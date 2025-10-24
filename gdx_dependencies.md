@@ -103,6 +103,20 @@ rm -rf src/com/badlogic/gdx/graphics/g3d
 * RepeatablePolygonSprite
 * FreetypeFontLoader
 * FreeTypeFontGeneratorLoader
+* TideMapLoader
+* TiledMapLoader
+* AtlasTmxMapLoader
+* AtlasTmjMapLoader
+* TmjMapLoader
+* HexagonalTiledMapRenderer
+* IsometricStaggeredTiledMapRenderer
+* IsometricTiledMapRenderer
+* OrthoCachedTiledMapRenderer
+* OrthogonalTiledMapRenderer
+
+Inline BatchTiledMapRenderer into my TmRenderer
+Inile TiledMapRenderer interface
+Inline maps.MapRenderer
 
 TODO:
 * PerspectiveCamera (delete doc references first)

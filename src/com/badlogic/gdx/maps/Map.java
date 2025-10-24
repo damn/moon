@@ -34,7 +34,7 @@ import com.badlogic.gdx.utils.Disposable;
  * {@link TextureMapObject}, and so on.
  * </p>
  * 
- * A map can be rendered by a {@link MapRenderer}. A MapRenderer implementation may chose to only render specific MapObject or
+ * A map can be rendered by a MapRenderer. A MapRenderer implementation may chose to only render specific MapObject or
  * MapLayer types.
  * </p>
  * 
