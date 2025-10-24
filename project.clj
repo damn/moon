@@ -15,7 +15,7 @@
                  [com.badlogicgames.gdx/gdx-platform          "1.13.5" :classifier "natives-desktop"]
 
                  ; afaik 1 usage of 'Gdx'
-                 [com.badlogicgames.gdx/gdx-freetype          "1.13.5"]
+                 ;[com.badlogicgames.gdx/gdx-freetype          "1.13.5"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.13.5" :classifier "natives-desktop"]
 
                  ; what do I really use there ?
