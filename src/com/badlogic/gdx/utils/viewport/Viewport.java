@@ -18,7 +18,6 @@ package com.badlogic.gdx.utils.viewport;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 import com.badlogic.gdx.math.Matrix4;
@@ -59,7 +58,7 @@ public abstract class Viewport {
 	}
 
 	/** Configures this viewport's screen bounds using the specified screen size and calls {@link #apply(boolean)}. Typically
-	 * called from {@link ApplicationListener#resize(int, int)} or {@link Screen#resize(int, int)}.
+	 * called from {@link ApplicationListener#resize(int, int)}.
 	 * <p>
 	 * The default implementation only calls {@link #apply(boolean)}. */
 	public void update (int screenWidth, int screenHeight, boolean centerCamera) {
