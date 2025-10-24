@@ -103,25 +103,22 @@
                        handled-txs))))
 
 (defn create!
-  [{:keys [audio
-           files
-           graphics
-           input]}
-   config]
-  (let [graphics (cdq.graphics.impl/create! graphics files (:graphics config))
+  [{:keys [ctx/app]} config]
+  (let [graphics (cdq.graphics.impl/create! (.getGraphics app) (.getFiles app) (:graphics config))
         stage (cdq.ui.impl/create! graphics {:dev-menu cdq.game.create.dev-menu-config/create})
-        skin (com.badlogic.gdx.scenes.scene2d.ui.Skin. (.internal files "uiskin.json"))
+        skin (com.badlogic.gdx.scenes.scene2d.ui.Skin. (.internal (.getFiles app) "uiskin.json"))
         ; (-> (vis-ui/skin) (skin/font "default-font") bitmap-font/data (bmfont-data/set-enable-markup! true)
         ctx (-> (map->Context {})
+                (assoc :ctx/app app)
                 (assoc :ctx/graphics graphics)
                 (assoc :ctx/stage stage)
-                (assoc :ctx/audio (cdq.audio/create audio files (:audio config)))
+                (assoc :ctx/audio (cdq.audio/create (.getAudio app) (.getFiles app) (:audio config)))
                 (assoc :ctx/db (cdq.db.impl/create))
-                (assoc :ctx/input input)
+                (assoc :ctx/input (.getInput app))
                 ; TODO dispose
                 (assoc :ctx/skin skin)
                 (assoc :ctx/config {:world-impl cdq.world.impl/create}))]
     (.bindRoot #'cdq.ui/skin skin)
-    (.setInputProcessor input stage)
+    (.setInputProcessor (.getInput app) stage)
     (cdq.game.create.add-actors/step stage ctx)
     (cdq.game.create.world/step ctx (:world config))))

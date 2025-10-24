@@ -24,11 +24,7 @@
     (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
-                            (reset! state (create! {:audio    Gdx/audio
-                                                    :files    Gdx/files
-                                                    :graphics Gdx/graphics
-                                                    :input    Gdx/input}
-                                                   config)))
+                            (reset! state (create! {:ctx/app Gdx/app} config)))
 
                           (dispose [_]
                             (dispose! @state))

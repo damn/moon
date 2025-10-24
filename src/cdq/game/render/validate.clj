@@ -2,12 +2,10 @@
   (:require [malli.core :as m]
             [malli.utils :as mu]))
 
-; Move into config?
-; or next to q/defrecord actually
-; or just 'cdq.ctx'?
 (def ^:private schema
   (m/schema
    [:map {:closed true}
+    [:ctx/app :some]
     [:ctx/audio :some]
     [:ctx/config :some]
     [:ctx/graphics :some]
