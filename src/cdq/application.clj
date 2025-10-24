@@ -6,8 +6,7 @@
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
-           (org.lwjgl.system Configuration))
+                                             Lwjgl3ApplicationConfiguration))
   (:gen-class))
 
 (defn- edn-resource [path]
@@ -20,7 +19,7 @@
 
 (defn -main []
   (let [config (edn-resource "config.edn")]
-    (.set Configuration/GLFW_LIBRARY_NAME "glfw_async")
+    (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
                             (reset! state (ctx/create! {:audio    Gdx/audio
