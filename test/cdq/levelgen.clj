@@ -4,7 +4,9 @@
             [cdq.files :as files-utils]
             [cdq.graphics.camera :as camera]
             [cdq.graphics.tm-renderer :as tm-renderer]
+
             [cdq.ui.stage :as stage]
+
             [cdq.world-fns.creature-tiles]
             [clojure.color :as color]
             [clojure.edn :as edn]
@@ -29,9 +31,12 @@
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.java.io :as io]
             [clojure.lwjgl.system.configuration :as lwjgl-config]
+
             [cdq.ui.skin :as vis-ui]
             [cdq.ui.text-button :as text-button]
-            [cdq.ui.window :as window]))
+            [cdq.ui.window :as window]
+
+            ))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -102,7 +107,7 @@
   ; skin = new Skin(Gdx.files.internal("data/uiskin.json"));
   (let [ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
-        stage (stage/create ui-viewport sprite-batch)
+        stage (stage/create ui-viewport sprite-batch nil)
         _  (input/set-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
@@ -130,7 +135,7 @@
                    :ctx/sprite-batch sprite-batch
                    :ctx/tiled-map-renderer (tm-renderer/create world-unit-scale sprite-batch))
         ctx (generate-level ctx initial-level-fn)]
-    (stage/add-actor! (:ctx/stage ctx) (edit-window))
+    (.addActor (:ctx/stage ctx) (edit-window))
     ctx))
 
 (defn dispose!
@@ -196,7 +201,7 @@
   (lwjgl-config/set-glfw-library-name! "glfw_async")
   (application/create (listener/create
                        {:create (fn []
-                                  (reset! state (create! (gdx/context))))
+                                  (reset! state (create! (gdx/state))))
                         :dispose (fn []
                                    (dispose! @state))
                         :render (fn []

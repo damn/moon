@@ -27,6 +27,11 @@
                  ; just for dev-menu ?
                  ; => use plain scene2d skin
                  [com.kotcrab.vis/vis-ui "1.5.2"]
+                 ; FIXME
+                 ; * Only Menu/Sepator/Tooltip are different
+                 ; in original scene2d.
+
+                 ; * First use normal scene2d @ levelgen test
 
                  [com.github.damn/clojure.grid2d "538fc4c44b"]
 
