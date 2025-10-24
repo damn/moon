@@ -3,7 +3,7 @@
   :dependencies [
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
 
-                 [com.github.damn/clojure.gdx "88092e50cc"]
+                 [com.badlogicgames.gdx/gdx "1.13.5"]
                  [com.github.damn/clojure.gdx.backends.lwjgl "482fadc0f9"]
                  [com.github.damn/clojure.gdx.graphics.g2d.freetype "1bc8c46339"]
                  [com.github.damn/clojure.gdx.graphics.g2d.shape-drawer "bd69dc5369"]
