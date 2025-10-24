@@ -3,6 +3,10 @@
  :window {:width 1440
           :height 900}
  :fps 60
+ :create!  cdq.ctx/create!
+ :dispose! cdq.tx.dispose/do!
+ :render!  cdq.ctx/render!
+ :resize!  cdq.tx.update-viewports/do!
  :audio    #edn/resource "audio.edn"
  :graphics #edn/resource "graphics.edn"
  :world    #edn/resource "world.edn"

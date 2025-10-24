@@ -1,6 +1,5 @@
 (ns cdq.application
-  (:require [cdq.ctx :as ctx]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.java.io :as io])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
@@ -17,24 +16,28 @@
 (def state (atom nil))
 
 (defn -main []
-  (let [config (edn-resource "config.edn")]
+  (let [config (edn-resource "config.edn")
+        create!  (requiring-resolve (:create!  config))
+        dispose! (requiring-resolve (:dispose! config))
+        render!  (requiring-resolve (:render!  config))
+        resize!  (requiring-resolve (:resize!  config))]
     (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
-                            (reset! state (ctx/create! {:audio    Gdx/audio
-                                                        :files    Gdx/files
-                                                        :graphics Gdx/graphics
-                                                        :input    Gdx/input}
-                                                       config)))
+                            (reset! state (create! {:audio    Gdx/audio
+                                                    :files    Gdx/files
+                                                    :graphics Gdx/graphics
+                                                    :input    Gdx/input}
+                                                   config)))
 
                           (dispose [_]
-                            (ctx/dispose! @state))
+                            (dispose! @state))
 
                           (render [_]
-                            (swap! state ctx/render!))
+                            (swap! state render!))
 
                           (resize [_ width height]
-                            (ctx/resize! @state width height))
+                            (resize! @state width height))
 
                           (pause [_])
 
