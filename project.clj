@@ -8,7 +8,8 @@
                  ; do I really want to maintain all that ?
 
                  ; What do I really need from here?
-                 [com.badlogicgames.gdx/gdx                   "1.13.5"]
+                 ;[com.badlogicgames.gdx/gdx                   "1.13.5"]
+                 [com.badlogicgames.gdx/gdx-jnigen-loader "2.5.2"]
 
                  ; What do I really need from here?
                  ;[com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.13.5"]
