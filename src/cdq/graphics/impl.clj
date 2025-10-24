@@ -1,12 +1,12 @@
 (ns cdq.graphics.impl
-  (:require [cdq.graphics]
+  (:require [moon.app :as app]
+            [cdq.graphics]
             [cdq.files :as files-utils]
             [cdq.graphics.camera :as camera]
             [cdq.graphics.tm-renderer :as tm-renderer]
             [clojure.gdx.files :as files]
             [clojure.gdx.graphics :as graphics]
             [clojure.gdx.graphics.color :as color]
-            [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.graphics.pixmap :as pixmap]
             [clojure.gdx.graphics.pixmap.format :as pixmap.format]
             [clojure.gdx.graphics.texture :as texture]
@@ -16,7 +16,6 @@
             [clojure.gdx.graphics.g2d.shape-drawer :as sd]
             [clojure.gdx.graphics.g2d.bitmap-font :as fnt]
             [clojure.gdx.graphics.g2d.bitmap-font.data :as data]
-            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.graphics.g2d.freetype.generator :as generator]
             [clojure.gdx.graphics.g2d.freetype.generator.parameter :as parameter]
@@ -307,8 +306,7 @@
     font))
 
 (defn create!
-  [graphics
-   files
+  [app
    {:keys [colors
            cursors
            default-font
@@ -317,8 +315,10 @@
            ui-viewport
            world-viewport]}]
   (doseq [[name rgba] colors]
-    (colors/put! name (color/create rgba)))
-  (let [batch (sprite-batch/create)
+    (app/def-color! app name rgba))
+  (let [graphics (.getGraphics app)
+        files    (.getFiles    app)
+        batch (app/sprite-batch app)
         shape-drawer-texture (let [pixmap (doto (pixmap/create 1 1 pixmap.format/rgba8888)
                                             (pixmap/set-color! [1 1 1 1])
                                             (pixmap/draw-pixel! 0 0))

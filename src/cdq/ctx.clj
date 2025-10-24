@@ -18,6 +18,7 @@
             [cdq.world.impl]
             [clojure.tx-handler :as tx-handler]
             [clojure.txs :as txs]
+            [moon.app :as app]
             [qrecord.core :as q]))
 
 (def reaction-txs-fn-map
@@ -106,9 +107,7 @@
   (merge (map->Context {}) ctx))
 
 (defn create-graphics [{:keys [ctx/app] :as ctx} config]
-  (assoc ctx :ctx/graphics (cdq.graphics.impl/create! (.getGraphics app)
-                                                      (.getFiles app)
-                                                      config)))
+  (assoc ctx :ctx/graphics (cdq.graphics.impl/create! app config)))
 
 (defn create-ui [{:keys [ctx/graphics] :as ctx}]
   (assoc ctx :ctx/stage (cdq.ui.impl/create! graphics {:dev-menu cdq.game.create.dev-menu-config/create})))
@@ -127,7 +126,7 @@
   (assoc ctx :ctx/db (cdq.db.impl/create)))
 
 (defn create-input [{:keys [ctx/app ctx/stage] :as ctx}]
-  (.setInputProcessor (.getInput app) stage)
+  (app/set-input-processor! app stage)
   (assoc ctx :ctx/input (.getInput app)))
 
 (defn create-config [ctx]

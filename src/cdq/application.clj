@@ -1,7 +1,12 @@
 (ns cdq.application
   (:require [clojure.edn :as edn]
-            [clojure.java.io :as io])
-  (:import (com.badlogic.gdx ApplicationListener
+            [clojure.java.io :as io]
+            [clojure.gdx.graphics.color :as color]
+            [clojure.gdx.graphics.colors :as colors]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [moon.app :as app])
+  (:import (com.badlogic.gdx Application
+                             ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration))
@@ -47,3 +52,15 @@
                           (.setWindowedMode (:width (:window config))
                                             (:height (:window config)))
                           (.setForegroundFPS (:fps config))))))
+
+(extend-type Application
+  app/Input
+  (set-input-processor! [this input-processor]
+    (.setInputProcessor (.getInput this) input-processor))
+
+  app/Graphics
+  (def-color! [_ name rgba]
+    (colors/put! name (color/create rgba)))
+
+  (sprite-batch [_]
+    (sprite-batch/create)))
