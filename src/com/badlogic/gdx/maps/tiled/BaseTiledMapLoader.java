@@ -251,7 +251,7 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 			Array<ProjectClassMember> projectClassMembers = new Array<>();
 			projectClassInfo.put(className, projectClassMembers);
 			for (JsonValue member : members) {
-				BaseTmjMapLoader.ProjectClassMember projectClassMember = new BaseTmjMapLoader.ProjectClassMember();
+				BaseTmxMapLoader.ProjectClassMember projectClassMember = new BaseTmjMapLoader.ProjectClassMember();
 				projectClassMember.name = member.getString("name");
 				projectClassMember.type = member.getString("type");
 				projectClassMember.propertyType = member.getString("propertyType", null);
@@ -320,7 +320,7 @@ public abstract class BaseTiledMapLoader<P extends BaseTiledMapLoader.Parameters
 
 	protected void loadMapPropertiesClassDefaults (String className, MapProperties mapProperties) {
 		if (projectClassInfo == null) {
-			Gdx.app.log("TiledMapLoader", "WARN: There is at least one property of type class or an object with a class defined. "
+			Gdx.app.log("BaseTiledMapLoader", "WARN: There is at least one property of type class or an object with a class defined. "
 				+ "Use the 'projectFilePath' parameter to correctly load the default values of a class.");
 			// to avoid spamming the warning message we can set an empty ObjectMap as projectClassInfo
 			this.projectClassInfo = new ObjectMap<>();
