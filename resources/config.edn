@@ -1,4 +1,4 @@
-[
+[[clojure.gdx.backends.lwjgl.application.config/use-glfw-async!]
  [cdq.application/start!
   {
    :title "Cyber Dungeon Quest"

@@ -31,3 +31,6 @@
   "the connected {@link Monitor}s"
   []
   (Lwjgl3ApplicationConfiguration/getMonitors))
+
+(defn use-glfw-async! []
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync))

@@ -17,33 +17,33 @@
   (let [create!  (:create!  config)
         dispose! (:dispose! config)
         render!  (:render!  config)
-        resize!  (:resize!  config)]
-    (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-    (Lwjgl3Application. (reify ApplicationListener
-                          (create [_]
-                            (reset! state (create! {:ctx/app Gdx/app} config)))
+        resize!  (:resize!  config)
+        listener (reify ApplicationListener
+                   (create [_]
+                     (reset! state (create! {:ctx/app Gdx/app} config)))
 
-                          (dispose [_]
-                            (dispose! @state))
+                   (dispose [_]
+                     (dispose! @state))
 
-                          (render [_]
-                            (swap! state (fn [ctx]
-                                           (reduce (fn [ctx f]
-                                                     (f ctx))
-                                                   ctx
-                                                   render!))))
+                   (render [_]
+                     (swap! state (fn [ctx]
+                                    (reduce (fn [ctx f]
+                                              (f ctx))
+                                            ctx
+                                            render!))))
 
-                          (resize [_ width height]
-                            (resize! @state width height))
+                   (resize [_ width height]
+                     (resize! @state width height))
 
-                          (pause [_])
+                   (pause [_])
 
-                          (resume [_]))
-                        (doto (Lwjgl3ApplicationConfiguration.)
-                          (.setTitle (:title config))
-                          (.setWindowedMode (:width (:window config))
-                                            (:height (:window config)))
-                          (.setForegroundFPS (:fps config))))))
+                   (resume [_]))
+        app-config (doto (Lwjgl3ApplicationConfiguration.)
+                     (.setTitle (:title config))
+                     (.setWindowedMode (:width (:window config))
+                                       (:height (:window config)))
+                     (.setForegroundFPS (:fps config)))]
+    (Lwjgl3Application. listener app-config)))
 
 (defn -main []
   (run! call (edn-resource "config.edn")))
