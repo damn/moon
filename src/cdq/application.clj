@@ -1,8 +1,7 @@
 (ns cdq.application
   (:require [cdq.ctx :as ctx]
             [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [qrecord.core :as q])
+            [clojure.java.io :as io])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application

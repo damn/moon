@@ -3,8 +3,7 @@
             [com.badlogic.gdx.maps.tiled :as tiled]
             [com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [clojure.gdx.maps.tiled.tmx :as tmx])
-  (:import (com.badlogic.gdx ApplicationAdapter)
-           (com.badlogic.gdx.graphics Color OrthographicCamera)
+  (:import (com.badlogic.gdx.graphics Color OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)))
 
 (def screen-width 800)

@@ -118,6 +118,8 @@ Inline BatchTiledMapRenderer into my TmRenderer
 Inile TiledMapRenderer interface
 Inline maps.MapRenderer
 
+* math/collision Segment, Sphere
+
 TODO:
 * PerspectiveCamera (delete doc references first)
 * Texture3D and texture3dData
