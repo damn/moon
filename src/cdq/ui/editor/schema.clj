@@ -46,12 +46,14 @@
     :cell-defaults {:pad 1}}))
 
 (defmethod create :s/boolean
-  [_ checked? _ctx]
+  [_ checked? {:keys [ctx/skin]}]
   (assert (boolean? checked?))
   (check-box/create
    :text ""
    :on-clicked (fn [_])
-   :checked? checked?))
+   :checked? checked?
+   :skin skin
+   ))
 
 (defmethod value :s/boolean
   [_ widget _schemas]

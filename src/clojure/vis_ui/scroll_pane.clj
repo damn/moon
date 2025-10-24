@@ -1,7 +1,6 @@
 (ns clojure.vis-ui.scroll-pane
-  (:import (com.kotcrab.vis.ui.widget VisScrollPane)))
+  (:require [cdq.ui :as ui])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui ScrollPane)))
 
 (defn create [actor]
-  (doto (VisScrollPane. actor)
-    (.setFlickScroll false)
-    (.setFadeScrollBars false)))
+  (ScrollPane. actor ui/skin))

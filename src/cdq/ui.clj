@@ -1,5 +1,7 @@
 (ns cdq.ui)
 
+(declare skin)
+
 (defprotocol UserInterface
   (dispose! [_])
   (show-data-viewer! [_ data])

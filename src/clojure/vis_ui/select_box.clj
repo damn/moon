@@ -1,9 +1,10 @@
 (ns clojure.vis-ui.select-box
-  (:import (com.kotcrab.vis.ui.widget VisSelectBox)))
+  (:require [cdq.ui :as ui])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox)))
 
 (defn create [{:keys [items selected]}]
-  (doto (VisSelectBox.)
+  (doto (SelectBox. ui/skin)
     (.setItems ^"[Lcom.badlogic.gdx.scenes.scene2d.Actor;" (into-array items))
     (.setSelected selected)))
 
-(def selected VisSelectBox/.getSelected)
+(def selected SelectBox/.getSelected)

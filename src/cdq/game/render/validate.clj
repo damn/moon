@@ -13,6 +13,7 @@
     [:ctx/graphics :some]
     [:ctx/input :some]
     [:ctx/stage :some]
+    [:ctx/skin :some]
     [:ctx/db :some]
     [:ctx/world :some]]))
 

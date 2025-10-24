@@ -1,16 +1,16 @@
 (ns clojure.vis-ui.image
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)
-           (com.kotcrab.vis.ui.widget VisImage)))
+           (com.badlogic.gdx.scenes.scene2d.ui Image)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defmulti create type)
 
 (defmethod create Drawable [^Drawable drawable]
-  (VisImage. drawable))
+  (Image. drawable))
 
 (defmethod create Texture [texture]
-  (VisImage. (TextureRegion. ^Texture texture)))
+  (Image. ^Texture texture))
 
 (defmethod create TextureRegion [texture-region]
-  (VisImage. ^TextureRegion texture-region))
+  (Image. ^TextureRegion texture-region))

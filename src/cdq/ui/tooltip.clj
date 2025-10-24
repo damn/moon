@@ -1,13 +1,16 @@
 (ns cdq.ui.tooltip
-  (:require [cdq.ui.stage :as stage]
+  (:require [cdq.ui :as ui]
+            [cdq.ui.stage :as stage]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.ui.label :as label]
             [clojure.gdx.utils.align :as align]
             [clojure.vis-ui.label :as vis-label]
-            [clojure.vis-ui.tooltip :as tooltip]))
+            [clojure.vis-ui.tooltip :as tooltip])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TextTooltip)))
 
 (defn add! [actor tooltip-text]
-  (tooltip/create {:update-fn (fn [tooltip]
+  (.addListener actor (TextTooltip. (str tooltip-text) ui/skin))
+  #_(tooltip/create {:update-fn (fn [tooltip]
                                 (when-not (string? tooltip-text)
                                   (let [actor (tooltip/target tooltip)
                                         ctx (when-let [stage (actor/stage actor)]
@@ -20,4 +23,7 @@
   actor)
 
 (defn remove! [actor]
-  (tooltip/remove! actor))
+  ; TODO ?
+  (tooltip/remove! actor)
+
+  )

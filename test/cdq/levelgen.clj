@@ -5,10 +5,6 @@
             [cdq.graphics.camera :as camera]
             [cdq.graphics.tm-renderer :as tm-renderer]
 
-            [cdq.ui.stage :as stage] ; This is actually nice because of ctx !
-            ; this is not from vis-ui just small extension ....
-            ; make userObject @ libgdx PR?
-
             [cdq.world-fns.creature-tiles]
             [clojure.color :as color]
             [clojure.edn :as edn]
@@ -27,9 +23,13 @@
             [clojure.gdx.maps.tiled :as tiled-map]
             [clojure.gdx.maps.tiled.layer :as layer]
 
+            [cdq.ui.stage :as stage] ; This is actually nice because of ctx !
+            ; this is not from vis-ui just small extension ....
+            ; make userObject @ libgdx PR?
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
+            [cdq.ui.table]
 
             [clojure.gdx.utils.disposable :as disposable]
             [clojure.gdx.utils.screen :as screen-utils]
@@ -37,9 +37,6 @@
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.java.io :as io]
             [clojure.lwjgl.system.configuration :as lwjgl-config]
-
-            [cdq.ui.window :as window]
-
             ))
 
 (def initial-level-fn "world_fns/uf_caves.edn")

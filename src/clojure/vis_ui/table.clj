@@ -1,5 +1,5 @@
 (ns clojure.vis-ui.table
-  (:import (com.kotcrab.vis.ui.widget VisTable)))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn create []
-  (VisTable.))
+  (Table.))

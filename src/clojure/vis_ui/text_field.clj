@@ -1,7 +1,8 @@
 (ns clojure.vis-ui.text-field
-  (:import (com.kotcrab.vis.ui.widget VisTextField)))
+  (:require [cdq.ui :as ui])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TextField)))
 
 (defn create [text]
-  (VisTextField. (str text)))
+  (TextField. (str text) ui/skin))
 
-(def text VisTextField/.getText)
+(def text TextField/.getText)

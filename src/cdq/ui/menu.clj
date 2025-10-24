@@ -21,7 +21,7 @@
              (label/set-text! label (text-fn (stage/ctx stage)))))
     :draw (fn [this batch parent-alpha])}))
 
-(defn- add-upd-label!
+(defn add-upd-label!
   ([table text-fn icon]
    (let [label (vis-label/create "")
          sub-table (table/create

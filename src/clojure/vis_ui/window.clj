@@ -1,14 +1,18 @@
 (ns clojure.vis-ui.window
-  (:import (com.kotcrab.vis.ui.widget VisWindow)))
+  (:require [cdq.ui :as ui])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
+; FIXME opts not there anymore
+; TODO cannot close !
+; TODO WASD in textfield -> player moves -> InputMultiplexer?
 (defn create
   [{:keys [title
            close-button?
            center?
            close-on-escape?]}]
-  (let [show-window-border? true
-        window (VisWindow. ^String title (boolean show-window-border?))]
-    (when close-button?    (.addCloseButton window))
-    (when center?          (.centerWindow   window))
-    (when close-on-escape? (.closeOnEscape  window))
+  (let [#_show-window-border? #_true
+        window (Window. title ui/skin)]
+    #_(when close-button?    (.addCloseButton window))
+    #_(when center?          (.centerWindow   window))
+    #_(when close-on-escape? (.closeOnEscape  window))
     window))
