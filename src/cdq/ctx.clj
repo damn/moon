@@ -102,23 +102,47 @@
                        ctx
                        handled-txs))))
 
-(defn create!
-  [{:keys [ctx/app]} config]
-  (let [graphics (cdq.graphics.impl/create! (.getGraphics app) (.getFiles app) (:graphics config))
-        stage (cdq.ui.impl/create! graphics {:dev-menu cdq.game.create.dev-menu-config/create})
-        skin (com.badlogic.gdx.scenes.scene2d.ui.Skin. (.internal (.getFiles app) "uiskin.json"))
-        ; (-> (vis-ui/skin) (skin/font "default-font") bitmap-font/data (bmfont-data/set-enable-markup! true)
-        ctx (-> (map->Context {})
-                (assoc :ctx/app app)
-                (assoc :ctx/graphics graphics)
-                (assoc :ctx/stage stage)
-                (assoc :ctx/audio (cdq.audio/create (.getAudio app) (.getFiles app) (:audio config)))
-                (assoc :ctx/db (cdq.db.impl/create))
-                (assoc :ctx/input (.getInput app))
-                ; TODO dispose
-                (assoc :ctx/skin skin)
-                (assoc :ctx/config {:world-impl cdq.world.impl/create}))]
+(defn into-record [ctx]
+  (merge (map->Context {}) ctx))
+
+(defn create-graphics [{:keys [ctx/app] :as ctx} config]
+  (assoc ctx :ctx/graphics (cdq.graphics.impl/create! (.getGraphics app)
+                                                      (.getFiles app)
+                                                      config)))
+
+(defn create-ui [{:keys [ctx/graphics] :as ctx}]
+  (assoc ctx :ctx/stage (cdq.ui.impl/create! graphics {:dev-menu cdq.game.create.dev-menu-config/create})))
+
+(defn create-skin [{:keys [ctx/app] :as ctx}]
+  ; (-> (vis-ui/skin) (skin/font "default-font") bitmap-font/data (bmfont-data/set-enable-markup! true)
+  ; TODO DISPOSE
+  (let [skin (com.badlogic.gdx.scenes.scene2d.ui.Skin. (.internal (.getFiles app) "uiskin.json"))]
     (.bindRoot #'cdq.ui/skin skin)
-    (.setInputProcessor (.getInput app) stage)
-    (cdq.game.create.add-actors/step stage ctx)
-    (cdq.game.create.world/step ctx (:world config))))
+    (assoc ctx :ctx/skin skin)))
+
+(defn create-audio [{:keys [ctx/app] :as ctx} config]
+  (assoc ctx :ctx/audio (cdq.audio/create (.getAudio app) (.getFiles app) config)))
+
+(defn create-db [ctx]
+  (assoc ctx :ctx/db (cdq.db.impl/create)))
+
+(defn create-input [{:keys [ctx/app ctx/stage] :as ctx}]
+  (.setInputProcessor (.getInput app) stage)
+  (assoc ctx :ctx/input (.getInput app)))
+
+(defn create-config [ctx]
+  (assoc ctx :ctx/config {:world-impl cdq.world.impl/create}))
+
+(defn create!
+  [ctx config]
+  (-> ctx
+      into-record
+      (create-graphics (:graphics config))
+      create-ui
+      create-skin
+      (create-audio (:audio config))
+      create-db
+      create-input
+      create-config
+      cdq.game.create.add-actors/step
+      (cdq.game.create.world/step (:world config))))

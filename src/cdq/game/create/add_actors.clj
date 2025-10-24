@@ -52,7 +52,7 @@
   (stage/clear! stage)
   (step stage ctx))
 
-(defn step [stage ctx]
+(defn step [{:keys [ctx/stage] :as ctx}]
   (let [config (.config stage)]
     (doseq [actor [((:dev-menu config)
                     ctx
@@ -70,4 +70,5 @@
                             (player-state-handle-draws (stage/ctx (actor/stage this))))
                     :act (fn [_ _delta])}
                    (message/create message-duration-seconds)]]
-      (stage/add-actor! stage actor))))
+      (stage/add-actor! stage actor)))
+  ctx)
