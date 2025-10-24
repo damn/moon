@@ -29,27 +29,6 @@
                  :tx/set-item                 cdq.tx.set-item/do!
                  :tx/remove-item              cdq.tx.remove-item/do!
                  :tx/add-skill                cdq.tx.add-skill/do!
-                 :tx/get-stage-ctx cdq.game.render.get-stage-ctx/step
-                 :tx/validate cdq.game.render.validate/step
-                 :tx/update-mouse cdq.game.render.update-mouse/step
-                 :tx/update-mouseover-eid cdq.game.render.update-mouseover-eid/step
-                 :tx/check-open-debug cdq.game.render.check-open-debug/step
-                 :tx/assoc-active-entities cdq.game.render.assoc-active-entities/step
-                 :tx/set-camera-on-player cdq.game.render.set-camera-on-player/step
-                 :tx/clear-screen cdq.game.render.clear-screen/step
-                 :tx/draw-world-map cdq.game.render.draw-world-map/step
-                 :tx/draw-on-world-viewport cdq.game.render.draw-on-world-viewport/step
-                 :tx/assoc-interaction-state cdq.game.render.assoc-interaction-state/step
-                 :tx/set-cursor cdq.game.render.set-cursor/step
-                 :tx/player-state-handle-input cdq.game.render.player-state-handle-input/step
-                 :tx/dissoc-interaction-state cdq.game.render.dissoc-interaction-state/step
-                 :tx/assoc-paused cdq.game.render.assoc-paused/step
-                 :tx/update-world-time cdq.game.render.update-world-time/step
-                 :tx/update-potential-fields cdq.game.render.update-potential-fields/step
-                 :tx/tick-entities cdq.game.render.tick-entities/step
-                 :tx/remove-destroyed-entities cdq.game.render.remove-destroyed-entities/step
-                 :tx/window-camera-controls cdq.game.render.window-camera-controls/step
-                 :tx/render-stage cdq.game.render.render-stage/step
                  }
                requiring-resolve))
 
@@ -146,32 +125,3 @@
     (.setInputProcessor input stage)
     (cdq.game.create.add-actors/step stage ctx)
     (cdq.game.create.world/step ctx (:world config))))
-
-(defn render! [ctx]
-  (reduce-actions! reaction-txs-fn-map
-                   ctx
-                   [
-                    [:tx/get-stage-ctx]
-                    [:tx/validate]
-                    [:tx/update-mouse]
-                    [:tx/update-mouseover-eid]
-                    [:tx/check-open-debug]
-                    [:tx/assoc-active-entities]
-                    [:tx/set-camera-on-player]
-                    [:tx/clear-screen]
-                    [:tx/draw-world-map]
-                    [:tx/draw-on-world-viewport]
-                    [:tx/assoc-interaction-state]
-                    [:tx/set-cursor]
-                    [:tx/player-state-handle-input]
-                    [:tx/dissoc-interaction-state]
-                    [:tx/assoc-paused]
-                    [:tx/update-world-time]
-                    [:tx/update-potential-fields]
-                    [:tx/tick-entities]
-                    [:tx/remove-destroyed-entities]
-                    [:tx/window-camera-controls]
-                    [:tx/render-stage]
-                    [:tx/validate]
-                    ]
-                   ))

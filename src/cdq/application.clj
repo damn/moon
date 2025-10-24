@@ -19,7 +19,7 @@
   (let [config (edn-resource "config.edn")
         create!  (requiring-resolve (:create!  config))
         dispose! (requiring-resolve (:dispose! config))
-        render!  (requiring-resolve (:render!  config))
+        render!  (map requiring-resolve (:render!  config))
         resize!  (requiring-resolve (:resize!  config))]
     (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
@@ -34,7 +34,11 @@
                             (dispose! @state))
 
                           (render [_]
-                            (swap! state render!))
+                            (swap! state (fn [ctx]
+                                           (reduce (fn [ctx f]
+                                                     (f ctx))
+                                                   ctx
+                                                   render!))))
 
                           (resize [_ width height]
                             (resize! @state width height))
