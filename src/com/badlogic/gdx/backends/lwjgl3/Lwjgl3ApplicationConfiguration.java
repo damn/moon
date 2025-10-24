@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -133,7 +133,7 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	}
 
 	/** Sets the audio device configuration.
-	 * 
+	 *
 	 * @param simultaneousSources the maximum number of sources that can be played simultaniously (default 16)
 	 * @param bufferSize the audio device buffer size in samples (default 512)
 	 * @param bufferCount the audio device buffer count (default 9) */
@@ -147,9 +147,9 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	 * back to OpenGL ES 2.0 emulation through OpenGL 2.0. The default parameters for major and minor should be 3 and 2
 	 * respectively to be compatible with Mac OS X. Specifying major version 4 and minor version 2 will ensure that all OpenGL ES
 	 * 3.0 features are supported. Note however that Mac OS X does only support 3.2.
-	 * 
+	 *
 	 * @see <a href= "http://legacy.lwjgl.org/javadoc/org/lwjgl/opengl/ContextAttribs.html"> LWJGL OSX ContextAttribs note</a>
-	 * 
+	 *
 	 * @param glVersion which OpenGL ES emulation version to use
 	 * @param gles3MajorVersion OpenGL ES major version, use 3 as default
 	 * @param gles3MinorVersion OpenGL ES minor version, use 2 as default */
@@ -160,7 +160,7 @@ public class Lwjgl3ApplicationConfiguration extends Lwjgl3WindowConfiguration {
 	}
 
 	/** Sets the bit depth of the color, depth and stencil buffer as well as multi-sampling.
-	 * 
+	 *
 	 * @param r red bits (default 8)
 	 * @param g green bits (default 8)
 	 * @param b blue bits (default 8)
