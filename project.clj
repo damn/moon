@@ -7,7 +7,7 @@
                  [com.github.damn/clojure.gdx.backends.lwjgl "482fadc0f9"]
                  [com.github.damn/clojure.gdx.graphics.g2d.freetype "1bc8c46339"]
                  [com.github.damn/clojure.gdx.graphics.g2d.shape-drawer "bd69dc5369"]
-                 [com.github.damn/clojure.vis-ui "41ed3ee736"]
+                 [com.kotcrab.vis/vis-ui "1.5.2"]
 
                  [com.github.damn/clojure.grid2d "538fc4c44b"]
 
