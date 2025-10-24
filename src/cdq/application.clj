@@ -1,10 +1,9 @@
 (ns cdq.application
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.gdx.graphics.color :as color]
+  (:require [clojure.gdx.graphics.color :as color]
             [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [moon.app :as app])
+            [moon.app :as app]
+            [moon.core :refer [edn-resource]])
   (:import (com.badlogic.gdx Application
                              ApplicationListener
                              Gdx)
@@ -12,20 +11,14 @@
                                              Lwjgl3ApplicationConfiguration))
   (:gen-class))
 
-(defn- edn-resource [path]
-  (->> path
-       io/resource
-       slurp
-       (edn/read-string {:readers {'edn/resource edn-resource}})))
-
 (def state (atom nil))
 
 (defn -main []
   (let [config (edn-resource "config.edn")
-        create!  (requiring-resolve (:create!  config))
-        dispose! (requiring-resolve (:dispose! config))
-        render!  (map requiring-resolve (:render!  config))
-        resize!  (requiring-resolve (:resize!  config))]
+        create!  (:create!  config)
+        dispose! (:dispose! config)
+        render!  (:render!  config)
+        resize!  (:resize!  config)]
     (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
