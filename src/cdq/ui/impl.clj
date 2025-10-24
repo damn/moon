@@ -9,7 +9,6 @@
             [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.utils.viewport :as viewport]
             [clojure.repl]
-            [cdq.ui.skin :as vis-ui]
             [cdq.ui.text-button :as text-button]
             [clojure.utils :as utils]
             [clojure.vis-ui.label :as label])
@@ -51,7 +50,6 @@
   [{:keys [graphics/batch
            graphics/ui-viewport]}
    config]
-  (vis-ui/load! {:skin-scale :x1})
   (stage/create ui-viewport batch config))
 
 (defn- toggle-visible! [actor]
@@ -65,7 +63,8 @@
 (extend-type cdq.ui.Stage
   ui/UserInterface
   (dispose! [_]
-    (vis-ui/dispose!))
+    ; TODO fixme skin ?
+    )
 
   (show-data-viewer! [this data]
     (stage/add-actor! this

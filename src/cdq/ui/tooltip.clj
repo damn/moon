@@ -4,8 +4,7 @@
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.ui.label :as label]
             [clojure.gdx.utils.align :as align]
-            [clojure.vis-ui.label :as vis-label]
-            [clojure.vis-ui.tooltip :as tooltip])
+            [clojure.vis-ui.label :as vis-label])
   (:import (com.badlogic.gdx.scenes.scene2d.ui TextTooltip)))
 
 (defn add! [actor tooltip-text]
@@ -24,6 +23,6 @@
 
 (defn remove! [actor]
   ; TODO ?
-  (tooltip/remove! actor)
+  #_(tooltip/remove! actor)
 
   )

@@ -1,34 +1,68 @@
 (ns cdq.ui.dev-menu
-  (:require [cdq.ui.table :as table]
+  (:require [cdq.ui.image :as image]
             [cdq.ui.stage :as stage]
+            [cdq.ui.table :as table]
+            [cdq.ui.window :as window]
             [clojure.gdx.scene2d.actor :as actor]
-            [cdq.ui.menu :as menu]
-            [clojure.vis-ui.label :as label]
             [clojure.gdx.scene2d.event :as event]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [clojure.vis-ui.text-button :as text-button]
+            [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.touchable :as touchable]
+            [clojure.gdx.scene2d.ui.cell :as cell]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
+            [clojure.vis-ui.label :as label]
+            [clojure.vis-ui.text-button :as text-button]
             [clojure.vis-ui.label :as vis-label]))
+
+(defn- set-label-text-actor [label text-fn]
+  (actor/create
+   {:act (fn [this delta]
+           (when-let [stage (actor/stage this)]
+             (.setText label (text-fn (stage/ctx stage)))))
+    :draw (fn [this batch parent-alpha])}))
+
+(defn add-upd-label!
+  ([table text-fn icon]
+   (let [label (label/create "")
+         sub-table (table/create
+                    {:rows [[{:actor (image/create {:image/object icon})}
+                             label]]})]
+     (group/add-actor! table (set-label-text-actor label text-fn))
+     (cell/expand-x! (cell/right! (table/add! table sub-table)))))
+  ([table text-fn]
+   (let [label (label/create "")]
+     (group/add-actor! table (set-label-text-actor label text-fn))
+     (cell/expand-x! (cell/right! (table/add! table label))))))
+
+(defn- create-window [label items]
+  (window/create
+   {:pack? true
+    :title label
+    :rows [(for [{:keys [label on-click]} items]
+             {:actor (doto (text-button/create label)
+                       (actor/add-listener!
+                        (change-listener/create
+                         (fn [event actor]
+                           (on-click actor (stage/ctx (event/stage event)))))))})]}))
 
 (defn- main-table [menus update-labels]
   (let [table (table/create
                {:rows [(for [{:keys [label items]} menus]
-                         {:actor (text-button/create label)})
-                       ]})]
+                         {:actor (doto (text-button/create label)
+                                   (actor/add-listener!
+                                    (change-listener/create
+                                     (fn [event actor]
+                                       (.addActor (event/stage event) (create-window label items))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
-          (menu/add-upd-label! table update-fn icon)
-          (menu/add-upd-label! table update-fn))))
+          (add-upd-label! table update-fn icon)
+          (add-upd-label! table update-fn))))
     table))
 
 (defmethod stage/build :actor/dev-menu
   [{:keys [menus update-labels]}]
   (table/create
    {:rows [[{:actor (main-table menus update-labels)
-             #_(menu/create
-                     {:menus menus
-                      :update-labels update-labels})
              :expand-x? true
              :fill-x? true
              :colspan 1}]

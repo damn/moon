@@ -26,7 +26,7 @@
                  ; absolutely insanely huge, do I really need it ? 66x usage of 'Gdx'.
                  ; just for dev-menu ?
                  ; => use plain scene2d skin
-                 [com.kotcrab.vis/vis-ui "1.5.2"]
+                 ;[com.kotcrab.vis/vis-ui "1.5.2"]
                  ; FIXME
                  ; * Only Menu/Sepator/Tooltip are different
                  ; in original scene2d.
