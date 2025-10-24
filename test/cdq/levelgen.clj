@@ -5,7 +5,9 @@
             [cdq.graphics.camera :as camera]
             [cdq.graphics.tm-renderer :as tm-renderer]
 
-            [cdq.ui.stage :as stage]
+            [cdq.ui.stage :as stage] ; This is actually nice because of ctx !
+            ; this is not from vis-ui just small extension ....
+            ; make userObject @ libgdx PR?
 
             [cdq.world-fns.creature-tiles]
             [clojure.color :as color]
@@ -24,7 +26,11 @@
             [clojure.gdx.maps.map-layers :as layers]
             [clojure.gdx.maps.tiled :as tiled-map]
             [clojure.gdx.maps.tiled.layer :as layer]
+
             [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
+
             [clojure.gdx.utils.disposable :as disposable]
             [clojure.gdx.utils.screen :as screen-utils]
             [clojure.gdx.utils.viewport :as viewport]
@@ -32,8 +38,6 @@
             [clojure.java.io :as io]
             [clojure.lwjgl.system.configuration :as lwjgl-config]
 
-            [cdq.ui.skin :as vis-ui]
-            [cdq.ui.text-button :as text-button]
             [cdq.ui.window :as window]
 
             ))
@@ -86,26 +90,28 @@
     (show-whole-map! ctx)
     ctx))
 
-(defn- edit-window []
-  (window/create
-   {:title "Edit"
-    :cell-defaults {:pad 10}
-    :rows (for [level-fn level-fns]
-            [{:actor (text-button/create
-                      {:text (str "Generate " level-fn)
-                       :on-clicked (fn [actor ctx]
-                                     (let [stage (actor/stage actor)
-                                           new-ctx (generate-level ctx level-fn)]
-                                       (stage/set-ctx! stage new-ctx)))})}])
-    :pack? true}))
+(defn- edit-window [skin]
+  (let [window (com.badlogic.gdx.scenes.scene2d.ui.Window. "Edit" skin)]
+    (cdq.ui.table/add-rows! window (for [level-fn level-fns
+                                         :let [on-clicked (fn [actor ctx]
+                                                            (let [stage (actor/stage actor)
+                                                                  new-ctx (generate-level ctx level-fn)]
+                                                              (stage/set-ctx! stage new-ctx)))]]
+                                     [{:actor (doto (com.badlogic.gdx.scenes.scene2d.ui.TextButton. (str "Generate " level-fn) skin)
+                                                (actor/add-listener!
+                                                 (change-listener/create
+                                                  (fn [event actor]
+                                                    (on-clicked actor (stage/ctx (event/stage event)))))))}]))
+    (.pack window)
+    window))
 
 (defn create!
   [{:keys [files
            graphics
            input]}]
-  (vis-ui/load! {:skin-scale :x1})
-  ; skin = new Skin(Gdx.files.internal("data/uiskin.json"));
-  (let [ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
+  (let [skin (com.badlogic.gdx.scenes.scene2d.ui.Skin. (.internal files "uiskin.json")) ; TODO dispose
+
+        ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch nil)
         _  (input/set-processor! input stage)
@@ -135,13 +141,13 @@
                    :ctx/sprite-batch sprite-batch
                    :ctx/tiled-map-renderer (tm-renderer/create world-unit-scale sprite-batch))
         ctx (generate-level ctx initial-level-fn)]
-    (.addActor (:ctx/stage ctx) (edit-window))
+    (.addActor (:ctx/stage ctx) (edit-window skin))
     ctx))
 
 (defn dispose!
   [{:keys [ctx/sprite-batch
            ctx/tiled-map ]}]
-  (vis-ui/dispose!)
+  ; TODO dispose skin?
   (disposable/dispose! sprite-batch)
   (disposable/dispose! tiled-map))
 
