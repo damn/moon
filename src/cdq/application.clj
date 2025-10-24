@@ -3,7 +3,7 @@
             [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [moon.app :as app]
-            [moon.core :refer [edn-resource]])
+            [moon.core :refer [call edn-resource]])
   (:import (com.badlogic.gdx Application
                              ApplicationListener
                              Gdx)
@@ -13,9 +13,8 @@
 
 (def state (atom nil))
 
-(defn -main []
-  (let [config (edn-resource "config.edn")
-        create!  (:create!  config)
+(defn start! [config]
+  (let [create!  (:create!  config)
         dispose! (:dispose! config)
         render!  (:render!  config)
         resize!  (:resize!  config)]
@@ -45,6 +44,9 @@
                           (.setWindowedMode (:width (:window config))
                                             (:height (:window config)))
                           (.setForegroundFPS (:fps config))))))
+
+(defn -main []
+  (run! call (edn-resource "config.edn")))
 
 (extend-type Application
   app/Input

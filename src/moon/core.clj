@@ -3,6 +3,9 @@
             [clojure.java.io :as io]
             [clojure.walk :as walk]))
 
+(defn call [[f & params]]
+  (apply f params))
+
 (defn edn-resource [path]
   (->> path
        io/resource

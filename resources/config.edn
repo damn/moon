@@ -1,34 +1,36 @@
-{
- :title "Cyber Dungeon Quest"
- :window {:width 1440
-          :height 900}
- :fps 60
- :create!  cdq.ctx/create!
- :dispose! cdq.tx.dispose/do!
- :render!  [cdq.game.render.get-stage-ctx/step
-            cdq.game.render.validate/step
-            cdq.game.render.update-mouse/step
-            cdq.game.render.update-mouseover-eid/step
-            cdq.game.render.check-open-debug/step
-            cdq.game.render.assoc-active-entities/step
-            cdq.game.render.set-camera-on-player/step
-            cdq.game.render.clear-screen/step
-            cdq.game.render.draw-world-map/step
-            cdq.game.render.draw-on-world-viewport/step
-            cdq.game.render.assoc-interaction-state/step
-            cdq.game.render.set-cursor/step
-            cdq.game.render.player-state-handle-input/step
-            cdq.game.render.dissoc-interaction-state/step
-            cdq.game.render.assoc-paused/step
-            cdq.game.render.update-world-time/step
-            cdq.game.render.update-potential-fields/step
-            cdq.game.render.tick-entities/step
-            cdq.game.render.remove-destroyed-entities/step
-            cdq.game.render.window-camera-controls/step
-            cdq.game.render.render-stage/step
-            cdq.game.render.validate/step]
- :resize!  cdq.tx.update-viewports/do!
- :audio    #edn/resource "audio.edn"
- :graphics #edn/resource "graphics.edn"
- :world    #edn/resource "world.edn"
- }
+[
+ [cdq.application/start!
+  {
+   :title "Cyber Dungeon Quest"
+   :window {:width 1440
+            :height 900}
+   :fps 60
+   :create!  cdq.ctx/create!
+   :dispose! cdq.tx.dispose/do!
+   :render!  [cdq.game.render.get-stage-ctx/step
+              cdq.game.render.validate/step
+              cdq.game.render.update-mouse/step
+              cdq.game.render.update-mouseover-eid/step
+              cdq.game.render.check-open-debug/step
+              cdq.game.render.assoc-active-entities/step
+              cdq.game.render.set-camera-on-player/step
+              cdq.game.render.clear-screen/step
+              cdq.game.render.draw-world-map/step
+              cdq.game.render.draw-on-world-viewport/step
+              cdq.game.render.assoc-interaction-state/step
+              cdq.game.render.set-cursor/step
+              cdq.game.render.player-state-handle-input/step
+              cdq.game.render.dissoc-interaction-state/step
+              cdq.game.render.assoc-paused/step
+              cdq.game.render.update-world-time/step
+              cdq.game.render.update-potential-fields/step
+              cdq.game.render.tick-entities/step
+              cdq.game.render.remove-destroyed-entities/step
+              cdq.game.render.window-camera-controls/step
+              cdq.game.render.render-stage/step
+              cdq.game.render.validate/step]
+   :resize!  cdq.tx.update-viewports/do!
+   :audio    #edn/resource "audio.edn"
+   :graphics #edn/resource "graphics.edn"
+   :world    #edn/resource "world.edn"
+   }]]
