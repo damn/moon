@@ -3,12 +3,29 @@
   :dependencies [
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
 
+                 ; If I pull in all the code I have to maintain it
+                 ; and what about the tests, e.g. shape-drawer/vis-ui gigantic tests
+                 ; do I really want to maintain all that ?
+
+                 ; What do I really need from here?
                  [com.badlogicgames.gdx/gdx                   "1.13.5"]
+
+                 ; What do I really need from here?
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.13.5"]
                  [com.badlogicgames.gdx/gdx-platform          "1.13.5" :classifier "natives-desktop"]
+
+                 ; afaik 1 usage of 'Gdx'
                  [com.badlogicgames.gdx/gdx-freetype          "1.13.5"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.13.5" :classifier "natives-desktop"]
-                 [space.earlygrey/shapedrawer "2.5.0"]
+
+                 ; what do I really use there ?
+                 ; only 'update' uses 'Gdx', otherwise using omly a few g2d and math stuff
+                 ; deleted scene2d folder in here
+                 ;[space.earlygrey/shapedrawer "2.5.0"]
+
+                 ; absolutely insanely huge, do I really need it ? 66x usage of 'Gdx'.
+                 ; just for dev-menu ?
+                 ; => use plain scene2d skin
                  [com.kotcrab.vis/vis-ui "1.5.2"]
 
                  [com.github.damn/clojure.grid2d "538fc4c44b"]
