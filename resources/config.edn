@@ -1,4 +1,8 @@
-[[clojure.gdx.backends.lwjgl.application.config/use-glfw-async!]
+[[clojure.core/require cdq.ui.build.editor-window]
+ [clojure.core/require cdq.ui.dev-menu]
+ [clojure.core/require cdq.ui.editor.overview-window]
+ [clojure.core/require cdq.ui.editor.window]
+ [clojure.gdx.backends.lwjgl.application.config/use-glfw-async!]
  [cdq.application/start!
   {
    :title "Cyber Dungeon Quest"

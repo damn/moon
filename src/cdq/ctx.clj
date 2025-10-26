@@ -1,20 +1,12 @@
 (ns cdq.ctx
-  (:require [cdq.audio :as audio]
+  (:require [cdq.audio]
             [cdq.db.impl]
-            ;;
             [cdq.game.create.add-actors]
             [cdq.game.create.dev-menu-config]
             [cdq.game.create.world]
-            ;;
-            [cdq.graphics :as graphics]
             [cdq.graphics.impl]
-            [cdq.ui :as ui]
-            [cdq.ui.build.editor-window]
-            [cdq.ui.dev-menu]
-            [cdq.ui.editor.overview-window]
-            [cdq.ui.editor.window]
+            [cdq.ui]
             [cdq.ui.impl]
-            [cdq.world :as world]
             [cdq.world.impl]
             [clojure.tx-handler :as tx-handler]
             [clojure.txs :as txs]
