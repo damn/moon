@@ -1,17 +1,17 @@
 (ns cdq.audio
-  (:require [moon.audio :as audio]
-            [moon.audio.sound :as sound]
-            [moon.files :as files]))
+  (:require [moon.files :as files])
+  (:import (com.badlogic.gdx Audio)
+           (com.badlogic.gdx.audio Sound)))
 
 (defn sound-names [sounds]
   (map first sounds))
 
 (defn play! [sounds sound-name]
   (assert (contains? sounds sound-name) (str sound-name))
-  (sound/play! (get sounds sound-name)))
+  (Sound/.play (get sounds sound-name)))
 
 (defn dispose! [sounds]
-  (run! sound/dispose! (vals sounds)))
+  (run! Sound/.dispose (vals sounds)))
 
 (defn create
   [audio files {:keys [sound-names path-format]}]
@@ -23,4 +23,4 @@
     (into {}
           (for [[sound-name file-handle] sound-name->file-handle]
             [sound-name
-             (audio/sound audio file-handle)]))))
+             (Audio/.newSound audio file-handle)]))))
