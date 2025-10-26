@@ -1,12 +1,13 @@
 (ns cdq.ui.text-button
-  (:require [cdq.ui.tooltip :as tooltip]
+  (:require [cdq.ui :as ui]
+            [cdq.ui.tooltip :as tooltip]
             [cdq.ui.table :as table]
             [cdq.ui.stage :as stage]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]
-            [moon.scene2d.utils.change-listener :as change-listener]
-            [moon.ui.text-button :as text-button])
-  (:import (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
+            [moon.scene2d.utils.change-listener :as change-listener])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn create
   ([text on-clicked]
@@ -15,7 +16,7 @@
   ([{:keys [text
             on-clicked]
      :as opts}]
-   (let [actor (doto (text-button/create text)
+   (let [actor (doto (TextButton. (str text) ui/skin)
                  (actor/add-listener!
                   (change-listener/create
                     (fn [event actor]

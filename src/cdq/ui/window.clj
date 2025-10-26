@@ -1,18 +1,33 @@
 (ns cdq.ui.window
-  (:require [cdq.ui.table :as table]
+  (:require [cdq.ui :as ui]
+            [cdq.ui.table :as table]
             [cdq.ui.stage :as stage]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.ui.window :as window]
-            [moon.scene2d.utils.change-listener :as change-listener]
-            [moon.ui.text-button :as text-button]
-            [moon.ui.window :as vis-window])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
+            [moon.scene2d.utils.change-listener :as change-listener])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton
+                                               Window)))
+
+; FIXME opts not there anymore
+; TODO cannot close !
+; TODO WASD in textfield -> player moves -> InputMultiplexer?
+(defn- create*
+  [{:keys [title
+           close-button?
+           center?
+           close-on-escape?]}]
+  (let [#_show-window-border? #_true
+        window (Window. title ui/skin)]
+    #_(when close-button?    (.addCloseButton window))
+    #_(when center?          (.centerWindow   window))
+    #_(when close-on-escape? (.closeOnEscape  window))
+    window))
 
 (defn create
   [{:keys [modal?] :as opts}]
-  (let [window (vis-window/create opts)]
+  (let [window (create* opts)]
     (table/add! (.getTitleTable window)
-                (doto (text-button/create "X")
+                (doto (TextButton. "X" ui/skin)
                   (actor/add-listener!
                    (change-listener/create
                     (fn [_event _actor]

@@ -3,8 +3,22 @@
             [moon.scene2d.ui.image :as image]
             [moon.scene2d.ui.widget :as widget]
             [moon.utils.align :as align]
-            [moon.utils.scaling :as scaling]
-            [moon.ui.image :as vis-image]))
+            [moon.utils.scaling :as scaling])
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d.ui Image)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+
+(defmulti create* type)
+
+(defmethod create* Drawable [^Drawable drawable]
+  (Image. drawable))
+
+(defmethod create* Texture [texture]
+  (Image. ^Texture texture))
+
+(defmethod create* TextureRegion [texture-region]
+  (Image. ^TextureRegion texture-region))
 
 (defn create
   [{:keys [image/object
@@ -12,7 +26,7 @@
            align
            fill-parent?]
     :as opts}]
-  (let [image (vis-image/create object)]
+  (let [image (create* object)]
     (when (= :center align)
       (image/set-align! image align/center))
     (when (= :fill scaling)

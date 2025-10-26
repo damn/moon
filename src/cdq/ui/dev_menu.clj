@@ -1,5 +1,6 @@
 (ns cdq.ui.dev-menu
-  (:require [cdq.ui.image :as image]
+  (:require [cdq.ui :as ui]
+            [cdq.ui.image :as image]
             [cdq.ui.stage :as stage]
             [cdq.ui.table :as table]
             [cdq.ui.window :as window]
@@ -10,8 +11,8 @@
             [moon.scene2d.ui.cell :as cell]
             [moon.scene2d.utils.change-listener :as change-listener]
             [moon.ui.label :as label]
-            [moon.ui.text-button :as text-button]
-            [moon.ui.label :as vis-label]))
+            [moon.ui.label :as vis-label])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton)))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create
@@ -38,7 +39,7 @@
    {:pack? true
     :title label
     :rows [(for [{:keys [label on-click]} items]
-             {:actor (doto (text-button/create label)
+             {:actor (doto (TextButton. label ui/skin)
                        (actor/add-listener!
                         (change-listener/create
                          (fn [event actor]
@@ -47,7 +48,7 @@
 (defn- main-table [menus update-labels]
   (let [table (table/create
                {:rows [(for [{:keys [label items]} menus]
-                         {:actor (doto (text-button/create label)
+                         {:actor (doto (TextButton. label ui/skin)
                                    (actor/add-listener!
                                     (change-listener/create
                                      (fn [event actor]

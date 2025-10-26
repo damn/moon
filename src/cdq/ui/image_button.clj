@@ -7,8 +7,9 @@
             [moon.scene2d.event :as event]
             [moon.scene2d.utils.change-listener :as change-listener]
             [moon.scene2d.utils.drawable :as drawable]
-            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [moon.ui.image-button :as image-button]))
+            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defn create
   [{:keys [drawable/texture-region
@@ -19,7 +20,7 @@
         [w h] (texture-region/dimensions texture-region)
         drawable (doto (texture-region-drawable/create texture-region)
                    (drawable/set-min-size! (* scale w) (* scale h)))
-        image-button (image-button/create drawable)]
+        image-button (ImageButton. ^Drawable drawable)]
     (when on-clicked
       (actor/add-listener! image-button (change-listener/create
                                          (fn [event actor]
