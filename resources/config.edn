@@ -2,6 +2,7 @@
  [clojure.core/require cdq.ui.dev-menu]
  [clojure.core/require cdq.ui.editor.overview-window]
  [clojure.core/require cdq.ui.editor.window]
+ [clojure.core/require cdq.entity.state-impl]
  [clojure.gdx.backends.lwjgl.application.config/use-glfw-async!]
  [cdq.application/start!
   {
