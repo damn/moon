@@ -36,7 +36,6 @@
             [clojure.gdx.utils.viewport :as viewport]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.java.io :as io]
-            [clojure.lwjgl.system.configuration :as lwjgl-config]
             ))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
@@ -201,7 +200,7 @@
 (def state (atom nil))
 
 (defn -main []
-  (lwjgl-config/set-glfw-library-name! "glfw_async")
+  (app-config/use-glfw-async!)
   (application/create (listener/create
                        {:create (fn []
                                   (reset! state (create! (gdx/state))))
