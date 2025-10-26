@@ -8,7 +8,6 @@
             [cdq.world-fns.creature-tiles]
             [moon.color :as color]
             [clojure.edn :as edn]
-            [clojure.gdx :as gdx]
             [clojure.gdx.application.listener :as listener]
             [clojure.gdx.backends.lwjgl.application :as application]
             [clojure.gdx.backends.lwjgl.application.config :as app-config]
@@ -203,7 +202,9 @@
   (app-config/use-glfw-async!)
   (application/create (listener/create
                        {:create (fn []
-                                  (reset! state (create! (gdx/state))))
+                                  (reset! state (create! {:files    com.badlogic.gdx.Gdx/files
+                                                          :graphics com.badlogic.gdx.Gdx/graphics
+                                                          :input    com.badlogic.gdx.Gdx/input})))
                         :dispose (fn []
                                    (dispose! @state))
                         :render (fn []
