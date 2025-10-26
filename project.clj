@@ -6,8 +6,8 @@
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
-                 [com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.0" :classifier "natives-desktop"]
+                 [com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]
                  [space.earlygrey/shapedrawer "2.5.0"]
 
                  [com.github.damn/clojure.grid2d "538fc4c44b"]
