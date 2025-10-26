@@ -50,7 +50,7 @@
 
 (defn rebuild-actors! [stage ctx]
   (stage/clear! stage)
-  (step stage ctx))
+  (step ctx))
 
 (defn step [{:keys [ctx/stage] :as ctx}]
   (let [config (.config stage)]
