@@ -9,18 +9,18 @@
             [cdq.ui.tooltip :as tooltip]
             [cdq.ui.window :as window]
             [clojure.edn :as edn]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.group :as group]
-            [clojure.gdx.scene2d.ui.widget-group :as widget-group]
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.group :as group]
+            [moon.scene2d.ui.widget-group :as widget-group]
             [cdq.ui.check-box :as check-box]
             [cdq.ui.image :as image]
             [cdq.ui.image-button :as image-button]
             [cdq.ui.text-button :as text-button]
             [clojure.edn :as edn]
             [moon.utils :as utils]
-            [clojure.vis-ui.label :as label]
-            [clojure.vis-ui.select-box :as select-box]
-            [clojure.vis-ui.text-field :as text-field]))
+            [moon.ui.label :as label]
+            [moon.ui.select-box :as select-box]
+            [moon.ui.text-field :as text-field]))
 
 (defmulti create (fn [[schema-k :as _schema] v ctx]
                    schema-k))

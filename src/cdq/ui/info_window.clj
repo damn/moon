@@ -1,11 +1,11 @@
 (ns cdq.ui.info-window
   (:require [cdq.ui.stage :as stage]
             [cdq.ui.window :as window]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.group :as group]
-            [clojure.gdx.scene2d.ui.label :as label]
-            [clojure.gdx.scene2d.ui.widget-group :as widget-group]
-            [clojure.vis-ui.label :as vis-label]))
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.group :as group]
+            [moon.scene2d.ui.label :as label]
+            [moon.scene2d.ui.widget-group :as widget-group]
+            [moon.ui.label :as vis-label]))
 
 (defn create
   [{:keys [title

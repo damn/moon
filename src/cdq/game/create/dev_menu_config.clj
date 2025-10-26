@@ -5,7 +5,7 @@
             [cdq.ui :as ui]
             [cdq.ui.stage :as stage]
             [cdq.world :as world]
-            [clojure.gdx.scene2d.actor :as actor]
+            [moon.scene2d.actor :as actor]
             [clojure.string :as str]
             [moon.utils :as utils]))
 

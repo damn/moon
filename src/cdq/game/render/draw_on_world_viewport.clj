@@ -303,7 +303,7 @@
 
 (comment
  (require '[cdq.world.grid :as grid])
- (require '[clojure.math.geom :as geom])
+ (require '[moon.math.geom :as geom])
 
  (defn geom-test
    [{:keys [ctx/graphics

@@ -1,5 +1,5 @@
 (ns cdq.ui.actor
-  (:require [clojure.gdx.scene2d.actor :as actor]
+  (:require [moon.scene2d.actor :as actor]
             [cdq.ui.stage :as stage]))
 
 (def opts-fn-map

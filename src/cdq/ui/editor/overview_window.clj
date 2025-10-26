@@ -1,14 +1,14 @@
 (ns cdq.ui.editor.overview-window
   (:require [cdq.db :as db]
             [cdq.graphics :as graphics]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.touchable :as touchable]
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.touchable :as touchable]
             [cdq.ui.stack :as stack]
             [cdq.ui.stage :as stage]
             [cdq.ui.editor.property :as property]
             [cdq.ui.image-button :as image-button]
             [cdq.ui.window :as window]
-            [clojure.vis-ui.label :as label]))
+            [moon.ui.label :as label]))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10

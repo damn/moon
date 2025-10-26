@@ -1,7 +1,7 @@
 (ns cdq.application
-  (:require [clojure.gdx.graphics.color :as color]
-            [clojure.gdx.graphics.colors :as colors]
-            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+  (:require [moon.graphics.color :as color]
+            [moon.graphics.colors :as colors]
+            [moon.graphics.g2d.sprite-batch :as sprite-batch]
             [moon.app :as app]
             [moon.core :refer [call edn-resource]])
   (:import (com.badlogic.gdx Application

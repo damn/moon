@@ -1,6 +1,6 @@
 (ns cdq.files
-  (:require [clojure.gdx.files :as files]
-            [clojure.gdx.files.file-handle :as fh]
+  (:require [moon.files :as files]
+            [moon.files.file-handle :as fh]
             [clojure.string :as str]))
 
 (defn- recursively-search

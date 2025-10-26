@@ -1,11 +1,11 @@
 (ns cdq.ui.widget
   (:require [cdq.ui.window :as window]
-            [clojure.vis-ui.scroll-pane :as scroll-pane]
+            [moon.ui.scroll-pane :as scroll-pane]
             [cdq.ui.table :as table]
             [cdq.ui.stage :as stage]
             [cdq.ui.text-button :as text-button]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.vis-ui.label :as label]))
+            [moon.scene2d.actor :as actor]
+            [moon.ui.label :as label]))
 
 (defn- create-scroll-pane
   [{:keys [scroll-pane/actor

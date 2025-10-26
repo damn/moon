@@ -2,13 +2,13 @@
   (:require [cdq.ui.tooltip :as tooltip]
             [cdq.ui.table :as table]
             [cdq.ui.stage :as stage]
-            [clojure.gdx.graphics.g2d.texture-region :as texture-region]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.event :as event]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [clojure.gdx.scene2d.utils.drawable :as drawable]
-            [clojure.gdx.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [clojure.vis-ui.image-button :as image-button]))
+            [moon.graphics.g2d.texture-region :as texture-region]
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.event :as event]
+            [moon.scene2d.utils.change-listener :as change-listener]
+            [moon.scene2d.utils.drawable :as drawable]
+            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [moon.ui.image-button :as image-button]))
 
 (defn create
   [{:keys [drawable/texture-region

@@ -2,10 +2,10 @@
   (:require [cdq.ui.tooltip :as tooltip]
             [cdq.ui.table :as table]
             [cdq.ui.stage :as stage]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.event :as event]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [clojure.vis-ui.text-button :as text-button])
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.event :as event]
+            [moon.scene2d.utils.change-listener :as change-listener]
+            [moon.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn create

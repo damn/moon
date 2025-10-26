@@ -9,7 +9,7 @@
             [cdq.ui.info-window :as info-window]
             [cdq.ui.message :as message]
             [cdq.ui.stage :as stage]
-            [clojure.gdx.scene2d.actor :as actor]))
+            [moon.scene2d.actor :as actor]))
 
 (defn- create-hp-mana-bar* [create-draws]
   {:type :actor/actor

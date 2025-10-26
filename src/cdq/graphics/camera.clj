@@ -1,6 +1,6 @@
 (ns cdq.graphics.camera
-  (:require [clojure.gdx.graphics.orthographic-camera :as camera]
-            [clojure.gdx.math.vector3 :as vector3]))
+  (:require [moon.graphics.orthographic-camera :as camera]
+            [moon.math.vector3 :as vector3]))
 
 (defn viewport-height [this]
   (camera/viewport-height this))

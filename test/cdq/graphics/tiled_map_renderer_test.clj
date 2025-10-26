@@ -1,8 +1,8 @@
 #_(ns cdq.graphics.tiled-map-renderer-test
-  (:require [clojure.gdx.backends.lwjgl.application :as application]
+  (:require [moon.backends.lwjgl.application :as application]
             [com.badlogic.gdx.maps.tiled :as tiled]
             [com.badlogic.gdx.graphics.orthographic-camera :as camera]
-            [clojure.gdx.maps.tiled.tmx :as tmx])
+            [moon.maps.tiled.tmx :as tmx])
   (:import (com.badlogic.gdx.graphics Color OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)))
 

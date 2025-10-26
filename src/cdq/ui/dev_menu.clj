@@ -3,15 +3,15 @@
             [cdq.ui.stage :as stage]
             [cdq.ui.table :as table]
             [cdq.ui.window :as window]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.event :as event]
-            [clojure.gdx.scene2d.group :as group]
-            [clojure.gdx.scene2d.touchable :as touchable]
-            [clojure.gdx.scene2d.ui.cell :as cell]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [clojure.vis-ui.label :as label]
-            [clojure.vis-ui.text-button :as text-button]
-            [clojure.vis-ui.label :as vis-label]))
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.event :as event]
+            [moon.scene2d.group :as group]
+            [moon.scene2d.touchable :as touchable]
+            [moon.scene2d.ui.cell :as cell]
+            [moon.scene2d.utils.change-listener :as change-listener]
+            [moon.ui.label :as label]
+            [moon.ui.text-button :as text-button]
+            [moon.ui.label :as vis-label]))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create

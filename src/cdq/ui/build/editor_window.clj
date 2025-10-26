@@ -8,8 +8,8 @@
             [cdq.ui.text-button :as text-button]
             [cdq.ui.widget :as widget]
             [cdq.ui.window :as window]
-            [clojure.gdx.input.keys :as input.keys]
-            [clojure.gdx.scene2d.actor :as actor]
+            [moon.input.keys :as input.keys]
+            [moon.scene2d.actor :as actor]
             [moon.throwable :as throwable]))
 
 (defmethod stage/build :actor/editor-window

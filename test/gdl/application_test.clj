@@ -1,5 +1,5 @@
 #_(ns clojure.application-test
-  ;(:require [clojure.gdx :as gdx])
+  ;(:require [moon :as gdx])
   (:import (com.badlogic.gdx Gdx)
            (com.badlogic.gdx ApplicationListener)))
 

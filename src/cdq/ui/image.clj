@@ -1,10 +1,10 @@
 (ns cdq.ui.image
   (:require [cdq.ui.actor :as actor]
-            [clojure.gdx.scene2d.ui.image :as image]
-            [clojure.gdx.scene2d.ui.widget :as widget]
-            [clojure.gdx.utils.align :as align]
-            [clojure.gdx.utils.scaling :as scaling]
-            [clojure.vis-ui.image :as vis-image]))
+            [moon.scene2d.ui.image :as image]
+            [moon.scene2d.ui.widget :as widget]
+            [moon.utils.align :as align]
+            [moon.utils.scaling :as scaling]
+            [moon.ui.image :as vis-image]))
 
 (defn create
   [{:keys [image/object

@@ -24,8 +24,8 @@
       (replace-in-file! f from to))))
 
 (comment
- (let [from "clojure.scene2d.build"
-       to   "cdq.ui.build"]
+ (let [from "clojure.gdx"
+       to   "moon"]
    (rename! from to)
    )
  )

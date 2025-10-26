@@ -4,14 +4,14 @@
             [cdq.ui.action-bar :as action-bar]
             [cdq.ui.inventory :as inventory-window]
             [cdq.ui.message :as message]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.group :as group]
-            [clojure.gdx.math.vector2 :as vector2]
-            [clojure.gdx.utils.viewport :as viewport]
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.group :as group]
+            [moon.math.vector2 :as vector2]
+            [moon.utils.viewport :as viewport]
             [clojure.repl]
             [cdq.ui.text-button :as text-button]
             [moon.utils :as utils]
-            [clojure.vis-ui.label :as label])
+            [moon.ui.label :as label])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))

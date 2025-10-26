@@ -1,8 +1,8 @@
 (ns cdq.ui.action-bar
-  (:require [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.group :as group]
-            [clojure.gdx.scene2d.ui.button-group :as button-group]
-            [clojure.gdx.scene2d.ui.horizontal-group :as horizontal-group]
+  (:require [moon.scene2d.actor :as actor]
+            [moon.scene2d.group :as group]
+            [moon.scene2d.ui.button-group :as button-group]
+            [moon.scene2d.ui.horizontal-group :as horizontal-group]
             [cdq.ui.table :as table]
             [cdq.ui.stage :as stage]
             [cdq.ui.image-button :as image-button]))

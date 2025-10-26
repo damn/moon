@@ -1,11 +1,11 @@
 (ns cdq.world.tiled
-  (:require [clojure.gdx.maps.map-properties :as props]
-            [clojure.gdx.maps.map-layers :as layers]
-            [clojure.gdx.maps.tiled :as tiled-map]
-            [clojure.gdx.maps.tiled.layer :as layer]
-            [clojure.gdx.maps.tiled.layer.cell :as cell]
-            [clojure.gdx.maps.tiled.tiled-map-tile :as tile]
-            [clojure.gdx.maps.tiled.tiles :as tiles]))
+  (:require [moon.maps.map-properties :as props]
+            [moon.maps.map-layers :as layers]
+            [moon.maps.tiled :as tiled-map]
+            [moon.maps.tiled.layer :as layer]
+            [moon.maps.tiled.layer.cell :as cell]
+            [moon.maps.tiled.tiled-map-tile :as tile]
+            [moon.maps.tiled.tiles :as tiles]))
 
 (defn- create-layer
   [{:keys [width

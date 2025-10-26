@@ -1,10 +1,10 @@
 (ns cdq.world.tiled-map
-  (:require [clojure.gdx.maps.map-layers :as layers]
-            [clojure.gdx.maps.map-properties :as props]
-            [clojure.gdx.maps.tiled :as tiled-map]
-            [clojure.gdx.maps.tiled.tiled-map-tile :as tile]
-            [clojure.gdx.maps.tiled.layer :as layer]
-            [clojure.gdx.maps.tiled.layer.cell :as cell]))
+  (:require [moon.maps.map-layers :as layers]
+            [moon.maps.map-properties :as props]
+            [moon.maps.tiled :as tiled-map]
+            [moon.maps.tiled.tiled-map-tile :as tile]
+            [moon.maps.tiled.layer :as layer]
+            [moon.maps.tiled.layer.cell :as cell]))
 
 (defn spawn-positions
   [tiled-map]

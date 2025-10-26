@@ -4,7 +4,7 @@
             [cdq.world-fns.caves :as caves]
             [cdq.world-fns.nads :as nads]
             [cdq.world-fns.utils :as helper]
-            [clojure.gdx.graphics.g2d.texture-region :as texture-region]
+            [moon.graphics.g2d.texture-region :as texture-region]
             [clojure.grid2d :as g2d]
             [clojure.rand :as rand]))
 

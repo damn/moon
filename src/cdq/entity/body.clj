@@ -1,5 +1,5 @@
 (ns cdq.entity.body
-  (:require [clojure.math.geom :as geom]
+  (:require [moon.math.geom :as geom]
             [clojure.math.vector2 :as v]
             [qrecord.core :as q]))
 

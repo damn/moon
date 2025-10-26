@@ -1,7 +1,7 @@
 (ns cdq.ui.group
   (:require [cdq.ui.actor :as actor]
             [cdq.ui.stage :as stage]
-            [clojure.gdx.scene2d.group :as group]))
+            [moon.scene2d.group :as group]))
 
 (defn set-opts! [group opts]
   (run! (fn [actor]

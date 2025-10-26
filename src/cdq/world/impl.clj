@@ -10,9 +10,9 @@
             [cdq.world.raycaster :as raycaster]
             [cdq.world.update-potential-fields :as update-potential-fields]
             [cdq.world.tiled :as tiled]
-            [clojure.gdx.maps.map-properties :as props]
-            [clojure.gdx.maps.tiled :as tiled-map]
-            [clojure.gdx.utils.disposable :as disposable]
+            [moon.maps.map-properties :as props]
+            [moon.maps.tiled :as tiled-map]
+            [moon.utils.disposable :as disposable]
             [clojure.grid2d :as g2d]
             [moon.utils :as utils]))
 

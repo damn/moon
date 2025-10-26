@@ -1,5 +1,5 @@
 (ns cdq.ui.stage
-  (:require [clojure.gdx.scene2d.stage :as stage])
+  (:require [moon.scene2d.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (cdq.ui Stage)))
 

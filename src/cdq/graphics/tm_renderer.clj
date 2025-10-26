@@ -1,9 +1,9 @@
 (ns cdq.graphics.tm-renderer
-  (:require [clojure.gdx.graphics.color :as color]
-            [clojure.gdx.maps.map-layers :as layers]
-            [clojure.gdx.maps.tiled :as tiled-map]
-            [clojure.gdx.maps.tiled.layer :as layer]
-            [clojure.gdx.utils.viewport :as viewport])
+  (:require [moon.graphics.color :as color]
+            [moon.maps.map-layers :as layers]
+            [moon.maps.tiled :as tiled-map]
+            [moon.maps.tiled.layer :as layer]
+            [moon.utils.viewport :as viewport])
   (:import (cdq.graphics ColorSetter
                          TiledMapRenderer)))
 

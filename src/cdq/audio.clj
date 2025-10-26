@@ -1,7 +1,7 @@
 (ns cdq.audio
-  (:require [clojure.gdx.audio :as audio]
-            [clojure.gdx.audio.sound :as sound]
-            [clojure.gdx.files :as files]))
+  (:require [moon.audio :as audio]
+            [moon.audio.sound :as sound]
+            [moon.files :as files]))
 
 (defn sound-names [sounds]
   (map first sounds))

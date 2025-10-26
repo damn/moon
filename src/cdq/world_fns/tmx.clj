@@ -1,5 +1,5 @@
 (ns cdq.world-fns.tmx
-  (:require [clojure.gdx.maps.tiled.tmx :as tmx]))
+  (:require [moon.maps.tiled.tmx :as tmx]))
 
 (defn create
   [{:keys [tmx-file

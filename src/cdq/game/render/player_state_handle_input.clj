@@ -4,7 +4,7 @@
             [cdq.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [cdq.input :as input]
             [cdq.ui :as ui]
-            [clojure.gdx.input.buttons :as input.buttons]
+            [moon.input.buttons :as input.buttons]
             [moon.txs :as txs]))
 
 (defn- interaction-state->txs [[k params] stage player-eid]

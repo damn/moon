@@ -1,8 +1,8 @@
 (ns cdq.ui.message
   (:require [cdq.graphics :as graphics]
             [cdq.ui.stage :as stage]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.utils.viewport :as viewport]))
+            [moon.scene2d.actor :as actor]
+            [moon.utils.viewport :as viewport]))
 
 (defn- draw-message [state vp-width vp-height]
   (when-let [text (:text @state)]

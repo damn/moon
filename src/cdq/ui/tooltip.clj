@@ -1,10 +1,10 @@
 (ns cdq.ui.tooltip
   (:require [cdq.ui :as ui]
             [cdq.ui.stage :as stage]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.ui.label :as label]
-            [clojure.gdx.utils.align :as align]
-            [clojure.vis-ui.label :as vis-label])
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.ui.label :as label]
+            [moon.utils.align :as align]
+            [moon.ui.label :as vis-label])
   (:import (com.badlogic.gdx.scenes.scene2d.ui TextTooltip)))
 
 (defn add! [actor tooltip-text]

@@ -1,7 +1,7 @@
 (ns cdq.input
-  (:require [clojure.gdx.input :as input]
-            [clojure.gdx.input.buttons :as input.buttons]
-            [clojure.gdx.input.keys :as input.keys]
+  (:require [moon.input :as input]
+            [moon.input.buttons :as input.buttons]
+            [moon.input.keys :as input.keys]
             [clojure.string :as str]
             [clojure.math.vector2 :as v]))
 

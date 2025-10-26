@@ -1,8 +1,8 @@
 (ns cdq.ui.table
   (:require [cdq.ui.widget-group :as widget-group]
-            [clojure.gdx.scene2d.ui.cell :as cell]
-            [clojure.gdx.scene2d.ui.table :as table]
-            [clojure.vis-ui.table :as vis-table]))
+            [moon.scene2d.ui.cell :as cell]
+            [moon.scene2d.ui.table :as table]
+            [moon.ui.table :as vis-table]))
 
 (defn add! [table actor]
   (table/add! table actor))

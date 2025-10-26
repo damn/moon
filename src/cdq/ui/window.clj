@@ -1,11 +1,11 @@
 (ns cdq.ui.window
   (:require [cdq.ui.table :as table]
             [cdq.ui.stage :as stage]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.ui.window :as window]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [clojure.vis-ui.text-button :as text-button]
-            [clojure.vis-ui.window :as vis-window])
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.ui.window :as window]
+            [moon.scene2d.utils.change-listener :as change-listener]
+            [moon.ui.text-button :as text-button]
+            [moon.ui.window :as vis-window])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn create

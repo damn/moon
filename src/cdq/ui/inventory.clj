@@ -1,10 +1,10 @@
 (ns cdq.ui.inventory
   (:require [cdq.ui.tooltip :as tooltip]
-            [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.group :as group]
-            [clojure.gdx.scene2d.ui.image :as image]
-            [clojure.gdx.scene2d.utils.drawable :as drawable]
-            [clojure.gdx.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
+            [moon.scene2d.actor :as actor]
+            [moon.scene2d.group :as group]
+            [moon.scene2d.ui.image :as image]
+            [moon.scene2d.utils.drawable :as drawable]
+            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn- find-cell [group cell]
   (first (filter #(= (actor/user-object % ) cell)
