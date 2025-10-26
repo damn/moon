@@ -1,4 +1,4 @@
-(ns dev.migrations.add-obligatory-mana
+(ns moon.dev.migrations.add-obligatory-mana
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]))
 

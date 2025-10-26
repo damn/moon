@@ -1,4 +1,4 @@
-(ns dev.create-assets-edn
+(ns moon.dev.create-assets-edn
   (:require [clojure.java.io :as io]
             [clojure.string :as str])
   (:import (java.io File)))

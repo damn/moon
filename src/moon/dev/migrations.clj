@@ -1,4 +1,4 @@
-(ns dev.migrations
+(ns moon.dev.migrations
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]))
 
