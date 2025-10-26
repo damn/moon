@@ -9,11 +9,11 @@
             [cdq.input :as input]
             [cdq.ui :as ui]
             [cdq.world.raycaster :as raycaster]
-            [clojure.color :as color]
-            [clojure.timer :as timer]
-            [clojure.throwable :as throwable]
-            [clojure.utils :as utils]
-            [clojure.val-max :as val-max]))
+            [moon.color :as color]
+            [moon.timer :as timer]
+            [moon.throwable :as throwable]
+            [moon.utils :as utils]
+            [moon.val-max :as val-max]))
 
 (defn- draw-image
   [image

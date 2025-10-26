@@ -1,7 +1,7 @@
 (ns cdq.world.update-potential-fields
   (:require [cdq.world.grid :as grid]
             [cdq.world.grid.cell :as cell]
-            [clojure.position :as position]))
+            [moon.position :as position]))
 
 ; Assumption: The map contains no not-allowed diagonal cells, diagonal wall cells where both
 ; adjacent cells are walls and blocked.

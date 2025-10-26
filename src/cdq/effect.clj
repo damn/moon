@@ -6,7 +6,7 @@
             [cdq.world.raycaster :as raycaster]
             [clojure.math.vector2 :as v]
             [clojure.rand :refer [rand-int-between]]
-            [clojure.timer :as timer]))
+            [moon.timer :as timer]))
 
 (defn- proj-start-point [body direction size]
   (v/add (:body/position body)

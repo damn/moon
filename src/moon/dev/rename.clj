@@ -1,5 +1,6 @@
 (ns moon.dev.rename
-  (:require [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [clojure.string :as str])
   (:import (java.nio.file Files
                           Paths
                           StandardCopyOption)))
@@ -17,6 +18,7 @@
        (filter java.io.File/.isFile)))
 
 (defn rename! [from to]
+  ; vimgrep/ns dev/gj src/** resources/**/*.edn test/** project.clj
   (let [files (matching-files ["src" "resources" "test"])]
     (doseq [f files]
       (replace-in-file! f from to))))
@@ -28,26 +30,30 @@
    )
  )
 
-(defn move-file [source-path target-path]
+(defn move-file! [source-path target-path]
   (Files/move
    (Paths/get source-path (make-array String 0))
    (Paths/get target-path (make-array String 0))
    (into-array StandardCopyOption [StandardCopyOption/REPLACE_EXISTING])))
 
+(defn ns->file [ns-string]
+  (str "src/"
+       (-> ns-string
+           (str/replace "." "/")
+           (str/replace "-" "_"))
+       ".clj"))
+
+(defn move-and-rename! [from-ns to-ns]
+  (move-file! (ns->file from-ns)
+              (ns->file to-ns))
+  (rename! from-ns
+           to-ns))
+
 (comment
- ; Move ns
- ; clojure.scene2d.vis-ui.check-box
- ; to
- ; cdq.ui.check-box
+ (move-and-rename! "clojure.color"
+                   "moon.color")
 
- ; 1. move file
- ; 2. rename
 
- (let [from-ns 'clojure.scene2d.vis-ui.check-box
-       to-ns 'cdq.ui.check-box]
-   (move-file "src/clojure/scene2d/vis_ui/text_button.clj"
-              "src/cdq/ui/text_button.clj")
-   (rename! "clojure.scene2d.vis-ui.text-button"
-            "cdq.ui.text-button")
-   )
+
+
  )

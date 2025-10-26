@@ -10,7 +10,7 @@
             [clojure.gdx.scene2d.ui.widget-group :as widget-group]
             [cdq.ui.text-button :as text-button]
             [clojure.set :as set]
-            [clojure.utils :as utils]
+            [moon.utils :as utils]
             [clojure.vis-ui.label :as label]
             [clojure.vis-ui.separator :as separator]
             [malli.utils :as mu]))

@@ -1,4 +1,4 @@
-(ns clojure.position)
+(ns moon.position)
 
 ; using this instead of g2d/get-8-neighbour-positions, because `for` there creates a lazy seq.
 (let [offsets [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]]]

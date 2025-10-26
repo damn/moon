@@ -1,4 +1,4 @@
-(ns clojure.utils
+(ns moon.utils
   (:require [clojure.math :as math]))
 
 (defn- index-of [k ^clojure.lang.PersistentVector v]

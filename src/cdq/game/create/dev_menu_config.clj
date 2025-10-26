@@ -7,7 +7,7 @@
             [cdq.world :as world]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.string :as str]
-            [clojure.utils :as utils]))
+            [moon.utils :as utils]))
 
 (defn create
   [{:keys [ctx/db

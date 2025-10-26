@@ -2,8 +2,8 @@
   (:require [cdq.stats.ops.info :as ops]
             cdq.entity.stats.info
             [clojure.string :as str]
-            [clojure.timer :as timer]
-            [clojure.utils :as utils]))
+            [moon.timer :as timer]
+            [moon.utils :as utils]))
 
 (defn stats-modifiers-info [mods]
   (when (seq mods) ; ?

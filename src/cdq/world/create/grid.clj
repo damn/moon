@@ -4,7 +4,7 @@
             [cdq.world.grid.cell :as cell]
             [clojure.grid2d :as g2d]
             [clojure.math.geom :as geom]
-            [clojure.position :as position]))
+            [moon.position :as position]))
 
 (defn- body->occupied-cells
   [grid

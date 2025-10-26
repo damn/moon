@@ -1,5 +1,5 @@
 (ns cdq.world.tx.spawn-creature
-  (:require [clojure.utils :as utils]))
+  (:require [moon.utils :as utils]))
 
 (defn do!
   [_ctx

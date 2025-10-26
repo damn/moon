@@ -5,7 +5,7 @@
             [cdq.world-fns.creature-tiles]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.txs :as txs]))
+            [moon.txs :as txs]))
 
 (defn- spawn-player!
   [{:keys [ctx/db

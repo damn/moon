@@ -11,8 +11,8 @@
             [clojure.grid2d :as g2d]
             [clojure.math :as math]
             [clojure.math.vector2 :as v]
-            [clojure.timer :as timer]
-            [clojure.utils :as utils]))
+            [moon.timer :as timer]
+            [moon.utils :as utils]))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))

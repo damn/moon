@@ -14,7 +14,7 @@
             [clojure.gdx.maps.tiled :as tiled-map]
             [clojure.gdx.utils.disposable :as disposable]
             [clojure.grid2d :as g2d]
-            [clojure.utils :as utils]))
+            [moon.utils :as utils]))
 
 (def destroy-components
   {:entity/destroy-audiovisual

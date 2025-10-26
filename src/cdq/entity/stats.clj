@@ -2,7 +2,7 @@
 ; e.g. ops just :ops/inc/:ops/mult?
 (ns cdq.entity.stats
   (:require [cdq.stats.ops :as ops]
-            [clojure.val-max :as val-max]
+            [moon.val-max :as val-max]
             [malli.core :as m]))
 
 (defn- get-value [base-value modifiers modifier-k]

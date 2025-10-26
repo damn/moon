@@ -1,7 +1,7 @@
 (ns cdq.malli
   (:require [cdq.db.schemas :as schemas]
             [cdq.db.property :as property]
-            [clojure.val-max :as val-max]))
+            [moon.val-max :as val-max]))
 
 (defmulti form (fn [[k] _schemas]
                  k))

@@ -1,8 +1,8 @@
 (ns cdq.game.render.tick-entities
   (:require [cdq.ui :as ui]
             [cdq.world :as world]
-            [clojure.throwable :as throwable]
-            [clojure.txs :as txs]))
+            [moon.throwable :as throwable]
+            [moon.txs :as txs]))
 
 (defn step
   [{:keys [ctx/stage

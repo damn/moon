@@ -10,7 +10,7 @@
             [clojure.gdx.utils.viewport :as viewport]
             [clojure.repl]
             [cdq.ui.text-button :as text-button]
-            [clojure.utils :as utils]
+            [moon.utils :as utils]
             [clojure.vis-ui.label :as label])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label

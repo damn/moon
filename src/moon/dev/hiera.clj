@@ -32,8 +32,8 @@
 
      com.kotcrab,
 
-     clojure.throwable
-     clojure.utils
+     moon.throwable
+     moon.utils
      clojure.math
      clojure.scene2d.actor,
 

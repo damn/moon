@@ -1,5 +1,5 @@
 (ns cdq.world.tx.add-text-effect
-  (:require [clojure.timer :as timer]))
+  (:require [moon.timer :as timer]))
 
 (defn do!
   [{:keys [ctx/world]} eid text duration]

@@ -5,8 +5,8 @@
             [cdq.world.grid.cell :as cell]
             [clojure.grid2d :as g2d]
             [clojure.math.vector2 :as v]
-            [clojure.position :as position]
-            [clojure.utils :as utils]))
+            [moon.position :as position]
+            [moon.utils :as utils]))
 
 (let [order (position/get-8-neighbours [0 0])]
   (def ^:private diagonal-check-indizes

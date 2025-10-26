@@ -17,7 +17,7 @@
             [cdq.ui.image-button :as image-button]
             [cdq.ui.text-button :as text-button]
             [clojure.edn :as edn]
-            [clojure.utils :as utils]
+            [moon.utils :as utils]
             [clojure.vis-ui.label :as label]
             [clojure.vis-ui.select-box :as select-box]
             [clojure.vis-ui.text-field :as text-field]))

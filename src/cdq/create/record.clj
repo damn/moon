@@ -1,6 +1,6 @@
 (ns cdq.create.record
-  (:require [clojure.tx-handler :as tx-handler]
-            [clojure.txs :as txs]
+  (:require [moon.tx-handler :as tx-handler]
+            [moon.txs :as txs]
             [qrecord.core :as q]))
 
 (def reaction-txs-fn-map

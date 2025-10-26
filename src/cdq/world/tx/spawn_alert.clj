@@ -1,5 +1,5 @@
 (ns cdq.world.tx.spawn-alert
-  (:require [clojure.timer :as timer]))
+  (:require [moon.timer :as timer]))
 
 (defn do!
   [{:keys [ctx/world]} position faction duration]

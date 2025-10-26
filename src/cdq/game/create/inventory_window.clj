@@ -15,7 +15,7 @@
             [clojure.gdx.scene2d.utils.drawable :as drawable]
             [clojure.gdx.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.gdx.math.vector2 :as gdxvector2]
-            [clojure.txs :as txs]))
+            [moon.txs :as txs]))
 
 (let [fn-map {:player-idle           (fn [eid cell]
                                        (when-let [item (get-in (:entity/inventory @eid) cell)]

@@ -2,7 +2,7 @@
   (:require [cdq.effect :as effect]
             [cdq.entity.stats :as stats]
             [cdq.entity.skills.skill :as skill]
-            [clojure.timer :as timer]))
+            [moon.timer :as timer]))
 
 ; this is my game/world logic !
 (extend-type clojure.lang.PersistentHashMap

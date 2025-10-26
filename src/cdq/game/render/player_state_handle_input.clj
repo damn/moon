@@ -5,7 +5,7 @@
             [cdq.input :as input]
             [cdq.ui :as ui]
             [clojure.gdx.input.buttons :as input.buttons]
-            [clojure.txs :as txs]))
+            [moon.txs :as txs]))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
   (case k

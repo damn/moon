@@ -1,4 +1,4 @@
-(ns clojure.val-max
+(ns moon.val-max
   (:require [malli.core :as m]))
 
 (def schema

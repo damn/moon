@@ -1,5 +1,5 @@
 (ns cdq.math.vector2-test
-  (:require [clojure.utils :as utils]
+  (:require [moon.utils :as utils]
             [clojure.math.vector2 :as v]
             [clojure.test :refer :all]))
 

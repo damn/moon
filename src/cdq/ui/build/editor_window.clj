@@ -10,7 +10,7 @@
             [cdq.ui.window :as window]
             [clojure.gdx.input.keys :as input.keys]
             [clojure.gdx.scene2d.actor :as actor]
-            [clojure.throwable :as throwable]))
+            [moon.throwable :as throwable]))
 
 (defmethod stage/build :actor/editor-window
   [{:keys [ctx

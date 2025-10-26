@@ -6,7 +6,7 @@
             [cdq.graphics.tm-renderer :as tm-renderer]
 
             [cdq.world-fns.creature-tiles]
-            [clojure.color :as color]
+            [moon.color :as color]
             [clojure.edn :as edn]
             [clojure.gdx :as gdx]
             [clojure.gdx.application.listener :as listener]

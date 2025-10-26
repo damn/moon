@@ -3,7 +3,7 @@
             [cdq.entity.state :as state]
             [cdq.entity.state.player-item-on-cursor :as item-on-cursor]
             [cdq.entity.stats :as stats]
-            [clojure.timer :as timer]))
+            [moon.timer :as timer]))
 
 (def reaction-time-multiplier 0.016)
 
