@@ -19,7 +19,7 @@
 
  (def creature? :creature/level)
 
- (#'cdq.db/save!
+ (#'moon.db/save!
   {:db/data (into {}
                   (for [property (read-properties file)]
                     [(:property/id property)

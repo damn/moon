@@ -1,5 +1,5 @@
 (ns moon.ui.label
-  (:require [cdq.ui :as ui])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label)))
 
 (defn create [text #_skin]

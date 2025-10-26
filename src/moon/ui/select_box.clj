@@ -1,5 +1,5 @@
 (ns moon.ui.select-box
-  (:require [cdq.ui :as ui])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox)))
 
 (defn create [{:keys [items selected]}]

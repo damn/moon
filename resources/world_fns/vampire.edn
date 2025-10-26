@@ -1,2 +1,2 @@
-[cdq.world-fns.tmx/create {:tmx-file "maps/vampire.tmx"
+[moon.world-fns.tmx/create {:tmx-file "maps/vampire.tmx"
                            :start-position [32 71]}]

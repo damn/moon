@@ -1,5 +1,5 @@
 (ns moon.ui.text-field
-  (:require [cdq.ui :as ui])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d.ui TextField)))
 
 (defn create [text]
