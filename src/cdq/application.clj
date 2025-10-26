@@ -20,7 +20,10 @@
         resize!  (:resize!  config)
         listener (reify ApplicationListener
                    (create [_]
-                     (reset! state (create! {:ctx/app Gdx/app} config)))
+                     (reset! state (reduce (fn [ctx [f & params]]
+                                             (apply f ctx params))
+                                           {:ctx/app Gdx/app}
+                                           create!)))
 
                    (dispose [_]
                      (dispose! @state))

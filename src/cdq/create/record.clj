@@ -1,16 +1,6 @@
-(ns cdq.ctx
-  (:require [cdq.audio]
-            [cdq.db.impl]
-            [cdq.game.create.add-actors]
-            [cdq.game.create.dev-menu-config]
-            [cdq.game.create.world]
-            [cdq.graphics.impl]
-            [cdq.ui]
-            [cdq.ui.impl]
-            [cdq.world.impl]
-            [clojure.tx-handler :as tx-handler]
+(ns cdq.create.record
+  (:require [clojure.tx-handler :as tx-handler]
             [clojure.txs :as txs]
-            [moon.app :as app]
             [qrecord.core :as q]))
 
 (def reaction-txs-fn-map
@@ -95,45 +85,5 @@
                        ctx
                        handled-txs))))
 
-(defn into-record [ctx]
+(defn step [ctx]
   (merge (map->Context {}) ctx))
-
-(defn create-graphics [{:keys [ctx/app] :as ctx} config]
-  (assoc ctx :ctx/graphics (cdq.graphics.impl/create! app config)))
-
-(defn create-ui [{:keys [ctx/graphics] :as ctx}]
-  (assoc ctx :ctx/stage (cdq.ui.impl/create! graphics {:dev-menu cdq.game.create.dev-menu-config/create})))
-
-(defn create-skin [{:keys [ctx/app] :as ctx}]
-  ; (-> (vis-ui/skin) (skin/font "default-font") bitmap-font/data (bmfont-data/set-enable-markup! true)
-  ; TODO DISPOSE
-  (let [skin (com.badlogic.gdx.scenes.scene2d.ui.Skin. (.internal (.getFiles app) "uiskin.json"))]
-    (.bindRoot #'cdq.ui/skin skin)
-    (assoc ctx :ctx/skin skin)))
-
-(defn create-audio [{:keys [ctx/app] :as ctx} config]
-  (assoc ctx :ctx/audio (cdq.audio/create (.getAudio app) (.getFiles app) config)))
-
-(defn create-db [ctx]
-  (assoc ctx :ctx/db (cdq.db.impl/create)))
-
-(defn create-input [{:keys [ctx/app ctx/stage] :as ctx}]
-  (app/set-input-processor! app stage)
-  (assoc ctx :ctx/input (.getInput app)))
-
-(defn create-config [ctx]
-  (assoc ctx :ctx/config {:world-impl cdq.world.impl/create}))
-
-(defn create!
-  [ctx config]
-  (-> ctx
-      into-record
-      (create-graphics (:graphics config))
-      create-ui
-      create-skin
-      (create-audio (:audio config))
-      create-db
-      create-input
-      create-config
-      cdq.game.create.add-actors/step
-      (cdq.game.create.world/step (:world config))))

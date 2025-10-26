@@ -9,7 +9,19 @@
    :window {:width 1440
             :height 900}
    :fps 60
-   :create!  cdq.ctx/create!
+   :create! [[cdq.create.record/step]
+             [cdq.create.graphics/step {:impl cdq.graphics.impl/create!
+                                        :config #edn/resource "graphics.edn"}]
+             [cdq.create.ui/step {:impl cdq.ui.impl/create!
+                                  :config {:dev-menu cdq.game.create.dev-menu-config/create}}]
+             [cdq.create.skin/step]
+             [cdq.create.audio/step {:impl cdq.audio/create
+                                     :config #edn/resource "audio.edn"}]
+             [cdq.create.db/step cdq.db.impl/create]
+             [cdq.create.input/step]
+             [cdq.create.config/step {:world-impl cdq.world.impl/create}]
+             [cdq.game.create.add-actors/step]
+             [cdq.game.create.world/step #edn/resource "world.edn"]]
    :dispose! cdq.tx.dispose/do!
    :render!  [cdq.game.render.get-stage-ctx/step
               cdq.game.render.validate/step
@@ -34,7 +46,4 @@
               cdq.game.render.render-stage/step
               cdq.game.render.validate/step]
    :resize!  cdq.tx.update-viewports/do!
-   :audio    #edn/resource "audio.edn"
-   :graphics #edn/resource "graphics.edn"
-   :world    #edn/resource "world.edn"
    }]]
