@@ -4,14 +4,12 @@
             [cdq.files :as files-utils]
             [cdq.graphics.camera :as camera]
             [cdq.graphics.tm-renderer :as tm-renderer]
-
             [cdq.world-fns.creature-tiles]
             [moon.color :as color]
             [clojure.edn :as edn]
             [moon.application.listener :as listener]
             [moon.backends.lwjgl.application :as application]
             [moon.backends.lwjgl.application.config :as app-config]
-            [moon.input :as input]
             [moon.input.keys :as input.keys]
             [moon.graphics.texture :as texture]
             [moon.graphics.orthographic-camera :as orthographic-camera]
@@ -21,21 +19,18 @@
             [moon.maps.map-layers :as layers]
             [moon.maps.tiled :as tiled-map]
             [moon.maps.tiled.layer :as layer]
-
-            [cdq.ui.stage :as stage] ; This is actually nice because of ctx !
-            ; this is not from vis-ui just small extension ....
-            ; make userObject @ libgdx PR?
+            [cdq.ui.stage :as stage]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]
             [moon.scene2d.utils.change-listener :as change-listener]
             [cdq.ui.table]
-
             [moon.utils.disposable :as disposable]
             [moon.utils.screen :as screen-utils]
             [moon.utils.viewport :as viewport]
             [moon.utils.viewport.fit-viewport :as fit-viewport]
-            [clojure.java.io :as io]
-            ))
+            [clojure.java.io :as io])
+  (:import (com.badlogic.gdx Gdx
+                             Input)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -109,7 +104,7 @@
         ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch nil)
-        _  (input/set-processor! input stage)
+        _  (.setInputProcessor input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage}
@@ -163,16 +158,16 @@
                                                (update (camera/position camera)
                                                        idx
                                                        #(f % camera-movement-speed))))]
-    (if (input/key-pressed? input input.keys/left)  (apply-position 0 -))
-    (if (input/key-pressed? input input.keys/right) (apply-position 0 +))
-    (if (input/key-pressed? input input.keys/up)    (apply-position 1 +))
-    (if (input/key-pressed? input input.keys/down)  (apply-position 1 -))))
+    (if (Input/.isKeyPressed input input.keys/left)  (apply-position 0 -))
+    (if (Input/.isKeyPressed input input.keys/right) (apply-position 0 +))
+    (if (Input/.isKeyPressed input input.keys/up)    (apply-position 1 +))
+    (if (Input/.isKeyPressed input input.keys/down)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (input/key-pressed? input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
-  (when (input/key-pressed? input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (Input/.isKeyPressed input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
+  (when (Input/.isKeyPressed input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
 
 (defn render!
   [{:keys [ctx/stage]
@@ -202,9 +197,9 @@
   (app-config/use-glfw-async!)
   (application/create (listener/create
                        {:create (fn []
-                                  (reset! state (create! {:files    com.badlogic.gdx.Gdx/files
-                                                          :graphics com.badlogic.gdx.Gdx/graphics
-                                                          :input    com.badlogic.gdx.Gdx/input})))
+                                  (reset! state (create! {:files    Gdx/files
+                                                          :graphics Gdx/graphics
+                                                          :input    Gdx/input})))
                         :dispose (fn []
                                    (dispose! @state))
                         :render (fn []
