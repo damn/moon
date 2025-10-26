@@ -4,8 +4,6 @@
             [cdq.files :as files-utils]
             [cdq.graphics.camera :as camera]
             [cdq.graphics.tm-renderer :as tm-renderer]
-            [moon.files :as files]
-            [moon.graphics :as graphics]
             [moon.graphics.color :as color]
             [moon.graphics.pixmap :as pixmap]
             [moon.graphics.pixmap.format :as pixmap.format]
@@ -26,7 +24,9 @@
             [moon.math.vector2 :as vector2]
             [moon.utils.viewport :as viewport]
             [clojure.math :as math]
-            [clojure.string :as str]))
+            [clojure.string :as str])
+  (:import (com.badlogic.gdx Files
+                             Graphics)))
 
 (defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
   (let [text-height (fn []
@@ -173,7 +173,7 @@
    }
   )
 
-(defrecord Graphics []
+(defrecord RGraphics []
   cdq.graphics/Graphics
   (unproject-ui [{:keys [graphics/ui-viewport]} position]
     (unproject ui-viewport position))
@@ -194,10 +194,10 @@
     (run! disposable/dispose! (vals textures)))
 
   (frames-per-second [{:keys [graphics/core]}]
-    (graphics/frames-per-second core))
+    (Graphics/.getFramesPerSecond core))
 
   (delta-time [{:keys [graphics/core]}]
-    (graphics/delta-time core))
+    (Graphics/.getDeltaTime core))
 
   (clear-screen! [_ color]
     (screen-utils/clear! color))
@@ -206,7 +206,7 @@
                         graphics/cursors]}
                 cursor-key]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! core (get cursors cursor-key)))
+    (Graphics/.setCursor core (get cursors cursor-key)))
 
   (draw! [graphics draws]
     (doseq [{k 0 :as component} draws
@@ -283,8 +283,8 @@
     (batch/end! batch)))
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
-  (let [pixmap (pixmap/create (files/internal files path))
-        cursor (graphics/cursor graphics pixmap hotspot-x hotspot-y)]
+  (let [pixmap (pixmap/create (Files/.internal files path))
+        cursor (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y)]
     (pixmap/dispose! pixmap)
     cursor))
 
@@ -326,7 +326,7 @@
                                (pixmap/dispose! pixmap)
                                texture)
         world-unit-scale (float (/ tile-size))]
-    (-> (map->Graphics {})
+    (-> (map->RGraphics {})
         (assoc :graphics/core graphics)
         (assoc :graphics/cursors (update-vals (:data cursors)
                                               (fn [[path hotspot]]
@@ -334,7 +334,7 @@
                                                                graphics
                                                                (format (:path-format cursors) path)
                                                                hotspot))))
-        (assoc :graphics/default-font (generate-font (files/internal files (:path default-font))
+        (assoc :graphics/default-font (generate-font (Files/.internal files (:path default-font))
                                                      (:params default-font)))
         (assoc :graphics/batch batch)
         (assoc :graphics/shape-drawer-texture shape-drawer-texture)

@@ -1,6 +1,6 @@
 (ns cdq.audio
-  (:require [moon.files :as files])
-  (:import (com.badlogic.gdx Audio)
+  (:import (com.badlogic.gdx Audio
+                             Files)
            (com.badlogic.gdx.audio Sound)))
 
 (defn sound-names [sounds]
@@ -19,7 +19,7 @@
                                       (for [sound-name sound-names
                                             :let [path (format path-format sound-name)]]
                                         [sound-name
-                                         (files/internal files path)]))]
+                                         (Files/.internal files path)]))]
     (into {}
           (for [[sound-name file-handle] sound-name->file-handle]
             [sound-name
