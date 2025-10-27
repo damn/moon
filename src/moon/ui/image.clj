@@ -1,7 +1,7 @@
 (ns moon.ui.image
-  (:require [moon.ui.actor :as actor]
-            [moon.scene2d.ui.image :as image]
+  (:require [moon.scene2d.ui.image :as image]
             [moon.scene2d.ui.widget :as widget]
+            [moon.ui.actor :as actor]
             [moon.utils.align :as align]
             [moon.utils.scaling :as scaling])
   (:import (com.badlogic.gdx.graphics Texture)

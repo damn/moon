@@ -1,6 +1,6 @@
 (ns moon.world.tiled
-  (:require [moon.maps.map-properties :as props]
-            [moon.maps.map-layers :as layers]
+  (:require [moon.maps.map-layers :as layers]
+            [moon.maps.map-properties :as props]
             [moon.maps.tiled :as tiled-map]
             [moon.maps.tiled.layer :as layer]
             [moon.maps.tiled.layer.cell :as cell]

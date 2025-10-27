@@ -1,5 +1,6 @@
 (ns moon.game.render.draw-on-world-viewport
-  (:require [moon.effects.target-all :as target-all]
+  (:require [moon.color :as color]
+            [moon.effects.target-all :as target-all]
             [moon.effects.target-entity :as target-entity]
             [moon.entity.animation :as animation]
             [moon.entity.faction :as faction]
@@ -7,13 +8,12 @@
             [moon.entity.stats :as stats]
             [moon.graphics :as graphics]
             [moon.input :as input]
-            [moon.ui :as ui]
-            [moon.world.raycaster :as raycaster]
-            [moon.color :as color]
-            [moon.timer :as timer]
             [moon.throwable :as throwable]
+            [moon.timer :as timer]
+            [moon.ui :as ui]
             [moon.utils :as utils]
-            [moon.val-max :as val-max]))
+            [moon.val-max :as val-max]
+            [moon.world.raycaster :as raycaster]))
 
 (defn- draw-image
   [image

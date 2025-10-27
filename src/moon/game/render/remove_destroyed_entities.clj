@@ -1,6 +1,6 @@
 (ns moon.game.render.remove-destroyed-entities
-  (:require [moon.world :as world]
-            [moon.txs :as txs]))
+  (:require [moon.txs :as txs]
+            [moon.world :as world]))
 
 (defn step
   [{:keys [ctx/world]

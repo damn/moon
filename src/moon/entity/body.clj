@@ -1,6 +1,6 @@
 (ns moon.entity.body
-  (:require [moon.math.geom :as geom]
-            [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2 :as v]
+            [moon.math.geom :as geom]
             [qrecord.core :as q]))
 
 (defprotocol Body

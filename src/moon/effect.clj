@@ -1,12 +1,12 @@
 (ns moon.effect
-  (:require [moon.effects.target-all :as target-all]
+  (:require [clojure.math.vector2 :as v]
+            [clojure.rand :refer [rand-int-between]]
+            [moon.effects.target-all :as target-all]
             [moon.effects.target-entity :as target-entity]
             [moon.entity.faction :as faction]
             [moon.entity.stats :as stats]
-            [moon.world.raycaster :as raycaster]
-            [clojure.math.vector2 :as v]
-            [clojure.rand :refer [rand-int-between]]
-            [moon.timer :as timer]))
+            [moon.timer :as timer]
+            [moon.world.raycaster :as raycaster]))
 
 (defn- proj-start-point [body direction size]
   (v/add (:body/position body)

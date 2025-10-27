@@ -1,11 +1,11 @@
 (ns moon.game.create.world
-  (:require [moon.db :as db]
-            [moon.graphics :as graphics]
-            [moon.world.tiled-map :as tiled-map]
-            [moon.world-fns.creature-tiles]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.txs :as txs]))
+            [moon.db :as db]
+            [moon.graphics :as graphics]
+            [moon.txs :as txs]
+            [moon.world-fns.creature-tiles]
+            [moon.world.tiled-map :as tiled-map]))
 
 (defn- spawn-player!
   [{:keys [ctx/db

@@ -1,10 +1,10 @@
 (ns moon.ui.tooltip
-  (:require [moon.ui :as ui]
-            [moon.ui.stage :as stage]
-            [moon.scene2d.actor :as actor]
+  (:require [moon.scene2d.actor :as actor]
             [moon.scene2d.ui.label :as label]
-            [moon.utils.align :as align]
-            [moon.ui.label :as vis-label])
+            [moon.ui :as ui]
+            [moon.ui.label :as vis-label]
+            [moon.ui.stage :as stage]
+            [moon.utils.align :as align])
   (:import (com.badlogic.gdx.scenes.scene2d.ui TextTooltip)))
 
 (defn add! [actor tooltip-text]

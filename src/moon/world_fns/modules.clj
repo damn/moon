@@ -1,18 +1,18 @@
 (ns moon.world-fns.modules
-  (:require [moon.world.tiled :as tiled]
-            [moon.world-fns.area-level-grid :as area-level-grid]
-            [moon.world-fns.creature-layer :as creature-layer]
-            [moon.world-fns.caves :as caves]
-            [moon.world-fns.nads :as nads]
-            [moon.world-fns.utils :as helper]
-            [moon.maps.map-properties :as props]
+  (:require [clojure.grid2d :as g2d]
             [moon.maps.map-layers :as layers]
+            [moon.maps.map-properties :as props]
             [moon.maps.tiled :as tiled-map]
             [moon.maps.tiled.layer :as layer]
             [moon.maps.tiled.layer.cell :as cell]
             [moon.maps.tiled.tiled-map-tile :as tile]
             [moon.maps.tiled.tmx :as tmx]
-            [clojure.grid2d :as g2d]))
+            [moon.world-fns.area-level-grid :as area-level-grid]
+            [moon.world-fns.caves :as caves]
+            [moon.world-fns.creature-layer :as creature-layer]
+            [moon.world-fns.nads :as nads]
+            [moon.world-fns.utils :as helper]
+            [moon.world.tiled :as tiled]))
 
 (defn- property-value [layer position property-key]
   (if-let [cell (layer/cell layer position)]

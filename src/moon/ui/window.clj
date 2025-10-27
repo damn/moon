@@ -1,10 +1,10 @@
 (ns moon.ui.window
-  (:require [moon.ui :as ui]
-            [moon.ui.table :as table]
-            [moon.ui.stage :as stage]
-            [moon.scene2d.actor :as actor]
+  (:require [moon.scene2d.actor :as actor]
             [moon.scene2d.ui.window :as window]
-            [moon.scene2d.utils.change-listener :as change-listener])
+            [moon.scene2d.utils.change-listener :as change-listener]
+            [moon.ui :as ui]
+            [moon.ui.stage :as stage]
+            [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton
                                                Window)))
 

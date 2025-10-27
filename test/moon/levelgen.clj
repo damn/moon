@@ -1,35 +1,35 @@
 (ns moon.levelgen
-  (:require [moon.db :as db]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [moon.backends.lwjgl.application :as application]
+            [moon.backends.lwjgl.application.config :as app-config]
+            [moon.color :as color]
+            [moon.db :as db]
             [moon.db.impl]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
-            [moon.graphics.tm-renderer :as tm-renderer]
-            [moon.world-fns.creature-tiles]
-            [moon.color :as color]
-            [clojure.edn :as edn]
-            [moon.application.listener :as listener]
-            [moon.backends.lwjgl.application :as application]
-            [moon.backends.lwjgl.application.config :as app-config]
-            [moon.input.keys :as input.keys]
-            [moon.graphics.texture :as texture]
-            [moon.graphics.orthographic-camera :as orthographic-camera]
             [moon.graphics.g2d.sprite-batch :as sprite-batch]
             [moon.graphics.g2d.texture-region :as texture-region]
-            [moon.maps.map-properties :as props]
+            [moon.graphics.orthographic-camera :as orthographic-camera]
+            [moon.graphics.texture :as texture]
+            [moon.graphics.tm-renderer :as tm-renderer]
+            [moon.input.keys :as input.keys]
             [moon.maps.map-layers :as layers]
+            [moon.maps.map-properties :as props]
             [moon.maps.tiled :as tiled-map]
             [moon.maps.tiled.layer :as layer]
-            [moon.ui.stage :as stage]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]
             [moon.scene2d.utils.change-listener :as change-listener]
+            [moon.ui.stage :as stage]
             [moon.ui.table]
             [moon.utils.disposable :as disposable]
             [moon.utils.screen :as screen-utils]
             [moon.utils.viewport :as viewport]
             [moon.utils.viewport.fit-viewport :as fit-viewport]
-            [clojure.java.io :as io])
-  (:import (com.badlogic.gdx Gdx
+            [moon.world-fns.creature-tiles])
+  (:import (com.badlogic.gdx ApplicationListener
+                             Gdx
                              Input)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
@@ -195,19 +195,19 @@
 
 (defn -main []
   (app-config/use-glfw-async!)
-  (application/create (listener/create
-                       {:create (fn []
-                                  (reset! state (create! {:files    Gdx/files
-                                                          :graphics Gdx/graphics
-                                                          :input    Gdx/input})))
-                        :dispose (fn []
-                                   (dispose! @state))
-                        :render (fn []
-                                  (swap! state render!))
-                        :resize (fn [width height]
-                                  (resize! @state width height))
-                        :pause (fn [])
-                        :resume (fn [])})
+  (application/create (reify ApplicationListener
+                        (create [_]
+                          (reset! state (create! {:files    Gdx/files
+                                                  :graphics Gdx/graphics
+                                                  :input    Gdx/input})))
+                        (dispose [_]
+                          (dispose! @state))
+                        (render [_]
+                          (swap! state render!))
+                        (resize [_ width height]
+                          (resize! @state width height))
+                        (pause [_])
+                        (resume [_]))
                       (app-config/create
                        {:title "Levelgen Test"
                         :window {:width 1440

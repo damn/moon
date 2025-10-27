@@ -1,6 +1,6 @@
 (ns moon.dev.app-values
-  (:require [clojure.string :as str]
-            [clojure.pprint :refer [pprint]]))
+  (:require [clojure.pprint :refer [pprint]]
+            [clojure.string :as str]))
 
 (defn get-namespaces [packages]
   (filter #(packages (first (str/split (name (ns-name %)) #"\.")))

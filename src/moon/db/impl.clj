@@ -1,14 +1,14 @@
 (ns moon.db.impl
-  (:require [moon.db :as db]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [clojure.pprint :as pprint]
+            [malli.core :as m]
+            [malli.utils :as mu]
+            [moon.db :as db]
             [moon.db.property :as property]
             [moon.db.schemas :as schemas]
             [moon.malli :as malli]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.pprint :as pprint]
-            [moon.utils :as utils]
-            [malli.core :as m]
-            [malli.utils :as mu]))
+            [moon.utils :as utils]))
 
 (defn- save!
   [{:keys [db/data db/file]}]

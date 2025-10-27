@@ -2,15 +2,15 @@
   (:require [moon.db :as db]
             [moon.db.property :as property]
             [moon.input :as input]
+            [moon.input.keys :as input.keys]
+            [moon.scene2d.actor :as actor]
+            [moon.throwable :as throwable]
             [moon.ui :as ui]
             [moon.ui.editor.schema :as schema]
             [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.ui.widget :as widget]
-            [moon.ui.window :as window]
-            [moon.input.keys :as input.keys]
-            [moon.scene2d.actor :as actor]
-            [moon.throwable :as throwable]))
+            [moon.ui.window :as window]))
 
 (defmethod stage/build :actor/editor-window
   [{:keys [ctx

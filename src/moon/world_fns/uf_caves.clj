@@ -1,12 +1,12 @@
 (ns moon.world-fns.uf-caves
-  (:require [moon.world.tiled :as tiled]
-            [moon.world-fns.creature-layer :as creature-layer]
+  (:require [clojure.grid2d :as g2d]
+            [clojure.rand :as rand]
+            [moon.graphics.g2d.texture-region :as texture-region]
             [moon.world-fns.caves :as caves]
+            [moon.world-fns.creature-layer :as creature-layer]
             [moon.world-fns.nads :as nads]
             [moon.world-fns.utils :as helper]
-            [moon.graphics.g2d.texture-region :as texture-region]
-            [clojure.grid2d :as g2d]
-            [clojure.rand :as rand]))
+            [moon.world.tiled :as tiled]))
 
 (defn- assoc-transition-cells [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid

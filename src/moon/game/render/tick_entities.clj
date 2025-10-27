@@ -1,8 +1,8 @@
 (ns moon.game.render.tick-entities
-  (:require [moon.ui :as ui]
-            [moon.world :as world]
-            [moon.throwable :as throwable]
-            [moon.txs :as txs]))
+  (:require [moon.throwable :as throwable]
+            [moon.txs :as txs]
+            [moon.ui :as ui]
+            [moon.world :as world]))
 
 (defn step
   [{:keys [ctx/stage

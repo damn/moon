@@ -1,7 +1,7 @@
 (ns moon.entity.skills
   (:require [moon.effect :as effect]
-            [moon.entity.stats :as stats]
             [moon.entity.skills.skill :as skill]
+            [moon.entity.stats :as stats]
             [moon.timer :as timer]))
 
 ; this is my game/world logic !

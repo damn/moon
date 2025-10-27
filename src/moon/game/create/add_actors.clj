@@ -5,11 +5,11 @@
             [moon.game.create.inventory-window :as inventory-window]
             [moon.graphics :as graphics]
             [moon.input :as input]
+            [moon.scene2d.actor :as actor]
             [moon.ui :as ui]
             [moon.ui.info-window :as info-window]
             [moon.ui.message :as message]
-            [moon.ui.stage :as stage]
-            [moon.scene2d.actor :as actor]))
+            [moon.ui.stage :as stage]))
 
 (defn- create-hp-mana-bar* [create-draws]
   {:type :actor/actor

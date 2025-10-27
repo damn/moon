@@ -1,7 +1,7 @@
 (ns moon.world.info
-  (:require [moon.stats.ops.info :as ops]
-            moon.entity.stats.info
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
+            [moon.entity.stats.info]
+            [moon.stats.ops.info :as ops]
             [moon.timer :as timer]
             [moon.utils :as utils]))
 

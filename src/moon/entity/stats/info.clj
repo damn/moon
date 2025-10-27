@@ -1,6 +1,6 @@
 (ns moon.entity.stats.info
-  (:require [moon.entity.stats :as stats]
-            [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [moon.entity.stats :as stats]))
 
 (def ^:private non-val-max-stat-ks
   [:stats/movement-speed

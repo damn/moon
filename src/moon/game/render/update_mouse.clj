@@ -1,6 +1,6 @@
 (ns moon.game.render.update-mouse
-  (:require [moon.input :as input]
-            [moon.graphics :as graphics]))
+  (:require [moon.graphics :as graphics]
+            [moon.input :as input]))
 
 (defn step
   [{:keys [ctx/graphics

@@ -1,20 +1,20 @@
 (ns moon.world.impl
-  (:require [moon.world]
-            [moon.world.create.grid]
+  (:require [clojure.grid2d :as g2d]
+            [moon.maps.map-properties :as props]
+            [moon.maps.tiled :as tiled-map]
+            [moon.utils :as utils]
+            [moon.utils.disposable :as disposable]
+            [moon.world]
             [moon.world.assoc-entity-spawn-schema :as assoc-entity-spawn-schema]
             [moon.world.content-grid :as content-grid]
             [moon.world.create-fsms :as create-fsms]
+            [moon.world.create.grid]
             [moon.world.grid :as grid]
             [moon.world.grid.cell :as cell]
-            [moon.world.tick-entities :as tick-entities]
             [moon.world.raycaster :as raycaster]
-            [moon.world.update-potential-fields :as update-potential-fields]
+            [moon.world.tick-entities :as tick-entities]
             [moon.world.tiled :as tiled]
-            [moon.maps.map-properties :as props]
-            [moon.maps.tiled :as tiled-map]
-            [moon.utils.disposable :as disposable]
-            [clojure.grid2d :as g2d]
-            [moon.utils :as utils]))
+            [moon.world.update-potential-fields :as update-potential-fields]))
 
 (def destroy-components
   {:entity/destroy-audiovisual

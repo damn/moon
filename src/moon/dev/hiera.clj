@@ -1,8 +1,7 @@
 (ns moon.dev.hiera
-  (:require [hiera.main :as hiera]
-            [clojure.set :as set]
-            [clojure.string :as str])
-  (:import [java.io File]))
+  (:require [clojure.string :as str]
+            [hiera.main :as hiera])
+  (:import (java.io File)))
 
 (defn locked-files [^File dir]
   (->> (file-seq dir)

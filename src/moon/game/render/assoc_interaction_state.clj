@@ -1,9 +1,9 @@
 (ns moon.game.render.assoc-interaction-state
-  (:require [moon.entity.body :as body]
+  (:require [clojure.math.vector2 :as v]
+            [moon.entity.body :as body]
             [moon.entity.skills.skill :as skill]
             [moon.input :as input]
-            [moon.ui :as ui]
-            [clojure.math.vector2 :as v]))
+            [moon.ui :as ui]))
 
 (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid

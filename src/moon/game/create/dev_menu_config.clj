@@ -1,13 +1,13 @@
 (ns moon.game.create.dev-menu-config
-  (:require [moon.db :as db]
+  (:require [clojure.string :as str]
+            [moon.db :as db]
             [moon.graphics :as graphics]
             [moon.input :as input]
+            [moon.scene2d.actor :as actor]
             [moon.ui :as ui]
             [moon.ui.stage :as stage]
-            [moon.world :as world]
-            [moon.scene2d.actor :as actor]
-            [clojure.string :as str]
-            [moon.utils :as utils]))
+            [moon.utils :as utils]
+            [moon.world :as world]))
 
 (defn create
   [{:keys [ctx/db

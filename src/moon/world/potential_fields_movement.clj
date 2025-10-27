@@ -1,12 +1,12 @@
 (ns moon.world.potential-fields-movement
-  (:require [moon.entity.body :as body]
-            [moon.entity.faction :as faction]
-            [moon.world.grid :as grid]
-            [moon.world.grid.cell :as cell]
-            [clojure.grid2d :as g2d]
+  (:require [clojure.grid2d :as g2d]
             [clojure.math.vector2 :as v]
+            [moon.entity.body :as body]
+            [moon.entity.faction :as faction]
             [moon.position :as position]
-            [moon.utils :as utils]))
+            [moon.utils :as utils]
+            [moon.world.grid :as grid]
+            [moon.world.grid.cell :as cell]))
 
 (let [order (position/get-8-neighbours [0 0])]
   (def ^:private diagonal-check-indizes

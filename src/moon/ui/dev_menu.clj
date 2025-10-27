@@ -1,17 +1,17 @@
 (ns moon.ui.dev-menu
-  (:require [moon.ui :as ui]
-            [moon.ui.image :as image]
-            [moon.ui.stage :as stage]
-            [moon.ui.table :as table]
-            [moon.ui.window :as window]
-            [moon.scene2d.actor :as actor]
+  (:require [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]
             [moon.scene2d.group :as group]
             [moon.scene2d.touchable :as touchable]
             [moon.scene2d.ui.cell :as cell]
             [moon.scene2d.utils.change-listener :as change-listener]
+            [moon.ui :as ui]
+            [moon.ui.image :as image]
             [moon.ui.label :as label]
-            [moon.ui.label :as vis-label])
+            [moon.ui.label :as vis-label]
+            [moon.ui.stage :as stage]
+            [moon.ui.table :as table]
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton)))
 
 (defn- set-label-text-actor [label text-fn]

@@ -1,13 +1,13 @@
 (ns moon.ui.image-button
-  (:require [moon.ui.tooltip :as tooltip]
-            [moon.ui.table :as table]
-            [moon.ui.stage :as stage]
-            [moon.graphics.g2d.texture-region :as texture-region]
+  (:require [moon.graphics.g2d.texture-region :as texture-region]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]
             [moon.scene2d.utils.change-listener :as change-listener]
             [moon.scene2d.utils.drawable :as drawable]
-            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable])
+            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [moon.ui.stage :as stage]
+            [moon.ui.table :as table]
+            [moon.ui.tooltip :as tooltip])
   (:import (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 

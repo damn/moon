@@ -1,7 +1,7 @@
 (ns moon.world.tx.spawn-entity
-  (:require [moon.world.content-grid :as content-grid]
+  (:require [malli.utils :as mu]
+            [moon.world.content-grid :as content-grid]
             [moon.world.grid :as grid]
-            [malli.utils :as mu]
             [qrecord.core :as q]))
 
 (defn- create-component [[k v] {:keys [world/create-fns] :as world}]

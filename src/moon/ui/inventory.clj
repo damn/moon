@@ -1,10 +1,10 @@
 (ns moon.ui.inventory
-  (:require [moon.ui.tooltip :as tooltip]
-            [moon.scene2d.actor :as actor]
+  (:require [moon.scene2d.actor :as actor]
             [moon.scene2d.group :as group]
             [moon.scene2d.ui.image :as image]
             [moon.scene2d.utils.drawable :as drawable]
-            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
+            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [moon.ui.tooltip :as tooltip]))
 
 (defn- find-cell [group cell]
   (first (filter #(= (actor/user-object % ) cell)

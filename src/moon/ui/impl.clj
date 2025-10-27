@@ -1,17 +1,17 @@
 (ns moon.ui.impl
-  (:require [moon.ui :as ui]
-            [moon.ui.stage :as stage]
-            [moon.ui.action-bar :as action-bar]
-            [moon.ui.inventory :as inventory-window]
-            [moon.ui.message :as message]
+  (:require [clojure.repl]
+            [moon.math.vector2 :as vector2]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.group :as group]
-            [moon.math.vector2 :as vector2]
-            [moon.utils.viewport :as viewport]
-            [clojure.repl]
+            [moon.ui :as ui]
+            [moon.ui.action-bar :as action-bar]
+            [moon.ui.inventory :as inventory-window]
+            [moon.ui.label :as label]
+            [moon.ui.message :as message]
+            [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.utils :as utils]
-            [moon.ui.label :as label])
+            [moon.utils.viewport :as viewport])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))

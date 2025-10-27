@@ -1,8 +1,8 @@
 (ns moon.input
-  (:require [moon.input.buttons :as input.buttons]
-            [moon.input.keys :as input.keys]
+  (:require [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [clojure.math.vector2 :as v])
+            [moon.input.buttons :as input.buttons]
+            [moon.input.keys :as input.keys])
   (:import (com.badlogic.gdx Input)))
 
 (defn set-processor! [^Input input input-processor]

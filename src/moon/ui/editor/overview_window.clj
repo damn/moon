@@ -3,12 +3,12 @@
             [moon.graphics :as graphics]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.touchable :as touchable]
-            [moon.ui.stack :as stack]
-            [moon.ui.stage :as stage]
             [moon.ui.editor.property :as property]
             [moon.ui.image-button :as image-button]
-            [moon.ui.window :as window]
-            [moon.ui.label :as label]))
+            [moon.ui.label :as label]
+            [moon.ui.stack :as stack]
+            [moon.ui.stage :as stage]
+            [moon.ui.window :as window]))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10

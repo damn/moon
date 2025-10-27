@@ -1,10 +1,10 @@
 (ns moon.world.create.grid
-  (:require [moon.entity.faction :as faction]
-            [moon.world.grid :as grid]
-            [moon.world.grid.cell :as cell]
-            [clojure.grid2d :as g2d]
+  (:require [clojure.grid2d :as g2d]
+            [moon.entity.faction :as faction]
             [moon.math.geom :as geom]
-            [moon.position :as position]))
+            [moon.position :as position]
+            [moon.world.grid :as grid]
+            [moon.world.grid.cell :as cell]))
 
 (defn- body->occupied-cells
   [grid

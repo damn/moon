@@ -1,19 +1,19 @@
 (ns moon.ui.editor.window
-  (:require [moon.db.schemas :as schemas]
-            [moon.ui.editor.schema :as schema]
-            [moon.ui.stage :as stage]
-            [moon.ui.table :as table]
-            [moon.ui.window :as window]
+  (:require [clojure.set :as set]
+            [malli.utils :as mu]
+            [moon.db.schemas :as schemas]
             [moon.malli :as malli]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.group :as group]
             [moon.scene2d.ui.widget-group :as widget-group]
-            [moon.ui.text-button :as text-button]
-            [clojure.set :as set]
-            [moon.utils :as utils]
+            [moon.ui.editor.schema :as schema]
             [moon.ui.label :as label]
             [moon.ui.separator :as separator]
-            [malli.utils :as mu]))
+            [moon.ui.stage :as stage]
+            [moon.ui.table :as table]
+            [moon.ui.text-button :as text-button]
+            [moon.ui.window :as window]
+            [moon.utils :as utils]))
 
 (defn- map-widget-table-value [table schemas]
   (into {}

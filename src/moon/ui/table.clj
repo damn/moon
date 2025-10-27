@@ -1,7 +1,7 @@
 (ns moon.ui.table
-  (:require [moon.ui.widget-group :as widget-group]
-            [moon.scene2d.ui.cell :as cell]
-            [moon.scene2d.ui.table :as table])
+  (:require [moon.scene2d.ui.cell :as cell]
+            [moon.scene2d.ui.table :as table]
+            [moon.ui.widget-group :as widget-group])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn add! [table actor]

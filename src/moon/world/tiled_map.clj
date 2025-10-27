@@ -2,9 +2,9 @@
   (:require [moon.maps.map-layers :as layers]
             [moon.maps.map-properties :as props]
             [moon.maps.tiled :as tiled-map]
-            [moon.maps.tiled.tiled-map-tile :as tile]
             [moon.maps.tiled.layer :as layer]
-            [moon.maps.tiled.layer.cell :as cell]))
+            [moon.maps.tiled.layer.cell :as cell]
+            [moon.maps.tiled.tiled-map-tile :as tile]))
 
 (defn spawn-positions
   [tiled-map]

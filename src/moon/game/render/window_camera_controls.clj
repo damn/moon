@@ -1,6 +1,6 @@
 (ns moon.game.render.window-camera-controls
-  (:require [moon.input :as input]
-            [moon.graphics :as graphics]
+  (:require [moon.graphics :as graphics]
+            [moon.input :as input]
             [moon.ui :as ui]))
 
 (def zoom-speed 0.025)

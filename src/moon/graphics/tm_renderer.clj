@@ -5,7 +5,7 @@
             [moon.maps.tiled.layer :as layer]
             [moon.utils.viewport :as viewport])
   (:import (moon.graphics ColorSetter
-                         TiledMapRenderer)))
+                          TiledMapRenderer)))
 
 (defn draw! [tiled-map-renderer world-viewport tiled-map color-setter]
   (let [^TiledMapRenderer renderer (tiled-map-renderer tiled-map)

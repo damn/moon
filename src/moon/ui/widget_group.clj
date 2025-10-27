@@ -1,6 +1,6 @@
 (ns moon.ui.widget-group
-  (:require [moon.ui.group :as group]
-            [moon.scene2d.ui.widget-group :as widget-group]))
+  (:require [moon.scene2d.ui.widget-group :as widget-group]
+            [moon.ui.group :as group]))
 
 (defn set-opts!
   [widget-group {:keys [fill-parent? pack?] :as opts}]

@@ -1,6 +1,5 @@
 (ns moon.entity.state-impl
-  (:require [moon.effect :as effect]
-            [moon.entity.state :as state]
+  (:require [moon.entity.state :as state]
             [moon.entity.state.player-item-on-cursor :as item-on-cursor]
             [moon.entity.stats :as stats]
             [moon.timer :as timer]))

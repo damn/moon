@@ -1,11 +1,11 @@
 (ns moon.game.render.player-state-handle-input
   (:require [moon.entity.inventory :as inventory]
-            [moon.entity.stats :as stats]
             [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
+            [moon.entity.stats :as stats]
             [moon.input :as input]
-            [moon.ui :as ui]
             [moon.input.buttons :as input.buttons]
-            [moon.txs :as txs]))
+            [moon.txs :as txs]
+            [moon.ui :as ui]))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
   (case k

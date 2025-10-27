@@ -1,6 +1,6 @@
 (ns moon.game.render.clear-screen
-  (:require [moon.graphics :as graphics]
-            [moon.color :as color]))
+  (:require [moon.color :as color]
+            [moon.graphics :as graphics]))
 
 (defn step
   [{:keys [ctx/graphics] :as ctx}]

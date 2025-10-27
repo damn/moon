@@ -1,6 +1,6 @@
 (ns moon.game.create.hp-mana-bar-config
-  (:require [moon.graphics :as graphics]
-            [moon.entity.stats :as stats]
+  (:require [moon.entity.stats :as stats]
+            [moon.graphics :as graphics]
             [moon.ui :as ui]
             [moon.utils :as utils]
             [moon.val-max :as val-max]))

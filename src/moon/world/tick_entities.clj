@@ -1,18 +1,18 @@
 (ns moon.world.tick-entities
-  (:require [moon.effect :as effect]
+  (:require [clojure.grid2d :as g2d]
+            [clojure.math :as math]
+            [clojure.math.vector2 :as v]
+            [moon.effect :as effect]
             [moon.entity.animation :as animation]
             [moon.entity.body :as body]
             [moon.entity.skills.skill :as skill]
             [moon.entity.stats :as stats]
+            [moon.timer :as timer]
+            [moon.utils :as utils]
             [moon.world.grid :as grid]
             [moon.world.grid.cell :as cell]
-            [moon.world.raycaster :as raycaster]
             [moon.world.potential-fields-movement :as potential-fields-movement]
-            [clojure.grid2d :as g2d]
-            [clojure.math :as math]
-            [clojure.math.vector2 :as v]
-            [moon.timer :as timer]
-            [moon.utils :as utils]))
+            [moon.world.raycaster :as raycaster]))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))

@@ -1,13 +1,12 @@
 (ns moon.ui.text-button
-  (:require [moon.ui :as ui]
-            [moon.ui.tooltip :as tooltip]
-            [moon.ui.table :as table]
-            [moon.ui.stage :as stage]
-            [moon.scene2d.actor :as actor]
+  (:require [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]
-            [moon.scene2d.utils.change-listener :as change-listener])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
+            [moon.scene2d.utils.change-listener :as change-listener]
+            [moon.ui :as ui]
+            [moon.ui.stage :as stage]
+            [moon.ui.table :as table]
+            [moon.ui.tooltip :as tooltip])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton)))
 
 (defn create
   ([text on-clicked]

@@ -1,7 +1,7 @@
 (ns moon.stats.ops.info
-  (:require [moon.stats.ops :as ops]
+  (:require [clojure.math :as math]
             [clojure.string :as str]
-            [clojure.math :as math]))
+            [moon.stats.ops :as ops]))
 
 (defn info [ops modifier-k]
   (str/join "\n"

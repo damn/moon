@@ -1,9 +1,9 @@
 (ns moon.application
-  (:require [moon.graphics.color :as color]
+  (:require [moon.app :as app]
+            [moon.core :refer [call edn-resource]]
+            [moon.graphics.color :as color]
             [moon.graphics.colors :as colors]
-            [moon.graphics.g2d.sprite-batch :as sprite-batch]
-            [moon.app :as app]
-            [moon.core :refer [call edn-resource]])
+            [moon.graphics.g2d.sprite-batch :as sprite-batch])
   (:import (com.badlogic.gdx Application
                              ApplicationListener
                              Gdx)

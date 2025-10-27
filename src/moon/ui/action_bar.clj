@@ -3,9 +3,9 @@
             [moon.scene2d.group :as group]
             [moon.scene2d.ui.button-group :as button-group]
             [moon.scene2d.ui.horizontal-group :as horizontal-group]
-            [moon.ui.table :as table]
+            [moon.ui.image-button :as image-button]
             [moon.ui.stage :as stage]
-            [moon.ui.image-button :as image-button]))
+            [moon.ui.table :as table]))
 
 (defmethod stage/build :actor/action-bar [_]
   (table/create

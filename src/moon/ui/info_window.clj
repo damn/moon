@@ -1,11 +1,11 @@
 (ns moon.ui.info-window
-  (:require [moon.ui.stage :as stage]
-            [moon.ui.window :as window]
-            [moon.scene2d.actor :as actor]
+  (:require [moon.scene2d.actor :as actor]
             [moon.scene2d.group :as group]
             [moon.scene2d.ui.label :as label]
             [moon.scene2d.ui.widget-group :as widget-group]
-            [moon.ui.label :as vis-label]))
+            [moon.ui.label :as vis-label]
+            [moon.ui.stage :as stage]
+            [moon.ui.window :as window]))
 
 (defn create
   [{:keys [title

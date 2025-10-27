@@ -1,11 +1,11 @@
 (ns moon.ui.widget
-  (:require [moon.ui.window :as window]
+  (:require [moon.scene2d.actor :as actor]
+            [moon.ui.label :as label]
             [moon.ui.scroll-pane :as scroll-pane]
-            [moon.ui.table :as table]
             [moon.ui.stage :as stage]
+            [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
-            [moon.scene2d.actor :as actor]
-            [moon.ui.label :as label]))
+            [moon.ui.window :as window]))
 
 (defn- create-scroll-pane
   [{:keys [scroll-pane/actor
