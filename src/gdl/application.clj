@@ -1,8 +1,3 @@
-; gdl == 'minimal' gdx API for moon
-; write test/copy libgdx tests for the classes I use
-; port to clojure
-; remove 'Gdx/Application(?)  ?'
-; => clojure.lwjgl = gdl ?
 (ns gdl.application
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
