@@ -3,6 +3,19 @@
   :dependencies [
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
 
+                 ; _ just pull it in _
+                 ; _ add/copy libgdx tests? _
+                 ; _ port to clojure _
+                 ; _ Remove 'GDX/Application'
+                 ; => Call it 'gdl' library.
+                 ; what is the 'API', what do I have to now?!
+
+                 ; gdl == 'minimal' gdx API for moon
+                 ; write test/copy libgdx tests for the classes I use
+                 ; port to clojure
+                 ; remove 'Gdx/Application(?)  ?'
+                 ; => clojure.lwjgl = gdl ?
+
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]

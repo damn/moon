@@ -1,14 +1,11 @@
 (ns moon.application
-  (:require [moon.app :as app]
+  (:require [gdl.application]
+            [moon.app :as app]
             [moon.core :refer [call edn-resource]]
             [moon.graphics.color :as color]
             [moon.graphics.colors :as colors]
             [moon.graphics.g2d.sprite-batch :as sprite-batch])
-  (:import (com.badlogic.gdx Application
-                             ApplicationListener
-                             Gdx)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration))
+  (:import (com.badlogic.gdx Application))
   (:gen-class))
 
 (def state (atom nil))
@@ -18,35 +15,30 @@
         dispose! (:dispose! config)
         render!  (:render!  config)
         resize!  (:resize!  config)
-        listener (reify ApplicationListener
-                   (create [_]
+        listener (reify gdl.application/Listener
+                   (create! [_ app]
                      (reset! state (reduce (fn [ctx [f & params]]
                                              (apply f ctx params))
-                                           {:ctx/app Gdx/app}
+                                           {:ctx/app app}
                                            create!)))
 
-                   (dispose [_]
+                   (dispose! [_]
                      (dispose! @state))
 
-                   (render [_]
+                   (render! [_]
                      (swap! state (fn [ctx]
                                     (reduce (fn [ctx f]
                                               (f ctx))
                                             ctx
                                             render!))))
 
-                   (resize [_ width height]
+                   (resize! [_ width height]
                      (resize! @state width height))
 
-                   (pause [_])
+                   (pause! [_])
 
-                   (resume [_]))
-        app-config (doto (Lwjgl3ApplicationConfiguration.)
-                     (.setTitle (:title config))
-                     (.setWindowedMode (:width (:window config))
-                                       (:height (:window config)))
-                     (.setForegroundFPS (:fps config)))]
-    (Lwjgl3Application. listener app-config)))
+                   (resume! [_]))]
+    (gdl.application/start! listener config)))
 
 (defn -main []
   (run! call (edn-resource "config.edn")))
