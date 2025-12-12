@@ -4,7 +4,6 @@
  [clojure.core/require moon.ui.editor.window]
  [clojure.core/require moon.ui.editor.widgets-impl]
  [clojure.core/require moon.entity.state-impl]
- [moon.backends.lwjgl.application.config/use-glfw-async!]
  [moon.application/start!
   {
    :title "Cyber Dungeon Quest"

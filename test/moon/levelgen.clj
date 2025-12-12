@@ -1,8 +1,7 @@
 (ns moon.levelgen
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.backends.lwjgl.application :as application]
-            [moon.backends.lwjgl.application.config :as app-config]
+            [gdl.application :as application]
             [moon.color :as color]
             [moon.db :as db]
             [moon.db.impl]
@@ -194,22 +193,20 @@
 (def state (atom nil))
 
 (defn -main []
-  (app-config/use-glfw-async!)
-  (application/create (reify ApplicationListener
-                        (create [_]
-                          (reset! state (create! {:files    Gdx/files
-                                                  :graphics Gdx/graphics
-                                                  :input    Gdx/input})))
-                        (dispose [_]
+  (application/start! (reify application/Listener
+                        (create! [_ app]
+                          (reset! state (create! {:files    (.getFiles app)
+                                                  :graphics (.getGraphics app)
+                                                  :input    (.getInput app)})))
+                        (dispose! [_]
                           (dispose! @state))
-                        (render [_]
+                        (render! [_]
                           (swap! state render!))
-                        (resize [_ width height]
+                        (resize! [_ width height]
                           (resize! @state width height))
-                        (pause [_])
-                        (resume [_]))
-                      (app-config/create
-                       {:title "Levelgen Test"
-                        :window {:width 1440
-                                 :height 900}
-                        :fps 60})))
+                        (pause! [_])
+                        (resume! [_]))
+                      {:title "Levelgen Test"
+                       :window {:width 1440
+                                :height 900}
+                       :fps 60}))

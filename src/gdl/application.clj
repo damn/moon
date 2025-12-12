@@ -13,6 +13,7 @@
   (resume! [_]))
 
 (defn start! [listener config]
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
                           (create! listener Gdx/app))
