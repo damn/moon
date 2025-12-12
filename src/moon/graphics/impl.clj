@@ -1,17 +1,18 @@
 (ns moon.graphics.impl
   (:require [clojure.math :as math]
             [clojure.string :as str]
-            [moon.app :as app]
             [moon.files :as files-utils]
             [moon.graphics]
             [moon.graphics.camera :as camera]
             [moon.graphics.color :as color]
+            [moon.graphics.colors :as colors]
             [moon.graphics.g2d.batch :as batch]
             [moon.graphics.g2d.bitmap-font :as fnt]
             [moon.graphics.g2d.bitmap-font.data :as data]
             [moon.graphics.g2d.freetype.generator :as generator]
             [moon.graphics.g2d.freetype.generator.parameter :as parameter]
             [moon.graphics.g2d.shape-drawer :as sd]
+            [moon.graphics.g2d.sprite-batch :as sprite-batch]
             [moon.graphics.g2d.texture-region :as texture-region]
             [moon.graphics.orthographic-camera :as orthographic-camera]
             [moon.graphics.pixmap :as pixmap]
@@ -315,10 +316,10 @@
            ui-viewport
            world-viewport]}]
   (doseq [[name rgba] colors]
-    (app/def-color! app name rgba))
+    (colors/put! name (color/create rgba)))
   (let [graphics (.getGraphics app)
         files    (.getFiles    app)
-        batch (app/sprite-batch app)
+        batch (sprite-batch/create)
         shape-drawer-texture (let [pixmap (doto (pixmap/create 1 1 pixmap.format/rgba8888)
                                             (pixmap/set-color! [1 1 1 1])
                                             (pixmap/draw-pixel! 0 0))

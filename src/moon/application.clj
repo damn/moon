@@ -1,11 +1,6 @@
 (ns moon.application
   (:require [gdl.application]
-            [moon.app :as app]
-            [moon.core :refer [call edn-resource]]
-            [moon.graphics.color :as color]
-            [moon.graphics.colors :as colors]
-            [moon.graphics.g2d.sprite-batch :as sprite-batch])
-  (:import (com.badlogic.gdx Application))
+            [moon.core :refer [call edn-resource]])
   (:gen-class))
 
 (def state (atom nil))
@@ -42,15 +37,3 @@
 
 (defn -main []
   (run! call (edn-resource "config.edn")))
-
-(extend-type Application
-  app/Input
-  (set-input-processor! [this input-processor]
-    (.setInputProcessor (.getInput this) input-processor))
-
-  app/Graphics
-  (def-color! [_ name rgba]
-    (colors/put! name (color/create rgba)))
-
-  (sprite-batch [_]
-    (sprite-batch/create)))

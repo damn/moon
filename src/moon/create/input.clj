@@ -1,6 +1,5 @@
-(ns moon.create.input
-  (:require [moon.app :as app]))
+(ns moon.create.input)
 
 (defn step [{:keys [ctx/app ctx/stage] :as ctx}]
-  (app/set-input-processor! app stage)
+  (.setInputProcessor (.getInput app) stage)
   (assoc ctx :ctx/input (.getInput app)))
