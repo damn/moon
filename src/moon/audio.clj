@@ -1,17 +1,17 @@
 (ns moon.audio
-  (:import (com.badlogic.gdx Audio
-                             Files)
-           (com.badlogic.gdx.audio Sound)))
+  (:require [gdl.audio :as audio]
+            [gdl.audio.sound :as sound]
+            [gdl.files :as files]))
 
 (defn sound-names [sounds]
   (map first sounds))
 
 (defn play! [sounds sound-name]
   (assert (contains? sounds sound-name) (str sound-name))
-  (Sound/.play (get sounds sound-name)))
+  (sound/play! (get sounds sound-name)))
 
 (defn dispose! [sounds]
-  (run! Sound/.dispose (vals sounds)))
+  (run! sound/dispose! (vals sounds)))
 
 (defn create
   [audio files {:keys [sound-names path-format]}]
@@ -19,8 +19,8 @@
                                       (for [sound-name sound-names
                                             :let [path (format path-format sound-name)]]
                                         [sound-name
-                                         (Files/.internal files path)]))]
+                                         (files/internal files path)]))]
     (into {}
           (for [[sound-name file-handle] sound-name->file-handle]
             [sound-name
-             (Audio/.newSound audio file-handle)]))))
+             (audio/new-sound audio file-handle)]))))
