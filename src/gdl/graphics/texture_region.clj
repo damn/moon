@@ -1,4 +1,4 @@
-(ns moon.graphics.g2d.texture-region
+(ns gdl.graphics.texture-region
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
 

@@ -1,5 +1,5 @@
 (ns moon.world-fns.tmx
-  (:require [moon.maps.tiled.tmx :as tmx]))
+  (:require [gdl.maps.tiled.tmx :as tmx]))
 
 (defn create
   [{:keys [tmx-file

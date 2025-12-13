@@ -1,4 +1,4 @@
-(ns moon.maps.tiled
+(ns gdl.maps.tiled
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn create []

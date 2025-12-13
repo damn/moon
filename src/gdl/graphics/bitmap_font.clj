@@ -1,4 +1,4 @@
-(ns moon.graphics.g2d.bitmap-font
+(ns gdl.graphics.bitmap-font
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
 
 (defn line-height [^BitmapFont font]

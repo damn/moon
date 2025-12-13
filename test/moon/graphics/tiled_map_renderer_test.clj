@@ -2,7 +2,7 @@
   (:require [moon.backends.lwjgl.application :as application]
             [com.badlogic.gdx.maps.tiled :as tiled]
             [com.badlogic.gdx.graphics.orthographic-camera :as camera]
-            [moon.maps.tiled.tmx :as tmx])
+            [gdl.maps.tiled.tmx :as tmx])
   (:import (com.badlogic.gdx.graphics Color OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)))
 

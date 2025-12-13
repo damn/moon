@@ -1,4 +1,4 @@
-(ns moon.graphics.g2d.batch
+(ns gdl.graphics.batch
   (:import (com.badlogic.gdx.graphics.g2d Batch
                                           TextureRegion)))
 

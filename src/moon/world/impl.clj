@@ -1,7 +1,7 @@
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
-            [moon.maps.map-properties :as props]
-            [moon.maps.tiled :as tiled-map]
+            [gdl.maps.map-properties :as props]
+            [gdl.maps.tiled :as tiled-map]
             [moon.utils :as utils]
             [moon.utils.disposable :as disposable]
             [moon.world]

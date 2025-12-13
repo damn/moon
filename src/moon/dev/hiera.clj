@@ -26,17 +26,10 @@
 (def finished
   '#{
      dev,
-
-     com.badlogic.gdx.utils.align
-
-     com.kotcrab,
-
      moon.throwable
      moon.utils
      clojure.math
      clojure.scene2d.actor,
-
-
      }
   )
 

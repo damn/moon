@@ -1,4 +1,4 @@
-(ns moon.maps.tiled.layer
+(ns gdl.maps.tiled.layer
   (:refer-clojure :exclude [name])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 

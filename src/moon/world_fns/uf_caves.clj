@@ -1,7 +1,7 @@
 (ns moon.world-fns.uf-caves
   (:require [clojure.grid2d :as g2d]
             [clojure.rand :as rand]
-            [moon.graphics.g2d.texture-region :as texture-region]
+            [gdl.graphics.texture-region :as texture-region]
             [moon.world-fns.caves :as caves]
             [moon.world-fns.creature-layer :as creature-layer]
             [moon.world-fns.nads :as nads]

@@ -1,10 +1,10 @@
 (ns moon.world.tiled-map
-  (:require [moon.maps.map-layers :as layers]
-            [moon.maps.map-properties :as props]
-            [moon.maps.tiled :as tiled-map]
-            [moon.maps.tiled.layer :as layer]
-            [moon.maps.tiled.layer.cell :as cell]
-            [moon.maps.tiled.tiled-map-tile :as tile]))
+  (:require [gdl.maps.map-layers :as layers]
+            [gdl.maps.map-properties :as props]
+            [gdl.maps.tiled :as tiled-map]
+            [gdl.maps.tiled.layer :as layer]
+            [gdl.maps.tiled.layer.cell :as cell]
+            [gdl.maps.tiled.tiled-map-tile :as tile]))
 
 (defn spawn-positions
   [tiled-map]

@@ -1,4 +1,4 @@
-(ns moon.maps.tiled.tmx
+(ns gdl.maps.tiled.tmx
   (:import (com.badlogic.gdx.maps.tiled TmxMapLoader)))
 
 (defn load-map

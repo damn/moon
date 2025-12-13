@@ -1,5 +1,5 @@
 (ns moon.ui.image-button
-  (:require [moon.graphics.g2d.texture-region :as texture-region]
+  (:require [gdl.graphics.texture-region :as texture-region]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]
             [moon.scene2d.utils.change-listener :as change-listener]

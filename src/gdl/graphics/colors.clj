@@ -1,4 +1,4 @@
-(ns moon.graphics.colors
+(ns gdl.graphics.colors
   (:import (com.badlogic.gdx.graphics Colors)))
 
 (defn put! [name color]

@@ -1,8 +1,8 @@
 (ns moon.graphics.tm-renderer
-  (:require [moon.graphics.color :as color]
-            [moon.maps.map-layers :as layers]
-            [moon.maps.tiled :as tiled-map]
-            [moon.maps.tiled.layer :as layer]
+  (:require [gdl.graphics.color :as color]
+            [gdl.maps.map-layers :as layers]
+            [gdl.maps.tiled :as tiled-map]
+            [gdl.maps.tiled.layer :as layer]
             [moon.utils.viewport :as viewport])
   (:import (moon.graphics ColorSetter
                           TiledMapRenderer)))

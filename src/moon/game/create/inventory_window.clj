@@ -1,7 +1,7 @@
 (ns moon.game.create.inventory-window
   (:require [moon.entity.inventory :as inventory]
             [moon.graphics :as graphics]
-            [moon.graphics.color :as gdxcolor]
+            [gdl.graphics.color :as gdxcolor]
             [moon.math.vector2 :as gdxvector2]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]

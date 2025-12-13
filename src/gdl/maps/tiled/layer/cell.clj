@@ -1,4 +1,4 @@
-(ns moon.maps.tiled.layer.cell
+(ns gdl.maps.tiled.layer.cell
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
 (defn create [tile]

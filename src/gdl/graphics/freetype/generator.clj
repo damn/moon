@@ -1,4 +1,4 @@
-(ns moon.graphics.g2d.freetype.generator
+(ns gdl.graphics.freetype.generator
   (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
 
 (defn create [file-handle]
