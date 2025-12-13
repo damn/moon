@@ -12,12 +12,12 @@
    :fps 60
    :create! [[moon.create.record/step]
              [moon.create.graphics/step {:impl moon.graphics.impl/create!
-                                        :config #edn/resource "graphics.edn"}]
+                                         :config #edn/resource "graphics.edn"}]
              [moon.create.ui/step {:impl moon.ui.impl/create!
-                                  :config {:dev-menu moon.game.create.dev-menu-config/create}}]
+                                   :config {:dev-menu moon.game.create.dev-menu-config/create}}]
              [moon.create.skin/step]
              [moon.create.audio/step {:impl moon.audio/create
-                                     :config #edn/resource "audio.edn"}]
+                                      :config #edn/resource "audio.edn"}]
              [moon.create.db/step moon.db.impl/create]
              [moon.create.input/step]
              [moon.create.config/step {:world-impl moon.world.impl/create}]
