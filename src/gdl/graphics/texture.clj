@@ -1,4 +1,4 @@
-(ns moon.graphics.texture
+(ns gdl.graphics.texture
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Texture)))

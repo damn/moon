@@ -1,11 +1,11 @@
-(ns moon.graphics.tm-renderer
+(ns gdl.graphics.tm-renderer
   (:require [gdl.graphics.color :as color]
             [gdl.maps.map-layers :as layers]
             [gdl.maps.tiled :as tiled-map]
             [gdl.maps.tiled.layer :as layer]
             [moon.utils.viewport :as viewport])
-  (:import (moon.graphics ColorSetter
-                          TiledMapRenderer)))
+  (:import (gdl.graphics ColorSetter
+                         TiledMapRenderer)))
 
 (defn draw! [tiled-map-renderer world-viewport tiled-map color-setter]
   (let [^TiledMapRenderer renderer (tiled-map-renderer tiled-map)

@@ -4,6 +4,8 @@
             [moon.files :as files-utils]
             [moon.graphics]
             [moon.graphics.camera :as camera]
+            [gdl.files :as files]
+            [gdl.graphics :as graphics]
             [gdl.graphics.color :as color]
             [gdl.graphics.colors :as colors]
             [gdl.graphics.batch :as batch]
@@ -14,20 +16,18 @@
             [gdl.graphics.shape-drawer :as sd]
             [gdl.graphics.sprite-batch :as sprite-batch]
             [gdl.graphics.texture-region :as texture-region]
-            [moon.graphics.orthographic-camera :as orthographic-camera]
-            [moon.graphics.pixmap :as pixmap]
-            [moon.graphics.pixmap.format :as pixmap.format]
-            [moon.graphics.texture :as texture]
-            [moon.graphics.texture.filter :as texture.filter]
-            [moon.graphics.tm-renderer :as tm-renderer]
+            [gdl.graphics.orthographic-camera :as orthographic-camera]
+            [gdl.graphics.pixmap :as pixmap]
+            [gdl.graphics.pixmap.format :as pixmap.format]
+            [gdl.graphics.texture :as texture]
+            [gdl.graphics.texture.filter :as texture.filter]
+            [gdl.graphics.tm-renderer :as tm-renderer]
             [moon.math.vector2 :as vector2]
             [moon.utils.align :as align]
             [moon.utils.disposable :as disposable]
             [moon.utils.screen :as screen-utils]
             [moon.utils.viewport :as viewport]
-            [moon.utils.viewport.fit-viewport :as fit-viewport])
-  (:import (com.badlogic.gdx Files
-                             Graphics)))
+            [moon.utils.viewport.fit-viewport :as fit-viewport]))
 
 (defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
   (let [text-height (fn []
@@ -195,10 +195,10 @@
     (run! disposable/dispose! (vals textures)))
 
   (frames-per-second [{:keys [graphics/core]}]
-    (Graphics/.getFramesPerSecond core))
+    (graphics/frames-per-second core))
 
   (delta-time [{:keys [graphics/core]}]
-    (Graphics/.getDeltaTime core))
+    (graphics/delta-time core))
 
   (clear-screen! [_ color]
     (screen-utils/clear! color))
@@ -207,7 +207,7 @@
                         graphics/cursors]}
                 cursor-key]
     (assert (contains? cursors cursor-key))
-    (Graphics/.setCursor core (get cursors cursor-key)))
+    (graphics/set-cursor! core (get cursors cursor-key)))
 
   (draw! [graphics draws]
     (doseq [{k 0 :as component} draws
@@ -284,8 +284,8 @@
     (batch/end! batch)))
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
-  (let [pixmap (pixmap/create (Files/.internal files path))
-        cursor (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y)]
+  (let [pixmap (pixmap/create (files/internal files path))
+        cursor (graphics/new-cursor graphics pixmap hotspot-x hotspot-y)]
     (pixmap/dispose! pixmap)
     cursor))
 
@@ -335,7 +335,7 @@
                                                                graphics
                                                                (format (:path-format cursors) path)
                                                                hotspot))))
-        (assoc :graphics/default-font (generate-font (Files/.internal files (:path default-font))
+        (assoc :graphics/default-font (generate-font (files/internal files (:path default-font))
                                                      (:params default-font)))
         (assoc :graphics/batch batch)
         (assoc :graphics/shape-drawer-texture shape-drawer-texture)
