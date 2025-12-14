@@ -10,41 +10,41 @@
    :window {:width 1440
             :height 900}
    :fps 60
-   :create! [[moon.create.record/step]
-             [moon.create.graphics/step {:impl moon.graphics.impl/create!
-                                         :config #edn/resource "graphics.edn"}]
-             [moon.create.ui/step {:impl moon.ui.impl/create!
-                                   :config {:dev-menu moon.game.create.dev-menu-config/create}}]
-             [moon.create.skin/step]
-             [moon.create.audio/step {:impl moon.audio/create
-                                      :config #edn/resource "audio.edn"}]
-             [moon.create.db/step moon.db.impl/create]
-             [moon.create.input/step]
-             [moon.create.config/step {:world-impl moon.world.impl/create}]
-             [moon.game.create.add-actors/step]
-             [moon.game.create.world/step #edn/resource "world.edn"]]
-   :dispose! moon.tx.dispose/do!
-   :render!  [moon.game.render.get-stage-ctx/step
-              moon.game.render.validate/step
-              moon.game.render.update-mouse/step
-              moon.game.render.update-mouseover-eid/step
-              moon.game.render.check-open-debug/step
-              moon.game.render.assoc-active-entities/step
-              moon.game.render.set-camera-on-player/step
-              moon.game.render.clear-screen/step
-              moon.game.render.draw-world-map/step
-              moon.game.render.draw-on-world-viewport/step
-              moon.game.render.assoc-interaction-state/step
-              moon.game.render.set-cursor/step
-              moon.game.render.player-state-handle-input/step
-              moon.game.render.dissoc-interaction-state/step
-              moon.game.render.assoc-paused/step
-              moon.game.render.update-world-time/step
-              moon.game.render.update-potential-fields/step
-              moon.game.render.tick-entities/step
-              moon.game.render.remove-destroyed-entities/step
-              moon.game.render.window-camera-controls/step
-              moon.game.render.render-stage/step
-              moon.game.render.validate/step]
-   :resize!  moon.tx.update-viewports/do!
+   :create! [[moon.application.create.record/step]
+             [moon.application.create.graphics/step {:impl moon.graphics.impl/create!
+                                                     :config #edn/resource "graphics.edn"}]
+             [moon.application.create.ui/step {:impl moon.ui.impl/create!
+                                               :config {:dev-menu moon.game.create.ui.dev-menu-config/create}}]
+             [moon.application.create.skin/step]
+             [moon.application.create.audio/step {:impl moon.audio/create
+                                                  :config #edn/resource "audio.edn"}]
+             [moon.application.create.db/step moon.db.impl/create]
+             [moon.application.create.input/step]
+             [moon.application.create.config/step {:world-impl moon.world.impl/create}]
+             [moon.application.create.add-actors/step]
+             [moon.application.create.world/step #edn/resource "world.edn"]]
+   :dispose! moon.application.dispose/do!
+   :render!  [moon.application.render.get-stage-ctx/step
+              moon.application.render.validate/step
+              moon.application.render.update-mouse/step
+              moon.application.render.update-mouseover-eid/step
+              moon.application.render.check-open-debug/step
+              moon.application.render.assoc-active-entities/step
+              moon.application.render.set-camera-on-player/step
+              moon.application.render.clear-screen/step
+              moon.application.render.draw-world-map/step
+              moon.application.render.draw-on-world-viewport/step
+              moon.application.render.assoc-interaction-state/step
+              moon.application.render.set-cursor/step
+              moon.application.render.player-state-handle-input/step
+              moon.application.render.dissoc-interaction-state/step
+              moon.application.render.assoc-paused/step
+              moon.application.render.update-world-time/step
+              moon.application.render.update-potential-fields/step
+              moon.application.render.tick-entities/step
+              moon.application.render.remove-destroyed-entities/step
+              moon.application.render.window-camera-controls/step
+              moon.application.render.render-stage/step
+              moon.application.render.validate/step]
+   :resize!  moon.application.update-viewports/do!
    }]]
