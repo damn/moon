@@ -1,8 +1,8 @@
-(ns moon.game.create.add-actors
+(ns moon.application.create.add-actors
   (:require [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
-            [moon.game.create.ui.entity-info-window-config :as entity-info-window-config]
-            [moon.game.create.ui.hp-mana-bar-config :as hp-mana-bar-config]
-            [moon.game.create.ui.inventory-window :as inventory-window]
+            [moon.application.create.ui.entity-info-window-config :as entity-info-window-config]
+            [moon.application.create.ui.hp-mana-bar-config :as hp-mana-bar-config]
+            [moon.application.create.ui.inventory-window :as inventory-window]
             [moon.graphics :as graphics]
             [moon.input :as input]
             [moon.scene2d.actor :as actor]

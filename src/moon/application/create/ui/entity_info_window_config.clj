@@ -1,4 +1,4 @@
-(ns moon.game.create.ui.entity-info-window-config
+(ns moon.application.create.ui.entity-info-window-config
   (:require [moon.ui :as ui]
             [moon.world.info :as info]))
 

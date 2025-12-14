@@ -14,7 +14,7 @@
              [moon.application.create.graphics/step {:impl moon.graphics.impl/create!
                                                      :config #edn/resource "graphics.edn"}]
              [moon.application.create.ui/step {:impl moon.ui.impl/create!
-                                               :config {:dev-menu moon.game.create.ui.dev-menu-config/create}}]
+                                               :config {:dev-menu moon.application.create.ui.dev-menu-config/create}}]
              [moon.application.create.skin/step]
              [moon.application.create.audio/step {:impl moon.audio/create
                                                   :config #edn/resource "audio.edn"}]

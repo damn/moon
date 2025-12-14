@@ -1,4 +1,4 @@
-(ns moon.game.create.ui.inventory-window
+(ns moon.application.create.ui.inventory-window
   (:require [moon.entity.inventory :as inventory]
             [moon.graphics :as graphics]
             [gdl.graphics.color :as gdxcolor]

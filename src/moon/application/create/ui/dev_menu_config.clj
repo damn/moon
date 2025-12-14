@@ -1,4 +1,4 @@
-(ns moon.game.create.ui.dev-menu-config
+(ns moon.application.create.ui.dev-menu-config
   (:require [clojure.string :as str]
             [moon.db :as db]
             [moon.graphics :as graphics]

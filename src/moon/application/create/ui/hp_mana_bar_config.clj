@@ -1,4 +1,4 @@
-(ns moon.game.create.ui.hp-mana-bar-config
+(ns moon.application.create.ui.hp-mana-bar-config
   (:require [moon.entity.stats :as stats]
             [moon.graphics :as graphics]
             [moon.ui :as ui]
