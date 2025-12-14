@@ -1,25 +1,15 @@
 (ns moon.input
   (:require [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [moon.input.buttons :as input.buttons]
-            [moon.input.keys :as input.keys])
-  (:import (com.badlogic.gdx Input)))
+            [gdl.input :as input]
+            [gdl.input.buttons :as input.buttons]
+            [gdl.input.keys :as input.keys]))
 
-(defn set-processor! [^Input input input-processor]
-  (.setInputProcessor input input-processor))
-
-(defn key-pressed? [^Input input key]
-  (.isKeyPressed input key))
-
-(defn key-just-pressed? [^Input input key]
-  (.isKeyJustPressed input key))
-
-(defn button-just-pressed? [^Input input button]
-  (.isButtonJustPressed input button))
-
-(defn mouse-position [^Input input]
-  [(.getX input)
-   (.getY input)])
+(def set-processor! input/set-processor!)
+(def key-pressed? input/key-pressed?)
+(def key-just-pressed? input/key-just-pressed?)
+(def button-just-pressed? input/button-just-pressed?)
+(def mouse-position input/mouse-position)
 
 (def controls
   {

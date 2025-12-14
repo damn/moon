@@ -2,7 +2,7 @@
   (:require [moon.db :as db]
             [moon.db.property :as property]
             [moon.input :as input]
-            [moon.input.keys :as input.keys]
+            [gdl.input.keys :as input.keys]
             [moon.scene2d.actor :as actor]
             [moon.throwable :as throwable]
             [moon.ui :as ui]

@@ -12,7 +12,7 @@
             [gdl.graphics.orthographic-camera :as orthographic-camera]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.tm-renderer :as tm-renderer]
-            [moon.input.keys :as input.keys]
+            [gdl.input.keys :as input.keys]
             [gdl.maps.map-layers :as layers]
             [gdl.maps.map-properties :as props]
             [gdl.maps.tiled :as tiled-map]

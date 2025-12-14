@@ -3,7 +3,7 @@
             [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.entity.stats :as stats]
             [moon.input :as input]
-            [moon.input.buttons :as input.buttons]
+            [gdl.input.buttons :as input.buttons]
             [moon.txs :as txs]
             [moon.ui :as ui]))
 

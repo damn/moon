@@ -1,4 +1,4 @@
-(ns moon.input.keys
+(ns gdl.input.keys
   (:import (com.badlogic.gdx Input$Keys)))
 
 (def left   Input$Keys/LEFT)
