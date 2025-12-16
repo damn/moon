@@ -4,7 +4,7 @@
             [moon.ui :as ui]
             [moon.ui.label :as vis-label]
             [moon.ui.stage :as stage]
-            [moon.utils.align :as align])
+            [gdl.utils.align :as align])
   (:import (com.badlogic.gdx.scenes.scene2d.ui TextTooltip)))
 
 (defn add! [actor tooltip-text]

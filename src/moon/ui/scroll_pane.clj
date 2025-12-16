@@ -1,6 +1,6 @@
 (ns moon.ui.scroll-pane
-  (:require [moon.ui :as ui])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui ScrollPane)))
+  (:require [gdl.ui.scroll-pane :as scroll-pane]
+            [moon.ui :as ui]))
 
 (defn create [actor]
-  (ScrollPane. actor ui/skin))
+  (scroll-pane/create actor ui/skin))

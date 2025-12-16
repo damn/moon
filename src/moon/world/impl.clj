@@ -3,7 +3,7 @@
             [gdl.maps.map-properties :as props]
             [gdl.maps.tiled :as tiled-map]
             [moon.utils :as utils]
-            [moon.utils.disposable :as disposable]
+            [gdl.utils.disposable :as disposable]
             [moon.world]
             [moon.world.assoc-entity-spawn-schema :as assoc-entity-spawn-schema]
             [moon.world.content-grid :as content-grid]

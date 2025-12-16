@@ -3,7 +3,7 @@
             [gdl.maps.map-layers :as layers]
             [gdl.maps.tiled :as tiled-map]
             [gdl.maps.tiled.layer :as layer]
-            [moon.utils.viewport :as viewport])
+            [gdl.utils.viewport :as viewport])
   (:import (gdl.graphics ColorSetter
                          TiledMapRenderer)))
 

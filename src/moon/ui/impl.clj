@@ -11,7 +11,7 @@
             [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.utils :as utils]
-            [moon.utils.viewport :as viewport])
+            [gdl.utils.viewport :as viewport])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))

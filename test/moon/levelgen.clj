@@ -23,10 +23,10 @@
             [gdl.ui.text-button :as text-button]
             [moon.ui.stage :as stage]
             [moon.ui.table]
-            [moon.utils.disposable :as disposable]
-            [moon.utils.screen :as screen-utils]
-            [moon.utils.viewport :as viewport]
-            [moon.utils.viewport.fit-viewport :as fit-viewport]
+            [gdl.utils.disposable :as disposable]
+            [gdl.utils.screen :as screen-utils]
+            [gdl.utils.viewport :as viewport]
+            [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx Input)))
 

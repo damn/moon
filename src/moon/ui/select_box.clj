@@ -1,10 +1,8 @@
 (ns moon.ui.select-box
-  (:require [moon.ui :as ui])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox)))
+  (:require [gdl.ui.select-box :as select-box]
+            [moon.ui :as ui]))
 
-(defn create [{:keys [items selected]}]
-  (doto (SelectBox. ui/skin)
-    (.setItems ^"[Lcom.badlogic.gdx.scenes.scene2d.Actor;" (into-array items))
-    (.setSelected selected)))
+(defn create [{:keys [items selected] :as opts}]
+  (select-box/create opts ui/skin))
 
-(def selected SelectBox/.getSelected)
+(def selected select-box/selected)

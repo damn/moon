@@ -1,4 +1,4 @@
-(ns moon.utils.viewport.fit-viewport
+(ns gdl.utils.viewport.fit-viewport
   (:import (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn create [world-width world-height camera]

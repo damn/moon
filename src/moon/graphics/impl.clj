@@ -23,11 +23,11 @@
             [gdl.graphics.texture.filter :as texture.filter]
             [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.math.vector2 :as vector2]
-            [moon.utils.align :as align]
-            [moon.utils.disposable :as disposable]
-            [moon.utils.screen :as screen-utils]
-            [moon.utils.viewport :as viewport]
-            [moon.utils.viewport.fit-viewport :as fit-viewport]))
+            [gdl.utils.align :as align]
+            [gdl.utils.disposable :as disposable]
+            [gdl.utils.screen :as screen-utils]
+            [gdl.utils.viewport :as viewport]
+            [gdl.utils.viewport.fit-viewport :as fit-viewport]))
 
 (defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
   (let [text-height (fn []
