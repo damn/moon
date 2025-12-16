@@ -1,6 +1,6 @@
 (ns moon.ui.tooltip
-  (:require [moon.scene2d.actor :as actor]
-            [moon.scene2d.ui.label :as label]
+  (:require [gdl.ui.actor :as actor]
+            [gdl.ui.label :as label]
             [moon.ui :as ui]
             [moon.ui.label :as vis-label]
             [moon.ui.stage :as stage]

@@ -1,5 +1,5 @@
 (ns moon.ui.widget-group
-  (:require [moon.scene2d.ui.widget-group :as widget-group]
+  (:require [gdl.ui.widget-group :as widget-group]
             [moon.ui.group :as group]))
 
 (defn set-opts!

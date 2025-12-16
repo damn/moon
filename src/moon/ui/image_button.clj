@@ -1,10 +1,10 @@
 (ns moon.ui.image-button
   (:require [gdl.graphics.texture-region :as texture-region]
-            [moon.scene2d.actor :as actor]
-            [moon.scene2d.event :as event]
-            [moon.scene2d.utils.change-listener :as change-listener]
-            [moon.scene2d.utils.drawable :as drawable]
-            [moon.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [gdl.ui.actor :as actor]
+            [gdl.ui.event :as event]
+            [gdl.ui.change-listener :as change-listener]
+            [gdl.ui.drawable :as drawable]
+            [gdl.ui.texture-region-drawable :as texture-region-drawable]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.tooltip :as tooltip])

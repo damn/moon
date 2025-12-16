@@ -1,5 +1,5 @@
 (ns moon.ui.group
-  (:require [moon.scene2d.group :as group]
+  (:require [gdl.ui.group :as group]
             [moon.ui.actor :as actor]
             [moon.ui.stage :as stage]))
 

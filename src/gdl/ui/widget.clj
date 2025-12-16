@@ -1,4 +1,4 @@
-(ns moon.scene2d.ui.widget
+(ns gdl.ui.widget
   (:import (com.badlogic.gdx.scenes.scene2d.ui Widget)))
 
 (defn create [draw]

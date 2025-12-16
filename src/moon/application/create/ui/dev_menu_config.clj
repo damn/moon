@@ -3,7 +3,7 @@
             [moon.db :as db]
             [moon.graphics :as graphics]
             [moon.input :as input]
-            [moon.scene2d.actor :as actor]
+            [gdl.ui.actor :as actor]
             [moon.ui :as ui]
             [moon.ui.stage :as stage]
             [moon.utils :as utils]

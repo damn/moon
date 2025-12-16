@@ -5,7 +5,7 @@
             [moon.application.create.ui.inventory-window :as inventory-window]
             [moon.graphics :as graphics]
             [moon.input :as input]
-            [moon.scene2d.actor :as actor]
+            [gdl.ui.actor :as actor]
             [moon.ui :as ui]
             [moon.ui.info-window :as info-window]
             [moon.ui.message :as message]

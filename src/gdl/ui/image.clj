@@ -1,4 +1,4 @@
-(ns moon.scene2d.ui.image
+(ns gdl.ui.image
   (:import (com.badlogic.gdx.scenes.scene2d.ui Image)))
 
 (defn set-drawable! [image drawable]

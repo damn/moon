@@ -1,4 +1,4 @@
-(ns moon.ui.check-box
+(ns gdl.ui.check-box
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                CheckBox)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))

@@ -44,14 +44,17 @@
        ".clj"))
 
 (defn move-and-rename! [from-ns to-ns]
-  (move-file! (ns->file from-ns)
-              (ns->file to-ns))
+  (let [from-file (ns->file from-ns)
+        to-file   (ns->file to-ns)]
+    (println "Moving file " from-file " to " to-file)
+    (move-file! from-file to-file))
+  (println "Renaming " from-ns " to " to-ns)
   (rename! from-ns
            to-ns))
 
 (comment
- (move-and-rename! "gdl.math.circle"
-                   "moon.color")
+ (move-and-rename! "moon.scene2d.group"
+                   "gdl.ui.group")
 
 
 

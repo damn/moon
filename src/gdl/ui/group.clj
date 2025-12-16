@@ -1,4 +1,4 @@
-(ns moon.scene2d.group
+(ns gdl.ui.group
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn create []

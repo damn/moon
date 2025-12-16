@@ -1,4 +1,4 @@
-(ns moon.scene2d.ui.widget-group
+(ns gdl.ui.widget-group
   (:import (com.badlogic.gdx.scenes.scene2d.ui WidgetGroup)))
 
 ; TODO Widget

@@ -1,5 +1,5 @@
 (ns moon.ui.stack
-  (:require [moon.scene2d.ui.stack :as stack]
+  (:require [gdl.ui.stack :as stack]
             [moon.ui.widget-group :as widget-group]))
 
 (defn create [opts]

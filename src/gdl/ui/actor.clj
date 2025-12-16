@@ -1,4 +1,4 @@
-(ns moon.scene2d.actor
+(ns gdl.ui.actor
   (:refer-clojure :exclude [name])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 

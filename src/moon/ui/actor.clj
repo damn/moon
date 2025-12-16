@@ -1,5 +1,5 @@
 (ns moon.ui.actor
-  (:require [moon.scene2d.actor :as actor]
+  (:require [gdl.ui.actor :as actor]
             [moon.ui.stage :as stage]))
 
 (def opts-fn-map

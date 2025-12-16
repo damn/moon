@@ -1,6 +1,6 @@
 (ns moon.ui.image
-  (:require [moon.scene2d.ui.image :as image]
-            [moon.scene2d.ui.widget :as widget]
+  (:require [gdl.ui.image :as image]
+            [gdl.ui.widget :as widget]
             [moon.ui.actor :as actor]
             [moon.utils.align :as align]
             [moon.utils.scaling :as scaling])

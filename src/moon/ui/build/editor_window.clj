@@ -3,7 +3,7 @@
             [moon.db.property :as property]
             [moon.input :as input]
             [gdl.input.keys :as input.keys]
-            [moon.scene2d.actor :as actor]
+            [gdl.ui.actor :as actor]
             [moon.throwable :as throwable]
             [moon.ui :as ui]
             [moon.ui.editor.schema :as schema]

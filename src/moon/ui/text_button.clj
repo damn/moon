@@ -1,7 +1,7 @@
 (ns moon.ui.text-button
-  (:require [moon.scene2d.actor :as actor]
-            [moon.scene2d.event :as event]
-            [moon.scene2d.utils.change-listener :as change-listener]
+  (:require [gdl.ui.actor :as actor]
+            [gdl.ui.event :as event]
+            [gdl.ui.change-listener :as change-listener]
             [moon.ui :as ui]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]

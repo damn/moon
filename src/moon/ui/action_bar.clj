@@ -1,8 +1,8 @@
 (ns moon.ui.action-bar
-  (:require [moon.scene2d.actor :as actor]
-            [moon.scene2d.group :as group]
-            [moon.scene2d.ui.button-group :as button-group]
-            [moon.scene2d.ui.horizontal-group :as horizontal-group]
+  (:require [gdl.ui.actor :as actor]
+            [gdl.ui.group :as group]
+            [gdl.ui.button-group :as button-group]
+            [gdl.ui.horizontal-group :as horizontal-group]
             [moon.ui.image-button :as image-button]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]))

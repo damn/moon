@@ -1,4 +1,4 @@
-(ns moon.scene2d.utils.change-listener
+(ns gdl.ui.change-listener
   (:import (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn create [f]
