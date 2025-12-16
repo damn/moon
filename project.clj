@@ -1,28 +1,15 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
+                 [gdl "0.1"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
-
-                 [com.badlogicgames.gdx/gdx                   "1.14.0"]
-                 [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
-                 [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
-                 [com.badlogicgames.gdx/gdx-freetype-platform "1.14.0" :classifier "natives-desktop"]
-                 [com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]
-                 [space.earlygrey/shapedrawer "2.6.0"]
-
                  [com.github.damn/clojure.grid2d "538fc4c44b"]
-
                  [com.github.damn/clojure.math.raycaster "0956fc0e9b"]
                  [com.github.damn/clojure.math.vector2 "9b3fd73f9b"]
-
                  [com.github.damn/clojure.rand "6a273c942b"]
-
                  [com.github.damn/malli.utils "5da493efcb"]
-
                  [fr.reuz/qrecord "0.1.0"]
-
                  [org.clj-commons/pretty "3.2.0"]
-
                  [org.clojure/clojure "1.12.0"]
 
                  ; dev-only
@@ -30,7 +17,6 @@
                  [org.clojure/tools.namespace "1.3.0"]
                  [lein-hiera "2.0.0"]
                  [com.github.damn/clojure.dev-loop "ef54a03"]
-                 ;
                  ]
   :java-source-paths ["src"]
   :aliases {"dev"      ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'moon.application/-main))"]
