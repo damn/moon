@@ -1,6 +1,6 @@
 (ns moon.ui.impl
   (:require [clojure.repl]
-            [moon.math.vector2 :as vector2]
+            [gdl.math.vector2 :as vector2]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.group :as group]
             [moon.ui :as ui]

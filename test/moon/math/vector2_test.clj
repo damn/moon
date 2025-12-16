@@ -1,4 +1,4 @@
-(ns moon.math.vector2-test
+(ns gdl.math.vector2-test
   (:require [moon.utils :as utils]
             [clojure.math.vector2 :as v]
             [clojure.test :refer :all]))

@@ -22,7 +22,7 @@
             [gdl.graphics.texture :as texture]
             [gdl.graphics.texture.filter :as texture.filter]
             [gdl.graphics.tm-renderer :as tm-renderer]
-            [moon.math.vector2 :as vector2]
+            [gdl.math.vector2 :as vector2]
             [moon.utils.align :as align]
             [moon.utils.disposable :as disposable]
             [moon.utils.screen :as screen-utils]

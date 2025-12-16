@@ -1,4 +1,4 @@
-(ns moon.math.vector3
+(ns gdl.math.vector3
   (:import (com.badlogic.gdx.math Vector3)))
 
 (defn clojurize [^Vector3 v3]

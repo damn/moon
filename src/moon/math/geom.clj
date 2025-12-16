@@ -1,8 +1,8 @@
 (ns moon.math.geom
   (:refer-clojure :exclude [contains?])
-  (:require [moon.math.circle :as circle]
-            [moon.math.intersector :as intersector]
-            [moon.math.rectangle :as rectangle]))
+  (:require [gdl.math.circle :as circle]
+            [gdl.math.intersector :as intersector]
+            [gdl.math.rectangle :as rectangle]))
 
 (def circle    circle/create)
 (def rectangle rectangle/create)

@@ -1,6 +1,6 @@
 (ns moon.graphics.camera
   (:require [gdl.graphics.orthographic-camera :as camera]
-            [moon.math.vector3 :as vector3]))
+            [gdl.math.vector3 :as vector3]))
 
 (defn viewport-height [this]
   (camera/viewport-height this))

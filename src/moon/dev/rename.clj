@@ -50,7 +50,7 @@
            to-ns))
 
 (comment
- (move-and-rename! "clojure.color"
+ (move-and-rename! "gdl.math.circle"
                    "moon.color")
 
 

@@ -2,7 +2,7 @@
   (:require [moon.entity.inventory :as inventory]
             [moon.graphics :as graphics]
             [gdl.graphics.color :as gdxcolor]
-            [moon.math.vector2 :as gdxvector2]
+            [gdl.math.vector2 :as gdxvector2]
             [moon.scene2d.actor :as actor]
             [moon.scene2d.event :as event]
             [moon.scene2d.ui.widget :as widget]

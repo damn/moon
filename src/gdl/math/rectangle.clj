@@ -1,4 +1,4 @@
-(ns moon.math.rectangle
+(ns gdl.math.rectangle
   (:refer-clojure :exclude [contains?])
   (:import (com.badlogic.gdx.math Rectangle)))
 
