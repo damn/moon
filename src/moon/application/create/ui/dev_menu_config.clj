@@ -5,7 +5,7 @@
             [moon.input :as input]
             [gdl.ui.actor :as actor]
             [moon.ui :as ui]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.utils :as utils]
             [moon.world :as world]))
 

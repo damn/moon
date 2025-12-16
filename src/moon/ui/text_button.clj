@@ -4,7 +4,7 @@
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.text-button :as text-button]
             [moon.ui :as ui]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.tooltip :as tooltip]))
 

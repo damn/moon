@@ -4,7 +4,7 @@
             [gdl.ui.button-group :as button-group]
             [gdl.ui.horizontal-group :as horizontal-group]
             [moon.ui.image-button :as image-button]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]))
 
 (defmethod stage/build :actor/action-bar [_]

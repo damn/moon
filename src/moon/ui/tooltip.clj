@@ -3,12 +3,12 @@
             [gdl.ui.label :as label]
             [moon.ui :as ui]
             [moon.ui.label :as vis-label]
-            [moon.ui.stage :as stage]
-            [gdl.utils.align :as align])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui TextTooltip)))
+            [gdl.ui.stage :as stage]
+            [gdl.ui.tooltip :as tooltip]
+            [gdl.utils.align :as align]))
 
 (defn add! [actor tooltip-text]
-  (.addListener actor (TextTooltip. (str tooltip-text) ui/skin))
+  (.addListener actor (tooltip/create tooltip-text ui/skin))
   #_(tooltip/create {:update-fn (fn [tooltip]
                                 (when-not (string? tooltip-text)
                                   (let [actor (tooltip/target tooltip)

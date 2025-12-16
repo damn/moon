@@ -1,6 +1,6 @@
 (ns moon.ui.actor
   (:require [gdl.ui.actor :as actor]
-            [moon.ui.stage :as stage]))
+            [gdl.ui.stage :as stage]))
 
 (def opts-fn-map
   {:actor/name        actor/set-name!

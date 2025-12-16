@@ -10,3 +10,6 @@
 
 (defn row! [^Table table]
   (.row table))
+
+(defn create []
+  (Table.))

@@ -4,7 +4,7 @@
             [gdl.ui.window :as window]
             [gdl.ui.change-listener :as change-listener]
             [moon.ui :as ui]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 

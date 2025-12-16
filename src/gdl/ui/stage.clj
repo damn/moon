@@ -1,5 +1,5 @@
-(ns moon.ui.stage
-  (:import (moon.ui Stage)))
+(ns gdl.ui.stage
+  (:import (gdl.ui Stage)))
 
 (defmulti build :type)
 

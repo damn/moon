@@ -1,5 +1,5 @@
 (ns moon.application.render.render-stage
-  (:import (moon.ui Stage)))
+  (:import (gdl.ui Stage)))
 
 (defn step
   [{:keys [^Stage ctx/stage]

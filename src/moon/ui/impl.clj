@@ -8,7 +8,7 @@
             [moon.ui.inventory :as inventory-window]
             [moon.ui.label :as label]
             [moon.ui.message :as message]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.utils :as utils]
             [gdl.utils.viewport :as viewport])
@@ -60,7 +60,7 @@
       stage/root
       (group/find-actor k)))
 
-(extend-type moon.ui.Stage
+(extend-type gdl.ui.Stage
   ui/UserInterface
   (dispose! [_]
     ; TODO fixme skin ?

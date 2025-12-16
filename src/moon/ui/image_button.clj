@@ -6,7 +6,7 @@
             [gdl.ui.drawable :as drawable]
             [gdl.ui.image-button :as image-button]
             [gdl.ui.texture-region-drawable :as texture-region-drawable]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.tooltip :as tooltip]))
 

@@ -21,7 +21,7 @@
             [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.text-button :as text-button]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table]
             [gdl.utils.disposable :as disposable]
             [gdl.utils.screen :as screen-utils]

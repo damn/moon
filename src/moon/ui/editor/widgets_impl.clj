@@ -14,10 +14,10 @@
             [moon.ui.image-button :as image-button]
             [moon.ui.label :as label]
             [moon.ui.select-box :as select-box]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
-            [moon.ui.text-field :as text-field]
+            [gdl.ui.text-field :as text-field]
             [moon.ui.tooltip :as tooltip]
             [moon.ui.window :as window]
             [moon.utils :as utils]))
@@ -227,14 +227,14 @@
     table))
 
 (defmethod create :s/string [schema v _ctx]
-  (tooltip/add! (text-field/create (str v))
+  (tooltip/add! (text-field/create (str v) ui/skin)
                 (str schema)))
 
 (defmethod value :s/string [_ widget _schemas]
   (text-field/text widget))
 
 (defn- create-edn-widget [schema v _ctx]
-  (tooltip/add! (text-field/create (utils/->edn-str v))
+  (tooltip/add! (text-field/create (utils/->edn-str v) ui/skin)
                 (str schema)))
 
 (defn- edn-widget-value [_  widget _schemas]

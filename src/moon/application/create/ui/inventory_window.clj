@@ -13,7 +13,7 @@
             [moon.ui :as ui]
             [moon.ui.image :as image]
             [moon.ui.stack :as stack]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.window :as window]))
 

@@ -9,7 +9,7 @@
             [moon.ui :as ui]
             [moon.ui.info-window :as info-window]
             [moon.ui.message :as message]
-            [moon.ui.stage :as stage]))
+            [gdl.ui.stage :as stage]))
 
 (defn- create-hp-mana-bar* [create-draws]
   {:type :actor/actor

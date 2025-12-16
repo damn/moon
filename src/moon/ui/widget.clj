@@ -2,7 +2,7 @@
   (:require [gdl.ui.actor :as actor]
             [moon.ui.label :as label]
             [moon.ui.scroll-pane :as scroll-pane]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]))

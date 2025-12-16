@@ -7,7 +7,7 @@
             [moon.ui.image-button :as image-button]
             [moon.ui.label :as label]
             [moon.ui.stack :as stack]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.window :as window]))
 
 (def ^:private property-type->overview-table-props

@@ -4,7 +4,7 @@
             [gdl.ui.label :as label]
             [gdl.ui.widget-group :as widget-group]
             [moon.ui.label :as vis-label]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.window :as window]))
 
 (defn create

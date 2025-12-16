@@ -7,7 +7,7 @@
             [moon.throwable :as throwable]
             [moon.ui :as ui]
             [moon.ui.editor.schema :as schema]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.ui.widget :as widget]
             [moon.ui.window :as window]))

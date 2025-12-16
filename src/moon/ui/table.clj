@@ -1,8 +1,7 @@
 (ns moon.ui.table
   (:require [gdl.ui.cell :as cell]
             [gdl.ui.table :as table]
-            [moon.ui.widget-group :as widget-group])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
+            [moon.ui.widget-group :as widget-group]))
 
 (defn add! [table actor]
   (table/add! table actor))
@@ -27,5 +26,5 @@
     (widget-group/set-opts! opts)))
 
 (defn create [opts]
-  (-> (Table.)
+  (-> (table/create)
       (set-opts! opts)))

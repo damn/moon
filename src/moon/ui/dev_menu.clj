@@ -10,7 +10,7 @@
             [moon.ui.image :as image]
             [moon.ui.label :as label]
             [moon.ui.label :as vis-label]
-            [moon.ui.stage :as stage]
+            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.window :as window]))
 

@@ -1,6 +1,6 @@
 (ns moon.application.open-editor
   (:require [moon.db :as db]
-            [moon.ui.stage :as stage]))
+            [gdl.ui.stage :as stage]))
 
 ; is this not same like a :tx/ ?
 (defn do!
