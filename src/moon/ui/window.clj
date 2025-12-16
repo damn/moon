@@ -5,8 +5,8 @@
             [gdl.ui.change-listener :as change-listener]
             [moon.ui :as ui]
             [gdl.ui.stage :as stage]
-            [moon.ui.table :as table])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
+            [gdl.ui.window :as window]
+            [moon.ui.table :as table]))
 
 ; FIXME opts not there anymore
 ; TODO cannot close !
@@ -17,7 +17,7 @@
            center?
            close-on-escape?]}]
   (let [#_show-window-border? #_true
-        window (Window. title ui/skin)]
+        window (window/create title ui/skin)]
     #_(when close-button?    (.addCloseButton window))
     #_(when center?          (.centerWindow   window))
     #_(when close-on-escape? (.closeOnEscape  window))
@@ -41,8 +41,4 @@
 (defn find-ancestor
   "Finds the ancestor window of actor, otherwise throws an error if none of recursively searched parents of actors is a window actor."
   [actor]
-  (if-let [parent (actor/parent actor)]
-    (if (instance? Window parent)
-      parent
-      (find-ancestor parent))
-    (throw (Error. (str "Actor has no parent window " actor)))))
+  (window/find-ancestor actor))

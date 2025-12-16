@@ -2,7 +2,9 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [gdl.application :as application]
+            [gdl.ui]
             [moon.color :as color]
+            [gdl.files :as files]
             [moon.db :as db]
             [moon.db.impl]
             [moon.files :as files-utils]
@@ -12,6 +14,7 @@
             [gdl.graphics.orthographic-camera :as orthographic-camera]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.tm-renderer :as tm-renderer]
+            [gdl.input :as input]
             [gdl.input.keys :as input.keys]
             [gdl.maps.map-layers :as layers]
             [gdl.maps.map-properties :as props]
@@ -22,13 +25,13 @@
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.text-button :as text-button]
             [gdl.ui.stage :as stage]
+            [gdl.ui.window :as window]
             [moon.ui.table]
             [gdl.utils.disposable :as disposable]
             [gdl.utils.screen :as screen-utils]
             [gdl.utils.viewport :as viewport]
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
-            [moon.world-fns.creature-tiles])
-  (:import (com.badlogic.gdx Input)))
+            [moon.world-fns.creature-tiles]))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -79,7 +82,7 @@
     ctx))
 
 (defn- edit-window [skin]
-  (let [window (com.badlogic.gdx.scenes.scene2d.ui.Window. "Edit" skin)]
+  (let [window (window/create "Edit" skin)]
     (moon.ui.table/add-rows! window (for [level-fn level-fns
                                          :let [on-clicked (fn [actor ctx]
                                                             (let [stage (actor/stage actor)
@@ -97,12 +100,11 @@
   [{:keys [files
            graphics
            input]}]
-  (let [skin (com.badlogic.gdx.scenes.scene2d.ui.Skin. (.internal files "uiskin.json")) ; TODO dispose
-
+  (let [skin (gdl.ui/skin (files/internal files "uiskin.json")) ; TODO dispose
         ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch nil)
-        _  (.setInputProcessor input stage)
+        _  (input/set-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage}
@@ -156,16 +158,16 @@
                                                (update (camera/position camera)
                                                        idx
                                                        #(f % camera-movement-speed))))]
-    (if (Input/.isKeyPressed input input.keys/left)  (apply-position 0 -))
-    (if (Input/.isKeyPressed input input.keys/right) (apply-position 0 +))
-    (if (Input/.isKeyPressed input input.keys/up)    (apply-position 1 +))
-    (if (Input/.isKeyPressed input input.keys/down)  (apply-position 1 -))))
+    (if (input/key-pressed? input input.keys/left)  (apply-position 0 -))
+    (if (input/key-pressed? input input.keys/right) (apply-position 0 +))
+    (if (input/key-pressed? input input.keys/up)    (apply-position 1 +))
+    (if (input/key-pressed? input input.keys/down)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (Input/.isKeyPressed input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
-  (when (Input/.isKeyPressed input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (input/key-pressed? input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
+  (when (input/key-pressed? input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
 
 (defn render!
   [{:keys [ctx/stage]
