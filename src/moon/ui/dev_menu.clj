@@ -5,14 +5,14 @@
             [gdl.ui.touchable :as touchable]
             [gdl.ui.cell :as cell]
             [gdl.ui.change-listener :as change-listener]
+            [gdl.ui.text-button :as text-button]
             [moon.ui :as ui]
             [moon.ui.image :as image]
             [moon.ui.label :as label]
             [moon.ui.label :as vis-label]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
-            [moon.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton)))
+            [moon.ui.window :as window]))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create
@@ -39,7 +39,7 @@
    {:pack? true
     :title label
     :rows [(for [{:keys [label on-click]} items]
-             {:actor (doto (TextButton. label ui/skin)
+             {:actor (doto (text-button/create label ui/skin)
                        (actor/add-listener!
                         (change-listener/create
                          (fn [event actor]
@@ -48,7 +48,7 @@
 (defn- main-table [menus update-labels]
   (let [table (table/create
                {:rows [(for [{:keys [label items]} menus]
-                         {:actor (doto (TextButton. label ui/skin)
+                         {:actor (doto (text-button/create label ui/skin)
                                    (actor/add-listener!
                                     (change-listener/create
                                      (fn [event actor]

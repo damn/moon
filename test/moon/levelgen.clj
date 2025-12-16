@@ -20,6 +20,7 @@
             [gdl.ui.actor :as actor]
             [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
+            [gdl.ui.text-button :as text-button]
             [moon.ui.stage :as stage]
             [moon.ui.table]
             [moon.utils.disposable :as disposable]
@@ -27,9 +28,7 @@
             [moon.utils.viewport :as viewport]
             [moon.utils.viewport.fit-viewport :as fit-viewport]
             [moon.world-fns.creature-tiles])
-  (:import (com.badlogic.gdx ApplicationListener
-                             Gdx
-                             Input)))
+  (:import (com.badlogic.gdx Input)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -86,7 +85,7 @@
                                                             (let [stage (actor/stage actor)
                                                                   new-ctx (generate-level ctx level-fn)]
                                                               (stage/set-ctx! stage new-ctx)))]]
-                                     [{:actor (doto (com.badlogic.gdx.scenes.scene2d.ui.TextButton. (str "Generate " level-fn) skin)
+                                     [{:actor (doto (text-button/create (str "Generate " level-fn) skin)
                                                 (actor/add-listener!
                                                  (change-listener/create
                                                   (fn [event actor]

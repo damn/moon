@@ -1,12 +1,12 @@
 (ns moon.ui.window
   (:require [gdl.ui.actor :as actor]
+            [gdl.ui.text-button :as text-button]
             [gdl.ui.window :as window]
             [gdl.ui.change-listener :as change-listener]
             [moon.ui :as ui]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton
-                                               Window)))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 ; FIXME opts not there anymore
 ; TODO cannot close !
@@ -27,7 +27,7 @@
   [{:keys [modal?] :as opts}]
   (let [window (create* opts)]
     (table/add! (.getTitleTable window)
-                (doto (TextButton. "X" ui/skin)
+                (doto (text-button/create "X" ui/skin)
                   (actor/add-listener!
                    (change-listener/create
                     (fn [_event _actor]
