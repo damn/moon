@@ -1,51 +1,43 @@
 (ns moon.graphics.impl
-  (:require [clojure.math :as math]
-            [clojure.string :as str]
-            [moon.files :as files-utils]
-            [moon.graphics]
-            [moon.graphics.camera :as camera]
-            [gdl.files :as files]
+  (:require [gdl.files :as files]
             [gdl.graphics :as graphics]
-            [gdl.graphics.color :as color]
-            [gdl.graphics.colors :as colors]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.bitmap-font :as fnt]
             [gdl.graphics.bitmap-font.data :as data]
+            [gdl.graphics.color :as color]
+            [gdl.graphics.colors :as colors]
             [gdl.graphics.freetype.generator :as generator]
             [gdl.graphics.freetype.generator.parameter :as parameter]
-            [gdl.graphics.shape-drawer :as sd]
-            [gdl.graphics.sprite-batch :as sprite-batch]
-            [gdl.graphics.texture-region :as texture-region]
             [gdl.graphics.orthographic-camera :as orthographic-camera]
             [gdl.graphics.pixmap :as pixmap]
             [gdl.graphics.pixmap.format :as pixmap.format]
+            [gdl.graphics.shape-drawer :as sd]
+            [gdl.graphics.sprite-batch :as sprite-batch]
             [gdl.graphics.texture :as texture]
+            [gdl.graphics.texture-region :as texture-region]
             [gdl.graphics.texture.filter :as texture.filter]
             [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.math.vector2 :as vector2]
-            [gdl.utils.align :as align]
             [gdl.utils.disposable :as disposable]
             [gdl.utils.screen :as screen-utils]
             [gdl.utils.viewport :as viewport]
-            [gdl.utils.viewport.fit-viewport :as fit-viewport]))
-
-(defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
-  (let [text-height (fn []
-                      (-> text
-                          (str/split #"\n")
-                          count
-                          (* (fnt/line-height font))))
-        old-scale (data/scale-x (fnt/data font))]
-    (data/set-scale! (fnt/data font) (* old-scale scale))
-    (fnt/draw! font
-               batch
-               text
-               x
-               (+ y (if up? (text-height) 0))
-               target-width
-               (or h-align align/center)
-               wrap?)
-    (data/set-scale! (fnt/data font) old-scale)))
+            [gdl.utils.viewport.fit-viewport :as fit-viewport]
+            [moon.files :as files-utils]
+            [moon.graphics]
+            [moon.graphics.camera :as camera]
+            [moon.graphics.draw.arc]
+            [moon.graphics.draw.circle]
+            [moon.graphics.draw.ellipse]
+            [moon.graphics.draw.filled-circle]
+            [moon.graphics.draw.filled-ellipse]
+            [moon.graphics.draw.filled-rectangle]
+            [moon.graphics.draw.grid]
+            [moon.graphics.draw.line]
+            [moon.graphics.draw.rectangle]
+            [moon.graphics.draw.sector]
+            [moon.graphics.draw.text]
+            [moon.graphics.draw.texture-region]
+            [moon.graphics.draw.with-line-width]))
 
 (defn- unproject [viewport [x y]]
   (-> viewport
@@ -54,123 +46,19 @@
 
 (def ^:private draw-fns
   {
-   :draw/with-line-width  (fn [{:keys [graphics/shape-drawer]
-                                :as graphics}
-                               width
-                               draws]
-                            (sd/with-line-width shape-drawer width
-                              (moon.graphics/draw! graphics draws)))
-
-   :draw/grid             (fn [graphics
-                               leftx bottomy gridw gridh cellw cellh color]
-                            (let [w (* (float gridw) (float cellw))
-                                  h (* (float gridh) (float cellh))
-                                  topy (+ (float bottomy) (float h))
-                                  rightx (+ (float leftx) (float w))]
-                              (doseq [idx (range (inc (float gridw)))
-                                      :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-                                (moon.graphics/draw! graphics
-                                                    [[:draw/line [linex topy] [linex bottomy] color]]))
-                              (doseq [idx (range (inc (float gridh)))
-                                      :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-                                (moon.graphics/draw! graphics
-                                                    [[:draw/line [leftx liney] [rightx liney] color]]))))
-
-   :draw/texture-region   (fn [{:keys [graphics/batch
-                                       graphics/unit-scale
-                                       graphics/world-unit-scale]}
-                               texture-region
-                               [x y]
-                               & {:keys [center? rotation]}]
-                            (let [[w h] (let [dimensions (texture-region/dimensions texture-region)]
-                                          (if (= @unit-scale 1)
-                                            dimensions
-                                            (mapv (comp float (partial * world-unit-scale))
-                                                  dimensions)))]
-                              (if center?
-                                (batch/draw! batch
-                                             texture-region
-                                             (- (float x) (/ (float w) 2))
-                                             (- (float y) (/ (float h) 2))
-                                             (/ (float w) 2)
-                                             (/ (float h) 2)
-                                             w
-                                             h
-                                             1
-                                             1
-                                             (or rotation 0))
-                                (batch/draw! batch texture-region x y w h))))
-
-   :draw/text             (fn [{:keys [graphics/batch
-                                       graphics/unit-scale
-                                       graphics/default-font]}
-                               {:keys [font scale x y text h-align up?]}]
-                            (draw-text! (or font default-font)
-                                        batch
-                                        {:scale (* (float @unit-scale)
-                                                   (float (or scale 1)))
-                                         :text text
-                                         :x x
-                                         :y y
-                                         :up? up?
-                                         :h-align h-align
-                                         :target-width 0
-                                         :wrap? false}))
-
-   :draw/ellipse          (fn [{:keys [graphics/shape-drawer]}
-                               [x y] radius-x radius-y color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/ellipse! shape-drawer x y radius-x radius-y))
-
-   :draw/filled-ellipse   (fn [{:keys [graphics/shape-drawer]}
-                               [x y] radius-x radius-y color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/filled-ellipse! shape-drawer x y radius-x radius-y))
-
-   :draw/circle           (fn [{:keys [graphics/shape-drawer]}
-                               [x y] radius color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/circle! shape-drawer x y radius))
-
-   :draw/filled-circle    (fn [{:keys [graphics/shape-drawer]}
-                               [x y] radius color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/filled-circle! shape-drawer x y radius))
-
-   :draw/rectangle        (fn [{:keys [graphics/shape-drawer]}
-                               x y w h color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/rectangle! shape-drawer x y w h))
-
-   :draw/filled-rectangle (fn [{:keys [graphics/shape-drawer]}
-                               x y w h color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/filled-rectangle! shape-drawer x y w h))
-
-   :draw/arc              (fn [{:keys [graphics/shape-drawer]}
-                               [center-x center-y] radius start-angle degree color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/arc! shape-drawer
-                                     center-x
-                                     center-y
-                                     radius
-                                     (math/to-radians start-angle)
-                                     (math/to-radians degree)))
-
-   :draw/sector           (fn [{:keys [graphics/shape-drawer]}
-                               [center-x center-y] radius start-angle degree color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/sector! shape-drawer
-                                        center-x
-                                        center-y
-                                        radius
-                                        (math/to-radians start-angle)
-                                        (math/to-radians degree)))
-
-   :draw/line             (fn [{:keys [graphics/shape-drawer]}
-                               [sx sy] [ex ey] color]
-                            (sd/set-color! shape-drawer (color/float-bits color))
-                            (sd/line! shape-drawer sx sy ex ey))
+   :draw/with-line-width  moon.graphics.draw.with-line-width/do!
+   :draw/grid             moon.graphics.draw.grid/do!
+   :draw/texture-region   moon.graphics.draw.texture-region/do!
+   :draw/text             moon.graphics.draw.text/do!
+   :draw/ellipse          moon.graphics.draw.ellipse/do!
+   :draw/filled-ellipse   moon.graphics.draw.filled-ellipse/do!
+   :draw/circle           moon.graphics.draw.circle/do!
+   :draw/filled-circle    moon.graphics.draw.filled-circle/do!
+   :draw/rectangle        moon.graphics.draw.rectangle/do!
+   :draw/filled-rectangle moon.graphics.draw.filled-rectangle/do!
+   :draw/arc              moon.graphics.draw.arc/do!
+   :draw/sector           moon.graphics.draw.sector/do!
+   :draw/line             moon.graphics.draw.line/do!
    }
   )
 
