@@ -1,11 +1,11 @@
 (ns moon.ui.window
   (:require [gdl.ui.actor :as actor]
+            [gdl.ui.change-listener :as change-listener]
+            [gdl.ui.stage :as stage]
             [gdl.ui.text-button :as text-button]
             [gdl.ui.window :as window]
-            [gdl.ui.change-listener :as change-listener]
-            [moon.ui :as ui]
-            [gdl.ui.stage :as stage]
             [gdl.ui.window :as window]
+            [moon.ui :as ui]
             [moon.ui.table :as table]))
 
 ; FIXME opts not there anymore

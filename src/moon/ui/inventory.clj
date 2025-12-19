@@ -1,8 +1,8 @@
 (ns moon.ui.inventory
   (:require [gdl.ui.actor :as actor]
+            [gdl.ui.drawable :as drawable]
             [gdl.ui.group :as group]
             [gdl.ui.image :as image]
-            [gdl.ui.drawable :as drawable]
             [gdl.ui.texture-region-drawable :as texture-region-drawable]
             [moon.ui.tooltip :as tooltip]))
 

@@ -1,9 +1,9 @@
 (ns moon.application.render.player-state-handle-input
-  (:require [moon.entity.inventory :as inventory]
+  (:require [gdl.input.buttons :as input.buttons]
+            [moon.entity.inventory :as inventory]
             [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.entity.stats :as stats]
             [moon.input :as input]
-            [gdl.input.buttons :as input.buttons]
             [moon.txs :as txs]
             [moon.ui :as ui]))
 

@@ -1,11 +1,11 @@
 (ns moon.ui.tooltip
   (:require [gdl.ui.actor :as actor]
             [gdl.ui.label :as label]
-            [moon.ui :as ui]
-            [moon.ui.label :as vis-label]
             [gdl.ui.stage :as stage]
             [gdl.ui.tooltip :as tooltip]
-            [gdl.utils.align :as align]))
+            [gdl.utils.align :as align]
+            [moon.ui :as ui]
+            [moon.ui.label :as vis-label]))
 
 (defn add! [actor tooltip-text]
   (.addListener actor (tooltip/create tooltip-text ui/skin))

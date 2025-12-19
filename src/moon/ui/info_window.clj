@@ -2,9 +2,9 @@
   (:require [gdl.ui.actor :as actor]
             [gdl.ui.group :as group]
             [gdl.ui.label :as label]
+            [gdl.ui.stage :as stage]
             [gdl.ui.widget-group :as widget-group]
             [moon.ui.label :as vis-label]
-            [gdl.ui.stage :as stage]
             [moon.ui.window :as window]))
 
 (defn create

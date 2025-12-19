@@ -1,11 +1,11 @@
 (ns moon.application.create.ui.dev-menu-config
   (:require [clojure.string :as str]
+            [gdl.ui.actor :as actor]
+            [gdl.ui.stage :as stage]
             [moon.db :as db]
             [moon.graphics :as graphics]
             [moon.input :as input]
-            [gdl.ui.actor :as actor]
             [moon.ui :as ui]
-            [gdl.ui.stage :as stage]
             [moon.utils :as utils]
             [moon.world :as world]))
 

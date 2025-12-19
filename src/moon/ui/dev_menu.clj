@@ -1,16 +1,16 @@
 (ns moon.ui.dev-menu
   (:require [gdl.ui.actor :as actor]
-            [gdl.ui.event :as event]
-            [gdl.ui.group :as group]
-            [gdl.ui.touchable :as touchable]
             [gdl.ui.cell :as cell]
             [gdl.ui.change-listener :as change-listener]
+            [gdl.ui.event :as event]
+            [gdl.ui.group :as group]
+            [gdl.ui.stage :as stage]
             [gdl.ui.text-button :as text-button]
+            [gdl.ui.touchable :as touchable]
             [moon.ui :as ui]
             [moon.ui.image :as image]
             [moon.ui.label :as label]
             [moon.ui.label :as vis-label]
-            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.window :as window]))
 

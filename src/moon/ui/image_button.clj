@@ -1,12 +1,12 @@
 (ns moon.ui.image-button
   (:require [gdl.graphics.texture-region :as texture-region]
             [gdl.ui.actor :as actor]
-            [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.drawable :as drawable]
+            [gdl.ui.event :as event]
             [gdl.ui.image-button :as image-button]
-            [gdl.ui.texture-region-drawable :as texture-region-drawable]
             [gdl.ui.stage :as stage]
+            [gdl.ui.texture-region-drawable :as texture-region-drawable]
             [moon.ui.table :as table]
             [moon.ui.tooltip :as tooltip]))
 

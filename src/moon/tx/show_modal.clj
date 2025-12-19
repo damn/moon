@@ -1,6 +1,6 @@
 (ns moon.tx.show-modal
-  (:require [moon.ui :as ui]
-            [gdl.ui.stage :as stage]))
+  (:require [gdl.ui.stage :as stage]
+            [moon.ui :as ui]))
 
 (defn do!
   [{:keys [ctx/stage] :as ctx} opts]

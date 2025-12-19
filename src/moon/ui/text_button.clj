@@ -1,10 +1,10 @@
 (ns moon.ui.text-button
   (:require [gdl.ui.actor :as actor]
-            [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
+            [gdl.ui.event :as event]
+            [gdl.ui.stage :as stage]
             [gdl.ui.text-button :as text-button]
             [moon.ui :as ui]
-            [gdl.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.tooltip :as tooltip]))
 

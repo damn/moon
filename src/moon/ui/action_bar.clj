@@ -1,10 +1,10 @@
 (ns moon.ui.action-bar
   (:require [gdl.ui.actor :as actor]
-            [gdl.ui.group :as group]
             [gdl.ui.button-group :as button-group]
+            [gdl.ui.group :as group]
             [gdl.ui.horizontal-group :as horizontal-group]
-            [moon.ui.image-button :as image-button]
             [gdl.ui.stage :as stage]
+            [moon.ui.image-button :as image-button]
             [moon.ui.table :as table]))
 
 (defmethod stage/build :actor/action-bar [_]

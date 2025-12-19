@@ -1,15 +1,15 @@
 (ns moon.application.create.add-actors
-  (:require [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
+  (:require [gdl.ui.actor :as actor]
+            [gdl.ui.stage :as stage]
             [moon.application.create.ui.entity-info-window-config :as entity-info-window-config]
             [moon.application.create.ui.hp-mana-bar-config :as hp-mana-bar-config]
             [moon.application.create.ui.inventory-window :as inventory-window]
+            [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.graphics :as graphics]
             [moon.input :as input]
-            [gdl.ui.actor :as actor]
             [moon.ui :as ui]
             [moon.ui.info-window :as info-window]
-            [moon.ui.message :as message]
-            [gdl.ui.stage :as stage]))
+            [moon.ui.message :as message]))
 
 (defn- create-hp-mana-bar* [create-draws]
   {:type :actor/actor

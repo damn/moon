@@ -3,16 +3,16 @@
             [gdl.math.vector2 :as vector2]
             [gdl.ui.actor :as actor]
             [gdl.ui.group :as group]
+            [gdl.ui.stage :as stage]
+            [gdl.ui.utils :as ui-utils]
+            [gdl.utils.viewport :as viewport]
             [moon.ui :as ui]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory :as inventory-window]
             [moon.ui.label :as label]
             [moon.ui.message :as message]
-            [gdl.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
-            [moon.utils :as utils]
-            [gdl.ui.utils :as ui-utils]
-            [gdl.utils.viewport :as viewport]))
+            [moon.utils :as utils]))
 
 (defn- inventory-cell-with-item? [actor]
   (and (actor/parent actor)

@@ -1,8 +1,8 @@
 (ns moon.ui.message
-  (:require [moon.graphics :as graphics]
-            [gdl.ui.actor :as actor]
+  (:require [gdl.ui.actor :as actor]
             [gdl.ui.stage :as stage]
-            [gdl.utils.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]
+            [moon.graphics :as graphics]))
 
 (defn- draw-message [state vp-width vp-height]
   (when-let [text (:text @state)]

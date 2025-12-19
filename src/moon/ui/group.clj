@@ -1,7 +1,7 @@
 (ns moon.ui.group
   (:require [gdl.ui.group :as group]
-            [moon.ui.actor :as actor]
-            [gdl.ui.stage :as stage]))
+            [gdl.ui.stage :as stage]
+            [moon.ui.actor :as actor]))
 
 (defn set-opts! [group opts]
   (run! (fn [actor]

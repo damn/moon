@@ -1,9 +1,9 @@
 (ns moon.ui.image
   (:require [gdl.ui.image :as image]
             [gdl.ui.widget :as widget]
-            [moon.ui.actor :as actor]
             [gdl.utils.align :as align]
-            [gdl.utils.scaling :as scaling]))
+            [gdl.utils.scaling :as scaling]
+            [moon.ui.actor :as actor]))
 
 (defn create
   [{:keys [image/object

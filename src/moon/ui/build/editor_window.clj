@@ -1,13 +1,13 @@
 (ns moon.ui.build.editor-window
-  (:require [moon.db :as db]
+  (:require [gdl.input.keys :as input.keys]
+            [gdl.ui.actor :as actor]
+            [gdl.ui.stage :as stage]
+            [moon.db :as db]
             [moon.db.property :as property]
             [moon.input :as input]
-            [gdl.input.keys :as input.keys]
-            [gdl.ui.actor :as actor]
             [moon.throwable :as throwable]
             [moon.ui :as ui]
             [moon.ui.editor.schema :as schema]
-            [gdl.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.ui.widget :as widget]
             [moon.ui.window :as window]))
