@@ -2,7 +2,6 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [gdl.application :as application]
-            [gdl.ui]
             [moon.color :as color]
             [gdl.files :as files]
             [moon.db :as db]
@@ -24,6 +23,7 @@
             [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.text-button :as text-button]
+            [gdl.ui.skin :as skin]
             [gdl.ui.stage :as stage]
             [gdl.ui.window :as window]
             [moon.ui.table]
@@ -100,7 +100,7 @@
   [{:keys [files
            graphics
            input]}]
-  (let [skin (gdl.ui/skin (files/internal files "uiskin.json")) ; TODO dispose
+  (let [skin (skin/create (files/internal files "uiskin.json")) ; TODO dispose
         ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch nil)

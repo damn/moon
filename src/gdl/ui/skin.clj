@@ -3,3 +3,6 @@
 
 (defn font [^Skin skin name]
   (.getFont skin name))
+
+(defn create [file-handle]
+  (Skin. file-handle))
