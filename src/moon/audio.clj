@@ -1,7 +1,8 @@
 (ns moon.audio
   (:require [gdl.audio :as audio]
             [gdl.audio.sound :as sound]
-            [gdl.files :as files]))
+            [gdl.files :as files]
+            [gdl.utils.disposable :as disposable]))
 
 (defn sound-names [sounds]
   (map first sounds))
@@ -11,7 +12,7 @@
   (sound/play! (get sounds sound-name)))
 
 (defn dispose! [sounds]
-  (run! sound/dispose! (vals sounds)))
+  (run! disposable/dispose! (vals sounds)))
 
 (defn create
   [audio files {:keys [sound-names path-format]}]
