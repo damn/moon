@@ -1,4 +1,4 @@
-(ns gdl.audio.sound
-  (:import (com.badlogic.gdx.audio Sound)))
+(ns gdl.audio.sound) ; moon.audio.sound?
 
-(def play! Sound/.play)
+(defprotocol Sound
+  (play! [_]))
