@@ -9,6 +9,9 @@
 (defn create [title ^Skin skin]
   (Window. (str title) skin))
 
+(defn title-table [^Window window]
+  (.getTitleTable window))
+
 (defn find-ancestor
   "Finds the ancestor window of actor, otherwise throws an error if none of recursively searched parents of actors is a window actor."
   [actor]

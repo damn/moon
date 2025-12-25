@@ -26,7 +26,7 @@
 (defn create
   [{:keys [modal?] :as opts}]
   (let [window (create* opts)]
-    (table/add! (.getTitleTable window)
+    (table/add! (window/title-table window)
                 (doto (text-button/create "X" ui/skin)
                   (actor/add-listener!
                    (change-listener/create
