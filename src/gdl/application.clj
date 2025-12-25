@@ -20,7 +20,10 @@
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
-                          (create! listener Gdx/app))
+                          (create! listener {:ctx/audio    Gdx/audio
+                                             :ctx/files    Gdx/files
+                                             :ctx/graphics Gdx/graphics
+                                             :ctx/input    Gdx/input}))
 
                         (dispose [_]
                           (dispose! listener))

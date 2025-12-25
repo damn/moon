@@ -1,6 +1,8 @@
 (ns moon.application.create.audio)
 
 (defn step
-  [{:keys [ctx/app] :as ctx}
+  [{:keys [ctx/audio
+           ctx/files]
+    :as ctx}
    {:keys [impl config]}]
-  (assoc ctx :ctx/audio (impl (.getAudio app) (.getFiles app) config)))
+  (assoc ctx :ctx/audio (impl audio files config)))

@@ -11,10 +11,10 @@
         render!  (:render!  config)
         resize!  (:resize!  config)
         listener (reify gdl.application/Listener
-                   (create! [_ app]
+                   (create! [_ ctx]
                      (reset! state (reduce (fn [ctx [f & params]]
                                              (apply f ctx params))
-                                           {:ctx/app app}
+                                           ctx
                                            create!)))
 
                    (dispose! [_]

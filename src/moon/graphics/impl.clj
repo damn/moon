@@ -195,7 +195,8 @@
     font))
 
 (defn create!
-  [app
+  [graphics
+   files
    {:keys [colors
            cursors
            default-font
@@ -205,9 +206,7 @@
            world-viewport]}]
   (doseq [[name rgba] colors]
     (colors/put! name (color/create rgba)))
-  (let [graphics (.getGraphics app)
-        files    (.getFiles    app)
-        batch (sprite-batch/create)
+  (let [batch (sprite-batch/create)
         shape-drawer-texture (let [pixmap (doto (pixmap/create 1 1 pixmap.format/rgba8888)
                                             (pixmap/set-color! [1 1 1 1])
                                             (pixmap/draw-pixel! 0 0))

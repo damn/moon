@@ -97,9 +97,9 @@
     window))
 
 (defn create!
-  [{:keys [files
-           graphics
-           input]}]
+  [{:keys [ctx/files
+           ctx/graphics
+           ctx/input]}]
   (let [skin (skin/create (files/internal files "uiskin.json")) ; TODO dispose
         ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
@@ -195,10 +195,8 @@
 
 (defn -main []
   (application/start! (reify application/Listener
-                        (create! [_ app]
-                          (reset! state (create! {:files    (.getFiles app)
-                                                  :graphics (.getGraphics app)
-                                                  :input    (.getInput app)})))
+                        (create! [_ ctx]
+                          (reset! state (create! ctx)))
                         (dispose! [_]
                           (dispose! @state))
                         (render! [_]
