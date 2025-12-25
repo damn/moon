@@ -1,13 +1,14 @@
 (ns gdl.ui.check-box
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
-                                               CheckBox)
+                                               CheckBox
+                                               Skin)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (def checked? Button/.isChecked)
 
 (defn create
-  [& {:keys [text on-clicked checked? skin]}]
-  (let [^Button button (CheckBox. text skin)]
+  [& {:keys [text on-clicked checked? ^Skin skin]}]
+  (let [^Button button (CheckBox. (str text) skin)]
     (.setChecked button checked?)
     (.addListener button
                   (proxy [ChangeListener] []

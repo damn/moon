@@ -20,7 +20,7 @@
   table)
 
 (defn set-opts! [table {:keys [rows cell-defaults] :as opts}]
-  (cell/set-opts! (.defaults table) cell-defaults)
+  (cell/set-opts! (table/defaults table) cell-defaults)
   (doto table
     (add-rows! rows)
     (widget-group/set-opts! opts)))

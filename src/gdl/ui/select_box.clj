@@ -1,7 +1,8 @@
 (ns gdl.ui.select-box
-  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox)))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox
+                                               Skin)))
 
-(defn create [{:keys [items selected]} skin]
+(defn create [{:keys [items selected]} ^Skin skin]
   (doto (SelectBox. skin)
     (.setItems ^"[Lcom.badlogic.gdx.scenes.scene2d.Actor;" (into-array items))
     (.setSelected selected)))

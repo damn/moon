@@ -1,5 +1,7 @@
 (ns gdl.ui.scroll-pane
-  (:import (com.badlogic.gdx.scenes.scene2d.ui ScrollPane)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
+                                               Skin)))
 
-(defn create [actor skin]
+(defn create [^Actor actor ^Skin skin]
   (ScrollPane. actor skin))

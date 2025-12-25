@@ -1,5 +1,6 @@
 (ns moon.graphics.camera
   (:require [gdl.graphics.orthographic-camera :as camera]
+            [gdl.math.frustum :as frustum]
             [gdl.math.vector3 :as vector3]))
 
 (defn viewport-height [this]
@@ -26,7 +27,7 @@
   (camera/update! this))
 
 (defn frustum-bounds [this]
-  (mapv vector3/clojurize (.planePoints (camera/frustum this))))
+  (mapv vector3/clojurize (frustum/plane-points (camera/frustum this))))
 
 (defn reset-zoom! [cam]
   (set-zoom! cam 1))

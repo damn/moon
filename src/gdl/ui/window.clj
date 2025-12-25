@@ -1,12 +1,13 @@
 (ns gdl.ui.window
   (:require [gdl.ui.actor :as actor])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               Window)))
 
 (defn set-modal! [^Window window modal?]
   (.setModal window modal?))
 
-(defn create [title skin]
-  (Window. title skin))
+(defn create [title ^Skin skin]
+  (Window. (str title) skin))
 
 (defn find-ancestor
   "Finds the ancestor window of actor, otherwise throws an error if none of recursively searched parents of actors is a window actor."

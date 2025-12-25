@@ -1,7 +1,8 @@
 (ns gdl.ui.label
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Label)))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Skin)))
 
-(defn create [text skin]
+(defn create [text ^Skin skin]
   (Label. ^CharSequence (str text) skin))
 
 (defn set-text! [^Label label text]

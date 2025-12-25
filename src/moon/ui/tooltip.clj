@@ -8,7 +8,7 @@
             [moon.ui.label :as vis-label]))
 
 (defn add! [actor tooltip-text]
-  (.addListener actor (tooltip/create tooltip-text ui/skin))
+  (actor/add-listener! actor (tooltip/create tooltip-text ui/skin))
   #_(tooltip/create {:update-fn (fn [tooltip]
                                 (when-not (string? tooltip-text)
                                   (let [actor (tooltip/target tooltip)

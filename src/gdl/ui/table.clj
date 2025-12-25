@@ -13,3 +13,6 @@
 
 (defn create []
   (Table.))
+
+(defn defaults [^Table table]
+  (.defaults table))
