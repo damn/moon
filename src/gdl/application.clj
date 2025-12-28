@@ -1,12 +1,12 @@
 (ns gdl.application
-  (:require gdl.audio
+  (:require [clojure.gdx :as gdx]
+            [clojure.gdx.backends.lwjgl3.application :as application]
+            [clojure.gdx.backends.lwjgl3.application.configuration :as configuration]
+            gdl.audio
             gdl.audio.sound)
   (:import (com.badlogic.gdx Audio
-                             ApplicationListener
-                             Gdx)
-           (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)))
+                             ApplicationListener)
+           (com.badlogic.gdx.audio Sound)))
 
 (defprotocol Listener
   (create! [_ app])
@@ -17,13 +17,10 @@
   (resume! [_]))
 
 (defn start! [listener config]
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (reify ApplicationListener
+  (configuration/use-glfw-async!)
+  (application/create (reify ApplicationListener
                         (create [_]
-                          (create! listener {:ctx/audio    Gdx/audio
-                                             :ctx/files    Gdx/files
-                                             :ctx/graphics Gdx/graphics
-                                             :ctx/input    Gdx/input}))
+                          (create! listener (gdx/context)))
 
                         (dispose [_]
                           (dispose! listener))
@@ -39,11 +36,7 @@
 
                         (resume [_]
                           (resume! listener)))
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle (:title config))
-                        (.setWindowedMode (:width (:window config))
-                                          (:height (:window config)))
-                        (.setForegroundFPS (:fps config)))))
+                      (configuration/create config)))
 
 (extend-type Audio
   gdl.audio/Audio
