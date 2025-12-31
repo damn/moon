@@ -5,7 +5,6 @@
             [gdl.ui.touchable :as touchable]
             [moon.db :as db]
             [moon.graphics :as graphics]
-            [moon.ui :as ui]
             [moon.ui.editor.property :as property]
             [moon.ui.image-button :as image-button]
             [moon.ui.stack :as stack]
@@ -72,9 +71,10 @@
          (partition-all columns)
          (overview-table-rows* skin image-scale))))
 
-(defn create
+(defmethod stage/build :actor/editor-overview-window
   [{:keys [db
            graphics
+           skin
            property-type
            clicked-id-fn]}]
   (window/create
@@ -86,9 +86,6 @@
     :pack? true
     :rows (overview-table-rows db
                                graphics
-                               ui/skin
+                               skin
                                property-type
                                clicked-id-fn)}))
-
-(defmethod stage/build :actor/editor-overview-window [opts]
-  (create opts))

@@ -8,7 +8,6 @@
             [gdl.ui.stage :as stage]
             [gdl.ui.text-button :as text-button]
             [gdl.ui.touchable :as touchable]
-            [moon.ui :as ui]
             [moon.ui.image :as image]
             [moon.ui.table :as table]
             [moon.ui.window :as window]))
@@ -60,13 +59,13 @@
     table))
 
 (defmethod stage/build :actor/dev-menu
-  [{:keys [menus update-labels]}]
+  [{:keys [menus update-labels skin]}]
   (table/create
-   {:rows [[{:actor (main-table ui/skin menus update-labels)
+   {:rows [[{:actor (main-table skin menus update-labels)
              :expand-x? true
              :fill-x? true
              :colspan 1}]
-           [{:actor (doto (label/create "" ui/skin)
+           [{:actor (doto (label/create "" skin)
                       (actor/set-touchable! touchable/disabled))
              :expand? true
              :fill-x? true

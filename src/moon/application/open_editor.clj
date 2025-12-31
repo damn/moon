@@ -6,12 +6,14 @@
 (defn do!
   [{:keys [ctx/db
            ctx/graphics
+           ctx/skin
            ctx/stage]}
    property-type]
   (stage/add-actor! stage
                     {:type :actor/editor-overview-window
                      :db db
                      :graphics graphics
+                     :skin skin
                      :property-type property-type
                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
                                       ; why not a 'ctx' function

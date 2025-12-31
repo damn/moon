@@ -97,12 +97,14 @@
                 {:text "+"
                  :on-clicked (fn [_actor {:keys [ctx/db
                                                  ctx/graphics
+                                                 ctx/skin
                                                  ctx/stage]}]
                                (stage/add-actor!
                                 stage
                                 {:type :actor/editor-overview-window
                                  :db db
                                  :graphics graphics
+                                 :skin skin
                                  :property-type property-type
                                  :clicked-id-fn (fn [actor id ctx]
                                                   (actor/remove! (window/find-ancestor actor))
@@ -148,12 +150,14 @@
                   {:text "+"
                    :on-clicked (fn [_actor {:keys [ctx/db
                                                    ctx/graphics
+                                                   ctx/skin
                                                    ctx/stage]}]
                                  (stage/add-actor!
                                   stage
                                   {:type :actor/editor-overview-window
                                    :db db
                                    :graphics graphics
+                                   :skin skin
                                    :property-type property-type
                                    :clicked-id-fn (fn [actor id ctx]
                                                     (actor/remove! (window/find-ancestor actor))

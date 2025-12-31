@@ -11,7 +11,8 @@
 
 (defn create
   [{:keys [ctx/db
-           ctx/graphics]}
+           ctx/graphics
+           ctx/skin]}
    rebuild-actors!
    create-world
    open-editor!]
@@ -75,4 +76,5 @@
      :update-labels (for [item update-labels]
                       (if (:icon item)
                         (update item :icon #(get (:graphics/textures graphics) %))
-                        item))}))
+                        item))
+     :skin skin}))

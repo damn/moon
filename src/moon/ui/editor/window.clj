@@ -8,7 +8,6 @@
             [malli.utils :as mu]
             [moon.db.schemas :as schemas]
             [moon.malli :as malli]
-            [moon.ui :as ui]
             [moon.ui.editor.schema :as schema]
             [moon.ui.separator :as separator]
             [moon.ui.table :as table]
@@ -50,7 +49,8 @@
   )
 
 (defn- component-row*
-  [{:keys [editor-widget
+  [{:keys [skin
+           editor-widget
            display-remove-component-button?
            k
            table
@@ -67,7 +67,7 @@
                                                                              (group/children table))))
                                                (rebuild! ctx))}))
                       :left? true}
-                     {:actor (label/create label-text ui/skin)}]]})
+                     {:actor (label/create label-text skin)}]]})
     :right? true}
    {:actor (separator/vertical)
     :pad-top 2
@@ -77,16 +77,17 @@
    {:actor editor-widget
     :left? true}])
 
-(defn- component-row [editor-widget k optional-key? table]
+(defn- component-row [skin editor-widget k optional-key? table]
   (component-row*
-   {:editor-widget editor-widget
+   {:skin skin
+    :editor-widget editor-widget
     :display-remove-component-button? optional-key?
     :k k
     :table table
     :label-text (k->label-text k)}))
 
 (defmethod stage/build :actor/add-component-window
-  [{:keys [schemas schema map-widget-table]}]
+  [{:keys [schemas schema map-widget-table skin]}]
   (let [window (window/create
                 {:title "Choose"
                  :modal? true
@@ -103,7 +104,8 @@
                  {:text (name k)
                   :on-clicked (fn [_actor ctx]
                                 (actor/remove! window)
-                                (table/add-rows! map-widget-table [(component-row (build-value-widget ctx
+                                (table/add-rows! map-widget-table [(component-row skin
+                                                                                  (build-value-widget ctx
                                                                                                       (get schemas k)
                                                                                                       k
                                                                                                       (schemas/default-value schemas k))
@@ -127,7 +129,8 @@
   (drop 1 (interleave (repeatedly f) coll)))
 
 (defn- create-map-widget-table
-  [{:keys [schema
+  [{:keys [skin
+           schema
            k->widget
            k->optional?
            ks-sorted
@@ -138,7 +141,8 @@
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
                                     (map (fn [k]
-                                           (component-row (k->widget k)
+                                           (component-row skin
+                                                          (k->widget k)
                                                           k
                                                           (k->optional? k)
                                                           table))
@@ -149,10 +153,12 @@
                 [{:actor (text-button/create
                           {:text "Add component"
                            :on-clicked (fn [_actor {:keys [ctx/db
-                                                           ctx/stage]}]
+                                                           ctx/stage
+                                                           ctx/skin]}]
                                          (stage/add-actor!
                                           stage
                                           {:type :actor/add-component-window
+                                           :skin skin
                                            :schemas (:db/schemas db)
                                            :schema schema
                                            :map-widget-table table}))})
@@ -188,11 +194,13 @@
 (defmethod schema/create :s/map
   [schema
    m
-   {:keys [ctx/db]
+   {:keys [ctx/db
+           ctx/skin]
     :as ctx}]
   (let [schemas (:db/schemas db)]
     (create-map-widget-table
-     {:schema schema
+     {:skin skin
+      :schema schema
       :k->widget (into {}
                        (for [[k v] m]
                          [k (build-value-widget ctx (get schemas k) k v)]))
