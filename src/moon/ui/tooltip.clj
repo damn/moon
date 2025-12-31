@@ -4,8 +4,7 @@
             [gdl.ui.stage :as stage]
             [gdl.ui.tooltip :as tooltip]
             [gdl.utils.align :as align]
-            [moon.ui :as ui]
-            [moon.ui.label :as vis-label]))
+            [moon.ui :as ui]))
 
 (defn add! [actor tooltip-text]
   (actor/add-listener! actor (tooltip/create tooltip-text ui/skin))
@@ -17,7 +16,8 @@
                                     (when ctx
                                       (tooltip/set-text! tooltip (tooltip-text ctx))))))
                    :target actor
-                   :content (doto (vis-label/create (if (string? tooltip-text) tooltip-text ""))
+                   :content (doto (label/create (if (string? tooltip-text) tooltip-text "")
+                                                ui/skin)
                               (label/set-alignment! align/center))})
   actor)
 

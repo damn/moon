@@ -2,13 +2,14 @@
   (:require [clojure.set :as set]
             [gdl.ui.actor :as actor]
             [gdl.ui.group :as group]
+            [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.widget-group :as widget-group]
             [malli.utils :as mu]
             [moon.db.schemas :as schemas]
             [moon.malli :as malli]
+            [moon.ui :as ui]
             [moon.ui.editor.schema :as schema]
-            [moon.ui.label :as label]
             [moon.ui.separator :as separator]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
@@ -66,7 +67,7 @@
                                                                              (group/children table))))
                                                (rebuild! ctx))}))
                       :left? true}
-                     {:actor (label/create label-text)}]]})
+                     {:actor (label/create label-text ui/skin)}]]})
     :right? true}
    {:actor (separator/vertical)
     :pad-top 2

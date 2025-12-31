@@ -1,8 +1,9 @@
 (ns moon.ui.widget
   (:require [gdl.ui.actor :as actor]
+            [gdl.ui.label :as label]
+            [gdl.ui.scroll-pane :as scroll-pane]
             [gdl.ui.stage :as stage]
-            [moon.ui.label :as label]
-            [moon.ui.scroll-pane :as scroll-pane]
+            [moon.ui :as ui]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]))
@@ -10,7 +11,7 @@
 (defn- create-scroll-pane
   [{:keys [scroll-pane/actor
            actor/name]}]
-  (doto (scroll-pane/create actor)
+  (doto (scroll-pane/create actor ui/skin)
     (actor/set-name! name)))
 
 (defn scroll-pane-cell [viewport-height rows]
@@ -66,7 +67,7 @@
                                        :data v
                                        :width 500
                                        :height 500}))})
-    (label/create (v->text v))))
+    (label/create (v->text v) ui/skin)))
 
 (defmethod stage/build :actor/data-viewer
   [{:keys [title
@@ -79,7 +80,7 @@
                 :actor (v->actor v)})
         scroll-pane-table (table/create
                            {:rows (for [{:keys [label actor]} rows]
-                                    [{:actor (label/create label)}
+                                    [{:actor (label/create label ui/skin)}
                                      {:actor actor}])})
         scroll-pane-cell (let [table (table/create
                                       {:rows [[scroll-pane-table]]

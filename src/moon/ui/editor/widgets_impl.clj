@@ -3,6 +3,8 @@
             [gdl.ui.actor :as actor]
             [gdl.ui.check-box :as check-box]
             [gdl.ui.group :as group]
+            [gdl.ui.label :as label]
+            [gdl.ui.select-box :as select-box]
             [gdl.ui.stage :as stage]
             [gdl.ui.text-field :as text-field]
             [gdl.ui.widget-group :as widget-group]
@@ -14,8 +16,6 @@
             [moon.ui.editor.schema :refer [create value]]
             [moon.ui.image :as image]
             [moon.ui.image-button :as image-button]
-            [moon.ui.label :as label]
-            [moon.ui.select-box :as select-box]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.tooltip :as tooltip]
@@ -23,8 +23,8 @@
             [moon.utils :as utils]))
 
 (defmethod create :default
-  [_ v _ctx]
-  (label/create (utils/truncate (utils/->edn-str v) 60)))
+  [_ v {:keys [ctx/skin]}]
+  (label/create (utils/truncate (utils/->edn-str v) 60) skin))
 
 (defmethod value :default
   [_  widget _schemas]
@@ -53,10 +53,11 @@
   [_ widget _schemas]
   (check-box/checked? widget))
 
-(defmethod create :s/enum [schema v _ctx]
+(defmethod create :s/enum [schema v {:keys [ctx/skin]}]
   (select-box/create
    {:items (map utils/->edn-str (rest schema))
-    :selected (utils/->edn-str v)}))
+    :selected (utils/->edn-str v)}
+   skin))
 
 (defmethod value :s/enum [_  widget _schemas]
   (edn/read-string (select-box/selected widget)))
@@ -226,15 +227,15 @@
                                          :on-clicked (open-select-sounds-handler table)})}])])
     table))
 
-(defmethod create :s/string [schema v _ctx]
-  (tooltip/add! (text-field/create (str v) ui/skin)
+(defmethod create :s/string [schema v {:keys [ctx/skin]}]
+  (tooltip/add! (text-field/create (str v) skin)
                 (str schema)))
 
 (defmethod value :s/string [_ widget _schemas]
   (text-field/text widget))
 
-(defn- create-edn-widget [schema v _ctx]
-  (tooltip/add! (text-field/create (utils/->edn-str v) ui/skin)
+(defn- create-edn-widget [schema v {:keys [ctx/skin]}]
+  (tooltip/add! (text-field/create (utils/->edn-str v) skin)
                 (str schema)))
 
 (defn- edn-widget-value [_  widget _schemas]

@@ -1,12 +1,13 @@
 (ns moon.ui.editor.overview-window
   (:require [gdl.ui.actor :as actor]
+            [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.touchable :as touchable]
             [moon.db :as db]
             [moon.graphics :as graphics]
+            [moon.ui :as ui]
             [moon.ui.editor.property :as property]
             [moon.ui.image-button :as image-button]
-            [moon.ui.label :as label]
             [moon.ui.stack :as stack]
             [moon.ui.window :as window]))
 
@@ -35,7 +36,7 @@
                              :sort-by-fn (comp name :property/id)
                              :extra-info-text (constantly "")}})
 
-(defn- overview-table-rows* [image-scale rows]
+(defn- overview-table-rows* [skin image-scale rows]
   (for [row rows]
     (for [{:keys [texture-region
                   on-clicked
@@ -47,12 +48,13 @@
                                  :on-clicked on-clicked
                                  :drawable/scale image-scale
                                  :tooltip tooltip})
-                               (doto (label/create extra-info-text)
+                               (doto (label/create extra-info-text skin)
                                  (actor/set-touchable! touchable/disabled))]})})))
 
 (defn- overview-table-rows
   [db
    graphics
+   skin
    property-type
    clicked-id-fn]
   (let [{:keys [sort-by-fn
@@ -68,7 +70,7 @@
                  :tooltip (property/tooltip property)
                  :extra-info-text (extra-info-text property)}))
          (partition-all columns)
-         (overview-table-rows* image-scale))))
+         (overview-table-rows* skin image-scale))))
 
 (defn create
   [{:keys [db
@@ -84,6 +86,7 @@
     :pack? true
     :rows (overview-table-rows db
                                graphics
+                               ui/skin
                                property-type
                                clicked-id-fn)}))
 

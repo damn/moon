@@ -3,13 +3,13 @@
             [gdl.math.vector2 :as vector2]
             [gdl.ui.actor :as actor]
             [gdl.ui.group :as group]
+            [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.utils :as ui-utils]
             [gdl.utils.viewport :as viewport]
             [moon.ui :as ui]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory :as inventory-window]
-            [moon.ui.label :as label]
             [moon.ui.message :as message]
             [moon.ui.text-button :as text-button]
             [moon.utils :as utils]))
@@ -89,7 +89,7 @@
     (stage/add-actor! stage
                       {:type :actor/window
                        :title title
-                       :rows [[{:actor (label/create text)}]
+                       :rows [[{:actor (label/create text ui/skin)}]
                               [{:actor (text-button/create
                                         {:text button-text
                                          :on-clicked (fn [_actor _ctx]
@@ -151,7 +151,8 @@
                        :title "Error"
                        :rows [[{:actor (label/create (binding [*print-level* 3]
                                                        (utils/with-err-str
-                                                         (clojure.repl/pst throwable))))}]]
+                                                         (clojure.repl/pst throwable)))
+                                                     ui/skin)}]]
                        :modal? true
                        :close-button? true
                        :close-on-escape? true
