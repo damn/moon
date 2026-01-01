@@ -65,7 +65,8 @@
                                                                                (and (actor/user-object actor)
                                                                                     (= k ((actor/user-object actor) 0))))
                                                                              (group/children table))))
-                                               (rebuild! ctx))}))
+                                               (rebuild! ctx))
+                                 :skin skin}))
                       :left? true}
                      {:actor (label/create label-text skin)}]]})
     :right? true}
@@ -112,7 +113,8 @@
                                                                                   k
                                                                                   (mu/optional? k (malli/form schema schemas))
                                                                                   map-widget-table)])
-                                (rebuild! ctx))})}]))
+                                (rebuild! ctx))
+                  :skin skin})}]))
     (widget-group/pack! window)
     window))
 
@@ -161,7 +163,8 @@
                                            :skin skin
                                            :schemas (:db/schemas db)
                                            :schema schema
-                                           :map-widget-table table}))})
+                                           :map-widget-table table}))
+                           :skin skin})
                   :colspan colspan}])]
              [(when opt?
                 [{:actor (separator/horizontal)

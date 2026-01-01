@@ -83,7 +83,8 @@
 
 (defn- add-one-to-many-rows
   [{:keys [ctx/db
-           ctx/graphics]}
+           ctx/graphics
+           ctx/skin]}
    table
    property-type
    property-ids]
@@ -108,7 +109,8 @@
                                  :property-type property-type
                                  :clicked-id-fn (fn [actor id ctx]
                                                   (actor/remove! (window/find-ancestor actor))
-                                                  (redo-rows ctx (conj property-ids id)))}))})}]
+                                                  (redo-rows ctx (conj property-ids id)))}))
+                 :skin skin})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)
               texture-region (graphics/texture-region graphics (property/image property))
@@ -120,7 +122,8 @@
         {:actor (text-button/create
                  {:text "-"
                   :on-clicked (fn [_actor ctx]
-                                (redo-rows ctx (disj property-ids id)))})})])))
+                                (redo-rows ctx (disj property-ids id)))
+                  :skin skin})})])))
 
 (defmethod create :s/one-to-many [[_ property-type] property-ids ctx]
   (let [table (table/create
@@ -135,7 +138,8 @@
 
 (defn- add-one-to-one-rows
   [{:keys [ctx/db
-           ctx/graphics]}
+           ctx/graphics
+           ctx/skin]}
    table
    property-type
    property-id]
@@ -161,7 +165,8 @@
                                    :property-type property-type
                                    :clicked-id-fn (fn [actor id ctx]
                                                     (actor/remove! (window/find-ancestor actor))
-                                                    (redo-rows ctx id))}))})})]
+                                                    (redo-rows ctx id))}))
+                   :skin skin})})]
       [(when property-id
          (let [property (db/get-raw db property-id)
                texture-region (graphics/texture-region graphics (property/image property))
@@ -174,7 +179,8 @@
          {:actor (text-button/create
                   {:text "-"
                    :on-clicked (fn [_actor ctx]
-                                 (redo-rows ctx nil))})})]])))
+                                 (redo-rows ctx nil))
+                   :skin skin})})]])))
 
 (defmethod create :s/one-to-one [[_ property-type] property-id ctx]
   (let [table (table/create
@@ -190,9 +196,9 @@
 (declare sound-columns)
 
 (defn- rebuild-sound-widget! [table sound-name]
-  (fn [actor _ctx]
+  (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
-    (table/add-rows! table [(sound-columns table sound-name)])
+    (table/add-rows! table [(sound-columns skin table sound-name)])
     (actor/remove! (window/find-ancestor actor))
     (widget-group/pack! (window/find-ancestor table))
     (let [[k _] (actor/user-object table)]
@@ -200,6 +206,7 @@
 
 (defn- open-select-sounds-handler [table]
   (fn [_actor {:keys [ctx/audio
+                      ctx/skin
                       ctx/stage]}]
     (stage/add-actor! stage
                       {:type :actor/scroll-pane-window
@@ -207,28 +214,33 @@
                        :rows (for [sound-name (audio/sound-names audio)]
                                [{:actor (text-button/create
                                          {:text sound-name
-                                          :on-clicked (rebuild-sound-widget! table sound-name)})}
+                                          :on-clicked (rebuild-sound-widget! table sound-name)
+                                          :skin skin})}
                                 {:actor (text-button/create
                                          {:text "play!"
                                           :on-clicked (fn [_actor {:keys [ctx/audio]}]
-                                                        (audio/play! audio sound-name))})}])})))
+                                                        (audio/play! audio sound-name))
+                                          :skin skin})}])})))
 
-(defn- sound-columns [table sound-name]
+(defn- sound-columns [skin table sound-name]
   [{:actor (text-button/create
             {:text sound-name
-             :on-clicked (open-select-sounds-handler table)})}
+             :on-clicked (open-select-sounds-handler table)
+             :skin skin})}
    {:actor (text-button/create
             {:text "play!"
              :on-clicked (fn [_actor {:keys [ctx/audio]}]
-                           (audio/play! audio sound-name))})}])
+                           (audio/play! audio sound-name))
+             :skin skin})}])
 
-(defmethod create :s/sound [_  sound-name _ctx]
+(defmethod create :s/sound [_  sound-name {:keys [ctx/skin]}]
   (let [table (table/create {:cell-defaults {:pad 5}})]
     (table/add-rows! table [(if sound-name
-                              (sound-columns table sound-name)
+                              (sound-columns skin table sound-name)
                               [{:actor (text-button/create
                                         {:text "No sound"
-                                         :on-clicked (open-select-sounds-handler table)})}])])
+                                         :on-clicked (open-select-sounds-handler table)
+                                         :skin skin})}])])
     table))
 
 (defmethod create :s/string [schema v {:keys [ctx/skin]}]

@@ -16,6 +16,7 @@
   [{:keys [ctx
            property]}]
   (let [{:keys [ctx/db
+                ctx/skin
                 ctx/stage]} ctx
         schemas (:db/schemas db)
         schema (get schemas (property/type property))
@@ -52,10 +53,12 @@
                   :draw (fn [this batch parent-alpha])})]
         save-button (text-button/create
                      {:text "Save [LIGHT_GRAY](ENTER)[]"
-                      :on-clicked clicked-save-fn})
+                      :on-clicked clicked-save-fn
+                      :skin skin})
         delete-button (text-button/create
                        {:text "Delete"
-                        :on-clicked clicked-delete-fn})
+                        :on-clicked clicked-delete-fn
+                        :skin skin})
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor save-button :center? true}
                            {:actor delete-button :center? true}]]

@@ -3,13 +3,13 @@
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.event :as event]
             [gdl.ui.stage :as stage]
-            [gdl.ui.text-button :as text-button]
-            [moon.ui :as ui]))
+            [gdl.ui.text-button :as text-button]))
 
 (defn create
   [{:keys [text
-           on-clicked]}]
-  (doto (text-button/create (str text) ui/skin)
+           on-clicked
+           skin]}]
+  (doto (text-button/create (str text) skin)
     (actor/add-listener!
      (change-listener/create
       (fn [event actor]

@@ -66,7 +66,8 @@
                                        :title "title"
                                        :data v
                                        :width 500
-                                       :height 500}))})
+                                       :height 500}))
+      :skin ui/skin})
     (label/create (v->text v) ui/skin)))
 
 (defmethod stage/build :actor/data-viewer

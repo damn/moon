@@ -97,7 +97,8 @@
                                                         (-> stage
                                                             stage/root
                                                             (group/find-actor "moon.ui.modal-window")))
-                                                       (on-click))})}]]
+                                                       (on-click))
+                                         :skin skin})}]]
                        :actor/name "moon.ui.modal-window"
                        :modal? true
                        :actor/center-position [(/ (viewport/world-width  ui-viewport) 2)
