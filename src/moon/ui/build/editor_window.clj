@@ -62,10 +62,12 @@
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor save-button :center? true}
                            {:actor delete-button :center? true}]]
-        rows [[(widget/scroll-pane-cell scroll-pane-height
+        rows [[(widget/scroll-pane-cell skin
+                                        scroll-pane-height
                                         scroll-pane-rows)]]]
     (window/create
-     {:title "[SKY]Property[]"
+     {:skin skin
+      :title "[SKY]Property[]"
       :actor/name "moon.ui.editor.window"
       :modal? true
       :close-button? true

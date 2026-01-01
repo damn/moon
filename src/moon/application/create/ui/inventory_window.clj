@@ -82,7 +82,8 @@
            title
            actor/visible?
            clicked-cell-listener
-           slot->texture-region]}]
+           slot->texture-region
+           skin]}]
   (let [cell-size 48
         slot->drawable (fn [slot]
                          (doto (texture-region-drawable/create (slot->texture-region slot))
@@ -113,7 +114,8 @@
                                               :actor/user-object {:background-drawable background-drawable
                                                                   :cell-size cell-size}})]})}))]
     (window/create
-     {:title title
+     {:skin skin
+      :title title
       :actor/name "moon.ui.windows.inventory"
       :actor/visible? visible?
       :pack? true
@@ -142,6 +144,7 @@
 
 (defn create
   [{:keys [ctx/graphics
+           ctx/skin
            ctx/stage]}]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
                                              :shield   1
@@ -167,7 +170,8 @@
                                                           {:image/file "images/items.png"
                                                            :image/bounds bounds})))]
     (create-inventory-window*
-     {:title "Inventory"
+     {:skin skin
+      :title "Inventory"
       :actor/visible? false
       :position [(ui/viewport-width  stage)
                  (ui/viewport-height stage)]

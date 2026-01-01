@@ -34,7 +34,8 @@
 
 (defn- create-window [skin label items]
   (window/create
-   {:pack? true
+   {:skin skin
+    :pack? true
     :title label
     :rows [(for [{:keys [label on-click]} items]
              {:actor (doto (text-button/create label skin)

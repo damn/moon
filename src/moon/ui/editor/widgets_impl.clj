@@ -219,6 +219,7 @@
                       ctx/stage]}]
     (stage/add-actor! stage
                       {:type :actor/scroll-pane-window
+                       :skin skin
                        :viewport-height (ui/viewport-width stage)
                        :rows (for [sound-name (audio/sound-names audio)]
                                [{:actor (text-button/create

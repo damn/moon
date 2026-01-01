@@ -79,7 +79,8 @@
            property-type
            clicked-id-fn]}]
   (window/create
-   {:title "Edit"
+   {:skin skin
+    :title "Edit"
     :modal? true
     :close-button? true
     :center? true

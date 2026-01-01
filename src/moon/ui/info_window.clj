@@ -14,7 +14,8 @@
            position
            set-label-text!]}]
   (let [label (label/create "" skin)
-        window (window/create {:title title
+        window (window/create {:skin skin
+                               :title title
                                :actor/name actor-name
                                :actor/visible? visible?
                                :actor/position position

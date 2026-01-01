@@ -5,7 +5,6 @@
             [gdl.ui.text-button :as text-button]
             [gdl.ui.window :as window]
             [gdl.ui.window :as window]
-            [moon.ui :as ui]
             [moon.ui.table :as table]))
 
 ; FIXME opts not there anymore
@@ -15,19 +14,20 @@
   [{:keys [title
            close-button?
            center?
-           close-on-escape?]}]
+           close-on-escape?]}
+   skin]
   (let [#_show-window-border? #_true
-        window (window/create title ui/skin)]
+        window (window/create title skin)]
     #_(when close-button?    (.addCloseButton window))
     #_(when center?          (.centerWindow   window))
     #_(when close-on-escape? (.closeOnEscape  window))
     window))
 
 (defn create
-  [{:keys [modal?] :as opts}]
-  (let [window (create* opts)]
+  [{:keys [skin modal?] :as opts}]
+  (let [window (create* opts skin)]
     (table/add! (window/title-table window)
-                (doto (text-button/create "X" ui/skin)
+                (doto (text-button/create "X" skin)
                   (actor/add-listener!
                    (change-listener/create
                     (fn [_event _actor]

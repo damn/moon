@@ -1,10 +1,8 @@
 (ns moon.ui)
 
-(declare skin)
-
 (defprotocol UserInterface
   (dispose! [_])
-  (show-data-viewer! [_ data])
+  (show-data-viewer! [_ data skin])
   (viewport-width  [_])
   (viewport-height [_])
   (get-ctx [_])

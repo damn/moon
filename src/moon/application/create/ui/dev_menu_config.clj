@@ -27,8 +27,9 @@
 
         ctx-data-viewer {:label "Ctx Data"
                          :items [{:label "Show data"
-                                  :on-click (fn [_actor {:keys [ctx/stage] :as ctx}]
-                                              (ui/show-data-viewer! stage ctx))}]}
+                                  :on-click (fn [_actor {:keys [ctx/skin
+                                                                ctx/stage] :as ctx}]
+                                              (ui/show-data-viewer! stage ctx skin))}]}
         help-info-text {:label "Help"
                         :items [{:label input/info-text}]}
         select-world {:label "Select World"

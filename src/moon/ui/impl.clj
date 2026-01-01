@@ -39,13 +39,14 @@
     ; TODO fixme skin ?
     )
 
-  (show-data-viewer! [this data]
+  (show-data-viewer! [this data skin]
     (stage/add-actor! this
                       {:type :actor/data-viewer
                        :title "Data View"
                        :data data
                        :width 500
-                       :height 500}))
+                       :height 500
+                       :skin skin}))
 
   (viewport-width  [stage]
     (viewport/world-width (stage/viewport stage)))

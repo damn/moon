@@ -90,7 +90,8 @@
 (defmethod stage/build :actor/add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (window/create
-                {:title "Choose"
+                {:skin skin
+                 :title "Choose"
                  :modal? true
                  :close-button? true
                  :center? true
