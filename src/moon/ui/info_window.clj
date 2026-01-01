@@ -4,16 +4,16 @@
             [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.widget-group :as widget-group]
-            [moon.ui :as ui]
             [moon.ui.window :as window]))
 
 (defn create
-  [{:keys [title
+  [skin
+   {:keys [title
            actor-name
            visible?
            position
            set-label-text!]}]
-  (let [label (label/create "" ui/skin)
+  (let [label (label/create "" skin)
         window (window/create {:title title
                                :actor/name actor-name
                                :actor/visible? visible?

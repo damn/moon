@@ -27,7 +27,8 @@
         get-widget-value #(schema/value schema widget schemas)
         property-id (:property/id property)
         with-window-close (fn [f]
-                            (fn [actor {:keys [ctx/stage]
+                            (fn [actor {:keys [ctx/skin
+                                               ctx/stage]
                                         :as ctx}]
                               (try
                                (let [new-ctx (update ctx :ctx/db f)
@@ -36,7 +37,7 @@
                                (actor/remove! (window/find-ancestor actor))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
-                                 (ui/show-error-window! stage t)))))
+                                 (ui/show-error-window! stage skin t)))))
         clicked-delete-fn (with-window-close (fn [db]
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]

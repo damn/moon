@@ -3,6 +3,9 @@
             [moon.ui :as ui]))
 
 (defn do!
-  [{:keys [ctx/stage] :as ctx} opts]
-  (ui/show-modal-window! stage (stage/viewport stage) opts)
+  [{:keys [ctx/skin
+           ctx/stage]
+    :as ctx}
+   opts]
+  (ui/show-modal-window! stage skin (stage/viewport stage) opts)
   ctx)

@@ -82,14 +82,14 @@
   ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
   ; => input events handling
   ; hmmm interesting ... can disable @ item in cursor  / moving / etc.
-  (show-modal-window! [stage ui-viewport {:keys [title text button-text on-click]}]
+  (show-modal-window! [stage skin ui-viewport {:keys [title text button-text on-click]}]
     (assert (not (-> stage
                      stage/root
                      (group/find-actor "moon.ui.modal-window"))))
     (stage/add-actor! stage
                       {:type :actor/window
                        :title title
-                       :rows [[{:actor (label/create text ui/skin)}]
+                       :rows [[{:actor (label/create text skin)}]
                               [{:actor (text-button/create
                                         {:text button-text
                                          :on-clicked (fn [_actor _ctx]
@@ -145,14 +145,14 @@
          group/children
          (run! #(actor/set-visible! % false))))
 
-  (show-error-window! [stage throwable]
+  (show-error-window! [stage skin throwable]
     (stage/add-actor! stage
                       {:type :actor/window
                        :title "Error"
                        :rows [[{:actor (label/create (binding [*print-level* 3]
                                                        (utils/with-err-str
                                                          (clojure.repl/pst throwable)))
-                                                     ui/skin)}]]
+                                                     skin)}]]
                        :modal? true
                        :close-button? true
                        :close-on-escape? true

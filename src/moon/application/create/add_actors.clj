@@ -52,7 +52,9 @@
   (stage/clear! stage)
   (step ctx))
 
-(defn step [{:keys [ctx/stage] :as ctx}]
+(defn step
+  [{:keys [ctx/skin
+           ctx/stage] :as ctx}]
   (let [config (.config stage)]
     (doseq [actor [((:dev-menu config)
                     ctx
@@ -63,7 +65,7 @@
                    (create-hp-mana-bar* (hp-mana-bar-config/create ctx))
                    {:type :actor/group
                     :actor/name "moon.ui.windows"
-                    :group/actors [(info-window/create (entity-info-window-config/create ctx))
+                    :group/actors [(info-window/create skin (entity-info-window-config/create ctx))
                                    (inventory-window/create ctx)]}
                    {:type :actor/actor
                     :draw (fn [this _batch _parent-alpha]
