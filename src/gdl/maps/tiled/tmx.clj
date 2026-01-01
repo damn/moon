@@ -6,11 +6,3 @@
   Loads through internal file handle."
   [file-name]
   (.load (TmxMapLoader.) file-name))
-
-(comment
- ; 1. constructor with: InternalFileHandleResolver
-
- ; 2. load second arg:
- (com.badlogic.gdx.maps.tiled.BaseTiledMapLoader$Parameters.)
-
- )
