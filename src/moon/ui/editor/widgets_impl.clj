@@ -31,12 +31,14 @@
   ((actor/user-object widget) 1))
 
 (defmethod create :s/animation
-  [_ animation {:keys [ctx/graphics]}]
+  [_ animation {:keys [ctx/graphics
+                       ctx/skin]}]
   (table/create
    {:rows [(for [image (:animation/frames animation)]
              {:actor (image-button/create
                       {:drawable/texture-region (graphics/texture-region graphics image)
-                       :drawable/scale 2})})]
+                       :drawable/scale 2
+                       :skin skin})})]
     :cell-defaults {:pad 1}}))
 
 (defmethod create :s/boolean
@@ -63,10 +65,12 @@
   (edn/read-string (select-box/selected widget)))
 
 (defmethod create :s/image
-  [schema  image {:keys [ctx/graphics]}]
+  [schema image {:keys [ctx/graphics
+                        ctx/skin]}]
   (image-button/create
    {:drawable/texture-region (graphics/texture-region graphics image)
-    :drawable/scale 2})
+    :drawable/scale 2
+    :skin skin})
   #_(ui/image-button image
                      (fn [_actor ctx]
                        (c/add-actor! ctx (scroll-pane/choose-window (texture-rows ctx))))
@@ -77,7 +81,8 @@
 ; make tree view from folders, etc. .. !! all creatures animations showing...
 #_(defn- texture-rows [ctx]
     (for [file (sort (assets/all-of-type assets :texture))]
-      [(image-button/create {:texture-region (texture/region (assets file))})]
+      [(image-button/create {:texture-region (texture/region (assets file))
+                             :skin skin})]
       #_[(text-button/create file
                              (fn [_actor _ctx]))]))
 
@@ -117,7 +122,9 @@
               image-widget (image/create
                             {:image/object texture-region
                              :actor/user-object property-id})]
-          {:actor (tooltip/add! image-widget (property/tooltip property))}))
+          {:actor (tooltip/add! image-widget
+                                (property/tooltip property)
+                                skin)}))
       (for [id property-ids]
         {:actor (text-button/create
                  {:text "-"
@@ -173,7 +180,9 @@
                image-widget (image/create
                              {:image/object texture-region
                               :actor/user-object property-id})]
-           {:actor (tooltip/add! image-widget (property/tooltip property))}
+           {:actor (tooltip/add! image-widget
+                                 (property/tooltip property)
+                                 skin)}
            image-widget))]
       [(when property-id
          {:actor (text-button/create
@@ -245,14 +254,16 @@
 
 (defmethod create :s/string [schema v {:keys [ctx/skin]}]
   (tooltip/add! (text-field/create (str v) skin)
-                (str schema)))
+                (str schema)
+                skin))
 
 (defmethod value :s/string [_ widget _schemas]
   (text-field/text widget))
 
 (defn- create-edn-widget [schema v {:keys [ctx/skin]}]
   (tooltip/add! (text-field/create (utils/->edn-str v) skin)
-                (str schema)))
+                (str schema)
+                skin))
 
 (defn- edn-widget-value [_  widget _schemas]
   (edn/read-string (text-field/text widget)))

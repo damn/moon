@@ -3,11 +3,10 @@
             [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.tooltip :as tooltip]
-            [gdl.utils.align :as align]
-            [moon.ui :as ui]))
+            [gdl.utils.align :as align]))
 
-(defn add! [actor tooltip-text]
-  (actor/add-listener! actor (tooltip/create tooltip-text ui/skin))
+(defn add! [actor tooltip-text skin]
+  (actor/add-listener! actor (tooltip/create tooltip-text skin))
   #_(tooltip/create {:update-fn (fn [tooltip]
                                 (when-not (string? tooltip-text)
                                   (let [actor (tooltip/target tooltip)
@@ -17,7 +16,7 @@
                                       (tooltip/set-text! tooltip (tooltip-text ctx))))))
                    :target actor
                    :content (doto (label/create (if (string? tooltip-text) tooltip-text "")
-                                                ui/skin)
+                                                skin)
                               (label/set-alignment! align/center))})
   actor)
 

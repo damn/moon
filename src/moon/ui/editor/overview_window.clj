@@ -46,7 +46,8 @@
                                 {:drawable/texture-region texture-region
                                  :on-clicked on-clicked
                                  :drawable/scale image-scale
-                                 :tooltip tooltip})
+                                 :tooltip tooltip
+                                 :skin skin})
                                (doto (label/create extra-info-text skin)
                                  (actor/set-touchable! touchable/disabled))]})})))
 

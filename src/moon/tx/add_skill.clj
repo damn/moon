@@ -5,6 +5,7 @@
 
 (defn do!
   [{:keys [ctx/graphics
+           ctx/skin
            ctx/stage]
     :as ctx}
    eid skill]
@@ -13,5 +14,6 @@
                    {:skill-id (:property/id skill)
                     :texture-region (graphics/texture-region graphics (:entity/image skill))
                     :tooltip-text (fn [{:keys [ctx/world]}]
-                                    (info/text skill world))}))
+                                    (info/text skill world))}
+                   skin))
   ctx)

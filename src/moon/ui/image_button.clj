@@ -13,7 +13,8 @@
 (defn create
   [{:keys [drawable/texture-region
            on-clicked
-           drawable/scale]
+           drawable/scale
+           skin]
     :as opts}]
   (let [scale (or scale 1)
         [w h] (texture-region/dimensions texture-region)
@@ -25,5 +26,7 @@
                                          (fn [event actor]
                                            (on-clicked actor (stage/ctx (event/stage event)))))))
     (when-let [tooltip (:tooltip opts)]
-      (tooltip/add! image-button tooltip))
+      (tooltip/add! image-button
+                    tooltip
+                    skin))
     (table/set-opts! image-button opts)))

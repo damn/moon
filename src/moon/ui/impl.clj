@@ -105,11 +105,11 @@
                                                (* (viewport/world-height ui-viewport) (/ 3 4))]
                        :pack? true}))
 
-  (set-item! [stage cell item-properties]
+  (set-item! [stage cell item-properties skin]
     (-> stage
         (stage-find "moon.ui.windows")
         (group/find-actor "moon.ui.windows.inventory")
-        (inventory-window/set-item! cell item-properties)))
+        (inventory-window/set-item! cell item-properties skin)))
 
   (remove-item! [stage inventory-cell]
     (-> stage
@@ -117,11 +117,11 @@
         (group/find-actor "moon.ui.windows.inventory")
         (inventory-window/remove-item! inventory-cell)))
 
-  (add-skill! [stage skill-properties]
+  (add-skill! [stage skill-properties skin]
     (-> stage
         stage/root
         (group/find-actor "moon.ui.action-bar")
-        (action-bar/add-skill! skill-properties)))
+        (action-bar/add-skill! skill-properties skin)))
 
   (remove-skill! [stage skill-id]
     (-> stage
