@@ -4,23 +4,13 @@
             [gdl.ui.event :as event]
             [gdl.ui.stage :as stage]
             [gdl.ui.text-button :as text-button]
-            [moon.ui :as ui]
-            [moon.ui.table :as table]
-            [moon.ui.tooltip :as tooltip]))
+            [moon.ui :as ui]))
 
 (defn create
-  ([text on-clicked]
-   (create {:text text
-            :on-clicked on-clicked}))
-  ([{:keys [text
-            on-clicked]
-     :as opts}]
-   (let [actor (doto (text-button/create (str text) ui/skin)
-                 (actor/add-listener!
-                  (change-listener/create
-                    (fn [event actor]
-                      (on-clicked actor (stage/ctx (event/stage event))))))
-                 (table/set-opts! opts))]
-     (when-let [tooltip (:tooltip opts)]
-       (tooltip/add! actor tooltip))
-     actor)))
+  [{:keys [text
+           on-clicked]}]
+  (doto (text-button/create (str text) ui/skin)
+    (actor/add-listener!
+     (change-listener/create
+      (fn [event actor]
+        (on-clicked actor (stage/ctx (event/stage event))))))))
