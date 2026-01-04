@@ -20,7 +20,8 @@
                                                   :config #edn/resource "audio.edn"}]
              [moon.application.create.db/step moon.db.impl/create]
              [moon.application.create.input/step]
-             [moon.application.create.config/step {:world-impl moon.world.impl/create}]
+             [moon.application.create.config/step {:world-impl moon.world.impl/create
+                                                   :config/actor-create-fns #edn/resource "actor-create-fns.edn"}]
              [moon.application.create.add-actors/step]
              [moon.application.create.world/step #edn/resource "world.edn"]]
    :dispose! moon.application.dispose/do!

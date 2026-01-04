@@ -1,0 +1,11 @@
+[
+ [moon.actor-create-fns.dev-menu/create]
+ [moon.actor-create-fns.action-bar/create]
+ [moon.actor-create-fns.hp-mana-bar/create]
+ [moon.actor-create-fns.windows/create [
+                                        moon.actor-create-fns.windows.info-window/create
+                                        moon.actor-create-fns.windows.inventory/create
+                                        ]]
+ [moon.actor-create-fns.player-state-draw/create]
+ [moon.actor-create-fns.player-message/create]
+ ]

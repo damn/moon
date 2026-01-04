@@ -1,76 +1,10 @@
 (ns moon.application.create.add-actors
-  (:require [gdl.ui.actor :as actor]
-            [gdl.ui.stage :as stage]
-            [moon.application.create.ui.entity-info-window-config :as entity-info-window-config]
-            [moon.application.create.ui.hp-mana-bar-config :as hp-mana-bar-config]
-            [moon.application.create.ui.inventory-window :as inventory-window]
-            [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
-            [moon.graphics :as graphics]
-            [moon.input :as input]
-            [moon.ui :as ui]
-            [moon.ui.info-window :as info-window]
-            [moon.ui.message :as message]))
-
-(defn- create-hp-mana-bar* [create-draws]
-  {:type :actor/actor
-   :act (fn [_this _delta])
-   :draw (fn [actor _batch _parent-alpha]
-           (when-let [stage (actor/stage actor)]
-             (graphics/draw! (:ctx/graphics (stage/ctx stage))
-                             (create-draws (stage/ctx stage)))))})
-
-(def state->draw-ui-view
-  {:player-item-on-cursor (fn
-                            [eid
-                             {:keys [ctx/graphics
-                                     ctx/input
-                                     ctx/stage]}]
-                            ; TODO see player-item-on-cursor at render layers
-                            ; always draw it here at right position, then render layers does not need input/stage
-                            ; can pass world to graphics, not handle here at application
-                            (when (not (player-item-on-cursor/world-item? (ui/mouseover-actor stage (input/mouse-position input))))
-                              [[:draw/texture-region
-                                (graphics/texture-region graphics (:entity/image (:entity/item-on-cursor @eid)))
-                                (:graphics/ui-mouse-position graphics)
-                                {:center? true}]]))})
-
-(defn- player-state-handle-draws
-  [{:keys [ctx/graphics
-           ctx/world]
-    :as ctx}]
-  (let [player-eid (:world/player-eid world)
-        entity @player-eid
-        state-k (:state (:entity/fsm entity))]
-    (when-let [f (state->draw-ui-view state-k)]
-      (graphics/draw! graphics (f player-eid ctx)))))
-
-(def message-duration-seconds 0.5)
-
-(declare step)
-
-(defn rebuild-actors! [stage ctx]
-  (stage/clear! stage)
-  (step ctx))
+  (:require [gdl.ui.stage :as stage]))
 
 (defn step
-  [{:keys [ctx/skin
-           ctx/stage] :as ctx}]
-  (let [config (.config stage)]
-    (doseq [actor [((:dev-menu config)
-                    ctx
-                    rebuild-actors!
-                    (requiring-resolve 'moon.application.create.world/step)
-                    (requiring-resolve 'moon.application.open-editor/do!))
-                   {:type :actor/action-bar}
-                   (create-hp-mana-bar* (hp-mana-bar-config/create ctx))
-                   {:type :actor/group
-                    :actor/name "moon.ui.windows"
-                    :group/actors [(info-window/create skin (entity-info-window-config/create ctx))
-                                   (inventory-window/create ctx)]}
-                   {:type :actor/actor
-                    :draw (fn [this _batch _parent-alpha]
-                            (player-state-handle-draws (stage/ctx (actor/stage this))))
-                    :act (fn [_ _delta])}
-                   (message/create message-duration-seconds)]]
-      (stage/add-actor! stage actor)))
+  [{:keys [ctx/config
+           ctx/stage]
+    :as ctx}]
+  (doseq [[actor-create-fn & params] (:config/actor-create-fns config)]
+    (stage/add-actor! stage (apply actor-create-fn ctx params)))
   ctx)
