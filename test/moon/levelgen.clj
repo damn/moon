@@ -103,7 +103,7 @@
   (let [skin (skin/create (files/internal files "uiskin.json")) ; TODO dispose
         ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
-        stage (stage/create ui-viewport sprite-batch nil)
+        stage (stage/create ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))

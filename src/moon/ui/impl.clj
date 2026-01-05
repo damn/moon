@@ -21,9 +21,8 @@
 
 (defn create!
   [{:keys [graphics/batch
-           graphics/ui-viewport]}
-   config]
-  (stage/create ui-viewport batch config))
+           graphics/ui-viewport]}]
+  (stage/create ui-viewport batch))
 
 (defn- toggle-visible! [actor]
   (actor/set-visible! actor (not (actor/visible? actor))))

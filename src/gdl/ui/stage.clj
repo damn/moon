@@ -3,8 +3,8 @@
 
 (defmulti build :type)
 
-(defn create [viewport batch config]
-  (Stage. viewport batch config))
+(defn create [viewport batch]
+  (Stage. viewport batch))
 
 (defn ctx [^Stage stage]
   (.ctx stage))

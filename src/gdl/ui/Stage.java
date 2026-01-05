@@ -6,12 +6,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class Stage extends com.badlogic.gdx.scenes.scene2d.Stage  {
 
   public Object ctx;
-  public Object config;
 
-	public Stage (Viewport viewport, Batch batch, Object config) {
+	public Stage (Viewport viewport, Batch batch) {
 		super(viewport, batch);
     this.ctx = null;
-    this.config = config;
 	}
 
 }
