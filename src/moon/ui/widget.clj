@@ -64,12 +64,13 @@
      {:text "Map"
       :on-clicked (fn [actor _ctx]
                     (stage/add-actor! (actor/stage actor)
-                                      {:type :actor/data-viewer
-                                       :title "title"
-                                       :data v
-                                       :width 500
-                                       :height 500
-                                       :skin skin}))
+                                      (stage/build
+                                       {:type :actor/data-viewer
+                                        :title "title"
+                                        :data v
+                                        :width 500
+                                        :height 500
+                                        :skin skin})))
       :skin skin})
     (label/create (v->text v) skin)))
 

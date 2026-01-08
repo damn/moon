@@ -40,9 +40,10 @@
                              (group/find-actor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
-    (stage/add-actor! stage {:type :actor/editor-window
-                             :ctx ctx
-                             :property property})))
+    (stage/add-actor! stage (stage/build
+                             {:type :actor/editor-window
+                              :ctx ctx
+                              :property property}))))
 
 (defn- k->label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
@@ -160,11 +161,12 @@
                                                            ctx/skin]}]
                                          (stage/add-actor!
                                           stage
-                                          {:type :actor/add-component-window
-                                           :skin skin
-                                           :schemas (:db/schemas db)
-                                           :schema schema
-                                           :map-widget-table table}))
+                                          (stage/build
+                                           {:type :actor/add-component-window
+                                            :skin skin
+                                            :schemas (:db/schemas db)
+                                            :schema schema
+                                            :map-widget-table table})))
                            :skin skin})
                   :colspan colspan}])]
              [(when opt?

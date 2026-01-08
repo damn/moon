@@ -6,5 +6,5 @@
            ctx/stage]
     :as ctx}]
   (doseq [[actor-create-fn & params] (:config/actor-create-fns config)]
-    (stage/add-actor! stage (apply actor-create-fn ctx params)))
+    (stage/add-actor! stage (stage/build (apply actor-create-fn ctx params))))
   ctx)

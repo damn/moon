@@ -107,14 +107,15 @@
                                                  ctx/stage]}]
                                (stage/add-actor!
                                 stage
-                                {:type :actor/editor-overview-window
-                                 :db db
-                                 :graphics graphics
-                                 :skin skin
-                                 :property-type property-type
-                                 :clicked-id-fn (fn [actor id ctx]
-                                                  (actor/remove! (window/find-ancestor actor))
-                                                  (redo-rows ctx (conj property-ids id)))}))
+                                (stage/build
+                                 {:type :actor/editor-overview-window
+                                  :db db
+                                  :graphics graphics
+                                  :skin skin
+                                  :property-type property-type
+                                  :clicked-id-fn (fn [actor id ctx]
+                                                   (actor/remove! (window/find-ancestor actor))
+                                                   (redo-rows ctx (conj property-ids id)))})))
                  :skin skin})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)
@@ -165,14 +166,15 @@
                                                    ctx/stage]}]
                                  (stage/add-actor!
                                   stage
-                                  {:type :actor/editor-overview-window
-                                   :db db
-                                   :graphics graphics
-                                   :skin skin
-                                   :property-type property-type
-                                   :clicked-id-fn (fn [actor id ctx]
-                                                    (actor/remove! (window/find-ancestor actor))
-                                                    (redo-rows ctx id))}))
+                                  (stage/build
+                                   {:type :actor/editor-overview-window
+                                    :db db
+                                    :graphics graphics
+                                    :skin skin
+                                    :property-type property-type
+                                    :clicked-id-fn (fn [actor id ctx]
+                                                     (actor/remove! (window/find-ancestor actor))
+                                                     (redo-rows ctx id))})))
                    :skin skin})})]
       [(when property-id
          (let [property (db/get-raw db property-id)
@@ -218,19 +220,20 @@
                       ctx/skin
                       ctx/stage]}]
     (stage/add-actor! stage
-                      {:type :actor/scroll-pane-window
-                       :skin skin
-                       :viewport-height (ui/viewport-width stage)
-                       :rows (for [sound-name (audio/sound-names audio)]
-                               [{:actor (text-button/create
-                                         {:text sound-name
-                                          :on-clicked (rebuild-sound-widget! table sound-name)
-                                          :skin skin})}
-                                {:actor (text-button/create
-                                         {:text "play!"
-                                          :on-clicked (fn [_actor {:keys [ctx/audio]}]
-                                                        (audio/play! audio sound-name))
-                                          :skin skin})}])})))
+                      (stage/build
+                       {:type :actor/scroll-pane-window
+                        :skin skin
+                        :viewport-height (ui/viewport-width stage)
+                        :rows (for [sound-name (audio/sound-names audio)]
+                                [{:actor (text-button/create
+                                          {:text sound-name
+                                           :on-clicked (rebuild-sound-widget! table sound-name)
+                                           :skin skin})}
+                                 {:actor (text-button/create
+                                          {:text "play!"
+                                           :on-clicked (fn [_actor {:keys [ctx/audio]}]
+                                                         (audio/play! audio sound-name))
+                                           :skin skin})}])}))))
 
 (defn- sound-columns [skin table sound-name]
   [{:actor (text-button/create

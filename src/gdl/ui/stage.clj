@@ -18,8 +18,8 @@
 (defn draw! [^Stage stage]
   (.draw stage))
 
-(defn add-actor! [^Stage stage actor-decl]
-  (.addActor stage (build actor-decl)))
+(defn add-actor! [^Stage stage actor]
+  (.addActor stage actor))
 
 (defn root [^Stage stage]
   (.getRoot stage))

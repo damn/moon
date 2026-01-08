@@ -40,12 +40,13 @@
 
   (show-data-viewer! [this data skin]
     (stage/add-actor! this
-                      {:type :actor/data-viewer
-                       :title "Data View"
-                       :data data
-                       :width 500
-                       :height 500
-                       :skin skin}))
+                      (stage/build
+                       {:type :actor/data-viewer
+                        :title "Data View"
+                        :data data
+                        :width 500
+                        :height 500
+                        :skin skin})))
 
   (viewport-width  [stage]
     (viewport/world-width (stage/viewport stage)))
@@ -87,23 +88,24 @@
                      stage/root
                      (group/find-actor "moon.ui.modal-window"))))
     (stage/add-actor! stage
-                      {:type :actor/window
-                       :title title
-                       :rows [[{:actor (label/create text skin)}]
-                              [{:actor (text-button/create
-                                        {:text button-text
-                                         :on-clicked (fn [_actor _ctx]
-                                                       (actor/remove!
-                                                        (-> stage
-                                                            stage/root
-                                                            (group/find-actor "moon.ui.modal-window")))
-                                                       (on-click))
-                                         :skin skin})}]]
-                       :actor/name "moon.ui.modal-window"
-                       :modal? true
-                       :actor/center-position [(/ (viewport/world-width  ui-viewport) 2)
-                                               (* (viewport/world-height ui-viewport) (/ 3 4))]
-                       :pack? true}))
+                      (stage/build
+                       {:type :actor/window
+                        :title title
+                        :rows [[{:actor (label/create text skin)}]
+                               [{:actor (text-button/create
+                                         {:text button-text
+                                          :on-clicked (fn [_actor _ctx]
+                                                        (actor/remove!
+                                                         (-> stage
+                                                             stage/root
+                                                             (group/find-actor "moon.ui.modal-window")))
+                                                        (on-click))
+                                          :skin skin})}]]
+                        :actor/name "moon.ui.modal-window"
+                        :modal? true
+                        :actor/center-position [(/ (viewport/world-width  ui-viewport) 2)
+                                                (* (viewport/world-height ui-viewport) (/ 3 4))]
+                        :pack? true})))
 
   (set-item! [stage cell item-properties skin]
     (-> stage
@@ -148,17 +150,18 @@
 
   (show-error-window! [stage skin throwable]
     (stage/add-actor! stage
-                      {:type :actor/window
-                       :title "Error"
-                       :rows [[{:actor (label/create (binding [*print-level* 3]
-                                                       (utils/with-err-str
-                                                         (clojure.repl/pst throwable)))
-                                                     skin)}]]
-                       :modal? true
-                       :close-button? true
-                       :close-on-escape? true
-                       :center? true
-                       :pack? true}))
+                      (stage/build
+                       {:type :actor/window
+                        :title "Error"
+                        :rows [[{:actor (label/create (binding [*print-level* 3]
+                                                        (utils/with-err-str
+                                                          (clojure.repl/pst throwable)))
+                                                      skin)}]]
+                        :modal? true
+                        :close-button? true
+                        :close-on-escape? true
+                        :center? true
+                        :pack? true})))
 
   (actor-information [_ actor]
     (let [inventory-slot (inventory-cell-with-item? actor)]
