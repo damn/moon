@@ -2,7 +2,6 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.math.vector2 :as v]
-            [clojure.walk :as walk]
             [gdl.files :as files]
             [gdl.graphics.bitmap-font :as bitmap-font]
             [gdl.graphics.bitmap-font.data :as bitmap-font-data]
@@ -62,6 +61,12 @@
            (gdl.ui Stage))
   (:gen-class))
 
+(defn- edn-resource [path]
+  (->> path
+       io/resource
+       slurp
+       edn/read-string))
+
 (def ^:private schema
   (m/schema
    [:map {:closed true}
@@ -105,7 +110,7 @@
 
 (defn- call-world-fn
   [world-fn creature-properties graphics]
-  (let [[f params] (-> world-fn io/resource slurp edn/read-string)]
+  (let [[f params] (edn-resource world-fn)]
     ((requiring-resolve f)
      (assoc params
             :level/creature-properties (moon.world-fns.creature-tiles/prepare creature-properties
@@ -332,13 +337,25 @@
 (defn- create-player-message-actor [_ctx]
   (message/create message-duration-seconds))
 
+(defn- load-sounds
+  [{:keys [sound-names path-format]}]
+  (let [sound-name->file-handle (into {}
+                                      (for [sound-name (edn-resource sound-names)
+                                            :let [path (format path-format sound-name)]]
+                                        [sound-name
+                                         (.internal Gdx/files path)]))]
+    (into {}
+          (for [[sound-name file-handle] sound-name->file-handle]
+            [sound-name
+             (.newSound Gdx/audio file-handle)]))))
+
 (defn- create! [config]
   (let [graphics (moon.graphics.impl/create! Gdx/graphics Gdx/files (:graphics config))
         stage (moon.ui.impl/create! graphics)
         skin (skin/create (files/internal Gdx/files "uiskin.json"))
         ctx (merge (map->Context {})
                    {:ctx/db (moon.db.impl/create)
-                    :ctx/audio (moon.audio/create Gdx/audio Gdx/files (:audio config))
+                    :ctx/audio (load-sounds (:audio config))
                     :ctx/graphics graphics
                     :ctx/input Gdx/input
                     :ctx/stage stage
@@ -1132,17 +1149,7 @@
       render-stage
       validate))
 
-(defn- edn-resource [path]
-  (->> path
-       io/resource
-       slurp
-       (edn/read-string {:readers {'edn/resource edn-resource}})
-       (walk/postwalk (fn [form]
-                        (if (and (symbol? form) (namespace form))
-                          (let [avar (requiring-resolve form)]
-                            (assert avar form)
-                            avar)
-                          form)))))
+
 
 (def state (atom nil))
 

@@ -1,8 +1,6 @@
 (ns moon.audio
-  (:require [gdl.files :as files]
-            [gdl.utils.disposable :as disposable])
-  (:import (com.badlogic.gdx Audio)
-           (com.badlogic.gdx.audio Sound)))
+  (:require [gdl.utils.disposable :as disposable])
+  (:import (com.badlogic.gdx.audio Sound)))
 
 (defn sound-names [sounds]
   (map first sounds))
@@ -13,15 +11,3 @@
 
 (defn dispose! [sounds]
   (run! disposable/dispose! (vals sounds)))
-
-(defn create
-  [audio files {:keys [sound-names path-format]}]
-  (let [sound-name->file-handle (into {}
-                                      (for [sound-name sound-names
-                                            :let [path (format path-format sound-name)]]
-                                        [sound-name
-                                         (files/internal files path)]))]
-    (into {}
-          (for [[sound-name file-handle] sound-name->file-handle]
-            [sound-name
-             (Audio/.newSound audio file-handle)]))))
