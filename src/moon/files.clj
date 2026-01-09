@@ -1,25 +1,25 @@
 (ns moon.files
-  (:require [clojure.string :as str]
-            [gdl.files :as files]
-            [gdl.files.file-handle :as fh]))
+  (:require [clojure.string :as str])
+  (:import (com.badlogic.gdx Files)
+           (com.badlogic.gdx.files FileHandle)))
 
 (defn- recursively-search
-  [folder extensions]
-  (loop [[file & remaining] (fh/list folder)
+  [^FileHandle folder extensions]
+  (loop [[^FileHandle file & remaining] (.list folder)
          result []]
     (cond (nil? file)
           result
 
-          (fh/directory? file)
-          (recur (concat remaining (fh/list file)) result)
+          (.isDirectory file)
+          (recur (concat remaining (.list file)) result)
 
-          (extensions (fh/extension file))
-          (recur remaining (conj result (fh/path file)))
+          (extensions (.extension file))
+          (recur remaining (conj result (.path file)))
 
           :else
           (recur remaining result))))
 
-(defn search [files {:keys [folder extensions]}]
+(defn search [^Files files {:keys [folder extensions]}]
   (map (fn [path]
          (str/replace-first path folder ""))
-       (recursively-search (files/internal files folder) extensions)))
+       (recursively-search (.internal files folder) extensions)))

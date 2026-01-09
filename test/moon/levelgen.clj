@@ -5,7 +5,6 @@
             [clojure.gdx.backends.lwjgl3.application.configuration :as configuration]
             [clojure.java.io :as io]
             [moon.color :as color]
-            [gdl.files :as files]
             [moon.db :as db]
             [moon.db.impl]
             [moon.files :as files-utils]
@@ -34,7 +33,8 @@
             [gdl.utils.viewport :as viewport]
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [moon.world-fns.creature-tiles])
-  (:import (com.badlogic.gdx ApplicationListener)))
+  (:import (com.badlogic.gdx ApplicationListener
+                             Gdx)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -103,7 +103,7 @@
   [{:keys [ctx/files
            ctx/graphics
            ctx/input]}]
-  (let [skin (skin/create (files/internal files "uiskin.json")) ; TODO dispose
+  (let [skin (skin/create (.internal Gdx/files "uiskin.json")) ; TODO dispose
         ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch)

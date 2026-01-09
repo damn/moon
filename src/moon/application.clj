@@ -1,8 +1,7 @@
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.math.vector2 :as v]
-            [gdl.files :as files]
+            [clojure.math.vector2 :as v] ; assoc-interaction-state
             [gdl.graphics.bitmap-font :as bitmap-font]
             [gdl.graphics.bitmap-font.data :as bitmap-font-data]
             [gdl.input.buttons :as input.buttons]
@@ -352,7 +351,7 @@
 (defn- create! [config]
   (let [graphics (moon.graphics.impl/create! Gdx/graphics Gdx/files (:graphics config))
         stage (moon.ui.impl/create! graphics)
-        skin (skin/create (files/internal Gdx/files "uiskin.json"))
+        skin (skin/create (.internal Gdx/files "uiskin.json"))
         ctx (merge (map->Context {})
                    {:ctx/db (moon.db.impl/create)
                     :ctx/audio (load-sounds (:audio config))
@@ -1148,8 +1147,6 @@
       window-camera-controls
       render-stage
       validate))
-
-
 
 (def state (atom nil))
 

@@ -1,6 +1,5 @@
 (ns moon.graphics.impl
-  (:require [gdl.files :as files]
-            [gdl.graphics :as graphics]
+  (:require [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.bitmap-font :as fnt]
             [gdl.graphics.bitmap-font.data :as data]
@@ -37,7 +36,8 @@
             [moon.graphics.draw.sector]
             [moon.graphics.draw.text]
             [moon.graphics.draw.texture-region]
-            [moon.graphics.draw.with-line-width]))
+            [moon.graphics.draw.with-line-width])
+  (:import (com.badlogic.gdx Gdx)))
 
 (defn- unproject [viewport [x y]]
   (-> viewport
@@ -172,7 +172,7 @@
     (batch/end! batch)))
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
-  (let [pixmap (pixmap/create (files/internal files path))
+  (let [pixmap (pixmap/create (.internal Gdx/files path))
         cursor (graphics/new-cursor graphics pixmap hotspot-x hotspot-y)]
     (pixmap/dispose! pixmap)
     cursor))
@@ -222,7 +222,7 @@
                                                                graphics
                                                                (format (:path-format cursors) path)
                                                                hotspot))))
-        (assoc :graphics/default-font (generate-font (files/internal files (:path default-font))
+        (assoc :graphics/default-font (generate-font (.internal Gdx/files (:path default-font))
                                                      (:params default-font)))
         (assoc :graphics/batch batch)
         (assoc :graphics/shape-drawer-texture shape-drawer-texture)
