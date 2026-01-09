@@ -63,7 +63,7 @@
   (configuration/use-glfw-async!)
   (let [listener (reify ApplicationListener
                    (create [_]
-                     (reset! state (create! ctx)))
+                     (reset! state (create! (gdx/context))))
 
                    (dispose [_]
                      (dispose! @state))

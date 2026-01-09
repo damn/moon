@@ -4,7 +4,7 @@
  [clojure.core/require moon.ui.editor.window]
  [clojure.core/require moon.ui.editor.widgets-impl]
  [clojure.core/require moon.entity.state-impl]
- [moon.application/start!
+ [moon.application.desktop/start!
   {
    :title "Cyber Dungeon Quest"
    :window {:width 1440
