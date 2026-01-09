@@ -23,6 +23,7 @@
             [moon.ui.info-window :as info-window]
             [moon.ui.message :as message]
             [moon.world :as world]
+            [moon.world.impl]
             [moon.world.info :as info]
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
@@ -198,8 +199,7 @@
                        handled-txs))))
 
 (defn- create-world
-  [{:keys [ctx/config
-           ctx/db
+  [{:keys [ctx/db
            ctx/graphics
            ctx/world]
     :as ctx}
@@ -208,7 +208,7 @@
                                        (db/all-raw db :properties/creatures)
                                        graphics)]
     (-> ctx
-        (assoc :ctx/world ((:world-impl config) world-params world-fn-result))
+        (assoc :ctx/world (moon.world.impl/create world-params world-fn-result))
         spawn-player!
         spawn-enemies!)))
 
@@ -305,7 +305,6 @@
         ctx (merge (map->Context {})
                    {:ctx/db (moon.db.impl/create)
                     :ctx/audio (moon.audio/create Gdx/audio Gdx/files (:audio config))
-                    :ctx/config (:config config)
                     :ctx/graphics graphics
                     :ctx/input Gdx/input
                     :ctx/stage stage

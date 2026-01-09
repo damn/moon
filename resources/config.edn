@@ -5,7 +5,6 @@
  :fps 60
  :audio #edn/resource "audio.edn"
  :graphics #edn/resource "graphics.edn"
- :config {:world-impl moon.world.impl/create}
  :world #edn/resource "world.edn"
  :render!  [[moon.application.render.get-stage-ctx/step]
             [moon.application.render.validate/step]
