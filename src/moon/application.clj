@@ -1,4 +1,5 @@
 ; Here 'ctx' , dont pass it anywhere else? mimal 'orchestration' ?
+; => Nobody knows knows about 'ctx' -> editor has to be a separate application.
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -79,32 +80,6 @@
 
 (defn- validate [ctx]
   (mu/validate-humanize schema ctx)
-  ctx)
-
-(defn- spawn-player!
-  [{:keys [ctx/db
-           ctx/world]
-    :as ctx}]
-  (txs/handle! ctx
-               [[:tx/spawn-creature (let [{:keys [creature-id
-                                                  components]} (:world/player-components world)]
-                                      {:position (mapv (partial + 0.5) (:world/start-position world))
-                                       :creature-property (db/build db creature-id)
-                                       :components components})]])
-  (let [eid (get @(:world/entity-ids world) 1)]
-    (assert (:entity/player? @eid))
-    (assoc-in ctx [:ctx/world :world/player-eid] eid)))
-
-(defn- spawn-enemies!
-  [{:keys [ctx/db
-           ctx/world]
-    :as ctx}]
-  (txs/handle!
-   ctx
-   (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]
-     [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
-                          :creature-property (db/build db (keyword creature-id))
-                          :components (:world/enemy-components world)}]))
   ctx)
 
 (defn- call-world-fn
@@ -426,12 +401,27 @@
       (stage/add-actor! stage actor))
     (let [world-fn-result (call-world-fn (:world config)
                                          (db/all-raw db :properties/creatures)
-                                         graphics)]
-      (-> ctx
+                                         graphics)
           ; TODO world-params via config ?
-          (assoc :ctx/world (moon.world.impl/create world-params world-fn-result))
-          spawn-player! ; takes whole ctx?!
-          spawn-enemies!)))) ; takes whole ctx?!
+          world (moon.world.impl/create world-params world-fn-result)
+          ctx (assoc ctx :ctx/world world)
+          _ (txs/handle! ctx
+                         [[:tx/spawn-creature (let [{:keys [creature-id
+                                                            components]} (:world/player-components world)]
+                                                {:position (mapv (partial + 0.5) (:world/start-position world))
+                                                 :creature-property (db/build db creature-id)
+                                                 :components components})]])
+          ctx (let [eid (get @(:world/entity-ids world) 1)]
+                (assert (:entity/player? @eid))
+                (assoc-in ctx [:ctx/world :world/player-eid] eid))]
+      (txs/handle!
+       ctx
+       (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]
+         [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
+                              :creature-property (db/build db (keyword creature-id))
+                              :components (:world/enemy-components world)}]))
+
+      ctx)))
 
 (defn- dispose!
   [{:keys [ctx/audio
