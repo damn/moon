@@ -3,19 +3,11 @@
  :window {:width 1440
           :height 900}
  :fps 60
- :create! [[moon.application.create.record/step]
-           [moon.application.create.graphics/step {:impl moon.graphics.impl/create!
-                                                   :config #edn/resource "graphics.edn"}]
-           [moon.application.create.ui/step {:impl moon.ui.impl/create!}]
-           [moon.application.create.skin/step]
-           [moon.application.create.audio/step {:impl moon.audio/create
-                                                :config #edn/resource "audio.edn"}]
-           [moon.application.create.db/step moon.db.impl/create]
-           [moon.application.create.input/step]
-           [moon.application.create.config/step {:world-impl moon.world.impl/create
-                                                 :config/actor-create-fns #edn/resource "actor-create-fns.edn"}]
-           [moon.application.create.add-actors/step]
-           [moon.application.create.world/step #edn/resource "world.edn"]]
+ :audio #edn/resource "audio.edn"
+ :graphics #edn/resource "graphics.edn"
+ :config/actor-create-fns #edn/resource "actor-create-fns.edn"
+ :config {:world-impl moon.world.impl/create}
+ :world #edn/resource "world.edn"
  :dispose! moon.application.dispose/do!
  :render!  [[moon.application.render.get-stage-ctx/step]
             [moon.application.render.validate/step]

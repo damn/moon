@@ -1,33 +1,23 @@
 (ns moon.application.desktop
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.gdx :as gdx]
-            [clojure.gdx.backends.lwjgl3.application :as application]
-            [clojure.gdx.backends.lwjgl3.application.configuration :as configuration]
             [clojure.walk :as walk]
-            moon.ui.build.editor-window
-            moon.ui.dev-menu
-            moon.ui.editor.overview-window
-            moon.ui.editor.window
-            moon.ui.editor.widgets-impl
-            moon.entity.state-impl)
-  (:import (com.badlogic.gdx ApplicationListener))
+            [moon.application :as application])
+  (:import (com.badlogic.gdx ApplicationListener)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration))
   (:gen-class))
 
 (def state (atom nil))
 
 (defn start! [config]
-  (configuration/use-glfw-async!)
-  (let [create!  (:create!  config)
-        dispose! (:dispose! config)
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (let [dispose! (:dispose! config)
         render!  (:render!  config)
         resize!  (:resize!  config)
         listener (reify ApplicationListener
                    (create [_]
-                     (reset! state (reduce (fn [ctx [f & params]]
-                                             (apply f ctx params))
-                                           (gdx/context)
-                                           create!)))
+                     (reset! state (application/create! config)))
 
                    (dispose [_]
                      (dispose! @state))
@@ -45,7 +35,12 @@
                    (pause [_])
 
                    (resume [_]))]
-    (application/create listener (configuration/create config))))
+    (Lwjgl3Application. listener
+                        (doto (Lwjgl3ApplicationConfiguration.)
+                          (.setTitle (:title config))
+                          (.setWindowedMode (:width (:window config))
+                                            (:height (:window config)))
+                          (.setForegroundFPS (:fps config))))))
 
 (defn- edn-resource [path]
   (->> path

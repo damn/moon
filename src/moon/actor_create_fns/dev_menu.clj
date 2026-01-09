@@ -6,8 +6,8 @@
   [ctx]
   (moon.application.create.ui.dev-menu-config/create
    ctx
-   (fn rebuild-actors! [stage ctx]
+   nil #_(fn rebuild-actors! [stage ctx]
      (stage/clear! stage)
      ((requiring-resolve 'moon.application.create.add-actors/step) ctx))
-   (requiring-resolve 'moon.application.create.world/step)
-   (requiring-resolve 'moon.application.open-editor/do!)))
+   nil #_(requiring-resolve 'moon.application.create.world/step)
+   nil #_(requiring-resolve 'moon.application.open-editor/do!)))
