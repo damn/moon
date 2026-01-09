@@ -1148,24 +1148,23 @@
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (let [config (edn-resource "config.edn")
-        listener (reify ApplicationListener
-                   (create [_]
-                     (reset! state (create! config)))
+  (let [config (edn-resource "config.edn")]
+    (Lwjgl3Application. (reify ApplicationListener
+                          (create [_]
+                            (reset! state (create! config)))
 
-                   (dispose [_]
-                     (dispose! @state))
+                          (dispose [_]
+                            (dispose! @state))
 
-                   (render [_]
-                     (swap! state render!))
+                          (render [_]
+                            (swap! state render!))
 
-                   (resize [_ width height]
-                     (resize! @state width height))
+                          (resize [_ width height]
+                            (resize! @state width height))
 
-                   (pause [_])
+                          (pause [_])
 
-                   (resume [_]))]
-    (Lwjgl3Application. listener
+                          (resume [_]))
                         (doto (Lwjgl3ApplicationConfiguration.)
                           (.setTitle (:title config))
                           (.setWindowedMode (:width (:window config))
