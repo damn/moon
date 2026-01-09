@@ -311,19 +311,20 @@
                         :update-fn (fn [ctx]
                                      (graphics/zoom (:ctx/graphics ctx)))
                         :icon "images/zoom.png"}]]
-    {:type :actor/dev-menu
-     :menus [ctx-data-viewer
-             (open-editor db)
-             help-info-text
-             select-world]
-     :update-labels (for [item update-labels]
-                      (if (:icon item)
-                        (update item :icon #(get (:graphics/textures graphics) %))
-                        item))
-     :skin skin}))
+    (stage/build
+     {:type :actor/dev-menu
+      :menus [ctx-data-viewer
+              (open-editor db)
+              help-info-text
+              select-world]
+      :update-labels (for [item update-labels]
+                       (if (:icon item)
+                         (update item :icon #(get (:graphics/textures graphics) %))
+                         item))
+      :skin skin})))
 
 (defn- create-action-bar [_ctx]
-  {:type :actor/action-bar})
+  (stage/build {:type :actor/action-bar}))
 
 (defn- create-hp-mana-bar* [create-draws]
   {:type :actor/actor
@@ -334,7 +335,8 @@
                              (create-draws (stage/ctx stage)))))})
 
 (defn- create-hp-mana-bar [ctx]
-  (create-hp-mana-bar* (hp-mana-bar-config/create ctx)))
+  (stage/build
+   (create-hp-mana-bar* (hp-mana-bar-config/create ctx))))
 
 (defn- create-info-window
   [{:keys [ctx/skin
@@ -356,11 +358,12 @@
 (defn- create-ui-windows
   [{:keys [ctx/skin]
     :as ctx}]
-  {:type :actor/group
-   :actor/name "moon.ui.windows"
-   :group/actors (for [f [create-info-window
-                          inventory-window/create]]
-                   (f ctx))})
+  (stage/build
+   {:type :actor/group
+    :actor/name "moon.ui.windows"
+    :group/actors (for [f [create-info-window
+                           inventory-window/create]]
+                    (f ctx))}))
 
 (def state->draw-ui-view
   {:player-item-on-cursor (fn
@@ -388,15 +391,16 @@
       (graphics/draw! graphics (f player-eid ctx)))))
 
 (defn- create-player-state-draw-actor [_ctx]
-  {:type :actor/actor
-   :draw (fn [this _batch _parent-alpha]
-           (player-state-handle-draws (stage/ctx (actor/stage this))))
-   :act (fn [_ _delta])})
+  (stage/build
+   {:type :actor/actor
+    :draw (fn [this _batch _parent-alpha]
+            (player-state-handle-draws (stage/ctx (actor/stage this))))
+    :act (fn [_ _delta])}))
 
 (def message-duration-seconds 0.5)
 
 (defn- create-player-message-actor [_ctx]
-  (message/create message-duration-seconds))
+  (stage/build (message/create message-duration-seconds)))
 
 (defn- load-sounds
   [audio files {:keys [sound-names path-format]}]
@@ -437,7 +441,7 @@
                              create-ui-windows
                              create-player-state-draw-actor
                              create-player-message-actor]]
-      (stage/add-actor! stage (stage/build (actor-create-fn ctx))))
+      (stage/add-actor! stage (actor-create-fn ctx)))
     (create-world ctx (:world config))))
 
 (defn- dispose!
