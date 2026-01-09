@@ -6,16 +6,24 @@
             [gdl.graphics.bitmap-font :as bitmap-font]
             [gdl.graphics.bitmap-font.data :as bitmap-font-data]
             [gdl.input :as input]
+            [gdl.ui.actor :as actor]
             [gdl.ui.stage :as stage]
             [gdl.ui.skin :as skin]
             [gdl.utils.disposable :as disposable]
+            moon.application.create.ui.dev-menu-config
+            [moon.application.create.ui.hp-mana-bar-config :as hp-mana-bar-config]
+            [moon.application.create.ui.inventory-window :as inventory-window]
             [moon.audio :as audio]
             [moon.db :as db]
             [moon.db.impl]
+            [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.graphics :as graphics]
             [moon.graphics.impl]
             [moon.ui :as ui]
+            [moon.ui.info-window :as info-window]
+            [moon.ui.message :as message]
             [moon.world :as world]
+            [moon.world.info :as info]
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
             moon.ui.impl
@@ -204,6 +212,92 @@
         spawn-player!
         spawn-enemies!)))
 
+(defn- create-dev-menu
+  [ctx]
+  (moon.application.create.ui.dev-menu-config/create
+   ctx
+   nil #_(fn rebuild-actors! [stage ctx]
+           (stage/clear! stage)
+           ((requiring-resolve 'moon.application.create.add-actors/step) ctx)) ; remove
+   nil #_(requiring-resolve 'moon.application.create.world/step); remove
+   nil #_(requiring-resolve 'moon.application.open-editor/do!))) ; editor separte ... - javafx ? -
+
+(defn- create-action-bar [_ctx]
+  {:type :actor/action-bar})
+
+(defn- create-hp-mana-bar* [create-draws]
+  {:type :actor/actor
+   :act (fn [_this _delta])
+   :draw (fn [actor _batch _parent-alpha]
+           (when-let [stage (actor/stage actor)]
+             (graphics/draw! (:ctx/graphics (stage/ctx stage))
+                             (create-draws (stage/ctx stage)))))})
+
+(defn- create-hp-mana-bar [ctx]
+  (create-hp-mana-bar* (hp-mana-bar-config/create ctx)))
+
+(defn- create-info-window
+  [{:keys [ctx/skin
+           ctx/stage]
+    :as ctx}]
+  (info-window/create skin
+                      {:title "Entity Info"
+                       :actor-name "moon.ui.windows.entity-info"
+                       :visible? false
+                       :position [(ui/viewport-width stage) 0]
+                       :set-label-text! (fn [{:keys [ctx/world]}]
+                                          (if-let [eid (:world/mouseover-eid world)]
+                                            (info/text (apply dissoc @eid [:entity/skills
+                                                                           :entity/faction
+                                                                           :active-skill])
+                                                       world)
+                                            ""))}))
+
+(defn- create-ui-windows
+  [{:keys [ctx/skin]
+    :as ctx}]
+  {:type :actor/group
+   :actor/name "moon.ui.windows"
+   :group/actors (for [f [create-info-window
+                          inventory-window/create]]
+                   (f ctx))})
+
+(def state->draw-ui-view
+  {:player-item-on-cursor (fn
+                            [eid
+                             {:keys [ctx/graphics
+                                     ctx/input
+                                     ctx/stage]}]
+                            ; TODO see player-item-on-cursor at render layers
+                            ; always draw it here at right position, then render layers does not need input/stage
+                            ; can pass world to graphics, not handle here at application
+                            (when (not (player-item-on-cursor/world-item? (ui/mouseover-actor stage (input/mouse-position input))))
+                              [[:draw/texture-region
+                                (graphics/texture-region graphics (:entity/image (:entity/item-on-cursor @eid)))
+                                (:graphics/ui-mouse-position graphics)
+                                {:center? true}]]))})
+
+(defn- player-state-handle-draws
+  [{:keys [ctx/graphics
+           ctx/world]
+    :as ctx}]
+  (let [player-eid (:world/player-eid world)
+        entity @player-eid
+        state-k (:state (:entity/fsm entity))]
+    (when-let [f (state->draw-ui-view state-k)]
+      (graphics/draw! graphics (f player-eid ctx)))))
+
+(defn- create-player-state-draw-actor [_ctx]
+  {:type :actor/actor
+   :draw (fn [this _batch _parent-alpha]
+           (player-state-handle-draws (stage/ctx (actor/stage this))))
+   :act (fn [_ _delta])})
+
+(def message-duration-seconds 0.5)
+
+(defn- create-player-message-actor [_ctx]
+  (message/create message-duration-seconds))
+
 (defn- create! [config]
   (let [graphics (moon.graphics.impl/create! Gdx/graphics Gdx/files (:graphics config))
         stage (moon.ui.impl/create! graphics)
@@ -216,13 +310,18 @@
                     :ctx/input Gdx/input
                     :ctx/stage stage
                     :ctx/skin skin})]
-    (input/set-processor! Gdx/input stage)
+    (.setInputProcessor Gdx/input stage)
     (-> skin
         (skin/font "default-font")
         bitmap-font/data
         (bitmap-font-data/set-enable-markup! true))
-    (doseq [[actor-create-fn & params] (:config/actor-create-fns config)]
-      (stage/add-actor! stage (stage/build (apply actor-create-fn ctx params)))) ; TODO needs what from ctx?
+    (doseq [actor-create-fn [create-dev-menu
+                             create-action-bar
+                             create-hp-mana-bar
+                             create-ui-windows
+                             create-player-state-draw-actor
+                             create-player-message-actor]]
+      (stage/add-actor! stage (stage/build (actor-create-fn ctx))))
     (create-world ctx (:world config))))
 
 (defn- dispose!
