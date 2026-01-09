@@ -236,20 +236,6 @@
                        ctx
                        handled-txs))))
 
-(defn- create-world
-  [{:keys [ctx/db
-           ctx/graphics
-           ctx/world]
-    :as ctx}
-   world-fn]
-  (let [world-fn-result (call-world-fn world-fn
-                                       (db/all-raw db :properties/creatures)
-                                       graphics)]
-    (-> ctx
-        (assoc :ctx/world (moon.world.impl/create world-params world-fn-result))
-        spawn-player!
-        spawn-enemies!)))
-
 (defn- create-dev-menu
   [db graphics skin]
   (let [open-editor (fn [db]
@@ -277,7 +263,7 @@
                                                   #_(fn rebuild-actors! [stage ctx]
                                                       (stage/clear! stage)
                                                       ((requiring-resolve 'moon.application.create.add-actors/step) ctx))
-                                                  crete-world nil
+                                                  create-world nil
                                                   #_(requiring-resolve 'moon.application.create.world/step)
                                                   ui stage
                                                   stage (actor/stage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
@@ -419,7 +405,7 @@
         graphics (graphics/create! graphics files (:graphics config))
         stage (ui/create! graphics)
         skin (skin/create (Files/.internal files "uiskin.json"))
-        ctx (merge (map->Context {})
+        ctx (merge (map->Context {}) ; record not needed - txs/handle! in here? & throwable ?
                    {:ctx/audio (load-sounds audio files (:audio config))
                     :ctx/db db
                     :ctx/graphics graphics
@@ -438,7 +424,14 @@
                    (create-player-state-draw-actor)
                    (create-player-message-actor)]]
       (stage/add-actor! stage actor))
-    (create-world ctx (:world config))))
+    (let [world-fn-result (call-world-fn (:world config)
+                                         (db/all-raw db :properties/creatures)
+                                         graphics)]
+      (-> ctx
+          ; TODO world-params via config ?
+          (assoc :ctx/world (moon.world.impl/create world-params world-fn-result))
+          spawn-player! ; takes whole ctx?!
+          spawn-enemies!)))) ; takes whole ctx?!
 
 (defn- dispose!
   [{:keys [ctx/audio
