@@ -6,7 +6,6 @@
             [clojure.java.io :as io]
             [moon.color :as color]
             [moon.db :as db]
-            [moon.db.impl]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
             [gdl.graphics.sprite-batch :as sprite-batch]
@@ -112,7 +111,7 @@
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage}
         ctx (-> ctx
-                (assoc :ctx/db (moon.db.impl/create)))
+                (assoc :ctx/db (db/create)))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (fit-viewport/create world-width

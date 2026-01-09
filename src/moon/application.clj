@@ -17,7 +17,6 @@
             [moon.audio :as audio]
             [moon.color :as color]
             [moon.db :as db]
-            [moon.db.impl]
             [moon.effects.target-all :as target-all]
             [moon.effects.target-entity :as target-entity]
             [moon.entity.animation :as animation]
@@ -359,7 +358,7 @@
         stage (ui/create! graphics)
         skin (skin/create (.internal files "uiskin.json"))
         ctx (merge (map->Context {})
-                   {:ctx/db (moon.db.impl/create)
+                   {:ctx/db (db/create)
                     :ctx/audio (load-sounds audio files (:audio config))
                     :ctx/graphics graphics
                     :ctx/input input
