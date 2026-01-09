@@ -12,7 +12,7 @@
             [moon.ui.widget :as widget]
             [moon.ui.window :as window]))
 
-(defmethod stage/build :actor/editor-window
+(defn create
   [{:keys [ctx
            property]}]
   (let [{:keys [ctx/db

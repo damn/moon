@@ -8,6 +8,7 @@
             [malli.utils :as mu]
             [moon.db.schemas :as schemas]
             [moon.malli :as malli]
+            [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.schema :as schema]
             [moon.ui.separator :as separator]
             [moon.ui.table :as table]
@@ -40,9 +41,8 @@
                              (group/find-actor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
-    (stage/add-actor! stage (stage/build
-                             {:type :actor/editor-window
-                              :ctx ctx
+    (stage/add-actor! stage (editor-window/create
+                             {:ctx ctx
                               :property property}))))
 
 (defn- k->label-text [k]
