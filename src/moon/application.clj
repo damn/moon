@@ -54,7 +54,10 @@
             [moon.txs :as txs]
             [qrecord.core :as q])
   (:import (com.badlogic.gdx ApplicationListener
-                             Gdx)
+                             Audio
+                             Files
+                             Gdx
+                             Input)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (gdl.ui Stage))
@@ -337,29 +340,34 @@
   (message/create message-duration-seconds))
 
 (defn- load-sounds
-  [{:keys [sound-names path-format]}]
+  [audio files {:keys [sound-names path-format]}]
   (let [sound-name->file-handle (into {}
                                       (for [sound-name (edn-resource sound-names)
                                             :let [path (format path-format sound-name)]]
                                         [sound-name
-                                         (.internal Gdx/files path)]))]
+                                         (Files/.internal files path)]))]
     (into {}
           (for [[sound-name file-handle] sound-name->file-handle]
             [sound-name
-             (.newSound Gdx/audio file-handle)]))))
+             (Audio/.newSound audio file-handle)]))))
 
-(defn- create! [config]
-  (let [graphics (moon.graphics.impl/create! Gdx/graphics Gdx/files (:graphics config))
+(defn- create!
+  [{:keys [gdx/audio
+           ^Files gdx/files
+           gdx/graphics
+           ^Input gdx/input]}
+   config]
+  (let [graphics (moon.graphics.impl/create! graphics files (:graphics config))
         stage (moon.ui.impl/create! graphics)
-        skin (skin/create (.internal Gdx/files "uiskin.json"))
+        skin (skin/create (.internal files "uiskin.json"))
         ctx (merge (map->Context {})
                    {:ctx/db (moon.db.impl/create)
-                    :ctx/audio (load-sounds (:audio config))
+                    :ctx/audio (load-sounds audio files (:audio config))
                     :ctx/graphics graphics
-                    :ctx/input Gdx/input
+                    :ctx/input input
                     :ctx/stage stage
                     :ctx/skin skin})]
-    (.setInputProcessor Gdx/input stage)
+    (.setInputProcessor input stage)
     (-> skin
         (skin/font "default-font")
         bitmap-font/data
@@ -1155,7 +1163,12 @@
   (let [config (edn-resource "config.edn")]
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
-                            (reset! state (create! config)))
+                            (reset! state (create!
+                                           {:gdx/audio    Gdx/audio
+                                            :gdx/files    Gdx/files
+                                            :gdx/graphics Gdx/graphics
+                                            :gdx/input    Gdx/input}
+                                           config)))
 
                           (dispose [_]
                             (dispose! @state))
