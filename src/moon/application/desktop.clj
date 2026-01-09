@@ -1,8 +1,16 @@
 (ns moon.application.desktop
-  (:require [clojure.gdx :as gdx]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [clojure.gdx :as gdx]
             [clojure.gdx.backends.lwjgl3.application :as application]
             [clojure.gdx.backends.lwjgl3.application.configuration :as configuration]
-            [moon.core :refer [call edn-resource]])
+            [clojure.walk :as walk]
+            moon.ui.build.editor-window
+            moon.ui.dev-menu
+            moon.ui.editor.overview-window
+            moon.ui.editor.window
+            moon.ui.editor.widgets-impl
+            moon.entity.state-impl)
   (:import (com.badlogic.gdx ApplicationListener))
   (:gen-class))
 
@@ -39,5 +47,17 @@
                    (resume [_]))]
     (application/create listener (configuration/create config))))
 
+(defn- edn-resource [path]
+  (->> path
+       io/resource
+       slurp
+       (edn/read-string {:readers {'edn/resource edn-resource}})
+       (walk/postwalk (fn [form]
+                        (if (and (symbol? form) (namespace form))
+                          (let [avar (requiring-resolve form)]
+                            (assert avar form)
+                            avar)
+                          form)))))
+
 (defn -main []
-  (run! call (edn-resource "config.edn")))
+  (start! (edn-resource "config.edn")))
