@@ -42,7 +42,6 @@
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
             [moon.world.raycaster :as raycaster]
-            moon.ui.impl
             moon.ui.build.editor-window
             moon.ui.dev-menu
             moon.ui.editor.overview-window
@@ -357,7 +356,7 @@
            ^Input gdx/input]}
    config]
   (let [graphics (graphics/create! graphics files (:graphics config))
-        stage (moon.ui.impl/create! graphics)
+        stage (ui/create! graphics)
         skin (skin/create (.internal files "uiskin.json"))
         ctx (merge (map->Context {})
                    {:ctx/db (moon.db.impl/create)
