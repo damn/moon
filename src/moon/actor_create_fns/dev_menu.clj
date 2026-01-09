@@ -8,6 +8,6 @@
    ctx
    nil #_(fn rebuild-actors! [stage ctx]
      (stage/clear! stage)
-     ((requiring-resolve 'moon.application.create.add-actors/step) ctx))
-   nil #_(requiring-resolve 'moon.application.create.world/step)
-   nil #_(requiring-resolve 'moon.application.open-editor/do!)))
+     ((requiring-resolve 'moon.application.create.add-actors/step) ctx)) ; remove
+   nil #_(requiring-resolve 'moon.application.create.world/step); remove
+   nil #_(requiring-resolve 'moon.application.open-editor/do!))) ; editor separte ... - javafx ? -
