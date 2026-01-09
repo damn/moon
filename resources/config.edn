@@ -8,7 +8,6 @@
  :config/actor-create-fns #edn/resource "actor-create-fns.edn"
  :config {:world-impl moon.world.impl/create}
  :world #edn/resource "world.edn"
- :dispose! moon.application.dispose/do!
  :render!  [[moon.application.render.get-stage-ctx/step]
             [moon.application.render.validate/step]
             [moon.application.render.update-mouse/step]
@@ -35,5 +34,4 @@
             [moon.application.render.window-camera-controls/step]
             [moon.application.render.render-stage/step]
             [moon.application.render.validate/step]]
- :resize! moon.application.update-viewports/do!
  }

@@ -8,11 +8,14 @@
             [gdl.input :as input]
             [gdl.ui.stage :as stage]
             [gdl.ui.skin :as skin]
-            moon.audio
+            [gdl.utils.disposable :as disposable]
+            [moon.audio :as audio]
             [moon.db :as db]
             [moon.db.impl]
             [moon.graphics :as graphics]
             [moon.graphics.impl]
+            [moon.ui :as ui]
+            [moon.world :as world]
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
             moon.ui.impl
@@ -222,13 +225,44 @@
       (stage/add-actor! stage (stage/build (apply actor-create-fn ctx params)))) ; TODO needs what from ctx?
     (create-world ctx (:world config))))
 
+(defn- dispose!
+  [{:keys [ctx/audio
+           ctx/graphics
+           ctx/skin
+           ctx/stage
+           ctx/world]
+    :as ctx}]
+  (audio/dispose! audio)
+  (graphics/dispose! graphics)
+  (ui/dispose! stage)
+  (disposable/dispose! skin)
+  (world/dispose! world)
+  ctx)
+
+(defn- resize!
+  [{:keys [ctx/graphics] :as ctx} width height]
+  (graphics/update-ui-viewport! graphics width height)
+  (graphics/update-world-vp! graphics width height)
+  ctx)
+
+(defn- edn-resource [path]
+  (->> path
+       io/resource
+       slurp
+       (edn/read-string {:readers {'edn/resource edn-resource}})
+       (walk/postwalk (fn [form]
+                        (if (and (symbol? form) (namespace form))
+                          (let [avar (requiring-resolve form)]
+                            (assert avar form)
+                            avar)
+                          form)))))
+
 (def state (atom nil))
 
-(defn start! [config]
+(defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (let [dispose! (:dispose! config)
+  (let [config (edn-resource "config.edn")
         render!  (:render!  config)
-        resize!  (:resize!  config)
         listener (reify ApplicationListener
                    (create [_]
                      (reset! state (create! config)))
@@ -255,18 +289,3 @@
                           (.setWindowedMode (:width (:window config))
                                             (:height (:window config)))
                           (.setForegroundFPS (:fps config))))))
-
-(defn- edn-resource [path]
-  (->> path
-       io/resource
-       slurp
-       (edn/read-string {:readers {'edn/resource edn-resource}})
-       (walk/postwalk (fn [form]
-                        (if (and (symbol? form) (namespace form))
-                          (let [avar (requiring-resolve form)]
-                            (assert avar form)
-                            avar)
-                          form)))))
-
-(defn -main []
-  (start! (edn-resource "config.edn")))
