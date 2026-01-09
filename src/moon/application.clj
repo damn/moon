@@ -2,6 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.math.vector2 :as v] ; assoc-interaction-state
+            [clojure.string :as str]
             [gdl.graphics.bitmap-font :as bitmap-font]
             [gdl.graphics.bitmap-font.data :as bitmap-font-data]
             [gdl.input.buttons :as input.buttons]
@@ -12,7 +13,6 @@
             [malli.core :as m]
             [malli.utils :as mu]
             moon.application.open-editor
-            moon.application.create.ui.dev-menu-config
             [moon.application.create.ui.hp-mana-bar-config :as hp-mana-bar-config]
             [moon.application.create.ui.inventory-window :as inventory-window]
             [moon.audio :as audio]
@@ -250,14 +250,77 @@
         spawn-enemies!)))
 
 (defn- create-dev-menu
-  [ctx]
-  (moon.application.create.ui.dev-menu-config/create
-   ctx
-   nil #_(fn rebuild-actors! [stage ctx]
-           (stage/clear! stage)
-           ((requiring-resolve 'moon.application.create.add-actors/step) ctx))
-   nil #_(requiring-resolve 'moon.application.create.world/step)
-   moon.application.open-editor/do!))
+  [{:keys [ctx/db
+           ctx/graphics
+           ctx/skin]}]
+  (let [open-editor (fn [db]
+                      {:label "Editor"
+                       :items (for [property-type (sort (db/property-types db))]
+                                {:label (str/capitalize (name property-type))
+                                 :on-click (fn [_actor ctx]
+                                             (moon.application.open-editor/do! ctx property-type))})})
+
+
+        ctx-data-viewer {:label "Ctx Data"
+                         :items [{:label "Show data"
+                                  :on-click (fn [_actor {:keys [ctx/skin
+                                                                ctx/stage] :as ctx}]
+                                              (ui/show-data-viewer! stage ctx skin))}]}
+        help-info-text {:label "Help"
+                        :items [{:label input/info-text}]}
+        select-world {:label "Select World"
+                      :items (for [world-fn ["world_fns/vampire.edn"
+                                             "world_fns/uf_caves.edn"
+                                             "world_fns/modules.edn"]]
+                               {:label (str "Start " world-fn)
+                                :on-click (fn [actor {:keys [ctx/stage] :as ctx}]
+                                            (let [rebuild-actors! nil
+                                                  #_(fn rebuild-actors! [stage ctx]
+                                                      (stage/clear! stage)
+                                                      ((requiring-resolve 'moon.application.create.add-actors/step) ctx))
+                                                  crete-world nil
+                                                  #_(requiring-resolve 'moon.application.create.world/step)
+                                                  ui stage
+                                                  stage (actor/stage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
+                                              (rebuild-actors! ui ctx)
+                                              (world/dispose! (:ctx/world ctx))
+                                              (stage/set-ctx! stage (create-world ctx world-fn))))})}
+        update-labels [{:label "elapsed-time"
+                        :update-fn (fn [ctx]
+                                     (str (utils/readable-number (:world/elapsed-time (:ctx/world ctx))) " seconds"))
+                        :icon "images/clock.png"}
+                       {:label "FPS"
+                        :update-fn (fn [ctx]
+                                     (graphics/frames-per-second (:ctx/graphics ctx)))
+                        :icon "images/fps.png"}
+                       {:label "Mouseover-entity id"
+                        :update-fn (fn [{:keys [ctx/world]}]
+                                     (let [eid (:world/mouseover-eid world)]
+                                       (when-let [entity (and eid @eid)]
+                                         (:entity/id entity))))
+                        :icon "images/mouseover.png"}
+                       {:label "paused?"
+                        :update-fn (comp :world/paused? :ctx/world)}
+                       {:label "GUI"
+                        :update-fn (fn [{:keys [ctx/graphics]}]
+                                     (mapv int (:graphics/ui-mouse-position graphics)))}
+                       {:label "World"
+                        :update-fn (fn [{:keys [ctx/graphics]}]
+                                     (mapv int (:graphics/world-mouse-position graphics)))}
+                       {:label "Zoom"
+                        :update-fn (fn [ctx]
+                                     (graphics/zoom (:ctx/graphics ctx)))
+                        :icon "images/zoom.png"}]]
+    {:type :actor/dev-menu
+     :menus [ctx-data-viewer
+             (open-editor db)
+             help-info-text
+             select-world]
+     :update-labels (for [item update-labels]
+                      (if (:icon item)
+                        (update item :icon #(get (:graphics/textures graphics) %))
+                        item))
+     :skin skin}))
 
 (defn- create-action-bar [_ctx]
   {:type :actor/action-bar})
