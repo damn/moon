@@ -1,7 +1,6 @@
 (ns moon.ui.editor.overview-window
   (:require [gdl.ui.actor :as actor]
             [gdl.ui.label :as label]
-            [gdl.ui.stage :as stage]
             [gdl.ui.touchable :as touchable]
             [moon.db :as db]
             [moon.graphics :as graphics]
@@ -72,7 +71,7 @@
          (partition-all columns)
          (overview-table-rows* skin image-scale))))
 
-(defmethod stage/build :actor/editor-overview-window
+(defn create
   [{:keys [db
            graphics
            skin

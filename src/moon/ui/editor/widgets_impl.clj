@@ -14,6 +14,7 @@
             [moon.ui :as ui]
             [moon.ui.editor.property :as property]
             [moon.ui.editor.schema :refer [create value]]
+            [moon.ui.editor.overview-window :as overview-window]
             [moon.ui.image :as image]
             [moon.ui.image-button :as image-button]
             [moon.ui.table :as table]
@@ -107,9 +108,8 @@
                                                  ctx/stage]}]
                                (stage/add-actor!
                                 stage
-                                (stage/build
-                                 {:type :actor/editor-overview-window
-                                  :db db
+                                (overview-window/create
+                                 {:db db
                                   :graphics graphics
                                   :skin skin
                                   :property-type property-type
@@ -166,9 +166,8 @@
                                                    ctx/stage]}]
                                  (stage/add-actor!
                                   stage
-                                  (stage/build
-                                   {:type :actor/editor-overview-window
-                                    :db db
+                                  (overview-window/create
+                                   {:db db
                                     :graphics graphics
                                     :skin skin
                                     :property-type property-type

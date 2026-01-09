@@ -11,6 +11,7 @@
             [gdl.utils.disposable :as disposable]
             [malli.core :as m]
             [malli.utils :as mu]
+            moon.application.open-editor
             moon.application.create.ui.dev-menu-config
             [moon.application.create.ui.hp-mana-bar-config :as hp-mana-bar-config]
             [moon.application.create.ui.inventory-window :as inventory-window]
@@ -43,7 +44,6 @@
             [moon.world.raycaster :as raycaster]
             moon.ui.build.editor-window
             moon.ui.dev-menu
-            moon.ui.editor.overview-window
             moon.ui.editor.window
             moon.ui.editor.widgets-impl
             moon.entity.state-impl
@@ -256,9 +256,9 @@
    ctx
    nil #_(fn rebuild-actors! [stage ctx]
            (stage/clear! stage)
-           ((requiring-resolve 'moon.application.create.add-actors/step) ctx)) ; remove
-   nil #_(requiring-resolve 'moon.application.create.world/step); remove
-   nil #_(requiring-resolve 'moon.application.open-editor/do!))) ; editor separte ... - javafx ? -
+           ((requiring-resolve 'moon.application.create.add-actors/step) ctx))
+   nil #_(requiring-resolve 'moon.application.create.world/step)
+   moon.application.open-editor/do!))
 
 (defn- create-action-bar [_ctx]
   {:type :actor/action-bar})
