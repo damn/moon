@@ -1,3 +1,4 @@
+; Here 'ctx' , dont pass it anywhere else? mimal 'orchestration' ?
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -423,13 +424,13 @@
                     :ctx/db db
                     :ctx/graphics graphics
                     :ctx/input input
-                    :ctx/stage stage ; to ui
-                    :ctx/skin skin})] ; to ui
+                    :ctx/stage stage
+                    :ctx/skin skin})]
     (Input/.setInputProcessor input stage)
     (-> skin
         (skin/font "default-font")
         bitmap-font/data
-        (bitmap-font-data/set-enable-markup! true)) ; to ui
+        (bitmap-font-data/set-enable-markup! true))
     (doseq [actor [(create-dev-menu db graphics skin)
                    (create-action-bar)
                    (create-hp-mana-bar graphics stage)
