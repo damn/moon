@@ -24,7 +24,7 @@
                  [com.github.damn/clojure.dev-loop "ef54a03"]
                  ]
   :java-source-paths ["src"]
-  :aliases {"dev"      ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'moon.application.desktop/-main))"]
+  :aliases {"dev"      ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'moon.application/-main))"]
             "levelgen" ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'moon.levelgen/-main))"]
             "nsgraph"  ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'ns-graph.core/-main))"]
             "ns"       ["hiera" ":layout" ":horizontal"]}
@@ -51,9 +51,9 @@
                 ;*unchecked-math* :warn-on-boxed
                 ;*assert* false
                 *print-level* 3}
-  :profiles {:uberjar {:aot [moon.application.desktop]}}
+  :profiles {:uberjar {:aot [moon.application]}}
   :uberjar-name "moon.jar"
-  :main moon.application.desktop)
+  :main moon.application)
 
 ; * Notes
 
