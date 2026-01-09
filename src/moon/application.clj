@@ -42,7 +42,6 @@
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
             [moon.world.raycaster :as raycaster]
-            moon.ui.build.editor-window
             moon.ui.dev-menu
             moon.ui.editor.window
             moon.ui.editor.widgets-impl
