@@ -12,8 +12,7 @@
               :manacontent-file "images/mana.png"
               :y-mana 80}]
   (defn create
-    [{:keys [ctx/stage
-             ctx/graphics]}]
+    [graphics stage]
     (let [{:keys [rahmen-file
                   rahmenw
                   rahmenh

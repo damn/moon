@@ -250,9 +250,7 @@
         spawn-enemies!)))
 
 (defn- create-dev-menu
-  [{:keys [ctx/db
-           ctx/graphics
-           ctx/skin]}]
+  [db graphics skin]
   (let [open-editor (fn [db]
                       {:label "Editor"
                        :items (for [property-type (sort (db/property-types db))]
@@ -323,7 +321,7 @@
                          item))
       :skin skin})))
 
-(defn- create-action-bar [_ctx]
+(defn- create-action-bar []
   (stage/build {:type :actor/action-bar}))
 
 (defn- create-hp-mana-bar* [create-draws]
@@ -334,14 +332,12 @@
              (graphics/draw! (:ctx/graphics (stage/ctx stage))
                              (create-draws (stage/ctx stage)))))})
 
-(defn- create-hp-mana-bar [ctx]
+(defn- create-hp-mana-bar [graphics stage]
   (stage/build
-   (create-hp-mana-bar* (hp-mana-bar-config/create ctx))))
+   (create-hp-mana-bar* (hp-mana-bar-config/create graphics stage))))
 
 (defn- create-info-window
-  [{:keys [ctx/skin
-           ctx/stage]
-    :as ctx}]
+  [skin stage]
   (info-window/create skin
                       {:title "Entity Info"
                        :actor-name "moon.ui.windows.entity-info"
@@ -356,14 +352,12 @@
                                             ""))}))
 
 (defn- create-ui-windows
-  [{:keys [ctx/skin]
-    :as ctx}]
+  [graphics skin stage]
   (stage/build
    {:type :actor/group
     :actor/name "moon.ui.windows"
-    :group/actors (for [f [create-info-window
-                           inventory-window/create]]
-                    (f ctx))}))
+    :group/actors [(create-info-window skin stage)
+                   (inventory-window/create graphics skin stage)]}))
 
 (def state->draw-ui-view
   {:player-item-on-cursor (fn
@@ -390,7 +384,7 @@
     (when-let [f (state->draw-ui-view state-k)]
       (graphics/draw! graphics (f player-eid ctx)))))
 
-(defn- create-player-state-draw-actor [_ctx]
+(defn- create-player-state-draw-actor []
   (stage/build
    {:type :actor/actor
     :draw (fn [this _batch _parent-alpha]
@@ -399,7 +393,7 @@
 
 (def message-duration-seconds 0.5)
 
-(defn- create-player-message-actor [_ctx]
+(defn- create-player-message-actor []
   (stage/build (message/create message-duration-seconds)))
 
 (defn- load-sounds
@@ -420,12 +414,13 @@
            gdx/graphics
            gdx/input]}
    config]
-  (let [graphics (graphics/create! graphics files (:graphics config))
+  (let [db (db/create)
+        graphics (graphics/create! graphics files (:graphics config))
         stage (ui/create! graphics)
         skin (skin/create (Files/.internal files "uiskin.json"))
         ctx (merge (map->Context {})
                    {:ctx/audio (load-sounds audio files (:audio config))
-                    :ctx/db (db/create)
+                    :ctx/db db
                     :ctx/graphics graphics
                     :ctx/input input
                     :ctx/stage stage ; to ui
@@ -435,13 +430,13 @@
         (skin/font "default-font")
         bitmap-font/data
         (bitmap-font-data/set-enable-markup! true)) ; to ui
-    (doseq [actor-create-fn [create-dev-menu
-                             create-action-bar
-                             create-hp-mana-bar
-                             create-ui-windows
-                             create-player-state-draw-actor
-                             create-player-message-actor]]
-      (stage/add-actor! stage (actor-create-fn ctx)))
+    (doseq [actor [(create-dev-menu db graphics skin)
+                   (create-action-bar)
+                   (create-hp-mana-bar graphics stage)
+                   (create-ui-windows graphics skin stage)
+                   (create-player-state-draw-actor)
+                   (create-player-message-actor)]]
+      (stage/add-actor! stage actor))
     (create-world ctx (:world config))))
 
 (defn- dispose!
