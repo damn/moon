@@ -1,7 +1,9 @@
 (ns moon.levelgen
   (:require [clojure.edn :as edn]
+            [clojure.gdx :as gdx]
+            [clojure.gdx.backends.lwjgl3.application :as application]
+            [clojure.gdx.backends.lwjgl3.application.configuration :as configuration]
             [clojure.java.io :as io]
-            [gdl.application :as application]
             [moon.color :as color]
             [gdl.files :as files]
             [moon.db :as db]
@@ -31,7 +33,8 @@
             [gdl.utils.screen :as screen-utils]
             [gdl.utils.viewport :as viewport]
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
-            [moon.world-fns.creature-tiles]))
+            [moon.world-fns.creature-tiles])
+  (:import (com.badlogic.gdx ApplicationListener)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -194,18 +197,20 @@
 (def state (atom nil))
 
 (defn -main []
-  (application/start! (reify application/Listener
-                        (create! [_ ctx]
-                          (reset! state (create! ctx)))
-                        (dispose! [_]
+  (configuration/use-glfw-async!)
+  (application/create (reify ApplicationListener
+                        (create [_]
+                          (reset! state (create! (gdx/context))))
+                        (dispose [_]
                           (dispose! @state))
-                        (render! [_]
+                        (render [_]
                           (swap! state render!))
-                        (resize! [_ width height]
+                        (resize [_ width height]
                           (resize! @state width height))
-                        (pause! [_])
-                        (resume! [_]))
-                      {:title "Levelgen Test"
-                       :window {:width 1440
-                                :height 900}
-                       :fps 60}))
+                        (pause [_])
+                        (resume [_]))
+                      (configuration/create
+                       {:title "Levelgen Test"
+                        :window {:width 1440
+                                 :height 900}
+                        :fps 60})))
