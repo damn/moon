@@ -350,25 +350,25 @@
 
 (defn- create!
   [{:keys [gdx/audio
-           ^Files gdx/files
+           gdx/files
            gdx/graphics
-           ^Input gdx/input]}
+           gdx/input]}
    config]
   (let [graphics (graphics/create! graphics files (:graphics config))
         stage (ui/create! graphics)
-        skin (skin/create (.internal files "uiskin.json"))
+        skin (skin/create (Files/.internal files "uiskin.json"))
         ctx (merge (map->Context {})
-                   {:ctx/db (db/create)
-                    :ctx/audio (load-sounds audio files (:audio config))
+                   {:ctx/audio (load-sounds audio files (:audio config))
+                    :ctx/db (db/create)
                     :ctx/graphics graphics
                     :ctx/input input
-                    :ctx/stage stage
-                    :ctx/skin skin})]
-    (.setInputProcessor input stage)
+                    :ctx/stage stage ; to ui
+                    :ctx/skin skin})] ; to ui
+    (Input/.setInputProcessor input stage)
     (-> skin
         (skin/font "default-font")
         bitmap-font/data
-        (bitmap-font-data/set-enable-markup! true))
+        (bitmap-font-data/set-enable-markup! true)) ; to ui
     (doseq [actor-create-fn [create-dev-menu
                              create-action-bar
                              create-hp-mana-bar
