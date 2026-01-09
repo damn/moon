@@ -35,7 +35,23 @@
                              :cursors/sandclock             ["sandclock"    [16 16]]
                              :cursors/skill-not-usable      ["x007"         [0   0]]
                              :cursors/use-skill             ["pointer004"   [0   0]]
-                             :cursors/walking               ["walking"      [16 16]]}}}
+                             :cursors/walking               ["walking"      [16 16]]}}
+            :draw-fns {
+                       :draw/with-line-width  moon.graphics.draw.with-line-width/do!
+                       :draw/grid             moon.graphics.draw.grid/do!
+                       :draw/texture-region   moon.graphics.draw.texture-region/do!
+                       :draw/text             moon.graphics.draw.text/do!
+                       :draw/ellipse          moon.graphics.draw.ellipse/do!
+                       :draw/filled-ellipse   moon.graphics.draw.filled-ellipse/do!
+                       :draw/circle           moon.graphics.draw.circle/do!
+                       :draw/filled-circle    moon.graphics.draw.filled-circle/do!
+                       :draw/rectangle        moon.graphics.draw.rectangle/do!
+                       :draw/filled-rectangle moon.graphics.draw.filled-rectangle/do!
+                       :draw/arc              moon.graphics.draw.arc/do!
+                       :draw/sector           moon.graphics.draw.sector/do!
+                       :draw/line             moon.graphics.draw.line/do!
+                       }
+            }
  :world "world_fns/vampire.edn"
         ; "world_fns/uf_caves.edn"
         ; "world_fns/modules.edn"

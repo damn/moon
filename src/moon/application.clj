@@ -28,7 +28,6 @@
             [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.entity.stats :as stats]
             [moon.graphics :as graphics]
-            [moon.graphics.impl]
             [moon.input :as input]
             [moon.throwable :as throwable]
             [moon.ui :as ui]
@@ -357,7 +356,7 @@
            gdx/graphics
            ^Input gdx/input]}
    config]
-  (let [graphics (moon.graphics.impl/create! graphics files (:graphics config))
+  (let [graphics (graphics/create! graphics files (:graphics config))
         stage (moon.ui.impl/create! graphics)
         skin (skin/create (.internal files "uiskin.json"))
         ctx (merge (map->Context {})
