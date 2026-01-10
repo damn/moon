@@ -4,8 +4,8 @@
             [gdl.maps.tiled :as tiled-map]
             [gdl.maps.tiled.layer :as layer]
             [gdl.utils.viewport :as viewport])
-  (:import (gdl.graphics ColorSetter
-                         TiledMapRenderer)))
+  (:import (moon ColorSetter
+                 TiledMapRenderer)))
 
 (defn draw! [tiled-map-renderer world-viewport tiled-map color-setter]
   (let [^TiledMapRenderer renderer (tiled-map-renderer tiled-map)

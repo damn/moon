@@ -1,7 +1,5 @@
 (ns gdl.ui.stage
-  "Clojure API/Facade for `gdl.ui.Stage` class. This means we expose here all methods which we use
-  because we do not need the full API of the class."
-  (:import (gdl.ui Stage)))
+  (:import (moon Stage)))
 
 (defmulti build :type)
 

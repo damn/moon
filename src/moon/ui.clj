@@ -52,7 +52,7 @@
       stage/root
       (group/find-actor k)))
 
-(extend-type gdl.ui.Stage
+(extend-type moon.Stage
   UserInterface
   (dispose! [_]
     ; TODO fixme skin ?

@@ -1,4 +1,4 @@
-package gdl.graphics;
+package moon;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;

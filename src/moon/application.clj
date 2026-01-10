@@ -55,7 +55,7 @@
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
-           (gdl.ui Stage))
+           (moon Stage))
   (:gen-class))
 
 (defn- edn-resource [path]

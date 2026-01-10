@@ -1,4 +1,4 @@
-package gdl.ui;
+package moon;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.viewport.Viewport;
