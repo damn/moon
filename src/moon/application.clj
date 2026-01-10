@@ -1,9 +1,7 @@
-; Here 'ctx' , dont pass it anywhere else? mimal 'orchestration' ?
-; => Nobody knows knows about 'ctx' -> editor has to be a separate application.
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.math.vector2 :as v] ; assoc-interaction-state
+            [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [gdl.input.buttons :as input.buttons]
             [gdl.ui.actor :as actor]
