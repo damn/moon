@@ -10,6 +10,8 @@
             [moon.ui.inventory :as inventory-window]
             [moon.ui.message :as message]
             [moon.ui.text-button :as text-button]
+            [moon.ui.window :as window]
+            [moon.ui.widgets :as widgets]
             [moon.utils :as utils]))
 
 (defprotocol UserInterface
@@ -59,9 +61,8 @@
 
   (show-data-viewer! [this data skin]
     (stage/add-actor! this
-                      (stage/build
-                       {:type :actor/data-viewer
-                        :title "Data View"
+                      (widgets/data-viewer-window
+                       {:title "Data View"
                         :data data
                         :width 500
                         :height 500
@@ -107,9 +108,8 @@
                      stage/root
                      (group/find-actor "moon.ui.modal-window"))))
     (stage/add-actor! stage
-                      (stage/build
-                       {:type :actor/window
-                        :title title
+                      (window/create
+                       {:title title
                         :rows [[{:actor (label/create text skin)}]
                                [{:actor (text-button/create
                                          {:text button-text
@@ -169,9 +169,8 @@
 
   (show-error-window! [stage skin throwable]
     (stage/add-actor! stage
-                      (stage/build
-                       {:type :actor/window
-                        :title "Error"
+                      (window/create
+                       {:title "Error"
                         :rows [[{:actor (label/create (binding [*print-level* 3]
                                                         (utils/with-err-str
                                                           (clojure.repl/pst throwable)))

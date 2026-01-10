@@ -4,6 +4,7 @@
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [moon.ui.actor :as actor]
+            [moon.ui.group :as group]
             [moon.ui.stage :as stage]
             [moon.disposable :as disposable]
             [malli.core :as m]
@@ -24,6 +25,7 @@
             [moon.input :as input]
             [moon.throwable :as throwable]
             [moon.ui :as ui]
+            [moon.ui.action-bar :as action-bar]
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.overview-window :as overview-window]
             [moon.ui.info-window :as info-window]
@@ -42,7 +44,7 @@
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
             [moon.world.raycaster :as raycaster]
-            moon.ui.dev-menu
+            [moon.ui.dev-menu :as dev-menu]
             moon.ui.editor.window
             moon.ui.editor.widgets-impl
             [moon.ui.image :as image]
@@ -295,9 +297,8 @@
                         :update-fn (fn [ctx]
                                      (graphics/zoom (:ctx/graphics ctx)))
                         :icon "images/zoom.png"}]]
-    (stage/build
-     {:type :actor/dev-menu
-      :menus [ctx-data-viewer
+    (dev-menu/create
+     {:menus [ctx-data-viewer
               (open-editor db)
               help-info-text
               select-world]
@@ -307,16 +308,13 @@
                          item))
       :skin skin})))
 
-(defn- create-action-bar []
-  (stage/build {:type :actor/action-bar}))
-
 (defn- create-hp-mana-bar* [create-draws]
-  {:type :actor/actor
-   :act (fn [_this _delta])
-   :draw (fn [actor _batch _parent-alpha]
-           (when-let [stage (actor/stage actor)]
-             (graphics/draw! (:ctx/graphics (stage/ctx stage))
-                             (create-draws (stage/ctx stage)))))})
+  (actor/create
+   {:act (fn [_this _delta])
+    :draw (fn [actor _batch _parent-alpha]
+            (when-let [stage (actor/stage actor)]
+              (graphics/draw! (:ctx/graphics (stage/ctx stage))
+                              (create-draws (stage/ctx stage)))))}))
 
 (let [config {:rahmen-file "images/rahmen.png"
               :rahmenw 150
@@ -359,8 +357,7 @@
            (render-hpmana-bar x y-mana manacontent-file (stats/get-mana      stats) "MP")))))))
 
 (defn- create-hp-mana-bar [graphics stage]
-  (stage/build
-   (create-hp-mana-bar* (hp-mana-bar-config graphics stage))))
+  (create-hp-mana-bar* (hp-mana-bar-config graphics stage)))
 
 (defn- create-info-window
   [skin stage]
@@ -546,9 +543,8 @@
 
 (defn- create-ui-windows
   [graphics skin stage]
-  (stage/build
-   {:type :actor/group
-    :actor/name "moon.ui.windows"
+  (group/create
+   {:actor/name "moon.ui.windows"
     :group/actors [(create-info-window skin stage)
                    (create-inventory-window graphics skin stage)]}))
 
@@ -578,16 +574,15 @@
       (graphics/draw! graphics (f player-eid ctx)))))
 
 (defn- create-player-state-draw-actor []
-  (stage/build
-   {:type :actor/actor
-    :draw (fn [this _batch _parent-alpha]
+  (actor/create
+   {:draw (fn [this _batch _parent-alpha]
             (player-state-handle-draws (stage/ctx (actor/stage this))))
     :act (fn [_ _delta])}))
 
 (def message-duration-seconds 0.5)
 
 (defn- create-player-message-actor []
-  (stage/build (message/create message-duration-seconds)))
+  (message/create message-duration-seconds))
 
 (defn- load-sounds
   [audio files {:keys [sound-names path-format]}]
@@ -626,7 +621,7 @@
                     :ctx/skin skin})]
     (Input/.setInputProcessor input stage)
     (doseq [actor [(create-dev-menu db graphics skin)
-                   (create-action-bar)
+                   (action-bar/create)
                    (create-hp-mana-bar graphics stage)
                    (create-ui-windows graphics skin stage)
                    (create-player-state-draw-actor)

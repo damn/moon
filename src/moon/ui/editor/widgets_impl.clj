@@ -7,6 +7,7 @@
             [moon.ui.select-box :as select-box]
             [moon.ui.stage :as stage]
             [moon.ui.text-field :as text-field]
+            [moon.ui.widgets :as widgets]
             [moon.ui.widget-group :as widget-group]
             [moon.audio :as audio]
             [moon.db :as db]
@@ -219,9 +220,8 @@
                       ctx/skin
                       ctx/stage]}]
     (stage/add-actor! stage
-                      (stage/build
-                       {:type :actor/scroll-pane-window
-                        :skin skin
+                      (widgets/scroll-pane-window
+                       {:skin skin
                         :viewport-height (ui/viewport-width stage)
                         :rows (for [sound-name (audio/sound-names audio)]
                                 [{:actor (text-button/create

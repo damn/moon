@@ -88,7 +88,7 @@
     :table table
     :label-text (k->label-text k)}))
 
-(defmethod stage/build :actor/add-component-window
+(defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (window/create
                 {:skin skin
@@ -161,9 +161,8 @@
                                                            ctx/skin]}]
                                          (stage/add-actor!
                                           stage
-                                          (stage/build
-                                           {:type :actor/add-component-window
-                                            :skin skin
+                                          (add-component-window
+                                           {:skin skin
                                             :schemas (:db/schemas db)
                                             :schema schema
                                             :map-widget-table table})))

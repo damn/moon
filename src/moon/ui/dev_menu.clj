@@ -59,7 +59,7 @@
           (add-upd-label! skin table update-fn))))
     table))
 
-(defmethod stage/build :actor/dev-menu
+(defn create
   [{:keys [menus update-labels skin]}]
   (table/create
    {:rows [[{:actor (main-table skin menus update-labels)

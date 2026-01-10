@@ -1,6 +1,5 @@
 (ns moon.ui.actor
   (:refer-clojure :exclude [name])
-  (:require [moon.ui.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.math Vector2)))
 
@@ -58,7 +57,3 @@
         (draw [batch parent-alpha]
           (draw this batch parent-alpha)))
       (set-opts! opts)))
-
-(defmethod stage/build :actor/actor
-  [opts]
-  (create opts))

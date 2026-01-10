@@ -28,7 +28,7 @@
      :height (min (- viewport-height 50)
                   (actor/height table))}))
 
-(defmethod stage/build :actor/scroll-pane-window
+(defn scroll-pane-window
   [{:keys [skin viewport-height rows]}]
   (window/create
    {:skin skin
@@ -58,15 +58,16 @@
    :else
    (str (class v))))
 
+(declare data-viewer-window)
+
 (defn- v->actor [v skin]
   (if (map? v)
     (text-button/create
      {:text "Map"
       :on-clicked (fn [actor _ctx]
                     (stage/add-actor! (actor/stage actor)
-                                      (stage/build
-                                       {:type :actor/data-viewer
-                                        :title "title"
+                                      (data-viewer-window
+                                       {:title "title"
                                         :data v
                                         :width 500
                                         :height 500
@@ -74,7 +75,7 @@
       :skin skin})
     (label/create (v->text v) skin)))
 
-(defmethod stage/build :actor/data-viewer
+(defn data-viewer-window
   [{:keys [title
            data
            width

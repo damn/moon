@@ -1,6 +1,5 @@
 (ns moon.ui.group
-  (:require [moon.ui.stage :as stage]
-            [moon.ui.actor :as actor])
+  (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn find-actor [group actor-name]
@@ -21,6 +20,6 @@
         (:group/actors opts))
   (actor/set-opts! group opts))
 
-(defmethod stage/build :actor/group [opts]
+(defn create [opts]
   (doto (Group.)
     (set-opts! opts)))

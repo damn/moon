@@ -3,11 +3,10 @@
             [moon.ui.button-group :as button-group]
             [moon.ui.group :as group]
             [moon.ui.horizontal-group :as horizontal-group]
-            [moon.ui.stage :as stage]
             [moon.ui.image-button :as image-button]
             [moon.ui.table :as table]))
 
-(defmethod stage/build :actor/action-bar [_]
+(defn create []
   (table/create
    {:rows [[{:actor (doto (horizontal-group/create {:pad 2
                                                     :space 2})
