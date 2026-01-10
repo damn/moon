@@ -1,4 +1,4 @@
-(ns gdl.graphics.tm-renderer
+(ns moon.tm-renderer
   (:require [moon.color :as color]
             [gdl.maps.map-layers :as layers]
             [gdl.maps.tiled :as tiled-map]

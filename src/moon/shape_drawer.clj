@@ -1,4 +1,4 @@
-(ns gdl.graphics.shape-drawer
+(ns moon.shape-drawer
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn create [batch texture-region]

@@ -2,8 +2,6 @@
   (:require [clojure.string :as str]
             [clojure.math :as math]
             [gdl.graphics :as graphics]
-            [gdl.graphics.shape-drawer :as sd]
-            [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.math.vector2 :as vector2]
             [gdl.utils.align :as align]
             [gdl.utils.disposable :as disposable]
@@ -12,7 +10,9 @@
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [moon.color :as color]
             [moon.files :as files-utils]
-            [moon.graphics.camera :as camera])
+            [moon.graphics.camera :as camera]
+            [moon.shape-drawer :as sd]
+            [moon.tm-renderer :as tm-renderer])
   (:import (com.badlogic.gdx Gdx)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color
@@ -27,7 +27,8 @@
                                           SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
+           (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defprotocol Graphics
   (unproject-ui [_ position])

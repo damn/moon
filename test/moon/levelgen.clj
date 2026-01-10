@@ -4,7 +4,7 @@
             [moon.db :as db]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
-            [gdl.graphics.tm-renderer :as tm-renderer]
+            [moon.tm-renderer :as tm-renderer]
             [gdl.input :as input]
             [gdl.input.keys :as input.keys]
             [gdl.maps.map-layers :as layers]
