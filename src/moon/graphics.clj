@@ -1,8 +1,7 @@
 (ns moon.graphics
   (:require [clojure.string :as str]
             [clojure.math :as math]
-            [gdl.utils.align :as align]
-            [gdl.utils.disposable :as disposable]
+            [moon.disposable :as disposable]
             [moon.viewport :as viewport]
             [moon.color :as color]
             [moon.files :as files-utils]
@@ -25,7 +24,8 @@
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.utils ScreenUtils)
+           (com.badlogic.gdx.utils Align
+                                   ScreenUtils)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defprotocol PGraphics
@@ -65,7 +65,7 @@
            (float x)
            (float (+ y (if up? (text-height) 0)))
            (float target-width)
-           (or h-align align/center)
+           (or h-align Align/center)
            wrap?)
     (.setScale (.getData font) old-scale)))
 

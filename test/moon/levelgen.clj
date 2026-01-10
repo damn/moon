@@ -11,7 +11,7 @@
             [moon.ui.text-button :as text-button]
             [moon.ui.stage :as stage]
             [moon.ui.table]
-            [gdl.utils.disposable :as disposable]
+            [moon.disposable :as disposable]
             [moon.viewport :as viewport]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener

@@ -1,12 +1,12 @@
 (ns moon.ui.image
   (:require [moon.ui.widget :as widget]
-            [gdl.utils.align :as align]
-            [gdl.utils.scaling :as scaling]
             [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Image)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)
+           (com.badlogic.gdx.utils Align
+                                   Scaling)))
 
 (defmulti ^:private create* type)
 
@@ -30,9 +30,9 @@
     :as opts}]
   (let [image (create* object)]
     (when (= :center align)
-      (Image/.setAlign image align/center))
+      (Image/.setAlign image Align/center))
     (when (= :fill scaling)
-      (Image/.setScaling image scaling/fill))
+      (Image/.setScaling image Scaling/fill))
     (when fill-parent?
       (widget/set-fill-parent! image true))
     (actor/set-opts! image opts)))

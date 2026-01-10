@@ -5,7 +5,7 @@
             [clojure.string :as str]
             [moon.ui.actor :as actor]
             [moon.ui.stage :as stage]
-            [gdl.utils.disposable :as disposable]
+            [moon.disposable :as disposable]
             [malli.core :as m]
             [malli.utils :as mu]
             moon.application.open-editor

@@ -1,6 +1,6 @@
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
-            [gdl.utils.disposable :as disposable]
+            [moon.disposable :as disposable]
             [moon.utils :as utils]
             [moon.world]
             [moon.world.assoc-entity-spawn-schema :as assoc-entity-spawn-schema]

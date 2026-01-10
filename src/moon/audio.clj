@@ -1,5 +1,5 @@
 (ns moon.audio
-  (:require [gdl.utils.disposable :as disposable])
+  (:require [moon.disposable :as disposable])
   (:import (com.badlogic.gdx.audio Sound)))
 
 (defn sound-names [sounds]
