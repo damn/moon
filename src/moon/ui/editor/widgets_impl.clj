@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [moon.ui.actor :as actor]
             [gdl.ui.check-box :as check-box]
-            [gdl.ui.group :as group]
+            [moon.ui.group :as group]
             [gdl.ui.label :as label]
             [gdl.ui.select-box :as select-box]
             [gdl.ui.stage :as stage]

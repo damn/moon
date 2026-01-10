@@ -2,7 +2,7 @@
   (:require [clojure.repl]
             [gdl.math.vector2 :as vector2]
             [moon.ui.actor :as actor]
-            [gdl.ui.group :as group]
+            [moon.ui.group :as group]
             [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.utils :as ui-utils]

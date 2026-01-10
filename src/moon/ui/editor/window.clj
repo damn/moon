@@ -1,7 +1,7 @@
 (ns moon.ui.editor.window
   (:require [clojure.set :as set]
             [moon.ui.actor :as actor]
-            [gdl.ui.group :as group]
+            [moon.ui.group :as group]
             [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.widget-group :as widget-group]

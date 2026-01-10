@@ -1,14 +1,26 @@
 (ns moon.ui.group
-  (:require [gdl.ui.group :as group]
-            [gdl.ui.stage :as stage]
-            [moon.ui.actor :as actor]))
+  (:require [gdl.ui.stage :as stage]
+            [moon.ui.actor :as actor])
+  (:import (com.badlogic.gdx.scenes.scene2d Group)))
+
+(defn find-actor [group actor-name]
+  (Group/.findActor group actor-name))
+
+(defn add-actor! [group actor]
+  (Group/.addActor group actor))
+
+(defn children [group]
+  (Group/.getChildren group))
+
+(defn clear-children! [group]
+  (Group/.clearChildren group))
 
 (defn set-opts! [group opts]
   (run! (fn [actor]
-          (group/add-actor! group actor))
+          (add-actor! group actor))
         (:group/actors opts))
   (actor/set-opts! group opts))
 
 (defmethod stage/build :actor/group [opts]
-  (doto (group/create)
+  (doto (Group.)
     (set-opts! opts)))

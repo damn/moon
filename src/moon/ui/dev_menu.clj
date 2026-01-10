@@ -3,7 +3,7 @@
             [gdl.ui.cell :as cell]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.event :as event]
-            [gdl.ui.group :as group]
+            [moon.ui.group :as group]
             [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.text-button :as text-button]
