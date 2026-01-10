@@ -1,11 +1,18 @@
 (ns moon.ui.widget-group
-  (:require [gdl.ui.widget-group :as widget-group]
-            [moon.ui.group :as group]))
+  (:require [moon.ui.group :as group])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui WidgetGroup)))
+
+; TODO Widget
+(defn set-fill-parent! [^WidgetGroup widget-group fill-parent?]
+  (.setFillParent widget-group fill-parent?))
+
+(defn pack! [^WidgetGroup widget-group]
+  (.pack widget-group))
 
 (defn set-opts!
   [widget-group {:keys [fill-parent? pack?] :as opts}]
   (when fill-parent?
-    (widget-group/set-fill-parent! widget-group fill-parent?))
+    (set-fill-parent! widget-group fill-parent?))
   (when pack?
-    (widget-group/pack! widget-group))
+    (pack! widget-group))
   (group/set-opts! widget-group opts))

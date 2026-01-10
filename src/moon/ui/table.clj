@@ -1,13 +1,14 @@
 (ns moon.ui.table
   (:require [gdl.ui.cell :as cell]
-            [gdl.ui.table :as table]
-            [moon.ui.widget-group :as widget-group]))
+            [moon.ui.widget-group :as widget-group])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
-(defn add! [table actor]
-  (table/add! table actor))
+(defn add! [^Table table actor]
+  (.add table ^Actor actor))
 
-(defn cells [table]
-  (table/cells table))
+(defn cells [^Table table]
+  (.getCells table))
 
 (defn add-rows! [table rows]
   (doseq [row rows]
@@ -16,15 +17,15 @@
        (map? props-or-actor) (-> (add! table (:actor props-or-actor))
                                  (cell/set-opts! (dissoc props-or-actor :actor)))
        :else (add! table props-or-actor)))
-    (table/row! table))
+    (Table/.row table))
   table)
 
 (defn set-opts! [table {:keys [rows cell-defaults] :as opts}]
-  (cell/set-opts! (table/defaults table) cell-defaults)
+  (cell/set-opts! (.defaults ^Table table) cell-defaults)
   (doto table
     (add-rows! rows)
     (widget-group/set-opts! opts)))
 
 (defn create [opts]
-  (-> (table/create)
+  (-> (Table.)
       (set-opts! opts)))

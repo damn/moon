@@ -7,7 +7,7 @@
             [gdl.ui.select-box :as select-box]
             [gdl.ui.stage :as stage]
             [gdl.ui.text-field :as text-field]
-            [gdl.ui.widget-group :as widget-group]
+            [moon.ui.widget-group :as widget-group]
             [moon.audio :as audio]
             [moon.db :as db]
             [moon.graphics :as graphics]

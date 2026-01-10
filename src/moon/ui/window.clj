@@ -2,7 +2,7 @@
   (:require [moon.ui.actor :as actor]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.stage :as stage]
-            [gdl.ui.text-button :as text-button]
+            [moon.ui.text-button :as text-button]
             [gdl.ui.window :as window]
             [gdl.ui.window :as window]
             [moon.ui.table :as table]))

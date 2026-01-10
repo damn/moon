@@ -4,7 +4,7 @@
             [moon.ui.group :as group]
             [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
-            [gdl.ui.widget-group :as widget-group]
+            [moon.ui.widget-group :as widget-group]
             [malli.utils :as mu]
             [moon.db.schemas :as schemas]
             [moon.malli :as malli]

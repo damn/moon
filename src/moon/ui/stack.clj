@@ -1,7 +1,7 @@
 (ns moon.ui.stack
-  (:require [gdl.ui.stack :as stack]
-            [moon.ui.widget-group :as widget-group]))
+  (:require [moon.ui.widget-group :as widget-group])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Stack)))
 
 (defn create [opts]
-  (doto (stack/create)
+  (doto (Stack.)
     (widget-group/set-opts! opts)))

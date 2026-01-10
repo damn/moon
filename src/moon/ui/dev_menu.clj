@@ -6,7 +6,7 @@
             [moon.ui.group :as group]
             [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
-            [gdl.ui.text-button :as text-button]
+            [moon.ui.text-button :as text-button]
             [gdl.ui.touchable :as touchable]
             [moon.ui.image :as image]
             [moon.ui.table :as table]

@@ -8,7 +8,7 @@
             [moon.ui :as ui]
             [moon.ui.editor.schema :as schema]
             [moon.ui.text-button :as text-button]
-            [moon.ui.widget :as widget]
+            [moon.ui.widgets :as widget]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)))
 
@@ -43,9 +43,8 @@
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
-        actors [(stage/build
-                 {:actor/type :actor/actor
-                  :act (fn [this delta]
+        actors [(actor/create
+                 {:act (fn [this delta]
                          (when-let [stage (actor/stage this)]
                            (let [{:keys [ctx/input]
                                   :as ctx} (stage/ctx stage)]

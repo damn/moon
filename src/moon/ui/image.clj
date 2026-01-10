@@ -1,9 +1,26 @@
 (ns moon.ui.image
-  (:require [gdl.ui.image :as image]
-            [gdl.ui.widget :as widget]
+  (:require [gdl.ui.widget :as widget]
             [gdl.utils.align :as align]
             [gdl.utils.scaling :as scaling]
-            [moon.ui.actor :as actor]))
+            [moon.ui.actor :as actor])
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d.ui Image)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+
+(defmulti ^:private create* type)
+
+(defmethod create* Drawable [^Drawable drawable]
+  (Image. drawable))
+
+(defmethod create* Texture [texture]
+  (Image. ^Texture texture))
+
+(defmethod create* TextureRegion [texture-region]
+  (Image. ^TextureRegion texture-region))
+
+(defn set-drawable! [image ^Drawable drawable]
+  (.setDrawable image drawable))
 
 (defn create
   [{:keys [image/object
@@ -11,11 +28,11 @@
            align
            fill-parent?]
     :as opts}]
-  (let [image (image/create object)]
+  (let [image (create* object)]
     (when (= :center align)
-      (image/set-align! image align/center))
+      (Image/.setAlign image align/center))
     (when (= :fill scaling)
-      (image/set-scaling! image scaling/fill))
+      (Image/.setScaling image scaling/fill))
     (when fill-parent?
       (widget/set-fill-parent! image true))
     (actor/set-opts! image opts)))

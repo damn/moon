@@ -3,12 +3,13 @@
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.drawable :as drawable]
             [gdl.ui.event :as event]
-            [gdl.ui.image-button :as image-button]
             [gdl.ui.stage :as stage]
             [gdl.ui.texture-region-drawable :as texture-region-drawable]
             [moon.ui.table :as table]
             [moon.ui.tooltip :as tooltip])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)))
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defn create
   [{:keys [^TextureRegion drawable/texture-region
@@ -21,7 +22,7 @@
                (.getRegionHeight texture-region)]
         drawable (doto (texture-region-drawable/create texture-region)
                    (drawable/set-min-size! (* scale w) (* scale h)))
-        image-button (image-button/create drawable)]
+        image-button (ImageButton. ^Drawable drawable)]
     (when on-clicked
       (actor/add-listener! image-button (change-listener/create
                                          (fn [event actor]

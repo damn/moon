@@ -2,15 +2,20 @@
   (:require [moon.ui.actor :as actor]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.event :as event]
-            [gdl.ui.stage :as stage]
-            [gdl.ui.text-button :as text-button]))
+            [gdl.ui.stage :as stage])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               TextButton)))
 
 (defn create
-  [{:keys [text
-           on-clicked
-           skin]}]
-  (doto (text-button/create (str text) skin)
-    (actor/add-listener!
-     (change-listener/create
-      (fn [event actor]
-        (on-clicked actor (stage/ctx (event/stage event))))))))
+  ([text skin]
+   (create {:text text
+            :skin skin
+            :on-clicked (fn [actor ctx])}))
+  ([{:keys [text
+            on-clicked
+            ^Skin skin]}]
+   (doto (TextButton. (str text) skin)
+     (actor/add-listener!
+      (change-listener/create
+       (fn [event actor]
+         (on-clicked actor (stage/ctx (event/stage event)))))))))

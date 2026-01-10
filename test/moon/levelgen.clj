@@ -8,7 +8,7 @@
             [moon.ui.actor :as actor]
             [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
-            [gdl.ui.text-button :as text-button]
+            [moon.ui.text-button :as text-button]
             [gdl.ui.stage :as stage]
             [gdl.ui.window :as window]
             [moon.ui.table]

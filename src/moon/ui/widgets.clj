@@ -1,4 +1,4 @@
-(ns moon.ui.widget
+(ns moon.ui.widgets
   (:require [moon.ui.actor :as actor]
             [gdl.ui.label :as label]
             [gdl.ui.scroll-pane :as scroll-pane]
