@@ -1,12 +1,16 @@
 (ns moon.graphics
-  (:require [gdl.graphics :as graphics]
+  (:require [clojure.string :as str]
+            [clojure.math :as math]
+            [gdl.graphics :as graphics]
             [gdl.graphics.shape-drawer :as sd]
             [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.math.vector2 :as vector2]
+            [gdl.utils.align :as align]
             [gdl.utils.disposable :as disposable]
             [gdl.utils.screen :as screen-utils]
             [gdl.utils.viewport :as viewport]
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
+            [moon.color :as color]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera])
   (:import (com.badlogic.gdx Gdx)
@@ -19,6 +23,7 @@
                                       Texture$TextureFilter
                                       OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch
+                                          BitmapFont
                                           SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
@@ -46,6 +51,176 @@
   (unproject-world [_ position])
   (update-world-vp! [_ width height])
   (draw-on-world-vp! [_ f]))
+
+(defn- draw-text! [^BitmapFont font batch {:keys [scale text x y up? h-align target-width wrap?]}]
+  (let [text-height (fn []
+                      (-> text
+                          (str/split #"\n")
+                          count
+                          (* (.getLineHeight font))))
+        old-scale (.scaleX (.getData font))]
+    (.setScale (.getData font) (* old-scale scale))
+    (.draw font
+           batch
+           text
+           (float x)
+           (float (+ y (if up? (text-height) 0)))
+           (float target-width)
+           (or h-align align/center)
+           wrap?)
+    (.setScale (.getData font) old-scale)))
+
+(defmulti ^:private handle-draw!
+  (fn [k graphics & params]
+    k))
+
+(defmethod handle-draw! :draw/with-line-width
+  [_
+   {:keys [graphics/shape-drawer]
+    :as graphics}
+   width
+   draws]
+  (sd/with-line-width shape-drawer width
+    (draw! graphics draws)))
+
+(defmethod handle-draw! :draw/grid
+  [_ graphics leftx bottomy gridw gridh cellw cellh color]
+  (let [w (* (float gridw) (float cellw))
+        h (* (float gridh) (float cellh))
+        topy (+ (float bottomy) (float h))
+        rightx (+ (float leftx) (float w))]
+    (doseq [idx (range (inc (float gridw)))
+            :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
+      (draw! graphics
+                           [[:draw/line [linex topy] [linex bottomy] color]]))
+    (doseq [idx (range (inc (float gridh)))
+            :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
+      (draw! graphics
+                           [[:draw/line [leftx liney] [rightx liney] color]]))))
+
+(defmethod handle-draw! :draw/texture-region
+  [_
+   {:keys [^Batch graphics/batch
+           graphics/unit-scale
+           graphics/world-unit-scale]}
+   ^TextureRegion texture-region
+   [x y]
+   & {:keys [center? rotation]}]
+  (let [[w h] (let [dimensions [(.getRegionWidth  texture-region)
+                                (.getRegionHeight texture-region)]]
+                (if (= @unit-scale 1)
+                  dimensions
+                  (mapv (comp float (partial * world-unit-scale))
+                        dimensions)))]
+    (if center?
+      (.draw batch
+             texture-region
+             (- (float x) (/ (float w) 2))
+             (- (float y) (/ (float h) 2))
+             (/ (float w) 2)
+             (/ (float h) 2)
+             w
+             h
+             1
+             1
+             (or rotation 0))
+      (.draw batch
+             texture-region
+             (float x)
+             (float y)
+             (float w)
+             (float h)))))
+
+(defmethod handle-draw! :draw/text
+  [_
+   {:keys [graphics/batch
+           graphics/unit-scale
+           graphics/default-font]}
+   {:keys [font scale x y text h-align up?]}]
+  (draw-text! (or font default-font)
+              batch
+              {:scale (* (float @unit-scale)
+                         (float (or scale 1)))
+               :text text
+               :x x
+               :y y
+               :up? up?
+               :h-align h-align
+               :target-width 0
+               :wrap? false}))
+
+(defmethod handle-draw! :draw/ellipse
+  [_
+   {:keys [graphics/shape-drawer]}
+   [x y] radius-x radius-y color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/ellipse! shape-drawer x y radius-x radius-y))
+
+(defmethod handle-draw! :draw/filled-ellipse
+  [_
+   {:keys [graphics/shape-drawer]}
+   [x y] radius-x radius-y color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/filled-ellipse! shape-drawer x y radius-x radius-y))
+
+(defmethod handle-draw! :draw/circle
+  [_
+   {:keys [graphics/shape-drawer]}
+   [x y] radius color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/circle! shape-drawer x y radius))
+
+(defmethod handle-draw! :draw/filled-circle
+  [_
+   {:keys [graphics/shape-drawer]}
+   [x y] radius color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/filled-circle! shape-drawer x y radius))
+
+(defmethod handle-draw! :draw/rectangle
+  [_
+   {:keys [graphics/shape-drawer]}
+   x y w h color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/rectangle! shape-drawer x y w h))
+
+(defmethod handle-draw! :draw/filled-rectangle
+  [_
+   {:keys [graphics/shape-drawer]}
+   x y w h color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/filled-rectangle! shape-drawer x y w h))
+
+(defmethod handle-draw! :draw/arc
+  [_
+   {:keys [graphics/shape-drawer]}
+   [center-x center-y] radius start-angle degree color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/arc! shape-drawer
+           center-x
+           center-y
+           radius
+           (math/to-radians start-angle)
+           (math/to-radians degree)))
+
+(defmethod handle-draw! :draw/sector
+  [_
+   {:keys [graphics/shape-drawer]}
+   [center-x center-y] radius start-angle degree color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/sector! shape-drawer
+              center-x
+              center-y
+              radius
+              (math/to-radians start-angle)
+              (math/to-radians degree)))
+
+(defmethod handle-draw! :draw/line
+  [_
+   {:keys [graphics/shape-drawer]}
+   [sx sy] [ex ey] color]
+  (sd/set-color! shape-drawer (color/float-bits color))
+  (sd/line! shape-drawer sx sy ex ey))
 
 (defn- unproject [viewport [x y]]
   (-> viewport
@@ -87,12 +262,10 @@
     (assert (contains? cursors cursor-key))
     (graphics/set-cursor! core (get cursors cursor-key)))
 
-  (draw! [{:keys [graphics/draw-fns]
-           :as graphics}
-          draws]
+  (draw! [graphics draws]
     (doseq [{k 0 :as component} draws
             :when component]
-      (apply (draw-fns k) graphics (rest component))))
+      (apply handle-draw! k graphics (rest component))))
 
   (texture-region [{:keys [graphics/textures]}
                    {:keys [image/file image/bounds]}]
@@ -196,8 +369,7 @@
            texture-folder
            tile-size
            ui-viewport
-           world-viewport
-           draw-fns]}]
+           world-viewport]}]
   (doseq [[name [r g b a]] colors]
     (Colors/put name (Color. r g b a)))
   (let [batch (SpriteBatch.)
@@ -234,5 +406,4 @@
                                           (fit-viewport/create world-width
                                                                world-height
                                                                (doto (OrthographicCamera.)
-                                                                 (.setToOrtho false world-width world-height)))))
-        (assoc :graphics/draw-fns (update-vals draw-fns requiring-resolve)))))
+                                                                 (.setToOrtho false world-width world-height))))))))
