@@ -23,6 +23,7 @@
                  [lein-hiera "2.0.0"]
                  [com.github.damn/clojure.dev-loop "ef54a03"]
                  ]
+  :source-paths ["clj"]
   :java-source-paths ["java"]
   :aliases {"dev"      ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'moon.application/-main))"]
             "levelgen" ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'moon.levelgen/-main))"]
