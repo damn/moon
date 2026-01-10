@@ -6,7 +6,7 @@
             [gdl.ui.label :as label]
             [gdl.ui.stage :as stage]
             [gdl.ui.utils :as ui-utils]
-            [gdl.utils.viewport :as viewport]
+            [moon.viewport :as viewport]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory :as inventory-window]
             [moon.ui.message :as message]

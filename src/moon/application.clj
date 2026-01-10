@@ -383,7 +383,7 @@
         graphics (graphics/create! graphics files (:graphics config))
         stage (ui/create! graphics)
         skin (create-skin (Files/.internal files "uiskin.json"))
-        ctx (merge (map->Context {}) ; record not needed - txs/handle! in here? & throwable ?
+        ctx (merge (map->Context {})
                    {:ctx/audio (load-sounds audio files (:audio config))
                     :ctx/db db
                     :ctx/graphics graphics
@@ -401,7 +401,6 @@
     (let [world-fn-result (call-world-fn (:world config)
                                          (db/all-raw db :properties/creatures)
                                          graphics)
-          ; TODO world-params via config ?
           world (moon.world.impl/create world-params world-fn-result)
           ctx (assoc ctx :ctx/world world)
           _ (txs/handle! ctx

@@ -13,8 +13,7 @@
             [gdl.ui.window :as window]
             [moon.ui.table]
             [gdl.utils.disposable :as disposable]
-            [gdl.utils.viewport :as viewport]
-            [gdl.utils.viewport.fit-viewport :as fit-viewport]
+            [moon.viewport :as viewport]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
@@ -97,7 +96,7 @@
            ctx/graphics
            ctx/input]}]
   (let [skin (Skin. (.internal Gdx/files "uiskin.json")) ; TODO dispose
-        ui-viewport (fit-viewport/create 1440 900 (OrthographicCamera.))
+        ui-viewport (viewport/create 1440 900 (OrthographicCamera.))
         sprite-batch (SpriteBatch.)
         stage (stage/create ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
@@ -108,10 +107,10 @@
                 (assoc :ctx/db (db/create)))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
-                         (fit-viewport/create world-width
-                                              world-height
-                                              (doto (OrthographicCamera.)
-                                                (.setToOrtho false world-width world-height))))
+                         (viewport/create world-width
+                                          world-height
+                                          (doto (OrthographicCamera.)
+                                            (.setToOrtho false world-width world-height))))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport

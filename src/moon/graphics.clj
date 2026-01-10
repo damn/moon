@@ -4,8 +4,7 @@
             [gdl.math.vector2 :as vector2]
             [gdl.utils.align :as align]
             [gdl.utils.disposable :as disposable]
-            [gdl.utils.viewport :as viewport]
-            [gdl.utils.viewport.fit-viewport :as fit-viewport]
+            [moon.viewport :as viewport]
             [moon.color :as color]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
@@ -399,12 +398,12 @@
         (assoc :graphics/unit-scale (atom 1)
                :graphics/world-unit-scale world-unit-scale)
         (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch))
-        (assoc :graphics/ui-viewport (fit-viewport/create (:width  ui-viewport)
-                                                          (:height ui-viewport)
-                                                          (OrthographicCamera.)))
+        (assoc :graphics/ui-viewport (viewport/create (:width  ui-viewport)
+                                                      (:height ui-viewport)
+                                                      (OrthographicCamera.)))
         (assoc :graphics/world-viewport (let [world-width  (* (:width  world-viewport) world-unit-scale)
                                               world-height (* (:height world-viewport) world-unit-scale)]
-                                          (fit-viewport/create world-width
-                                                               world-height
-                                                               (doto (OrthographicCamera.)
-                                                                 (.setToOrtho false world-width world-height))))))))
+                                          (viewport/create world-width
+                                                           world-height
+                                                           (doto (OrthographicCamera.)
+                                                             (.setToOrtho false world-width world-height))))))))
