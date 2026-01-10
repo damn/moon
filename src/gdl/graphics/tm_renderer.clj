@@ -1,5 +1,5 @@
 (ns gdl.graphics.tm-renderer
-  (:require [gdl.graphics.color :as color]
+  (:require [moon.color :as color]
             [gdl.maps.map-layers :as layers]
             [gdl.maps.tiled :as tiled-map]
             [gdl.maps.tiled.layer :as layer]

@@ -1,7 +1,5 @@
 (ns moon.graphics
   (:require [gdl.graphics :as graphics]
-            [gdl.graphics.color :as color]
-            [gdl.graphics.colors :as colors]
             [gdl.graphics.orthographic-camera :as orthographic-camera]
             [gdl.graphics.pixmap :as pixmap]
             [gdl.graphics.shape-drawer :as sd]
@@ -17,7 +15,9 @@
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera])
   (:import (com.badlogic.gdx Gdx)
-           (com.badlogic.gdx.graphics Pixmap$Format
+           (com.badlogic.gdx.graphics Color
+                                      Colors
+                                      Pixmap$Format
                                       Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
@@ -197,8 +197,8 @@
            ui-viewport
            world-viewport
            draw-fns]}]
-  (doseq [[name rgba] colors]
-    (colors/put! name (color/create rgba)))
+  (doseq [[name [r g b a]] colors]
+    (Colors/put name (Color. r g b a)))
   (let [batch (sprite-batch/create)
         shape-drawer-texture (let [pixmap (doto (pixmap/create 1 1 Pixmap$Format/RGBA8888)
                                             (pixmap/set-color! [1 1 1 1])

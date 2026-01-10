@@ -1,5 +1,5 @@
 (ns moon.graphics.draw.filled-rectangle
-  (:require [gdl.graphics.color :as color]
+  (:require [moon.color :as color]
             [gdl.graphics.shape-drawer :as sd]))
 
 (defn do!

@@ -1,6 +1,5 @@
 (ns moon.application.create.ui.inventory-window
-  (:require [gdl.graphics.color :as gdxcolor]
-            [gdl.math.vector2 :as gdxvector2]
+  (:require [gdl.math.vector2 :as gdxvector2]
             [gdl.ui.actor :as actor]
             [gdl.ui.click-listener :as click-listener]
             [gdl.ui.drawable :as drawable]
@@ -15,7 +14,8 @@
             [moon.ui.image :as image]
             [moon.ui.stack :as stack]
             [moon.ui.table :as table]
-            [moon.ui.window :as window]))
+            [moon.ui.window :as window])
+  (:import (com.badlogic.gdx.graphics Color)))
 
 (let [fn-map {:player-idle           (fn [eid cell]
                                        (when-let [item (get-in (:entity/inventory @eid) cell)]
@@ -88,7 +88,7 @@
         slot->drawable (fn [slot]
                          (doto (texture-region-drawable/create (slot->texture-region slot))
                            (drawable/set-min-size! cell-size cell-size)
-                           (texture-region-drawable/tint (gdxcolor/create [1 1 1 0.4]))))
+                           (texture-region-drawable/tint (Color. 1 1 1 0.4))))
         droppable-color   [0   0.6 0 0.8 1]
         not-allowed-color [0.6 0   0 0.8 1]
         draw-cell-rect (fn [player-entity x y mouseover? cell]

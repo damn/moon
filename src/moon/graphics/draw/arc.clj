@@ -1,6 +1,6 @@
 (ns moon.graphics.draw.arc
   (:require [clojure.math :as math]
-            [gdl.graphics.color :as color]
+            [moon.color :as color]
             [gdl.graphics.shape-drawer :as sd]))
 
 (defn do!
