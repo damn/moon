@@ -1,10 +1,9 @@
 (ns moon.tm-renderer
   (:require [moon.color :as color]
-            [gdl.maps.map-layers :as layers]
-            [gdl.maps.tiled :as tiled-map]
-            [gdl.maps.tiled.layer :as layer]
             [gdl.utils.viewport :as viewport])
-  (:import (moon TiledMapRenderer
+  (:import (com.badlogic.gdx.maps MapLayers)
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
+           (moon TiledMapRenderer
                  TiledMapRenderer$ColorSetter)))
 
 (defn draw! [tiled-map-renderer world-viewport tiled-map color-setter]
@@ -15,9 +14,9 @@
                                   (color/float-bits (color-setter color x y)))))
     (.setView renderer camera)
     (->> tiled-map
-         tiled-map/layers
-         (filter layer/visible?)
-         (map (partial layers/get-index (tiled-map/layers tiled-map)))
+         .getLayers
+         (filter TiledMapTileLayer/.isVisible)
+         (map (partial MapLayers/.getIndex (.getLayers tiled-map)))
          int-array
          (.render renderer))))
 

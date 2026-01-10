@@ -1,8 +1,7 @@
 #_(ns moon.graphics.tiled-map-renderer-test
   (:require [moon.backends.lwjgl.application :as application]
             [com.badlogic.gdx.maps.tiled :as tiled]
-            [com.badlogic.gdx.graphics.orthographic-camera :as camera]
-            [gdl.maps.tiled.tmx :as tmx])
+            [com.badlogic.gdx.graphics.orthographic-camera :as camera])
   (:import (com.badlogic.gdx.graphics Color OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)))
 
@@ -23,7 +22,7 @@
   (application/create
    (proxy [ApplicationAdapter] []
      (create []
-       (def tiled-map (tmx/load-map tiled-map-path))
+       (def tiled-map (.load (TmxMapLoader.) tiled-map-path))
        (def batch (SpriteBatch.))
        (def camera (doto (OrthographicCamera.)
                      (.setToOrtho false ; y-down?

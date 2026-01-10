@@ -1,21 +1,17 @@
 (ns moon.world-fns.modules
   (:require [clojure.grid2d :as g2d]
-            [gdl.maps.map-layers :as layers]
-            [gdl.maps.map-properties :as props]
-            [gdl.maps.tiled :as tiled-map]
-            [gdl.maps.tiled.layer :as layer]
-            [gdl.maps.tiled.tiled-map-tile :as tile]
-            [gdl.maps.tiled.tmx :as tmx]
             [moon.world-fns.area-level-grid :as area-level-grid]
             [moon.world-fns.caves :as caves]
             [moon.world-fns.creature-layer :as creature-layer]
             [moon.world-fns.nads :as nads]
             [moon.world-fns.utils :as helper]
-            [moon.world.tiled :as tiled]))
+            [moon.world.tiled :as tiled])
+  (:import (com.badlogic.gdx.maps MapProperties)
+           (com.badlogic.gdx.maps.tiled TmxMapLoader)))
 
-(defn- property-value [layer position property-key]
-  (if-let [cell (layer/cell layer position)]
-    (if-let [value (props/get (tile/properties (.getTile cell)) property-key)]
+(defn- property-value [layer [x y] property-key]
+  (if-let [cell (.getCell layer x y)]
+    (if-let [value (.get (.getProperties (.getTile cell)) property-key)]
       value
       :undefined)
     :no-cell))
@@ -64,7 +60,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (layers/get (tiled-map/layers tiled-map) "creatures")
+                                                    (property-value (.get (.getLayers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))
@@ -83,24 +79,26 @@
      :start-position (get-free-position-in-area-level 0)
      :area-level-grid scaled-area-level-grid}))
 
-; TODO properties->clj step probably not needed
+(defn- props->clj [^MapProperties map-properties]
+  (zipmap (.getKeys   map-properties)
+          (.getValues map-properties)))
+
 (defn- grid->tiled-map
-  "Creates an empty new tiled-map with same layers and properties as schema-tiled-map.
-  The size of the map is as of the grid, which contains also the tile information from the schema-tiled-map."
   [schema-tiled-map grid]
   (tiled/create-tiled-map
-   {:properties (merge (props/->clj (tiled-map/properties schema-tiled-map))
+   {:properties (merge (props->clj (.getProperties schema-tiled-map))
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})
-    :layers (for [layer (tiled-map/layers schema-tiled-map)]
-              {:name (layer/name layer)
-               :visible? (layer/visible? layer)
-               :properties (props/->clj (layer/properties layer))
+    :layers (for [layer (.getLayers schema-tiled-map)]
+              {:name (.getName layer)
+               :visible? (.isVisible layer)
+               :properties (props->clj (.getProperties layer))
                :tiles (for [position (g2d/posis grid)
                             :let [local-position (get grid position)]
                             :when local-position]
                         (when (vector? local-position)
-                          (when-let [cell (layer/cell layer local-position)]
+                          (when-let [cell (let [[x y] local-position]
+                                            (.getCell layer x y))]
                             [position (tiled/copy-tile (.getTile cell))])))})}))
 
 (defn- convert-to-tiled-map
@@ -171,9 +169,9 @@
    unscaled-floor-positions
    unscaled-transition-positions]
   (let [[modules-width modules-height] modules-scale
-        _ (assert (and (= (props/get (tiled-map/properties modules-tiled-map) "width")
+        _ (assert (and (= (.get (.getProperties modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (props/get (tiled-map/properties modules-tiled-map) "height")
+                       (= (.get (.getProperties modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* modules-scale
@@ -244,7 +242,7 @@
   (assoc w :start-position (mapv * start scale)))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (tmx/load-map "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")))
 
 (defn create
   [{:keys [world/map-size

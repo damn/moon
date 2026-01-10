@@ -6,10 +6,6 @@
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
             [gdl.input :as input]
-            [gdl.maps.map-layers :as layers]
-            [gdl.maps.map-properties :as props]
-            [gdl.maps.tiled :as tiled-map]
-            [gdl.maps.tiled.layer :as layer]
             [gdl.ui.actor :as actor]
             [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
@@ -44,13 +40,13 @@
 (defn- show-whole-map! [{:keys [ctx/camera
                                 ctx/tiled-map]}]
   (camera/set-position! camera
-                        [(/ (props/get (tiled-map/properties tiled-map) "width") 2)
-                         (/ (props/get (tiled-map/properties tiled-map) "height") 2)])
+                        [(/ (.get (.getProperties tiled-map) "width") 2)
+                         (/ (.get (.getProperties tiled-map) "height") 2)])
   (camera/set-zoom! camera
                     (camera/calculate-zoom camera
                                            :left [0 0]
-                                           :top [0 (props/get (tiled-map/properties tiled-map) "height")]
-                                           :right [(props/get (tiled-map/properties tiled-map) "width") 0]
+                                           :top [0 (.get (.getProperties tiled-map) "height")]
+                                           :right [(.get (.getProperties tiled-map) "width") 0]
                                            :bottom [0 0])))
 
 (def tile-size 48)
@@ -78,7 +74,7 @@
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
-    (layer/set-visible! (layers/get (tiled-map/layers tiled-map) "creatures") true)
+    (.setVisible (.get (.getLayers tiled-map) "creatures") true)
     (show-whole-map! ctx)
     ctx))
 

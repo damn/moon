@@ -1,7 +1,5 @@
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
-            [gdl.maps.map-properties :as props]
-            [gdl.maps.tiled :as tiled-map]
             [gdl.utils.disposable :as disposable]
             [moon.utils :as utils]
             [moon.world]
@@ -158,8 +156,8 @@
 
 (defn- assoc-state [world {:keys [tiled-map
                                   start-position]}]
-  (let [width  (props/get (tiled-map/properties tiled-map) "width")
-        height (props/get (tiled-map/properties tiled-map) "height")
+  (let [width  (.get (.getProperties tiled-map) "width")
+        height (.get (.getProperties tiled-map) "height")
         grid (create-world-grid width height
                                 #(case (tiled/movement-property tiled-map %)
                                    "none" :none
