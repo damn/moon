@@ -1,11 +1,7 @@
 (ns moon.graphics
   (:require [gdl.graphics :as graphics]
             [gdl.graphics.orthographic-camera :as orthographic-camera]
-            [gdl.graphics.pixmap :as pixmap]
             [gdl.graphics.shape-drawer :as sd]
-            [gdl.graphics.sprite-batch :as sprite-batch]
-            [gdl.graphics.texture :as texture]
-            [gdl.graphics.texture-region :as texture-region]
             [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.math.vector2 :as vector2]
             [gdl.utils.disposable :as disposable]
@@ -15,11 +11,16 @@
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera])
   (:import (com.badlogic.gdx Gdx)
+           (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color
                                       Colors
+                                      Pixmap
                                       Pixmap$Format
+                                      Texture
                                       Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d Batch)
+           (com.badlogic.gdx.graphics.g2d Batch
+                                          SpriteBatch
+                                          TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
@@ -97,10 +98,10 @@
                    {:keys [image/file image/bounds]}]
     (assert file)
     (assert (contains? textures file))
-    (let [texture (get textures file)]
-      (if bounds
-        (texture-region/create texture bounds)
-        (texture-region/create texture))))
+    (let [^Texture texture (get textures file)]
+      (if-let [[x y w h] bounds]
+        (TextureRegion. texture (int x) (int y) (int w) (int h))
+        (TextureRegion. texture))))
 
   (draw-tiled-map!
     [{:keys [graphics/tiled-map-renderer
@@ -163,9 +164,9 @@
     (.end batch)))
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
-  (let [pixmap (pixmap/create (.internal Gdx/files path))
+  (let [pixmap (Pixmap. (.internal Gdx/files path))
         cursor (graphics/new-cursor graphics pixmap hotspot-x hotspot-y)]
-    (pixmap/dispose! pixmap)
+    (.dispose pixmap)
     cursor))
 
 (defn- generate-font
@@ -199,12 +200,12 @@
            draw-fns]}]
   (doseq [[name [r g b a]] colors]
     (Colors/put name (Color. r g b a)))
-  (let [batch (sprite-batch/create)
-        shape-drawer-texture (let [pixmap (doto (pixmap/create 1 1 Pixmap$Format/RGBA8888)
-                                            (pixmap/set-color! [1 1 1 1])
-                                            (pixmap/draw-pixel! 0 0))
-                                   texture (texture/create pixmap)]
-                               (pixmap/dispose! pixmap)
+  (let [batch (SpriteBatch.)
+        shape-drawer-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                                            (.setColor 1 1 1 1)
+                                            (.drawPixel 0 0))
+                                   texture (Texture. pixmap)]
+                               (.dispose pixmap)
                                texture)
         world-unit-scale (float (/ tile-size))]
     (-> (map->RGraphics {})
@@ -219,9 +220,9 @@
                                                      (:params default-font)))
         (assoc :graphics/batch batch)
         (assoc :graphics/shape-drawer-texture shape-drawer-texture)
-        (assoc :graphics/shape-drawer (sd/create batch (texture-region/create shape-drawer-texture 1 0 1 1)))
+        (assoc :graphics/shape-drawer (sd/create batch (TextureRegion. shape-drawer-texture 1 0 1 1)))
         (assoc :graphics/textures (into {} (for [path (files-utils/search files texture-folder)]
-                                             [path (texture/create path)])))
+                                             [path (Texture. ^String path)])))
         (assoc :graphics/unit-scale (atom 1)
                :graphics/world-unit-scale world-unit-scale)
         (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch))

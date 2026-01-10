@@ -5,10 +5,7 @@
             [moon.db :as db]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
-            [gdl.graphics.sprite-batch :as sprite-batch]
-            [gdl.graphics.texture-region :as texture-region]
             [gdl.graphics.orthographic-camera :as orthographic-camera]
-            [gdl.graphics.texture :as texture]
             [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.input :as input]
             [gdl.input.keys :as input.keys]
@@ -32,6 +29,9 @@
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch
+                                          TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
@@ -72,9 +72,9 @@
                                                       (assert file)
                                                       (assert (contains? textures file))
                                                       (let [texture (get textures file)]
-                                                        (if bounds
-                                                          (texture-region/create texture bounds)
-                                                          (texture-region/create texture)))))
+                                                        (if-let [[x y w h] bounds]
+                                                          (TextureRegion. texture x y w h)
+                                                          (TextureRegion. texture)))))
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
@@ -103,7 +103,7 @@
            ctx/input]}]
   (let [skin (Skin. (.internal Gdx/files "uiskin.json")) ; TODO dispose
         ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
-        sprite-batch (sprite-batch/create)
+        sprite-batch (SpriteBatch.)
         stage (stage/create ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
         tile-size 48
@@ -124,7 +124,7 @@
                    :ctx/textures (into {} (for [path (files-utils/search files
                                                                          {:folder "resources/"
                                                                           :extensions #{"png" "bmp"}})]
-                                            [path (texture/create path)]))
+                                            [path (Texture. path)]))
                    :ctx/camera (viewport/camera world-viewport)
                    :ctx/color-setter (constantly [1 1 1 1])
                    :ctx/zoom-speed 0.1

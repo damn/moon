@@ -1,5 +1,4 @@
 (ns moon.graphics.draw.texture-region
-  (:require [gdl.graphics.texture-region :as texture-region])
   (:import (com.badlogic.gdx.graphics.g2d Batch
                                           TextureRegion)))
 
@@ -10,7 +9,8 @@
    ^TextureRegion texture-region
    [x y]
    & {:keys [center? rotation]}]
-  (let [[w h] (let [dimensions (texture-region/dimensions texture-region)]
+  (let [[w h] (let [dimensions [(.getRegionWidth  texture-region)
+                                (.getRegionHeight texture-region)]]
                 (if (= @unit-scale 1)
                   dimensions
                   (mapv (comp float (partial * world-unit-scale))
