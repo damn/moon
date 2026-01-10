@@ -1,10 +1,10 @@
 (ns moon.ui.image-button
   (:require [moon.ui.actor :as actor]
-            [gdl.ui.change-listener :as change-listener]
-            [gdl.ui.drawable :as drawable]
-            [gdl.ui.event :as event]
-            [gdl.ui.stage :as stage]
-            [gdl.ui.texture-region-drawable :as texture-region-drawable]
+            [moon.ui.change-listener :as change-listener]
+            [moon.ui.drawable :as drawable]
+            [moon.ui.event :as event]
+            [moon.ui.stage :as stage]
+            [moon.ui.texture-region-drawable :as texture-region-drawable]
             [moon.ui.table :as table]
             [moon.ui.tooltip :as tooltip])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)

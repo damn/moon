@@ -1,8 +1,8 @@
 (ns moon.ui.info-window
   (:require [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [gdl.ui.label :as label]
-            [gdl.ui.stage :as stage]
+            [moon.ui.label :as label]
+            [moon.ui.stage :as stage]
             [moon.ui.widget-group :as widget-group]
             [moon.ui.window :as window]))
 

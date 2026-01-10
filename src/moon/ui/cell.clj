@@ -1,4 +1,4 @@
-(ns gdl.ui.cell
+(ns moon.ui.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defn right! [^Cell cell]

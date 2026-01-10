@@ -4,7 +4,7 @@
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [moon.ui.actor :as actor]
-            [gdl.ui.stage :as stage]
+            [moon.ui.stage :as stage]
             [gdl.utils.disposable :as disposable]
             [malli.core :as m]
             [malli.utils :as mu]

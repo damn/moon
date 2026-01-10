@@ -1,5 +1,5 @@
 (ns moon.ui.group
-  (:require [gdl.ui.stage :as stage]
+  (:require [moon.ui.stage :as stage]
             [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 

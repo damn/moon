@@ -1,6 +1,6 @@
 (ns moon.ui.message
   (:require [moon.ui.actor :as actor]
-            [gdl.ui.stage :as stage]
+            [moon.ui.stage :as stage]
             [moon.viewport :as viewport]
             [moon.graphics :as graphics]))
 

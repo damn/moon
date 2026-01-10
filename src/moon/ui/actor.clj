@@ -1,6 +1,6 @@
 (ns moon.ui.actor
   (:refer-clojure :exclude [name])
-  (:require [gdl.ui.stage :as stage])
+  (:require [moon.ui.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (def set-name!                Actor/.setName)

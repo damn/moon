@@ -1,4 +1,4 @@
-(ns gdl.ui.texture-region-drawable
+(ns moon.ui.texture-region-drawable
   "Drawable for a `TextureRegion`."
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))

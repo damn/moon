@@ -1,9 +1,9 @@
 (ns moon.ui.inventory
   (:require [moon.ui.actor :as actor]
-            [gdl.ui.drawable :as drawable]
+            [moon.ui.drawable :as drawable]
             [moon.ui.group :as group]
             [moon.ui.image :as image]
-            [gdl.ui.texture-region-drawable :as texture-region-drawable]
+            [moon.ui.texture-region-drawable :as texture-region-drawable]
             [moon.ui.tooltip :as tooltip]))
 
 (defn- find-cell [group cell]

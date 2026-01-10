@@ -1,7 +1,7 @@
 (ns moon.ui.editor.overview-window
   (:require [moon.ui.actor :as actor]
-            [gdl.ui.label :as label]
-            [gdl.ui.touchable :as touchable]
+            [moon.ui.label :as label]
+            [moon.ui.touchable :as touchable]
             [moon.db :as db]
             [moon.graphics :as graphics]
             [moon.ui.editor.property :as property]

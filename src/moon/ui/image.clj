@@ -1,5 +1,5 @@
 (ns moon.ui.image
-  (:require [gdl.ui.widget :as widget]
+  (:require [moon.ui.widget :as widget]
             [gdl.utils.align :as align]
             [gdl.utils.scaling :as scaling]
             [moon.ui.actor :as actor])

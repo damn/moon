@@ -1,8 +1,8 @@
 (ns moon.ui.text-button
   (:require [moon.ui.actor :as actor]
-            [gdl.ui.change-listener :as change-listener]
-            [gdl.ui.event :as event]
-            [gdl.ui.stage :as stage])
+            [moon.ui.change-listener :as change-listener]
+            [moon.ui.event :as event]
+            [moon.ui.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton)))
 

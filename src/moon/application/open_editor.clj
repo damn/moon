@@ -1,5 +1,5 @@
 (ns moon.application.open-editor
-  (:require [gdl.ui.stage :as stage]
+  (:require [moon.ui.stage :as stage]
             [moon.db :as db]
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.overview-window :as overview-window]))

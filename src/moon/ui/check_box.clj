@@ -1,4 +1,4 @@
-(ns gdl.ui.check-box
+(ns moon.ui.check-box
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                CheckBox
                                                Skin)

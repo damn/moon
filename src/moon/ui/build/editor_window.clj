@@ -1,6 +1,6 @@
 (ns moon.ui.build.editor-window
   (:require [moon.ui.actor :as actor]
-            [gdl.ui.stage :as stage]
+            [moon.ui.stage :as stage]
             [moon.db :as db]
             [moon.db.property :as property]
             [moon.input :as input]

@@ -1,7 +1,7 @@
 (ns moon.ui.window
   (:require [moon.ui.actor :as actor]
-            [gdl.ui.change-listener :as change-listener]
-            [gdl.ui.stage :as stage]
+            [moon.ui.change-listener :as change-listener]
+            [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin

@@ -1,4 +1,4 @@
-(ns gdl.ui.select-box
+(ns moon.ui.select-box
   (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox
                                                Skin)))
 

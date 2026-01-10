@@ -1,5 +1,5 @@
 (ns moon.tx.show-modal
-  (:require [gdl.ui.stage :as stage]
+  (:require [moon.ui.stage :as stage]
             [moon.ui :as ui]))
 
 (defn do!
