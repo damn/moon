@@ -17,5 +17,7 @@
 (defn update! [^FitViewport viewport width height {:keys [center?]}]
   (.update viewport width height (boolean center?)))
 
-(defn unproject [^FitViewport viewport ^Vector2 vector2]
-  (.unproject viewport vector2))
+(defn unproject [^FitViewport viewport [x y]]
+  (let [v2 (.unproject viewport (Vector2. x y))]
+    [(.x v2)
+     (.y v2)]))

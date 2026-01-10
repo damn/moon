@@ -1,6 +1,5 @@
 (ns moon.application.create.ui.inventory-window
-  (:require [gdl.math.vector2 :as gdxvector2]
-            [moon.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [moon.ui.click-listener :as click-listener]
             [moon.ui.drawable :as drawable]
             [moon.ui.event :as event]
@@ -71,9 +70,7 @@
                             (draw-cell-rect @(:world/player-eid world)
                                             (actor/x this)
                                             (actor/y this)
-                                            (let [[x y] (-> this
-                                                            (actor/stage->local-coordinates (gdxvector2/->java ui-mouse))
-                                                            gdxvector2/->clj)]
+                                            (let [[x y] (actor/stage->local-coordinates this)]
                                               (actor/hit this x y true))
                                             (actor/user-object (actor/parent this))))))))))
 

@@ -1,6 +1,5 @@
 (ns moon.ui
   (:require [clojure.repl]
-            [gdl.math.vector2 :as vector2]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.label :as label]
@@ -78,7 +77,7 @@
     (stage/ctx this))
 
   (mouseover-actor [this position]
-    (let [position (vector2/->clj (viewport/unproject (stage/viewport this) (vector2/->java position)))]
+    (let [position (viewport/unproject (stage/viewport this) position)]
       (stage/hit this position true)))
 
   (action-bar-selected-skill [this]

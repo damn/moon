@@ -1,7 +1,6 @@
 (ns moon.graphics
   (:require [clojure.string :as str]
             [clojure.math :as math]
-            [gdl.math.vector2 :as vector2]
             [gdl.utils.align :as align]
             [gdl.utils.disposable :as disposable]
             [moon.viewport :as viewport]
@@ -222,15 +221,10 @@
   (sd/set-color! shape-drawer (color/float-bits color))
   (sd/line! shape-drawer sx sy ex ey))
 
-(defn- unproject [viewport [x y]]
-  (-> viewport
-      (viewport/unproject (vector2/->java x y))
-      vector2/->clj))
-
 (defrecord RGraphics []
   PGraphics
   (unproject-ui [{:keys [graphics/ui-viewport]} position]
-    (unproject ui-viewport position))
+    (viewport/unproject ui-viewport position))
 
   (update-ui-viewport! [{:keys [graphics/ui-viewport]} width height]
     (viewport/update! ui-viewport width height {:center? true}))
@@ -311,7 +305,7 @@
     (viewport/world-height world-viewport))
 
   (unproject-world [{:keys [graphics/world-viewport]} position]
-    (unproject world-viewport position))
+    (viewport/unproject world-viewport position))
 
   (update-world-vp! [{:keys [graphics/world-viewport]} width height]
     (viewport/update! world-viewport width height {:center? false}))

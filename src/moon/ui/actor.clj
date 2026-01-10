@@ -1,7 +1,8 @@
 (ns moon.ui.actor
   (:refer-clojure :exclude [name])
   (:require [moon.ui.stage :as stage])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.math Vector2)))
 
 (def set-name!                Actor/.setName)
 (def set-user-object!         Actor/.setUserObject)
@@ -21,6 +22,11 @@
 (def visible?                 Actor/.isVisible)
 (def stage->local-coordinates Actor/.stageToLocalCoordinates)
 (def hit                      Actor/.hit)
+
+(defn stage->local-coordinates [^Actor actor [x y]]
+  (let [v2 (.stageToLocalCoordinates actor (Vector2. x y))]
+    [(.x v2)
+     (.y v2)]))
 
 (def opts-fn-map
   {:actor/name        set-name!
