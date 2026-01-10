@@ -1,13 +1,37 @@
 (ns moon.math.geom
   (:refer-clojure :exclude [contains?])
-  (:require [gdl.math.circle :as circle]
-            [gdl.math.intersector :as intersector]
-            [gdl.math.rectangle :as rectangle]))
+  (:import (com.badlogic.gdx.math Circle
+                                  Intersector
+                                  Rectangle)))
 
-(def circle    circle/create)
-(def rectangle rectangle/create)
-(def overlaps? intersector/overlaps?)
-(def contains? rectangle/contains?)
+(defn circle [x y radius]
+  (Circle. x y radius))
+
+(defn rectangle [x y width height]
+  (Rectangle. x y width height))
+
+(defmulti overlaps?
+  (fn [a b] [(class a) (class b)]))
+
+(defmethod overlaps? [Circle Circle]
+  [^Circle a ^Circle b]
+  (Intersector/overlaps a b))
+
+(defmethod overlaps? [Rectangle Rectangle]
+  [^Rectangle a ^Rectangle b]
+  (Intersector/overlaps a b))
+
+(defmethod overlaps? [Rectangle Circle]
+  [^Rectangle rect ^Circle circle]
+  (Intersector/overlaps circle rect))
+
+(defmethod overlaps? [Circle Rectangle]
+  [^Circle circle ^Rectangle rect]
+  (Intersector/overlaps circle rect))
+
+(defn contains?
+  [rectangle [x y]]
+  (Rectangle/.contains rectangle x y))
 
 (defn circle->outer-rectangle [{[x y] :position :keys [radius]}]
   (let [radius (float radius)
