@@ -4,7 +4,6 @@
             [gdl.maps.map-properties :as props]
             [gdl.maps.tiled :as tiled-map]
             [gdl.maps.tiled.layer :as layer]
-            [gdl.maps.tiled.layer.cell :as cell]
             [gdl.maps.tiled.tiled-map-tile :as tile]
             [gdl.maps.tiled.tmx :as tmx]
             [moon.world-fns.area-level-grid :as area-level-grid]
@@ -16,7 +15,7 @@
 
 (defn- property-value [layer position property-key]
   (if-let [cell (layer/cell layer position)]
-    (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
+    (if-let [value (props/get (tile/properties (.getTile cell)) property-key)]
       value
       :undefined)
     :no-cell))
@@ -102,7 +101,7 @@
                             :when local-position]
                         (when (vector? local-position)
                           (when-let [cell (layer/cell layer local-position)]
-                            [position (tiled/copy-tile (cell/tile cell))])))})}))
+                            [position (tiled/copy-tile (.getTile cell))])))})}))
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid

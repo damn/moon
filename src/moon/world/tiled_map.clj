@@ -3,7 +3,6 @@
             [gdl.maps.map-properties :as props]
             [gdl.maps.tiled :as tiled-map]
             [gdl.maps.tiled.layer :as layer]
-            [gdl.maps.tiled.layer.cell :as cell]
             [gdl.maps.tiled.tiled-map-tile :as tile]))
 
 (defn spawn-positions
@@ -17,7 +16,7 @@
                 cell (layer/cell layer position)]
           :when cell
           :let [value (-> cell
-                          cell/tile
+                          .getTile
                           tile/properties
                           (props/get property-key))]
           :when value]

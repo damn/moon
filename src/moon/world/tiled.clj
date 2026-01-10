@@ -3,9 +3,9 @@
             [gdl.maps.map-properties :as props]
             [gdl.maps.tiled :as tiled-map]
             [gdl.maps.tiled.layer :as layer]
-            [gdl.maps.tiled.layer.cell :as cell]
             [gdl.maps.tiled.tiled-map-tile :as tile]
-            [gdl.maps.tiled.tiles :as tiles]))
+            [gdl.maps.tiled.tiles :as tiles])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
 (defn- create-layer
   [{:keys [width
@@ -26,7 +26,8 @@
             :when tiled-map-tile]
       (layer/set-cell! layer
                        position
-                       (cell/create tiled-map-tile)))
+                       (doto (TiledMapTileLayer$Cell.)
+                         (.setTile tiled-map-tile))))
     layer))
 
 (defn add-layer!
@@ -62,7 +63,7 @@
 (defn- tile-movement-property [tiled-map layer position]
   (when-let [cell (layer/cell layer position)]
     (let [value (-> cell
-                    cell/tile
+                    .getTile
                     tile/properties
                     (props/get "movement"))]
       (assert value
