@@ -8,7 +8,6 @@
             [moon.disposable :as disposable]
             [malli.core :as m]
             [malli.utils :as mu]
-            moon.application.open-editor
             [moon.application.create.ui.hp-mana-bar-config :as hp-mana-bar-config]
             [moon.application.create.ui.inventory-window :as inventory-window]
             [moon.audio :as audio]
@@ -27,6 +26,8 @@
             [moon.input :as input]
             [moon.throwable :as throwable]
             [moon.ui :as ui]
+            [moon.ui.build.editor-window :as editor-window]
+            [moon.ui.editor.overview-window :as overview-window]
             [moon.ui.info-window :as info-window]
             [moon.ui.message :as message]
             [moon.utils :as utils]
@@ -208,6 +209,24 @@
                        ctx
                        handled-txs))))
 
+(defn- open-editor!
+  [{:keys [ctx/db
+           ctx/graphics
+           ctx/skin
+           ctx/stage]}
+   property-type]
+  (stage/add-actor! stage
+                    (overview-window/create
+                     {:db db
+                      :graphics graphics
+                      :skin skin
+                      :property-type property-type
+                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                       (stage/add-actor! stage
+                                                         (editor-window/create
+                                                          {:ctx ctx
+                                                           :property (db/get-raw db id)})))})))
+
 (defn- create-dev-menu
   [db graphics skin]
   (let [open-editor (fn [db]
@@ -215,7 +234,7 @@
                        :items (for [property-type (sort (db/property-types db))]
                                 {:label (str/capitalize (name property-type))
                                  :on-click (fn [_actor ctx]
-                                             (moon.application.open-editor/do! ctx property-type))})})
+                                             (open-editor! ctx property-type))})})
 
 
         ctx-data-viewer {:label "Ctx Data"
