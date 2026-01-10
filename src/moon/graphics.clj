@@ -1,7 +1,6 @@
 (ns moon.graphics
   (:require [clojure.string :as str]
             [clojure.math :as math]
-            [moon.disposable :as disposable]
             [moon.viewport :as viewport]
             [moon.color :as color]
             [moon.files :as files-utils]
@@ -235,11 +234,11 @@
              graphics/default-font
              graphics/shape-drawer-texture
              graphics/textures]}]
-    (disposable/dispose! batch)
-    (run! disposable/dispose! (vals cursors))
-    (disposable/dispose! default-font)
-    (disposable/dispose! shape-drawer-texture)
-    (run! disposable/dispose! (vals textures)))
+    (Disposable/.dispose batch)
+    (run! Disposable/.dispose (vals cursors))
+    (Disposable/.dispose default-font)
+    (Disposable/.dispose shape-drawer-texture)
+    (run! Disposable/.dispose (vals textures)))
 
   (frames-per-second [{:keys [graphics/core]}]
     (Graphics/.getFramesPerSecond core))

@@ -1,5 +1,4 @@
 (ns moon.audio
-  (:require [moon.disposable :as disposable])
   (:import (com.badlogic.gdx.audio Sound)))
 
 (defn sound-names [sounds]
@@ -10,4 +9,4 @@
   (Sound/.play (get sounds sound-name)))
 
 (defn dispose! [sounds]
-  (run! disposable/dispose! (vals sounds)))
+  (run! Sound/.dispose (vals sounds)))

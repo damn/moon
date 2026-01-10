@@ -1,4 +1,4 @@
-(ns moon.db.schemas)
+(ns moon.schemas)
 
 (defprotocol Schemas
   (build-values [_ property db])

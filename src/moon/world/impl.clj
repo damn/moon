@@ -1,6 +1,5 @@
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
-            [moon.disposable :as disposable]
             [moon.utils :as utils]
             [moon.world]
             [moon.world.assoc-entity-spawn-schema :as assoc-entity-spawn-schema]
@@ -90,7 +89,7 @@
   moon.world/World
   (dispose! [{:keys [world/tiled-map]}]
     (assert tiled-map) ; only dispose after world was created
-    (disposable/dispose! tiled-map))
+    (.dispose tiled-map))
 
   (cache-active-entities [{:keys [world/content-grid
                                   world/player-eid]

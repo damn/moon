@@ -6,7 +6,6 @@
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.stage :as stage]
-            [moon.disposable :as disposable]
             [malli.core :as m]
             [malli.utils :as mu]
             [moon.audio :as audio]
@@ -75,6 +74,7 @@
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.utils Disposable)
            (moon Stage))
   (:gen-class))
 
@@ -935,7 +935,7 @@
   (audio/dispose! audio)
   (graphics/dispose! graphics)
   (ui/dispose! stage)
-  (disposable/dispose! skin)
+  (Disposable/.dispose skin)
   (world/dispose! world)
   ctx)
 

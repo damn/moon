@@ -4,8 +4,8 @@
             [clojure.pprint :as pprint]
             [malli.core :as m]
             [malli.utils :as mu]
-            [moon.db.property :as property]
-            [moon.db.schemas :as schemas]
+            [moon.property :as property]
+            [moon.schemas :as schemas]
             [moon.malli :as malli]
             [moon.utils :as utils]))
 

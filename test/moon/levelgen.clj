@@ -11,7 +11,6 @@
             [moon.ui.text-button :as text-button]
             [moon.ui.stage :as stage]
             [moon.ui.table]
-            [moon.disposable :as disposable]
             [moon.viewport :as viewport]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
@@ -53,7 +52,7 @@
                                ctx/textures
                                ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
-    (disposable/dispose! tiled-map))
+    (.dispose tiled-map))
   (let [level (let [[f params] (-> level-fn
                                    io/resource
                                    slurp
@@ -133,8 +132,8 @@
   [{:keys [ctx/sprite-batch
            ctx/tiled-map ]}]
   ; TODO dispose skin?
-  (disposable/dispose! sprite-batch)
-  (disposable/dispose! tiled-map))
+  (.dispose sprite-batch)
+  (.dispose tiled-map))
 
 (defn- draw-tiled-map! [{:keys [ctx/color-setter
                                 ctx/tiled-map

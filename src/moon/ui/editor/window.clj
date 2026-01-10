@@ -6,7 +6,7 @@
             [moon.ui.stage :as stage]
             [moon.ui.widget-group :as widget-group]
             [malli.utils :as mu]
-            [moon.db.schemas :as schemas]
+            [moon.schemas :as schemas]
             [moon.malli :as malli]
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.schema :as schema]

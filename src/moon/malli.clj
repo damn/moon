@@ -1,6 +1,6 @@
 (ns moon.malli
-  (:require [moon.db.property :as property]
-            [moon.db.schemas :as schemas]
+  (:require [moon.property :as property]
+            [moon.schemas :as schemas]
             [moon.val-max :as val-max]))
 
 (defmulti form (fn [[k] _schemas]

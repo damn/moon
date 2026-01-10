@@ -1,4 +1,4 @@
-(ns moon.db.property
+(ns moon.property
   "A property in the database.
 
   The type is implicit in the `:property/id`.

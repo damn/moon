@@ -2,7 +2,7 @@
   (:require [moon.ui.actor :as actor]
             [moon.ui.stage :as stage]
             [moon.db :as db]
-            [moon.db.property :as property]
+            [moon.property :as property]
             [moon.input :as input]
             [moon.throwable :as throwable]
             [moon.ui :as ui]
