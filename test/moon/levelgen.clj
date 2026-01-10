@@ -10,7 +10,6 @@
             [gdl.ui.change-listener :as change-listener]
             [moon.ui.text-button :as text-button]
             [gdl.ui.stage :as stage]
-            [gdl.ui.window :as window]
             [moon.ui.table]
             [gdl.utils.disposable :as disposable]
             [moon.viewport :as viewport]
@@ -77,7 +76,7 @@
     ctx))
 
 (defn- edit-window [skin]
-  (let [window (window/create "Edit" skin)]
+  (let [window (Window. "Edit" skin)]
     (moon.ui.table/add-rows! window (for [level-fn level-fns
                                          :let [on-clicked (fn [actor ctx]
                                                             (let [stage (actor/stage actor)
