@@ -1,7 +1,6 @@
 (ns moon.graphics
   (:require [clojure.string :as str]
             [clojure.math :as math]
-            [gdl.graphics :as graphics]
             [gdl.math.vector2 :as vector2]
             [gdl.utils.align :as align]
             [gdl.utils.disposable :as disposable]
@@ -12,7 +11,8 @@
             [moon.graphics.camera :as camera]
             [moon.shape-drawer :as sd]
             [moon.tm-renderer :as tm-renderer])
-  (:import (com.badlogic.gdx Gdx)
+  (:import (com.badlogic.gdx Gdx
+                             Graphics)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color
                                       Colors
@@ -30,7 +30,7 @@
            (com.badlogic.gdx.utils ScreenUtils)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defprotocol Graphics
+(defprotocol PGraphics
   (unproject-ui [_ position])
   (update-ui-viewport! [_ width height])
   (clear-screen! [_ color])
@@ -229,7 +229,7 @@
       vector2/->clj))
 
 (defrecord RGraphics []
-  Graphics
+  PGraphics
   (unproject-ui [{:keys [graphics/ui-viewport]} position]
     (unproject ui-viewport position))
 
@@ -249,10 +249,10 @@
     (run! disposable/dispose! (vals textures)))
 
   (frames-per-second [{:keys [graphics/core]}]
-    (graphics/frames-per-second core))
+    (Graphics/.getFramesPerSecond core))
 
   (delta-time [{:keys [graphics/core]}]
-    (graphics/delta-time core))
+    (Graphics/.getDeltaTime core))
 
   (clear-screen! [_ [r g b a]]
     (ScreenUtils/clear r g b a))
@@ -261,7 +261,7 @@
                         graphics/cursors]}
                 cursor-key]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! core (get cursors cursor-key)))
+    (Graphics/.setCursor core (get cursors cursor-key)))
 
   (draw! [graphics draws]
     (doseq [{k 0 :as component} draws
@@ -339,7 +339,7 @@
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
   (let [pixmap (Pixmap. (.internal Gdx/files path))
-        cursor (graphics/new-cursor graphics pixmap hotspot-x hotspot-y)]
+        cursor (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y)]
     (.dispose pixmap)
     cursor))
 
