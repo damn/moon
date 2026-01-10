@@ -15,15 +15,18 @@
             [moon.effect :as effect]
             [moon.effects.target-all :as target-all]
             [moon.effects.target-entity :as target-entity]
-            [moon.entity.animation :as animation]
-            [moon.entity.body :as body]
+            [moon.entity.animation :as animation] ; just animation
+            [moon.entity.body :as body] ; just body
+            moon.entity.delete-after-duration
+            moon.entity.projectile-collision
             [moon.entity.faction :as faction]
+            moon.entity.fsm
             [moon.entity.inventory :as inventory]
             [moon.entity.skills :as skills]
             [moon.entity.skills.skill :as skill]
-            [moon.entity.state :as state]
+            [moon.entity.state :as state] ; 'creature' ?
             [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
-            [moon.entity.stats :as stats]
+            [moon.entity.stats :as stats] ; moon.stats ?
             [moon.graphics :as graphics]
             [moon.input :as input]
             [moon.throwable :as throwable]
@@ -128,16 +131,15 @@
    :world/effect-body-props {:width 0.5
                              :height 0.5
                              :z-order :z-order/effect}
-   :world/create-fns (update-vals '{:entity/animation             moon.entity.animation/create
-                                    :entity/body                  moon.entity.body/create
-                                    :entity/delete-after-duration moon.entity.delete-after-duration/create
-                                    :entity/projectile-collision  moon.entity.projectile-collision/create
-                                    :entity/stats                 moon.entity.stats/create}
-                                  requiring-resolve)
-   :world/after-create-fns (update-vals '{:entity/fsm                             moon.entity.fsm/create!
-                                          :entity/inventory                       moon.entity.inventory/create!
-                                          :entity/skills                          moon.entity.skills/create!}
-                                        requiring-resolve)
+   :world/create-fns {:entity/animation             moon.entity.animation/create
+                      :entity/body                  moon.entity.body/create
+                      :entity/delete-after-duration moon.entity.delete-after-duration/create
+                      :entity/projectile-collision  moon.entity.projectile-collision/create
+                      :entity/stats                 moon.entity.stats/create}
+   :world/after-create-fns {:entity/fsm                             moon.entity.fsm/create!
+                            :entity/inventory                       moon.entity.inventory/create!
+                            :entity/skills                          moon.entity.skills/create!}
+
    })
 
 
@@ -1701,6 +1703,8 @@
 (def state (atom nil))
 
 ; for every ' symbol/name ' give documentation for _ALL_ revelant information and zusammenhaenge
+; e.g. a function requires 'txs' as result (entity tick, ..)
+;> point to all txs with params and documentation?
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (let [config (edn-resource "config.edn")]
