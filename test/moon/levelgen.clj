@@ -20,7 +20,6 @@
             [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.text-button :as text-button]
-            [gdl.ui.skin :as skin]
             [gdl.ui.stage :as stage]
             [gdl.ui.window :as window]
             [moon.ui.table]
@@ -32,7 +31,8 @@
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)))
+                                             Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -101,7 +101,7 @@
   [{:keys [ctx/files
            ctx/graphics
            ctx/input]}]
-  (let [skin (skin/create (.internal Gdx/files "uiskin.json")) ; TODO dispose
+  (let [skin (Skin. (.internal Gdx/files "uiskin.json")) ; TODO dispose
         ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch)

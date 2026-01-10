@@ -1,20 +1,13 @@
 (ns moon.graphics
   (:require [gdl.graphics :as graphics]
-            [gdl.graphics.batch :as batch]
-            [gdl.graphics.bitmap-font :as fnt]
-            [gdl.graphics.bitmap-font.data :as data]
             [gdl.graphics.color :as color]
             [gdl.graphics.colors :as colors]
-            [gdl.graphics.freetype.generator :as generator]
-            [gdl.graphics.freetype.generator.parameter :as parameter]
             [gdl.graphics.orthographic-camera :as orthographic-camera]
             [gdl.graphics.pixmap :as pixmap]
-            [gdl.graphics.pixmap.format :as pixmap.format]
             [gdl.graphics.shape-drawer :as sd]
             [gdl.graphics.sprite-batch :as sprite-batch]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.texture-region :as texture-region]
-            [gdl.graphics.texture.filter :as texture.filter]
             [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.math.vector2 :as vector2]
             [gdl.utils.disposable :as disposable]
@@ -23,7 +16,12 @@
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera])
-  (:import (com.badlogic.gdx Gdx)))
+  (:import (com.badlogic.gdx Gdx)
+           (com.badlogic.gdx.graphics Pixmap$Format
+                                      Texture$TextureFilter)
+           (com.badlogic.gdx.graphics.g2d Batch)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
 
 (defprotocol Graphics
   (unproject-ui [_ position])
@@ -145,7 +143,7 @@
     (viewport/update! world-viewport width height {:center? false}))
 
   (draw-on-world-vp!
-    [{:keys [graphics/batch
+    [{:keys [^Batch graphics/batch
              graphics/shape-drawer
              graphics/unit-scale
              graphics/world-unit-scale
@@ -154,15 +152,15 @@
     ; fix scene2d.ui.tooltip flickering
     ; _everything_ flickers with vis ui tooltip! it changes batch color somehow and does not
     ; change it back !
-    (batch/set-color! batch [1 1 1 1])
+    (.setColor batch 1 1 1 1)
     ;
-    (batch/set-projection-matrix! batch (camera/combined (viewport/camera world-viewport)))
-    (batch/begin! batch)
+    (.setProjectionMatrix batch (camera/combined (viewport/camera world-viewport)))
+    (.begin batch)
     (sd/with-line-width shape-drawer world-unit-scale
       (reset! unit-scale world-unit-scale)
       (f)
       (reset! unit-scale 1))
-    (batch/end! batch)))
+    (.end batch)))
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
   (let [pixmap (pixmap/create (.internal Gdx/files path))
@@ -175,16 +173,17 @@
                        quality-scaling
                        enable-markup?
                        use-integer-positions?]}]
-  (let [generator (generator/create file-handle)
-        font (generator/font generator
-                             (parameter/create
-                              {:size (* size quality-scaling)
-                               :min-filter texture.filter/linear
-                               :mag-filter texture.filter/linear}))]
-    (generator/dispose! generator)
-    (data/set-scale! (fnt/data font) (/ quality-scaling))
-    (data/set-enable-markup! (fnt/data font) enable-markup?)
-    (fnt/set-use-integer-positions! font use-integer-positions?)
+  (let [generator (FreeTypeFontGenerator. file-handle)
+        font (.generateFont generator
+                            (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                              (set! (.size params) (* size quality-scaling))
+                              (set! (.minFilter params) Texture$TextureFilter/Linear)
+                              (set! (.magFilter params) Texture$TextureFilter/Linear)
+                              params))]
+    (.dispose generator)
+    (.setScale (.getData font) (/ quality-scaling))
+    (set! (.markupEnabled (.getData font)) enable-markup?)
+    (.setUseIntegerPositions font use-integer-positions?)
     font))
 
 (defn create!
@@ -201,7 +200,7 @@
   (doseq [[name rgba] colors]
     (colors/put! name (color/create rgba)))
   (let [batch (sprite-batch/create)
-        shape-drawer-texture (let [pixmap (doto (pixmap/create 1 1 pixmap.format/rgba8888)
+        shape-drawer-texture (let [pixmap (doto (pixmap/create 1 1 Pixmap$Format/RGBA8888)
                                             (pixmap/set-color! [1 1 1 1])
                                             (pixmap/draw-pixel! 0 0))
                                    texture (texture/create pixmap)]

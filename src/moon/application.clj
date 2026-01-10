@@ -5,12 +5,9 @@
             [clojure.java.io :as io]
             [clojure.math.vector2 :as v] ; assoc-interaction-state
             [clojure.string :as str]
-            [gdl.graphics.bitmap-font :as bitmap-font]
-            [gdl.graphics.bitmap-font.data :as bitmap-font-data]
             [gdl.input.buttons :as input.buttons]
             [gdl.ui.actor :as actor]
             [gdl.ui.stage :as stage]
-            [gdl.ui.skin :as skin]
             [gdl.utils.disposable :as disposable]
             [malli.core :as m]
             [malli.utils :as mu]
@@ -58,6 +55,8 @@
                              Input)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)
            (gdl.ui Stage))
   (:gen-class))
 
@@ -370,6 +369,12 @@
             [sound-name
              (Audio/.newSound audio file-handle)]))))
 
+(defn- create-skin [^FileHandle file-handle]
+  (let [skin (Skin. file-handle)]
+    (set! (.markupEnabled (-> skin (.getFont "default-font") .getData))
+          true)
+    skin))
+
 (defn- create!
   [{:keys [gdx/audio
            gdx/files
@@ -379,7 +384,7 @@
   (let [db (db/create)
         graphics (graphics/create! graphics files (:graphics config))
         stage (ui/create! graphics)
-        skin (skin/create (Files/.internal files "uiskin.json"))
+        skin (create-skin (Files/.internal files "uiskin.json"))
         ctx (merge (map->Context {}) ; record not needed - txs/handle! in here? & throwable ?
                    {:ctx/audio (load-sounds audio files (:audio config))
                     :ctx/db db
@@ -388,10 +393,6 @@
                     :ctx/stage stage
                     :ctx/skin skin})]
     (Input/.setInputProcessor input stage)
-    (-> skin
-        (skin/font "default-font")
-        bitmap-font/data
-        (bitmap-font-data/set-enable-markup! true))
     (doseq [actor [(create-dev-menu db graphics skin)
                    (create-action-bar)
                    (create-hp-mana-bar graphics stage)
