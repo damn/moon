@@ -1,6 +1,5 @@
 (ns moon.ui.build.editor-window
-  (:require [gdl.input.keys :as input.keys]
-            [gdl.ui.actor :as actor]
+  (:require [gdl.ui.actor :as actor]
             [gdl.ui.stage :as stage]
             [moon.db :as db]
             [moon.db.property :as property]
@@ -10,7 +9,8 @@
             [moon.ui.editor.schema :as schema]
             [moon.ui.text-button :as text-button]
             [moon.ui.widget :as widget]
-            [moon.ui.window :as window]))
+            [moon.ui.window :as window])
+  (:import (com.badlogic.gdx Input$Keys)))
 
 (defn create
   [{:keys [ctx
@@ -48,7 +48,7 @@
                          (when-let [stage (actor/stage this)]
                            (let [{:keys [ctx/input]
                                   :as ctx} (stage/ctx stage)]
-                             (when (input/key-just-pressed? input input.keys/enter)
+                             (when (input/key-just-pressed? input Input$Keys/ENTER)
                                (clicked-save-fn this ctx)))))
                   :draw (fn [this batch parent-alpha])})]
         save-button (text-button/create

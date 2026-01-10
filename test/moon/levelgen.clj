@@ -6,7 +6,6 @@
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
             [gdl.input :as input]
-            [gdl.input.keys :as input.keys]
             [gdl.maps.map-layers :as layers]
             [gdl.maps.map-properties :as props]
             [gdl.maps.tiled :as tiled-map]
@@ -23,7 +22,8 @@
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
-                             Gdx)
+                             Gdx
+                             Input$Keys)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Color
@@ -159,16 +159,16 @@
                                                (update (camera/position camera)
                                                        idx
                                                        #(f % camera-movement-speed))))]
-    (if (input/key-pressed? input input.keys/left)  (apply-position 0 -))
-    (if (input/key-pressed? input input.keys/right) (apply-position 0 +))
-    (if (input/key-pressed? input input.keys/up)    (apply-position 1 +))
-    (if (input/key-pressed? input input.keys/down)  (apply-position 1 -))))
+    (if (input/key-pressed? input Input$Keys/LEFT)  (apply-position 0 -))
+    (if (input/key-pressed? input Input$Keys/RIGHT) (apply-position 0 +))
+    (if (input/key-pressed? input Input$Keys/UP)    (apply-position 1 +))
+    (if (input/key-pressed? input Input$Keys/DOWN)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (input/key-pressed? input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
-  (when (input/key-pressed? input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (input/key-pressed? input Input$Keys/MINUS)  (camera/inc-zoom! camera zoom-speed))
+  (when (input/key-pressed? input Input$Keys/EQUALS) (camera/inc-zoom! camera (- zoom-speed))))
 
 (defn render!
   [{:keys [ctx/stage]

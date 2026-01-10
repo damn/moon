@@ -3,7 +3,6 @@
             [clojure.java.io :as io]
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [gdl.input.buttons :as input.buttons]
             [gdl.ui.actor :as actor]
             [gdl.ui.stage :as stage]
             [gdl.utils.disposable :as disposable]
@@ -50,7 +49,8 @@
                              Audio
                              Files
                              Gdx
-                             Input)
+                             Input
+                             Input$Buttons)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
@@ -1045,7 +1045,7 @@
                                                 ctx/stage] :as ctx}]
                                        (if-let [movement-vector (input/player-movement-vector input)]
                                          [[:tx/event player-eid :movement-input movement-vector]]
-                                         (when (input/button-just-pressed? input input.buttons/left)
+                                         (when (input/button-just-pressed? input Input$Buttons/LEFT)
                                            (interaction-state->txs interaction-state
                                                                    stage
                                                                    player-eid))))
@@ -1054,7 +1054,7 @@
                                        [eid {:keys [ctx/input
                                                     ctx/stage]}]
                                        (let [mouseover-actor (ui/mouseover-actor stage (input/mouse-position input))]
-                                         (when (and (input/button-just-pressed? input input.buttons/left)
+                                         (when (and (input/button-just-pressed? input Input$Buttons/LEFT)
                                                     (player-item-on-cursor/world-item? mouseover-actor))
                                            [[:tx/event eid :drop-item]])))
 
