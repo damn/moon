@@ -137,16 +137,58 @@
 
 
 (def reaction-txs-fn-map
-  (update-vals '{
-                 :tx/sound                    moon.tx.sound/do!
-                 :tx/toggle-inventory-visible moon.tx.toggle-inventory-visible/do!
-                 :tx/show-message             moon.tx.show-message/do!
-                 :tx/show-modal               moon.tx.show-modal/do!
-                 :tx/set-item                 moon.tx.set-item/do!
-                 :tx/remove-item              moon.tx.remove-item/do!
-                 :tx/add-skill                moon.tx.add-skill/do!
-                 }
-               requiring-resolve))
+  {
+   :tx/sound                    (fn
+                                  [{:keys [ctx/audio] :as ctx} sound-name]
+                                  (audio/play! audio sound-name)
+                                  ctx)
+   :tx/toggle-inventory-visible (fn
+                                  [{:keys [ctx/stage] :as ctx}]
+                                  (ui/toggle-inventory-visible! stage)
+                                  ctx)
+   :tx/show-message             (fn
+                                  [{:keys [ctx/stage] :as ctx} message]
+                                  (ui/show-text-message! stage message)
+                                  ctx)
+   :tx/show-modal               (fn
+                                  [{:keys [ctx/skin
+                                           ctx/stage]
+                                    :as ctx}
+                                   opts]
+                                  (ui/show-modal-window! stage skin (stage/viewport stage) opts)
+                                  ctx)
+   :tx/set-item                 (fn
+                                  [{:keys [ctx/graphics
+                                           ctx/skin
+                                           ctx/stage]
+                                    :as ctx}
+                                   eid cell item]
+                                  (when (:entity/player? @eid)
+                                    (ui/set-item! stage cell
+                                                  {:texture-region (graphics/texture-region graphics (:entity/image item))
+                                                   :tooltip-text (info/text item nil)}
+                                                  skin))
+                                  ctx)
+   :tx/remove-item              (fn
+                                  [{:keys [ctx/stage] :as ctx} eid cell]
+                                  (when (:entity/player? @eid)
+                                    (ui/remove-item! stage cell))
+                                  ctx)
+   :tx/add-skill                (fn
+                                  [{:keys [ctx/graphics
+                                           ctx/skin
+                                           ctx/stage]
+                                    :as ctx}
+                                   eid skill]
+                                  (when (:entity/player? @eid)
+                                    (ui/add-skill! stage
+                                                   {:skill-id (:property/id skill)
+                                                    :texture-region (graphics/texture-region graphics (:entity/image skill))
+                                                    :tooltip-text (fn [{:keys [ctx/world]}]
+                                                                    (info/text skill world))}
+                                                   skin))
+                                  ctx)
+   })
 
 (def txs-fn-map
   (update-vals '{
