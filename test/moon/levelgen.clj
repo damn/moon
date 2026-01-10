@@ -1,8 +1,5 @@
 (ns moon.levelgen
   (:require [clojure.edn :as edn]
-            [clojure.gdx :as gdx]
-            [clojure.gdx.backends.lwjgl3.application :as application]
-            [clojure.gdx.backends.lwjgl3.application.configuration :as configuration]
             [clojure.java.io :as io]
             [moon.color :as color]
             [moon.db :as db]
@@ -33,7 +30,9 @@
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
-                             Gdx)))
+                             Gdx)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -196,10 +195,12 @@
 (def state (atom nil))
 
 (defn -main []
-  (configuration/use-glfw-async!)
-  (application/create (reify ApplicationListener
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
-                          (reset! state (create! (gdx/context))))
+                          (reset! state (create! {:ctx/files    Gdx/files
+                                                  :ctx/graphics Gdx/graphics
+                                                  :ctx/input    Gdx/input})))
                         (dispose [_]
                           (dispose! @state))
                         (render [_]
@@ -208,8 +209,7 @@
                           (resize! @state width height))
                         (pause [_])
                         (resume [_]))
-                      (configuration/create
-                       {:title "Levelgen Test"
-                        :window {:width 1440
-                                 :height 900}
-                        :fps 60})))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Levelgen Test")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))

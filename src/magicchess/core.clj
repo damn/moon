@@ -1,8 +1,8 @@
 (ns magicchess.core
-  (:require [clojure.gdx :as gdx]
-            [clojure.gdx.backends.lwjgl3.application :as application]
-            [clojure.gdx.backends.lwjgl3.application.configuration :as configuration])
-  (:import (com.badlogic.gdx ApplicationListener)))
+  (:import (com.badlogic.gdx ApplicationListener
+                             Gdx)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)))
 
 ; [x] create window
 
@@ -60,10 +60,10 @@
 (def state (atom nil))
 
 (defn -main []
-  (configuration/use-glfw-async!)
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (let [listener (reify ApplicationListener
                    (create [_]
-                     (reset! state (create! (gdx/context))))
+                     (reset! state (create! Gdx/app)))
 
                    (dispose [_]
                      (dispose! @state))
@@ -76,10 +76,9 @@
 
                    (pause [_])
 
-                   (resume [_]))
-        config (configuration/create
-                {:title "Magic Chess"
-                 :window {:width 1440
-                          :height 900}
-                 :fps 60})]
-    (application/create listener config)))
+                   (resume [_]))]
+    (Lwjgl3Application. listener
+                        (doto (Lwjgl3ApplicationConfiguration.)
+                          (.setTitle "Magic Chess")
+                          (.setWindowedMode 1440 900)
+                          (.setForegroundFPS 60)))))
