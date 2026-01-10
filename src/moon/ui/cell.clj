@@ -1,4 +1,4 @@
-(ns moon.ui.cell
+(ns moon.ui.cell ; integrate/to table
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defn right! [^Cell cell]

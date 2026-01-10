@@ -1,4 +1,4 @@
-(ns moon.ui.button-group
+(ns moon.ui.button-group ; integrate
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup)))
 

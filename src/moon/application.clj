@@ -1,3 +1,5 @@
+; TODO
+; * editor in 1 namespace
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -16,10 +18,7 @@
             [moon.effects.target-entity :as target-entity]
             [moon.entity.animation :as animation] ; just animation
             [moon.entity.body :as body] ; just body
-            moon.entity.delete-after-duration
-            moon.entity.projectile-collision
             [moon.entity.faction :as faction]
-            moon.entity.fsm
             [moon.entity.inventory :as inventory]
             [moon.entity.skills :as skills]
             [moon.entity.skills.skill :as skill]
@@ -133,10 +132,17 @@
                              :z-order :z-order/effect}
    :world/create-fns {:entity/animation             moon.entity.animation/create
                       :entity/body                  moon.entity.body/create
-                      :entity/delete-after-duration moon.entity.delete-after-duration/create
-                      :entity/projectile-collision  moon.entity.projectile-collision/create
+                      :entity/delete-after-duration (fn [duration {:keys [world/elapsed-time]}]
+                                                      (timer/create elapsed-time duration))
+                      :entity/projectile-collision  (fn create [v _world]
+                                                      (assoc v :already-hit-bodies #{}))
                       :entity/stats                 moon.entity.stats/create}
-   :world/after-create-fns {:entity/fsm                             moon.entity.fsm/create!
+   :world/after-create-fns {:entity/fsm                             (fn
+                                                                      [{:keys [fsm initial-state]} eid world]
+                                                                      ; fsm throws when initial-state is not part of states, so no need to assert initial-state
+                                                                      ; initial state is nil, so associng it. make bug report at reduce-fsm?
+                                                                      [[:tx/assoc eid :entity/fsm (assoc ((get (:world/fsms world) fsm) initial-state nil) :state initial-state)]
+                                                                       [:tx/assoc eid initial-state (state/create [initial-state nil] eid world)]])
                             :entity/inventory                       moon.entity.inventory/create!
                             :entity/skills                          moon.entity.skills/create!}
 
@@ -895,6 +901,8 @@
                     :ctx/stage stage
                     :ctx/skin skin})]
     (Input/.setInputProcessor input stage)
+    ; all ui building inside moon.ui ??
+    ; just pass game-fns ?
     (doseq [actor [(create-dev-menu db graphics skin)
                    (action-bar/create)
                    (create-hp-mana-bar graphics stage)

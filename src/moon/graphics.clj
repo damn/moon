@@ -24,8 +24,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.utils Align
-                                   ScreenUtils)
-           (space.earlygrey.shapedrawer ShapeDrawer)))
+                                   Disposable
+                                   ScreenUtils)))
 
 (defprotocol PGraphics
   (unproject-ui [_ position])
