@@ -4,13 +4,13 @@
             [gdl.maps.tiled :as tiled-map]
             [gdl.maps.tiled.layer :as layer]
             [gdl.utils.viewport :as viewport])
-  (:import (moon ColorSetter
-                 TiledMapRenderer)))
+  (:import (moon TiledMapRenderer
+                 TiledMapRenderer$ColorSetter)))
 
 (defn draw! [tiled-map-renderer world-viewport tiled-map color-setter]
   (let [^TiledMapRenderer renderer (tiled-map-renderer tiled-map)
         camera (viewport/camera world-viewport)]
-    (.setColorSetter renderer (reify ColorSetter
+    (.setColorSetter renderer (reify TiledMapRenderer$ColorSetter
                                 (apply [_ color x y]
                                   (color/float-bits (color-setter color x y)))))
     (.setView renderer camera)

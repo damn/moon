@@ -22,6 +22,11 @@ import static com.badlogic.gdx.graphics.g2d.Batch.*;
 
 public class TiledMapRenderer implements Disposable {
 
+  public interface ColorSetter {
+
+    public float apply(Color color, float x, float y);
+  }
+
 	static protected final int NUM_VERTICES = 20;
 	protected TiledMap map;
 	protected float unitScale;
