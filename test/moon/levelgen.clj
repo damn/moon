@@ -1,11 +1,9 @@
 (ns moon.levelgen
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.color :as color]
             [moon.db :as db]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
-            [gdl.graphics.orthographic-camera :as orthographic-camera]
             [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.input :as input]
             [gdl.input.keys :as input.keys]
@@ -21,7 +19,6 @@
             [gdl.ui.window :as window]
             [moon.ui.table]
             [gdl.utils.disposable :as disposable]
-            [gdl.utils.screen :as screen-utils]
             [gdl.utils.viewport :as viewport]
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [moon.world-fns.creature-tiles])
@@ -29,10 +26,13 @@
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics Color
+                                      Texture
+                                      OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.utils ScreenUtils)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -102,7 +102,7 @@
            ctx/graphics
            ctx/input]}]
   (let [skin (Skin. (.internal Gdx/files "uiskin.json")) ; TODO dispose
-        ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
+        ui-viewport (fit-viewport/create 1440 900 (OrthographicCamera.))
         sprite-batch (SpriteBatch.)
         stage (stage/create ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
@@ -115,8 +115,8 @@
                              world-height (* 900  world-unit-scale)]
                          (fit-viewport/create world-width
                                               world-height
-                                              (doto (orthographic-camera/create)
-                                                (orthographic-camera/set-to-ortho! false world-width world-height))))
+                                              (doto (OrthographicCamera.)
+                                                (.setToOrtho false world-width world-height))))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport
@@ -176,7 +176,7 @@
   (let [ctx (if-let [new-ctx (stage/ctx stage)]
               new-ctx
               ctx)]
-    (screen-utils/clear! color/black)
+    (ScreenUtils/clear Color/BLACK)
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)
