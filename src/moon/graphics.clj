@@ -5,7 +5,6 @@
             [gdl.math.vector2 :as vector2]
             [gdl.utils.align :as align]
             [gdl.utils.disposable :as disposable]
-            [gdl.utils.screen :as screen-utils]
             [gdl.utils.viewport :as viewport]
             [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [moon.color :as color]
@@ -28,6 +27,7 @@
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
+           (com.badlogic.gdx.utils ScreenUtils)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defprotocol Graphics
@@ -254,8 +254,8 @@
   (delta-time [{:keys [graphics/core]}]
     (graphics/delta-time core))
 
-  (clear-screen! [_ color]
-    (screen-utils/clear! color))
+  (clear-screen! [_ [r g b a]]
+    (ScreenUtils/clear r g b a))
 
   (set-cursor! [{:keys [graphics/core
                         graphics/cursors]}
