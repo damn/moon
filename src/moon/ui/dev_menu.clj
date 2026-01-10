@@ -1,5 +1,5 @@
 (ns moon.ui.dev-menu
-  (:require [gdl.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [gdl.ui.cell :as cell]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.event :as event]

@@ -1,5 +1,5 @@
 (ns moon.ui.image-button
-  (:require [gdl.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.drawable :as drawable]
             [gdl.ui.event :as event]

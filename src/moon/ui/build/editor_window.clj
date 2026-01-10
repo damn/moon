@@ -1,5 +1,5 @@
 (ns moon.ui.build.editor-window
-  (:require [gdl.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [gdl.ui.stage :as stage]
             [moon.db :as db]
             [moon.db.property :as property]
@@ -43,8 +43,9 @@
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
-        actors [(actor/create
-                 {:act (fn [this delta]
+        actors [(stage/build
+                 {:actor/type :actor/actor
+                  :act (fn [this delta]
                          (when-let [stage (actor/stage this)]
                            (let [{:keys [ctx/input]
                                   :as ctx} (stage/ctx stage)]

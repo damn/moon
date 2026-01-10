@@ -1,5 +1,5 @@
 (ns moon.ui.widget
-  (:require [gdl.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [gdl.ui.label :as label]
             [gdl.ui.scroll-pane :as scroll-pane]
             [gdl.ui.stage :as stage]

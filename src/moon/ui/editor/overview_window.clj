@@ -1,5 +1,5 @@
 (ns moon.ui.editor.overview-window
-  (:require [gdl.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [gdl.ui.label :as label]
             [gdl.ui.touchable :as touchable]
             [moon.db :as db]

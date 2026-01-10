@@ -1,19 +1,39 @@
 (ns moon.ui.actor
-  (:require [gdl.ui.actor :as actor]
-            [gdl.ui.stage :as stage]))
+  (:refer-clojure :exclude [name])
+  (:require [gdl.ui.stage :as stage])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+
+(def set-name!                Actor/.setName)
+(def set-user-object!         Actor/.setUserObject)
+(def set-visible!             Actor/.setVisible)
+(def set-touchable!           Actor/.setTouchable)
+(def set-position!            Actor/.setPosition)
+(def add-listener!            Actor/.addListener)
+(def remove!                  Actor/.remove)
+(def stage                    Actor/.getStage)
+(def user-object              Actor/.getUserObject)
+(def width                    Actor/.getWidth)
+(def height                   Actor/.getHeight)
+(def x                        Actor/.getX)
+(def y                        Actor/.getY)
+(def parent                   Actor/.getParent)
+(def name                     Actor/.getName)
+(def visible?                 Actor/.isVisible)
+(def stage->local-coordinates Actor/.stageToLocalCoordinates)
+(def hit                      Actor/.hit)
 
 (def opts-fn-map
-  {:actor/name        actor/set-name!
-   :actor/user-object actor/set-user-object!
-   :actor/visible?    actor/set-visible!
-   :actor/touchable   actor/set-touchable!
-   :actor/listener    actor/add-listener!
+  {:actor/name        set-name!
+   :actor/user-object set-user-object!
+   :actor/visible?    set-visible!
+   :actor/touchable   set-touchable!
+   :actor/listener    add-listener!
    :actor/position (fn [a [x y]]
-                     (actor/set-position! a x y))
+                     (set-position! a x y))
    :actor/center-position (fn [a [x y]]
-                            (actor/set-position! a
-                                                 (- x (/ (actor/width  a) 2))
-                                                 (- y (/ (actor/height a) 2))))})
+                            (set-position! a
+                                           (- x (/ (width  a) 2))
+                                           (- y (/ (height a) 2))))})
 
 (defn set-opts! [actor opts]
   (doseq [[k v] opts
@@ -22,6 +42,17 @@
     (f actor v))
   actor)
 
-(defmethod stage/build :actor/actor [opts]
-  (-> (actor/create opts)
+(defn create
+  [{:keys [act draw] :as opts}]
+  (-> (proxy [Actor] []
+        (act [delta]
+          (act this delta)
+          (let [^Actor this this]
+            (proxy-super act delta)))
+        (draw [batch parent-alpha]
+          (draw this batch parent-alpha)))
       (set-opts! opts)))
+
+(defmethod stage/build :actor/actor
+  [opts]
+  (create opts))

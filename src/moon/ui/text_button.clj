@@ -1,5 +1,5 @@
 (ns moon.ui.text-button
-  (:require [gdl.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.event :as event]
             [gdl.ui.stage :as stage]

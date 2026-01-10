@@ -3,7 +3,7 @@
             [clojure.java.io :as io]
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [gdl.ui.actor :as actor]
+            [moon.ui.actor :as actor]
             [gdl.ui.stage :as stage]
             [gdl.utils.disposable :as disposable]
             [malli.core :as m]

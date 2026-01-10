@@ -1,5 +1,5 @@
 (ns moon.ui.action-bar
-  (:require [gdl.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [gdl.ui.button-group :as button-group]
             [gdl.ui.group :as group]
             [gdl.ui.horizontal-group :as horizontal-group]

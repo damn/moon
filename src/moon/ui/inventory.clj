@@ -1,5 +1,5 @@
 (ns moon.ui.inventory
-  (:require [gdl.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [gdl.ui.drawable :as drawable]
             [gdl.ui.group :as group]
             [gdl.ui.image :as image]

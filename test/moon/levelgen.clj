@@ -5,7 +5,7 @@
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
-            [gdl.ui.actor :as actor]
+            [moon.ui.actor :as actor]
             [gdl.ui.event :as event]
             [gdl.ui.change-listener :as change-listener]
             [gdl.ui.text-button :as text-button]

@@ -1,6 +1,6 @@
 (ns moon.application.create.ui.inventory-window
   (:require [gdl.math.vector2 :as gdxvector2]
-            [gdl.ui.actor :as actor]
+            [moon.ui.actor :as actor]
             [gdl.ui.click-listener :as click-listener]
             [gdl.ui.drawable :as drawable]
             [gdl.ui.event :as event]

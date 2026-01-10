@@ -1,5 +1,5 @@
 (ns gdl.ui.utils
-  (:require [gdl.ui.actor :as actor])
+  (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))
