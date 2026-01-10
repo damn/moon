@@ -1,33 +1,34 @@
 (ns moon.graphics.camera
-  (:require [gdl.graphics.orthographic-camera :as camera]
-            [gdl.math.frustum :as frustum]
-            [gdl.math.vector3 :as vector3]))
+  (:require [gdl.math.frustum :as frustum]
+            [gdl.math.vector3 :as vector3])
+  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
-(defn viewport-height [this]
-  (camera/viewport-height this))
+(defn viewport-height [^OrthographicCamera camera]
+  (.viewportHeight camera))
 
-(defn viewport-width [this]
-  (camera/viewport-width this))
+(defn viewport-width [^OrthographicCamera camera]
+  (.viewportWidth camera))
 
-(defn position [this]
-  (vector3/clojurize (camera/position this)))
+(defn position [^OrthographicCamera this]
+  (vector3/clojurize (.position this)))
 
-(defn zoom [this]
-  (camera/zoom this))
+(defn zoom [^OrthographicCamera camera]
+  (.zoom camera))
 
-(defn combined [this]
-  (camera/combined this))
+(defn combined [^OrthographicCamera camera]
+  (.combined camera))
 
-(defn set-position! [this position]
-  (camera/set-position! this position)
-  (camera/update! this))
+(defn set-position! [^OrthographicCamera camera [x y]]
+  (set! (.x (.position camera)) (float x))
+  (set! (.y (.position camera)) (float y))
+  (.update camera))
 
-(defn set-zoom! [this amount]
-  (camera/set-zoom! this amount)
-  (camera/update! this))
+(defn set-zoom! [^OrthographicCamera camera amount]
+  (set! (.zoom camera) amount)
+  (.update camera))
 
-(defn frustum-bounds [this]
-  (mapv vector3/clojurize (frustum/plane-points (camera/frustum this))))
+(defn frustum-bounds [^OrthographicCamera this]
+  (mapv vector3/clojurize (frustum/plane-points (.frustum this))))
 
 (defn reset-zoom! [cam]
   (set-zoom! cam 1))

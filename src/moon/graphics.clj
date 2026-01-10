@@ -1,6 +1,5 @@
 (ns moon.graphics
   (:require [gdl.graphics :as graphics]
-            [gdl.graphics.orthographic-camera :as orthographic-camera]
             [gdl.graphics.shape-drawer :as sd]
             [gdl.graphics.tm-renderer :as tm-renderer]
             [gdl.math.vector2 :as vector2]
@@ -17,7 +16,8 @@
                                       Pixmap
                                       Pixmap$Format
                                       Texture
-                                      Texture$TextureFilter)
+                                      Texture$TextureFilter
+                                      OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch
                                           SpriteBatch
                                           TextureRegion)
@@ -228,11 +228,11 @@
         (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch))
         (assoc :graphics/ui-viewport (fit-viewport/create (:width  ui-viewport)
                                                           (:height ui-viewport)
-                                                          (orthographic-camera/create)))
+                                                          (OrthographicCamera.)))
         (assoc :graphics/world-viewport (let [world-width  (* (:width  world-viewport) world-unit-scale)
                                               world-height (* (:height world-viewport) world-unit-scale)]
                                           (fit-viewport/create world-width
                                                                world-height
-                                                               (doto (orthographic-camera/create)
-                                                                 (orthographic-camera/set-to-ortho! false world-width world-height)))))
+                                                               (doto (OrthographicCamera.)
+                                                                 (.setToOrtho false world-width world-height)))))
         (assoc :graphics/draw-fns (update-vals draw-fns requiring-resolve)))))
