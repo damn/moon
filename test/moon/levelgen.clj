@@ -24,7 +24,8 @@
                                       OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               Window)
            (com.badlogic.gdx.utils ScreenUtils)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
