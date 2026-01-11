@@ -55,7 +55,8 @@
             [moon.tx-handler :as tx-handler]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx ApplicationListener
+  (:import (com.badlogic.gdx Application
+                             ApplicationListener
                              Audio
                              Files
                              Gdx
@@ -878,23 +879,19 @@
     skin))
 
 (defn- create!
-  [{:keys [gdx/audio
-           gdx/files
-           gdx/graphics
-           gdx/input]}
-   config]
+  [^Application app config]
   (let [db (db/create)
-        graphics (graphics/create! graphics files (:graphics config))
+        graphics (graphics/create! (.getGraphics app) (.getFiles app) (:graphics config))
         stage (ui/create! graphics)
-        skin (create-skin (Files/.internal files "uiskin.json"))
+        skin (create-skin (.internal (.getFiles app) "uiskin.json"))
         ctx (merge (map->Context {})
-                   {:ctx/audio (load-sounds audio files (:audio config))
+                   {:ctx/audio (load-sounds (.getAudio app) (.getFiles app) (:audio config))
                     :ctx/db db
                     :ctx/graphics graphics
-                    :ctx/input input
+                    :ctx/input (.getInput app)
                     :ctx/stage stage
                     :ctx/skin skin})]
-    (Input/.setInputProcessor input stage)
+    (Input/.setInputProcessor (.getInput app) stage)
     ; all ui building inside moon.ui ??
     ; just pass game-fns ?
     (doseq [actor [(create-dev-menu db graphics skin)
@@ -1712,12 +1709,7 @@
     (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
-                            (reset! state (create!
-                                           {:gdx/audio    Gdx/audio
-                                            :gdx/files    Gdx/files
-                                            :gdx/graphics Gdx/graphics
-                                            :gdx/input    Gdx/input}
-                                           config)))
+                            (reset! state (create! Gdx/app config)))
 
                           (dispose [_]
                             (dispose! @state))
