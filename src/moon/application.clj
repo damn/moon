@@ -1707,12 +1707,9 @@
 
 (def state (atom nil))
 
-; for every ' symbol/name ' give documentation for _ALL_ revelant information and zusammenhaenge
-; e.g. a function requires 'txs' as result (entity tick, ..)
-;> point to all txs with params and documentation?
 (defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (let [config (edn-resource "config.edn")]
+    (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
                             (reset! state (create!
