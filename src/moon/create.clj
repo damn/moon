@@ -119,7 +119,7 @@
     (Input/.setInputProcessor (app/input app) stage)
     ; all ui building inside moon.ui ??
     ; just pass game-fns ?
-    (doseq [actor (map (fn [sym] ((requiring-resolve sym) ctx)) (:ui/actors config))]
+    (doseq [actor (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) (:ui/actors config))]
       (stage/add-actor! stage actor))
     ; this form what is input/output?
     (let [world-fn-result (call-world-fn (:world config)
