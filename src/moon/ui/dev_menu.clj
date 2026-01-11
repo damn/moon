@@ -1,7 +1,6 @@
 (ns moon.ui.dev-menu
   (:require [moon.ui.actor :as actor]
             [moon.ui.cell :as cell]
-            [moon.ui.change-listener :as change-listener]
             [moon.ui.group :as group]
             [moon.ui.label :as label]
             [moon.ui.stage :as stage]
@@ -10,7 +9,8 @@
             [moon.ui.table :as table]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Event
-                                            Touchable)))
+                                            Touchable)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create
@@ -40,9 +40,9 @@
     :rows [(for [{:keys [label on-click]} items]
              {:actor (doto (text-button/create label skin)
                        (actor/add-listener!
-                        (change-listener/create
-                         (fn [event actor]
-                           (on-click actor (stage/ctx (Event/.getStage event)))))))})]}))
+                        (proxy [ChangeListener] []
+                          (changed [event actor]
+                            (on-click actor (stage/ctx (Event/.getStage event)))))))})]}))
 
 (defn- main-table [skin menus update-labels]
   (let [table (table/create

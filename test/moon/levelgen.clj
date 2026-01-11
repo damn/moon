@@ -6,7 +6,6 @@
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
             [moon.ui.actor :as actor]
-            [moon.ui.change-listener :as change-listener]
             [moon.ui.text-button :as text-button]
             [moon.ui.stage :as stage]
             [moon.ui.table]
@@ -25,6 +24,7 @@
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (com.badlogic.gdx.utils ScreenUtils)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
@@ -84,9 +84,9 @@
                                                               (stage/set-ctx! stage new-ctx)))]]
                                      [{:actor (doto (text-button/create (str "Generate " level-fn) skin)
                                                 (actor/add-listener!
-                                                 (change-listener/create
-                                                  (fn [event actor]
-                                                    (on-clicked actor (stage/ctx (Event/.getStage event)))))))}]))
+                                                 (proxy [ChangeListener] []
+                                                   (changed [event actor]
+                                                     (on-clicked actor (stage/ctx (Event/.getStage event)))))))}]))
     (.pack window)
     window))
 

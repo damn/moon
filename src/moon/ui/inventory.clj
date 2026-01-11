@@ -1,6 +1,5 @@
 (ns moon.ui.inventory
   (:require [moon.ui.actor :as actor]
-            [moon.ui.drawable :as drawable]
             [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.texture-region-drawable :as texture-region-drawable]
@@ -20,7 +19,7 @@
         image-widget (group/find-actor cell-widget "image-widget")
         cell-size (:cell-size (actor/user-object image-widget))
         drawable (doto (texture-region-drawable/create texture-region)
-                   (drawable/set-min-size! cell-size cell-size))]
+                   (.setMinSize cell-size cell-size))]
     (image/set-drawable! image-widget drawable)
     (tooltip/add! cell-widget tooltip-text skin)))
 

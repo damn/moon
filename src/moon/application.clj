@@ -36,8 +36,6 @@
             [moon.ui.message :as message]
             [moon.ui.widget :as widget]
             [moon.ui.texture-region-drawable :as texture-region-drawable]
-            [moon.ui.drawable :as drawable]
-            [moon.ui.click-listener :as click-listener]
             [moon.utils :as utils]
             [moon.timer :as timer]
             [moon.val-max :as val-max]
@@ -71,6 +69,7 @@
            (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.scenes.scene2d.utils ClickListener)
            (com.badlogic.gdx.utils Disposable)
            (moon Stage))
   (:gen-class))
@@ -720,7 +719,7 @@
   (let [cell-size 48
         slot->drawable (fn [slot]
                          (doto (texture-region-drawable/create (slot->texture-region slot))
-                           (drawable/set-min-size! cell-size cell-size)
+                           (.setMinSize cell-size cell-size)
                            (texture-region-drawable/tint (Color. 1 1 1 0.4))))
         droppable-color   [0   0.6 0 0.8 1]
         not-allowed-color [0.6 0   0 0.8 1]
@@ -807,16 +806,16 @@
       :position [(ui/viewport-width  stage)
                  (ui/viewport-height stage)]
       :clicked-cell-listener (fn [cell]
-                               (click-listener/create
-                                (fn [event x y]
-                                  (let [{:keys [ctx/world] :as ctx} (stage/ctx (Event/.getStage event))
-                                        eid (:world/player-eid world)
-                                        entity @eid
-                                        state-k (:state (:entity/fsm entity))
-                                        txs (state->clicked-inventory-cell [state-k (state-k entity)]
-                                                                           eid
-                                                                           cell)]
-                                    (handle! ctx txs)))))
+                               (proxy [ClickListener] []
+                                 (clicked [event x y]
+                                   (let [{:keys [ctx/world] :as ctx} (stage/ctx (Event/.getStage event))
+                                         eid (:world/player-eid world)
+                                         entity @eid
+                                         state-k (:state (:entity/fsm entity))
+                                         txs (state->clicked-inventory-cell [state-k (state-k entity)]
+                                                                            eid
+                                                                            cell)]
+                                     (handle! ctx txs)))))
       :slot->texture-region slot->texture-region})))
 
 (defn- create-ui-windows

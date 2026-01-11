@@ -1,7 +1,5 @@
 (ns moon.ui.image-button
   (:require [moon.ui.actor :as actor]
-            [moon.ui.change-listener :as change-listener]
-            [moon.ui.drawable :as drawable]
             [moon.ui.stage :as stage]
             [moon.ui.texture-region-drawable :as texture-region-drawable]
             [moon.ui.table :as table]
@@ -9,7 +7,8 @@
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener
+                                                  Drawable)))
 
 (defn create
   [{:keys [^TextureRegion drawable/texture-region
@@ -21,12 +20,12 @@
         [w h] [(.getRegionWidth  texture-region)
                (.getRegionHeight texture-region)]
         drawable (doto (texture-region-drawable/create texture-region)
-                   (drawable/set-min-size! (* scale w) (* scale h)))
+                   (.setMinSize (* scale w) (* scale h)))
         image-button (ImageButton. ^Drawable drawable)]
     (when on-clicked
-      (actor/add-listener! image-button (change-listener/create
-                                         (fn [event actor]
-                                           (on-clicked actor (stage/ctx (Event/.getStage event)))))))
+      (actor/add-listener! image-button (proxy [ChangeListener] []
+                                          (changed [event actor]
+                                            (on-clicked actor (stage/ctx (Event/.getStage event)))))))
     (when-let [tooltip (:tooltip opts)]
       (tooltip/add! image-button
                     tooltip

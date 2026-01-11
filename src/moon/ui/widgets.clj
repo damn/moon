@@ -1,17 +1,19 @@
 (ns moon.ui.widgets
   (:require [moon.ui.actor :as actor]
             [moon.ui.label :as label]
-            [moon.ui.scroll-pane :as scroll-pane]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
-            [moon.ui.window :as window]))
+            [moon.ui.window :as window])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
+                                               Skin)))
 
 (defn- create-scroll-pane
-  [{:keys [scroll-pane/actor
+  [{:keys [^Actor scroll-pane/actor
            actor/name]}
-   skin]
-  (doto (scroll-pane/create actor skin)
+   ^Skin skin]
+  (doto (ScrollPane. actor skin)
     (actor/set-name! name)))
 
 (defn scroll-pane-cell [skin viewport-height rows]

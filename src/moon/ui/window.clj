@@ -1,10 +1,10 @@
 (ns moon.ui.window
   (:require [moon.ui.actor :as actor]
-            [moon.ui.change-listener :as change-listener]
             [moon.ui.text-button :as text-button]
             [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               Window)))
+                                               Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 ; FIXME opts not there anymore
 ; TODO cannot close !
@@ -28,9 +28,9 @@
     (table/add! (.getTitleTable window)
                 (doto (text-button/create "X" skin)
                   (actor/add-listener!
-                   (change-listener/create
-                    (fn [_event _actor]
-                      (actor/remove! window))))))
+                   (proxy [ChangeListener] []
+                     (changed [_event _actor]
+                       (actor/remove! window))))))
     (.setModal window (boolean modal?))
     (table/set-opts! window opts)))
 
