@@ -1,39 +1,25 @@
 (ns moon.ui-actors.windows
-  "The function which receives the context object and creates the dev menu user interface actor.
-
-  Game application domain function object - we dont have 'types' but 'functions'.
-  The game is made of special functions serving special use.
-  This one is for create?"
-  (:require
-    [moon.animation]
-    [moon.body]
-    [moon.ctx :as ctx]
-
-    [moon.entity.skills]
-
-    [moon.entity.state-impl]
-
-    [moon.graphics :as graphics]                            ; 'creature' ?
-    [moon.inventory :as inventory]                          ; moon.stats ?
-    [moon.ui :as ui]
-    [moon.ui.actor :as actor]
-    [moon.ui.editor.widgets-impl]
-    [moon.ui.editor.window]
-    [moon.ui.group :as group]
-    [moon.ui.image :as image]
-    [moon.ui.info-window :as info-window]
-    [moon.ui.stack :as stack]
-    [moon.ui.stage :as stage]
-    [moon.ui.table :as table]
-    [moon.ui.window :as window]
-    [moon.world-fns.creature-tiles]
-    [moon.world.info :as info])
+  (:require [moon.ctx :as ctx]
+            [moon.graphics :as graphics]
+            [moon.inventory :as inventory]
+            [moon.ui :as ui]
+            [moon.ui.actor :as actor]
+            [moon.ui.editor.widgets-impl]
+            [moon.ui.editor.window]
+            [moon.ui.group :as group]
+            [moon.ui.image :as image]
+            [moon.ui.info-window :as info-window]
+            [moon.ui.stack :as stack]
+            [moon.ui.stage :as stage]
+            [moon.ui.table :as table]
+            [moon.ui.window :as window]
+            [moon.world.info :as info])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
-                                                  TextureRegionDrawable))) ; actually `moon.stage.*` ?
+                                                  TextureRegionDrawable)))
 
 (let [fn-map {:player-idle           (fn [eid cell]
                                        (when-let [item (get-in (:entity/inventory @eid) cell)]

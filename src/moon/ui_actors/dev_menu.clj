@@ -1,46 +1,17 @@
 (ns moon.ui-actors.dev-menu
-  "The function which receives the context object and creates the dev menu user interface actor.
-
-  Game application domain function object - we dont have 'types' but 'functions'.
-  The game is made of special functions serving special use.
-  This one is for create?"
-  (:require
-
-    [clojure.string :as str]
-
-    [moon.animation]
-    [moon.body]
-
-    [moon.ctx :as ctx]
-    [moon.db :as db]
-    [moon.entity.skills]
-    [moon.entity.state-impl]
-    [moon.graphics :as graphics]
-
-    [moon.input :as input]
-
-
-    [moon.ui :as ui]                            ; 'creature' ?
-    [moon.ui.actor :as actor]
-
-    [moon.ui.build.editor-window :as editor-window]
-
-    [moon.ui.dev-menu :as dev-menu]
-    [moon.ui.editor.overview-window :as overview-window]
-    [moon.ui.editor.widgets-impl]
-    [moon.ui.editor.window]
-
-
-    [moon.ui.stage :as stage]
-
-
-    [moon.utils :as utils]
-
-    [moon.world :as world]
-    [moon.world-fns.creature-tiles]
-
-    )
-)
+  (:require [clojure.string :as str]
+            [moon.ctx :as ctx]
+            [moon.db :as db]
+            [moon.graphics :as graphics]
+            [moon.input :as input]
+            [moon.ui :as ui]
+            [moon.ui.actor :as actor]
+            [moon.ui.build.editor-window :as editor-window]
+            [moon.ui.dev-menu :as dev-menu]
+            [moon.ui.editor.overview-window :as overview-window]
+            [moon.ui.stage :as stage]
+            [moon.utils :as utils]
+            [moon.world :as world]))
 
 (defn- open-editor!
   [{:keys [ctx/db

@@ -1,34 +1,11 @@
 (ns moon.ui-actors.player-state-draw
-  "The function which receives the context object and creates the dev menu user interface actor.
-
-  Game application domain function object - we dont have 'types' but 'functions'.
-  The game is made of special functions serving special use.
-  This one is for create?"
-  (:require
-    [moon.animation]
-    [moon.body]
-    [moon.ctx :as ctx]
-
-    [moon.entity.skills]
-
-    [moon.entity.state-impl]
-    [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
-
-    [moon.graphics :as graphics]                            ; 'creature' ?
-    [moon.input :as input]
-
-    [moon.ui :as ui]
-
-    [moon.ui.actor :as actor]
-
-    [moon.ui.editor.widgets-impl]
-    [moon.ui.editor.window]
-
-    [moon.ui.stage :as stage]
-
-    [moon.world-fns.creature-tiles]
-    )
-)
+  (:require [moon.ctx :as ctx]
+            [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
+            [moon.graphics :as graphics]
+            [moon.input :as input]
+            [moon.ui :as ui]
+            [moon.ui.actor :as actor]
+            [moon.ui.stage :as stage]))
 
 ; TODO to 'entity.state'  protocol or 'state' protocol?
 (def state->draw-ui-view
