@@ -1,6 +1,5 @@
 (ns moon.ui-actors.player-state-draw
-  (:require [moon.ctx :as ctx]
-            [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
+  (:require [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.graphics :as graphics]
             [moon.input :as input]
             [moon.ui :as ui]

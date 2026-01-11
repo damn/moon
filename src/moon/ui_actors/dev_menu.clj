@@ -1,6 +1,5 @@
 (ns moon.ui-actors.dev-menu
   (:require [clojure.string :as str]
-            [moon.ctx :as ctx]
             [moon.db :as db]
             [moon.graphics :as graphics]
             [moon.input :as input]
