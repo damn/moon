@@ -1,4 +1,4 @@
-(ns moon.ui
+(ns moon.ui ; TODO delete and upfactor!? its just 'stage' ? ctx.stage ? (moon.ctx.stage protocols?)
   (:require [clojure.repl]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.actor :as actor]

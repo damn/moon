@@ -1,0 +1,227 @@
+(ns moon.ui-actors.windows
+  "The function which receives the context object and creates the dev menu user interface actor.
+
+  Game application domain function object - we dont have 'types' but 'functions'.
+  The game is made of special functions serving special use.
+  This one is for create?"
+  (:require
+    [moon.animation]
+    [moon.body]
+    [moon.ctx :as ctx]
+
+    [moon.entity.skills]
+
+    [moon.entity.state-impl]
+
+    [moon.graphics :as graphics]                            ; 'creature' ?
+    [moon.inventory :as inventory]                          ; moon.stats ?
+    [moon.ui :as ui]
+    [moon.ui.actor :as actor]
+    [moon.ui.editor.widgets-impl]
+    [moon.ui.editor.window]
+    [moon.ui.group :as group]
+    [moon.ui.image :as image]
+    [moon.ui.info-window :as info-window]
+    [moon.ui.stack :as stack]
+    [moon.ui.stage :as stage]
+    [moon.ui.table :as table]
+    [moon.ui.window :as window]
+    [moon.world-fns.creature-tiles]
+    [moon.world.info :as info])
+  (:import (com.badlogic.gdx.graphics Color)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d Event)
+           (com.badlogic.gdx.scenes.scene2d.ui Widget)
+           (com.badlogic.gdx.scenes.scene2d.utils ClickListener
+                                                  TextureRegionDrawable))) ; actually `moon.stage.*` ?
+
+(let [fn-map {:player-idle           (fn [eid cell]
+                                       (when-let [item (get-in (:entity/inventory @eid) cell)]
+                                         [[:tx/sound "bfxr_takeit"]
+                                          [:tx/event eid :pickup-item item]
+                                          [:tx/remove-item eid cell]]))
+
+              :player-item-on-cursor (fn [eid cell]
+                                       (let [entity @eid
+                                             inventory (:entity/inventory entity)
+                                             item-in-cell (get-in inventory cell)
+                                             item-on-cursor (:entity/item-on-cursor entity)]
+                                         (cond
+                                          ; PUT ITEM IN EMPTY CELL
+                                          (and (not item-in-cell)
+                                               (inventory/valid-slot? cell item-on-cursor))
+                                          [[:tx/sound "bfxr_itemput"]
+                                           [:tx/dissoc eid :entity/item-on-cursor]
+                                           [:tx/set-item eid cell item-on-cursor]
+                                           [:tx/event eid :dropped-item]]
+
+                                          ; STACK ITEMS
+                                          (and item-in-cell
+                                               (inventory/stackable? item-in-cell item-on-cursor))
+                                          [[:tx/sound "bfxr_itemput"]
+                                           [:tx/dissoc eid :entity/item-on-cursor]
+                                           [:tx/stack-item eid cell item-on-cursor]
+                                           [:tx/event eid :dropped-item]]
+
+                                          ; SWAP ITEMS
+                                          (and item-in-cell
+                                               (inventory/valid-slot? cell item-on-cursor))
+                                          [[:tx/sound "bfxr_itemput"]
+                                           ; need to dissoc and drop otherwise state enter does not trigger picking it up again
+                                           ; TODO? coud handle pickup-item from item-on-cursor state also
+                                           [:tx/dissoc eid :entity/item-on-cursor]
+                                           [:tx/remove-item eid cell]
+                                           [:tx/set-item eid cell item-on-cursor]
+                                           [:tx/event eid :dropped-item]
+                                           [:tx/event eid :pickup-item item-in-cell]])))}]
+  (defn state->clicked-inventory-cell [[k v] eid cell]
+    (when-let [f (k fn-map)]
+      (f eid cell))))
+
+(defn- draw-cell-rect-actor [draw-cell-rect]
+  (proxy [Widget] []
+    (draw [_batch _parent-alpha]
+      (when-let [stage (actor/stage this)]
+        (let [{:keys [ctx/graphics
+                      ctx/world]} (stage/ctx stage)]
+          (graphics/draw! graphics
+                          (let [ui-mouse (:graphics/ui-mouse-position graphics)]
+                            (draw-cell-rect @(:world/player-eid world)
+                                            (actor/x this)
+                                            (actor/y this)
+                                            (let [[x y] (actor/stage->local-coordinates this ui-mouse)]
+                                              (actor/hit this x y true))
+                                            (actor/user-object (actor/parent this))))))))))
+
+(defn- create-inventory-window*
+  [{:keys [position
+           title
+           actor/visible?
+           clicked-cell-listener
+           slot->texture-region
+           skin]}]
+  (let [cell-size 48
+        slot->drawable (fn [slot]
+                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
+                           (.setMinSize cell-size cell-size)
+                           (.tint (Color. 1 1 1 0.4))))
+        droppable-color   [0   0.6 0 0.8 1]
+        not-allowed-color [0.6 0   0 0.8 1]
+        draw-cell-rect (fn [player-entity x y mouseover? cell]
+                         [[:draw/rectangle x y cell-size cell-size [0.5 0.5 0.5 1]]
+                          (when (and mouseover?
+                                     (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                            (let [item (:entity/item-on-cursor player-entity)
+                                  color (if (inventory/valid-slot? cell item)
+                                          droppable-color
+                                          not-allowed-color)]
+                              [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
+        ->cell (fn [slot & {:keys [position]}]
+                 (let [cell [slot (or position [0 0])]
+                       background-drawable (slot->drawable slot)]
+                   {:actor (stack/create
+                            {:actor/name "inventory-cell"
+                             :actor/user-object cell
+                             :actor/listener (clicked-cell-listener cell)
+                             :group/actors [(draw-cell-rect-actor draw-cell-rect)
+                                            (image/create
+                                             {:image/object background-drawable
+                                              :actor/name "image-widget"
+                                              :actor/user-object {:background-drawable background-drawable
+                                                                  :cell-size cell-size}})]})}))]
+    (window/create
+     {:skin skin
+      :title title
+      :actor/name "moon.ui.windows.inventory"
+      :actor/visible? visible?
+      :pack? true
+      :actor/position position
+      :rows [[{:actor (table/create
+                       {:actor/name "inventory-cell-table"
+                        :rows (concat [[nil nil
+                                        (->cell :inventory.slot/helm)
+                                        (->cell :inventory.slot/necklace)]
+                                       [nil
+                                        (->cell :inventory.slot/weapon)
+                                        (->cell :inventory.slot/chest)
+                                        (->cell :inventory.slot/cloak)
+                                        (->cell :inventory.slot/shield)]
+                                       [nil nil
+                                        (->cell :inventory.slot/leg)]
+                                       [nil
+                                        (->cell :inventory.slot/glove)
+                                        (->cell :inventory.slot/rings :position [0 0])
+                                        (->cell :inventory.slot/rings :position [1 0])
+                                        (->cell :inventory.slot/boot)]]
+                                      (for [y (range 4)]
+                                        (for [x (range 6)]
+                                          (->cell :inventory.slot/bag :position [x y]))))})
+               :pad 4}]]})))
+
+(defn- create-inventory-window
+  [graphics skin stage]
+  (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
+                                             :shield   1
+                                             :rings    2
+                                             :necklace 3
+                                             :helm     4
+                                             :cloak    5
+                                             :chest    6
+                                             :leg      7
+                                             :glove    8
+                                             :boot     9
+                                             :bag      10}
+        slot->texture-region (fn [slot]
+                               (let [width  48
+                                     height 48
+                                     sprite-x 21
+                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
+                                     bounds [(* sprite-x width)
+                                             (* sprite-y height)
+                                             width
+                                             height]]
+                                 (graphics/texture-region graphics
+                                                          {:image/file "images/items.png"
+                                                           :image/bounds bounds})))]
+    (create-inventory-window*
+     {:skin skin
+      :title "Inventory"
+      :actor/visible? false
+      :position [(ui/viewport-width  stage)
+                 (ui/viewport-height stage)]
+      :clicked-cell-listener (fn [cell]
+                               (proxy [ClickListener] []
+                                 (clicked [event x y]
+                                   (let [{:keys [ctx/world] :as ctx} (stage/ctx (Event/.getStage event))
+                                         eid (:world/player-eid world)
+                                         entity @eid
+                                         state-k (:state (:entity/fsm entity))
+                                         txs (state->clicked-inventory-cell [state-k (state-k entity)]
+                                                                            eid
+                                                                            cell)]
+                                     (ctx/handle! ctx txs)))))
+      :slot->texture-region slot->texture-region})))
+
+(defn- create-info-window
+  [skin stage]
+  (info-window/create skin
+                      {:title "Entity Info"
+                       :actor-name "moon.ui.windows.entity-info"
+                       :visible? false
+                       :position [(ui/viewport-width stage) 0]
+                       :set-label-text! (fn [{:keys [ctx/world]}]
+                                          (if-let [eid (:world/mouseover-eid world)]
+                                            (info/text (apply dissoc @eid [:entity/skills
+                                                                           :entity/faction
+                                                                           :active-skill])
+                                                       world)
+                                            ""))}))
+
+(defn create
+  [{:keys [ctx/graphics
+           ctx/skin
+           ctx/stage]}]
+  (group/create
+   {:actor/name "moon.ui.windows"
+    :group/actors [(create-info-window skin stage)
+                   (create-inventory-window graphics skin stage)]}))

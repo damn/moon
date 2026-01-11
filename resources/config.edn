@@ -31,6 +31,12 @@
                              :cursors/skill-not-usable      ["x007"         [0   0]]
                              :cursors/use-skill             ["pointer004"   [0   0]]
                              :cursors/walking               ["walking"      [16 16]]}}}
+ :ui/actors [moon.ui-actors.dev-menu/create
+             moon.ui-actors.action-bar/create
+             moon.ui-actors.hp-mana-bar/create
+             moon.ui-actors.windows/create
+             moon.ui-actors.player-state-draw/create
+             moon.ui-actors.player-message/create]
  :world "world_fns/vampire.edn"
         ; "world_fns/uf_caves.edn"
         ; "world_fns/modules.edn"
