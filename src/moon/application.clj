@@ -36,7 +36,6 @@
             [moon.ui.message :as message]
             [moon.ui.widget :as widget]
             [moon.ui.texture-region-drawable :as texture-region-drawable]
-            [moon.ui.event :as event]
             [moon.ui.drawable :as drawable]
             [moon.ui.click-listener :as click-listener]
             [moon.utils :as utils]
@@ -70,6 +69,7 @@
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color)
+           (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
            (com.badlogic.gdx.utils Disposable)
            (moon Stage))
@@ -809,7 +809,7 @@
       :clicked-cell-listener (fn [cell]
                                (click-listener/create
                                 (fn [event x y]
-                                  (let [{:keys [ctx/world] :as ctx} (stage/ctx (event/stage event))
+                                  (let [{:keys [ctx/world] :as ctx} (stage/ctx (Event/.getStage event))
                                         eid (:world/player-eid world)
                                         entity @eid
                                         state-k (:state (:entity/fsm entity))

@@ -2,7 +2,6 @@
   (:require [moon.ui.actor :as actor]
             [moon.ui.cell :as cell]
             [moon.ui.change-listener :as change-listener]
-            [moon.ui.event :as event]
             [moon.ui.group :as group]
             [moon.ui.label :as label]
             [moon.ui.stage :as stage]
@@ -10,7 +9,8 @@
             [moon.ui.image :as image]
             [moon.ui.table :as table]
             [moon.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Touchable)))
+  (:import (com.badlogic.gdx.scenes.scene2d Event
+                                            Touchable)))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create
@@ -42,7 +42,7 @@
                        (actor/add-listener!
                         (change-listener/create
                          (fn [event actor]
-                           (on-click actor (stage/ctx (event/stage event)))))))})]}))
+                           (on-click actor (stage/ctx (Event/.getStage event)))))))})]}))
 
 (defn- main-table [skin menus update-labels]
   (let [table (table/create
@@ -51,7 +51,7 @@
                                    (actor/add-listener!
                                     (change-listener/create
                                      (fn [event actor]
-                                       (.addActor (event/stage event) (create-window skin label items))))))})]})]
+                                       (.addActor (Event/.getStage event) (create-window skin label items))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon

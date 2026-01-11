@@ -6,7 +6,6 @@
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
             [moon.ui.actor :as actor]
-            [moon.ui.event :as event]
             [moon.ui.change-listener :as change-listener]
             [moon.ui.text-button :as text-button]
             [moon.ui.stage :as stage]
@@ -23,6 +22,7 @@
                                       OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)
            (com.badlogic.gdx.utils ScreenUtils)))
@@ -86,7 +86,7 @@
                                                 (actor/add-listener!
                                                  (change-listener/create
                                                   (fn [event actor]
-                                                    (on-clicked actor (stage/ctx (event/stage event)))))))}]))
+                                                    (on-clicked actor (stage/ctx (Event/.getStage event)))))))}]))
     (.pack window)
     window))
 
