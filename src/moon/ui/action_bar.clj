@@ -6,7 +6,11 @@
             [moon.ui.image-button :as image-button]
             [moon.ui.table :as table]))
 
-(defn create []
+; declarative scene2d ui functions ?
+
+(defn create
+  "Is a table(ui actor for stage) which fills parent and contains a horizontal group of buttons."
+  []
   (table/create
    {:rows [[{:actor (doto (horizontal-group/create {:pad 2
                                                     :space 2})

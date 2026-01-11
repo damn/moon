@@ -1,4 +1,4 @@
-(ns moon.ui.label
+(ns moon.ui.label ; delete such stuff?
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
 

@@ -1,11 +1,28 @@
-(ns moon.entity.body
+(ns moon.entity.body ; moon.body
   (:require [clojure.math.vector2 :as v]
-            [moon.math.geom :as geom]
-            [qrecord.core :as q]))
+            [moon.rectangle :as rectangle]
+            [qrecord.core :as q])
+  (:import (com.badlogic.gdx.math Intersector
+                                  Rectangle)))
 
-(defprotocol Body
+(defn touched-tiles
+  [{:keys [body/position body/width body/height]}]
+  (rectangle/touched-tiles
+   {:x (- (position 0) (/ width  2))
+    :y (- (position 1) (/ height 2))
+    :width  width
+    :height height}))
+
+(defn rectangle
+  ;^Rectangle
+  [{:keys [body/position body/width body/height]}]
+  {:pre [position width height]}
+  (let [[x y] [(- (position 0) (/ width  2))
+               (- (position 1) (/ height 2))]]
+    (Rectangle. x y width height)))
+
+(defprotocol Body ; remove protocols not necessary ones
   (overlaps? [_ other-body])
-  (touched-tiles [_])
   (distance [_ other-body])
   (direction [_ other-body]))
 
@@ -17,11 +34,8 @@
                     body/rotation-angle]
   Body
   (overlaps? [body other-body]
-    (geom/overlaps? (geom/body->gdx-rectangle body)
-                    (geom/body->gdx-rectangle other-body)))
-
-  (touched-tiles [body]
-    (geom/body->touched-tiles body))
+    (Intersector/overlaps (rectangle body)
+                          (rectangle other-body)))
 
   (distance [body other-body]
     (v/distance (:body/position body)

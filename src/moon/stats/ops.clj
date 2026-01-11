@@ -1,4 +1,4 @@
-(ns moon.stats.ops
+(ns moon.stats.ops ; just ops, document, test
   (:refer-clojure :exclude [apply remove sort]))
 
 (defn sort [ops]

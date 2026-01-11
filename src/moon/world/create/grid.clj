@@ -1,10 +1,15 @@
 (ns moon.world.create.grid
   (:require [clojure.grid2d :as g2d]
+            [moon.circle :as circle]
+            [moon.entity.body :as body]
             [moon.entity.faction :as faction]
-            [moon.math.geom :as geom]
             [moon.position :as position]
+            [moon.rectangle :as rectangle]
             [moon.world.grid :as grid]
-            [moon.world.grid.cell :as cell]))
+            [moon.world.grid.cell :as cell])
+  (:import (com.badlogic.gdx.math Circle
+                                  Intersector
+                                  Rectangle)))
 
 (defn- body->occupied-cells
   [grid
@@ -13,24 +18,24 @@
            body/height]
     :as body}]
   (if (or (> (float width) 1) (> (float height) 1))
-    (g2d/get-cells grid (geom/body->touched-tiles body))
+    (g2d/get-cells grid (body/touched-tiles body))
     [(grid (mapv int position))]))
 
 (extend-type clojure.grid2d.VectorGrid
   grid/Grid
   (circle->cells [g2d circle]
     (->> circle
-         geom/circle->outer-rectangle
-         geom/rectangle->touched-tiles
+         circle/outer-rectangle
+         rectangle/touched-tiles
          (g2d/get-cells g2d)))
 
   (circle->entities [g2d {:keys [position radius] :as circle}]
     (->> (grid/circle->cells g2d circle)
          (map deref)
          grid/cells->entities
-         (filter #(geom/overlaps?
-                   (geom/circle (position 0) (position 1) radius)
-                   (geom/body->gdx-rectangle (:entity/body @%))))))
+         (filter #(Intersector/overlaps
+                   (Circle. (position 0) (position 1) radius)
+                   (body/rectangle (:entity/body @%))))))
 
   (cached-adjacent-cells [g2d cell]
     (if-let [result (:adjacent-cells @cell)]
@@ -44,11 +49,11 @@
 
   (point->entities [g2d position]
     (when-let [cell (g2d (mapv int position))]
-      (filter #(geom/contains? (geom/body->gdx-rectangle (:entity/body @%)) position)
+      (filter #(Rectangle/.contains (body/rectangle (:entity/body @%)) position)
               (:entities @cell))))
 
   (set-touched-cells! [grid eid]
-    (let [cells (g2d/get-cells grid (geom/body->touched-tiles (:entity/body @eid)))]
+    (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body @eid)))]
       (assert (not-any? nil? cells))
       (swap! eid assoc ::touched-cells cells)
       (doseq [cell cells]
@@ -74,7 +79,7 @@
 
   (valid-position? [g2d {:keys [body/z-order] :as body} entity-id]
     {:pre [(:body/collides? body)]}
-    (let [cells* (into [] (map deref) (g2d/get-cells g2d (geom/body->touched-tiles body)))]
+    (let [cells* (into [] (map deref) (g2d/get-cells g2d (body/touched-tiles body)))]
       (and (not-any? #(cell/blocked? % z-order) cells*)
            (->> cells*
                 grid/cells->entities
@@ -82,8 +87,8 @@
                             (let [other-entity @other-entity]
                               (and (not= (:entity/id other-entity) entity-id)
                                    (:body/collides? (:entity/body other-entity))
-                                   (geom/overlaps? (geom/body->gdx-rectangle (:entity/body other-entity))
-                                                   (geom/body->gdx-rectangle body))))))))))
+                                   (Intersector/overlaps (body/rectangle (:entity/body other-entity))
+                                                         (body/rectangle body))))))))))
 
   (nearest-enemy-distance [grid entity]
     (cell/nearest-entity-distance @(grid (mapv int (:body/position (:entity/body entity))))

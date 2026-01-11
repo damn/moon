@@ -3,7 +3,7 @@
 ;
 ;(comment
 ; (require '[moon.world.grid :as grid])
-; (require '[moon.math.geom :as geom])
+; (require '[moon.circle :as circle])
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/graphics
@@ -15,7 +15,7 @@
 ;     (conj (cons [:draw/circle position radius [1 0 0 0.5]]
 ;                 (for [[x y] (map #(:position @%) (grid/circle->cells (:world/grid world) circle))]
 ;                   [:draw/rectangle x y 1 1 [1 0 0 0.5]]))
-;           (let [{:keys [x y width height]} (geom/circle->outer-rectangle circle)]
+;           (let [{:keys [x y width height]} (circle/outer-rectangle circle)]
 ;             [:draw/rectangle x y width height [0 0 1 1]]))))
 ;
 ; )
