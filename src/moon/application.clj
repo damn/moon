@@ -21,7 +21,7 @@
             [moon.entity.faction :as faction]
             [moon.entity.inventory :as inventory]
             [moon.entity.skills :as skills]
-            [moon.entity.skills.skill :as skill]
+            [moon.skill :as skill]
             [moon.entity.state :as state] ; 'creature' ?
             [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.entity.stats :as stats] ; moon.stats ?

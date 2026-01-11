@@ -5,7 +5,7 @@
             [moon.effect :as effect]
             [moon.entity.animation :as animation]
             [moon.entity.body :as body]
-            [moon.entity.skills.skill :as skill]
+            [moon.skill :as skill]
             [moon.entity.stats :as stats]
             [moon.timer :as timer]
             [moon.utils :as utils]
