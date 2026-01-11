@@ -49,9 +49,10 @@
                {:rows [(for [{:keys [label items]} menus]
                          {:actor (doto (text-button/create label skin)
                                    (actor/add-listener!
-                                    (change-listener/create
-                                     (fn [event actor]
-                                       (.addActor (Event/.getStage event) (create-window skin label items))))))})]})]
+                                    (proxy [ChangeListener] []
+
+                                      (changed [event actor]
+                                        (.addActor (Event/.getStage event) (create-window skin label items))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
