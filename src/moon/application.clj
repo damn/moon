@@ -45,7 +45,6 @@
             [moon.world :as world]
             [moon.world.content-grid :as content-grid]
             [moon.world.grid :as grid]
-            [moon.world.impl]
             [moon.world.info :as info]
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
@@ -913,7 +912,7 @@
     (let [world-fn-result (call-world-fn (:world config)
                                          (db/all-raw db :properties/creatures)
                                          graphics)
-          world (moon.world.impl/create world-params world-fn-result)
+          world (world/create world-params world-fn-result)
           ctx (assoc ctx :ctx/world world)
           _ (txs/handle! ctx
                          [[:tx/spawn-creature (let [{:keys [creature-id
