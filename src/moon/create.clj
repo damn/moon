@@ -1,3 +1,4 @@
+; this is just the create the game step ! ... da haegnt so viel dran ... weird !
 (ns moon.create
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -492,7 +493,7 @@
 (defn do!
   [^Application app config]
   (let [db (db/create)
-        graphics (graphics/create! (.getGraphics app) (.getFiles app) (:graphics config))
+        graphics (graphics/create! (.getGraphics app) (.getFiles app) (:graphics config)) ; graphics/sounds/input already part of application?!
         stage (ui/create! graphics)
         skin (create-skin (.internal (.getFiles app) "uiskin.json"))
         ctx (merge (map->Context {})
