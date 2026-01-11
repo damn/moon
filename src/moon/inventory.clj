@@ -1,4 +1,4 @@
-(ns moon.entity.inventory
+(ns moon.inventory
   (:require [clojure.grid2d :as g2d]))
 
 (defprotocol Inventory
