@@ -1,13 +1,13 @@
 (ns moon.ui.editor.overview-window
   (:require [moon.ui.actor :as actor]
             [moon.ui.label :as label]
-            [moon.ui.touchable :as touchable]
             [moon.db :as db]
             [moon.graphics :as graphics]
             [moon.ui.editor.property :as property]
             [moon.ui.image-button :as image-button]
             [moon.ui.stack :as stack]
-            [moon.ui.window :as window]))
+            [moon.ui.window :as window])
+  (:import (com.badlogic.gdx.scenes.scene2d Touchable)))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -48,7 +48,7 @@
                                  :tooltip tooltip
                                  :skin skin})
                                (doto (label/create extra-info-text skin)
-                                 (actor/set-touchable! touchable/disabled))]})})))
+                                 (actor/set-touchable! Touchable/disabled))]})})))
 
 (defn- overview-table-rows
   [db

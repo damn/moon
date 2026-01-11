@@ -7,10 +7,10 @@
             [moon.ui.label :as label]
             [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
-            [moon.ui.touchable :as touchable]
             [moon.ui.image :as image]
             [moon.ui.table :as table]
-            [moon.ui.window :as window]))
+            [moon.ui.window :as window])
+  (:import (com.badlogic.gdx.scenes.scene2d Touchable)))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create
@@ -67,7 +67,7 @@
              :fill-x? true
              :colspan 1}]
            [{:actor (doto (label/create "" skin)
-                      (actor/set-touchable! touchable/disabled))
+                      (actor/set-touchable! Touchable/disabled))
              :expand? true
              :fill-x? true
              :fill-y? true}]]
