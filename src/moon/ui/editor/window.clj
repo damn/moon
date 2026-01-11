@@ -1,17 +1,17 @@
 (ns moon.ui.editor.window
   (:require [clojure.set :as set]
+            [malli.utils :as mu]
+            [moon.malli :as malli]
+            [moon.schemas :as schemas]
             [moon.ui.actor :as actor]
+            [moon.ui.build.editor-window :as editor-window]
+            [moon.ui.editor.schema :as schema]
             [moon.ui.group :as group]
             [moon.ui.label :as label]
             [moon.ui.stage :as stage]
-            [moon.ui.widget-group :as widget-group]
-            [malli.utils :as mu]
-            [moon.schemas :as schemas]
-            [moon.malli :as malli]
-            [moon.ui.build.editor-window :as editor-window]
-            [moon.ui.editor.schema :as schema]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
+            [moon.ui.widget-group :as widget-group]
             [moon.ui.window :as window]
             [moon.utils :as utils]))
 

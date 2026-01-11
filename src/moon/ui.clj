@@ -1,18 +1,18 @@
 (ns moon.ui
   (:require [clojure.repl]
+            [moon.ui.action-bar :as action-bar]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [moon.ui.label :as label]
-            [moon.ui.stage :as stage]
-            [moon.ui.utils :as ui-utils]
-            [moon.viewport :as viewport]
-            [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory :as inventory-window]
+            [moon.ui.label :as label]
             [moon.ui.message :as message]
+            [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
-            [moon.ui.window :as window]
+            [moon.ui.utils :as ui-utils]
             [moon.ui.widgets :as widgets]
-            [moon.utils :as utils]))
+            [moon.ui.window :as window]
+            [moon.utils :as utils]
+            [moon.viewport :as viewport]))
 
 (defprotocol UserInterface
   (dispose! [_])

@@ -2,11 +2,11 @@
   (:require [moon.ui.actor :as actor]
             [moon.ui.cell :as cell]
             [moon.ui.group :as group]
+            [moon.ui.image :as image]
             [moon.ui.label :as label]
             [moon.ui.stage :as stage]
-            [moon.ui.text-button :as text-button]
-            [moon.ui.image :as image]
             [moon.ui.table :as table]
+            [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Event
                                             Touchable)

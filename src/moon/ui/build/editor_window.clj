@@ -1,12 +1,12 @@
 (ns moon.ui.build.editor-window
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.stage :as stage]
-            [moon.db :as db]
-            [moon.property :as property]
+  (:require [moon.db :as db]
             [moon.input :as input]
+            [moon.property :as property]
             [moon.throwable :as throwable]
             [moon.ui :as ui]
+            [moon.ui.actor :as actor]
             [moon.ui.editor.schema :as schema]
+            [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.ui.widgets :as widget]
             [moon.ui.window :as window])

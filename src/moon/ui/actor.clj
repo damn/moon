@@ -3,8 +3,8 @@
 ; editor mit java FX und - was ohne editor needed??
 (ns moon.ui.actor
   (:refer-clojure :exclude [name])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.math Vector2)))
+  (:import (com.badlogic.gdx.math Vector2)
+           (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (def set-name!                Actor/.setName)
 (def set-user-object!         Actor/.setUserObject)

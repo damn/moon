@@ -1,6 +1,6 @@
 (ns moon.world.info
-  (:require [clojure.string :as str]
-            [clojure.math :as math]
+  (:require [clojure.math :as math]
+            [clojure.string :as str]
             [moon.entity.stats.info]
             [moon.ops :as ops]
             [moon.timer :as timer]

@@ -4,9 +4,9 @@
             [clojure.pprint :as pprint]
             [malli.core :as m]
             [malli.utils :as mu]
+            [moon.malli :as malli]
             [moon.property :as property]
             [moon.schemas :as schemas]
-            [moon.malli :as malli]
             [moon.utils :as utils]))
 
 (defprotocol DB

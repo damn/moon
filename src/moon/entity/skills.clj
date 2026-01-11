@@ -1,7 +1,5 @@
 (ns moon.entity.skills
-  (:require [moon.effect :as effect]
-            [moon.entity.stats :as stats]
-            [moon.timer :as timer]))
+  (:require [moon.timer :as timer]))
 
 (defn create! [skills eid _world]
   (cons [:tx/assoc eid :entity/skills nil]

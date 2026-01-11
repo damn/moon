@@ -3,5 +3,5 @@
                                              :window {:width 1440
                                                       :height 900}
                                              :fps 60}]
- :listener [moon.application/app-listener]
+ :listener [moon.application/app-listener {:create! moon.create/do!}]
  }

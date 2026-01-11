@@ -1,21 +1,20 @@
 (ns moon.graphics
-  (:require [clojure.string :as str]
-            [clojure.math :as math]
-            [moon.viewport :as viewport]
+  (:require [clojure.math :as math]
+            [clojure.string :as str]
             [moon.color :as color]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
             [moon.shape-drawer :as sd]
-            [moon.tm-renderer :as tm-renderer])
+            [moon.tm-renderer :as tm-renderer]
+            [moon.viewport :as viewport])
   (:import (com.badlogic.gdx Graphics)
-           (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color
                                       Colors
+                                      OrthographicCamera
                                       Pixmap
                                       Pixmap$Format
                                       Texture
-                                      Texture$TextureFilter
-                                      OrthographicCamera)
+                                      Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d Batch
                                           BitmapFont
                                           SpriteBatch
