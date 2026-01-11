@@ -58,7 +58,6 @@
             [moon.ui.window :as window]
             moon.entity.state-impl
             [moon.tx-handler :as tx-handler]
-            [moon.txs :as txs]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener
@@ -487,17 +486,16 @@
           (recur ctx
                  (rest txs)))))))
 
+(defn handle! [ctx txs]
+  (let [handled-txs (try (tx-handler/actions! txs-fn-map ctx txs)
+                         (catch Throwable t
+                           (throw (ex-info "Error handling txs"
+                                           {:txs txs} t))))]
+    (reduce-actions! reaction-txs-fn-map
+                     ctx
+                     handled-txs)))
 
-(q/defrecord Context []
-  txs/TransactionHandler
-  (handle! [ctx txs]
-    (let [handled-txs (try (tx-handler/actions! txs-fn-map ctx txs)
-                           (catch Throwable t
-                             (throw (ex-info "Error handling txs"
-                                             {:txs txs} t))))]
-      (reduce-actions! reaction-txs-fn-map
-                       ctx
-                       handled-txs))))
+(q/defrecord Context [])
 
 (defn- open-editor!
   [{:keys [ctx/db
@@ -818,7 +816,7 @@
                                         txs (state->clicked-inventory-cell [state-k (state-k entity)]
                                                                            eid
                                                                            cell)]
-                                    (txs/handle! ctx txs)))))
+                                    (handle! ctx txs)))))
       :slot->texture-region slot->texture-region})))
 
 (defn- create-ui-windows
@@ -914,16 +912,16 @@
                                          graphics)
           world (world/create world-params world-fn-result)
           ctx (assoc ctx :ctx/world world)
-          _ (txs/handle! ctx
-                         [[:tx/spawn-creature (let [{:keys [creature-id
-                                                            components]} (:world/player-components world)]
-                                                {:position (mapv (partial + 0.5) (:world/start-position world))
-                                                 :creature-property (db/build db creature-id)
-                                                 :components components})]])
+          _ (handle! ctx
+                     [[:tx/spawn-creature (let [{:keys [creature-id
+                                                        components]} (:world/player-components world)]
+                                            {:position (mapv (partial + 0.5) (:world/start-position world))
+                                             :creature-property (db/build db creature-id)
+                                             :components components})]])
           ctx (let [eid (get @(:world/entity-ids world) 1)]
                 (assert (:entity/player? @eid))
                 (assoc-in ctx [:ctx/world :world/player-eid] eid))]
-      (txs/handle!
+      (handle!
        ctx
        (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]
          [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
@@ -1588,7 +1586,7 @@
         entity @eid
         state-k (:state (:entity/fsm entity))
         txs (state->handle-input [state-k (state-k entity)] eid ctx)]
-    (txs/handle! ctx txs))
+    (handle! ctx txs))
   ctx)
 
 (defn- dissoc-interaction-state [ctx]
@@ -1639,7 +1637,7 @@
   (if (:world/paused? world)
     ctx
     (do (try
-         (txs/handle! ctx (world/tick-entities! world))
+         (handle! ctx (world/tick-entities! world))
          (catch Throwable t
            (throwable/pretty-pst t)
            (ui/show-error-window! stage skin t)))
@@ -1648,7 +1646,7 @@
 (defn- remove-destroyed-entities
   [{:keys [ctx/world]
     :as ctx}]
-  (txs/handle! ctx (world/remove-destroyed-entities! world))
+  (handle! ctx (world/remove-destroyed-entities! world))
   ctx)
 
 (def zoom-speed 0.025)
