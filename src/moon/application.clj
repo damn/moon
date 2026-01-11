@@ -75,12 +75,6 @@
            (moon Stage))
   (:gen-class))
 
-(defn- edn-resource [path]
-  (->> path
-       io/resource
-       slurp
-       edn/read-string))
-
 (def ^:private schema
   (m/schema
    [:map {:closed true}
@@ -98,7 +92,10 @@
 
 (defn- call-world-fn
   [world-fn creature-properties graphics]
-  (let [[f params] (edn-resource world-fn)]
+  (let [[f params] (->> world-fn
+                        io/resource
+                        slurp
+                        edn/read-string)]
     ((requiring-resolve f)
      (assoc params
             :level/creature-properties (moon.world-fns.creature-tiles/prepare creature-properties
@@ -865,7 +862,7 @@
 (defn- load-sounds
   [audio files {:keys [sound-names path-format]}]
   (let [sound-name->file-handle (into {}
-                                      (for [sound-name (edn-resource sound-names)
+                                      (for [sound-name (->> sound-names io/resource slurp edn/read-string)
                                             :let [path (format path-format sound-name)]]
                                         [sound-name
                                          (Files/.internal files path)]))]
@@ -1708,7 +1705,10 @@
 (def state (atom nil))
 
 (defn -main []
-  (let [config (edn-resource "config.edn")]
+  (let [config (->> "config.edn"
+                    io/resource
+                    slurp
+                    edn/read-string)]
     (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
