@@ -40,6 +40,7 @@
                        :items (for [property-type (sort (db/property-types db))]
                                 {:label (str/capitalize (name property-type))
                                  :on-click (fn [_actor ctx]
+                                             ; just pass open editor function
                                              (open-editor! ctx property-type))})})
 
 

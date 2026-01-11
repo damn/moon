@@ -36,8 +36,8 @@
              [moon.ui-actors.hp-mana-bar/create]
              ; eigentlich .windows not necessary
              ; it are functions taking 'ctx & params' and returning an subtype of 'Actor'
-             [moon.ui-actors.windows/create [moon.ui-actors.windows.info/create
-                                             moon.ui-actors.windows.inventory/create]]
+             [moon.ui-actors.windows/create [[moon.ui-actors.windows.info/create]
+                                             [moon.ui-actors.windows.inventory/create moon.clicked-inventory-cell/do!]]]
              [moon.ui-actors.player-state-draw/create]
              [moon.ui-actors.player-message/create]]
  :world "world_fns/vampire.edn"

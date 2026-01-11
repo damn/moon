@@ -1,6 +1,5 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [moon.ctx :as ctx]
-            [moon.graphics :as graphics]
+  (:require [moon.graphics :as graphics]
             [moon.inventory :as inventory]
             [moon.ui :as ui]
             [moon.ui.actor :as actor]
@@ -16,55 +15,13 @@
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
                                                   TextureRegionDrawable)))
 
-(let [fn-map {:player-idle           (fn [eid cell]
-                                       (when-let [item (get-in (:entity/inventory @eid) cell)]
-                                         [[:tx/sound "bfxr_takeit"]
-                                          [:tx/event eid :pickup-item item]
-                                          [:tx/remove-item eid cell]]))
-
-              :player-item-on-cursor (fn [eid cell]
-                                       (let [entity @eid
-                                             inventory (:entity/inventory entity)
-                                             item-in-cell (get-in inventory cell)
-                                             item-on-cursor (:entity/item-on-cursor entity)]
-                                         (cond
-                                          ; PUT ITEM IN EMPTY CELL
-                                          (and (not item-in-cell)
-                                               (inventory/valid-slot? cell item-on-cursor))
-                                          [[:tx/sound "bfxr_itemput"]
-                                           [:tx/dissoc eid :entity/item-on-cursor]
-                                           [:tx/set-item eid cell item-on-cursor]
-                                           [:tx/event eid :dropped-item]]
-
-                                          ; STACK ITEMS
-                                          (and item-in-cell
-                                               (inventory/stackable? item-in-cell item-on-cursor))
-                                          [[:tx/sound "bfxr_itemput"]
-                                           [:tx/dissoc eid :entity/item-on-cursor]
-                                           [:tx/stack-item eid cell item-on-cursor]
-                                           [:tx/event eid :dropped-item]]
-
-                                          ; SWAP ITEMS
-                                          (and item-in-cell
-                                               (inventory/valid-slot? cell item-on-cursor))
-                                          [[:tx/sound "bfxr_itemput"]
-                                           ; need to dissoc and drop otherwise state enter does not trigger picking it up again
-                                           ; TODO? coud handle pickup-item from item-on-cursor state also
-                                           [:tx/dissoc eid :entity/item-on-cursor]
-                                           [:tx/remove-item eid cell]
-                                           [:tx/set-item eid cell item-on-cursor]
-                                           [:tx/event eid :dropped-item]
-                                           [:tx/event eid :pickup-item item-in-cell]])))}]
-  (defn state->clicked-inventory-cell [[k v] eid cell]
-    (when-let [f (k fn-map)]
-      (f eid cell))))
-
 (defn- draw-cell-rect-actor [draw-cell-rect]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
       (when-let [stage (actor/stage this)]
         (let [{:keys [ctx/graphics
                       ctx/world]} (stage/ctx stage)]
+          ; TODO here just a simple callback ?
           (graphics/draw! graphics
                           (let [ui-mouse (:graphics/ui-mouse-position graphics)]
                             (draw-cell-rect @(:world/player-eid world)
@@ -142,7 +99,8 @@
 (defn create
   [{:keys [ctx/graphics
            ctx/skin
-           ctx/stage]}]
+           ctx/stage]}
+   clicked-inventory-cell]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
                                              :shield   1
                                              :rings    2
@@ -175,12 +133,7 @@
       :clicked-cell-listener (fn [cell]
                                (proxy [ClickListener] []
                                  (clicked [event x y]
-                                   (let [{:keys [ctx/world] :as ctx} (stage/ctx (Event/.getStage event))
-                                         eid (:world/player-eid world)
-                                         entity @eid
-                                         state-k (:state (:entity/fsm entity))
-                                         txs (state->clicked-inventory-cell [state-k (state-k entity)]
-                                                                            eid
-                                                                            cell)]
-                                     (ctx/handle! ctx txs)))))
+                                   ((requiring-resolve clicked-inventory-cell)
+                                    cell
+                                    (stage/ctx (Event/.getStage event))))))
       :slot->texture-region slot->texture-region})))

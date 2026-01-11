@@ -5,4 +5,4 @@
   [ctx actors]
   (group/create
    {:actor/name "moon.ui.windows"
-    :group/actors (map (fn [sym] ((requiring-resolve sym) ctx)) actors)}))
+    :group/actors (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) actors)}))

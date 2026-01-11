@@ -49,8 +49,9 @@
 
   (point->entities [g2d position]
     (when-let [cell (g2d (mapv int position))]
-      (filter #(Rectangle/.contains (body/rectangle (:entity/body @%)) position)
-              (:entities @cell))))
+      (let [[x y] position]
+        (filter #(Rectangle/.contains (body/rectangle (:entity/body @%)) x y)
+                (:entities @cell)))))
 
   (set-touched-cells! [grid eid]
     (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body @eid)))]

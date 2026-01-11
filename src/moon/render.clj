@@ -774,6 +774,7 @@
   (.draw stage)
   (.ctx  stage))
 
+; THIS IS ONE FUNCTION !!! 777 loc
 (defn do! [ctx]
   (-> ctx
       get-stage-ctx
