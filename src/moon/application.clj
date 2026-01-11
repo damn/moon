@@ -34,7 +34,6 @@
             [moon.ui.editor.overview-window :as overview-window]
             [moon.ui.info-window :as info-window]
             [moon.ui.message :as message]
-            [moon.ui.texture-region-drawable :as texture-region-drawable]
             [moon.utils :as utils]
             [moon.timer :as timer]
             [moon.val-max :as val-max]
@@ -66,10 +65,12 @@
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Widget)
-           (com.badlogic.gdx.scenes.scene2d.utils ClickListener)
+           (com.badlogic.gdx.scenes.scene2d.utils ClickListener
+                                                  TextureRegionDrawable)
            (com.badlogic.gdx.utils Disposable)
            (moon Stage))
   (:gen-class))
@@ -718,9 +719,9 @@
            skin]}]
   (let [cell-size 48
         slot->drawable (fn [slot]
-                         (doto (texture-region-drawable/create (slot->texture-region slot))
+                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
-                           (texture-region-drawable/tint (Color. 1 1 1 0.4))))
+                           (.tint (Color. 1 1 1 0.4))))
         droppable-color   [0   0.6 0 0.8 1]
         not-allowed-color [0.6 0   0 0.8 1]
         draw-cell-rect (fn [player-entity x y mouseover? cell]

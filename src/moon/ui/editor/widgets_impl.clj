@@ -1,7 +1,6 @@
 (ns moon.ui.editor.widgets-impl
   (:require [clojure.edn :as edn]
             [moon.ui.actor :as actor]
-            [moon.ui.check-box :as check-box]
             [moon.ui.group :as group]
             [moon.ui.label :as label]
             [moon.ui.stage :as stage]
@@ -21,7 +20,9 @@
             [moon.ui.tooltip :as tooltip]
             [moon.ui.window :as window]
             [moon.utils :as utils])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
+                                               CheckBox
+                                               SelectBox
                                                Skin
                                                TextField)))
 
@@ -47,16 +48,12 @@
 (defmethod create :s/boolean
   [_ checked? {:keys [ctx/skin]}]
   (assert (boolean? checked?))
-  (check-box/create
-   :text ""
-   :on-clicked (fn [_])
-   :checked? checked?
-   :skin skin
-   ))
+  (doto (CheckBox. "" ^Skin skin)
+    (.setChecked checked?)))
 
 (defmethod value :s/boolean
   [_ widget _schemas]
-  (check-box/checked? widget))
+  (Button/.isChecked widget))
 
 (defmethod create :s/enum [schema v {:keys [ctx/skin]}]
   (doto (SelectBox. ^Skin skin)
