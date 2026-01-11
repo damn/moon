@@ -7,8 +7,7 @@
             [moon.graphics.camera :as camera]
             [moon.shape-drawer :as sd]
             [moon.tm-renderer :as tm-renderer])
-  (:import (com.badlogic.gdx Gdx
-                             Graphics)
+  (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color
                                       Colors
@@ -330,7 +329,7 @@
     (.end batch)))
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
-  (let [pixmap (Pixmap. (.internal Gdx/files path))
+  (let [pixmap (Pixmap. (.internal files path))
         cursor (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y)]
     (.dispose pixmap)
     cursor))
@@ -381,7 +380,7 @@
                                                                graphics
                                                                (format (:path-format cursors) path)
                                                                hotspot))))
-        (assoc :graphics/default-font (generate-font (.internal Gdx/files (:path default-font))
+        (assoc :graphics/default-font (generate-font (.internal files (:path default-font))
                                                      (:params default-font)))
         (assoc :graphics/batch batch)
         (assoc :graphics/shape-drawer-texture shape-drawer-texture)
