@@ -1,5 +1,5 @@
 (ns moon.operations-test
-  (:require [moon.stats.ops :as ops]
+  (:require [moon.ops :as ops]
             [clojure.test :refer :all]))
 
 (deftest add-and-remove

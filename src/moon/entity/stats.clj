@@ -2,7 +2,7 @@
 ; e.g. ops just :ops/inc/:ops/mult?
 (ns moon.entity.stats
   (:require [malli.core :as m]
-            [moon.stats.ops :as ops]
+            [moon.ops :as ops]
             [moon.val-max :as val-max]))
 
 (defn- get-value [base-value modifiers modifier-k]
