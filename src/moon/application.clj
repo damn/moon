@@ -1701,30 +1701,40 @@
 
 (def state (atom nil))
 
+(defn apply* [[f params]]
+  ((requiring-resolve f) params))
+
+(defn lwjgl-app-config [config]
+  (doto (Lwjgl3ApplicationConfiguration.)
+    (.setTitle (:title config))
+    (.setWindowedMode (:width (:window config))
+                      (:height (:window config)))
+    (.setForegroundFPS (:fps config))))
+
+(defn app-listener [_]
+  (reify ApplicationListener
+    (create [_]
+      (reset! state (create! Gdx/app
+                             (->> "config.edn" io/resource slurp edn/read-string))))
+
+    (dispose [_]
+      (dispose! @state))
+
+    (render [_]
+      (swap! state render!))
+
+    (resize [_ width height]
+      (resize! @state width height))
+
+    (pause [_])
+
+    (resume [_])))
+
 (defn -main []
-  (let [config (->> "config.edn"
-                    io/resource
-                    slurp
-                    edn/read-string)]
-    (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-    (Lwjgl3Application. (reify ApplicationListener
-                          (create [_]
-                            (reset! state (create! Gdx/app config)))
-
-                          (dispose [_]
-                            (dispose! @state))
-
-                          (render [_]
-                            (swap! state render!))
-
-                          (resize [_ width height]
-                            (resize! @state width height))
-
-                          (pause [_])
-
-                          (resume [_]))
-                        (doto (Lwjgl3ApplicationConfiguration.)
-                          (.setTitle (:title config))
-                          (.setWindowedMode (:width (:window config))
-                                            (:height (:window config)))
-                          (.setForegroundFPS (:fps config))))))
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (let [{:keys [listener config]} (->> "start.edn"
+                                       io/resource
+                                       slurp
+                                       edn/read-string)]
+    (Lwjgl3Application. (apply* listener)
+                        (apply* config))))

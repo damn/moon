@@ -1,0 +1,7 @@
+{
+ :config [moon.application/lwjgl-app-config {:title "Moon"
+                                             :window {:width 1440
+                                                      :height 900}
+                                             :fps 60}]
+ :listener [moon.application/app-listener]
+ }

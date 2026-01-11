@@ -1,9 +1,4 @@
-{
- :title "Moon"
- :window {:width 1440
-          :height 900}
- :fps 60
- :audio {:sound-names "sounds.edn"
+{:audio {:sound-names "sounds.edn"
          :path-format "sounds/%s.wav"}
  :graphics {:colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
             :tile-size 48
