@@ -3,7 +3,7 @@
             [clojure.rand :refer [rand-int-between]]
             [moon.effects.target-all :as target-all]
             [moon.effects.target-entity :as target-entity]
-            [moon.entity.faction :as faction]
+            [moon.faction :as faction]
             [moon.entity.stats :as stats]
             [moon.timer :as timer]
             [moon.world.raycaster :as raycaster]))

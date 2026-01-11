@@ -1,4 +1,4 @@
-(ns moon.entity.animation)
+(ns moon.animation)
 
 (defprotocol Animation
   (tick [_ delta])

@@ -1,4 +1,4 @@
-(ns moon.entity.body ; moon.body
+(ns moon.body
   (:require [clojure.math.vector2 :as v]
             [moon.rectangle :as rectangle]
             [qrecord.core :as q])

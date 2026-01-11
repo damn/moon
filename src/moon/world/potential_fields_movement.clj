@@ -1,8 +1,8 @@
 (ns moon.world.potential-fields-movement
   (:require [clojure.grid2d :as g2d]
             [clojure.math.vector2 :as v]
-            [moon.entity.body :as body]
-            [moon.entity.faction :as faction]
+            [moon.body :as body]
+            [moon.faction :as faction]
             [moon.position :as position]
             [moon.utils :as utils]
             [moon.world.grid :as grid]

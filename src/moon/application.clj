@@ -16,9 +16,9 @@
             [moon.effect :as effect]
             [moon.effects.target-all :as target-all]
             [moon.effects.target-entity :as target-entity]
-            [moon.entity.animation :as animation] ; just animation
-            [moon.entity.body :as body] ; just body
-            [moon.entity.faction :as faction]
+            [moon.animation :as animation] ; just animation
+            [moon.body :as body]
+            [moon.faction :as faction]
             [moon.entity.inventory :as inventory]
             [moon.entity.skills :as skills]
             [moon.skill :as skill]
@@ -128,8 +128,8 @@
    :world/effect-body-props {:width 0.5
                              :height 0.5
                              :z-order :z-order/effect}
-   :world/create-fns {:entity/animation             moon.entity.animation/create
-                      :entity/body                  moon.entity.body/create
+   :world/create-fns {:entity/animation             moon.animation/create
+                      :entity/body                  moon.body/create
                       :entity/delete-after-duration (fn [duration {:keys [world/elapsed-time]}]
                                                       (timer/create elapsed-time duration))
                       :entity/projectile-collision  (fn create [v _world]

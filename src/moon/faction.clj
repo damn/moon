@@ -1,4 +1,4 @@
-(ns moon.entity.faction)
+(ns moon.faction)
 
 (defn enemy [faction]
   (case faction

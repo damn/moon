@@ -1,8 +1,8 @@
 (ns moon.world.create.grid
   (:require [clojure.grid2d :as g2d]
             [moon.circle :as circle]
-            [moon.entity.body :as body]
-            [moon.entity.faction :as faction]
+            [moon.body :as body]
+            [moon.faction :as faction]
             [moon.position :as position]
             [moon.rectangle :as rectangle]
             [moon.world.grid :as grid]
