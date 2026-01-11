@@ -2,9 +2,9 @@
   (:require [moon.ui.actor :as actor]
             [moon.ui.button-group :as button-group]
             [moon.ui.group :as group]
-            [moon.ui.horizontal-group :as horizontal-group]
             [moon.ui.image-button :as image-button]
-            [moon.ui.table :as table]))
+            [moon.ui.table :as table])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
 ; declarative scene2d ui functions ?
 
@@ -12,8 +12,9 @@
   "Is a table(ui actor for stage) which fills parent and contains a horizontal group of buttons."
   []
   (table/create
-   {:rows [[{:actor (doto (horizontal-group/create {:pad 2
-                                                    :space 2})
+   {:rows [[{:actor (doto (doto (HorizontalGroup.)
+                            (.space 2)
+                            (.pad 2))
                       (actor/set-name! "moon.ui.action-bar.horizontal-group")
                       (actor/set-user-object! (button-group/create
                                                {:min-check-count 0

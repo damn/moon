@@ -10,7 +10,6 @@
             [moon.malli :as malli]
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.schema :as schema]
-            [moon.ui.separator :as separator]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
@@ -71,7 +70,7 @@
                       :left? true}
                      {:actor (label/create label-text skin)}]]})
     :right? true}
-   {:actor (separator/vertical)
+   {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
     :pad-top 2
     :pad-bottom 2
     :fill-y? true
@@ -122,7 +121,7 @@
 
 (defn- horiz-sep [colspan]
   (fn []
-    [{:actor (separator/horizontal)
+    [{:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
       :pad-top 2
       :pad-bottom 2
       :colspan colspan
@@ -169,7 +168,7 @@
                            :skin skin})
                   :colspan colspan}])]
              [(when opt?
-                [{:actor (separator/horizontal)
+                [{:actor  nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
                   :pad-top 2
                   :pad-bottom 2
                   :colspan colspan

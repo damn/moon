@@ -34,7 +34,6 @@
             [moon.ui.editor.overview-window :as overview-window]
             [moon.ui.info-window :as info-window]
             [moon.ui.message :as message]
-            [moon.ui.widget :as widget]
             [moon.ui.texture-region-drawable :as texture-region-drawable]
             [moon.utils :as utils]
             [moon.timer :as timer]
@@ -68,7 +67,8 @@
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.scenes.scene2d Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener)
            (com.badlogic.gdx.utils Disposable)
            (moon Stage))
@@ -695,8 +695,8 @@
       (f eid cell))))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
-  (widget/create
-    (fn [this _batch _parent-alpha]
+  (proxy [Widget] []
+    (draw [_batch _parent-alpha]
       (when-let [stage (actor/stage this)]
         (let [{:keys [ctx/graphics
                       ctx/world]} (stage/ctx stage)]

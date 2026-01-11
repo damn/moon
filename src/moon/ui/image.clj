@@ -1,6 +1,5 @@
 (ns moon.ui.image
-  (:require [moon.ui.widget :as widget]
-            [moon.ui.actor :as actor])
+  (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Image)
@@ -34,5 +33,5 @@
     (when (= :fill scaling)
       (Image/.setScaling image Scaling/fill))
     (when fill-parent?
-      (widget/set-fill-parent! image true))
+      (.setFillParent image true))
     (actor/set-opts! image opts)))

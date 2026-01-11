@@ -4,9 +4,7 @@
             [moon.ui.check-box :as check-box]
             [moon.ui.group :as group]
             [moon.ui.label :as label]
-            [moon.ui.select-box :as select-box]
             [moon.ui.stage :as stage]
-            [moon.ui.text-field :as text-field]
             [moon.ui.widgets :as widgets]
             [moon.ui.widget-group :as widget-group]
             [moon.audio :as audio]
@@ -22,7 +20,10 @@
             [moon.ui.text-button :as text-button]
             [moon.ui.tooltip :as tooltip]
             [moon.ui.window :as window]
-            [moon.utils :as utils]))
+            [moon.utils :as utils])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox
+                                               Skin
+                                               TextField)))
 
 (defmethod create :default
   [_ v {:keys [ctx/skin]}]
@@ -58,13 +59,12 @@
   (check-box/checked? widget))
 
 (defmethod create :s/enum [schema v {:keys [ctx/skin]}]
-  (select-box/create
-   {:items (map utils/->edn-str (rest schema))
-    :selected (utils/->edn-str v)}
-   skin))
+  (doto (SelectBox. ^Skin skin)
+    (.setItems ^"[Lcom.badlogic.gdx.scenes.scene2d.Actor;" (into-array (map utils/->edn-str (rest schema))))
+    (.setSelected (utils/->edn-str v))))
 
 (defmethod value :s/enum [_  widget _schemas]
-  (edn/read-string (select-box/selected widget)))
+  (edn/read-string (SelectBox/.getSelected widget)))
 
 (defmethod create :s/image
   [schema image {:keys [ctx/graphics
@@ -256,20 +256,20 @@
     table))
 
 (defmethod create :s/string [schema v {:keys [ctx/skin]}]
-  (tooltip/add! (text-field/create (str v) skin)
+  (tooltip/add! (TextField. (str v) ^Skin skin)
                 (str schema)
                 skin))
 
 (defmethod value :s/string [_ widget _schemas]
-  (text-field/text widget))
+  (TextField/.getText widget))
 
 (defn- create-edn-widget [schema v {:keys [ctx/skin]}]
-  (tooltip/add! (text-field/create (utils/->edn-str v) skin)
+  (tooltip/add! (TextField. (utils/->edn-str v) ^Skin skin)
                 (str schema)
                 skin))
 
 (defn- edn-widget-value [_  widget _schemas]
-  (edn/read-string (text-field/text widget)))
+  (edn/read-string (TextField/.getText widget)))
 
 (def fn-map
   {:s/number {create  create-edn-widget
