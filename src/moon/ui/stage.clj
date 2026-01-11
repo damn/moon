@@ -1,8 +1,6 @@
 (ns moon.ui.stage
   (:import (moon Stage)))
 
-(defmulti build :type)
-
 (defn create [viewport batch]
   (Stage. viewport batch))
 
