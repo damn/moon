@@ -8,7 +8,6 @@
             [moon.ctx :as ctx]
             [moon.effects.target-all :as target-all]
             [moon.effects.target-entity :as target-entity]
-            [moon.entity.state-impl]
             [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.entity.stats :as stats]
             [moon.faction :as faction]
@@ -24,7 +23,6 @@
             [moon.utils :as utils]
             [moon.val-max :as val-max]
             [moon.world :as world]
-            [moon.world-fns.creature-tiles]
             [moon.world.raycaster :as raycaster])
   (:import (com.badlogic.gdx Input$Buttons)
            (moon Stage)))

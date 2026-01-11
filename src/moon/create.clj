@@ -11,7 +11,6 @@
             [moon.db :as db]
             [moon.entity.skills]
             [moon.entity.state :as state]
-            [moon.entity.state-impl]
             [moon.entity.stats]
             [moon.graphics :as graphics]
             [moon.inventory]

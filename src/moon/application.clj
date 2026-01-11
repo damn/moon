@@ -1,11 +1,8 @@
-; DEsign is separateing something into simple parts
-; only simple allowed
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.audio :as audio]
-            [moon.ctx :as ctx]
-            [moon.entity.state-impl]                        ; AHA !
+            [moon.entity.state-impl]
             [moon.graphics :as graphics]
             [moon.ui :as ui]
             [moon.world :as world])

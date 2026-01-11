@@ -7,7 +7,6 @@
             [moon.effect :as effect]
             [moon.entity.skills :as skills]
             [moon.entity.state :as state]
-            [moon.entity.state-impl]
             [moon.entity.stats :as stats]
             [moon.graphics :as graphics]
             [moon.inventory :as inventory]
