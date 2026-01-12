@@ -1,7 +1,6 @@
 (ns moon.ui ; TODO delete and upfactor!? its just 'stage' ? ctx.stage ? (moon.ctx.stage protocols?)
   (:require [clojure.repl]
             [moon.ui.action-bar :as action-bar]
-            [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.inventory :as inventory-window]
             [moon.ui.message :as message]
@@ -12,7 +11,8 @@
             [moon.ui.window :as window]
             [moon.utils :as utils]
             [moon.viewport :as viewport])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
 
 (defprotocol UserInterface
@@ -36,18 +36,18 @@
   (show-error-window! [_ skin throwable])
   (actor-information [_ actor]))
 
-(defn- inventory-cell-with-item? [actor]
-  (and (actor/parent actor)
-       (= "inventory-cell" (actor/name (actor/parent actor)))
-       (actor/user-object (actor/parent actor))))
+(defn- inventory-cell-with-item? [^Actor actor]
+  (and (.getParent actor)
+       (= "inventory-cell" (.getName (.getParent actor)))
+       (.getUserObject (.getParent actor))))
 
 (defn create!
   [{:keys [graphics/batch
            graphics/ui-viewport]}]
   (stage/create ui-viewport batch))
 
-(defn- toggle-visible! [actor]
-  (actor/set-visible! actor (not (actor/visible? actor))))
+(defn- toggle-visible! [^Actor actor]
+  (.setVisible actor (not (.isVisible actor))))
 
 (defn- stage-find [stage k]
   (-> stage
@@ -92,7 +92,7 @@
     (-> stage
         (stage-find "moon.ui.windows")
         (group/find-actor "moon.ui.windows.inventory")
-        actor/visible?))
+        Actor/.isVisible))
 
   (toggle-inventory-visible! [stage]
     (-> stage
@@ -115,7 +115,7 @@
                                [{:actor (text-button/create
                                          {:text button-text
                                           :on-clicked (fn [_actor _ctx]
-                                                        (actor/remove!
+                                                        (.remove
                                                          (-> stage
                                                              stage/root
                                                              (group/find-actor "moon.ui.modal-window")))
@@ -166,7 +166,7 @@
   (close-all-windows! [stage]
     (->> (stage-find stage "moon.ui.windows")
          group/children
-         (run! #(actor/set-visible! % false))))
+         (run! #(Actor/.setVisible % false))))
 
   (show-error-window! [stage skin throwable]
     (stage/add-actor! stage

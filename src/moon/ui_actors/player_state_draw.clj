@@ -35,5 +35,5 @@
 (defn create [_ctx]
   (actor/create
    {:draw (fn [this _batch _parent-alpha]
-            (player-state-handle-draws (stage/ctx (actor/stage this))))
+            (player-state-handle-draws (stage/ctx (.getStage this))))
     :act (fn [_ _delta])}))

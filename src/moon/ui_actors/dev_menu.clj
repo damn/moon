@@ -4,7 +4,6 @@
             [moon.graphics :as graphics]
             [moon.input :as input]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor]
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.dev-menu :as dev-menu]
             [moon.ui.editor.overview-window :as overview-window]
@@ -63,7 +62,7 @@
                                                   create-world nil
                                                   #_(requiring-resolve 'moon.application.create.world/step)
                                                   ui stage
-                                                  stage (actor/stage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
+                                                  stage (.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                               (rebuild-actors! ui ctx)
                                               (world/dispose! (:ctx/world ctx))
                                               (stage/set-ctx! stage (create-world ctx world-fn))))})}

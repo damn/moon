@@ -1,42 +1,18 @@
 (ns moon.ui.actor
-  (:refer-clojure :exclude [name])
-  (:import (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor)))
-
-(def set-visible!             Actor/.setVisible)
-(def set-touchable!           Actor/.setTouchable)
-(def set-position!            Actor/.setPosition)
-(def add-listener!            Actor/.addListener)
-(def remove!                  Actor/.remove)
-(def stage                    Actor/.getStage)
-(def user-object              Actor/.getUserObject)
-(def width                    Actor/.getWidth)
-(def height                   Actor/.getHeight)
-(def x                        Actor/.getX)
-(def y                        Actor/.getY)
-(def parent                   Actor/.getParent)
-(def name                     Actor/.getName)
-(def visible?                 Actor/.isVisible)
-(def stage->local-coordinates Actor/.stageToLocalCoordinates)
-(def hit                      Actor/.hit)
-
-(defn stage->local-coordinates [^Actor actor [x y]]
-  (let [v2 (.stageToLocalCoordinates actor (Vector2. x y))]
-    [(.x v2)
-     (.y v2)]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (def opts-fn-map
   {:actor/name        Actor/.setName
    :actor/user-object Actor/.setUserObject
-   :actor/visible?    set-visible!
-   :actor/touchable   set-touchable!
-   :actor/listener    add-listener!
+   :actor/visible?    Actor/.setVisible
+   :actor/touchable   Actor/.setTouchable
+   :actor/listener    Actor/.addListener
    :actor/position (fn [a [x y]]
-                     (set-position! a x y))
+                     (Actor/.setPosition a x y))
    :actor/center-position (fn [a [x y]]
-                            (set-position! a
-                                           (- x (/ (width  a) 2))
-                                           (- y (/ (height a) 2))))})
+                            (Actor/.setPosition a
+                                                (- x (/ (Actor/.getWidth  a) 2))
+                                                (- y (/ (Actor/.getHeight a) 2))))})
 
 (defn set-opts! [actor opts]
   (doseq [[k v] opts

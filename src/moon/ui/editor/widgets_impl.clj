@@ -4,7 +4,6 @@
             [moon.db :as db]
             [moon.graphics :as graphics]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor]
             [moon.ui.editor.overview-window :as overview-window]
             [moon.ui.editor.property :as property]
             [moon.ui.editor.schema :refer [create value]]
@@ -19,7 +18,8 @@
             [moon.ui.widgets :as widgets]
             [moon.ui.window :as window]
             [moon.utils :as utils])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Button
                                                CheckBox
                                                SelectBox
                                                Label
@@ -32,7 +32,7 @@
 
 (defmethod value :default
   [_  widget _schemas]
-  ((actor/user-object widget) 1))
+  ((.getUserObject widget) 1))
 
 (defmethod create :s/animation
   [_ animation {:keys [ctx/graphics
@@ -112,7 +112,7 @@
                                   :skin skin
                                   :property-type property-type
                                   :clicked-id-fn (fn [actor id ctx]
-                                                   (actor/remove! (window/find-ancestor actor))
+                                                   (.remove (window/find-ancestor actor))
                                                    (redo-rows ctx (conj property-ids id)))})))
                  :skin skin})}]
       (for [property-id property-ids]
@@ -139,7 +139,7 @@
 
 (defmethod value :s/one-to-many [_  widget _schemas]
   (->> (group/children widget)
-       (keep actor/user-object)
+       (keep Actor/.getUserObject)
        set))
 
 (defn- add-one-to-one-rows
@@ -170,7 +170,7 @@
                                     :skin skin
                                     :property-type property-type
                                     :clicked-id-fn (fn [actor id ctx]
-                                                     (actor/remove! (window/find-ancestor actor))
+                                                     (.remove (window/find-ancestor actor))
                                                      (redo-rows ctx id))})))
                    :skin skin})})]
       [(when property-id
@@ -198,7 +198,7 @@
 
 (defmethod value :s/one-to-one [_  widget _schemas]
   (->> (group/children widget)
-       (keep actor/user-object)
+       (keep Actor/.getUserObject)
        first))
 
 (declare sound-columns)
@@ -207,9 +207,9 @@
   (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
     (table/add-rows! table [(sound-columns skin table sound-name)])
-    (actor/remove! (window/find-ancestor actor))
+    (.remove (window/find-ancestor actor))
     (widget-group/pack! (window/find-ancestor table))
-    (let [[k _] (actor/user-object table)]
+    (let [[k _] (Actor/.getUserObject table)]
       (.setUserObject table [k sound-name]))))
 
 (defn- open-select-sounds-handler [table]

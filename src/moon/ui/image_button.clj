@@ -1,6 +1,5 @@
 (ns moon.ui.image-button
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.stage :as stage]
+  (:require [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.tooltip :as tooltip])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -23,9 +22,9 @@
                    (.setMinSize (* scale w) (* scale h)))
         image-button (ImageButton. ^Drawable drawable)]
     (when on-clicked
-      (actor/add-listener! image-button (proxy [ChangeListener] []
-                                          (changed [event actor]
-                                            (on-clicked actor (stage/ctx (Event/.getStage event)))))))
+      (.addListener image-button (proxy [ChangeListener] []
+                                   (changed [event actor]
+                                     (on-clicked actor (stage/ctx (Event/.getStage event)))))))
     (when-let [tooltip (:tooltip opts)]
       (tooltip/add! image-button
                     tooltip

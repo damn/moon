@@ -1,6 +1,5 @@
 (ns moon.ui.action-bar
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.group :as group]
+  (:require [moon.ui.group :as group]
             [moon.ui.image-button :as image-button]
             [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
@@ -29,11 +28,11 @@
 (defn- get-data [action-bar]
   (let [group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
-     :button-group (actor/user-object group)}))
+     :button-group (.getUserObject group)}))
 
 (defn selected-skill [action-bar]
   (when-let [skill-button (ButtonGroup/.getChecked (:button-group (get-data action-bar)))]
-    (actor/user-object skill-button)))
+    (.getUserObject skill-button)))
 
 (defn add-skill!
   [action-bar
@@ -55,6 +54,6 @@
 (defn remove-skill! [action-bar skill-id]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
         button (get horizontal-group skill-id)]
-    (actor/remove! button)
+    (.remove button)
     (ButtonGroup/.remove button-group ^Button button)
     nil))

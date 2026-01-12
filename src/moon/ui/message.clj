@@ -2,7 +2,8 @@
   (:require [moon.graphics :as graphics]
             [moon.ui.actor :as actor]
             [moon.ui.stage :as stage]
-            [moon.viewport :as viewport]))
+            [moon.viewport :as viewport])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn- draw-message [state vp-width vp-height]
   (when-let [text (:text @state)]
@@ -15,13 +16,13 @@
 (defn create [duration-seconds]
   (actor/create
    {:draw (fn [this _batch _parent-alpha]
-            (when-let [stage (actor/stage this)]
+            (when-let [stage (.getStage this)]
               (graphics/draw! (:ctx/graphics (stage/ctx stage))
-                              [(draw-message (actor/user-object this)
+                              [(draw-message (Actor/.getUserObject this)
                                              (viewport/world-width  (stage/viewport stage))
                                              (viewport/world-height (stage/viewport stage)))])))
     :act (fn [this delta]
-           (let [state (actor/user-object this)]
+           (let [state (Actor/.getUserObject this)]
              (when (:text @state)
                (swap! state update :counter + delta)
                (when (>= (:counter @state) duration-seconds)

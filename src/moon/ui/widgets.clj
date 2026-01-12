@@ -1,6 +1,5 @@
 (ns moon.ui.widgets
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.stage :as stage]
+  (:require [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
@@ -26,9 +25,9 @@
              {:actor/name "moon.ui.widget.scroll-pane-table"
               :scroll-pane/actor table}
              skin)
-     :width  (+ (actor/width table) 50)
+     :width  (+ (.getWidth table) 50)
      :height (min (- viewport-height 50)
-                  (actor/height table))}))
+                  (.getHeight table))}))
 
 (defn scroll-pane-window
   [{:keys [skin viewport-height rows]}]
@@ -67,7 +66,7 @@
     (text-button/create
      {:text "Map"
       :on-clicked (fn [actor _ctx]
-                    (stage/add-actor! (actor/stage actor)
+                    (stage/add-actor! (.getStage actor)
                                       (data-viewer-window
                                        {:title "title"
                                         :data v

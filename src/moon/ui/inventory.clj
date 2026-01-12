@@ -1,12 +1,12 @@
 (ns moon.ui.inventory
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.group :as group]
+  (:require [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.tooltip :as tooltip])
-  (:import (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
 (defn- find-cell [group cell]
-  (first (filter #(= (actor/user-object % ) cell)
+  (first (filter #(= (Actor/.getUserObject % ) cell)
                  (group/children group))))
 
 (defn- window->cell [inventory-window cell]
@@ -17,7 +17,7 @@
 (defn set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
   (let [cell-widget (window->cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")
-        cell-size (:cell-size (actor/user-object image-widget))
+        cell-size (:cell-size (Actor/.getUserObject image-widget))
         drawable (doto (TextureRegionDrawable. texture-region)
                    (.setMinSize cell-size cell-size))]
     (image/set-drawable! image-widget drawable)
@@ -26,5 +26,5 @@
 (defn remove-item! [inventory-window cell]
   (let [cell-widget (window->cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")]
-    (image/set-drawable! image-widget (:background-drawable (actor/user-object image-widget)))
+    (image/set-drawable! image-widget (:background-drawable (Actor/.getUserObject image-widget)))
     (tooltip/remove! cell-widget)))

@@ -24,7 +24,7 @@
                                         :expand? true}]]})]
     (group/add-actor! window (actor/create
                               {:act (fn [this _delta]
-                                      (when-let [stage (actor/stage this)]
+                                      (when-let [stage (.getStage this)]
                                         (.setText label (set-label-text! (stage/ctx stage))))
                                       (widget-group/pack! window))
                                :draw (fn [this batch parent-alpha])}))

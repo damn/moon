@@ -15,7 +15,7 @@
 (defn- set-label-text-actor [label text-fn]
   (actor/create
    {:act (fn [this delta]
-           (when-let [stage (actor/stage this)]
+           (when-let [stage (.getStage this)]
              (.setText label (text-fn (stage/ctx stage)))))
     :draw (fn [this batch parent-alpha])}))
 
@@ -39,7 +39,7 @@
     :title label
     :rows [(for [{:keys [label on-click]} items]
              {:actor (doto (text-button/create label skin)
-                       (actor/add-listener!
+                       (.addListener
                         (proxy [ChangeListener] []
                           (changed [event actor]
                             (on-click actor (stage/ctx (Event/.getStage event)))))))})]}))
@@ -48,7 +48,7 @@
   (let [table (table/create
                {:rows [(for [{:keys [label items]} menus]
                          {:actor (doto (text-button/create label skin)
-                                   (actor/add-listener!
+                                   (.addListener
                                     (proxy [ChangeListener] []
 
                                       (changed [event actor]
@@ -68,7 +68,7 @@
              :fill-x? true
              :colspan 1}]
            [{:actor (doto (Label. "" ^Skin skin)
-                      (actor/set-touchable! Touchable/disabled))
+                      (.setTouchable Touchable/disabled))
              :expand? true
              :fill-x? true
              :fill-y? true}]]

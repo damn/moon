@@ -2,7 +2,6 @@
   (:require [moon.graphics :as graphics]
             [moon.inventory :as inventory]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor]
             [moon.ui.image :as image]
             [moon.ui.stack :as stack]
             [moon.ui.stage :as stage]
@@ -10,26 +9,28 @@
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Event)
+           (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event)
            (com.badlogic.gdx.scenes.scene2d.ui Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
-                                                  TextureRegionDrawable)))
+                                                  TextureRegionDrawable)
+           (com.badlogic.gdx.math Vector2)))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
-      (when-let [stage (actor/stage this)]
+      (when-let [stage (.getStage this)]
         (let [{:keys [ctx/graphics
                       ctx/world]} (stage/ctx stage)]
           ; TODO here just a simple callback ?
           (graphics/draw! graphics
-                          (let [ui-mouse (:graphics/ui-mouse-position graphics)]
+                          (let [[x y] (:graphics/ui-mouse-position graphics)]
                             (draw-cell-rect @(:world/player-eid world)
-                                            (actor/x this)
-                                            (actor/y this)
-                                            (let [[x y] (actor/stage->local-coordinates this ui-mouse)]
-                                              (actor/hit this x y true))
-                                            (actor/user-object (actor/parent this))))))))))
+                                            (.getX this)
+                                            (.getY this)
+                                            (let [v2 (.stageToLocalCoordinates this (Vector2. x y))]
+                                              (.hit this (.x v2) (.y v2) true))
+                                            (Actor/.getUserObject (.getParent this))))))))))
 
 (defn- create-inventory-window*
   [{:keys [position

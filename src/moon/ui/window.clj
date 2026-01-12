@@ -1,6 +1,5 @@
 (ns moon.ui.window
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.table :as table]
+  (:require [moon.ui.table :as table]
             [moon.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)
@@ -27,17 +26,17 @@
   (let [window (create* opts skin)]
     (table/add! (.getTitleTable window)
                 (doto (text-button/create "X" skin)
-                  (actor/add-listener!
+                  (.addListener
                    (proxy [ChangeListener] []
                      (changed [_event _actor]
-                       (actor/remove! window))))))
+                       (.remove window))))))
     (.setModal window (boolean modal?))
     (table/set-opts! window opts)))
 
 (defn find-ancestor
   "Finds the ancestor window of actor, otherwise throws an error if none of recursively searched parents of actors is a window actor."
   [actor]
-  (if-let [parent (actor/parent actor)]
+  (if-let [parent (.getParent actor)]
     (if (instance? Window parent)
       parent
       (find-ancestor parent))

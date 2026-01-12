@@ -33,9 +33,9 @@
                                         :as ctx}]
                               (try
                                (let [new-ctx (update ctx :ctx/db f)
-                                     stage (actor/stage actor)]
+                                     stage (.getStage actor)]
                                  (stage/set-ctx! stage new-ctx))
-                               (actor/remove! (window/find-ancestor actor))
+                               (.remove (window/find-ancestor actor))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (ui/show-error-window! stage skin t)))))
@@ -45,7 +45,7 @@
                                              (db/update! db (get-widget-value))))
         actors [(actor/create
                  {:act (fn [this delta]
-                         (when-let [stage (actor/stage this)]
+                         (when-let [stage (.getStage this)]
                            (let [{:keys [ctx/input]
                                   :as ctx} (stage/ctx stage)]
                              (when (input/key-just-pressed? input Input$Keys/ENTER)

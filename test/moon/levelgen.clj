@@ -5,7 +5,6 @@
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
-            [moon.ui.actor :as actor]
             [moon.ui.text-button :as text-button]
             [moon.ui.stage :as stage]
             [moon.ui.table]
@@ -79,11 +78,11 @@
   (let [window (Window. "Edit" skin)]
     (moon.ui.table/add-rows! window (for [level-fn level-fns
                                          :let [on-clicked (fn [actor ctx]
-                                                            (let [stage (actor/stage actor)
+                                                            (let [stage (.getStage actor)
                                                                   new-ctx (generate-level ctx level-fn)]
                                                               (stage/set-ctx! stage new-ctx)))]]
                                      [{:actor (doto (text-button/create (str "Generate " level-fn) skin)
-                                                (actor/add-listener!
+                                                (.addListener
                                                  (proxy [ChangeListener] []
                                                    (changed [event actor]
                                                      (on-clicked actor (stage/ctx (Event/.getStage event)))))))}]))
