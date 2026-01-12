@@ -5,7 +5,6 @@
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
-            [moon.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.viewport :as viewport]
             [moon.world-fns.creature-tiles])
@@ -21,6 +20,7 @@
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               TextButton
                                                Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (com.badlogic.gdx.utils ScreenUtils)
@@ -82,7 +82,7 @@
                                               (let [stage (.getStage actor)
                                                     new-ctx (generate-level ctx level-fn)]
                                                 (set! (.ctx stage) new-ctx)))]]
-                       [{:actor (doto (text-button/create (str "Generate " level-fn) skin)
+                       [{:actor (doto (TextButton. (str "Generate " level-fn) skin)
                                   (.addListener
                                    (proxy [ChangeListener] []
                                      (changed [event actor]

@@ -1,7 +1,7 @@
 (ns moon.ui.window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.ui.text-button :as text-button])
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               TextButton
                                                Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
@@ -22,10 +22,10 @@
     window))
 
 (defn create
-  [{:keys [skin modal?] :as opts}]
+  [{:keys [^Skin skin modal?] :as opts}]
   (let [window (create* opts skin)]
     (.add (.getTitleTable window)
-          ^Actor (doto (text-button/create "X" skin)
+          ^Actor (doto (TextButton. "X" skin)
                    (.addListener
                     (proxy [ChangeListener] []
                       (changed [_event _actor]

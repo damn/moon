@@ -1,13 +1,13 @@
 (ns moon.ui.dev-menu
   (:require [moon.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
                                             Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)
+                                               Skin
+                                               TextButton)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn- set-label-text-actor [label text-fn]
@@ -37,16 +37,16 @@
     :pack? true
     :title label
     :rows [(for [{:keys [label on-click]} items]
-             {:actor (doto (text-button/create label skin)
+             {:actor (doto (TextButton. label ^Skin skin)
                        (.addListener
                         (proxy [ChangeListener] []
                           (changed [event actor]
                             (on-click actor (.ctx (Event/.getStage event)))))))})]}))
 
-(defn- main-table [skin menus update-labels]
+(defn- main-table [^Skin skin menus update-labels]
   (let [table (table/create
                {:rows [(for [{:keys [label items]} menus]
-                         {:actor (doto (text-button/create label skin)
+                         {:actor (doto (TextButton. label skin)
                                    (.addListener
                                     (proxy [ChangeListener] []
 

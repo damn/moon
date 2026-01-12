@@ -6,15 +6,11 @@
            (moon Stage)))
 
 (defn create
-  ([text skin]
-   (create {:text text
-            :skin skin
-            :on-clicked (fn [actor ctx])}))
-  ([{:keys [text
-            on-clicked
-            ^Skin skin]}]
-   (doto (TextButton. (str text) skin)
-     (.addListener
-      (proxy [ChangeListener] []
-        (changed [event actor]
-          (on-clicked actor (.ctx ^Stage (Event/.getStage event)))))))))
+  [{:keys [text
+           on-clicked
+           ^Skin skin]}]
+  (doto (TextButton. (str text) skin)
+    (.addListener
+     (proxy [ChangeListener] []
+       (changed [event actor]
+         (on-clicked actor (.ctx ^Stage (Event/.getStage event))))))))
