@@ -1,10 +1,10 @@
 (ns moon.ui.info-window
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.group :as group]
+  (:require [moon.ui.group :as group]
             [moon.ui.stage :as stage]
             [moon.ui.widget-group :as widget-group]
             [moon.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
 
 (defn create
@@ -22,10 +22,11 @@
                                :actor/position position
                                :rows [[{:actor label
                                         :expand? true}]]})]
-    (group/add-actor! window (actor/create
-                              {:act (fn [this _delta]
-                                      (when-let [stage (.getStage this)]
-                                        (.setText label (set-label-text! (stage/ctx stage))))
-                                      (widget-group/pack! window))
-                               :draw (fn [this batch parent-alpha])}))
+    (group/add-actor! window (proxy [Actor] []
+                               (act [delta]
+                                 (when-let [stage (.getStage this)]
+                                   (.setText label (set-label-text! (stage/ctx stage))))
+                                 (let [^Actor this this]
+                                   (proxy-super act delta))
+                                 (widget-group/pack! window))))
     window))

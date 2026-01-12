@@ -3,8 +3,8 @@
             [moon.graphics :as graphics]
             [moon.input :as input]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor]
-            [moon.ui.stage :as stage]))
+            [moon.ui.stage :as stage])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 ; TODO to 'entity.state'  protocol or 'state' protocol?
 (def state->draw-ui-view
@@ -33,7 +33,6 @@
       (graphics/draw! graphics (f player-eid ctx)))))
 
 (defn create [_ctx]
-  (actor/create
-   {:draw (fn [this _batch _parent-alpha]
-            (player-state-handle-draws (stage/ctx (.getStage this))))
-    :act (fn [_ _delta])}))
+  (proxy [Actor] []
+    (draw [_batch _parent-alpha]
+      (player-state-handle-draws (stage/ctx (.getStage this))))))

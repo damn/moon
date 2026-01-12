@@ -2,18 +2,17 @@
   (:require [moon.entity.stats :as stats]
             [moon.graphics :as graphics]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor]
             [moon.ui.stage :as stage]
             [moon.utils :as utils]
-            [moon.val-max :as val-max]))
+            [moon.val-max :as val-max])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn- create-hp-mana-bar* [create-draws]
-  (actor/create
-   {:act (fn [_this _delta])
-    :draw (fn [actor _batch _parent-alpha]
-            (when-let [stage (.getStage actor)]
-              (graphics/draw! (:ctx/graphics (stage/ctx stage))
-                              (create-draws (stage/ctx stage)))))}))
+  (proxy [Actor] []
+    (draw [_batch _parent-alpha]
+      (when-let [stage (.getStage this)]
+        (graphics/draw! (:ctx/graphics (stage/ctx stage))
+                        (create-draws (stage/ctx stage)))))))
 
 (let [config {:rahmen-file "images/rahmen.png"
               :rahmenw 150

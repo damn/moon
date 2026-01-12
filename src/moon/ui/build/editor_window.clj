@@ -4,13 +4,13 @@
             [moon.property :as property]
             [moon.throwable :as throwable]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor]
             [moon.ui.editor.schema :as schema]
             [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.ui.widgets :as widget]
             [moon.ui.window :as window])
-  (:import (com.badlogic.gdx Input$Keys)))
+  (:import (com.badlogic.gdx Input$Keys)
+           (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn create
   [{:keys [ctx
@@ -43,14 +43,15 @@
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
-        actors [(actor/create
-                 {:act (fn [this delta]
-                         (when-let [stage (.getStage this)]
-                           (let [{:keys [ctx/input]
-                                  :as ctx} (stage/ctx stage)]
-                             (when (input/key-just-pressed? input Input$Keys/ENTER)
-                               (clicked-save-fn this ctx)))))
-                  :draw (fn [this batch parent-alpha])})]
+        actors [(proxy [Actor] []
+                  (act [delta]
+                    (when-let [stage (.getStage this)]
+                      (let [{:keys [ctx/input]
+                             :as ctx} (stage/ctx stage)]
+                        (when (input/key-just-pressed? input Input$Keys/ENTER)
+                          (clicked-save-fn this ctx))))
+                    (let [^Actor this this]
+                      (proxy-super act delta))))]
         save-button (text-button/create
                      {:text "Save [LIGHT_GRAY](ENTER)[]"
                       :on-clicked clicked-save-fn

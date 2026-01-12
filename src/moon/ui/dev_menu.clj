@@ -1,23 +1,24 @@
 (ns moon.ui.dev-menu
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.group :as group]
+  (:require [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Event
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event
                                             Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn- set-label-text-actor [label text-fn]
-  (actor/create
-   {:act (fn [this delta]
-           (when-let [stage (.getStage this)]
-             (.setText label (text-fn (stage/ctx stage)))))
-    :draw (fn [this batch parent-alpha])}))
+  (proxy [Actor] []
+    (act [delta]
+      (when-let [stage (.getStage this)]
+        (.setText label (text-fn (stage/ctx stage))))
+      (let [^Actor this this]
+        (proxy-super act delta)))))
 
 (defn add-upd-label!
   ([skin table text-fn icon]
