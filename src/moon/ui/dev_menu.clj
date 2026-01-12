@@ -1,6 +1,5 @@
 (ns moon.ui.dev-menu
   (:require [moon.ui.actor :as actor]
-            [moon.ui.cell :as cell]
             [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.stage :as stage]
@@ -27,11 +26,11 @@
                     {:rows [[{:actor (image/create {:image/object icon})}
                              label]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
-     (cell/expand-x! (cell/right! (table/add! table sub-table)))))
+     (.expandX (.right (table/add! table sub-table)))))
   ([skin table text-fn]
    (let [label (Label. "" ^Skin skin)]
      (group/add-actor! table (set-label-text-actor label text-fn))
-     (cell/expand-x! (cell/right! (table/add! table label))))))
+     (.expandX (.right (table/add! table label))))))
 
 (defn- create-window [skin label items]
   (window/create

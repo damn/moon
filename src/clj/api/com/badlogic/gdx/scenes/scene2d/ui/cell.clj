@@ -1,11 +1,5 @@
-(ns moon.ui.cell ; integrate/to table
+(ns clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
-
-(defn right! [^Cell cell]
-  (.right cell))
-
-(defn expand-x! [^Cell cell]
-  (.expandX cell))
 
 (defn set-opts! [^Cell cell opts]
   (doseq [[option arg] opts]
