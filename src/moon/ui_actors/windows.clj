@@ -1,5 +1,5 @@
 (ns moon.ui-actors.windows
-  (:require [moon.ui.group :as group]))
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]))
 
 (defn create
   [ctx actors]

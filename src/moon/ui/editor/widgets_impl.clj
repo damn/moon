@@ -7,14 +7,12 @@
             [moon.ui.editor.overview-window :as overview-window]
             [moon.ui.editor.property :as property]
             [moon.ui.editor.schema :refer [create value]]
-            [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.image-button :as image-button]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.tooltip :as tooltip]
-            [moon.ui.widget-group :as widget-group]
             [moon.ui.widgets :as widgets]
             [moon.ui.window :as window]
             [moon.utils :as utils])
@@ -93,9 +91,9 @@
    property-type
    property-ids]
   (let [redo-rows (fn [ctx property-ids]
-                    (group/clear-children! table)
+                    (.clearChildren table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (widget-group/pack! (window/find-ancestor table)))]
+                    (.pack (window/find-ancestor table)))]
     (table/add-rows!
      table
      [[{:actor (text-button/create
@@ -138,7 +136,7 @@
     table))
 
 (defmethod value :s/one-to-many [_  widget _schemas]
-  (->> (group/children widget)
+  (->> (.getChildren widget)
        (keep Actor/.getUserObject)
        set))
 
@@ -150,9 +148,9 @@
    property-type
    property-id]
   (let [redo-rows (fn [ctx id]
-                    (group/clear-children! table)
+                    (.clearChildren table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (widget-group/pack! (window/find-ancestor table)))]
+                    (.pack (window/find-ancestor table)))]
     (table/add-rows!
      table
      [[(when-not property-id
@@ -197,7 +195,7 @@
     table))
 
 (defmethod value :s/one-to-one [_  widget _schemas]
-  (->> (group/children widget)
+  (->> (.getChildren widget)
        (keep Actor/.getUserObject)
        first))
 
@@ -205,10 +203,10 @@
 
 (defn- rebuild-sound-widget! [table sound-name]
   (fn [actor {:keys [ctx/skin]}]
-    (group/clear-children! table)
+    (.clearChildren table)
     (table/add-rows! table [(sound-columns skin table sound-name)])
     (.remove (window/find-ancestor actor))
-    (widget-group/pack! (window/find-ancestor table))
+    (.pack (window/find-ancestor table))
     (let [[k _] (Actor/.getUserObject table)]
       (.setUserObject table [k sound-name]))))
 

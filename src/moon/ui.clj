@@ -1,7 +1,6 @@
 (ns moon.ui ; TODO delete and upfactor!? its just 'stage' ? ctx.stage ? (moon.ctx.stage protocols?)
   (:require [clojure.repl]
             [moon.ui.action-bar :as action-bar]
-            [moon.ui.group :as group]
             [moon.ui.inventory :as inventory-window]
             [moon.ui.message :as message]
             [moon.ui.stage :as stage]
@@ -52,7 +51,7 @@
 (defn- stage-find [stage k]
   (-> stage
       stage/root
-      (group/find-actor k)))
+      (.findActor k)))
 
 (extend-type moon.Stage
   UserInterface
@@ -85,19 +84,19 @@
   (action-bar-selected-skill [this]
     (-> this
         stage/root
-        (group/find-actor "moon.ui.action-bar")
+        (.findActor "moon.ui.action-bar")
         action-bar/selected-skill))
 
   (inventory-window-visible? [stage]
     (-> stage
         (stage-find "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.inventory")
+        (.findActor "moon.ui.windows.inventory")
         Actor/.isVisible))
 
   (toggle-inventory-visible! [stage]
     (-> stage
         (stage-find "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.inventory")
+        (.findActor "moon.ui.windows.inventory")
         toggle-visible!))
 
   ; no window movable type cursor appears here like in player idle
@@ -107,7 +106,7 @@
   (show-modal-window! [stage skin ui-viewport {:keys [title text button-text on-click]}]
     (assert (not (-> stage
                      stage/root
-                     (group/find-actor "moon.ui.modal-window"))))
+                     (.findActor "moon.ui.modal-window"))))
     (stage/add-actor! stage
                       (window/create
                        {:title title
@@ -118,7 +117,7 @@
                                                         (.remove
                                                          (-> stage
                                                              stage/root
-                                                             (group/find-actor "moon.ui.modal-window")))
+                                                             (.findActor "moon.ui.modal-window")))
                                                         (on-click))
                                           :skin skin})}]]
                         :actor/name "moon.ui.modal-window"
@@ -130,42 +129,42 @@
   (set-item! [stage cell item-properties skin]
     (-> stage
         (stage-find "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.inventory")
+        (.findActor "moon.ui.windows.inventory")
         (inventory-window/set-item! cell item-properties skin)))
 
   (remove-item! [stage inventory-cell]
     (-> stage
         (stage-find "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.inventory")
+        (.findActor "moon.ui.windows.inventory")
         (inventory-window/remove-item! inventory-cell)))
 
   (add-skill! [stage skill-properties skin]
     (-> stage
         stage/root
-        (group/find-actor "moon.ui.action-bar")
+        (.findActor "moon.ui.action-bar")
         (action-bar/add-skill! skill-properties skin)))
 
   (remove-skill! [stage skill-id]
     (-> stage
         stage/root
-        (group/find-actor "moon.ui.action-bar")
+        (.findActor "moon.ui.action-bar")
         (action-bar/remove-skill! skill-id)))
 
   (show-text-message! [stage message]
     (-> stage
         stage/root
-        (group/find-actor "player-message")
+        (.findActor "player-message")
         (message/show! message)))
 
   (toggle-entity-info-window! [stage]
     (-> stage
         (stage-find "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.entity-info")
+        (.findActor "moon.ui.windows.entity-info")
         toggle-visible!))
 
   (close-all-windows! [stage]
     (->> (stage-find stage "moon.ui.windows")
-         group/children
+         .getChildren
          (run! #(Actor/.setVisible % false))))
 
   (show-error-window! [stage skin throwable]

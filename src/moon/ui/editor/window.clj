@@ -5,11 +5,9 @@
             [moon.schemas :as schemas]
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.schema :as schema]
-            [moon.ui.group :as group]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
-            [moon.ui.widget-group :as widget-group]
             [moon.ui.window :as window]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
@@ -18,7 +16,7 @@
 
 (defn- map-widget-table-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? Actor/.getUserObject) (group/children table))
+        (for [widget (filter (comp vector? Actor/.getUserObject) (.getChildren table))
               :let [[k _] (Actor/.getUserObject widget)]]
           [k (schema/value (get schemas k) widget schemas)])))
 
@@ -34,11 +32,11 @@
     :as ctx}]
   (let [window (-> stage
                    stage/root
-                   (group/find-actor "moon.ui.editor.window"))
+                   (.findActor "moon.ui.editor.window"))
         map-widget-table (-> window
-                             (group/find-actor "moon.ui.widget.scroll-pane-table")
-                             (group/find-actor "scroll-pane-table")
-                             (group/find-actor "moon.db.schema.map.ui.widget"))
+                             (.findActor "moon.ui.widget.scroll-pane-table")
+                             (.findActor "scroll-pane-table")
+                             (.findActor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (.remove window)
     (stage/add-actor! stage (editor-window/create
@@ -65,7 +63,7 @@
                                                (.remove (first (filter (fn [actor]
                                                                          (and (Actor/.getUserObject actor)
                                                                               (= k ((Actor/.getUserObject actor) 0))))
-                                                                       (group/children table))))
+                                                                       (.getChildren table))))
                                                (rebuild! ctx))
                                  :skin skin}))
                       :left? true}
@@ -117,7 +115,7 @@
                                                                                   map-widget-table)])
                                 (rebuild! ctx))
                   :skin skin})}]))
-    (widget-group/pack! window)
+    (.pack window)
     window))
 
 (defn- horiz-sep [colspan]

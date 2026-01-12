@@ -1,6 +1,5 @@
 (ns moon.ui.action-bar
-  (:require [moon.ui.group :as group]
-            [moon.ui.image-button :as image-button]
+  (:require [moon.ui.image-button :as image-button]
             [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup
@@ -26,7 +25,7 @@
     :fill-parent? true}))
 
 (defn- get-data [action-bar]
-  (let [group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")]
+  (let [group (.findActor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
      :button-group (.getUserObject group)}))
 
@@ -47,7 +46,7 @@
                  :drawable/scale 2
                  :tooltip tooltip-text
                  :skin skin})]
-    (group/add-actor! horizontal-group button)
+    (.addActor horizontal-group button)
     (ButtonGroup/.add button-group ^Button button)
     nil))
 
