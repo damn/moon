@@ -16,7 +16,6 @@
             [moon.inventory]
             [moon.timer :as timer]
             [moon.ui :as ui]
-            [moon.ui.stage :as stage]
             [moon.world :as world]
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
@@ -25,7 +24,8 @@
                              Files
                              Input)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (moon Stage)))
 
 (defn- call-world-fn
   [world-fn creature-properties graphics]
@@ -115,7 +115,7 @@
                     :ctx/skin skin})]
     (Input/.setInputProcessor (app/input app) stage)
     (doseq [actor (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) (:ui/actors config))]
-      (stage/add-actor! stage actor))
+      (.addActor stage actor))
     (let [world-fn-result (call-world-fn (:world config)
                                          (db/all-raw db :properties/creatures)
                                          graphics)

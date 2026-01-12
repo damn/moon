@@ -1,6 +1,5 @@
 (ns moon.ui.message
   (:require [moon.graphics :as graphics]
-            [moon.ui.stage :as stage]
             [moon.viewport :as viewport])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
@@ -16,10 +15,10 @@
   (doto (proxy [Actor] []
           (draw [_batch _parent-alpha]
             (when-let [stage (.getStage this)]
-              (graphics/draw! (:ctx/graphics (stage/ctx stage))
+              (graphics/draw! (:ctx/graphics (.ctx stage))
                               [(draw-message (Actor/.getUserObject this)
-                                             (viewport/world-width  (stage/viewport stage))
-                                             (viewport/world-height (stage/viewport stage)))])))
+                                             (viewport/world-width  (.getViewport stage))
+                                             (viewport/world-height (.getViewport stage)))])))
           (act [delta]
             (let [state (Actor/.getUserObject this)]
               (when (:text @state)

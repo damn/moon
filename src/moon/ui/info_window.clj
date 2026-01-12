@@ -1,6 +1,5 @@
 (ns moon.ui.info-window
-  (:require [moon.ui.stage :as stage]
-            [moon.ui.window :as window])
+  (:require [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
@@ -23,8 +22,8 @@
     (.addActor window (proxy [Actor] []
                         (act [delta]
                           (when-let [stage (.getStage this)]
-                            (.setText label (set-label-text! (stage/ctx stage))))
+                            (.setText label (set-label-text! (.ctx stage))))
+                          (.pack window)
                           (let [^Actor this this]
-                            (proxy-super act delta))
-                          (.pack window))))
+                            (proxy-super act delta)))))
     window))

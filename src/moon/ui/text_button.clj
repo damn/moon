@@ -1,9 +1,9 @@
 (ns moon.ui.text-button
-  (:require [moon.ui.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
+           (moon Stage)))
 
 (defn create
   ([text skin]
@@ -17,4 +17,4 @@
      (.addListener
       (proxy [ChangeListener] []
         (changed [event actor]
-          (on-clicked actor (stage/ctx (Event/.getStage event)))))))))
+          (on-clicked actor (.ctx ^Stage (Event/.getStage event)))))))))

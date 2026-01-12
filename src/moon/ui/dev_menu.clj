@@ -1,6 +1,5 @@
 (ns moon.ui.dev-menu
   (:require [moon.ui.image :as image]
-            [moon.ui.stage :as stage]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
@@ -15,7 +14,7 @@
   (proxy [Actor] []
     (act [delta]
       (when-let [stage (.getStage this)]
-        (.setText label (text-fn (stage/ctx stage))))
+        (.setText label (text-fn (.ctx stage))))
       (let [^Actor this this]
         (proxy-super act delta)))))
 
@@ -42,7 +41,7 @@
                        (.addListener
                         (proxy [ChangeListener] []
                           (changed [event actor]
-                            (on-click actor (stage/ctx (Event/.getStage event)))))))})]}))
+                            (on-click actor (.ctx (Event/.getStage event)))))))})]}))
 
 (defn- main-table [skin menus update-labels]
   (let [table (table/create

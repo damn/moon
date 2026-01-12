@@ -1,6 +1,5 @@
 (ns moon.ui.image-button
-  (:require [moon.ui.stage :as stage]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.tooltip :as tooltip])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
@@ -24,7 +23,7 @@
     (when on-clicked
       (.addListener image-button (proxy [ChangeListener] []
                                    (changed [event actor]
-                                     (on-clicked actor (stage/ctx (Event/.getStage event)))))))
+                                     (on-clicked actor (.ctx (Event/.getStage event)))))))
     (when-let [tooltip (:tooltip opts)]
       (tooltip/add! image-button
                     tooltip

@@ -2,8 +2,7 @@
   (:require [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.graphics :as graphics]
             [moon.input :as input]
-            [moon.ui :as ui]
-            [moon.ui.stage :as stage])
+            [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 ; TODO to 'entity.state'  protocol or 'state' protocol?
@@ -35,4 +34,4 @@
 (defn create [_ctx]
   (proxy [Actor] []
     (draw [_batch _parent-alpha]
-      (player-state-handle-draws (stage/ctx (.getStage this))))))
+      (player-state-handle-draws (.ctx (.getStage this))))))

@@ -2,7 +2,6 @@
   (:require [moon.entity.stats :as stats]
             [moon.graphics :as graphics]
             [moon.ui :as ui]
-            [moon.ui.stage :as stage]
             [moon.utils :as utils]
             [moon.val-max :as val-max])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
@@ -11,8 +10,8 @@
   (proxy [Actor] []
     (draw [_batch _parent-alpha]
       (when-let [stage (.getStage this)]
-        (graphics/draw! (:ctx/graphics (stage/ctx stage))
-                        (create-draws (stage/ctx stage)))))))
+        (graphics/draw! (:ctx/graphics (.ctx stage))
+                        (create-draws (.ctx stage)))))))
 
 (let [config {:rahmen-file "images/rahmen.png"
               :rahmenw 150

@@ -5,14 +5,14 @@
             [moon.schemas :as schemas]
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.schema :as schema]
-            [moon.ui.stage :as stage]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)))
+                                               Skin)
+           (moon Stage)))
 
 (defn- map-widget-table-value [table schemas]
   (into {}
@@ -31,7 +31,7 @@
            ctx/stage]
     :as ctx}]
   (let [window (-> stage
-                   stage/root
+                   .getRoot
                    (.findActor "moon.ui.editor.window"))
         map-widget-table (-> window
                              (.findActor "moon.ui.widget.scroll-pane-table")
@@ -39,7 +39,7 @@
                              (.findActor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (.remove window)
-    (stage/add-actor! stage (editor-window/create
+    (Stage/.addActor stage (editor-window/create
                              {:ctx ctx
                               :property property}))))
 
@@ -157,7 +157,7 @@
                            :on-clicked (fn [_actor {:keys [ctx/db
                                                            ctx/stage
                                                            ctx/skin]}]
-                                         (stage/add-actor!
+                                         (Stage/.addActor
                                           stage
                                           (add-component-window
                                            {:skin skin

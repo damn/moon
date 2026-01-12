@@ -5,12 +5,12 @@
             [moon.throwable :as throwable]
             [moon.ui :as ui]
             [moon.ui.editor.schema :as schema]
-            [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.ui.widgets :as widget]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
-           (com.badlogic.gdx.scenes.scene2d Actor)))
+           (com.badlogic.gdx.scenes.scene2d Actor)
+           (moon Stage)))
 
 (defn create
   [{:keys [ctx
@@ -34,7 +34,7 @@
                               (try
                                (let [new-ctx (update ctx :ctx/db f)
                                      stage (.getStage actor)]
-                                 (stage/set-ctx! stage new-ctx))
+                                 (set! (.ctx stage) new-ctx))
                                (.remove (window/find-ancestor actor))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
@@ -47,7 +47,7 @@
                   (act [delta]
                     (when-let [stage (.getStage this)]
                       (let [{:keys [ctx/input]
-                             :as ctx} (stage/ctx stage)]
+                             :as ctx} (.ctx stage)]
                         (when (input/key-just-pressed? input Input$Keys/ENTER)
                           (clicked-save-fn this ctx))))
                     (let [^Actor this this]

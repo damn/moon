@@ -6,7 +6,6 @@
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
             [moon.ui.text-button :as text-button]
-            [moon.ui.stage :as stage]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.viewport :as viewport]
             [moon.world-fns.creature-tiles])
@@ -24,7 +23,8 @@
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
-           (com.badlogic.gdx.utils ScreenUtils)))
+           (com.badlogic.gdx.utils ScreenUtils)
+           (moon Stage)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -81,12 +81,12 @@
                            :let [on-clicked (fn [actor ctx]
                                               (let [stage (.getStage actor)
                                                     new-ctx (generate-level ctx level-fn)]
-                                                (stage/set-ctx! stage new-ctx)))]]
+                                                (set! (.ctx stage) new-ctx)))]]
                        [{:actor (doto (text-button/create (str "Generate " level-fn) skin)
                                   (.addListener
                                    (proxy [ChangeListener] []
                                      (changed [event actor]
-                                       (on-clicked actor (stage/ctx (Event/.getStage event)))))))}]))
+                                       (on-clicked actor (.ctx (Event/.getStage event)))))))}]))
     (.pack window)
     window))
 
@@ -97,7 +97,7 @@
   (let [skin (Skin. (.internal Gdx/files "uiskin.json")) ; TODO dispose
         ui-viewport (viewport/create 1440 900 (OrthographicCamera.))
         sprite-batch (SpriteBatch.)
-        stage (stage/create ui-viewport sprite-batch)
+        stage (Stage. ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
@@ -166,17 +166,17 @@
 (defn render!
   [{:keys [ctx/stage]
     :as ctx}]
-  (let [ctx (if-let [new-ctx (stage/ctx stage)]
+  (let [ctx (if-let [new-ctx (.ctx stage)]
               new-ctx
               ctx)]
     (ScreenUtils/clear Color/BLACK)
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)
-    (stage/set-ctx! stage ctx)
-    (stage/act! stage)
-    (stage/draw! stage)
-    (stage/ctx stage)))
+    (set! (.ctx stage) ctx)
+    (.act stage)
+    (.draw stage)
+    (.ctx stage)))
 
 (defn resize!
   [{:keys [ctx/ui-viewport

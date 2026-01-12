@@ -9,7 +9,6 @@
             [moon.ui.editor.schema :refer [create value]]
             [moon.ui.image :as image]
             [moon.ui.image-button :as image-button]
-            [moon.ui.stage :as stage]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.tooltip :as tooltip]
@@ -22,7 +21,8 @@
                                                SelectBox
                                                Label
                                                Skin
-                                               TextField)))
+                                               TextField)
+           (moon Stage)))
 
 (defmethod create :default
   [_ v {:keys [^Skin ctx/skin]}]
@@ -102,7 +102,7 @@
                                                  ctx/graphics
                                                  ctx/skin
                                                  ctx/stage]}]
-                               (stage/add-actor!
+                               (Stage/.addActor
                                 stage
                                 (overview-window/create
                                  {:db db
@@ -160,7 +160,7 @@
                                                    ctx/graphics
                                                    ctx/skin
                                                    ctx/stage]}]
-                                 (stage/add-actor!
+                                 (Stage/.addActor
                                   stage
                                   (overview-window/create
                                    {:db db
@@ -214,7 +214,7 @@
   (fn [_actor {:keys [ctx/audio
                       ctx/skin
                       ctx/stage]}]
-    (stage/add-actor! stage
+    (Stage/.addActor stage
                       (widgets/scroll-pane-window
                        {:skin skin
                         :viewport-height (ui/viewport-width stage)

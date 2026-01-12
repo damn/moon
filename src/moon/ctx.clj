@@ -13,14 +13,14 @@
             [moon.timer :as timer]
             [moon.tx-handler :as tx-handler]
             [moon.ui :as ui]
-            [moon.ui.stage :as stage]
             [moon.utils :as utils]
             [moon.world :as world]
             [moon.world.content-grid :as content-grid]
             [moon.world.grid :as grid]
             [moon.world.info :as info]
             [qrecord.core :as q]
-            [reduce-fsm :as fsm]))
+            [reduce-fsm :as fsm])
+  (:import (moon Stage)))
 
 (def reaction-txs-fn-map
   {
@@ -41,7 +41,7 @@
                                            ctx/stage]
                                     :as ctx}
                                    opts]
-                                  (ui/show-modal-window! stage skin (stage/viewport stage) opts)
+                                  (ui/show-modal-window! stage skin (Stage/.getViewport stage) opts)
                                   ctx)
    :tx/set-item                 (fn
                                   [{:keys [ctx/graphics

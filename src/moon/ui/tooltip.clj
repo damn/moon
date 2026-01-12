@@ -1,7 +1,7 @@
 (ns moon.ui.tooltip
-  (:require [moon.ui.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               TextTooltip)))
+                                               TextTooltip)
+           (moon Stage)))
 
 (defn add! [actor tooltip-text ^Skin skin]
   (.addListener actor (TextTooltip. (str tooltip-text) skin))
@@ -9,7 +9,7 @@
                                 (when-not (string? tooltip-text)
                                   (let [actor (tooltip/target tooltip)
                                         ctx (when-let [stage (.getStage actor)]
-                                              (stage/ctx stage))]
+                                              (.ctx ^Stage stage))]
                                     (when ctx
                                       (tooltip/set-text! tooltip (tooltip-text ctx))))))
                    :target actor

@@ -7,7 +7,6 @@
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.dev-menu :as dev-menu]
             [moon.ui.editor.overview-window :as overview-window]
-            [moon.ui.stage :as stage]
             [moon.utils :as utils]
             [moon.world :as world]))
 
@@ -17,17 +16,17 @@
            ctx/skin
            ctx/stage]}
    property-type]
-  (stage/add-actor! stage
-                    (overview-window/create
-                     {:db db
-                      :graphics graphics
-                      :skin skin
-                      :property-type property-type
-                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                       (stage/add-actor! stage
-                                                         (editor-window/create
-                                                          {:ctx ctx
-                                                           :property (db/get-raw db id)})))})))
+  (.addActor stage
+             (overview-window/create
+              {:db db
+               :graphics graphics
+               :skin skin
+               :property-type property-type
+               :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                (.addActor stage
+                                           (editor-window/create
+                                            {:ctx ctx
+                                             :property (db/get-raw db id)})))})))
 
 (defn create
   [{:keys [ctx/db
@@ -57,7 +56,7 @@
                                 :on-click (fn [actor {:keys [ctx/stage] :as ctx}]
                                             (let [rebuild-actors! nil
                                                   #_(fn rebuild-actors! [stage ctx]
-                                                      (stage/clear! stage)
+                                                      (.clear stage)
                                                       ((requiring-resolve 'moon.application.create.add-actors/step) ctx))
                                                   create-world nil
                                                   #_(requiring-resolve 'moon.application.create.world/step)
@@ -65,7 +64,7 @@
                                                   stage (.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                               (rebuild-actors! ui ctx)
                                               (world/dispose! (:ctx/world ctx))
-                                              (stage/set-ctx! stage (create-world ctx world-fn))))})}
+                                              (set! (.ctx stage) (create-world ctx world-fn))))})}
         update-labels [{:label "elapsed-time"
                         :update-fn (fn [ctx]
                                      (str (utils/readable-number (:world/elapsed-time (:ctx/world ctx))) " seconds"))

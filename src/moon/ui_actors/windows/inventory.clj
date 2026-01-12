@@ -4,7 +4,6 @@
             [moon.ui :as ui]
             [moon.ui.image :as image]
             [moon.ui.stack :as stack]
-            [moon.ui.stage :as stage]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics Color)
@@ -21,7 +20,7 @@
     (draw [_batch _parent-alpha]
       (when-let [stage (.getStage this)]
         (let [{:keys [ctx/graphics
-                      ctx/world]} (stage/ctx stage)]
+                      ctx/world]} (.ctx stage)]
           ; TODO here just a simple callback ?
           (graphics/draw! graphics
                           (let [[x y] (:graphics/ui-mouse-position graphics)]
@@ -136,5 +135,5 @@
                                  (clicked [event x y]
                                    ((requiring-resolve clicked-inventory-cell)
                                     cell
-                                    (stage/ctx (Event/.getStage event))))))
+                                    (.ctx (Event/.getStage event))))))
       :slot->texture-region slot->texture-region})))

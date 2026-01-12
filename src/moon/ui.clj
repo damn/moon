@@ -3,7 +3,6 @@
             [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory :as inventory-window]
             [moon.ui.message :as message]
-            [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
             [moon.ui.utils :as ui-utils]
             [moon.ui.widgets :as widgets]
@@ -12,7 +11,8 @@
             [moon.viewport :as viewport])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)))
+                                               Skin)
+           (moon Stage)))
 
 (defprotocol UserInterface
   (dispose! [_])
@@ -43,14 +43,14 @@
 (defn create!
   [{:keys [graphics/batch
            graphics/ui-viewport]}]
-  (stage/create ui-viewport batch))
+  (Stage. ui-viewport batch))
 
 (defn- toggle-visible! [^Actor actor]
   (.setVisible actor (not (.isVisible actor))))
 
 (defn- stage-find [stage k]
   (-> stage
-      stage/root
+      .getRoot
       (.findActor k)))
 
 (extend-type moon.Stage
@@ -60,30 +60,30 @@
     )
 
   (show-data-viewer! [this data skin]
-    (stage/add-actor! this
-                      (widgets/data-viewer-window
-                       {:title "Data View"
-                        :data data
-                        :width 500
-                        :height 500
-                        :skin skin})))
+    (.addActor this
+               (widgets/data-viewer-window
+                {:title "Data View"
+                 :data data
+                 :width 500
+                 :height 500
+                 :skin skin})))
 
   (viewport-width  [stage]
-    (viewport/world-width (stage/viewport stage)))
+    (viewport/world-width (.getViewport stage)))
 
   (viewport-height [stage]
-    (viewport/world-height (stage/viewport stage)))
+    (viewport/world-height (.getViewport stage)))
 
   (get-ctx [this]
-    (stage/ctx this))
+    (.ctx this))
 
   (mouseover-actor [this position]
-    (let [position (viewport/unproject (stage/viewport this) position)]
-      (stage/hit this position true)))
+    (let [[x y] (viewport/unproject (.getViewport this) position)]
+      (.hit this x y true)))
 
   (action-bar-selected-skill [this]
     (-> this
-        stage/root
+        .getRoot
         (.findActor "moon.ui.action-bar")
         action-bar/selected-skill))
 
@@ -105,26 +105,26 @@
   ; hmmm interesting ... can disable @ item in cursor  / moving / etc.
   (show-modal-window! [stage skin ui-viewport {:keys [title text button-text on-click]}]
     (assert (not (-> stage
-                     stage/root
+                     .getRoot
                      (.findActor "moon.ui.modal-window"))))
-    (stage/add-actor! stage
-                      (window/create
-                       {:title title
-                        :rows [[{:actor (Label. text ^Skin skin)}]
-                               [{:actor (text-button/create
-                                         {:text button-text
-                                          :on-clicked (fn [_actor _ctx]
-                                                        (.remove
-                                                         (-> stage
-                                                             stage/root
-                                                             (.findActor "moon.ui.modal-window")))
-                                                        (on-click))
-                                          :skin skin})}]]
-                        :actor/name "moon.ui.modal-window"
-                        :modal? true
-                        :actor/center-position [(/ (viewport/world-width  ui-viewport) 2)
-                                                (* (viewport/world-height ui-viewport) (/ 3 4))]
-                        :pack? true})))
+    (.addActor stage
+               (window/create
+                {:title title
+                 :rows [[{:actor (Label. text ^Skin skin)}]
+                        [{:actor (text-button/create
+                                  {:text button-text
+                                   :on-clicked (fn [_actor _ctx]
+                                                 (.remove
+                                                  (-> stage
+                                                      .getRoot
+                                                      (.findActor "moon.ui.modal-window")))
+                                                 (on-click))
+                                   :skin skin})}]]
+                 :actor/name "moon.ui.modal-window"
+                 :modal? true
+                 :actor/center-position [(/ (viewport/world-width  ui-viewport) 2)
+                                         (* (viewport/world-height ui-viewport) (/ 3 4))]
+                 :pack? true})))
 
   (set-item! [stage cell item-properties skin]
     (-> stage
@@ -140,19 +140,19 @@
 
   (add-skill! [stage skill-properties skin]
     (-> stage
-        stage/root
+        .getRoot
         (.findActor "moon.ui.action-bar")
         (action-bar/add-skill! skill-properties skin)))
 
   (remove-skill! [stage skill-id]
     (-> stage
-        stage/root
+        .getRoot
         (.findActor "moon.ui.action-bar")
         (action-bar/remove-skill! skill-id)))
 
   (show-text-message! [stage message]
     (-> stage
-        stage/root
+        .getRoot
         (.findActor "player-message")
         (message/show! message)))
 
@@ -168,18 +168,18 @@
          (run! #(Actor/.setVisible % false))))
 
   (show-error-window! [stage skin throwable]
-    (stage/add-actor! stage
-                      (window/create
-                       {:title "Error"
-                        :rows [[{:actor (Label. (binding [*print-level* 3]
-                                                  (utils/with-err-str
-                                                    (clojure.repl/pst throwable)))
-                                                ^Skin skin)}]]
-                        :modal? true
-                        :close-button? true
-                        :close-on-escape? true
-                        :center? true
-                        :pack? true})))
+    (.addActor stage
+               (window/create
+                {:title "Error"
+                 :rows [[{:actor (Label. (binding [*print-level* 3]
+                                           (utils/with-err-str
+                                             (clojure.repl/pst throwable)))
+                                         ^Skin skin)}]]
+                 :modal? true
+                 :close-button? true
+                 :close-on-escape? true
+                 :center? true
+                 :pack? true})))
 
   (actor-information [_ actor]
     (let [inventory-slot (inventory-cell-with-item? actor)]
