@@ -17,9 +17,9 @@
                             (.space 2)
                             (.pad 2))
                       (.setName "moon.ui.action-bar.horizontal-group")
-                      (actor/set-user-object! (doto (ButtonGroup.)
-                                                (.setMaxCheckCount 1)
-                                                (.setMinCheckCount 0))))
+                      (.setUserObject (doto (ButtonGroup.)
+                                        (.setMaxCheckCount 1)
+                                        (.setMinCheckCount 0))))
              :expand? true
              :bottom? true}]]
     :actor/name "moon.ui.action-bar"

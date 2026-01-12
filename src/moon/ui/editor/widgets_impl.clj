@@ -210,7 +210,7 @@
     (actor/remove! (window/find-ancestor actor))
     (widget-group/pack! (window/find-ancestor table))
     (let [[k _] (actor/user-object table)]
-      (actor/set-user-object! table [k sound-name]))))
+      (.setUserObject table [k sound-name]))))
 
 (defn- open-select-sounds-handler [table]
   (fn [_actor {:keys [ctx/audio

@@ -30,5 +30,5 @@
     :actor/user-object (atom nil)}))
 
 (defn show! [this text]
-  (actor/set-user-object! this (atom {:text text
-                                      :counter 0})))
+  (.setUserObject this (atom {:text text
+                              :counter 0})))

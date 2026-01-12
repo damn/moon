@@ -25,7 +25,7 @@
 (defn- build-value-widget [ctx schema k v]
   (let [widget (schema/create schema v ctx)]
     ; FIXME assert no user object !
-    (actor/set-user-object! widget [k v])
+    (.setUserObject widget [k v])
     widget))
 
 (defn- rebuild!
