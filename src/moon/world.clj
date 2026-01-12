@@ -1,3 +1,8 @@
+; moon.ctx.world
+; moon.ctx.audio
+; moon.ctx.graphics
+; => ctx fns use protocols
+; moon.create.... also exists
 (ns moon.world
   (:require [clojure.grid2d :as g2d]
             [moon.utils :as utils]

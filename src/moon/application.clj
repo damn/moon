@@ -1,37 +1,12 @@
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.audio :as audio]
-            [moon.entity.state-impl]
-            [moon.graphics :as graphics]
-            [moon.ui :as ui]
-            [moon.world :as world])
+            [moon.entity.state-impl])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.utils Disposable))
+                                             Lwjgl3ApplicationConfiguration))
   (:gen-class))
-
-(defn- dispose!
-  [{:keys [ctx/audio
-           ctx/graphics
-           ctx/skin
-           ctx/stage
-           ctx/world]
-    :as ctx}]
-  (audio/dispose! audio)
-  (graphics/dispose! graphics)
-  (ui/dispose! stage)
-  (Disposable/.dispose skin)
-  (world/dispose! world)
-  ctx)
-
-(defn- resize!
-  [{:keys [ctx/graphics] :as ctx} width height]
-  (graphics/update-ui-viewport! graphics width height)
-  (graphics/update-world-vp! graphics width height)
-  ctx)
 
 (def state (atom nil))
 
@@ -45,24 +20,30 @@
                       (:height (:window config)))
     (.setForegroundFPS (:fps config))))
 
-(defn app-listener [{:keys [create! render!]}]
-  (let [render! (requiring-resolve render!)]
-    (reify ApplicationListener
-      (create [_]
-        (reset! state ((requiring-resolve create!)
-                       Gdx/app
-                       (->> "config.edn" io/resource slurp edn/read-string))))
+(defn app-listener
+  [{:keys [create!
+           dispose!
+           render!
+           resize!]}]
+(let [create! (requiring-resolve create!)
+      dispose! (requiring-resolve dispose!)
+      render! (requiring-resolve render!)
+      resize! (requiring-resolve resize!)
+      config (->> "config.edn" io/resource slurp edn/read-string)]
+  (reify ApplicationListener
+    (create [_]
+      (reset! state (create! Gdx/app config)))
 
-      (dispose [_]
-        (dispose! @state))
+    (dispose [_]
+      (dispose! @state))
 
-      (render [_]
-        (swap! state render!))
+    (render [_]
+      (swap! state render!))
 
-      (resize [_ width height]
-        (resize! @state width height))
+    (resize [_ width height]
+      (resize! @state width height))
 
-      (pause [_])
+    (pause [_])
 
       (resume [_]))))
 

@@ -1,7 +1,7 @@
 ; this is just the create the game step ! ... da haegnt so viel dran ... weird !
 ; just the function which creates data .. ?
 ; _how_ it is created not complect with the processing we do on a piece of data
-(ns moon.create
+(ns moon.listener.create
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.animation]
@@ -16,8 +16,6 @@
             [moon.inventory]
             [moon.timer :as timer]
             [moon.ui :as ui]
-            [moon.ui.editor.widgets-impl]
-            [moon.ui.editor.window]
             [moon.ui.stage :as stage]
             [moon.world :as world]
             [moon.world-fns.creature-tiles]

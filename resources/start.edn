@@ -3,6 +3,8 @@
                                              :window {:width 1440
                                                       :height 900}
                                              :fps 60}]
- :listener [moon.application/app-listener {:create! moon.create/do!
-                                           :render! moon.render/do!}]
+ :listener [moon.application/app-listener {:create!  moon.listener.create/do!
+                                           :render!  moon.listener.render/do!
+                                           :dispose! moon.listener.dispose/do!
+                                           :resize!  moon.listener.resize/do!}]
  }

@@ -1,3 +1,7 @@
+; part of world protocol ...
+; are we accessing it inside world too ?
+; do we need split context?
+; ???
 (ns moon.world.raycaster
   (:require [clojure.math.raycaster :as raycaster]
             [clojure.math.vector2 :as v]))
@@ -5,6 +9,7 @@
 (defn blocked? [{:keys [world/raycaster]} start target]
   (raycaster/blocked? raycaster start target))
 
+; 'moon.path'
 (defn- create-double-ray-endpositions
   [[start-x start-y]
    [target-x target-y]
