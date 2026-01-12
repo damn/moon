@@ -1,12 +1,12 @@
 (ns moon.graphics
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [clj.api.space.earlygrey.shape-drawer :as sd]
             [clojure.math :as math]
             [clojure.string :as str]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
-            [moon.tm-renderer :as tm-renderer]
-            [moon.viewport :as viewport])
+            [moon.tm-renderer :as tm-renderer])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics Color
                                       Colors
@@ -23,7 +23,9 @@
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.utils Align
                                    Disposable
-                                   ScreenUtils)))
+                                   ScreenUtils)
+           (com.badlogic.gdx.utils.viewport FitViewport
+                                            Viewport)))
 
 (defprotocol PGraphics
   (unproject-ui [_ position])
@@ -224,7 +226,7 @@
     (viewport/unproject ui-viewport position))
 
   (update-ui-viewport! [{:keys [graphics/ui-viewport]} width height]
-    (viewport/update! ui-viewport width height {:center? true}))
+    (FitViewport/.update ui-viewport width height true))
 
   (dispose!
     [{:keys [graphics/batch
@@ -278,34 +280,34 @@
                        color-setter))
 
   (position [{:keys [graphics/world-viewport]}]
-    (camera/position (viewport/camera world-viewport)))
+    (camera/position (Viewport/.getCamera world-viewport)))
 
   (visible-tiles [{:keys [graphics/world-viewport]}]
-    (camera/visible-tiles (viewport/camera world-viewport)))
+    (camera/visible-tiles (Viewport/.getCamera world-viewport)))
 
   (frustum [{:keys [graphics/world-viewport]}]
-    (camera/frustum (viewport/camera world-viewport)))
+    (camera/frustum (Viewport/.getCamera world-viewport)))
 
   (zoom [{:keys [graphics/world-viewport]}]
-    (camera/zoom (viewport/camera world-viewport)))
+    (camera/zoom (Viewport/.getCamera world-viewport)))
 
   (change-zoom! [{:keys [graphics/world-viewport]} amount]
-    (camera/inc-zoom! (viewport/camera world-viewport) amount))
+    (camera/inc-zoom! (Viewport/.getCamera world-viewport) amount))
 
   (set-position! [{:keys [graphics/world-viewport]} position]
-    (camera/set-position! (viewport/camera world-viewport) position))
+    (camera/set-position! (Viewport/.getCamera world-viewport) position))
 
   (world-vp-width [{:keys [graphics/world-viewport]}]
-    (viewport/world-width world-viewport))
+    (Viewport/.getWorldWidth world-viewport))
 
   (world-vp-height [{:keys [graphics/world-viewport]}]
-    (viewport/world-height world-viewport))
+    (Viewport/.getWorldHeight world-viewport))
 
   (unproject-world [{:keys [graphics/world-viewport]} position]
     (viewport/unproject world-viewport position))
 
   (update-world-vp! [{:keys [graphics/world-viewport]} width height]
-    (viewport/update! world-viewport width height {:center? false}))
+    (Viewport/.update world-viewport width height false))
 
   (draw-on-world-vp!
     [{:keys [^Batch graphics/batch
@@ -319,7 +321,7 @@
     ; change it back !
     (.setColor batch 1 1 1 1)
     ;
-    (.setProjectionMatrix batch (camera/combined (viewport/camera world-viewport)))
+    (.setProjectionMatrix batch (camera/combined (Viewport/.getCamera world-viewport)))
     (.begin batch)
     (sd/with-line-width shape-drawer world-unit-scale
       (reset! unit-scale world-unit-scale)
@@ -389,12 +391,12 @@
         (assoc :graphics/unit-scale (atom 1)
                :graphics/world-unit-scale world-unit-scale)
         (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch))
-        (assoc :graphics/ui-viewport (viewport/create (:width  ui-viewport)
-                                                      (:height ui-viewport)
-                                                      (OrthographicCamera.)))
+        (assoc :graphics/ui-viewport (FitViewport. (:width  ui-viewport)
+                                                   (:height ui-viewport)
+                                                   (OrthographicCamera.)))
         (assoc :graphics/world-viewport (let [world-width  (* (:width  world-viewport) world-unit-scale)
                                               world-height (* (:height world-viewport) world-unit-scale)]
-                                          (viewport/create world-width
-                                                           world-height
-                                                           (doto (OrthographicCamera.)
-                                                             (.setToOrtho false world-width world-height))))))))
+                                          (FitViewport. world-width
+                                                        world-height
+                                                        (doto (OrthographicCamera.)
+                                                          (.setToOrtho false world-width world-height))))))))

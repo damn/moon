@@ -1,7 +1,7 @@
 (ns moon.ui.message
-  (:require [moon.graphics :as graphics]
-            [moon.viewport :as viewport])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [moon.graphics :as graphics])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn- draw-message [state vp-width vp-height]
   (when-let [text (:text @state)]
@@ -17,8 +17,8 @@
             (when-let [stage (.getStage this)]
               (graphics/draw! (:ctx/graphics (.ctx stage))
                               [(draw-message (Actor/.getUserObject this)
-                                             (viewport/world-width  (.getViewport stage))
-                                             (viewport/world-height (.getViewport stage)))])))
+                                             (Viewport/.getWorldWidth  (.getViewport stage))
+                                             (Viewport/.getWorldHeight (.getViewport stage)))])))
           (act [delta]
             (let [state (Actor/.getUserObject this)]
               (when (:text @state)

@@ -1,12 +1,11 @@
 (ns moon.levelgen
-  (:require [clojure.edn :as edn]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.db :as db]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.viewport :as viewport]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
@@ -24,6 +23,7 @@
                                                Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (com.badlogic.gdx.utils ScreenUtils)
+           (com.badlogic.gdx.utils.viewport FitViewport)
            (moon Stage)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
@@ -95,7 +95,7 @@
            ctx/graphics
            ctx/input]}]
   (let [skin (Skin. (.internal Gdx/files "uiskin.json")) ; TODO dispose
-        ui-viewport (viewport/create 1440 900 (OrthographicCamera.))
+        ui-viewport (FitViewport. 1440 900 (OrthographicCamera.))
         sprite-batch (SpriteBatch.)
         stage (Stage. ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
@@ -106,10 +106,10 @@
                 (assoc :ctx/db (db/create)))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
-                         (viewport/create world-width
-                                          world-height
-                                          (doto (OrthographicCamera.)
-                                            (.setToOrtho false world-width world-height))))
+                         (FitViewport. world-width
+                                       world-height
+                                       (doto (OrthographicCamera.)
+                                         (.setToOrtho false world-width world-height))))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport
@@ -118,7 +118,7 @@
                                                                          {:folder "resources/"
                                                                           :extensions #{"png" "bmp"}})]
                                             [path (Texture. path)]))
-                   :ctx/camera (viewport/camera world-viewport)
+                   :ctx/camera (.getCamera world-viewport)
                    :ctx/color-setter (constantly [1 1 1 1])
                    :ctx/zoom-speed 0.1
                    :ctx/camera-movement-speed 1
@@ -182,8 +182,8 @@
   [{:keys [ctx/ui-viewport
            ctx/world-viewport]}
    width height]
-  (viewport/update! ui-viewport    width height {:center? true})
-  (viewport/update! world-viewport width height {:center? false}))
+  (.update ui-viewport    width height true)
+  (.update world-viewport width height false))
 
 (def state (atom nil))
 

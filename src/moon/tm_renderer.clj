@@ -1,14 +1,14 @@
 (ns moon.tm-renderer
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [moon.viewport :as viewport])
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color])
   (:import (com.badlogic.gdx.maps MapLayers)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
+           (com.badlogic.gdx.utils.viewport Viewport)
            (moon TiledMapRenderer
                  TiledMapRenderer$ColorSetter)))
 
 (defn draw! [tiled-map-renderer world-viewport tiled-map color-setter]
   (let [^TiledMapRenderer renderer (tiled-map-renderer tiled-map)
-        camera (viewport/camera world-viewport)]
+        camera (Viewport/.getCamera world-viewport)]
     (.setColorSetter renderer (reify TiledMapRenderer$ColorSetter
                                 (apply [_ color x y]
                                   (color/float-bits (color-setter color x y)))))

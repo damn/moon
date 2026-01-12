@@ -1,5 +1,6 @@
 (ns moon.ui ; TODO delete and upfactor!? its just 'stage' ? ctx.stage ? (moon.ctx.stage protocols?)
-  (:require [clojure.repl]
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [clojure.repl]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory :as inventory-window]
             [moon.ui.message :as message]
@@ -7,11 +8,11 @@
             [moon.ui.utils :as ui-utils]
             [moon.ui.widgets :as widgets]
             [moon.ui.window :as window]
-            [moon.utils :as utils]
-            [moon.viewport :as viewport])
+            [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)
+           (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
 (defprotocol UserInterface
@@ -69,10 +70,10 @@
                  :skin skin})))
 
   (viewport-width  [stage]
-    (viewport/world-width (.getViewport stage)))
+    (Viewport/.getWorldWidth (.getViewport stage)))
 
   (viewport-height [stage]
-    (viewport/world-height (.getViewport stage)))
+    (Viewport/.getWorldHeight (.getViewport stage)))
 
   (get-ctx [this]
     (.ctx this))
@@ -122,8 +123,8 @@
                                    :skin skin})}]]
                  :actor/name "moon.ui.modal-window"
                  :modal? true
-                 :actor/center-position [(/ (viewport/world-width  ui-viewport) 2)
-                                         (* (viewport/world-height ui-viewport) (/ 3 4))]
+                 :actor/center-position [(/ (Viewport/.getWorldWidth  ui-viewport) 2)
+                                         (* (Viewport/.getWorldHeight ui-viewport) (/ 3 4))]
                  :pack? true})))
 
   (set-item! [stage cell item-properties skin]
