@@ -10,7 +10,7 @@
             [moon.ui.image :as image]
             [moon.ui.image-button :as image-button]
             [moon.ui.stage :as stage]
-            [moon.ui.table :as table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.tooltip :as tooltip]
             [moon.ui.widgets :as widgets]

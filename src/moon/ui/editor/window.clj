@@ -6,7 +6,7 @@
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.schema :as schema]
             [moon.ui.stage :as stage]
-            [moon.ui.table :as table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
             [moon.utils :as utils])

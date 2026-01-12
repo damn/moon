@@ -1,7 +1,7 @@
 (ns moon.ui.dev-menu
   (:require [moon.ui.image :as image]
             [moon.ui.stage :as stage]
-            [moon.ui.table :as table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
@@ -26,11 +26,11 @@
                     {:rows [[{:actor (image/create {:image/object icon})}
                              label]]})]
      (.addActor table (set-label-text-actor label text-fn))
-     (.expandX (.right (table/add! table sub-table)))))
+     (.expandX (.right (.add table ^Actor sub-table)))))
   ([skin table text-fn]
    (let [label (Label. "" ^Skin skin)]
      (.addActor table (set-label-text-actor label text-fn))
-     (.expandX (.right (table/add! table label))))))
+     (.expandX (.right (.add table ^Actor label))))))
 
 (defn- create-window [skin label items]
   (window/create

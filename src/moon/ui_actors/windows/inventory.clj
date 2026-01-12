@@ -5,7 +5,7 @@
             [moon.ui.image :as image]
             [moon.ui.stack :as stack]
             [moon.ui.stage :as stage]
-            [moon.ui.table :as table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)

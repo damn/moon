@@ -7,7 +7,7 @@
             [moon.tm-renderer :as tm-renderer]
             [moon.ui.text-button :as text-button]
             [moon.ui.stage :as stage]
-            [moon.ui.table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.viewport :as viewport]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
@@ -76,16 +76,17 @@
 
 (defn- edit-window [skin]
   (let [window (Window. "Edit" skin)]
-    (moon.ui.table/add-rows! window (for [level-fn level-fns
-                                         :let [on-clicked (fn [actor ctx]
-                                                            (let [stage (.getStage actor)
-                                                                  new-ctx (generate-level ctx level-fn)]
-                                                              (stage/set-ctx! stage new-ctx)))]]
-                                     [{:actor (doto (text-button/create (str "Generate " level-fn) skin)
-                                                (.addListener
-                                                 (proxy [ChangeListener] []
-                                                   (changed [event actor]
-                                                     (on-clicked actor (stage/ctx (Event/.getStage event)))))))}]))
+    (table/add-rows! window
+                     (for [level-fn level-fns
+                           :let [on-clicked (fn [actor ctx]
+                                              (let [stage (.getStage actor)
+                                                    new-ctx (generate-level ctx level-fn)]
+                                                (stage/set-ctx! stage new-ctx)))]]
+                       [{:actor (doto (text-button/create (str "Generate " level-fn) skin)
+                                  (.addListener
+                                   (proxy [ChangeListener] []
+                                     (changed [event actor]
+                                       (on-clicked actor (stage/ctx (Event/.getStage event)))))))}]))
     (.pack window)
     window))
 

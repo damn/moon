@@ -1,6 +1,6 @@
 (ns moon.ui.action-bar
   (:require [moon.ui.image-button :as image-button]
-            [moon.ui.table :as table])
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup
                                                HorizontalGroup)))
