@@ -16,7 +16,7 @@
    {:rows [[{:actor (doto (doto (HorizontalGroup.)
                             (.space 2)
                             (.pad 2))
-                      (actor/set-name! "moon.ui.action-bar.horizontal-group")
+                      (.setName "moon.ui.action-bar.horizontal-group")
                       (actor/set-user-object! (doto (ButtonGroup.)
                                                 (.setMaxCheckCount 1)
                                                 (.setMinCheckCount 0))))

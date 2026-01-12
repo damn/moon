@@ -14,7 +14,7 @@
            actor/name]}
    ^Skin skin]
   (doto (ScrollPane. actor skin)
-    (actor/set-name! name)))
+    (.setName name)))
 
 (defn scroll-pane-cell [skin viewport-height rows]
   (let [table (table/create

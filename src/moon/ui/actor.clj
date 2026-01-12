@@ -3,7 +3,6 @@
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(def set-name!                Actor/.setName)
 (def set-user-object!         Actor/.setUserObject)
 (def set-visible!             Actor/.setVisible)
 (def set-touchable!           Actor/.setTouchable)
@@ -28,7 +27,7 @@
      (.y v2)]))
 
 (def opts-fn-map
-  {:actor/name        set-name!
+  {:actor/name        Actor/.setName
    :actor/user-object set-user-object!
    :actor/visible?    set-visible!
    :actor/touchable   set-touchable!
