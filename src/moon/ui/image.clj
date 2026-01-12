@@ -1,5 +1,5 @@
 (ns moon.ui.image
-  (:require [moon.ui.actor :as actor])
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Image)

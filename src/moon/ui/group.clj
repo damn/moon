@@ -1,5 +1,5 @@
 (ns moon.ui.group
-  (:require [moon.ui.actor :as actor])
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn find-actor [group actor-name]

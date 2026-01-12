@@ -1,4 +1,4 @@
-(ns moon.ui.actor
+(ns clj.api.com.badlogic.gdx.scenes.scene2d.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (def opts-fn-map
