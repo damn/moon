@@ -103,7 +103,7 @@
 (defn do!
   [app config]
   (let [db (db/create)
-        graphics (graphics/create! (app/graphics app) (app/files app) (:graphics config)) ; graphics/sounds/input already part of application?!
+        graphics (graphics/create! (app/graphics app) (app/files app) (:graphics config))
         stage (ui/create! graphics)
         skin (create-skin (.internal (app/files app) "uiskin.json"))
         ctx (merge (map->Context {})
@@ -114,11 +114,8 @@
                     :ctx/stage stage
                     :ctx/skin skin})]
     (Input/.setInputProcessor (app/input app) stage)
-    ; all ui building inside moon.ui ??
-    ; just pass game-fns ?
     (doseq [actor (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) (:ui/actors config))]
       (stage/add-actor! stage actor))
-    ; this form what is input/output?
     (let [world-fn-result (call-world-fn (:world config)
                                          (db/all-raw db :properties/creatures)
                                          graphics)
