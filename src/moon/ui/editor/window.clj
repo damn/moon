@@ -7,13 +7,14 @@
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.editor.schema :as schema]
             [moon.ui.group :as group]
-            [moon.ui.label :as label]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.widget-group :as widget-group]
             [moon.ui.window :as window]
-            [moon.utils :as utils]))
+            [moon.utils :as utils])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Skin)))
 
 (defn- map-widget-table-value [table schemas]
   (into {}
@@ -68,7 +69,7 @@
                                                (rebuild! ctx))
                                  :skin skin}))
                       :left? true}
-                     {:actor (label/create label-text skin)}]]})
+                     {:actor (Label. label-text ^Skin skin)}]]})
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
     :pad-top 2

@@ -4,7 +4,6 @@
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.inventory :as inventory-window]
-            [moon.ui.label :as label]
             [moon.ui.message :as message]
             [moon.ui.stage :as stage]
             [moon.ui.text-button :as text-button]
@@ -12,7 +11,9 @@
             [moon.ui.widgets :as widgets]
             [moon.ui.window :as window]
             [moon.utils :as utils]
-            [moon.viewport :as viewport]))
+            [moon.viewport :as viewport])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Skin)))
 
 (defprotocol UserInterface
   (dispose! [_])
@@ -110,7 +111,7 @@
     (stage/add-actor! stage
                       (window/create
                        {:title title
-                        :rows [[{:actor (label/create text skin)}]
+                        :rows [[{:actor (Label. text ^Skin skin)}]
                                [{:actor (text-button/create
                                          {:text button-text
                                           :on-clicked (fn [_actor _ctx]
@@ -171,10 +172,10 @@
     (stage/add-actor! stage
                       (window/create
                        {:title "Error"
-                        :rows [[{:actor (label/create (binding [*print-level* 3]
-                                                        (utils/with-err-str
-                                                          (clojure.repl/pst throwable)))
-                                                      skin)}]]
+                        :rows [[{:actor (Label. (binding [*print-level* 3]
+                                                  (utils/with-err-str
+                                                    (clojure.repl/pst throwable)))
+                                                ^Skin skin)}]]
                         :modal? true
                         :close-button? true
                         :close-on-escape? true

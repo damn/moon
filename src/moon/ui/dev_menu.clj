@@ -3,13 +3,14 @@
             [moon.ui.cell :as cell]
             [moon.ui.group :as group]
             [moon.ui.image :as image]
-            [moon.ui.label :as label]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Event
                                             Touchable)
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Skin)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn- set-label-text-actor [label text-fn]
@@ -21,14 +22,14 @@
 
 (defn add-upd-label!
   ([skin table text-fn icon]
-   (let [label (label/create "" skin)
+   (let [label (Label. "" ^Skin skin)
          sub-table (table/create
                     {:rows [[{:actor (image/create {:image/object icon})}
                              label]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (cell/expand-x! (cell/right! (table/add! table sub-table)))))
   ([skin table text-fn]
-   (let [label (label/create "" skin)]
+   (let [label (Label. "" ^Skin skin)]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (cell/expand-x! (cell/right! (table/add! table label))))))
 
@@ -67,7 +68,7 @@
              :expand-x? true
              :fill-x? true
              :colspan 1}]
-           [{:actor (doto (label/create "" skin)
+           [{:actor (doto (Label. "" ^Skin skin)
                       (actor/set-touchable! Touchable/disabled))
              :expand? true
              :fill-x? true

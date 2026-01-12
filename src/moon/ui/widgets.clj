@@ -1,12 +1,12 @@
 (ns moon.ui.widgets
   (:require [moon.ui.actor :as actor]
-            [moon.ui.label :as label]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               ScrollPane
                                                Skin)))
 
 (defn- create-scroll-pane
@@ -75,7 +75,7 @@
                                         :height 500
                                         :skin skin})))
       :skin skin})
-    (label/create (v->text v) skin)))
+    (Label. (v->text v) ^Skin skin)))
 
 (defn data-viewer-window
   [{:keys [title
@@ -89,7 +89,7 @@
                 :actor (v->actor v skin)})
         scroll-pane-table (table/create
                            {:rows (for [{:keys [label actor]} rows]
-                                    [{:actor (label/create label skin)}
+                                    [{:actor (Label. label ^Skin skin)}
                                      {:actor actor}])})
         scroll-pane-cell (let [table (table/create
                                       {:rows [[scroll-pane-table]]

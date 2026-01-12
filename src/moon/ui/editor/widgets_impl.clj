@@ -11,7 +11,6 @@
             [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.image-button :as image-button]
-            [moon.ui.label :as label]
             [moon.ui.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
@@ -23,12 +22,13 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                CheckBox
                                                SelectBox
+                                               Label
                                                Skin
                                                TextField)))
 
 (defmethod create :default
-  [_ v {:keys [ctx/skin]}]
-  (label/create (utils/truncate (utils/->edn-str v) 60) skin))
+  [_ v {:keys [^Skin ctx/skin]}]
+  (Label. (utils/truncate (utils/->edn-str v) 60) skin))
 
 (defmethod value :default
   [_  widget _schemas]

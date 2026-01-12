@@ -1,6 +1,5 @@
 (ns moon.ui.tooltip
   (:require [moon.ui.actor :as actor]
-            [moon.ui.label :as label]
             [moon.ui.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextTooltip)))
