@@ -1,10 +1,10 @@
 (ns moon.graphics
-  (:require [clojure.math :as math]
+  (:require [clj.api.space.earlygrey.shape-drawer :as sd]
+            [clojure.math :as math]
             [clojure.string :as str]
             [moon.color :as color]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
-            [moon.shape-drawer :as sd]
             [moon.tm-renderer :as tm-renderer]
             [moon.viewport :as viewport])
   (:import (com.badlogic.gdx Graphics)
