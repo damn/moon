@@ -1,6 +1,3 @@
-; 'clojure.gdx.scene2d' library ?
-; oder
-; editor mit java FX und - was ohne editor needed??
 (ns moon.ui.actor
   (:refer-clojure :exclude [name])
   (:import (com.badlogic.gdx.math Vector2)

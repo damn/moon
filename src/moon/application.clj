@@ -1,7 +1,8 @@
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.entity.state-impl])
+            [moon.entity.state-impl]
+            [moon.ui.editor.window])                        ; actually schema :s/map ?
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
