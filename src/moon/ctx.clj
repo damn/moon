@@ -4,7 +4,7 @@
 (declare reaction-txs-fn-map
          txs-fn-map)
 
-(defn reduce-actions!
+(defn- reduce-actions!
   [txs-fn-map ctx txs]
   (loop [ctx ctx
          txs txs]
