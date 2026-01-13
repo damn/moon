@@ -5,6 +5,7 @@
             [moon.body]
             [moon.ctx :as ctx]
             [moon.db :as db]
+            [moon.db-impl :as db-impl]
             [moon.entity.skills]
             [moon.entity.state :as state]
             [moon.entity.stats]
@@ -101,7 +102,7 @@
 
 (defn do!
   [^Application app config]
-  (let [db (db/create)
+  (let [db (db-impl/create)
         graphics (moon.graphics.impl/create! (.getGraphics app) (.getFiles app) (:graphics config))
         stage (moon.ui.impl/create! graphics)
         skin (create-skin (.internal (.getFiles app) "uiskin.json"))

@@ -3,6 +3,7 @@
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.db :as db]
+            [moon.db-impl :as db-impl]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer]
@@ -103,7 +104,7 @@
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage}
         ctx (-> ctx
-                (assoc :ctx/db (db/create)))
+                (assoc :ctx/db (db-impl/create)))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
