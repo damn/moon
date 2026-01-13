@@ -1,15 +1,16 @@
 {
  :requires [
-            moon.entity.state-impl ; separate components
-            moon.ui.editor.window  ; schema components? editor separate
-            moon.ui.editor.widgets-impl ; editor separate?
+            moon.entity.state-impl
+            moon.ui.editor.window
+            moon.ui.editor.widgets-impl
+            moon.txs-impl
             ]
  :config [moon.application/lwjgl-app-config {:title "Moon"
                                              :window {:width 1440
                                                       :height 900}
                                              :fps 60}]
- :listener [moon.application/app-listener {:create!  moon.listener.create/do! ; world params/entity create/after create
-                                           :render!  moon.listener.render/do! ; use protocols
-                                           :dispose! moon.listener.dispose/do! ; use protocols
-                                           :resize!  moon.listener.resize/do!}] ; use protocols
+ :listener [moon.application/app-listener {:create!  moon.listener.create/do!
+                                           :render!  moon.listener.render/do!
+                                           :dispose! moon.listener.dispose/do!
+                                           :resize!  moon.listener.resize/do!}]
  }
