@@ -7,7 +7,10 @@
             moon.entity.animation
             moon.entity.body
             moon.entity.delete-after-duration
+            moon.entity.inventory
+            moon.entity.fsm
             moon.entity.projectile-collision
+            moon.entity.skills
             moon.entity.stats
             ]
  :config [moon.application/lwjgl-app-config {:title "Moon"

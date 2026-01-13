@@ -65,11 +65,3 @@
     (or
      (free-cell inventory (:item/slot item)   item)
      (free-cell inventory :inventory.slot/bag item))))
-
-(defn create! [items eid _world]
-  (cons [:tx/assoc eid :entity/inventory (->> empty-inventory
-                                              (map (fn [[slot [width height]]]
-                                                     [slot (g2d/create-grid width height (constantly nil))]))
-                                              (into {}))]
-        (for [item items]
-          [:tx/pickup-item eid item])))

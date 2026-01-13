@@ -111,10 +111,6 @@
           [:tx/state-exit  eid old-state-obj]
           [:tx/state-enter eid new-state-obj]])))))
 
-(defn- after-create-component [[k v] eid {:keys [world/after-create-fns] :as world}]
-  (when-let [f (after-create-fns k)]
-    (f v eid world)))
-
 (q/defrecord Entity [entity/body])
 
 (defn- world-spawn-entity
@@ -143,7 +139,7 @@
    (grid/set-touched-cells! grid eid)
    (when (:body/collides? (:entity/body @eid))
      (grid/set-occupied-cells! grid eid))
-   (mapcat #(after-create-component % eid world) @eid)))
+   (mapcat #(entity/after-create % eid world) @eid)))
 
 ; TODO just call fns? no need 'transactions'??
 ; or only 1 'game/sprite-batch' ? moon.sprite-batch ?

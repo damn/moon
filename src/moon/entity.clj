@@ -7,3 +7,11 @@
 (defmethod create :default
   [[_ v] _world]
   v)
+
+(defmulti after-create
+  (fn [[k _v] _eid _world]
+    k))
+
+(defmethod after-create :default
+  [[_k _v] _eid _world]
+  nil)

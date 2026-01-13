@@ -1,7 +1,9 @@
 (ns moon.entity.skills
-  (:require [moon.timer :as timer]))
+  (:require [moon.entity :as entity]
+            [moon.timer :as timer]))
 
-(defn create! [skills eid _world]
+(defmethod entity/after-create :entity/skills
+  [[_k skills] eid _world]
   (cons [:tx/assoc eid :entity/skills nil]
         (for [skill skills]
           [:tx/add-skill eid skill])))
