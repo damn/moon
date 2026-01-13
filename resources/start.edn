@@ -13,6 +13,16 @@
             moon.entity.projectile-collision
             moon.entity.skills
             moon.entity.stats
+            moon.entity.alert-friendlies-after-duration
+            moon.entity.movement
+            moon.entity.string-effect
+            moon.entity.temp-modifier
+
+            moon.entity.state.active-skill
+            moon.entity.state.npc-idle
+            moon.entity.state.npc-moving
+            moon.entity.state.npc-sleeping
+            moon.entity.state.stunned
             ]
  :config [moon.application/lwjgl-app-config {:title "Moon"
                                              :window {:width 1440

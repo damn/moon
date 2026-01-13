@@ -10,7 +10,6 @@
             [moon.world.grid :as grid]
             [moon.world.grid.cell :as cell]
             [moon.world.raycaster :as raycaster]
-            [moon.world.tick-entities :as tick-entities]
             [moon.world.tiled :as tiled]
             [moon.world.update-potential-fields :as update-potential-fields]))
 
@@ -96,8 +95,15 @@
   (update-potential-fields! [this]
     (update-potential-fields/do! this))
 
-  (tick-entities! [this]
-    (tick-entities/do! this))
+  (tick-entities! [{:keys [world/active-entities]
+                    :as world}]
+    (mapcat (fn [eid]
+              (mapcat (fn [[k v]]
+                        (try (entity/tick [k v] eid world)
+                             (catch Throwable t
+                               (throw (ex-info "" {:eid eid} t)))))
+                      @eid))
+            active-entities))
 
   (remove-destroyed-entities!
     [{:keys [world/content-grid
@@ -187,3 +193,24 @@
       calculate-max-speed
       define-render-z-order
       (assoc-state world-fn-result)))
+
+(comment
+ (= (tick-entities! {:world/active-entities [(atom {:firstk :foo
+                                                    :secondk :bar})
+                                             (atom {:firstk2 :foo2
+                                                    :secondk2 :bar2})]}
+                    {:firstk (fn [v eid world]
+                               [[:foo/bar]])
+                     :secondk (fn [v eid world]
+                                [[:foo/barz]
+                                 [:asdf]])
+                     :firstk2 (fn [v eid world]
+                                nil)
+                     :secondk2 (fn [v eid world]
+                                 [[:asdf2] [:asdf3]])})
+    [[:foo/bar]
+     [:foo/barz]
+     [:asdf]
+     [:asdf2]
+     [:asdf3]])
+ )

@@ -17,13 +17,20 @@
   nil)
 
 (defmulti destroy
-  (fn [[k _v] eid]
+  (fn [[k _v] _eid]
     k))
 
 (defmethod destroy :default
   [[_k _v] _eid]
   nil)
 
-; tick
+(defmulti tick
+  (fn [[k _v] _eid _world]
+    k))
 
-; render ?
+(defmethod tick :default
+  [[_k _v] _eid _world]
+  nil)
+
+; TODO:
+; render (moon.listener.render)
