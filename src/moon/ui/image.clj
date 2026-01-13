@@ -18,9 +18,6 @@
 (defmethod create* TextureRegion [texture-region]
   (Image. ^TextureRegion texture-region))
 
-(defn set-drawable! [image ^Drawable drawable]
-  (.setDrawable image drawable))
-
 (defn create
   [{:keys [image/object
            scaling
