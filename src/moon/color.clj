@@ -1,4 +1,5 @@
-(ns moon.color)
+(ns moon.color
+  "Named colors in `[r g b a]` format.")
 
 (def black [0 0 0 1])
 (def white [1 1 1 1])
