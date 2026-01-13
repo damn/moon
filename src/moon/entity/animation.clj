@@ -1,9 +1,10 @@
 (ns moon.entity.animation
   (:require [moon.animation :as animation]
-            [moon.entity :as entity]))
+            [moon.entity :as entity]
+            [moon.entity.image :as image]))
 
 (defmethod entity/create :entity/animation
-  [[_ v] world]
+  [[_ v] _world]
   (animation/create v nil))
 
 (defmethod entity/tick :entity/animation
@@ -12,3 +13,9 @@
    (when (and (:delete-after-stopped? animation)
               (animation/stopped? animation))
      [:tx/mark-destroyed eid])])
+
+(defmethod entity/render :entity/animation
+  [[_k animation] entity ctx]
+  (image/draw-image (animation/current-frame animation)
+                    entity
+                    ctx))

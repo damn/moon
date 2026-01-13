@@ -103,6 +103,7 @@
                                    :skin skin})}]]
                  :actor/name "moon.ui.modal-window"
                  :modal? true
+                 :skin skin
                  :actor/center-position [(/ (Viewport/.getWorldWidth  ui-viewport) 2)
                                          (* (Viewport/.getWorldHeight ui-viewport) (/ 3 4))]
                  :pack? true})))

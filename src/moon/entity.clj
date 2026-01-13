@@ -32,5 +32,6 @@
   [[_k _v] _eid _world]
   nil)
 
-; TODO:
-; render (moon.listener.render)
+(defmulti render
+  (fn [[k _v] _entity _ctx]
+    k))

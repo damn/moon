@@ -4,6 +4,7 @@
             moon.ui.editor.window
             moon.ui.editor.widgets-impl
             moon.txs-impl
+
             moon.entity.animation
             moon.entity.body
             moon.entity.delete-after-duration
@@ -17,6 +18,10 @@
             moon.entity.movement
             moon.entity.string-effect
             moon.entity.temp-modifier
+            moon.entity.clickable
+            moon.entity.line-render
+            moon.entity.image
+            moon.entity.mouseover
 
             moon.entity.state.active-skill
             moon.entity.state.npc-idle

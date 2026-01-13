@@ -10,3 +10,10 @@
   (when (timer/stopped? elapsed-time counter)
     [[:tx/dissoc eid :entity/temp-modifier]
      [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
+
+(defmethod entity/render :entity/temp-modifier
+  [_ entity _ctx]
+  [[:draw/filled-circle
+    (:body/position (:entity/body entity))
+    0.5
+    [0.5 0.5 0.5 0.4]]])
