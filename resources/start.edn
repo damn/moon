@@ -1,4 +1,9 @@
 {
+ :requires [
+            moon.entity.state-impl
+            moon.ui.editor.window
+            moon.ui.editor.widgets-impl
+            ]
  :config [moon.application/lwjgl-app-config {:title "Moon"
                                              :window {:width 1440
                                                       :height 900}
