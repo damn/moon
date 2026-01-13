@@ -1,4 +1,8 @@
-{:audio {:sound-names "sounds.edn"
+{:db-impl moon.db-impl/create
+ :graphics-impl moon.graphics.impl/create!
+ :ui-impl moon.ui.impl/create!
+ :world-impl moon.world.impl/create
+ :audio {:sound-names "sounds.edn"
          :path-format "sounds/%s.wav"}
  :graphics {:colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
             :tile-size 48

@@ -3,12 +3,8 @@
             [clojure.java.io :as io]
             [moon.ctx :as ctx]
             [moon.db :as db]
-            [moon.db-impl :as db-impl]
             [moon.graphics :as graphics]
-            [moon.graphics.impl]
-            [moon.ui.impl]
             [moon.world :as world]
-            [moon.world.impl]
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
             [qrecord.core :as q])
@@ -79,9 +75,9 @@
 
 (defn do!
   [^Application app config]
-  (let [db (db-impl/create)
-        graphics (moon.graphics.impl/create! (.getGraphics app) (.getFiles app) (:graphics config))
-        stage (moon.ui.impl/create! graphics)
+  (let [db ((requiring-resolve (:db-impl config)))
+        graphics ((requiring-resolve (:graphics-impl config)) (.getGraphics app) (.getFiles app) (:graphics config))
+        stage ((requiring-resolve (:ui-impl config)) graphics)
         skin (create-skin (.internal (.getFiles app) "uiskin.json"))
         ctx (merge (map->Context {})
                    {:ctx/audio (load-sounds (.getAudio app) (.getFiles app) (:audio config))
@@ -96,7 +92,7 @@
     (let [world-fn-result (call-world-fn (:world config)
                                          (db/all-raw db :properties/creatures)
                                          graphics)
-          world (moon.world.impl/create world-params world-fn-result)
+          world ((requiring-resolve (:world-impl config)) world-params world-fn-result)
           ctx (assoc ctx :ctx/world world)
           _ (ctx/handle! ctx
                          [[:tx/spawn-creature (let [{:keys [creature-id
