@@ -9,10 +9,12 @@
             [moon.entity.state :as state]
             [moon.entity.stats]
             [moon.graphics :as graphics]
+            [moon.graphics.impl]
             [moon.inventory]
             [moon.timer :as timer]
-            [moon.ui :as ui]
+            [moon.ui.impl]
             [moon.world :as world]
+            [moon.world.impl]
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
             [qrecord.core :as q])
@@ -100,8 +102,8 @@
 (defn do!
   [^Application app config]
   (let [db (db/create)
-        graphics (graphics/create! (.getGraphics app) (.getFiles app) (:graphics config))
-        stage (ui/create! graphics)
+        graphics (moon.graphics.impl/create! (.getGraphics app) (.getFiles app) (:graphics config))
+        stage (moon.ui.impl/create! graphics)
         skin (create-skin (.internal (.getFiles app) "uiskin.json"))
         ctx (merge (map->Context {})
                    {:ctx/audio (load-sounds (.getAudio app) (.getFiles app) (:audio config))
@@ -116,7 +118,7 @@
     (let [world-fn-result (call-world-fn (:world config)
                                          (db/all-raw db :properties/creatures)
                                          graphics)
-          world (world/create world-params world-fn-result)
+          world (moon.world.impl/create world-params world-fn-result)
           ctx (assoc ctx :ctx/world world)
           _ (ctx/handle! ctx
                          [[:tx/spawn-creature (let [{:keys [creature-id
