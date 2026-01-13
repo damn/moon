@@ -1,11 +1,11 @@
 (ns moon.effects.target-all
   (:require [moon.effect :as effect]
-            [moon.world.raycaster :as raycaster]))
+            [moon.world :as world]))
 
 (defn affected-targets [active-entities world entity]
   (->> active-entities
        (filter #(:entity/species @%))
-       (filter #(raycaster/line-of-sight? world entity @%))
+       (filter #(world/line-of-sight? world entity @%))
        (remove #(:entity/player? @%))))
 
 (comment

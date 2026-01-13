@@ -3,13 +3,13 @@
             [moon.entity :as entity]
             [moon.graphics :as graphics]
             [moon.timer :as timer]
-            [moon.world.raycaster :as raycaster]))
+            [moon.world :as world]))
 
 (defn- update-effect-ctx
   [world {:keys [effect/source effect/target] :as effect-ctx}]
   (if (and target
            (not (:entity/destroyed? @target))
-           (raycaster/line-of-sight? world @source @target))
+           (world/line-of-sight? world @source @target))
     effect-ctx
     (dissoc effect-ctx :effect/target)))
 

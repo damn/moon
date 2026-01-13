@@ -1,5 +1,7 @@
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
+            [clojure.math.raycaster :as raycaster]
+            [clojure.math.vector2 :as v]
             [moon.entity :as entity]
             [moon.utils :as utils]
             [moon.world :as world]
@@ -9,9 +11,25 @@
             [moon.world.create.grid]
             [moon.world.grid :as grid]
             [moon.world.grid.cell :as cell]
-            [moon.world.raycaster :as raycaster]
             [moon.world.tiled :as tiled]
             [moon.world.update-potential-fields :as update-potential-fields]))
+
+(defn- create-double-ray-endpositions
+  [[start-x start-y]
+   [target-x target-y]
+   path-w]
+  {:pre [(< path-w 0.98)]} ; wieso 0.98??
+  (let [path-w (+ path-w 0.02) ;etwas gr�sser damit z.b. projektil nicht an ecken anst�sst
+        v (v/direction [start-x start-y]
+                       [target-y target-y])
+        [normal1 normal2] (v/normal-vectors v)
+        normal1 (v/scale normal1 (/ path-w 2))
+        normal2 (v/scale normal2 (/ path-w 2))
+        start1  (v/add [start-x  start-y]  normal1)
+        start2  (v/add [start-x  start-y]  normal2)
+        target1 (v/add [target-x target-y] normal1)
+        target2 (v/add [target-x target-y] normal2)]
+    [start1,target1,start2,target2]))
 
 (defn- create-world-grid [width height cell-movement]
   (g2d/create-grid width
@@ -78,6 +96,11 @@
         (aset arr x y (boolean blocked?)))
       [arr width height])))
 
+(defn- line-of-sight?* [raycaster source target]
+  (not (raycaster/blocked? raycaster
+                           (:body/position (:entity/body source))
+                           (:body/position (:entity/body target)))))
+
 (defrecord RWorld []
   moon.world/World
   (dispose! [{:keys [world/tiled-map]}]
@@ -140,6 +163,7 @@
     [{:keys [world/grid
              world/mouseover-eid
              world/player-eid
+             world/raycaster
              world/render-z-order]
       :as world}
      position]
@@ -149,8 +173,20 @@
       (->> render-z-order
            (utils/sort-by-order hits #(:body/z-order (:entity/body @%)))
            reverse
-           (filter #(raycaster/line-of-sight? world player @%))
-           first))))
+           (filter #(line-of-sight?* raycaster player @%))
+           first)))
+
+  (blocked? [{:keys [world/raycaster]} start target]
+    (raycaster/blocked? raycaster start target))
+
+  (path-blocked? [{:keys [world/raycaster]} start target path-w]
+    (let [[start1,target1,start2,target2] (create-double-ray-endpositions start target path-w)]
+      (or
+       (raycaster/blocked? raycaster start1 target1)
+       (raycaster/blocked? raycaster start2 target2))))
+
+  (line-of-sight? [{:keys [world/raycaster]} source target]
+    (line-of-sight?* raycaster source target)))
 
 (defn- assoc-state [world {:keys [tiled-map
                                   start-position]}]

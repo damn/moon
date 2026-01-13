@@ -15,8 +15,7 @@
             [moon.throwable :as throwable]
             [moon.ui :as ui]
             [moon.utils :as utils]
-            [moon.world :as world]
-            [moon.world.raycaster :as raycaster])
+            [moon.world :as world])
   (:import (com.badlogic.gdx Input$Buttons)
            (moon Stage)))
 
@@ -149,7 +148,7 @@
   (graphics/draw-tiled-map! graphics
                             (:world/tiled-map world)
                             (tile-color-setter
-                             {:ray-blocked? (partial raycaster/blocked? world)
+                             {:ray-blocked? (partial world/blocked? world)
                               :explored-tile-corners (:world/explored-tile-corners world)
                               :light-position (graphics/position graphics)
                               :see-all-tiles? false
@@ -252,7 +251,7 @@
         player @(:world/player-eid world)
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
-                           (raycaster/line-of-sight? world player entity)))]
+                           (world/line-of-sight? world player entity)))]
     (doseq [[z-order entities] (utils/sort-by-order (group-by (comp :body/z-order :entity/body) entities)
                                                     first
                                                     (:world/render-z-order world))

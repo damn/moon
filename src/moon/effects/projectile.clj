@@ -1,7 +1,7 @@
 (ns moon.effects.projectile
   (:require [clojure.math.vector2 :as v]
             [moon.effect :as effect]
-            [moon.world.raycaster :as raycaster]))
+            [moon.world :as world]))
 
 (defn- proj-start-point [body direction size]
   (v/add (:body/position body)
@@ -22,7 +22,7 @@
   (let [source-p (:body/position (:entity/body @source))
         target-p (:body/position (:entity/body @target))]
     ; is path blocked ereally needed? we need LOS also right to have a target-direction as AI?
-    (and (not (raycaster/path-blocked? world source-p target-p (:projectile/size projectile)))
+    (and (not (world/path-blocked? world source-p target-p (:projectile/size projectile)))
          ; TODO not taking into account body sizes
          (< (v/distance source-p ; entity/distance function protocol EntityPosition
                         target-p)
