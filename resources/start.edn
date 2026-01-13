@@ -7,6 +7,7 @@
             moon.entity.animation
             moon.entity.body
             moon.entity.delete-after-duration
+            moon.entity.destroy-audiovisual
             moon.entity.inventory
             moon.entity.fsm
             moon.entity.projectile-collision

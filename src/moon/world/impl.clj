@@ -1,5 +1,6 @@
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
+            [moon.entity :as entity]
             [moon.utils :as utils]
             [moon.world :as world]
             [moon.world.assoc-entity-spawn-schema :as assoc-entity-spawn-schema]
@@ -12,13 +13,6 @@
             [moon.world.tick-entities :as tick-entities]
             [moon.world.tiled :as tiled]
             [moon.world.update-potential-fields :as update-potential-fields]))
-
-(def destroy-components
-  {:entity/destroy-audiovisual
-   {:destroy! (fn [audiovisuals-id eid]
-                [[:tx/audiovisual
-                  (:body/position (:entity/body @eid))
-                  audiovisuals-id]])}})
 
 (defn- create-world-grid [width height cell-movement]
   (g2d/create-grid width
@@ -119,8 +113,7 @@
        (when (:body/collides? (:entity/body @eid))
          (grid/remove-from-occupied-cells! grid eid))
        (mapcat (fn [[k v]]
-                 (when-let [destroy! (:destroy! (k destroy-components))]
-                   (destroy! v eid)))
+                 (entity/destroy [k v] eid))
                @eid))
      (filter (comp :entity/destroyed? deref)
              (vals @entity-ids))))

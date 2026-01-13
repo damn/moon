@@ -15,3 +15,15 @@
 (defmethod after-create :default
   [[_k _v] _eid _world]
   nil)
+
+(defmulti destroy
+  (fn [[k _v] eid]
+    k))
+
+(defmethod destroy :default
+  [[_k _v] _eid]
+  nil)
+
+; tick
+
+; render ?
