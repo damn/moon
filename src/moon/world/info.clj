@@ -1,10 +1,20 @@
 (ns moon.world.info
   (:require [clojure.math :as math]
             [clojure.string :as str]
-            [moon.entity.stats.info]
+            [moon.entity.stats :as stats]
             [moon.ops :as ops]
             [moon.timer :as timer]
             [moon.utils :as utils]))
+
+(def ^:private non-val-max-stat-ks
+  [:stats/movement-speed
+   :stats/aggro-range
+   :stats/reaction-time
+   :stats/strength
+   :stats/cast-speed
+   :stats/attack-speed
+   :stats/armor-save
+   :stats/armor-pierce])
 
 (defn- ops-info [ops modifier-k]
   (str/join "\n"
@@ -102,7 +112,14 @@
   {:creature/level (fn [[_ v] _world]
                      (str "Level: " v))
 
-   :entity/stats moon.entity.stats.info/text
+   :entity/stats (fn [[_ stats] _world]
+                   (str/join "\n" (concat
+                                   ["*STATS*"
+                                    (str "Mana: " (stats/get-mana stats))
+                                    (str "Hitpoints: " (stats/get-hitpoints stats))]
+                                   (for [stat-k non-val-max-stat-ks]
+                                     (str (str/capitalize (name stat-k)) ": "
+                                          (stats/get-stat-value stats stat-k))))))
 
    :effects.target/convert (fn [_ _world]
                              "Converts target to your side.")

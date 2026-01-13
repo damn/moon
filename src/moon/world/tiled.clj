@@ -54,7 +54,6 @@
 
 (defn create-tiled-map [{:keys [properties
                                 layers]}]
-  (println "-> CREATE TILED MAP")
   (let [tiled-map (TiledMap.)]
     (add! (.getProperties tiled-map) properties)
     (doseq [layer layers]
