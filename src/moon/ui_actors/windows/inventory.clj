@@ -1,10 +1,10 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [moon.graphics :as graphics]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [moon.graphics :as graphics]
             [moon.inventory :as inventory]
             [moon.ui :as ui]
             [moon.ui.image :as image]
-            [moon.ui.stack :as stack]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)

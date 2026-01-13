@@ -1,9 +1,9 @@
 (ns moon.ui.editor.overview-window
-  (:require [moon.db :as db]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
+            [moon.db :as db]
             [moon.graphics :as graphics]
             [moon.ui.editor.property :as property]
             [moon.ui.image-button :as image-button]
-            [moon.ui.stack :as stack]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
