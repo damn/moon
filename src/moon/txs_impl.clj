@@ -1,7 +1,6 @@
 (ns moon.txs-impl
   (:require [clojure.math.vector2 :as v]
             [malli.utils :as mu]
-            [moon.audio :as audio]
             [moon.body :as body]
             [moon.ctx]
             [moon.db :as db]
@@ -10,72 +9,26 @@
             [moon.entity.skills :as skills]
             [moon.entity.state :as state]
             [moon.entity.stats :as stats]
-            [moon.graphics :as graphics]
             [moon.inventory :as inventory]
             [moon.timer :as timer]
-            [moon.ui :as ui]
             [moon.utils :as utils]
             [moon.world :as world]
             [moon.world.content-grid :as content-grid]
             [moon.world.grid :as grid]
-            [moon.world.info :as info]
             [qrecord.core :as q]
-            [reduce-fsm :as fsm])
-  (:import (moon Stage)))
+            [reduce-fsm :as fsm]))
 
 (def reaction-txs-fn-map
-  {
-   :tx/sound                    (fn
-                                  [{:keys [ctx/audio] :as ctx} sound-name]
-                                  (audio/play! audio sound-name)
-                                  ctx)
-   :tx/toggle-inventory-visible (fn
-                                  [{:keys [ctx/stage] :as ctx}]
-                                  (ui/toggle-inventory-visible! stage)
-                                  ctx)
-   :tx/show-message             (fn
-                                  [{:keys [ctx/stage] :as ctx} message]
-                                  (ui/show-text-message! stage message)
-                                  ctx)
-   :tx/show-modal               (fn
-                                  [{:keys [ctx/skin
-                                           ctx/stage]
-                                    :as ctx}
-                                   opts]
-                                  (ui/show-modal-window! stage skin (Stage/.getViewport stage) opts)
-                                  ctx)
-   :tx/set-item                 (fn
-                                  [{:keys [ctx/graphics
-                                           ctx/skin
-                                           ctx/stage]
-                                    :as ctx}
-                                   eid cell item]
-                                  (when (:entity/player? @eid)
-                                    (ui/set-item! stage cell
-                                                  {:texture-region (graphics/texture-region graphics (:entity/image item))
-                                                   :tooltip-text (info/text item nil)}
-                                                  skin))
-                                  ctx)
-   :tx/remove-item              (fn
-                                  [{:keys [ctx/stage] :as ctx} eid cell]
-                                  (when (:entity/player? @eid)
-                                    (ui/remove-item! stage cell))
-                                  ctx)
-   :tx/add-skill                (fn
-                                  [{:keys [ctx/graphics
-                                           ctx/skin
-                                           ctx/stage]
-                                    :as ctx}
-                                   eid skill]
-                                  (when (:entity/player? @eid)
-                                    (ui/add-skill! stage
-                                                   {:skill-id (:property/id skill)
-                                                    :texture-region (graphics/texture-region graphics (:entity/image skill))
-                                                    :tooltip-text (fn [{:keys [ctx/world]}]
-                                                                    (info/text skill world))}
-                                                   skin))
-                                  ctx)
-   })
+  (update-vals '{
+                 :tx/sound                    moon.reaction-txs.sound/do!
+                 :tx/toggle-inventory-visible moon.reaction-txs.toggle-inventory-visible/do!
+                 :tx/show-message             moon.reaction-txs.show-message/do!
+                 :tx/show-modal               moon.reaction-txs.show-modal/do!
+                 :tx/set-item                 moon.reaction-txs.set-item/do!
+                 :tx/remove-item              moon.reaction-txs.remove-item/do!
+                 :tx/add-skill                moon.reaction-txs.add-skill/do!
+                 }
+               requiring-resolve))
 
 (defn- world-move-entity
   [{:keys [world/content-grid
@@ -140,9 +93,6 @@
    (when (:body/collides? (:entity/body @eid))
      (grid/set-occupied-cells! grid eid))
    (mapcat #(entity/after-create % eid world) @eid)))
-
-; TODO just call fns? no need 'transactions'??
-; or only 1 'game/sprite-batch' ? moon.sprite-batch ?
 
 (def txs-fn-map
   {
