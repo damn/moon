@@ -1,5 +1,6 @@
 (ns moon.effects.target-all
-  (:require [moon.world.raycaster :as raycaster]))
+  (:require [moon.effect :as effect]
+            [moon.world.raycaster :as raycaster]))
 
 (defn affected-targets [active-entities world entity]
   (->> active-entities
@@ -19,3 +20,42 @@
                                    (:body/position (:entity/body @%))) targets)))
 
  )
+
+(defmethod effect/applicable? :effects/target-all
+  [_ _] ; TODO check ..
+  true)
+
+(defmethod effect/useful? :effects/target-all
+  [_ _effect-ctx _world]
+  false)
+
+(defmethod effect/handle :effects/target-all
+  [[_ {:keys [entity-effects]}]
+   {:keys [effect/source]}
+   world]
+  (let [{:keys [world/active-entities]} world
+        source* @source]
+    (apply concat
+           (for [target (affected-targets active-entities world source*)]
+             [[:tx/spawn-line
+               {:start (:body/position (:entity/body source*)) #_(start-point source* target*)
+                :end (:body/position (:entity/body @target))
+                :duration 0.05
+                :color [1 0 0 0.75]
+                :thick? true}]
+              [:tx/effect
+               {:effect/source source
+                :effect/target target}
+               entity-effects]]))))
+
+(defmethod effect/render :effects/target-all
+  [_
+   {:keys [effect/source]}
+   {:keys [ctx/world]}]
+  (let [{:keys [world/active-entities]} world
+        source* @source]
+    (for [target* (map deref (affected-targets active-entities world source*))]
+      [:draw/line
+       (:body/position (:entity/body source*)) #_(start-point source* target*)
+       (:body/position (:entity/body target*))
+       [1 0 0 0.5]])))
