@@ -7,16 +7,17 @@
             [moon.ui.editor.overview-window :as overview-window]
             [moon.ui.editor.property :as property]
             [moon.ui.editor.schema :refer [create value]]
-            [moon.ui.image :as image]
             [moon.ui.image-button :as image-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.widgets :as widgets]
             [moon.ui.window :as window]
             [moon.utils :as utils])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Button
                                                CheckBox
+                                               Image
                                                SelectBox
                                                Label
                                                Skin
@@ -116,9 +117,8 @@
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)
               texture-region (graphics/texture-region graphics (property/image property))
-              image-widget (doto (image/create
-                                  {:image/object texture-region
-                                   :actor/user-object property-id})
+              image-widget (doto (Image. ^TextureRegion texture-region)
+                             (.setUserObject property-id)
                              (.addListener (TextTooltip. (property/tooltip property) ^Skin skin)))]
           {:actor image-widget}))
       (for [id property-ids]
@@ -173,9 +173,8 @@
       [(when property-id
          (let [property (db/get-raw db property-id)
                texture-region (graphics/texture-region graphics (property/image property))
-               image-widget (doto (image/create
-                                   {:image/object texture-region
-                                    :actor/user-object property-id})
+               image-widget (doto (Image. ^TextureRegion texture-region)
+                              (.setUserObject property-id)
                               (.addListener (TextTooltip. (property/tooltip property) ^Skin skin)))]
            {:actor image-widget}
            image-widget))]

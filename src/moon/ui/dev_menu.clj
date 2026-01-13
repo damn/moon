@@ -1,11 +1,12 @@
 (ns moon.ui.dev-menu
-  (:require [moon.ui.image :as image]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
                                             Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Image
                                                Skin
                                                TextButton)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
@@ -22,7 +23,7 @@
   ([skin table text-fn icon]
    (let [label (Label. "" ^Skin skin)
          sub-table (table/create
-                    {:rows [[{:actor (image/create {:image/object icon})}
+                    {:rows [[{:actor (Image. ^Texture icon)}
                              label]]})]
      (.addActor table (set-label-text-actor label text-fn))
      (.expandX (.right (.add table ^Actor sub-table)))))

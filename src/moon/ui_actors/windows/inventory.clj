@@ -4,13 +4,13 @@
             [moon.graphics :as graphics]
             [moon.inventory :as inventory]
             [moon.ui :as ui]
-            [moon.ui.image :as image]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Widget)
+           (com.badlogic.gdx.scenes.scene2d.ui Image
+                                               Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
                                                   TextureRegionDrawable)
            (com.badlogic.gdx.math Vector2)))
@@ -62,11 +62,10 @@
                              :actor/user-object cell
                              :actor/listener (clicked-cell-listener cell)
                              :group/actors [(draw-cell-rect-actor draw-cell-rect)
-                                            (image/create
-                                             {:image/object background-drawable
-                                              :actor/name "image-widget"
-                                              :actor/user-object {:background-drawable background-drawable
-                                                                  :cell-size cell-size}})]})}))]
+                                            (doto (Image. ^TextureRegionDrawable background-drawable)
+                                              (.setName "image-widget")
+                                              (.setUserObject {:background-drawable background-drawable
+                                                               :cell-size cell-size}))]})}))]
     (window/create
      {:skin skin
       :title title
