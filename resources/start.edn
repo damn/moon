@@ -4,6 +4,11 @@
             moon.ui.editor.window
             moon.ui.editor.widgets-impl
             moon.txs-impl
+            moon.entity.animation
+            moon.entity.body
+            moon.entity.delete-after-duration
+            moon.entity.projectile-collision
+            moon.entity.stats
             ]
  :config [moon.application/lwjgl-app-config {:title "Moon"
                                              :window {:width 1440

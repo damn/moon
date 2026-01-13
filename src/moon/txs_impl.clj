@@ -6,6 +6,7 @@
             [moon.ctx]
             [moon.db :as db]
             [moon.effect :as effect]
+            [moon.entity :as entity]
             [moon.entity.skills :as skills]
             [moon.entity.state :as state]
             [moon.entity.stats :as stats]
@@ -110,11 +111,6 @@
           [:tx/state-exit  eid old-state-obj]
           [:tx/state-enter eid new-state-obj]])))))
 
-(defn- create-component [[k v] {:keys [world/create-fns] :as world}]
-  (if-let [f (create-fns k)]
-    (f v world)
-    v))
-
 (defn- after-create-component [[k v] eid {:keys [world/after-create-fns] :as world}]
   (when-let [f (after-create-fns k)]
     (f v eid world)))
@@ -131,7 +127,7 @@
   entity]
  (mu/validate-humanize spawn-entity-schema entity)
  (let [entity (reduce (fn [m [k v]]
-                        (assoc m k (create-component [k v] world)))
+                        (assoc m k (entity/create [k v] world)))
                       {}
                       entity)
        _ (assert (and (not (contains? entity :entity/id))))

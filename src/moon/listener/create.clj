@@ -1,18 +1,14 @@
 (ns moon.listener.create
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.animation]
-            [moon.body]
             [moon.ctx :as ctx]
             [moon.db :as db]
             [moon.db-impl :as db-impl]
             [moon.entity.skills]
             [moon.entity.state :as state]
-            [moon.entity.stats]
             [moon.graphics :as graphics]
             [moon.graphics.impl]
             [moon.inventory]
-            [moon.timer :as timer]
             [moon.ui.impl]
             [moon.world :as world]
             [moon.world.impl]
@@ -62,13 +58,6 @@
    :world/effect-body-props {:width 0.5
                              :height 0.5
                              :z-order :z-order/effect}
-   :world/create-fns {:entity/animation             moon.animation/create
-                      :entity/body                  moon.body/create
-                      :entity/delete-after-duration (fn [duration {:keys [world/elapsed-time]}]
-                                                      (timer/create elapsed-time duration))
-                      :entity/projectile-collision  (fn create [v _world]
-                                                      (assoc v :already-hit-bodies #{}))
-                      :entity/stats                 moon.entity.stats/create}
    :world/after-create-fns {:entity/fsm                             (fn
                                                                       [{:keys [fsm initial-state]} eid world]
                                                                       ; fsm throws when initial-state is not part of states, so no need to assert initial-state
