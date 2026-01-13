@@ -1,11 +1,7 @@
-; this is just the create the game step ! ... da haegnt so viel dran ... weird !
-; just the function which creates data .. ?
-; _how_ it is created not complect with the processing we do on a piece of data
 (ns moon.listener.create
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.animation]
-            [moon.app :as app]
             [moon.body]
             [moon.ctx :as ctx]
             [moon.db :as db]
@@ -20,7 +16,8 @@
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
             [qrecord.core :as q])
-  (:import (com.badlogic.gdx Audio                          ; we dont require this, but a new 'idea' of audio with just 'new-sound'
+  (:import (com.badlogic.gdx Application
+                             Audio
                              Files
                              Input)
            (com.badlogic.gdx.files FileHandle)
@@ -101,19 +98,19 @@
     skin))
 
 (defn do!
-  [app config]
+  [^Application app config]
   (let [db (db/create)
-        graphics (graphics/create! (app/graphics app) (app/files app) (:graphics config))
+        graphics (graphics/create! (.getGraphics app) (.getFiles app) (:graphics config))
         stage (ui/create! graphics)
-        skin (create-skin (.internal (app/files app) "uiskin.json"))
+        skin (create-skin (.internal (.getFiles app) "uiskin.json"))
         ctx (merge (map->Context {})
-                   {:ctx/audio (load-sounds (app/audio app) (app/files app) (:audio config))
+                   {:ctx/audio (load-sounds (.getAudio app) (.getFiles app) (:audio config))
                     :ctx/db db
                     :ctx/graphics graphics
-                    :ctx/input (app/input app)
+                    :ctx/input (.getInput app)
                     :ctx/stage stage
                     :ctx/skin skin})]
-    (Input/.setInputProcessor (app/input app) stage)
+    (Input/.setInputProcessor (.getInput app) stage)
     (doseq [actor (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) (:ui/actors config))]
       (.addActor stage actor))
     (let [world-fn-result (call-world-fn (:world config)

@@ -1,20 +1,18 @@
-; Welche elemente machen Sinn und sind self-contained units?
-;
 (ns moon.listener.render
-  (:require [clojure.math.vector2 :as v] ; OK
-            [malli.core :as m] ; OK
-            [malli.utils :as mu] ; OK
-            [moon.animation :as animation] ; OK but why here
+  (:require [clojure.math.vector2 :as v]
+            [malli.core :as m]
+            [malli.utils :as mu]
+            [moon.animation :as animation]
             [moon.body :as body]
-            [moon.color :as color] ; graphics ?
-            [moon.ctx :as ctx] ; can pass somehow
-            [moon.effects.target-all :as target-all] ; split out effects & make API what an effect has to be
+            [moon.color :as color]
+            [moon.ctx :as ctx]
+            [moon.effects.target-all :as target-all]
             [moon.effects.target-entity :as target-entity]
-            [moon.entity.state.player-item-on-cursor :as player-item-on-cursor] ;dito effects
+            [moon.entity.state.player-item-on-cursor :as player-item-on-cursor]
             [moon.entity.stats :as stats]
-            [moon.faction :as faction]; ?
-            [moon.graphics :as graphics] ; we assume graphics is ok
-            [moon.input :as input] ; we assume input is ok
+            [moon.faction :as faction]
+            [moon.graphics :as graphics]
+            [moon.input :as input]
             [moon.inventory :as inventory]
             [moon.skill :as skill]
             [moon.throwable :as throwable]
@@ -23,7 +21,7 @@
             [moon.utils :as utils]
             [moon.val-max :as val-max]
             [moon.world :as world]
-            [moon.world.raycaster :as raycaster])  ; weirdlo , fix effects first
+            [moon.world.raycaster :as raycaster])
   (:import (com.badlogic.gdx Input$Buttons)
            (moon Stage)))
 
@@ -462,7 +460,6 @@
             :when (should-draw? entity z-order)]
       (draw-entity ctx entity render-layer))))
 
-; moon.draw-on-world-viewport/?
 (defn- draw-on-world-viewport!
   [{:keys [ctx/graphics]
     :as ctx}]
@@ -780,17 +777,11 @@
       update-mouse
       update-mouseover-eid
       check-open-debug
-
       assoc-active-entities
-
-      ; update all before draw ?
-
       set-camera-on-player
       clear-screen!
       draw-world-map!
       draw-on-world-viewport!
-      ; draw ui here == draw game ?
-
       assoc-interaction-state
       set-cursor
       player-state-handle-input
