@@ -1,9 +1,10 @@
 (ns moon.ui.image-button
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.ui.tooltip :as tooltip])
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
-           (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
+           (com.badlogic.gdx.scenes.scene2d.ui ImageButton
+                                               Skin
+                                               TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener
                                                   Drawable
                                                   TextureRegionDrawable)))
@@ -12,7 +13,7 @@
   [{:keys [^TextureRegion drawable/texture-region
            on-clicked
            drawable/scale
-           skin]
+           ^Skin skin]
     :as opts}]
   (let [scale (or scale 1)
         [w h] [(.getRegionWidth  texture-region)
@@ -25,7 +26,5 @@
                                    (changed [event actor]
                                      (on-clicked actor (.ctx (Event/.getStage event)))))))
     (when-let [tooltip (:tooltip opts)]
-      (tooltip/add! image-button
-                    tooltip
-                    skin))
+      (.addListener image-button (TextTooltip. (str tooltip) skin)))
     (table/set-opts! image-button opts)))

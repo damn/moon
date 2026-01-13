@@ -11,7 +11,6 @@
             [moon.ui.image-button :as image-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
-            [moon.ui.tooltip :as tooltip]
             [moon.ui.widgets :as widgets]
             [moon.ui.window :as window]
             [moon.utils :as utils])
@@ -21,7 +20,8 @@
                                                SelectBox
                                                Label
                                                Skin
-                                               TextField)
+                                               TextField
+                                               TextTooltip)
            (moon Stage)))
 
 (defmethod create :default
@@ -116,12 +116,11 @@
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)
               texture-region (graphics/texture-region graphics (property/image property))
-              image-widget (image/create
-                            {:image/object texture-region
-                             :actor/user-object property-id})]
-          {:actor (tooltip/add! image-widget
-                                (property/tooltip property)
-                                skin)}))
+              image-widget (doto (image/create
+                                  {:image/object texture-region
+                                   :actor/user-object property-id})
+                             (.addListener (TextTooltip. (property/tooltip property) ^Skin skin)))]
+          {:actor image-widget}))
       (for [id property-ids]
         {:actor (text-button/create
                  {:text "-"
@@ -174,12 +173,11 @@
       [(when property-id
          (let [property (db/get-raw db property-id)
                texture-region (graphics/texture-region graphics (property/image property))
-               image-widget (image/create
-                             {:image/object texture-region
-                              :actor/user-object property-id})]
-           {:actor (tooltip/add! image-widget
-                                 (property/tooltip property)
-                                 skin)}
+               image-widget (doto (image/create
+                                   {:image/object texture-region
+                                    :actor/user-object property-id})
+                              (.addListener (TextTooltip. (property/tooltip property) ^Skin skin)))]
+           {:actor image-widget}
            image-widget))]
       [(when property-id
          {:actor (text-button/create
@@ -250,18 +248,16 @@
                                          :skin skin})}])])
     table))
 
-(defmethod create :s/string [schema v {:keys [ctx/skin]}]
-  (tooltip/add! (TextField. (str v) ^Skin skin)
-                (str schema)
-                skin))
+(defmethod create :s/string [schema v {:keys [^Skin ctx/skin]}]
+  (doto (TextField. (str v) skin)
+    (.addListener (TextTooltip. (str schema) skin))))
 
 (defmethod value :s/string [_ widget _schemas]
   (TextField/.getText widget))
 
-(defn- create-edn-widget [schema v {:keys [ctx/skin]}]
-  (tooltip/add! (TextField. (utils/->edn-str v) ^Skin skin)
-                (str schema)
-                skin))
+(defn- create-edn-widget [schema v {:keys [^Skin ctx/skin]}]
+  (doto (TextField. (utils/->edn-str v) skin)
+    (.addListener (TextTooltip. (str schema) skin))))
 
 (defn- edn-widget-value [_  widget _schemas]
   (edn/read-string (TextField/.getText widget)))

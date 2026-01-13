@@ -1,7 +1,8 @@
 (ns moon.ui.inventory
-  (:require [moon.ui.image :as image]
-            [moon.ui.tooltip :as tooltip])
+  (:require [moon.ui.image :as image])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
 (defn- find-cell [group cell]
@@ -20,10 +21,15 @@
         drawable (doto (TextureRegionDrawable. texture-region)
                    (.setMinSize cell-size cell-size))]
     (image/set-drawable! image-widget drawable)
-    (tooltip/add! cell-widget tooltip-text skin)))
+    (.addListener cell-widget (TextTooltip. tooltip-text ^Skin skin))
+    nil))
 
 (defn remove-item! [inventory-window cell]
   (let [cell-widget (window->cell inventory-window cell)
         image-widget (.findActor cell-widget "image-widget")]
     (image/set-drawable! image-widget (:background-drawable (Actor/.getUserObject image-widget)))
-    (tooltip/remove! cell-widget)))
+    ; TODO
+    ;(.removeListener actor (.getListeners actor))
+    ; ... first find the listener
+    #_(tooltip/remove! cell-widget)
+    nil))
