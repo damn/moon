@@ -4,3 +4,6 @@
 
 (defmethod schema/malli-form :s/map [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
+
+(defmethod schema/create-value :s/map [_ v db]
+  (schemas/build-values (:db/schemas db) v db))

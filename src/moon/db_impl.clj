@@ -25,27 +25,12 @@
                with-out-str
                (spit file))))))))
 
-(defmulti create-value (fn [[k] _v _db]
-                         k))
-
-(defmethod create-value :default [_ v _db]
-  v)
-
-(defmethod create-value :s/one-to-many [_ property-ids db]
-  (set (map (partial db/build db) property-ids)))
-
-(defmethod create-value :s/one-to-one [_ property-id db]
-  (db/build db property-id))
-
-(defmethod create-value :s/map [_ v db]
-  (schemas/build-values (:db/schemas db) v db))
-
 (defrecord Schemas []
   schemas/Schemas
   (build-values [schemas property db]
     (utils/apply-kvs property
                      (fn [k v]
-                       (try (create-value (get schemas k) v db)
+                       (try (schema/create-value (get schemas k) v db)
                             (catch Throwable t
                               (throw (ex-info " " {:k k :v v} t)))))))
 
