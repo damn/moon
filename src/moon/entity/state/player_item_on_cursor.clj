@@ -66,3 +66,7 @@
 (defmethod state/cursor :player-item-on-cursor
   [_ _eid _ctx]
   :cursors/hand-grab)
+
+(defmethod state/pause-game? :player-item-on-cursor
+  [_]
+  true)

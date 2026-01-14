@@ -43,3 +43,7 @@
 
       :interaction-state/no-skill-selected
       :cursors/no-skill-selected)))
+
+(defmethod state/pause-game? :player-idle
+  [_]
+  true)

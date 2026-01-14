@@ -22,3 +22,7 @@
 (defmethod state/cursor :stunned
   [_ _eid _ctx]
   :cursors/denied)
+
+(defmethod state/pause-game? :stunned
+  [_]
+  false)

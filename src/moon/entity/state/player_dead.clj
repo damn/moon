@@ -12,3 +12,7 @@
 (defmethod state/cursor :player-dead
   [_ _eid _ctx]
   :cursors/black-x)
+
+(defmethod state/pause-game? :player-dead
+  [_]
+  true)

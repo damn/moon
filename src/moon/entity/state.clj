@@ -27,3 +27,7 @@
 (defmulti cursor
   (fn [[k _v] _eid _ctx]
     k))
+
+(defmulti pause-game?
+  (fn [k]
+    k))

@@ -88,3 +88,7 @@
 (defmethod state/cursor :active-skill
   [_ _eid _ctx]
   :cursors/sandclock)
+
+(defmethod state/pause-game? :active-skill
+  [_]
+  false)

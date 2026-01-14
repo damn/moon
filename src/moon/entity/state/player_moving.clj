@@ -19,3 +19,7 @@
 (defmethod state/cursor :player-moving
   [_ _eid _ctx]
   :cursors/walking)
+
+(defmethod state/pause-game? :player-moving
+  [_]
+  false)
