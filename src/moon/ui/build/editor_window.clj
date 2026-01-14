@@ -3,8 +3,8 @@
             [moon.input :as input]
             [moon.property :as property]
             [moon.throwable :as throwable]
+            [moon.schema :as schema]
             [moon.ui :as ui]
-            [moon.ui.editor.schema :as schema]
             [moon.ui.text-button :as text-button]
             [moon.ui.widgets :as widget]
             [moon.ui.window :as window])

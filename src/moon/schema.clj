@@ -1,4 +1,4 @@
-(ns moon.ui.editor.schema)
+(ns moon.schema)
 
 (defmulti create (fn [[schema-k :as _schema] v ctx]
                    schema-k))

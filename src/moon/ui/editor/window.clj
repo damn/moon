@@ -2,9 +2,9 @@
   (:require [clojure.set :as set]
             [malli.utils :as mu]
             [moon.malli :as malli]
+            [moon.schema :as schema]
             [moon.schemas :as schemas]
             [moon.ui.build.editor-window :as editor-window]
-            [moon.ui.editor.schema :as schema]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
@@ -96,7 +96,7 @@
                  :center? true
                  :close-on-escape? true
                  :cell-defaults {:pad 5}})
-        remaining-ks (sort (remove (set (keys (moon.ui.editor.schema/value schema map-widget-table schemas)))
+        remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))
                                    (mu/map-keys (malli/form schema schemas))))]
     (table/add-rows!
      window
