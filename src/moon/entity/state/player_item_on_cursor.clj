@@ -1,9 +1,14 @@
 (ns moon.entity.state.player-item-on-cursor
   (:require [clojure.math.vector2 :as v]
             [moon.entity :as entity]
+            [moon.entity.state :as state]
             [moon.graphics :as graphics]
             [moon.input :as input]
             [moon.ui :as ui]))
+
+(defmethod state/create :player-item-on-cursor
+  [[_k item] _eid _world]
+  {:item item})
 
 (defn world-item? [mouseover-actor]
   (not mouseover-actor))
@@ -37,3 +42,23 @@
       (item-place-position (:graphics/world-mouse-position graphics)
                            entity)
       {:center? true}]]))
+
+(defmethod state/enter :player-item-on-cursor
+  [[_k {:keys [item]}] eid]
+  [[:tx/assoc eid :entity/item-on-cursor item]])
+
+(defmethod state/exit :player-item-on-cursor
+  [_ eid {:keys [ctx/graphics]}]
+  ; at clicked-cell when we put it into a inventory-cell
+  ; we do not want to drop it on the ground too additonally,
+  ; so we dissoc it there manually. Otherwise it creates another item
+  ; on the ground
+  (let [entity @eid]
+    (when (:entity/item-on-cursor entity)
+      [[:tx/sound "bfxr_itemputground"]
+       [:tx/dissoc eid :entity/item-on-cursor]
+       [:tx/spawn-item
+        (item-place-position
+         (:graphics/world-mouse-position graphics)
+         entity)
+        (:entity/item-on-cursor entity)]])))

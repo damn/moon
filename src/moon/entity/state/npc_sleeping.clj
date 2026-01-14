@@ -1,5 +1,6 @@
 (ns moon.entity.state.npc-sleeping
   (:require [moon.entity :as entity]
+            [moon.entity.state :as state]
             [moon.entity.stats :as stats]
             [moon.world.grid :as grid]))
 
@@ -17,3 +18,8 @@
                   :x x
                   :y (+ y (/ (:body/height body) 2))
                   :up? true}]]))
+
+(defmethod state/exit :npc-sleeping
+  [_ eid _ctx]
+  [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]
+   [:tx/add-text-effect eid "[WHITE]!" 1]])

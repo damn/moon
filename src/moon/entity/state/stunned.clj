@@ -1,6 +1,11 @@
 (ns moon.entity.state.stunned
   (:require [moon.entity :as entity]
+            [moon.entity.state :as state]
             [moon.timer :as timer]))
+
+(defmethod state/create :stunned
+  [[_k duration] _eid {:keys [world/elapsed-time]}]
+  {:counter (timer/create elapsed-time duration)})
 
 (defmethod entity/tick :stunned
   [[_k {:keys [counter]}] eid {:keys [world/elapsed-time]}]

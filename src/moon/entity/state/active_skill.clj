@@ -1,9 +1,25 @@
 (ns moon.entity.state.active-skill
   (:require [moon.effect :as effect]
             [moon.entity :as entity]
+            [moon.entity.state :as state]
+            [moon.entity.stats :as stats]
             [moon.graphics :as graphics]
             [moon.timer :as timer]
             [moon.world :as world]))
+
+(defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
+  (/ action-time
+     (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
+         1)))
+
+(defmethod state/create :active-skill
+  [[_k [skill effect-ctx]] eid {:keys [world/elapsed-time]}]
+  {:skill skill
+   :effect-ctx effect-ctx
+   :counter (->> skill
+                 :skill/action-time
+                 (apply-action-speed-modifier @eid skill)
+                 (timer/create elapsed-time))})
 
 (defn- update-effect-ctx
   [world {:keys [effect/source effect/target] :as effect-ctx}]
@@ -62,3 +78,9 @@
                               (timer/ratio (:world/elapsed-time world) counter))
             (mapcat #(effect/render % effect-ctx ctx)  ; update-effect-ctx here too ?
                     effects))))
+
+(defmethod state/enter :active-skill
+  [[_k {:keys [skill]}] eid]
+  [[:tx/sound (:skill/start-action-sound skill)]
+   [:tx/set-cooldown eid skill]
+   [:tx/update eid :entity/stats stats/pay-mana-cost (:skill/cost skill)]])

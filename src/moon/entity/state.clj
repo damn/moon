@@ -1,6 +1,25 @@
-(ns moon.entity.state) ; moon.creature.state ? / moon.player-entity.state ?
+(ns moon.entity.state)
 
-(defprotocol State
-  (create       [_ eid world])
-  (enter        [_ eid])
-  (exit         [_ eid ctx]))
+(defmulti create
+  (fn [[k _v] _eid _ctx]
+    k))
+
+(defmethod create :default
+  [[_k v] _eid _ctx]
+  v)
+
+(defmulti enter
+  (fn [[k _v] _eid]
+    k))
+
+(defmethod enter :default
+  [[_k _v] _eid]
+  nil)
+
+(defmulti exit
+  (fn [[k _v] _eid _ctx]
+    k))
+
+(defmethod exit :default
+  [[_k _v] _eid _ctx]
+  nil)
