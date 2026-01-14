@@ -62,3 +62,7 @@
          (:graphics/world-mouse-position graphics)
          entity)
         (:entity/item-on-cursor entity)]])))
+
+(defmethod state/cursor :player-item-on-cursor
+  [_ _eid _ctx]
+  :cursors/hand-grab)

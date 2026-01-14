@@ -15,3 +15,7 @@
 (defmethod state/exit :player-moving
   [_ eid _ctx]
   [[:tx/dissoc eid :entity/movement]])
+
+(defmethod state/cursor :player-moving
+  [_ _eid _ctx]
+  :cursors/walking)

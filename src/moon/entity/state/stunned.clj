@@ -18,3 +18,7 @@
     (:body/position body)
     0.5
     [1 1 1 0.6]]])
+
+(defmethod state/cursor :stunned
+  [_ _eid _ctx]
+  :cursors/denied)

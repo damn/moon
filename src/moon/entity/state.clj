@@ -23,3 +23,7 @@
 (defmethod exit :default
   [[_k _v] _eid _ctx]
   nil)
+
+(defmulti cursor
+  (fn [[k _v] _eid _ctx]
+    k))

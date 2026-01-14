@@ -41,6 +41,7 @@
             moon.entity.state.npc-moving
             moon.entity.state.npc-sleeping
             moon.entity.state.player-dead
+            moon.entity.state.player-idle
             moon.entity.state.player-item-on-cursor
             moon.entity.state.player-moving
             moon.entity.state.stunned

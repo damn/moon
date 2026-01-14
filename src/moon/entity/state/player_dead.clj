@@ -8,3 +8,7 @@
                     :text "Good luck next time!"
                     :button-text "OK"
                     :on-click (fn [])}]])
+
+(defmethod state/cursor :player-dead
+  [_ _eid _ctx]
+  :cursors/black-x)

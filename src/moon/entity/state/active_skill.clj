@@ -84,3 +84,7 @@
   [[:tx/sound (:skill/start-action-sound skill)]
    [:tx/set-cooldown eid skill]
    [:tx/update eid :entity/stats stats/pay-mana-cost (:skill/cost skill)]])
+
+(defmethod state/cursor :active-skill
+  [_ _eid _ctx]
+  :cursors/sandclock)
