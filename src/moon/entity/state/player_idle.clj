@@ -47,3 +47,10 @@
 (defmethod state/pause-game? :player-idle
   [_]
   true)
+
+(defmethod state/clicked-inventory-cell :player-idle
+  [_ eid cell]
+  (when-let [item (get-in (:entity/inventory @eid) cell)]
+    [[:tx/sound "bfxr_takeit"]
+     [:tx/event eid :pickup-item item]
+     [:tx/remove-item eid cell]]))

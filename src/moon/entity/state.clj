@@ -31,3 +31,11 @@
 (defmulti pause-game?
   (fn [k]
     k))
+
+(defmulti clicked-inventory-cell
+  (fn [[k _v] _eid _cell]
+    k))
+
+(defmethod clicked-inventory-cell :default
+  [_ _eid _cell]
+  nil)
