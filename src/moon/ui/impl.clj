@@ -161,6 +161,7 @@
                  :close-button? true
                  :close-on-escape? true
                  :center? true
+                 :skin skin
                  :pack? true})))
 
   (actor-information [_ actor]
