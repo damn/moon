@@ -1,5 +1,5 @@
 (ns moon.schema.string
-  (:require [moon.malli :as malli]))
+  (:require [moon.schema :as schema]))
 
-(defmethod malli/form :s/string [_ _schemas]
+(defmethod schema/malli-form :s/string [_ _schemas]
   :string)

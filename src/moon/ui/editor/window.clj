@@ -1,7 +1,6 @@
 (ns moon.ui.editor.window
   (:require [clojure.set :as set]
             [malli.utils :as mu]
-            [moon.malli :as malli]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
             [moon.ui.build.editor-window :as editor-window]
@@ -97,7 +96,7 @@
                  :close-on-escape? true
                  :cell-defaults {:pad 5}})
         remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))
-                                   (mu/map-keys (malli/form schema schemas))))]
+                                   (mu/map-keys (schema/malli-form schema schemas))))]
     (table/add-rows!
      window
      (for [k remaining-ks]
@@ -111,7 +110,7 @@
                                                                                                       k
                                                                                                       (schemas/default-value schemas k))
                                                                                   k
-                                                                                  (mu/optional? k (malli/form schema schemas))
+                                                                                  (mu/optional? k (schema/malli-form schema schemas))
                                                                                   map-widget-table)])
                                 (rebuild! ctx))
                   :skin skin})}]))
@@ -207,9 +206,9 @@
       :k->widget (into {}
                        (for [[k v] m]
                          [k (build-value-widget ctx (get schemas k) k v)]))
-      :k->optional? #(mu/optional? % (malli/form schema schemas))
+      :k->optional? #(mu/optional? % (schema/malli-form schema schemas))
       :ks-sorted (map first (utils/sort-by-k-order property-k-sort-order m))
-      :opt? (seq (set/difference (mu/optional-keyset (malli/form schema schemas))
+      :opt? (seq (set/difference (mu/optional-keyset (schema/malli-form schema schemas))
                                  (set (keys m))))})))
 
 (defmethod schema/value :s/map

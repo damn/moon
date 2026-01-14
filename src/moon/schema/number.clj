@@ -1,7 +1,7 @@
 (ns moon.schema.number
-  (:require [moon.malli :as malli]))
+  (:require [moon.schema :as schema]))
 
-(defmethod malli/form :s/number [[_ predicate] _schemas]
+(defmethod schema/malli-form :s/number [[_ predicate] _schemas]
   (case predicate
     :int     int?
     :nat-int nat-int?

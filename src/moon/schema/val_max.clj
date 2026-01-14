@@ -1,6 +1,6 @@
 (ns moon.schema.val-max
-  (:require [moon.malli :as malli]
+  (:require [moon.schema :as schema]
             [moon.val-max :as val-max]))
 
-(defmethod malli/form :s/val-max [_ _schemas]
+(defmethod schema/malli-form :s/val-max [_ _schemas]
   val-max/schema)

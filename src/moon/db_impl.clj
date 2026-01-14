@@ -5,8 +5,8 @@
             [malli.core :as m]
             [malli.utils :as mu]
             [moon.db :as db]
-            [moon.malli :as malli]
             [moon.property :as property]
+            [moon.schema :as schema]
             [moon.schemas :as schemas]
             [moon.utils :as utils]))
 
@@ -57,13 +57,13 @@
 
   (validate [schemas k value]
     (-> (get schemas k)
-        (malli/form schemas)
+        (schema/malli-form schemas)
         m/schema
         (mu/validate-humanize value)))
 
   (create-map-schema [schemas ks]
     (mu/create-map-schema ks (fn [k]
-                               (malli/form (get schemas k) schemas)))))
+                               (schema/malli-form (get schemas k) schemas)))))
 
 (defrecord RDB []
   db/DB

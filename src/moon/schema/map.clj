@@ -1,6 +1,6 @@
 (ns moon.schema.map
-  (:require [moon.malli :as malli]
+  (:require [moon.schema :as schema]
             [moon.schemas :as schemas]))
 
-(defmethod malli/form :s/map [[_ ks] schemas]
+(defmethod schema/malli-form :s/map [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))

@@ -1,5 +1,5 @@
 (ns moon.schema.vector
-  (:require [moon.malli :as malli]))
+  (:require [moon.schema :as schema]))
 
-(defmethod malli/form :s/vector [[_ & params] _schemas]
+(defmethod schema/malli-form :s/vector [[_ & params] _schemas]
   (apply vector :vector params))

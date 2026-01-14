@@ -1,8 +1,8 @@
 (ns moon.schema.animation
-  (:require [moon.malli :as malli]
+  (:require [moon.schema :as schema]
             [moon.schemas :as schemas]))
 
-(defmethod malli/form :s/animation [_ schemas]
+(defmethod schema/malli-form :s/animation [_ schemas]
   (schemas/create-map-schema schemas
                              [:animation/frames
                               :animation/frame-duration

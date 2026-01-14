@@ -1,5 +1,5 @@
 (ns moon.schema.sound
-  (:require [moon.malli :as malli]))
+  (:require [moon.schema :as schema]))
 
-(defmethod malli/form :s/sound [_ _schemas]
+(defmethod schema/malli-form :s/sound [_ _schemas]
   :string)
