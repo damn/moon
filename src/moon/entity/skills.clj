@@ -8,11 +8,6 @@
         (for [skill skills]
           [:tx/add-skill eid skill])))
 
-(defn set-cooldown [skills skill elapsed-time]
-  (assoc-in skills
-            [(:property/id skill) :skill/cooling-down?]
-            (timer/create elapsed-time (:skill/cooldown skill))))
-
 (defmethod entity/tick :entity/skills
   [[_k skills] eid {:keys [world/elapsed-time]}]
   (for [{:keys [skill/cooling-down?] :as skill} (vals skills)

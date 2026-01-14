@@ -1,7 +1,10 @@
 (ns moon.tx.set-cooldown
-  (:require [moon.entity.skills :as skills]))
+  (:require [moon.timer :as timer]))
 
 (defn do!
   [{:keys [ctx/world]} eid skill]
-  (swap! eid update :entity/skills skills/set-cooldown skill (:world/elapsed-time world))
+  (swap! eid assoc-in [:entity/skills
+                       (:property/id skill)
+                       :skill/cooling-down?]
+         (timer/create (:world/elapsed-time world) (:skill/cooldown skill)))
   nil)
