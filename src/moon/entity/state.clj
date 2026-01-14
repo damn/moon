@@ -39,3 +39,10 @@
 (defmethod clicked-inventory-cell :default
   [_ _eid _cell]
   nil)
+
+(defmulti draw-ui-view
+  (fn [[k _v] _eid _ctx]
+    k))
+
+(defmethod draw-ui-view :default
+  [_ _eid _ctx])

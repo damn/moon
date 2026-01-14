@@ -106,3 +106,16 @@
       [:tx/set-item eid cell item-on-cursor]
       [:tx/event eid :dropped-item]
       [:tx/event eid :pickup-item item-in-cell]])))
+
+(defmethod state/draw-ui-view :player-item-on-cursor
+  [_ eid {:keys [ctx/graphics
+                 ctx/input
+                 ctx/stage]}]
+  ; TODO see player-item-on-cursor at render layers
+  ; always draw it here at right position, then render layers does not need input/stage
+  ; can pass world to graphics, not handle here at application
+  (when (not (world-item? (ui/mouseover-actor stage (input/mouse-position input))))
+    [[:draw/texture-region
+      (graphics/texture-region graphics (:entity/image (:entity/item-on-cursor @eid)))
+      (:graphics/ui-mouse-position graphics)
+      {:center? true}]]))
