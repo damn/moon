@@ -262,7 +262,7 @@
     :as ctx}]
   (graphics/draw-on-world-vp! graphics
                               (fn []
-                                (doseq [f [draw-tile-grid
+                                (doseq [f [draw-tile-grid ; TODO ?
                                            draw-cell-debug
                                            draw-entities
                                            #_moon.application.render.draw-on-world-viewport.geom-test/do!
@@ -280,6 +280,7 @@
      :effect/target-direction (v/direction (:body/position (:entity/body @player-eid))
                                            target-position)}))
 
+; TODO ?
 (defn- interaction-state
   [stage
    world-mouse-position
@@ -345,6 +346,7 @@
 (defn- dissoc-interaction-state [ctx]
   (dissoc ctx :ctx/interaction-state))
 
+; TODO
 (def pausing? true)
 
 (defn- assoc-paused
