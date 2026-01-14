@@ -5,10 +5,7 @@
                                                ButtonGroup
                                                HorizontalGroup)))
 
-; declarative scene2d ui functions ?
-
 (defn create
-  "Is a table(ui actor for stage) which fills parent and contains a horizontal group of buttons."
   []
   (table/create
    {:rows [[{:actor (doto (doto (HorizontalGroup.)
