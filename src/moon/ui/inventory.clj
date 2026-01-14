@@ -6,7 +6,7 @@
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
 (defn- find-cell [group cell]
-  (first (filter #(= (Actor/.getUserObject % ) cell)
+  (first (filter #(= (Actor/.getUserObject %) cell)
                  (.getChildren group))))
 
 (defn- window->cell [inventory-window cell]
