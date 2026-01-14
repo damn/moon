@@ -35,6 +35,7 @@
            world/max-speed]}]
   (assert (<= 0 speed max-speed)
           (pr-str speed))
+  (assert (vector? direction))
   (assert (or (zero? (v/length direction))
               (utils/nearly-equal? 1 (v/length direction)))
           (str "cannot understand direction: " (pr-str direction)))
