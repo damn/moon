@@ -5,7 +5,8 @@
             [moon.graphics :as graphics]
             [moon.inventory :as inventory]
             [moon.input :as input]
-            [moon.ui :as ui]))
+            [moon.ui :as ui])
+  (:import (com.badlogic.gdx Input$Buttons)))
 
 (defmethod state/create :player-item-on-cursor
   [[_k item] _eid _world]
@@ -119,3 +120,11 @@
       (graphics/texture-region graphics (:entity/image (:entity/item-on-cursor @eid)))
       (:graphics/ui-mouse-position graphics)
       {:center? true}]]))
+
+(defmethod state/handle-input :player-item-on-cursor
+  [_ eid {:keys [ctx/input
+                 ctx/stage]}]
+  (let [mouseover-actor (ui/mouseover-actor stage (input/mouse-position input))]
+    (when (and (input/button-just-pressed? input Input$Buttons/LEFT)
+               (world-item? mouseover-actor))
+      [[:tx/event eid :drop-item]])))

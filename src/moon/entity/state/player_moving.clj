@@ -1,6 +1,11 @@
 (ns moon.entity.state.player-moving
   (:require [moon.entity.state :as state]
-            [moon.entity.stats :as stats]))
+            [moon.entity.stats :as stats]
+            [moon.input :as input]))
+
+(defn- speed [{:keys [entity/stats]}]
+  (or (stats/get-stat-value stats :stats/movement-speed)
+      0))
 
 (defmethod state/create :player-moving
   [[_k movement-vector] eid _world]
@@ -23,3 +28,10 @@
 (defmethod state/pause-game? :player-moving
   [_]
   false)
+
+(defmethod state/handle-input :player-moving
+  [_ eid {:keys [ctx/input]}]
+  (if-let [movement-vector (input/player-movement-vector input)]
+    [[:tx/assoc eid :entity/movement {:direction movement-vector
+                                      :speed (speed @eid)}]]
+    [[:tx/event eid :no-movement-input]]))
