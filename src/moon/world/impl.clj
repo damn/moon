@@ -9,8 +9,7 @@
             [moon.world.create.grid]
             [moon.world.grid :as grid]
             [moon.world.grid.cell :as cell]
-            [moon.world.tiled :as tiled]
-            [moon.world.update-potential-fields :as update-potential-fields]))
+            [moon.world.tiled :as tiled]))
 
 (defn- create-double-ray-endpositions
   [[start-x start-y]
@@ -99,9 +98,6 @@
   (dispose! [{:keys [world/tiled-map]}]
     (assert tiled-map) ; only dispose after world was created
     (.dispose tiled-map))
-
-  (update-potential-fields! [this]
-    (update-potential-fields/do! this))
 
   (tick-entities! [{:keys [world/active-entities]
                     :as world}]
