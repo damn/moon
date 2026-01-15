@@ -9,6 +9,7 @@
   (m/schema
    [:map {:closed true}
     [:ctx/audio :some]
+    [:ctx/cursors :some]
     [:ctx/graphics :some]
     [:ctx/input :some]
     [:ctx/mouseover-eid :any] ; can be nil

@@ -3,6 +3,21 @@
  :world-impl moon.world.impl/create
  :audio {:sound-names "sounds.edn"
          :path-format "sounds/%s.wav"}
+ :cursors {:path-format "cursors/%s.png"
+           :data {:cursors/bag                   ["bag001"       [0   0]]
+                  :cursors/black-x               ["black_x"      [0   0]]
+                  :cursors/default               ["default"      [0   0]]
+                  :cursors/denied                ["denied"       [16 16]]
+                  :cursors/hand-before-grab      ["hand004"      [4  16]]
+                  :cursors/hand-before-grab-gray ["hand004_gray" [4  16]]
+                  :cursors/hand-grab             ["hand003"      [4  16]]
+                  :cursors/move-window           ["move002"      [16 16]]
+                  :cursors/no-skill-selected     ["denied003"    [0   0]]
+                  :cursors/over-button           ["hand002"      [0   0]]
+                  :cursors/sandclock             ["sandclock"    [16 16]]
+                  :cursors/skill-not-usable      ["x007"         [0   0]]
+                  :cursors/use-skill             ["pointer004"   [0   0]]
+                  :cursors/walking               ["walking"      [16 16]]}}
  :texture-folder {:folder "resources/"
                   :extensions #{"png" "bmp"}}
  :ui-viewport {:width 1440
@@ -19,21 +34,7 @@
                                     ; :texture-filter/linear because scaling to world-units
                                     :min-filter :linear
                                     :mag-filter :linear}}
-            :cursors {:path-format "cursors/%s.png"
-                      :data {:cursors/bag                   ["bag001"       [0   0]]
-                             :cursors/black-x               ["black_x"      [0   0]]
-                             :cursors/default               ["default"      [0   0]]
-                             :cursors/denied                ["denied"       [16 16]]
-                             :cursors/hand-before-grab      ["hand004"      [4  16]]
-                             :cursors/hand-before-grab-gray ["hand004_gray" [4  16]]
-                             :cursors/hand-grab             ["hand003"      [4  16]]
-                             :cursors/move-window           ["move002"      [16 16]]
-                             :cursors/no-skill-selected     ["denied003"    [0   0]]
-                             :cursors/over-button           ["hand002"      [0   0]]
-                             :cursors/sandclock             ["sandclock"    [16 16]]
-                             :cursors/skill-not-usable      ["x007"         [0   0]]
-                             :cursors/use-skill             ["pointer004"   [0   0]]
-                             :cursors/walking               ["walking"      [16 16]]}}}
+            }
  :ui/actors [[moon.ui-actors.dev-menu/create]
              [moon.ui-actors.action-bar/create]
              [moon.ui-actors.hp-mana-bar/create]

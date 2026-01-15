@@ -12,9 +12,11 @@
   (:import (com.badlogic.gdx Application
                              Audio
                              Files
+                             Graphics
                              Input)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Texture
+           (com.badlogic.gdx.graphics Pixmap
+                                      Texture
                                       OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
            (com.badlogic.gdx.utils.viewport FitViewport)
@@ -75,6 +77,12 @@
           true)
     skin))
 
+(defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
+  (let [pixmap (Pixmap. (.internal files path))
+        cursor (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y)]
+    (.dispose pixmap)
+    cursor))
+
 ; Idea:
 ; Assert what is there before passing ctx somwehere (can do select-keys)
 ; e.g. what does add actors need? .. textures/etc.
@@ -134,4 +142,10 @@
                                                  world-height
                                                  (doto (OrthographicCamera.)
                                                    (.setToOrtho false world-width world-height))))
+             :ctx/cursors (update-vals (:data (:cursors config))
+                                       (fn [[path hotspot]]
+                                         (create-cursor (.getFiles app)
+                                                        (.getGraphics app)
+                                                        (format (:path-format (:cursors config)) path)
+                                                        hotspot)))
              ))))

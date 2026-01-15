@@ -1,8 +1,7 @@
 (ns moon.graphics.impl
   (:require [clj.api.space.earlygrey.shape-drawer :as sd]
             [moon.graphics :as graphics])
-  (:import (com.badlogic.gdx Graphics)
-           (com.badlogic.gdx.graphics Color
+  (:import (com.badlogic.gdx.graphics Color
                                       Colors
                                       Pixmap
                                       Pixmap$Format
@@ -36,12 +35,6 @@
             :when component]
       (apply (get draw-fns k) graphics (rest component)))))
 
-(defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
-  (let [pixmap (Pixmap. (.internal files path))
-        cursor (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y)]
-    (.dispose pixmap)
-    cursor))
-
 (defn- generate-font
   [file-handle {:keys [size
                        quality-scaling
@@ -64,7 +57,6 @@
   [graphics
    files
    {:keys [colors
-           cursors
            default-font
            tile-size]}]
   (doseq [[name [r g b a]] colors] ; remove out
@@ -79,12 +71,6 @@
         world-unit-scale (float (/ tile-size))]
     (-> (map->RGraphics {})
         (assoc :graphics/core graphics)
-        (assoc :graphics/cursors (update-vals (:data cursors)
-                                              (fn [[path hotspot]]
-                                                (create-cursor files
-                                                               graphics
-                                                               (format (:path-format cursors) path)
-                                                               hotspot))))
         (assoc :graphics/default-font (generate-font (.internal files (:path default-font))
                                                      (:params default-font)))
         (assoc :graphics/batch batch)

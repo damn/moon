@@ -62,15 +62,15 @@
                                                        (ui/mouseover-actor stage (input/mouse-position input)))))
 
 (defn- set-cursor
-  [{:keys [ctx/graphics
+  [{:keys [ctx/cursors
+           ctx/graphics
            ctx/player-eid]
     :as ctx}]
   (let [eid player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)
-        {:keys [graphics/core
-                graphics/cursors]} graphics]
+        {:keys [graphics/core]} graphics]
     (assert (contains? cursors cursor-key))
     (Graphics/.setCursor core (get cursors cursor-key)))
   ctx)
