@@ -1,9 +1,36 @@
 (ns moon.tx.spawn-entity
-  (:require [malli.utils :as mu]
+  (:require [malli.core :as m]
+            [malli.utils :as mu]
             [moon.entity :as entity]
             [moon.world.content-grid :as content-grid]
             [moon.world.grid :as grid]
             [qrecord.core :as q]))
+
+(def ^:private components-schema
+  (m/schema [:map {:closed true}
+             [:entity/body :some]
+             [:entity/image {:optional true} :some]
+             [:entity/animation {:optional true} :some]
+             [:entity/alert-friendlies-after-duration {:optional true} :some]
+             [:entity/line-render {:optional true} :some]
+             [:entity/delete-after-duration {:optional true} :some]
+             [:entity/destroy-audiovisual {:optional true} :some]
+             [:entity/fsm {:optional true} :some]
+             [:entity/player? {:optional true} :some]
+             [:entity/free-skill-points {:optional true} :some]
+             [:entity/click-distance-tiles {:optional true} :some]
+             [:entity/clickable {:optional true} :some]
+             [:property/id {:optional true} :some]
+             [:property/pretty-name {:optional true} :some]
+             [:creature/level {:optional true} :some]
+             [:entity/faction {:optional true} :some]
+             [:entity/species {:optional true} :some]
+             [:entity/movement {:optional true} :some]
+             [:entity/skills {:optional true} :some]
+             [:entity/stats {:optional true} :some]
+             [:entity/inventory    {:optional true} :some]
+             [:entity/item {:optional true} :some]
+             [:entity/projectile-collision {:optional true} :some]]))
 
 (q/defrecord Entity [entity/body])
 
@@ -11,11 +38,10 @@
  [{:keys [world/content-grid
           world/entity-ids
           world/grid
-          world/id-counter
-          world/spawn-entity-schema]
+          world/id-counter]
    :as world}
   entity]
- (mu/validate-humanize spawn-entity-schema entity)
+ (mu/validate-humanize components-schema entity)
  (let [entity (reduce (fn [m [k v]]
                         (assoc m k (entity/create [k v] world)))
                       {}

@@ -5,7 +5,6 @@
             [moon.entity :as entity]
             [moon.utils :as utils]
             [moon.world :as world]
-            [moon.world.assoc-entity-spawn-schema :as assoc-entity-spawn-schema]
             [moon.world.content-grid :as content-grid]
             [moon.world.create-fsms :as create-fsms]
             [moon.world.create.grid]
@@ -224,7 +223,6 @@
 
 (defn create [initial-config world-fn-result]
   (-> (merge (map->RWorld {}) initial-config)
-      assoc-entity-spawn-schema/step
       create-fsms/step
       calculate-max-speed
       define-render-z-order
