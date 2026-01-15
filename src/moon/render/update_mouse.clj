@@ -1,6 +1,6 @@
 (ns moon.render.update-mouse
-  (:require [moon.input :as input]
-            [moon.graphics :as graphics]))
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.input :as input]))
 
 (defn do!
   [{:keys [ctx/graphics
@@ -8,5 +8,5 @@
     :as ctx}]
   (let [mp (input/mouse-position input)]
     (-> ctx
-        (assoc-in [:ctx/graphics :graphics/world-mouse-position] (graphics/unproject-world graphics mp))
-        (assoc-in [:ctx/graphics :graphics/ui-mouse-position] (graphics/unproject-ui graphics mp)))))
+        (assoc-in [:ctx/graphics :graphics/world-mouse-position] (viewport/unproject (:graphics/world-viewport graphics) mp))
+        (assoc-in [:ctx/graphics :graphics/ui-mouse-position] (viewport/unproject (:graphics/ui-viewport graphics) mp)))))

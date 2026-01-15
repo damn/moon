@@ -1,6 +1,5 @@
 (ns moon.graphics.impl
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
-            [clj.api.space.earlygrey.shape-drawer :as sd]
+  (:require [clj.api.space.earlygrey.shape-drawer :as sd]
             [moon.graphics :as graphics]
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer])
@@ -39,12 +38,6 @@
 
 (defrecord RGraphics []
   moon.graphics/Graphics
-  (unproject-ui [{:keys [graphics/ui-viewport]} position]
-    (viewport/unproject ui-viewport position))
-
-  (update-ui-viewport! [{:keys [graphics/ui-viewport]} width height]
-    (FitViewport/.update ui-viewport width height true))
-
   (dispose!
     [{:keys [graphics/batch
              graphics/cursors
@@ -105,12 +98,6 @@
 
   (world-vp-height [{:keys [graphics/world-viewport]}]
     (Viewport/.getWorldHeight world-viewport))
-
-  (unproject-world [{:keys [graphics/world-viewport]} position]
-    (viewport/unproject world-viewport position))
-
-  (update-world-vp! [{:keys [graphics/world-viewport]} width height]
-    (Viewport/.update world-viewport width height false))
 
   (draw-on-world-vp!
     [{:keys [^Batch graphics/batch

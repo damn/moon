@@ -1,8 +1,8 @@
 (ns moon.listener.resize
-  (:require [moon.graphics :as graphics]))
+  (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn do!
-  [{:keys [ctx/graphics] :as ctx} width height]
-  (graphics/update-ui-viewport! graphics width height)
-  (graphics/update-world-vp! graphics width height)
-  ctx)
+  [{:keys [ctx/graphics]} width height]
+  (Viewport/.update (:graphics/ui-viewport    graphics) width height true)
+  (Viewport/.update (:graphics/world-viewport graphics) width height false)
+  nil)

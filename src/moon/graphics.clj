@@ -1,8 +1,6 @@
 (ns moon.graphics)
 
 (defprotocol Graphics
-  (unproject-ui [_ position])
-  (update-ui-viewport! [_ width height])
   (set-cursor! [_ cursor-key])
   (draw! [_ draws])
   (draw-tiled-map! [_ tiled-map color-setter])
@@ -17,6 +15,4 @@
   (set-position! [_ position])
   (world-vp-width [_])
   (world-vp-height [_])
-  (unproject-world [_ position])
-  (update-world-vp! [_ width height])
   (draw-on-world-vp! [_ f]))

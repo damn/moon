@@ -11,12 +11,11 @@
            ctx/skin
            ctx/stage
            ctx/textures
-           ctx/world]
-    :as ctx}]
+           ctx/world]}]
   (audio/dispose! audio)
   (graphics/dispose! graphics)
   (ui/dispose! stage)
   (Disposable/.dispose skin)
   (run! Disposable/.dispose (vals textures))
   (world/dispose! world)
-  ctx)
+  nil)
