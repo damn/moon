@@ -1,8 +1,7 @@
 (ns moon.render.clear-screen
-  (:require [moon.color :as color]
-            [moon.graphics :as graphics]))
+  (:import (com.badlogic.gdx.utils ScreenUtils)))
 
 (defn do!
-  [{:keys [ctx/graphics] :as ctx}]
-  (graphics/clear-screen! graphics color/black)
+  [ctx]
+  (ScreenUtils/clear 0 0 0 0)
   ctx)

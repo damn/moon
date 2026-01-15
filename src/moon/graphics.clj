@@ -3,7 +3,6 @@
 (defprotocol Graphics
   (unproject-ui [_ position])
   (update-ui-viewport! [_ width height])
-  (clear-screen! [_ color])
   (set-cursor! [_ cursor-key])
   (draw! [_ draws])
   (draw-tiled-map! [_ tiled-map color-setter])

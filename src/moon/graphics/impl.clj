@@ -17,8 +17,7 @@
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.utils Disposable
-                                   ScreenUtils)
+           (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport
                                             Viewport)))
 
@@ -61,9 +60,6 @@
 
   (delta-time [{:keys [graphics/core]}]
     (Graphics/.getDeltaTime core))
-
-  (clear-screen! [_ [r g b a]]
-    (ScreenUtils/clear r g b a))
 
   (set-cursor! [{:keys [graphics/core
                         graphics/cursors]}
