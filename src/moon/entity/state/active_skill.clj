@@ -3,7 +3,7 @@
             [moon.entity :as entity]
             [moon.entity.state :as state]
             [moon.entity.stats :as stats]
-            [moon.graphics :as graphics]
+            [moon.textures :as textures]
             [moon.timer :as timer]
             [moon.world :as world]))
 
@@ -68,11 +68,11 @@
 (defmethod entity/render :active-skill
   [[_k {:keys [skill effect-ctx counter]}]
    entity
-   {:keys [ctx/graphics
+   {:keys [ctx/textures
            ctx/world]
     :as ctx}]
   (let [{:keys [entity/image skill/effects]} skill]
-    (concat (draw-skill-image (graphics/texture-region graphics image)
+    (concat (draw-skill-image (textures/texture-region textures image)
                               entity
                               (:body/position (:entity/body entity))
                               (timer/ratio (:world/elapsed-time world) counter))

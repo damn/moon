@@ -1,6 +1,7 @@
 (ns moon.ui-actors.hp-mana-bar
   (:require [moon.entity.stats :as stats]
             [moon.graphics :as graphics]
+            [moon.textures :as textures]
             [moon.ui :as ui]
             [moon.utils :as utils]
             [moon.val-max :as val-max])
@@ -20,7 +21,7 @@
               :manacontent-file "images/mana.png"
               :y-mana 80}]
   (defn- hp-mana-bar-config
-    [graphics stage]
+    [textures stage]
     (let [{:keys [rahmen-file
                   rahmenw
                   rahmenh
@@ -29,12 +30,12 @@
                   y-mana]} config
           [x y-mana] [(/ (ui/viewport-width stage) 2)
                       y-mana]
-          rahmen-tex-reg (graphics/texture-region graphics {:image/file rahmen-file})
+          rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
           y-hp (+ y-mana rahmenh)
           render-hpmana-bar (fn [x y content-file minmaxval name]
                               [[:draw/texture-region rahmen-tex-reg [x y]]
                                [:draw/texture-region
-                                (graphics/texture-region graphics
+                                (textures/texture-region textures
                                                          {:image/file content-file
                                                           :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
                                 [x y]]
@@ -54,6 +55,6 @@
            (render-hpmana-bar x y-mana manacontent-file (stats/get-mana      stats) "MP")))))))
 
 (defn create
-  [{:keys [ctx/graphics ; we dont need full graphics -> flatten ctx !!
+  [{:keys [ctx/textures
            ctx/stage]}]
-  (create-hp-mana-bar* (hp-mana-bar-config graphics stage)))
+  (create-hp-mana-bar* (hp-mana-bar-config textures stage)))

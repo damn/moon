@@ -3,6 +3,7 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.graphics :as graphics]
             [moon.inventory :as inventory]
+            [moon.textures :as textures]
             [moon.ui :as ui]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics Color)
@@ -96,9 +97,9 @@
                :pad 4}]]})))
 
 (defn create
-  [{:keys [ctx/graphics
-           ctx/skin
-           ctx/stage]}
+  [{:keys [ctx/skin
+           ctx/stage
+           ctx/textures]}
    clicked-inventory-cell]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
                                              :shield   1
@@ -120,7 +121,7 @@
                                              (* sprite-y height)
                                              width
                                              height]]
-                                 (graphics/texture-region graphics
+                                 (textures/texture-region textures
                                                           {:image/file "images/items.png"
                                                            :image/bounds bounds})))]
     (create-inventory-window*

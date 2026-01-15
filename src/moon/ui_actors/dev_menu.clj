@@ -12,14 +12,14 @@
 
 (defn- open-editor!
   [{:keys [ctx/db
-           ctx/graphics
            ctx/skin
-           ctx/stage]}
+           ctx/stage
+           ctx/textures]}
    property-type]
   (.addActor stage
              (overview-window/create
               {:db db
-               :graphics graphics
+               :textures textures
                :skin skin
                :property-type property-type
                :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
@@ -30,8 +30,8 @@
 
 (defn create
   [{:keys [ctx/db
-           ctx/graphics
-           ctx/skin]}]
+           ctx/skin
+           ctx/textures]}]
   (let [open-editor (fn [db]
                       {:label "Editor"
                        :items (for [property-type (sort (db/property-types db))]
@@ -97,6 +97,6 @@
               select-world]
       :update-labels (for [item update-labels]
                        (if (:icon item)
-                         (update item :icon #(get (:graphics/textures graphics) %))
+                         (update item :icon #(get textures %))
                          item))
       :skin skin})))

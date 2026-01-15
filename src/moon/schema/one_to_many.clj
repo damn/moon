@@ -1,8 +1,8 @@
 (ns moon.schema.one-to-many
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.db :as db]
-            [moon.graphics :as graphics]
             [moon.schema :as schema]
+            [moon.textures :as textures]
             [moon.property :as property]
             [moon.ui.editor.property :as editor.property]
             [moon.ui.editor.overview-window :as overview-window]
@@ -23,8 +23,8 @@
 
 (defn- add-one-to-many-rows
   [{:keys [ctx/db
-           ctx/graphics
-           ctx/skin]}
+           ctx/skin
+           ctx/textures]}
    table
    property-type
    property-ids]
@@ -37,14 +37,14 @@
      [[{:actor (text-button/create
                 {:text "+"
                  :on-clicked (fn [_actor {:keys [ctx/db
-                                                 ctx/graphics
                                                  ctx/skin
-                                                 ctx/stage]}]
+                                                 ctx/stage
+                                                 ctx/textures]}]
                                (Stage/.addActor
                                 stage
                                 (overview-window/create
                                  {:db db
-                                  :graphics graphics
+                                  :textures textures
                                   :skin skin
                                   :property-type property-type
                                   :clicked-id-fn (fn [actor id ctx]
@@ -53,7 +53,7 @@
                  :skin skin})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)
-              texture-region (graphics/texture-region graphics (editor.property/image property))
+              texture-region (textures/texture-region textures (editor.property/image property))
               image-widget (doto (Image. ^TextureRegion texture-region)
                              (.setUserObject property-id)
                              (.addListener (TextTooltip. (editor.property/tooltip property) ^Skin skin)))]

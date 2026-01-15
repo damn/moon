@@ -6,7 +6,6 @@
   (clear-screen! [_ color])
   (set-cursor! [_ cursor-key])
   (draw! [_ draws])
-  (texture-region [_ image])
   (draw-tiled-map! [_ tiled-map color-setter])
   (frames-per-second [_])
   (delta-time [_])

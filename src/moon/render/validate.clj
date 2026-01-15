@@ -14,6 +14,7 @@
     [:ctx/mouseover-eid :any] ; can be nil
     [:ctx/stage :some]
     [:ctx/skin :some]
+    [:ctx/textures :some]
     [:ctx/db :some]
     [:ctx/paused? :some]
     [:ctx/player-eid :some]

@@ -1,7 +1,7 @@
 (ns moon.schema.image
-  (:require [moon.graphics :as graphics]
-            [moon.schema :as schema]
+  (:require [moon.schema :as schema]
             [moon.schemas :as schemas]
+            [moon.textures :as textures]
             [moon.ui.image-button :as image-button]))
 
 (defmethod schema/malli-form :s/image [_ schemas]
@@ -19,10 +19,10 @@
                              (fn [_actor _ctx]))]))
 
 (defmethod schema/create :s/image
-  [schema image {:keys [ctx/graphics
-                        ctx/skin]}]
+  [schema image {:keys [ctx/skin
+                        ctx/textures]}]
   (image-button/create
-   {:drawable/texture-region (graphics/texture-region graphics image)
+   {:drawable/texture-region (textures/texture-region textures image)
     :drawable/scale 2
     :skin skin})
   #_(ui/image-button image

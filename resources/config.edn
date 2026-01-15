@@ -4,14 +4,14 @@
  :world-impl moon.world.impl/create
  :audio {:sound-names "sounds.edn"
          :path-format "sounds/%s.wav"}
+ :texture-folder {:folder "resources/"
+                  :extensions #{"png" "bmp"}}
  :graphics {:colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
             :tile-size 48
             :ui-viewport {:width 1440
                           :height 900}
             :world-viewport {:width 1440
                              :height 900}
-            :texture-folder {:folder "resources/"
-                             :extensions #{"png" "bmp"}}
             :default-font {:path "exocet/films.EXL_____.ttf"
                            :params {:size 16
                                     :quality-scaling 2

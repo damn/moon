@@ -1,7 +1,6 @@
 (ns moon.graphics.impl
   (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [clj.api.space.earlygrey.shape-drawer :as sd]
-            [moon.files :as files-utils]
             [moon.graphics :as graphics]
             [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer])
@@ -51,13 +50,11 @@
     [{:keys [graphics/batch
              graphics/cursors
              graphics/default-font
-             graphics/shape-drawer-texture
-             graphics/textures]}]
+             graphics/shape-drawer-texture]}]
     (Disposable/.dispose batch)
     (run! Disposable/.dispose (vals cursors))
     (Disposable/.dispose default-font)
-    (Disposable/.dispose shape-drawer-texture)
-    (run! Disposable/.dispose (vals textures)))
+    (Disposable/.dispose shape-drawer-texture))
 
   (frames-per-second [{:keys [graphics/core]}]
     (Graphics/.getFramesPerSecond core))
@@ -78,15 +75,6 @@
     (doseq [{k 0 :as component} draws
             :when component]
       (apply (get draw-fns k) graphics (rest component))))
-
-  (texture-region [{:keys [graphics/textures]}
-                   {:keys [image/file image/bounds]}]
-    (assert file)
-    (assert (contains? textures file))
-    (let [^Texture texture (get textures file)]
-      (if-let [[x y w h] bounds]
-        (TextureRegion. texture (int x) (int y) (int w) (int h))
-        (TextureRegion. texture))))
 
   (draw-tiled-map!
     [{:keys [graphics/tiled-map-renderer
@@ -205,8 +193,6 @@
         (assoc :graphics/batch batch)
         (assoc :graphics/shape-drawer-texture shape-drawer-texture)
         (assoc :graphics/shape-drawer (sd/create batch (TextureRegion. shape-drawer-texture 1 0 1 1)))
-        (assoc :graphics/textures (into {} (for [path (files-utils/search files texture-folder)]
-                                             [path (Texture. ^String path)])))
         (assoc :graphics/unit-scale (atom 1)
                :graphics/world-unit-scale world-unit-scale)
         (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch))

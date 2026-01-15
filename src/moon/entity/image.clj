@@ -1,13 +1,13 @@
 (ns moon.entity.image
   (:require [moon.entity :as entity]
-            [moon.graphics :as graphics]))
+            [moon.textures :as textures]))
 
 (defn draw-image
   [image
    {:keys [entity/body]}
-   {:keys [ctx/graphics]}]
+   {:keys [ctx/textures]}]
   [[:draw/texture-region
-    (graphics/texture-region graphics image)
+    (textures/texture-region textures image)
     (:body/position body)
     {:center? true
      :rotation (or (:body/rotation-angle body)

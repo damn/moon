@@ -3,7 +3,8 @@
             [clojure.java.io :as io]
             [moon.ctx :as ctx]
             [moon.db :as db]
-            [moon.graphics :as graphics]
+            [moon.files :as files-utils]
+            [moon.textures :as textures]
             [moon.world :as world]
             [moon.world-fns.creature-tiles]
             [moon.world.tiled-map :as tiled-map]
@@ -13,11 +14,12 @@
                              Files
                              Input)
            (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
            (moon Stage)))
 
 (defn- call-world-fn
-  [world-fn creature-properties graphics]
+  [world-fn creature-properties textures]
   (let [[f params] (->> world-fn
                         io/resource
                         slurp
@@ -25,8 +27,8 @@
     ((requiring-resolve f)
      (assoc params
             :level/creature-properties (moon.world-fns.creature-tiles/prepare creature-properties
-                                                                             #(graphics/texture-region graphics %))
-            :textures (:graphics/textures graphics)))))
+                                                                             #(textures/texture-region textures %))
+            :textures textures))))
 
 (def ^:private world-params
   {
@@ -71,6 +73,9 @@
           true)
     skin))
 
+; Idea:
+; Assert what is there before passing ctx somwehere (can do select-keys)
+; e.g. what does add actors need? .. textures/etc.
 (defn do!
   [^Application app config]
   ; TODO postcondition validate?
@@ -78,19 +83,22 @@
         graphics ((requiring-resolve (:graphics-impl config)) (.getGraphics app) (.getFiles app) (:graphics config))
         stage ((requiring-resolve (:ui-impl config)) graphics)
         skin (create-skin (.internal (.getFiles app) "uiskin.json"))
+        textures (into {} (for [path (files-utils/search (.getFiles app) (:texture-folder config))]
+                            [path (Texture. ^String path)]))
         ctx (merge (map->Context {})
                    {:ctx/audio (load-sounds (.getAudio app) (.getFiles app) (:audio config))
                     :ctx/db db
                     :ctx/graphics graphics
                     :ctx/input (.getInput app)
                     :ctx/stage stage
-                    :ctx/skin skin})]
+                    :ctx/skin skin
+                    :ctx/textures textures})]
     (Input/.setInputProcessor (.getInput app) stage)
     (doseq [actor (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) (:ui/actors config))]
       (.addActor stage actor))
     (let [world-fn-result (call-world-fn (:world config)
                                          (db/all-raw db :properties/creatures)
-                                         graphics)
+                                         textures)
           world ((requiring-resolve (:world-impl config)) world-params world-fn-result)
           ctx (assoc ctx :ctx/world world)
           _ (ctx/handle! ctx

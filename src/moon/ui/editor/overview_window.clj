@@ -1,7 +1,7 @@
 (ns moon.ui.editor.overview-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [moon.db :as db]
-            [moon.graphics :as graphics]
+            [moon.textures :as textures]
             [moon.ui.editor.property :as property]
             [moon.ui.image-button :as image-button]
             [moon.ui.window :as window])
@@ -52,8 +52,8 @@
 
 (defn- overview-table-rows
   [db
-   graphics
    skin
+   textures
    property-type
    clicked-id-fn]
   (let [{:keys [sort-by-fn
@@ -63,7 +63,7 @@
     (->> (db/all-raw db property-type)
          (sort-by sort-by-fn)
          (map (fn [property]
-                {:texture-region (graphics/texture-region graphics (property/image property))
+                {:texture-region (textures/texture-region textures (property/image property))
                  :on-clicked (fn [actor ctx]
                                (clicked-id-fn actor (:property/id property) ctx))
                  :tooltip (property/tooltip property)
@@ -73,7 +73,7 @@
 
 (defn create
   [{:keys [db
-           graphics
+           textures
            skin
            property-type
            clicked-id-fn]}]
@@ -86,7 +86,7 @@
     :close-on-escape? true
     :pack? true
     :rows (overview-table-rows db
-                               graphics
                                skin
+                               textures
                                property-type
                                clicked-id-fn)}))

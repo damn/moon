@@ -2,7 +2,7 @@
   (:require [clojure.math.vector2 :as v]
             [moon.entity :as entity]
             [moon.entity.state :as state]
-            [moon.graphics :as graphics]
+            [moon.textures :as textures]
             [moon.inventory :as inventory]
             [moon.input :as input]
             [moon.ui :as ui])
@@ -35,12 +35,13 @@
    entity
    {:keys [ctx/graphics
            ctx/input
-           ctx/stage]}]
+           ctx/stage
+           ctx/textures]}]
   ; TODO do not draw here, only at UI view
   ; then graphics can draw world without stage/input
   (when (world-item? (ui/mouseover-actor stage (input/mouse-position input)))
     [[:draw/texture-region
-      (graphics/texture-region graphics (:entity/image item))
+      (textures/texture-region textures (:entity/image item))
       (item-place-position (:graphics/world-mouse-position graphics)
                            entity)
       {:center? true}]]))
@@ -111,13 +112,14 @@
 (defmethod state/draw-ui-view :player-item-on-cursor
   [_ eid {:keys [ctx/graphics
                  ctx/input
-                 ctx/stage]}]
+                 ctx/stage
+                 ctx/textures]}]
   ; TODO see player-item-on-cursor at render layers
   ; always draw it here at right position, then render layers does not need input/stage
   ; can pass world to graphics, not handle here at application
   (when (not (world-item? (ui/mouseover-actor stage (input/mouse-position input))))
     [[:draw/texture-region
-      (graphics/texture-region graphics (:entity/image (:entity/item-on-cursor @eid)))
+      (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
       (:graphics/ui-mouse-position graphics)
       {:center? true}]]))
 
