@@ -49,6 +49,10 @@
     (.setUseIntegerPositions font use-integer-positions?)
     font))
 
+(defn create-default-font [{:keys [ctx/files] :as ctx} {:keys [path params]}]
+  (assoc ctx :ctx/default-font (generate-font (.internal files path)
+                                              params)))
+
 (defn- call-world-fn
   [world-fn creature-properties textures]
   (let [[f params] (->> world-fn
@@ -107,7 +111,7 @@
             :when component]
       (apply (get draw-fns k) ctx (rest component)))))
 
-(defn- load-sounds
+(defn- load-sounds*
   [audio files {:keys [sound-names path-format]}]
   (let [sound-name->file-handle (into {}
                                       (for [sound-name (->> sound-names io/resource slurp edn/read-string)
@@ -119,11 +123,12 @@
             [sound-name
              (Audio/.newSound audio file-handle)]))))
 
-(defn- create-skin [^FileHandle file-handle]
-  (let [skin (Skin. file-handle)]
-    (set! (.markupEnabled (-> skin (.getFont "default-font") .getData))
-          true)
-    skin))
+(defn load-sounds
+  [{:keys [ctx/audio
+           ctx/files]
+    :as ctx}
+   config]
+  (assoc ctx :ctx/audio (load-sounds* audio files config)))
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
   (let [pixmap (Pixmap. (.internal files path))
@@ -131,88 +136,139 @@
     (.dispose pixmap)
     cursor))
 
+(defn- def-colors! [ctx colors]
+  (doseq [[name [r g b a]] colors]
+    (Colors/put name (Color. r g b a)))
+  ctx)
+
+(defn- create-db [ctx db-impl]
+  (assoc ctx :ctx/db (db-impl)))
+
+(defn- create-ui-viewport [ctx {:keys [width height]}]
+  (assoc ctx :ctx/ui-viewport (FitViewport. width height (OrthographicCamera.))))
+
+(defn- create-batch [ctx]
+  (assoc ctx :ctx/batch (SpriteBatch.)))
+
+(defn- create-stage [{:keys [ctx/batch
+                             ctx/ui-viewport]
+                      :as ctx}]
+  (assoc ctx :ctx/stage (Stage. ui-viewport batch)))
+
+(defn- create-skin [{:keys [ctx/files] :as ctx} path]
+  (assoc ctx :ctx/skin (let [skin (Skin. (.internal files path))]
+                         (set! (.markupEnabled (-> skin (.getFont "default-font") .getData))
+                               true)
+                         skin)))
+
+(defn create-textures [{:keys [ctx/files] :as ctx} folder]
+  (assoc ctx :ctx/textures
+         (into {} (for [path (files-utils/search files folder)]
+                    [path (Texture. ^String path)]))))
+
+(defn shape-drawer-texture [ctx]
+  (assoc ctx :ctx/shape-drawer-texture
+         (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                        (.setColor 1 1 1 1)
+                        (.drawPixel 0 0))
+               texture (Texture. pixmap)]
+           (.dispose pixmap)
+           texture)))
+
+(defn world-unit-scale [ctx tile-size]
+  (assoc ctx :ctx/world-unit-scale (float (/ tile-size))))
+
+(defn create-shape-drawer
+  [{:keys [ctx/batch
+           ctx/shape-drawer-texture]
+    :as ctx}]
+  (assoc ctx :ctx/shape-drawer (sd/create batch (TextureRegion. shape-drawer-texture 1 0 1 1))))
+
+(defn set-input-processor [{:keys [ctx/input
+                                   ctx/stage]
+                            :as ctx}]
+  (Input/.setInputProcessor input stage)
+  ctx)
+
+(defn add-stage-actors
+  [{:keys [ctx/stage] :as ctx} actor-fns]
+  (doseq [actor (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) actor-fns)]
+    (.addActor stage actor))
+  ctx)
+
+(defn finish-up
+  [{:keys [ctx/db
+           ctx/files
+           ctx/graphics
+           ctx/textures
+           ctx/world-unit-scale]
+    :as ctx}
+   config]
+  (let [world-fn-result (call-world-fn (:world config)
+                                       (db/all-raw db :properties/creatures)
+                                       textures)
+        world ((requiring-resolve (:world-impl config)) world-params world-fn-result)
+        ctx (assoc ctx :ctx/world world)
+        _ (ctx/handle! ctx
+                       [[:tx/spawn-creature (let [{:keys [creature-id
+                                                          components]} (:world/player-components world)]
+                                              {:position (mapv (partial + 0.5) (:world/start-position world))
+                                               :creature-property (db/build db creature-id)
+                                               :components components})]])
+        ctx (let [eid (get @(:world/entity-ids world) 1)]
+              (assert (:entity/player? @eid))
+              (assoc ctx :ctx/player-eid eid))]
+    (ctx/handle!
+     ctx
+     (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]
+       [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
+                            :creature-property (db/build db (keyword creature-id))
+                            :components (:world/enemy-components world)}]))
+
+    (assoc ctx
+           :ctx/mouseover-eid nil
+           :ctx/paused? false ; is set before checked ... this setting here is irrelevant
+           :ctx/world-mouse-position nil
+           :ctx/ui-mouse-position nil
+           :ctx/world-viewport (let [world-width  (* (:width  (:world-viewport config)) world-unit-scale)
+                                     world-height (* (:height (:world-viewport config)) world-unit-scale)]
+                                 (FitViewport. world-width
+                                               world-height
+                                               (doto (OrthographicCamera.)
+                                                 (.setToOrtho false world-width world-height))))
+           :ctx/cursors (update-vals (:data (:cursors config))
+                                     (fn [[path hotspot]]
+                                       (create-cursor files
+                                                      graphics
+                                                      (format (:path-format (:cursors config)) path)
+                                                      hotspot))))))
 (defn do!
   [^Application app
    {:keys [colors
            default-font
            tile-size]
     :as config}]
-  (doseq [[name [r g b a]] colors]
-    (Colors/put name (Color. r g b a)))
-  (let [db ((requiring-resolve (:db-impl config)))
-        ui-viewport (FitViewport. (:width  (:ui-viewport config))
-                                  (:height (:ui-viewport config))
-                                  (OrthographicCamera.))
-        batch (SpriteBatch.)
-        stage (Stage. ui-viewport batch)
-        skin (create-skin (.internal (.getFiles app) "uiskin.json"))
-        textures (into {} (for [path (files-utils/search (.getFiles app) (:texture-folder config))]
-                            [path (Texture. ^String path)]))
-        shape-drawer-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
-                                            (.setColor 1 1 1 1)
-                                            (.drawPixel 0 0))
-                                   texture (Texture. pixmap)]
-                               (.dispose pixmap)
-                               texture)
-        world-unit-scale (float (/ tile-size))
-        ctx (merge (map->Context {})
-                   {:ctx/audio (load-sounds (.getAudio app) (.getFiles app) (:audio config))
-                    :ctx/db db
-                    :ctx/graphics (.getGraphics app)
-
-                    :ctx/default-font (generate-font (.internal (.getFiles app) (:path default-font))
-                                                     (:params default-font))
-                    :ctx/batch batch
-                    :ctx/shape-drawer-texture shape-drawer-texture
-                    :ctx/shape-drawer (sd/create batch (TextureRegion. shape-drawer-texture 1 0 1 1))
-                    :ctx/unit-scale (atom 1)
-                    :ctx/world-unit-scale world-unit-scale
-
-                    :ctx/input (.getInput app)
-                    :ctx/stage stage
-                    :ctx/skin skin
-                    :ctx/textures textures
-                    :ctx/ui-viewport ui-viewport
-                    })]
-    (Input/.setInputProcessor (.getInput app) stage)
-    (doseq [actor (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) (:ui/actors config))]
-      (.addActor stage actor))
-    (let [world-fn-result (call-world-fn (:world config)
-                                         (db/all-raw db :properties/creatures)
-                                         textures)
-          world ((requiring-resolve (:world-impl config)) world-params world-fn-result)
-          ctx (assoc ctx :ctx/world world)
-          _ (ctx/handle! ctx
-                         [[:tx/spawn-creature (let [{:keys [creature-id
-                                                            components]} (:world/player-components world)]
-                                                {:position (mapv (partial + 0.5) (:world/start-position world))
-                                                 :creature-property (db/build db creature-id)
-                                                 :components components})]])
-          ctx (let [eid (get @(:world/entity-ids world) 1)]
-                (assert (:entity/player? @eid))
-                (assoc ctx :ctx/player-eid eid))]
-      (ctx/handle!
-       ctx
-       (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]
-         [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
-                              :creature-property (db/build db (keyword creature-id))
-                              :components (:world/enemy-components world)}]))
-
-      (assoc ctx
-             :ctx/mouseover-eid nil
-             :ctx/paused? false ; is set before checked ... this setting here is irrelevant
-             :ctx/world-mouse-position nil
-             :ctx/ui-mouse-position nil
-             :ctx/world-viewport (let [world-width  (* (:width  (:world-viewport config)) world-unit-scale)
-                                       world-height (* (:height (:world-viewport config)) world-unit-scale)]
-                                   (FitViewport. world-width
-                                                 world-height
-                                                 (doto (OrthographicCamera.)
-                                                   (.setToOrtho false world-width world-height))))
-             :ctx/cursors (update-vals (:data (:cursors config))
-                                       (fn [[path hotspot]]
-                                         (create-cursor (.getFiles app)
-                                                        (.getGraphics app)
-                                                        (format (:path-format (:cursors config)) path)
-                                                        hotspot)))
-             ))))
+  (reduce (fn [ctx [f & params]]
+            (apply f ctx params))
+          (merge (map->Context {})
+                 {:ctx/audio (.getAudio app)
+                  :ctx/graphics (.getGraphics app)
+                  :ctx/files (.getFiles app)
+                  :ctx/input (.getInput app)
+                  :ctx/unit-scale (atom 1)})
+          [[def-colors! colors]
+           [create-db (requiring-resolve (:db-impl config))]
+           [create-ui-viewport (:ui-viewport config)]
+           [create-batch]
+           [create-stage]
+           [set-input-processor]
+           [create-skin "uiskin.json"]
+           [create-textures (:texture-folder config)]
+           [shape-drawer-texture]
+           [world-unit-scale tile-size]
+           [load-sounds (:audio config)]
+           [create-default-font default-font]
+           [create-shape-drawer]
+           [set-input-processor]
+           [add-stage-actors (:ui/actors config)]
+           [finish-up config]]))

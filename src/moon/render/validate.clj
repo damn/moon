@@ -9,6 +9,7 @@
     [:ctx/cursors :some] ; map of cursor-key->cursor
     [:ctx/default-font :some] ; font -> API ?
     [:ctx/batch :some] ; batch -> API ?
+    [:ctx/files :some]
     [:ctx/shape-drawer :some] ; sd -> API ?
     [:ctx/shape-drawer-texture :some]
     [:ctx/unit-scale :some] ; only relevant during drawing?

@@ -1,3 +1,4 @@
+; TODO SCHEMA ! what is world? active-entities/time/configs/settings raus?
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
             [clojure.math.raycaster :as raycaster]
@@ -154,7 +155,6 @@
     :as world}]
   (assoc world :world/render-z-order (utils/define-order z-orders)))
 
-; TODO schema of level/world add...
 (defn create [initial-config world-fn-result]
   (-> (merge (map->RWorld {}) initial-config)
       calculate-max-speed
