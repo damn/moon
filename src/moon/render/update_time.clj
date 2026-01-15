@@ -1,6 +1,6 @@
 (ns moon.render.update-time
-  (:require [moon.graphics :as graphics]
-            [moon.world :as world]))
+  (:require [moon.world :as world])
+  (:import (com.badlogic.gdx Graphics)))
 
 (defn do!
   [{:keys [ctx/graphics
@@ -8,4 +8,4 @@
     :as ctx}]
   (if paused?
     ctx
-    (update ctx :ctx/world world/update-time (graphics/delta-time graphics))))
+    (update ctx :ctx/world world/update-time (Graphics/.getDeltaTime (:graphics/core graphics)))))

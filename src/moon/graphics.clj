@@ -1,17 +1,4 @@
 (ns moon.graphics)
 
 (defprotocol Graphics
-  (set-cursor! [_ cursor-key])
-  (draw! [_ draws])
-  (draw-tiled-map! [_ tiled-map color-setter])
-  (frames-per-second [_])
-  (delta-time [_])
-  (position [_])
-  (visible-tiles [_])
-  (frustum [_])
-  (zoom [_])
-  (change-zoom! [_ amount])
-  (set-position! [_ position])
-  (world-vp-width [_])
-  (world-vp-height [_])
-  (draw-on-world-vp! [_ f]))
+  (draw! [_ draws]))

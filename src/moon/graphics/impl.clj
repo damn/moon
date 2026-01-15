@@ -1,7 +1,6 @@
 (ns moon.graphics.impl
   (:require [clj.api.space.earlygrey.shape-drawer :as sd]
             [moon.graphics :as graphics]
-            [moon.graphics.camera :as camera]
             [moon.tm-renderer :as tm-renderer])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics Color
@@ -11,13 +10,11 @@
                                       Pixmap$Format
                                       Texture
                                       Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d Batch
-                                          SpriteBatch
+           (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.utils.viewport FitViewport
-                                            Viewport)))
+           (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (def draw-fns
   (update-vals '{:draw/arc              moon.draw.arc/do!
@@ -37,76 +34,10 @@
 
 (defrecord RGraphics []
   moon.graphics/Graphics
-  (frames-per-second [{:keys [graphics/core]}]
-    (Graphics/.getFramesPerSecond core))
-
-  (delta-time [{:keys [graphics/core]}]
-    (Graphics/.getDeltaTime core))
-
-  (set-cursor! [{:keys [graphics/core
-                        graphics/cursors]}
-                cursor-key]
-    (assert (contains? cursors cursor-key))
-    (Graphics/.setCursor core (get cursors cursor-key)))
-
   (draw! [graphics draws]
     (doseq [{k 0 :as component} draws
             :when component]
-      (apply (get draw-fns k) graphics (rest component))))
-
-  (draw-tiled-map!
-    [{:keys [graphics/tiled-map-renderer
-             graphics/world-viewport]}
-     tiled-map
-     color-setter]
-    (tm-renderer/draw! tiled-map-renderer
-                       world-viewport
-                       tiled-map
-                       color-setter))
-
-  (position [{:keys [graphics/world-viewport]}]
-    (camera/position (Viewport/.getCamera world-viewport)))
-
-  (visible-tiles [{:keys [graphics/world-viewport]}]
-    (camera/visible-tiles (Viewport/.getCamera world-viewport)))
-
-  (frustum [{:keys [graphics/world-viewport]}]
-    (camera/frustum (Viewport/.getCamera world-viewport)))
-
-  (zoom [{:keys [graphics/world-viewport]}]
-    (camera/zoom (Viewport/.getCamera world-viewport)))
-
-  (change-zoom! [{:keys [graphics/world-viewport]} amount]
-    (camera/inc-zoom! (Viewport/.getCamera world-viewport) amount))
-
-  (set-position! [{:keys [graphics/world-viewport]} position]
-    (camera/set-position! (Viewport/.getCamera world-viewport) position))
-
-  (world-vp-width [{:keys [graphics/world-viewport]}]
-    (Viewport/.getWorldWidth world-viewport))
-
-  (world-vp-height [{:keys [graphics/world-viewport]}]
-    (Viewport/.getWorldHeight world-viewport))
-
-  (draw-on-world-vp!
-    [{:keys [^Batch graphics/batch
-             graphics/shape-drawer
-             graphics/unit-scale
-             graphics/world-unit-scale
-             graphics/world-viewport]}
-     f]
-    ; fix scene2d.ui.tooltip flickering
-    ; _everything_ flickers with vis ui tooltip! it changes batch color somehow and does not
-    ; change it back !
-    (.setColor batch 1 1 1 1)
-    ;
-    (.setProjectionMatrix batch (camera/combined (Viewport/.getCamera world-viewport)))
-    (.begin batch)
-    (sd/with-line-width shape-drawer world-unit-scale
-      (reset! unit-scale world-unit-scale)
-      (f)
-      (reset! unit-scale 1))
-    (.end batch)))
+      (apply (get draw-fns k) graphics (rest component)))))
 
 (defn- create-cursor [files graphics path [hotspot-x hotspot-y]]
   (let [pixmap (Pixmap. (.internal files path))

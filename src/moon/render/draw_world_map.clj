@@ -1,6 +1,8 @@
 (ns moon.render.draw-world-map
-  (:require [moon.graphics :as graphics]
-            [moon.world :as world]))
+  (:require [moon.graphics.camera :as camera]
+            [moon.tm-renderer :as tm-renderer]
+            [moon.world :as world])
+  (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn- tile-color-setter
   [{:keys [ray-blocked?
@@ -52,14 +54,17 @@
   [{:keys [ctx/graphics
            ctx/world]
     :as ctx}]
-  (graphics/draw-tiled-map! graphics
-                            (:world/tiled-map world)
-                            (tile-color-setter
-                             {:ray-blocked? (partial world/blocked? world)
-                              :explored-tile-corners (:world/explored-tile-corners world)
-                              :light-position (graphics/position graphics)
-                              :see-all-tiles? false
-                              :explored-tile-color  [0.5 0.5 0.5 1]
-                              :visible-tile-color   [1 1 1 1]
-                              :invisible-tile-color [0 0 0 1]}))
+  (let [{:keys [graphics/tiled-map-renderer
+                graphics/world-viewport]} graphics]
+    (tm-renderer/draw! tiled-map-renderer
+                       world-viewport
+                       (:world/tiled-map world)
+                       (tile-color-setter
+                        {:ray-blocked? (partial world/blocked? world)
+                         :explored-tile-corners (:world/explored-tile-corners world)
+                         :light-position (camera/position (Viewport/.getCamera world-viewport))
+                         :see-all-tiles? false
+                         :explored-tile-color  [0.5 0.5 0.5 1]
+                         :visible-tile-color   [1 1 1 1]
+                         :invisible-tile-color [0 0 0 1]})))
   ctx)

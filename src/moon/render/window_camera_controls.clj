@@ -1,7 +1,8 @@
 (ns moon.render.window-camera-controls
   (:require [moon.input :as input]
-            [moon.graphics :as graphics]
-            [moon.ui :as ui]))
+            [moon.graphics.camera :as camera]
+            [moon.ui :as ui])
+  (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def zoom-speed 0.025)
 
@@ -12,10 +13,10 @@
            ctx/stage]
     :as ctx}]
   (when (input/key-pressed? input (:zoom-in input/controls))
-    (graphics/change-zoom! graphics zoom-speed))
+    (camera/inc-zoom! (Viewport/.getCamera (:graphics/world-viewport graphics)) zoom-speed))
 
   (when (input/key-pressed? input (:zoom-out input/controls))
-    (graphics/change-zoom! graphics (- zoom-speed)))
+    (camera/inc-zoom! (Viewport/.getCamera (:graphics/world-viewport graphics)) (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key input/controls))
     (ui/close-all-windows! stage))

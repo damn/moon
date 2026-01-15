@@ -1,22 +1,27 @@
 (ns moon.render.draw-on-world-viewport
-  (:require [moon.color :as color]
+  (:require [clj.api.space.earlygrey.shape-drawer :as sd]
+            [moon.color :as color]
             [moon.entity :as entity]
             [moon.graphics :as graphics]
+            [moon.graphics.camera :as camera]
             [moon.throwable :as throwable]
             [moon.world :as world]
-            [moon.utils :as utils]))
+            [moon.utils :as utils])
+  (:import (com.badlogic.gdx.graphics.g2d Batch)
+           (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def ^:dbg-flag show-tile-grid? false)
 
 (defn draw-tile-grid
   [{:keys [ctx/graphics]}]
   (when show-tile-grid?
-    (let [[left-x _right-x bottom-y _top-y] (graphics/frustum graphics)]
+    (let [world-viewport (:graphics/world-viewport graphics)
+          [left-x _right-x bottom-y _top-y] (camera/frustum (Viewport/.getCamera world-viewport))]
       [[:draw/grid
         (int left-x)
         (int bottom-y)
-        (inc (int (graphics/world-vp-width  graphics)))
-        (+ 2 (int (graphics/world-vp-height graphics)))
+        (inc (int (Viewport/.getWorldWidth  world-viewport)))
+        (+ 2 (int (Viewport/.getWorldHeight world-viewport)))
         1
         1
         [1 1 1 0.8]]])))
@@ -40,7 +45,7 @@
   [{:keys [ctx/graphics
            ctx/world]}]
   (apply concat
-         (for [[x y] (graphics/visible-tiles graphics)
+         (for [[x y] (camera/visible-tiles (Viewport/.getCamera (:graphics/world-viewport graphics)))
                :let [cell ((:world/grid world) [x y])]
                :when cell
                :let [cell* @cell]]
@@ -113,12 +118,25 @@
 (defn do!
   [{:keys [ctx/graphics]
     :as ctx}]
-  (graphics/draw-on-world-vp! graphics
-                              (fn []
-                                (doseq [f [draw-tile-grid ; TODO ?
-                                           draw-cell-debug
-                                           draw-entities
-                                           #_moon.application.render.draw-on-world-viewport.geom-test/do!
-                                           highlight-mouseover-tile]]
-                                  (graphics/draw! graphics (f ctx)))))
-  ctx)
+  (let [{:keys [^Batch graphics/batch
+                graphics/shape-drawer
+                graphics/unit-scale
+                graphics/world-unit-scale
+                graphics/world-viewport]} graphics]
+    ; fix scene2d.ui.tooltip flickering
+    ; _everything_ flickers with vis ui tooltip! it changes batch color somehow and does not
+    ; change it back !
+    (.setColor batch 1 1 1 1)
+    (.setProjectionMatrix batch (camera/combined (Viewport/.getCamera world-viewport)))
+    (.begin batch)
+    (sd/with-line-width shape-drawer world-unit-scale
+      (reset! unit-scale world-unit-scale)
+      (doseq [f [draw-tile-grid ; TODO ?
+                 draw-cell-debug
+                 draw-entities
+                 #_moon.application.render.draw-on-world-viewport.geom-test/do!
+                 highlight-mouseover-tile]]
+        (graphics/draw! graphics (f ctx)))
+      (reset! unit-scale 1))
+    (.end batch)
+    ctx))

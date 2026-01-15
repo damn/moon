@@ -1,14 +1,16 @@
 (ns moon.ui-actors.dev-menu
   (:require [clojure.string :as str]
             [moon.db :as db]
-            [moon.graphics :as graphics]
+            [moon.graphics.camera :as camera]
             [moon.input :as input]
             [moon.ui :as ui]
             [moon.ui.build.editor-window :as editor-window]
             [moon.ui.dev-menu :as dev-menu]
             [moon.ui.editor.overview-window :as overview-window]
             [moon.utils :as utils]
-            [moon.world :as world]))
+            [moon.world :as world])
+  (:import (com.badlogic.gdx Graphics)
+           (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn- open-editor!
   [{:keys [ctx/db
@@ -71,7 +73,7 @@
                         :icon "images/clock.png"}
                        {:label "FPS"
                         :update-fn (fn [ctx]
-                                     (graphics/frames-per-second (:ctx/graphics ctx)))
+                                     (Graphics/.getFramesPerSecond (:graphics/core (:ctx/graphics ctx))))
                         :icon "images/fps.png"}
                        {:label "Mouseover-entity id"
                         :update-fn (fn [{:keys [ctx/mouseover-eid]}]
@@ -88,7 +90,7 @@
                                      (mapv int (:graphics/world-mouse-position graphics)))}
                        {:label "Zoom"
                         :update-fn (fn [ctx]
-                                     (graphics/zoom (:ctx/graphics ctx)))
+                                     (camera/zoom (Viewport/.getCamera (:graphics/world-viewport (:ctx/graphics ctx)))))
                         :icon "images/zoom.png"}]]
     (dev-menu/create
      {:menus [ctx-data-viewer

@@ -3,10 +3,10 @@
             [moon.ctx :as ctx]
             [moon.body :as body]
             [moon.entity.state :as state]
-            [moon.graphics :as graphics]
             [moon.input :as input]
             [moon.skill :as skill]
-            [moon.ui :as ui]))
+            [moon.ui :as ui])
+  (:import (com.badlogic.gdx Graphics)))
 
 (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid
@@ -68,8 +68,11 @@
   (let [eid player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
-        cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
-    (graphics/set-cursor! graphics cursor-key))
+        cursor-key (state/cursor [state-k (state-k entity)] eid ctx)
+        {:keys [graphics/core
+                graphics/cursors]} graphics]
+    (assert (contains? cursors cursor-key))
+    (Graphics/.setCursor core (get cursors cursor-key)))
   ctx)
 
 (defn- player-state-handle-input
