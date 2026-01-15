@@ -8,13 +8,13 @@
 (defn do!
   [{:keys [ctx/graphics
            ctx/input
+           ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
            ctx/world]
     :as ctx}]
   (let [mouseover-actor (ui/mouseover-actor stage (input/mouse-position input))
         {:keys [world/grid
-                world/mouseover-eid
                 world/raycaster
                 world/render-z-order]} world
         position (:graphics/world-mouse-position graphics)
@@ -28,8 +28,8 @@
                          reverse
                          (filter #(world/line-of-sight? world player @%))
                          first)))]
-    (when-let [mouseover-eid (:world/mouseover-eid world)]
+    (when mouseover-eid
       (swap! mouseover-eid dissoc :entity/mouseover?))
     (when new-eid
       (swap! new-eid assoc :entity/mouseover? true))
-    (assoc-in ctx [:ctx/world :world/mouseover-eid] new-eid)))
+    (assoc ctx :ctx/mouseover-eid new-eid)))

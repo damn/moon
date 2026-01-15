@@ -1,3 +1,4 @@
+; == 'moon.level' / 'cyberdungeonquest.level'
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
             [clojure.math.raycaster :as raycaster]
@@ -167,12 +168,12 @@
            :world/content-grid (create-content-grid width height (:content-grid-cell-size world))
            :world/explored-tile-corners (create-explored-tile-corners width height)
            :world/raycaster (create-raycaster grid)
-           :world/elapsed-time 0
+           :world/elapsed-time 0 ; out
            :world/potential-field-cache (atom nil)
            :world/id-counter (atom 0)
            :world/entity-ids (atom {})
            :world/paused? false ; out
-           :world/mouseover-eid nil))) ; out (mouseover-entity world protocol)
+           )))
 
 (defn- calculate-max-speed
   [{:keys [world/minimum-size

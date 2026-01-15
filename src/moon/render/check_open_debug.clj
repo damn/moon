@@ -5,12 +5,14 @@
 (defn do!
   [{:keys [ctx/graphics
            ctx/input
+           ctx/mouseover-eid
            ctx/skin
            ctx/stage
            ctx/world]
     :as ctx}]
   (when (input/button-just-pressed? input (:open-debug-button input/controls))
-    (let [data (or (and (:world/mouseover-eid world) @(:world/mouseover-eid world))
+    ; (or mouseover-entity world-grid-cell)
+    (let [data (or (and mouseover-eid @mouseover-eid)
                    @((:world/grid world) (mapv int (:graphics/world-mouse-position graphics))))]
       (ui/show-data-viewer! stage data skin)))
   ctx)

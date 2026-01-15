@@ -50,13 +50,14 @@
 (defn- assoc-interaction-state
   [{:keys [ctx/graphics
            ctx/input
+           ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
            ctx/world]
     :as ctx}]
   (assoc ctx :ctx/interaction-state (interaction-state stage
                                                        (:graphics/world-mouse-position graphics)
-                                                       (:world/mouseover-eid world)
+                                                       mouseover-eid
                                                        player-eid
                                                        (ui/mouseover-actor stage (input/mouse-position input)))))
 

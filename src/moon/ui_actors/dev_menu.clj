@@ -74,10 +74,9 @@
                                      (graphics/frames-per-second (:ctx/graphics ctx)))
                         :icon "images/fps.png"}
                        {:label "Mouseover-entity id"
-                        :update-fn (fn [{:keys [ctx/world]}]
-                                     (let [eid (:world/mouseover-eid world)]
-                                       (when-let [entity (and eid @eid)]
-                                         (:entity/id entity))))
+                        :update-fn (fn [{:keys [ctx/mouseover-eid]}]
+                                     (when-let [entity (and mouseover-eid @mouseover-eid)]
+                                       (:entity/id entity)))
                         :icon "images/mouseover.png"}
                        {:label "paused?"
                         :update-fn (comp :world/paused? :ctx/world)}

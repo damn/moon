@@ -75,6 +75,7 @@
 
 (defn do!
   [^Application app config]
+  ; TODO postcondition validate?
   (let [db ((requiring-resolve (:db-impl config)))
         graphics ((requiring-resolve (:graphics-impl config)) (.getGraphics app) (.getFiles app) (:graphics config))
         stage ((requiring-resolve (:ui-impl config)) graphics)
@@ -110,4 +111,4 @@
                               :creature-property (db/build db (keyword creature-id))
                               :components (:world/enemy-components world)}]))
 
-      ctx)))
+      (assoc ctx :ctx/mouseover-eid nil))))
