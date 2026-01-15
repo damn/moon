@@ -61,7 +61,7 @@
     [:player-dead]]))
 
 (defmethod entity/after-create :entity/fsm
-  [[_k {:keys [fsm initial-state]}] eid world]
+  [[_k {:keys [fsm initial-state]}] eid {:keys [ctx/world]}]
   ; fsm throws when initial-state is not part of states, so no need to assert initial-state
   ; initial state is nil, so associng it. make bug report at reduce-fsm?
   [[:tx/assoc eid :entity/fsm (assoc ((case fsm

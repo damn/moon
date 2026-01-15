@@ -1,4 +1,3 @@
-; == 'moon.level' / 'cyberdungeonquest.level'
 (ns moon.world.impl
   (:require [clojure.grid2d :as g2d]
             [clojure.math.raycaster :as raycaster]

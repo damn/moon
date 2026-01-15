@@ -4,7 +4,7 @@
             [moon.inventory :as inventory]))
 
 (defmethod entity/after-create :entity/inventory
-  [[_k items] eid _world]
+  [[_k items] eid _ctx]
   (cons [:tx/assoc eid :entity/inventory (->> inventory/empty-inventory
                                               (map (fn [[slot [width height]]]
                                                      [slot (g2d/create-grid width height (constantly nil))]))

@@ -34,7 +34,10 @@
 
 (q/defrecord Entity [entity/body])
 
-(defn do! [{:keys [ctx/world]} entity]
+(defn do!
+  [{:keys [ctx/world]
+    :as ctx}
+   entity]
   (mu/validate-humanize components-schema entity)
   (let [{:keys [world/content-grid
                 world/entity-ids
@@ -58,4 +61,4 @@
     (grid/set-touched-cells! grid eid)
     (when (:body/collides? (:entity/body @eid))
       (grid/set-occupied-cells! grid eid))
-    (mapcat #(entity/after-create % eid world) @eid)))
+    (mapcat #(entity/after-create % eid ctx) @eid)))

@@ -3,7 +3,7 @@
             [moon.timer :as timer]))
 
 (defmethod entity/after-create :entity/skills
-  [[_k skills] eid _world]
+  [[_k skills] eid _ctx]
   (cons [:tx/assoc eid :entity/skills nil]
         (for [skill skills]
           [:tx/add-skill eid skill])))
