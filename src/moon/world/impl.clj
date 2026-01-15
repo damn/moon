@@ -6,7 +6,6 @@
             [moon.utils :as utils]
             [moon.world :as world]
             [moon.world.content-grid :as content-grid]
-            [moon.world.create-fsms :as create-fsms]
             [moon.world.create.grid]
             [moon.world.grid :as grid]
             [moon.world.grid.cell :as cell]
@@ -223,7 +222,6 @@
 
 (defn create [initial-config world-fn-result]
   (-> (merge (map->RWorld {}) initial-config)
-      create-fsms/step
       calculate-max-speed
       define-render-z-order
       (assoc-state world-fn-result)))
