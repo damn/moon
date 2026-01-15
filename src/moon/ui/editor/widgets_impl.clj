@@ -7,11 +7,19 @@
                                                Skin
                                                TextField
                                                TextTooltip)))
-
+; qualified-keyword
+; some
+; vector
 (defmethod schema/create :default
   [_ v {:keys [^Skin ctx/skin]}]
   (Label. (utils/truncate (utils/->edn-str v) 60) skin))
 
+; animation
+; image
+; qualified-keyword
+; some
+; sound
+; vector
 (defmethod schema/value :default
   [_  widget _schemas]
   ((.getUserObject widget) 1))
