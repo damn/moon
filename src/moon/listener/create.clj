@@ -131,17 +131,13 @@
     (.dispose pixmap)
     cursor))
 
-; Idea:
-; Assert what is there before passing ctx somwehere (can do select-keys)
-; e.g. what does add actors need? .. textures/etc.
 (defn do!
   [^Application app
    {:keys [colors
            default-font
            tile-size]
     :as config}]
-  ; TODO postcondition validate?
-  (doseq [[name [r g b a]] colors] ; remove out
+  (doseq [[name [r g b a]] colors]
     (Colors/put name (Color. r g b a)))
   (let [db ((requiring-resolve (:db-impl config)))
         ui-viewport (FitViewport. (:width  (:ui-viewport config))
