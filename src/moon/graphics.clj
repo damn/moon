@@ -6,7 +6,6 @@
   (draw-tiled-map! [_ tiled-map color-setter])
   (frames-per-second [_])
   (delta-time [_])
-  (dispose! [_])
   (position [_])
   (visible-tiles [_])
   (frustum [_])

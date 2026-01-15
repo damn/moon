@@ -31,10 +31,6 @@
 
 (extend-type moon.Stage
   moon.ui/UserInterface
-  (dispose! [_]
-    ; TODO fixme skin ?
-    )
-
   (show-data-viewer! [this data skin]
     (.addActor this
                (widgets/data-viewer-window

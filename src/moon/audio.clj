@@ -7,6 +7,3 @@
 (defn play! [sounds sound-name]
   (assert (contains? sounds sound-name) (str sound-name))
   (Sound/.play (get sounds sound-name)))
-
-(defn dispose! [sounds]
-  (run! Sound/.dispose (vals sounds)))

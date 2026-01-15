@@ -16,7 +16,6 @@
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport
                                             Viewport)))
 
@@ -38,16 +37,6 @@
 
 (defrecord RGraphics []
   moon.graphics/Graphics
-  (dispose!
-    [{:keys [graphics/batch
-             graphics/cursors
-             graphics/default-font
-             graphics/shape-drawer-texture]}]
-    (Disposable/.dispose batch)
-    (run! Disposable/.dispose (vals cursors))
-    (Disposable/.dispose default-font)
-    (Disposable/.dispose shape-drawer-texture))
-
   (frames-per-second [{:keys [graphics/core]}]
     (Graphics/.getFramesPerSecond core))
 
