@@ -6,11 +6,11 @@
 
 (defn do!
   [{:keys [ctx/input
-           ctx/world]
+           ctx/player-eid]
     :as ctx}]
   (assoc-in ctx [:ctx/world :world/paused?]
             (or #_error
                 (and pausing?
-                     (state/pause-game? (:state (:entity/fsm @(:world/player-eid world))))
+                     (state/pause-game? (:state (:entity/fsm @player-eid)))
                      (not (or (input/key-just-pressed? input (:unpause-once input/controls))
                               (input/key-pressed? input (:unpause-continously input/controls))))))))

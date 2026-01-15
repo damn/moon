@@ -102,7 +102,7 @@
                                                  :components components})]])
           ctx (let [eid (get @(:world/entity-ids world) 1)]
                 (assert (:entity/player? @eid))
-                (assoc-in ctx [:ctx/world :world/player-eid] eid))]
+                (assoc ctx :ctx/player-eid eid))]
       (ctx/handle!
        ctx
        (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]

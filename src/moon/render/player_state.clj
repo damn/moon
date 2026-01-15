@@ -51,19 +51,20 @@
   [{:keys [ctx/graphics
            ctx/input
            ctx/stage
+           ctx/player-eid
            ctx/world]
     :as ctx}]
   (assoc ctx :ctx/interaction-state (interaction-state stage
                                                        (:graphics/world-mouse-position graphics)
                                                        (:world/mouseover-eid world)
-                                                       (:world/player-eid    world)
+                                                       player-eid
                                                        (ui/mouseover-actor stage (input/mouse-position input)))))
 
 (defn- set-cursor
   [{:keys [ctx/graphics
-           ctx/world]
+           ctx/player-eid]
     :as ctx}]
-  (let [eid (:world/player-eid world)
+  (let [eid player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
@@ -71,9 +72,9 @@
   ctx)
 
 (defn- player-state-handle-input
-  [{:keys [ctx/world]
+  [{:keys [ctx/player-eid]
     :as ctx}]
-  (let [eid (:world/player-eid world)
+  (let [eid player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
         txs (state/handle-input [state-k (state-k entity)] eid ctx)]

@@ -94,24 +94,11 @@
         (aset arr x y (boolean blocked?)))
       [arr width height])))
 
-(defn- line-of-sight?* [raycaster source target]
-  (not (raycaster/blocked? raycaster
-                           (:body/position (:entity/body source))
-                           (:body/position (:entity/body target)))))
-
 (defrecord RWorld []
   moon.world/World
   (dispose! [{:keys [world/tiled-map]}]
     (assert tiled-map) ; only dispose after world was created
     (.dispose tiled-map))
-
-  (cache-active-entities [{:keys [world/content-grid
-                                  world/player-eid]
-                           :as world}]
-    (assoc world
-           :world/active-entities
-           (content-grid/active-entities content-grid
-                                         @player-eid)))
 
   (update-potential-fields! [this]
     (update-potential-fields/do! this))
@@ -154,26 +141,6 @@
           (assoc :world/delta-time delta-ms)
           (update :world/elapsed-time + delta-ms))))
 
-  (player-position [{:keys [world/player-eid]}]
-    (:body/position (:entity/body @player-eid)))
-
-  (mouseover-entity
-    [{:keys [world/grid
-             world/mouseover-eid
-             world/player-eid
-             world/raycaster
-             world/render-z-order]
-      :as world}
-     position]
-    (let [player @player-eid
-          hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
-                       (grid/point->entities grid position))]
-      (->> render-z-order
-           (utils/sort-by-order hits #(:body/z-order (:entity/body @%)))
-           reverse
-           (filter #(line-of-sight?* raycaster player @%))
-           first)))
-
   (blocked? [{:keys [world/raycaster]} start target]
     (raycaster/blocked? raycaster start target))
 
@@ -184,7 +151,9 @@
        (raycaster/blocked? raycaster start2 target2))))
 
   (line-of-sight? [{:keys [world/raycaster]} source target]
-    (line-of-sight?* raycaster source target)))
+    (not (raycaster/blocked? raycaster
+                             (:body/position (:entity/body source))
+                             (:body/position (:entity/body target))))))
 
 (defn- assoc-state [world {:keys [tiled-map
                                   start-position]}]

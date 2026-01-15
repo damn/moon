@@ -20,11 +20,11 @@
     (draw [_batch _parent-alpha]
       (when-let [stage (.getStage this)]
         (let [{:keys [ctx/graphics
-                      ctx/world]} (.ctx stage)]
+                      ctx/player-eid]} (.ctx stage)]
           ; TODO here just a simple callback ?
           (graphics/draw! graphics
                           (let [[x y] (:graphics/ui-mouse-position graphics)]
-                            (draw-cell-rect @(:world/player-eid world)
+                            (draw-cell-rect @player-eid
                                             (.getX this)
                                             (.getY this)
                                             (let [v2 (.stageToLocalCoordinates this (Vector2. x y))]

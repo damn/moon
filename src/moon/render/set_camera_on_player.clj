@@ -1,10 +1,9 @@
 (ns moon.render.set-camera-on-player
-  (:require [moon.graphics :as graphics]
-            [moon.world :as world]))
+  (:require [moon.graphics :as graphics]))
 
 (defn do!
   [{:keys [ctx/graphics
-           ctx/world]
+           ctx/player-eid]
     :as ctx}]
-  (graphics/set-position! graphics (world/player-position world))
+  (graphics/set-position! graphics (:body/position (:entity/body @player-eid)))
   ctx)

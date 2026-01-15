@@ -94,10 +94,11 @@
 
 (defn draw-entities
   [{:keys [ctx/graphics
+           ctx/player-eid
            ctx/world]
     :as ctx}]
   (let [entities (map deref (:world/active-entities world))
-        player @(:world/player-eid world)
+        player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
                            (world/line-of-sight? world player entity)))]

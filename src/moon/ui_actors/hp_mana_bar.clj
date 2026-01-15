@@ -46,8 +46,8 @@
                                             :x (+ x 75)
                                             :y (+ y 2)
                                             :up? true}]])]
-      (fn [{:keys [ctx/world]}]
-        (let [stats (:entity/stats @(:world/player-eid world))
+      (fn [{:keys [ctx/player-eid]}]
+        (let [stats (:entity/stats @player-eid)
               x (- x (/ rahmenw 2))]
           (concat
            (render-hpmana-bar x y-hp   hpcontent-file   (stats/get-hitpoints stats) "HP")
