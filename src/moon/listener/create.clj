@@ -29,7 +29,8 @@
             :textures (:graphics/textures graphics)))))
 
 (def ^:private world-params
-  {:content-grid-cell-size 16
+  {
+   :content-grid-cell-size 16
    :world/factions-iterations {:good 15 :evil 5}
    :world/max-delta 0.04
    :world/minimum-size 0.39
@@ -48,9 +49,6 @@
                                           :entity/free-skill-points 3
                                           :entity/clickable {:type :clickable/player}
                                           :entity/click-distance-tiles 1.5}}
-   :world/effect-body-props {:width 0.5
-                             :height 0.5
-                             :z-order :z-order/effect}
    })
 
 (q/defrecord Context [])

@@ -184,6 +184,7 @@
     :as world}]
   (assoc world :world/render-z-order (utils/define-order z-orders)))
 
+; TODO schema of level/world add...
 (defn create [initial-config world-fn-result]
   (-> (merge (map->RWorld {}) initial-config)
       calculate-max-speed

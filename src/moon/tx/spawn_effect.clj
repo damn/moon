@@ -1,9 +1,10 @@
 (ns moon.tx.spawn-effect)
 
 (defn do!
-  [{:keys [ctx/world]}
-   position
-   components]
+  [_ctx position components]
   [[:tx/spawn-entity
     (assoc components
-           :entity/body (assoc (:world/effect-body-props world) :position position))]])
+           :entity/body {:width 0.5
+                         :height 0.5
+                         :z-order :z-order/effect
+                         :position position})]])
