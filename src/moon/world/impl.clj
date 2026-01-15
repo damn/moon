@@ -206,8 +206,8 @@
            :world/potential-field-cache (atom nil)
            :world/id-counter (atom 0)
            :world/entity-ids (atom {})
-           :world/paused? false
-           :world/mouseover-eid nil)))
+           :world/paused? false ; out
+           :world/mouseover-eid nil))) ; out (mouseover-entity world protocol)
 
 (defn- calculate-max-speed
   [{:keys [world/minimum-size
