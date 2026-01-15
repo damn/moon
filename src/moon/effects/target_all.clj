@@ -32,7 +32,7 @@
 (defmethod effect/handle :effects/target-all
   [[_ {:keys [entity-effects]}]
    {:keys [effect/source]}
-   world]
+   {:keys [ctx/world]}]
   (let [{:keys [world/active-entities]} world
         source* @source]
     (apply concat

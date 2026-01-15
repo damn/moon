@@ -10,5 +10,5 @@
   false)
 
 (defmethod effect/handle :effects/audiovisual
-  [[_ audiovisual] {:keys [effect/target-position]} _world]
+  [[_ audiovisual] {:keys [effect/target-position]} _ctx]
   [[:tx/audiovisual target-position audiovisual]])

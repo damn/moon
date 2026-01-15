@@ -14,5 +14,5 @@
   (effect/applicable? (melee-damage-effect @source) effect-ctx))
 
 (defmethod effect/handle :effects.target/melee-damage
-  [_ {:keys [effect/source] :as effect-ctx} world]
-  (effect/handle (melee-damage-effect @source) effect-ctx world))
+  [_ {:keys [effect/source] :as effect-ctx} ctx]
+  (effect/handle (melee-damage-effect @source) effect-ctx ctx))

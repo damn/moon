@@ -1,6 +1,6 @@
 (ns moon.tx.effect
   (:require [moon.effect :as effect]))
 
-(defn do! [{:keys [ctx/world]} effect-ctx effects]
-  (mapcat #(effect/handle % effect-ctx world)
+(defn do! [ctx effect-ctx effects]
+  (mapcat #(effect/handle % effect-ctx ctx)
           (filter #(effect/applicable? % effect-ctx) effects)))

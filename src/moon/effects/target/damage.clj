@@ -40,7 +40,7 @@
        #_(:stats/hp @target))) ; not exist anymore ... bugfix .... -> is 'creature?'
 
 (defmethod effect/handle :effects.target/damage
-  [[_ damage] {:keys [effect/source effect/target]} _world]
+  [[_ damage] {:keys [effect/source effect/target]} _ctx]
   (let [source* @source
         target* @target
         hp (stats/get-hitpoints (:entity/stats target*))]

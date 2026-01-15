@@ -7,5 +7,5 @@
        (:entity/fsm @target)))
 
 (defmethod effect/handle :effects.target/stun
-  [[_ duration] {:keys [effect/target]} _world]
+  [[_ duration] {:keys [effect/target]} _ctx]
   [[:tx/event target :stun duration]])

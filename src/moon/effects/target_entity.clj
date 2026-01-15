@@ -36,7 +36,7 @@
 (defmethod effect/handle :effects/target-entity
   [[_ {:keys [maxrange entity-effects]}]
    {:keys [effect/source effect/target] :as effect-ctx}
-   _world]
+   _ctx]
   (let [body        (:entity/body @source)
         target-body (:entity/body @target)]
     (if (in-range? body target-body maxrange)

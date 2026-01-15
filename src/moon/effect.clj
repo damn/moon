@@ -5,11 +5,11 @@
     k))
 
 (defmulti handle
-  (fn [[k _v] _effect-ctx _world]
+  (fn [[k _v] _effect-ctx _ctx]
     k))
 
 (defmulti useful?
-  (fn [[k _v] _effect-ctx _world]
+  (fn [[k _v] _effect-ctx _ctx]
     k))
 
 (defmethod useful? :default

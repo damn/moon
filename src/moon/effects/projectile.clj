@@ -29,7 +29,7 @@
             max-range))))
 
 (defmethod effect/handle :effects/projectile
-  [[_ projectile] {:keys [effect/source effect/target-direction]} _world]
+  [[_ projectile] {:keys [effect/source effect/target-direction]} _ctx]
   [[:tx/spawn-projectile
     {:position (proj-start-point (:entity/body @source)
                                  target-direction
