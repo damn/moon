@@ -127,4 +127,11 @@
       (assoc ctx
              :ctx/mouseover-eid nil
              :ctx/paused? false ; is set before checked ... this setting here is irrelevant
+             :ctx/world-viewport (let [world-unit-scale (:graphics/world-unit-scale graphics)
+                                       world-width  (* (:width  (:world-viewport config)) world-unit-scale)
+                                       world-height (* (:height (:world-viewport config)) world-unit-scale)]
+                                   (FitViewport. world-width
+                                                 world-height
+                                                 (doto (OrthographicCamera.)
+                                                   (.setToOrtho false world-width world-height))))
              ))))

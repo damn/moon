@@ -5,7 +5,6 @@
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics Color
                                       Colors
-                                      OrthographicCamera
                                       Pixmap
                                       Pixmap$Format
                                       Texture
@@ -13,8 +12,7 @@
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.utils.viewport FitViewport)))
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
 
 (def draw-fns
   (update-vals '{:draw/arc              moon.draw.arc/do!
@@ -69,9 +67,7 @@
    {:keys [colors
            cursors
            default-font
-           texture-folder
-           tile-size
-           world-viewport]}]
+           tile-size]}]
   (doseq [[name [r g b a]] colors] ; remove out
     (Colors/put name (Color. r g b a)))
   (let [batch (SpriteBatch.)
@@ -97,10 +93,4 @@
         (assoc :graphics/shape-drawer (sd/create batch (TextureRegion. shape-drawer-texture 1 0 1 1)))
         (assoc :graphics/unit-scale (atom 1)
                :graphics/world-unit-scale world-unit-scale)
-        (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch))
-        (assoc :graphics/world-viewport (let [world-width  (* (:width  world-viewport) world-unit-scale)
-                                              world-height (* (:height world-viewport) world-unit-scale)]
-                                          (FitViewport. world-width
-                                                        world-height
-                                                        (doto (OrthographicCamera.)
-                                                          (.setToOrtho false world-width world-height))))))))
+        (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch)))))

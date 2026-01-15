@@ -52,10 +52,10 @@
 
 (defn do!
   [{:keys [ctx/graphics
-           ctx/world]
+           ctx/world
+           ctx/world-viewport]
     :as ctx}]
-  (let [{:keys [graphics/tiled-map-renderer
-                graphics/world-viewport]} graphics]
+  (let [{:keys [graphics/tiled-map-renderer]} graphics]
     (tm-renderer/draw! tiled-map-renderer
                        world-viewport
                        (:world/tiled-map world)

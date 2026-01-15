@@ -3,9 +3,9 @@
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn do!
-  [{:keys [ctx/graphics
-           ctx/player-eid]
+  [{:keys [ctx/player-eid
+           ctx/world-viewport]
     :as ctx}]
-  (camera/set-position! (Viewport/.getCamera (:graphics/world-viewport graphics))
+  (camera/set-position! (Viewport/.getCamera world-viewport)
                         (:body/position (:entity/body @player-eid)))
   ctx)

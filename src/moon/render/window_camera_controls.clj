@@ -10,13 +10,14 @@
 (defn do!
   [{:keys [ctx/input
            ctx/graphics
-           ctx/stage]
+           ctx/stage
+           ctx/world-viewport]
     :as ctx}]
   (when (input/key-pressed? input (:zoom-in input/controls))
-    (camera/inc-zoom! (Viewport/.getCamera (:graphics/world-viewport graphics)) zoom-speed))
+    (camera/inc-zoom! (Viewport/.getCamera world-viewport) zoom-speed))
 
   (when (input/key-pressed? input (:zoom-out input/controls))
-    (camera/inc-zoom! (Viewport/.getCamera (:graphics/world-viewport graphics)) (- zoom-speed)))
+    (camera/inc-zoom! (Viewport/.getCamera world-viewport) (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key input/controls))
     (ui/close-all-windows! stage))

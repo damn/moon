@@ -20,6 +20,7 @@
     [:ctx/player-eid :some]
     [:ctx/ui-viewport :some]
     [:ctx/world :some]
+    [:ctx/world-viewport :some]
     ; graphics/world-mouse-position
     ; graphics/ui-mouse-position
     ; delta-time / elapsed-time / ?

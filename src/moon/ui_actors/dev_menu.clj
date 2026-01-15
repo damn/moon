@@ -89,8 +89,8 @@
                         :update-fn (fn [{:keys [ctx/graphics]}]
                                      (mapv int (:graphics/world-mouse-position graphics)))}
                        {:label "Zoom"
-                        :update-fn (fn [ctx]
-                                     (camera/zoom (Viewport/.getCamera (:graphics/world-viewport (:ctx/graphics ctx)))))
+                        :update-fn (fn [{:keys [ctx/world-viewport]}]
+                                     (camera/zoom (Viewport/.getCamera world-viewport)))
                         :icon "images/zoom.png"}]]
     (dev-menu/create
      {:menus [ctx-data-viewer

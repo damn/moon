@@ -7,10 +7,10 @@
                   :extensions #{"png" "bmp"}}
  :ui-viewport {:width 1440
                :height 900}
+ :world-viewport {:width 1440
+                  :height 900}
  :graphics {:colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
             :tile-size 48
-            :world-viewport {:width 1440
-                             :height 900}
             :default-font {:path "exocet/films.EXL_____.ttf"
                            :params {:size 16
                                     :quality-scaling 2

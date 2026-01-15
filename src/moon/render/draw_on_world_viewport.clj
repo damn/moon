@@ -13,10 +13,9 @@
 (def ^:dbg-flag show-tile-grid? false)
 
 (defn draw-tile-grid
-  [{:keys [ctx/graphics]}]
+  [{:keys [ctx/world-viewport]}]
   (when show-tile-grid?
-    (let [world-viewport (:graphics/world-viewport graphics)
-          [left-x _right-x bottom-y _top-y] (camera/frustum (Viewport/.getCamera world-viewport))]
+    (let [[left-x _right-x bottom-y _top-y] (camera/frustum (Viewport/.getCamera world-viewport))]
       [[:draw/grid
         (int left-x)
         (int bottom-y)
@@ -43,9 +42,10 @@
 
 (defn- draw-cell-debug
   [{:keys [ctx/graphics
-           ctx/world]}]
+           ctx/world
+           ctx/world-viewport]}]
   (apply concat
-         (for [[x y] (camera/visible-tiles (Viewport/.getCamera (:graphics/world-viewport graphics)))
+         (for [[x y] (camera/visible-tiles (Viewport/.getCamera world-viewport))
                :let [cell ((:world/grid world) [x y])]
                :when cell
                :let [cell* @cell]]
@@ -116,13 +116,13 @@
       (draw-entity ctx entity render-layer))))
 
 (defn do!
-  [{:keys [ctx/graphics]
+  [{:keys [ctx/graphics
+           ctx/world-viewport]
     :as ctx}]
   (let [{:keys [^Batch graphics/batch
                 graphics/shape-drawer
                 graphics/unit-scale
-                graphics/world-unit-scale
-                graphics/world-viewport]} graphics]
+                graphics/world-unit-scale]} graphics]
     ; fix scene2d.ui.tooltip flickering
     ; _everything_ flickers with vis ui tooltip! it changes batch color somehow and does not
     ; change it back !
