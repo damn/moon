@@ -1,7 +1,6 @@
 (ns moon.graphics.impl
   (:require [clj.api.space.earlygrey.shape-drawer :as sd]
-            [moon.graphics :as graphics]
-            [moon.tm-renderer :as tm-renderer])
+            [moon.graphics :as graphics])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics Color
                                       Colors
@@ -92,5 +91,4 @@
         (assoc :graphics/shape-drawer-texture shape-drawer-texture)
         (assoc :graphics/shape-drawer (sd/create batch (TextureRegion. shape-drawer-texture 1 0 1 1)))
         (assoc :graphics/unit-scale (atom 1)
-               :graphics/world-unit-scale world-unit-scale)
-        (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch)))))
+               :graphics/world-unit-scale world-unit-scale))))

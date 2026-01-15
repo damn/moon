@@ -6,8 +6,8 @@
            (moon TiledMapRenderer
                  TiledMapRenderer$ColorSetter)))
 
-(defn draw! [tiled-map-renderer world-viewport tiled-map color-setter]
-  (let [^TiledMapRenderer renderer (tiled-map-renderer tiled-map)
+(defn draw! [batch world-unit-scale world-viewport tiled-map color-setter]
+  (let [renderer (TiledMapRenderer. tiled-map (float world-unit-scale) batch)
         camera (Viewport/.getCamera world-viewport)]
     (.setColorSetter renderer (reify TiledMapRenderer$ColorSetter
                                 (apply [_ color x y]
@@ -19,7 +19,3 @@
          (map (partial MapLayers/.getIndex (.getLayers tiled-map)))
          int-array
          (.render renderer))))
-
-(defn create [world-unit-scale batch]
-  (memoize (fn [tiled-map]
-             (TiledMapRenderer. tiled-map (float world-unit-scale) batch))))

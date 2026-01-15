@@ -124,7 +124,7 @@
                    :ctx/zoom-speed 0.1
                    :ctx/camera-movement-speed 1
                    :ctx/sprite-batch sprite-batch
-                   :ctx/tiled-map-renderer (tm-renderer/create world-unit-scale sprite-batch))
+                   :ctx/world-unit-scale world-unit-scale)
         ctx (generate-level ctx initial-level-fn)]
     (.addActor (:ctx/stage ctx) (edit-window skin))
     ctx))
@@ -136,11 +136,14 @@
   (.dispose sprite-batch)
   (.dispose tiled-map))
 
-(defn- draw-tiled-map! [{:keys [ctx/color-setter
+(defn- draw-tiled-map! [{:keys [ctx/sprite-batch
+                                ctx/color-setter
                                 ctx/tiled-map
                                 ctx/tiled-map-renderer
+                                ctx/world-unit-scale
                                 ctx/world-viewport]}]
-  (tm-renderer/draw! tiled-map-renderer
+  (tm-renderer/draw! sprite-batch
+                     world-unit-scale
                      world-viewport
                      tiled-map
                      color-setter))

@@ -55,16 +55,16 @@
            ctx/world
            ctx/world-viewport]
     :as ctx}]
-  (let [{:keys [graphics/tiled-map-renderer]} graphics]
-    (tm-renderer/draw! tiled-map-renderer
-                       world-viewport
-                       (:world/tiled-map world)
-                       (tile-color-setter
-                        {:ray-blocked? (partial world/blocked? world)
-                         :explored-tile-corners (:world/explored-tile-corners world)
-                         :light-position (camera/position (Viewport/.getCamera world-viewport))
-                         :see-all-tiles? false
-                         :explored-tile-color  [0.5 0.5 0.5 1]
-                         :visible-tile-color   [1 1 1 1]
-                         :invisible-tile-color [0 0 0 1]})))
+  (tm-renderer/draw! (:graphics/batch graphics)
+                     (:graphics/world-unit-scale graphics)
+                     world-viewport
+                     (:world/tiled-map world)
+                     (tile-color-setter
+                      {:ray-blocked? (partial world/blocked? world)
+                       :explored-tile-corners (:world/explored-tile-corners world)
+                       :light-position (camera/position (Viewport/.getCamera world-viewport))
+                       :see-all-tiles? false
+                       :explored-tile-color  [0.5 0.5 0.5 1]
+                       :visible-tile-color   [1 1 1 1]
+                       :invisible-tile-color [0 0 0 1]}))
   ctx)
