@@ -137,7 +137,9 @@
            :world/content-grid (create-content-grid width height (:content-grid-cell-size world))
            :world/explored-tile-corners (create-explored-tile-corners width height)
            :world/raycaster (create-raycaster grid)
+
            :world/elapsed-time 0 ; out
+
            :world/potential-field-cache (atom nil)
            :world/id-counter (atom 0)
            :world/entity-ids (atom {}))))
