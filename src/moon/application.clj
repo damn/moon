@@ -26,7 +26,9 @@
            resize!]}]
   (let [create! (requiring-resolve create!)
         dispose! (requiring-resolve dispose!)
-        render! (requiring-resolve render!)
+        [render-fn render-params] render!
+        render! (requiring-resolve render-fn)
+        render-params (map requiring-resolve render-params)
         resize! (requiring-resolve resize!)
         config (->> "config.edn" io/resource slurp edn/read-string)]
     (reify ApplicationListener
@@ -37,7 +39,7 @@
         (dispose! @state))
 
       (render [_]
-        (swap! state render!))
+        (swap! state render! render-params))
 
       (resize [_ width height]
         (resize! @state width height))
