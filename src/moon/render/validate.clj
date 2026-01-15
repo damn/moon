@@ -2,6 +2,9 @@
   (:require [malli.core :as m]
             [malli.utils :as mu]))
 
+; TODO or at each step we assert what we want ?
+; e.g. after create
+; or before render, etc.
 (def ^:private schema
   (m/schema
    [:map {:closed true}
@@ -18,6 +21,7 @@
     ; graphics/world-mouse-position
     ; graphics/ui-mouse-position
     ; delta-time / elapsed-time / ?
+    ; world/render-z-order ?
     ]))
 
 (defn do! [ctx]

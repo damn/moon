@@ -100,16 +100,6 @@
     (assert tiled-map) ; only dispose after world was created
     (.dispose tiled-map))
 
-  (tick-entities! [{:keys [world/active-entities]
-                    :as world}]
-    (mapcat (fn [eid]
-              (mapcat (fn [[k v]]
-                        (try (entity/tick [k v] eid world)
-                             (catch Throwable t
-                               (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
-                      @eid))
-            active-entities))
-
   (remove-destroyed-entities!
     [{:keys [world/content-grid
              world/entity-ids
@@ -190,24 +180,3 @@
       calculate-max-speed
       define-render-z-order
       (assoc-state world-fn-result)))
-
-(comment
- (= (tick-entities! {:world/active-entities [(atom {:firstk :foo
-                                                    :secondk :bar})
-                                             (atom {:firstk2 :foo2
-                                                    :secondk2 :bar2})]}
-                    {:firstk (fn [v eid world]
-                               [[:foo/bar]])
-                     :secondk (fn [v eid world]
-                                [[:foo/barz]
-                                 [:asdf]])
-                     :firstk2 (fn [v eid world]
-                                nil)
-                     :secondk2 (fn [v eid world]
-                                 [[:asdf2] [:asdf3]])})
-    [[:foo/bar]
-     [:foo/barz]
-     [:asdf]
-     [:asdf2]
-     [:asdf3]])
- )

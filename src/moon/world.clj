@@ -2,7 +2,6 @@
 
 (defprotocol World
   (dispose! [_])
-  (tick-entities! [_])
   (remove-destroyed-entities! [_])
   (update-time [_ delta-ms])
   (blocked? [_ start target])
