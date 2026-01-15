@@ -7,9 +7,10 @@
 (defn do!
   [{:keys [ctx/skin
            ctx/stage
+           ctx/paused?
            ctx/world]
     :as ctx}]
-  (if (:world/paused? world)
+  (if paused?
     ctx
     (do (try
          (ctx/handle! ctx (world/tick-entities! world))

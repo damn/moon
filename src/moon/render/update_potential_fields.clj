@@ -103,9 +103,10 @@
                                              max-iterations)))))
 
 (defn do!
-  [{:keys [ctx/world]
+  [{:keys [ctx/paused?
+           ctx/world]
     :as ctx}]
-  (if (:world/paused? world)
+  (if paused?
     ctx
     (do
      (let [{:keys [world/active-entities

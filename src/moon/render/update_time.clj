@@ -4,8 +4,8 @@
 
 (defn do!
   [{:keys [ctx/graphics
-           ctx/world]
+           ctx/paused?]
     :as ctx}]
-  (if (:world/paused? (:ctx/world ctx))
+  (if paused?
     ctx
     (update ctx :ctx/world world/update-time (graphics/delta-time graphics))))

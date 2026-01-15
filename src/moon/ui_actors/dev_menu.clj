@@ -79,7 +79,7 @@
                                        (:entity/id entity)))
                         :icon "images/mouseover.png"}
                        {:label "paused?"
-                        :update-fn (comp :world/paused? :ctx/world)}
+                        :update-fn :ctx/paused?}
                        {:label "GUI"
                         :update-fn (fn [{:keys [ctx/graphics]}]
                                      (mapv int (:graphics/ui-mouse-position graphics)))}

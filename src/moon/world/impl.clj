@@ -171,9 +171,7 @@
            :world/elapsed-time 0 ; out
            :world/potential-field-cache (atom nil)
            :world/id-counter (atom 0)
-           :world/entity-ids (atom {})
-           :world/paused? false ; out
-           )))
+           :world/entity-ids (atom {}))))
 
 (defn- calculate-max-speed
   [{:keys [world/minimum-size

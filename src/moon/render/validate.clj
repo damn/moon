@@ -12,6 +12,7 @@
     [:ctx/stage :some]
     [:ctx/skin :some]
     [:ctx/db :some]
+    [:ctx/paused? :some]
     [:ctx/player-eid :some]
     [:ctx/world :some]]))
 

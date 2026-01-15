@@ -111,4 +111,7 @@
                               :creature-property (db/build db (keyword creature-id))
                               :components (:world/enemy-components world)}]))
 
-      (assoc ctx :ctx/mouseover-eid nil))))
+      (assoc ctx
+             :ctx/mouseover-eid nil
+             :ctx/paused? false ; is set before checked ... this setting here is irrelevant
+             ))))
