@@ -196,52 +196,76 @@
     (.addActor stage actor))
   ctx)
 
-(defn finish-up
+(defn create-world
   [{:keys [ctx/db
-           ctx/files
-           ctx/graphics
-           ctx/textures
-           ctx/world-unit-scale]
+           ctx/textures]
     :as ctx}
    config]
   (let [world-fn-result (call-world-fn (:world config)
                                        (db/all-raw db :properties/creatures)
-                                       textures)
-        world ((requiring-resolve (:world-impl config)) world-params world-fn-result)
-        ctx (assoc ctx :ctx/world world)
-        _ (ctx/handle! ctx
-                       [[:tx/spawn-creature (let [{:keys [creature-id
-                                                          components]} (:world/player-components world)]
-                                              {:position (mapv (partial + 0.5) (:world/start-position world))
-                                               :creature-property (db/build db creature-id)
-                                               :components components})]])
-        ctx (let [eid (get @(:world/entity-ids world) 1)]
-              (assert (:entity/player? @eid))
-              (assoc ctx :ctx/player-eid eid))]
-    (ctx/handle!
-     ctx
-     (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]
-       [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
-                            :creature-property (db/build db (keyword creature-id))
-                            :components (:world/enemy-components world)}]))
+                                       textures)]
+    (assoc ctx :ctx/world ((requiring-resolve (:world-impl config))
+                           world-params
+                           world-fn-result))))
 
-    (assoc ctx
-           :ctx/mouseover-eid nil
-           :ctx/paused? false ; is set before checked ... this setting here is irrelevant
-           :ctx/world-mouse-position nil
-           :ctx/ui-mouse-position nil
-           :ctx/world-viewport (let [world-width  (* (:width  (:world-viewport config)) world-unit-scale)
-                                     world-height (* (:height (:world-viewport config)) world-unit-scale)]
-                                 (FitViewport. world-width
-                                               world-height
-                                               (doto (OrthographicCamera.)
-                                                 (.setToOrtho false world-width world-height))))
-           :ctx/cursors (update-vals (:data (:cursors config))
-                                     (fn [[path hotspot]]
-                                       (create-cursor files
-                                                      graphics
-                                                      (format (:path-format (:cursors config)) path)
-                                                      hotspot))))))
+(defn spawn-player-entity!
+  [{:keys [ctx/db
+           ctx/world]
+    :as ctx}]
+  (ctx/handle! ctx
+               [[:tx/spawn-creature (let [{:keys [creature-id
+                                                  components]} (:world/player-components world)]
+                                      {:position (mapv (partial + 0.5) (:world/start-position world))
+                                       :creature-property (db/build db creature-id)
+                                       :components components})]])
+  (let [eid (get @(:world/entity-ids world) 1)]
+    (assert (:entity/player? @eid))
+    (assoc ctx :ctx/player-eid eid)))
+
+(defn add-leftout-ctxs [ctx]
+  (assoc ctx
+         :ctx/mouseover-eid nil
+         :ctx/paused? false ; is set before checked ... this setting here is irrelevant
+         :ctx/world-mouse-position nil
+         :ctx/ui-mouse-position nil))
+
+(defn spawn-enemies!
+  [{:keys [ctx/db
+           ctx/world]
+    :as ctx}]
+  (ctx/handle!
+   ctx
+   (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]
+     [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
+                          :creature-property (db/build db (keyword creature-id))
+                          :components (:world/enemy-components world)}]))
+  ctx)
+
+(defn create-world-viewport
+  [{:keys [ctx/world-unit-scale]
+    :as ctx}
+   {:keys [width height]}]
+  (assoc ctx :ctx/world-viewport
+         (let [world-width  (* width world-unit-scale)
+               world-height (* height world-unit-scale)]
+           (FitViewport. world-width
+                         world-height
+                         (doto (OrthographicCamera.)
+                           (.setToOrtho false world-width world-height))))))
+
+(defn create-cursors
+  [{:keys [ctx/files
+           ctx/graphics]
+    :as ctx}
+   {:keys [data path-format]}]
+  (assoc ctx :ctx/cursors
+         (update-vals data
+                      (fn [[path hotspot]]
+                        (create-cursor files
+                                       graphics
+                                       (format path-format path)
+                                       hotspot)))))
+
 (defn do!
   [^Application app
    {:keys [colors
@@ -256,7 +280,9 @@
                   :ctx/files (.getFiles app)
                   :ctx/input (.getInput app)
                   :ctx/unit-scale (atom 1)})
-          [[def-colors! colors]
+          [
+           [def-colors! colors]
+           [create-cursors (:cursors config)]
            [create-db (requiring-resolve (:db-impl config))]
            [create-ui-viewport (:ui-viewport config)]
            [create-batch]
@@ -266,9 +292,14 @@
            [create-textures (:texture-folder config)]
            [shape-drawer-texture]
            [world-unit-scale tile-size]
+           [create-world-viewport (:world-viewport config)]
            [load-sounds (:audio config)]
            [create-default-font default-font]
            [create-shape-drawer]
            [set-input-processor]
            [add-stage-actors (:ui/actors config)]
-           [finish-up config]]))
+           [create-world config]
+           [spawn-player-entity!]
+           [spawn-enemies!]
+           [add-leftout-ctxs]
+           ]))
