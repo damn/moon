@@ -21,11 +21,6 @@
        (= "inventory-cell" (.getName (.getParent actor)))
        (.getUserObject (.getParent actor))))
 
-(defn create!
-  [{:keys [graphics/batch
-           graphics/ui-viewport]}]
-  (Stage. ui-viewport batch))
-
 (defn- toggle-visible! [^Actor actor]
   (.setVisible actor (not (.isVisible actor))))
 

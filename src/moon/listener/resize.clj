@@ -2,7 +2,9 @@
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn do!
-  [{:keys [ctx/graphics]} width height]
-  (Viewport/.update (:graphics/ui-viewport    graphics) width height true)
+  [{:keys [ctx/graphics
+           ctx/ui-viewport]}
+   width height]
+  (Viewport/.update ui-viewport width height true)
   (Viewport/.update (:graphics/world-viewport graphics) width height false)
   nil)

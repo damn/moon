@@ -1,5 +1,7 @@
 {
  :requires [
+            moon.ui.impl
+
             moon.schema.animation
             moon.schema.boolean
             moon.schema.enum

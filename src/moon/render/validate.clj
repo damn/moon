@@ -18,6 +18,7 @@
     [:ctx/db :some]
     [:ctx/paused? :some]
     [:ctx/player-eid :some]
+    [:ctx/ui-viewport :some]
     [:ctx/world :some]
     ; graphics/world-mouse-position
     ; graphics/ui-mouse-position

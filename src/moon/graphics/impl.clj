@@ -151,9 +151,8 @@
            default-font
            texture-folder
            tile-size
-           ui-viewport
            world-viewport]}]
-  (doseq [[name [r g b a]] colors]
+  (doseq [[name [r g b a]] colors] ; remove out
     (Colors/put name (Color. r g b a)))
   (let [batch (SpriteBatch.)
         shape-drawer-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
@@ -179,9 +178,6 @@
         (assoc :graphics/unit-scale (atom 1)
                :graphics/world-unit-scale world-unit-scale)
         (assoc :graphics/tiled-map-renderer (tm-renderer/create world-unit-scale batch))
-        (assoc :graphics/ui-viewport (FitViewport. (:width  ui-viewport)
-                                                   (:height ui-viewport)
-                                                   (OrthographicCamera.)))
         (assoc :graphics/world-viewport (let [world-width  (* (:width  world-viewport) world-unit-scale)
                                               world-height (* (:height world-viewport) world-unit-scale)]
                                           (FitViewport. world-width

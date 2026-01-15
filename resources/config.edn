@@ -1,15 +1,14 @@
 {:db-impl moon.db-impl/create
  :graphics-impl moon.graphics.impl/create!
- :ui-impl moon.ui.impl/create!
  :world-impl moon.world.impl/create
  :audio {:sound-names "sounds.edn"
          :path-format "sounds/%s.wav"}
  :texture-folder {:folder "resources/"
                   :extensions #{"png" "bmp"}}
+ :ui-viewport {:width 1440
+               :height 900}
  :graphics {:colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
             :tile-size 48
-            :ui-viewport {:width 1440
-                          :height 900}
             :world-viewport {:width 1440
                              :height 900}
             :default-font {:path "exocet/films.EXL_____.ttf"

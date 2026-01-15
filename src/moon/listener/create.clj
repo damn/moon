@@ -14,8 +14,10 @@
                              Files
                              Input)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics Texture
+                                      OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.utils.viewport FitViewport)
            (moon Stage)))
 
 (defn- call-world-fn
@@ -81,7 +83,10 @@
   ; TODO postcondition validate?
   (let [db ((requiring-resolve (:db-impl config)))
         graphics ((requiring-resolve (:graphics-impl config)) (.getGraphics app) (.getFiles app) (:graphics config))
-        stage ((requiring-resolve (:ui-impl config)) graphics)
+        ui-viewport (FitViewport. (:width  (:ui-viewport config))
+                                  (:height (:ui-viewport config))
+                                  (OrthographicCamera.))
+        stage (Stage. ui-viewport (:graphics/batch graphics))
         skin (create-skin (.internal (.getFiles app) "uiskin.json"))
         textures (into {} (for [path (files-utils/search (.getFiles app) (:texture-folder config))]
                             [path (Texture. ^String path)]))
@@ -92,7 +97,9 @@
                     :ctx/input (.getInput app)
                     :ctx/stage stage
                     :ctx/skin skin
-                    :ctx/textures textures})]
+                    :ctx/textures textures
+                    :ctx/ui-viewport ui-viewport
+                    })]
     (Input/.setInputProcessor (.getInput app) stage)
     (doseq [actor (map (fn [[sym & params]] (apply (requiring-resolve sym) ctx params)) (:ui/actors config))]
       (.addActor stage actor))
