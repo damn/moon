@@ -9,7 +9,6 @@
 ; also does >1 thing, and stage inputlistener do ?
 (defn do!
   [{:keys [ctx/input
-           ctx/graphics
            ctx/stage
            ctx/world-viewport]
     :as ctx}]

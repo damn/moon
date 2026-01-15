@@ -33,17 +33,16 @@
 (defmethod entity/render :player-item-on-cursor
   [[_k {:keys [item]}]
    entity
-   {:keys [ctx/graphics
-           ctx/input
+   {:keys [ctx/input
            ctx/stage
-           ctx/textures]}]
+           ctx/textures
+           ctx/world-mouse-position]}]
   ; TODO do not draw here, only at UI view
   ; then graphics can draw world without stage/input
   (when (world-item? (ui/mouseover-actor stage (input/mouse-position input)))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image item))
-      (item-place-position (:graphics/world-mouse-position graphics)
-                           entity)
+      (item-place-position world-mouse-position entity)
       {:center? true}]]))
 
 (defmethod state/enter :player-item-on-cursor
@@ -51,7 +50,7 @@
   [[:tx/assoc eid :entity/item-on-cursor item]])
 
 (defmethod state/exit :player-item-on-cursor
-  [_ eid {:keys [ctx/graphics]}]
+  [_ eid {:keys [ctx/world-mouse-position]}]
   ; at clicked-cell when we put it into a inventory-cell
   ; we do not want to drop it on the ground too additonally,
   ; so we dissoc it there manually. Otherwise it creates another item
@@ -61,9 +60,7 @@
       [[:tx/sound "bfxr_itemputground"]
        [:tx/dissoc eid :entity/item-on-cursor]
        [:tx/spawn-item
-        (item-place-position
-         (:graphics/world-mouse-position graphics)
-         entity)
+        (item-place-position world-mouse-position entity)
         (:entity/item-on-cursor entity)]])))
 
 (defmethod state/cursor :player-item-on-cursor
@@ -110,17 +107,17 @@
       [:tx/event eid :pickup-item item-in-cell]])))
 
 (defmethod state/draw-ui-view :player-item-on-cursor
-  [_ eid {:keys [ctx/graphics
-                 ctx/input
+  [_ eid {:keys [ctx/input
                  ctx/stage
-                 ctx/textures]}]
+                 ctx/textures
+                 ctx/ui-mouse-position]}]
   ; TODO see player-item-on-cursor at render layers
   ; always draw it here at right position, then render layers does not need input/stage
   ; can pass world to graphics, not handle here at application
   (when (not (world-item? (ui/mouseover-actor stage (input/mouse-position input))))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
-      (:graphics/ui-mouse-position graphics)
+      ui-mouse-position
       {:center? true}]]))
 
 (defmethod state/handle-input :player-item-on-cursor

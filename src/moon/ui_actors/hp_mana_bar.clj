@@ -1,6 +1,6 @@
 (ns moon.ui-actors.hp-mana-bar
   (:require [moon.entity.stats :as stats]
-            [moon.graphics :as graphics]
+            [moon.ctx :as ctx]
             [moon.textures :as textures]
             [moon.ui :as ui]
             [moon.utils :as utils]
@@ -11,8 +11,8 @@
   (proxy [Actor] []
     (draw [_batch _parent-alpha]
       (when-let [stage (.getStage this)]
-        (graphics/draw! (:ctx/graphics (.ctx stage))
-                        (create-draws (.ctx stage)))))))
+        (ctx/draw! (.ctx stage)
+                   (create-draws (.ctx stage)))))))
 
 (let [config {:rahmen-file "images/rahmen.png"
               :rahmenw 150

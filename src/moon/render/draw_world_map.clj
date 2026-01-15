@@ -51,12 +51,13 @@
  )
 
 (defn do!
-  [{:keys [ctx/graphics
+  [{:keys [ctx/batch
            ctx/world
+           ctx/world-unit-scale
            ctx/world-viewport]
     :as ctx}]
-  (tm-renderer/draw! (:graphics/batch graphics)
-                     (:graphics/world-unit-scale graphics)
+  (tm-renderer/draw! batch
+                     world-unit-scale
                      world-viewport
                      (:world/tiled-map world)
                      (tile-color-setter

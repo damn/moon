@@ -4,20 +4,18 @@
 
 (defn do!
   [{:keys [ctx/audio
+           ctx/batch
            ctx/cursors
-           ctx/graphics
+           ctx/default-font
+           ctx/shape-drawer-texture
            ctx/skin
            ctx/textures
            ctx/world]}]
   (run! Disposable/.dispose (vals audio))
+  (Disposable/.dispose batch)
   (run! Disposable/.dispose (vals cursors))
-  (let [{:keys [graphics/batch
-                graphics/default-font
-                graphics/shape-drawer-texture]} graphics]
-    (Disposable/.dispose batch)
-
-    (Disposable/.dispose default-font)
-    (Disposable/.dispose shape-drawer-texture))
+  (Disposable/.dispose default-font)
+  (Disposable/.dispose shape-drawer-texture)
   (Disposable/.dispose skin)
   (run! Disposable/.dispose (vals textures))
   (world/dispose! world)

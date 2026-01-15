@@ -8,4 +8,4 @@
     :as ctx}]
   (if paused?
     ctx
-    (update ctx :ctx/world world/update-time (Graphics/.getDeltaTime (:graphics/core graphics)))))
+    (update ctx :ctx/world world/update-time (Graphics/.getDeltaTime graphics))))

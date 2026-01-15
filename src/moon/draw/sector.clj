@@ -4,7 +4,7 @@
             [clojure.math :as math]))
 
 (defn do!
-  [{:keys [graphics/shape-drawer]}
+  [{:keys [ctx/shape-drawer]}
    [center-x center-y] radius start-angle degree color]
   (sd/set-color! shape-drawer (color/float-bits color))
   (sd/sector! shape-drawer

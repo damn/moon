@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.inventory
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.graphics :as graphics]
+            [moon.ctx :as ctx]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
             [moon.ui :as ui]
@@ -20,17 +20,18 @@
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
       (when-let [stage (.getStage this)]
-        (let [{:keys [ctx/graphics
-                      ctx/player-eid]} (.ctx stage)]
+        (let [{:keys [ctx/player-eid
+                      ctx/ui-mouse-position]
+               :as ctx} (.ctx stage)]
           ; TODO here just a simple callback ?
-          (graphics/draw! graphics
-                          (let [[x y] (:graphics/ui-mouse-position graphics)]
-                            (draw-cell-rect @player-eid
-                                            (.getX this)
-                                            (.getY this)
-                                            (let [v2 (.stageToLocalCoordinates this (Vector2. x y))]
-                                              (.hit this (.x v2) (.y v2) true))
-                                            (Actor/.getUserObject (.getParent this))))))))))
+          (ctx/draw! ctx
+                     (let [[x y] ui-mouse-position]
+                       (draw-cell-rect @player-eid
+                                       (.getX this)
+                                       (.getY this)
+                                       (let [v2 (.stageToLocalCoordinates this (Vector2. x y))]
+                                         (.hit this (.x v2) (.y v2) true))
+                                       (Actor/.getUserObject (.getParent this))))))))))
 
 (defn- create-inventory-window*
   [{:keys [position

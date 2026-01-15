@@ -6,9 +6,9 @@
 ; (require '[moon.circle :as circle])
 ;
 ; (defn geom-test
-;   [{:keys [ctx/graphics
-;            ctx/world]}]
-;   (let [position (:graphics/world-mouse-position graphics)
+;   [{:keys [ctx/world
+;            ctx/world-mouse-position]}]
+;   (let [position world-mouse-position
 ;         radius 0.8
 ;         circle {:position position
 ;                 :radius radius}]

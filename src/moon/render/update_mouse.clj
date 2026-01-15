@@ -9,5 +9,5 @@
     :as ctx}]
   (let [mp (input/mouse-position input)]
     (-> ctx
-        (assoc-in [:ctx/graphics :graphics/world-mouse-position] (viewport/unproject world-viewport mp))
-        (assoc-in [:ctx/graphics :graphics/ui-mouse-position] (viewport/unproject ui-viewport mp)))))
+        (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
+        (assoc :ctx/ui-mouse-position (viewport/unproject ui-viewport mp)))))

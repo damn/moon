@@ -6,18 +6,18 @@
             [moon.utils :as utils]))
 
 (defn do!
-  [{:keys [ctx/graphics
-           ctx/input
+  [{:keys [ctx/input
            ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
-           ctx/world]
+           ctx/world
+           ctx/world-mouse-position]
     :as ctx}]
   (let [mouseover-actor (ui/mouseover-actor stage (input/mouse-position input))
         {:keys [world/grid
                 world/raycaster
                 world/render-z-order]} world
-        position (:graphics/world-mouse-position graphics)
+        position world-mouse-position
         new-eid (if mouseover-actor
                   nil
                   (let [player @player-eid

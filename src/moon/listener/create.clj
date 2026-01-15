@@ -1,5 +1,6 @@
 (ns moon.listener.create
-  (:require [clojure.edn :as edn]
+  (:require [clj.api.space.earlygrey.shape-drawer :as sd]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.ctx :as ctx]
             [moon.db :as db]
@@ -15,12 +16,38 @@
                              Graphics
                              Input)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Pixmap
+           (com.badlogic.gdx.graphics Color
+                                      Colors
+                                      Pixmap
+                                      Pixmap$Format
                                       Texture
+                                      Texture$TextureFilter
                                       OrthographicCamera)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch
+                                          TextureRegion)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
            (com.badlogic.gdx.utils.viewport FitViewport)
            (moon Stage)))
+
+(defn- generate-font
+  [file-handle {:keys [size
+                       quality-scaling
+                       enable-markup?
+                       use-integer-positions?]}]
+  (let [generator (FreeTypeFontGenerator. file-handle)
+        font (.generateFont generator
+                            (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                              (set! (.size params) (* size quality-scaling))
+                              (set! (.minFilter params) Texture$TextureFilter/Linear)
+                              (set! (.magFilter params) Texture$TextureFilter/Linear)
+                              params))]
+    (.dispose generator)
+    (.setScale (.getData font) (/ quality-scaling))
+    (set! (.markupEnabled (.getData font)) enable-markup?)
+    (.setUseIntegerPositions font use-integer-positions?)
+    font))
 
 (defn- call-world-fn
   [world-fn creature-properties textures]
@@ -57,7 +84,28 @@
                                           :entity/click-distance-tiles 1.5}}
    })
 
-(q/defrecord Context [])
+(def draw-fns
+  (update-vals '{:draw/arc              moon.draw.arc/do!
+                 :draw/circle           moon.draw.circle/do!
+                 :draw/ellipse          moon.draw.ellipse/do!
+                 :draw/filled-circle    moon.draw.filled-circle/do!
+                 :draw/filled-ellipse   moon.draw.filled-ellipse/do!
+                 :draw/filled-rectangle moon.draw.filled-rectangle/do!
+                 :draw/grid             moon.draw.grid/do!
+                 :draw/line             moon.draw.line/do!
+                 :draw/rectangle        moon.draw.rectangle/do!
+                 :draw/sector           moon.draw.sector/do!
+                 :draw/text             moon.draw.text/do!
+                 :draw/texture-region   moon.draw.texture-region/do!
+                 :draw/with-line-width  moon.draw.with-line-width/do!}
+               requiring-resolve))
+
+(q/defrecord Context []
+  moon.ctx/Graphics
+  (draw! [ctx draws]
+    (doseq [{k 0 :as component} draws
+            :when component]
+      (apply (get draw-fns k) ctx (rest component)))))
 
 (defn- load-sounds
   [audio files {:keys [sound-names path-format]}]
@@ -87,21 +135,43 @@
 ; Assert what is there before passing ctx somwehere (can do select-keys)
 ; e.g. what does add actors need? .. textures/etc.
 (defn do!
-  [^Application app config]
+  [^Application app
+   {:keys [colors
+           default-font
+           tile-size]
+    :as config}]
   ; TODO postcondition validate?
+  (doseq [[name [r g b a]] colors] ; remove out
+    (Colors/put name (Color. r g b a)))
   (let [db ((requiring-resolve (:db-impl config)))
-        graphics ((requiring-resolve (:graphics-impl config)) (.getGraphics app) (.getFiles app) (:graphics config))
         ui-viewport (FitViewport. (:width  (:ui-viewport config))
                                   (:height (:ui-viewport config))
                                   (OrthographicCamera.))
-        stage (Stage. ui-viewport (:graphics/batch graphics))
+        batch (SpriteBatch.)
+        stage (Stage. ui-viewport batch)
         skin (create-skin (.internal (.getFiles app) "uiskin.json"))
         textures (into {} (for [path (files-utils/search (.getFiles app) (:texture-folder config))]
                             [path (Texture. ^String path)]))
+        shape-drawer-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                                            (.setColor 1 1 1 1)
+                                            (.drawPixel 0 0))
+                                   texture (Texture. pixmap)]
+                               (.dispose pixmap)
+                               texture)
+        world-unit-scale (float (/ tile-size))
         ctx (merge (map->Context {})
                    {:ctx/audio (load-sounds (.getAudio app) (.getFiles app) (:audio config))
                     :ctx/db db
-                    :ctx/graphics graphics
+                    :ctx/graphics (.getGraphics app)
+
+                    :ctx/default-font (generate-font (.internal (.getFiles app) (:path default-font))
+                                                     (:params default-font))
+                    :ctx/batch batch
+                    :ctx/shape-drawer-texture shape-drawer-texture
+                    :ctx/shape-drawer (sd/create batch (TextureRegion. shape-drawer-texture 1 0 1 1))
+                    :ctx/unit-scale (atom 1)
+                    :ctx/world-unit-scale world-unit-scale
+
                     :ctx/input (.getInput app)
                     :ctx/stage stage
                     :ctx/skin skin
@@ -135,8 +205,9 @@
       (assoc ctx
              :ctx/mouseover-eid nil
              :ctx/paused? false ; is set before checked ... this setting here is irrelevant
-             :ctx/world-viewport (let [world-unit-scale (:graphics/world-unit-scale graphics)
-                                       world-width  (* (:width  (:world-viewport config)) world-unit-scale)
+             :ctx/world-mouse-position nil
+             :ctx/ui-mouse-position nil
+             :ctx/world-viewport (let [world-width  (* (:width  (:world-viewport config)) world-unit-scale)
                                        world-height (* (:height (:world-viewport config)) world-unit-scale)]
                                    (FitViewport. world-width
                                                  world-height

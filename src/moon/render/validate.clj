@@ -2,17 +2,20 @@
   (:require [malli.core :as m]
             [malli.utils :as mu]))
 
-; TODO or at each step we assert what we want ?
-; e.g. after create
-; or before render, etc.
 (def ^:private schema
   (m/schema
    [:map {:closed true}
     [:ctx/audio :some]
     [:ctx/cursors :some]
+    [:ctx/default-font :some]
+    [:ctx/batch :some]
+    [:ctx/shape-drawer :some]
+    [:ctx/shape-drawer-texture :some]
+    [:ctx/unit-scale :some]
+    [:ctx/world-unit-scale :some]
     [:ctx/graphics :some]
     [:ctx/input :some]
-    [:ctx/mouseover-eid :any] ; can be nil
+    [:ctx/mouseover-eid :any]
     [:ctx/stage :some]
     [:ctx/skin :some]
     [:ctx/textures :some]
@@ -20,12 +23,10 @@
     [:ctx/paused? :some]
     [:ctx/player-eid :some]
     [:ctx/ui-viewport :some]
+    [:ctx/ui-mouse-position :any]
     [:ctx/world :some]
     [:ctx/world-viewport :some]
-    ; graphics/world-mouse-position
-    ; graphics/ui-mouse-position
-    ; delta-time / elapsed-time / ?
-    ; world/render-z-order ?
+    [:ctx/world-mouse-position :any]
     ]))
 
 (defn do! [ctx]

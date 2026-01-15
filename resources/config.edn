@@ -1,5 +1,4 @@
 {:db-impl moon.db-impl/create
- :graphics-impl moon.graphics.impl/create!
  :world-impl moon.world.impl/create
  :audio {:sound-names "sounds.edn"
          :path-format "sounds/%s.wav"}
@@ -24,17 +23,16 @@
                :height 900}
  :world-viewport {:width 1440
                   :height 900}
- :graphics {:colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
-            :tile-size 48
-            :default-font {:path "exocet/films.EXL_____.ttf"
-                           :params {:size 16
-                                    :quality-scaling 2
-                                    :enable-markup? true
-                                    :use-integer-positions? false
-                                    ; :texture-filter/linear because scaling to world-units
-                                    :min-filter :linear
-                                    :mag-filter :linear}}
-            }
+ :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
+ :tile-size 48
+ :default-font {:path "exocet/films.EXL_____.ttf"
+                :params {:size 16
+                         :quality-scaling 2
+                         :enable-markup? true
+                         :use-integer-positions? false
+                         ; :texture-filter/linear because scaling to world-units
+                         :min-filter :linear
+                         :mag-filter :linear}}
  :ui/actors [[moon.ui-actors.dev-menu/create]
              [moon.ui-actors.action-bar/create]
              [moon.ui-actors.hp-mana-bar/create]

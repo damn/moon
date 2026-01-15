@@ -72,8 +72,8 @@
                                      (str (utils/readable-number (:world/elapsed-time (:ctx/world ctx))) " seconds"))
                         :icon "images/clock.png"}
                        {:label "FPS"
-                        :update-fn (fn [ctx]
-                                     (Graphics/.getFramesPerSecond (:graphics/core (:ctx/graphics ctx))))
+                        :update-fn (fn [{:keys [ctx/graphics]}]
+                                     (Graphics/.getFramesPerSecond graphics))
                         :icon "images/fps.png"}
                        {:label "Mouseover-entity id"
                         :update-fn (fn [{:keys [ctx/mouseover-eid]}]
@@ -83,11 +83,11 @@
                        {:label "paused?"
                         :update-fn :ctx/paused?}
                        {:label "GUI"
-                        :update-fn (fn [{:keys [ctx/graphics]}]
-                                     (mapv int (:graphics/ui-mouse-position graphics)))}
+                        :update-fn (fn [{:keys [ctx/ui-mouse-position]}]
+                                     (mapv int ui-mouse-position))}
                        {:label "World"
-                        :update-fn (fn [{:keys [ctx/graphics]}]
-                                     (mapv int (:graphics/world-mouse-position graphics)))}
+                        :update-fn (fn [{:keys [ctx/world-mouse-position]}]
+                                     (mapv int world-mouse-position))}
                        {:label "Zoom"
                         :update-fn (fn [{:keys [ctx/world-viewport]}]
                                      (camera/zoom (Viewport/.getCamera world-viewport)))

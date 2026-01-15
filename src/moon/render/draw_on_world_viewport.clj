@@ -1,8 +1,8 @@
 (ns moon.render.draw-on-world-viewport
   (:require [clj.api.space.earlygrey.shape-drawer :as sd]
+            [moon.ctx :as ctx]
             [moon.color :as color]
             [moon.entity :as entity]
-            [moon.graphics :as graphics]
             [moon.graphics.camera :as camera]
             [moon.throwable :as throwable]
             [moon.world :as world]
@@ -26,9 +26,9 @@
         [1 1 1 0.8]]])))
 
 (defn- highlight-mouseover-tile
-  [{:keys [ctx/graphics
-           ctx/world]}]
-  (let [[x y] (mapv int (:graphics/world-mouse-position graphics))
+  [{:keys [ctx/world
+           ctx/world-mouse-position]}]
+  (let [[x y] (mapv int world-mouse-position)
         cell ((:world/grid world) [x y])]
     (when (and cell (#{:air :none} (:movement @cell)))
       [[:draw/rectangle x y 1 1
@@ -41,8 +41,7 @@
 (def ^:dbg-flag show-cell-occupied? false)
 
 (defn- draw-cell-debug
-  [{:keys [ctx/graphics
-           ctx/world
+  [{:keys [ctx/world
            ctx/world-viewport]}]
   (apply concat
          (for [[x y] (camera/visible-tiles (Viewport/.getCamera world-viewport))
@@ -81,25 +80,22 @@
     [[:draw/rectangle x y width height color]]))
 
 (defn- draw-entity
-  [{:keys [ctx/graphics]
-    :as ctx}
-   entity render-layer]
+  [ctx entity render-layer]
   (try (do
         (when show-body-bounds?
-          (graphics/draw! graphics (draw-body-rect (:entity/body entity)
+          (ctx/draw! ctx (draw-body-rect (:entity/body entity)
                                                    (if (:body/collides? (:entity/body entity))
                                                      color/white
                                                      color/gray))))
         (doseq [[k v] entity
                 :when (get render-layer k)]
-          (graphics/draw! graphics (entity/render [k v] entity ctx))))
+          (ctx/draw! ctx (entity/render [k v] entity ctx))))
        (catch Throwable t
-         (graphics/draw! graphics (draw-body-rect (:entity/body entity) color/red))
+         (ctx/draw! ctx (draw-body-rect (:entity/body entity) color/red))
          (throwable/pretty-pst t))))
 
 (defn draw-entities
-  [{:keys [ctx/graphics
-           ctx/player-eid
+  [{:keys [ctx/player-eid
            ctx/world]
     :as ctx}]
   (let [entities (map deref (:world/active-entities world))
@@ -116,27 +112,26 @@
       (draw-entity ctx entity render-layer))))
 
 (defn do!
-  [{:keys [ctx/graphics
+  [{:keys [^Batch ctx/batch
+           ctx/shape-drawer
+           ctx/unit-scale
+           ctx/world-unit-scale
            ctx/world-viewport]
     :as ctx}]
-  (let [{:keys [^Batch graphics/batch
-                graphics/shape-drawer
-                graphics/unit-scale
-                graphics/world-unit-scale]} graphics]
-    ; fix scene2d.ui.tooltip flickering
-    ; _everything_ flickers with vis ui tooltip! it changes batch color somehow and does not
-    ; change it back !
-    (.setColor batch 1 1 1 1)
-    (.setProjectionMatrix batch (camera/combined (Viewport/.getCamera world-viewport)))
-    (.begin batch)
-    (sd/with-line-width shape-drawer world-unit-scale
-      (reset! unit-scale world-unit-scale)
-      (doseq [f [draw-tile-grid ; TODO ?
-                 draw-cell-debug
-                 draw-entities
-                 #_moon.application.render.draw-on-world-viewport.geom-test/do!
-                 highlight-mouseover-tile]]
-        (graphics/draw! graphics (f ctx)))
-      (reset! unit-scale 1))
-    (.end batch)
-    ctx))
+  ; fix scene2d.ui.tooltip flickering
+  ; _everything_ flickers with vis ui tooltip! it changes batch color somehow and does not
+  ; change it back !
+  (.setColor batch 1 1 1 1)
+  (.setProjectionMatrix batch (camera/combined (Viewport/.getCamera world-viewport)))
+  (.begin batch)
+  (sd/with-line-width shape-drawer world-unit-scale
+    (reset! unit-scale world-unit-scale)
+    (doseq [f [draw-tile-grid ; TODO ?
+               draw-cell-debug
+               draw-entities
+               #_moon.application.render.draw-on-world-viewport.geom-test/do!
+               highlight-mouseover-tile]]
+      (ctx/draw! ctx (f ctx)))
+    (reset! unit-scale 1))
+  (.end batch)
+  ctx)

@@ -1,11 +1,11 @@
 (ns moon.draw.with-line-width
   (:require [clj.api.space.earlygrey.shape-drawer :as sd]
-            [moon.graphics :as graphics]))
+            [moon.ctx :as ctx]))
 
 (defn do!
-  [{:keys [graphics/shape-drawer]
-    :as graphics}
+  [{:keys [ctx/shape-drawer]
+    :as ctx}
    width
    draws]
   (sd/with-line-width shape-drawer width
-    (graphics/draw! graphics draws)))
+    (ctx/draw! ctx draws)))

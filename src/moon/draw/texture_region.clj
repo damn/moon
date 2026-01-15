@@ -3,9 +3,9 @@
                                           TextureRegion)))
 
 (defn do!
-  [{:keys [^Batch graphics/batch
-           graphics/unit-scale
-           graphics/world-unit-scale]}
+  [{:keys [^Batch ctx/batch
+           ctx/unit-scale
+           ctx/world-unit-scale]}
    ^TextureRegion texture-region
    [x y]
    & {:keys [center? rotation]}]

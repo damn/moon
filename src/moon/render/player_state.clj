@@ -48,15 +48,15 @@
      [:interaction-state/no-skill-selected])))
 
 (defn- assoc-interaction-state
-  [{:keys [ctx/graphics
-           ctx/input
+  [{:keys [ctx/input
            ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
-           ctx/world]
+           ctx/world
+           ctx/world-mouse-position]
     :as ctx}]
   (assoc ctx :ctx/interaction-state (interaction-state stage
-                                                       (:graphics/world-mouse-position graphics)
+                                                       world-mouse-position
                                                        mouseover-eid
                                                        player-eid
                                                        (ui/mouseover-actor stage (input/mouse-position input)))))
@@ -69,10 +69,9 @@
   (let [eid player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
-        cursor-key (state/cursor [state-k (state-k entity)] eid ctx)
-        {:keys [graphics/core]} graphics]
+        cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (Graphics/.setCursor core (get cursors cursor-key)))
+    (Graphics/.setCursor graphics (get cursors cursor-key)))
   ctx)
 
 (defn- player-state-handle-input

@@ -22,9 +22,9 @@
     (.setScale (.getData font) old-scale)))
 
 (defn do!
-  [{:keys [graphics/batch
-           graphics/unit-scale
-           graphics/default-font]}
+  [{:keys [ctx/batch
+           ctx/unit-scale
+           ctx/default-font]}
    {:keys [font scale x y text h-align up?]}]
   (draw-text! (or font default-font)
               batch

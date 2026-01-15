@@ -35,3 +35,6 @@
     (reduce-actions! reaction-txs-fn-map
                      ctx
                      handled-txs)))
+
+(defprotocol Graphics
+  (draw! [_ draws]))
