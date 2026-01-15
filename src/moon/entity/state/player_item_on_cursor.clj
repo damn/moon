@@ -9,7 +9,7 @@
   (:import (com.badlogic.gdx Input$Buttons)))
 
 (defmethod state/create :player-item-on-cursor
-  [[_k item] _eid _world]
+  [[_k item] _eid _ctx]
   {:item item})
 
 (defn world-item? [mouseover-actor]

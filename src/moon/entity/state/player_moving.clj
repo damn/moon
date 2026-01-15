@@ -8,7 +8,7 @@
       0))
 
 (defmethod state/create :player-moving
-  [[_k movement-vector] eid _world]
+  [[_k movement-vector] eid _ctx]
   {:movement-vector movement-vector})
 
 (defmethod state/enter :player-moving

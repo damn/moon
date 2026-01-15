@@ -7,9 +7,9 @@
 (def reaction-time-multiplier 0.016)
 
 (defmethod state/create :npc-moving
-  [[_k movement-vector] eid {:keys [world/elapsed-time]}]
+  [[_k movement-vector] eid {:keys [ctx/world]}]
   {:movement-vector movement-vector
-   :timer (timer/create elapsed-time
+   :timer (timer/create (:world/elapsed-time world)
                         (* (stats/get-stat-value (:entity/stats @eid) :stats/reaction-time)
                            reaction-time-multiplier))})
 

@@ -13,13 +13,13 @@
          1)))
 
 (defmethod state/create :active-skill
-  [[_k [skill effect-ctx]] eid {:keys [world/elapsed-time]}]
+  [[_k [skill effect-ctx]] eid {:keys [ctx/world]}]
   {:skill skill
    :effect-ctx effect-ctx
    :counter (->> skill
                  :skill/action-time
                  (apply-action-speed-modifier @eid skill)
-                 (timer/create elapsed-time))})
+                 (timer/create (:world/elapsed-time world)))})
 
 (defn- update-effect-ctx
   [world {:keys [effect/source effect/target] :as effect-ctx}]
