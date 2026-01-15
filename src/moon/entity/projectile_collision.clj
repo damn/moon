@@ -6,7 +6,7 @@
             [moon.world.grid.cell :as cell]))
 
 (defmethod entity/create :entity/projectile-collision
-  [[_ v] _world]
+  [[_ v] _ctx]
   (assoc v :already-hit-bodies #{}))
 
 (defmethod entity/tick :entity/projectile-collision

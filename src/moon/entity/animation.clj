@@ -28,7 +28,8 @@
   [[_k {:keys [animation/frames
                animation/frame-duration
                animation/looping?
-               delete-after-stopped?]}] _world]
+               delete-after-stopped?]}]
+   _ctx]
   (assert (not (and looping? delete-after-stopped?)))
   (map->RAnimation
    {:frames (vec frames)

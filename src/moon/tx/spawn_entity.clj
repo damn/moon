@@ -45,7 +45,7 @@
                 world/id-counter]
          :as world} world
         entity (reduce (fn [m [k v]]
-                         (assoc m k (entity/create [k v] world)))
+                         (assoc m k (entity/create [k v] ctx)))
                        {}
                        entity)
         _ (assert (and (not (contains? entity :entity/id))))

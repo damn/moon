@@ -1,11 +1,11 @@
 (ns moon.entity)
 
 (defmulti create
-  (fn [[k _v] _world]
+  (fn [[k _v] _ctx]
     k))
 
 (defmethod create :default
-  [[_ v] _world]
+  [[_ v] _ctx]
   v)
 
 (defmulti after-create

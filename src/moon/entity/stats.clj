@@ -68,7 +68,7 @@
   (apply-max hp modifiers :modifier/hp-max))
 
 (defmethod entity/create :entity/stats
-  [[_ v] _world]
+  [[_ v] _ctx]
   (-> v
       (update :stats/mana (fn [v] [v v]))
       (update :stats/hp   (fn [v] [v v]))))
