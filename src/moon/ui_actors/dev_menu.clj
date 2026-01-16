@@ -4,9 +4,9 @@
             [moon.graphics.camera :as camera]
             [moon.input :as input]
             [moon.ui :as ui]
-            [moon.ui.build.editor-window :as editor-window]
             [moon.ui.dev-menu :as dev-menu]
             [moon.ui.editor.overview-window :as overview-window]
+            [moon.ui.property-editor-window :as property-editor-window]
             [moon.utils :as utils]
             [moon.world :as world])
   (:import (com.badlogic.gdx Graphics)
@@ -26,7 +26,7 @@
                :property-type property-type
                :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
                                 (.addActor stage
-                                           (editor-window/create
+                                           (property-editor-window/create
                                             {:ctx ctx
                                              :property (db/get-raw db id)})))})))
 

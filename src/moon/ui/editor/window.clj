@@ -1,11 +1,11 @@
 (ns moon.ui.editor.window
-  (:require [clojure.set :as set]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [clojure.set :as set]
             [malli.utils :as mu]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
-            [moon.ui.build.editor-window :as editor-window]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
+            [moon.ui.property-editor-window :as property-editor-window]
             [moon.ui.window :as window]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
@@ -38,7 +38,7 @@
                              (.findActor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (.remove window)
-    (Stage/.addActor stage (editor-window/create
+    (Stage/.addActor stage (property-editor-window/create
                              {:ctx ctx
                               :property property}))))
 
