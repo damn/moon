@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.info
-  (:require [moon.ui :as ui]
-            [moon.ui.info-window :as info-window]
-            [moon.world.info :as info]))
+  (:require [moon.info :as info]
+            [moon.ui :as ui]
+            [moon.ui.info-window :as info-window]))
 
 (defn create
   [{:keys [ctx/skin

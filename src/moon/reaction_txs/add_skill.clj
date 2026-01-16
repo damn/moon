@@ -1,7 +1,7 @@
 (ns moon.reaction-txs.add-skill
-  (:require [moon.textures :as textures]
-            [moon.ui :as ui]
-            [moon.world.info :as info]))
+  (:require [moon.info :as info]
+            [moon.textures :as textures]
+            [moon.ui :as ui]))
 
 (defn do!
   [{:keys [ctx/skin

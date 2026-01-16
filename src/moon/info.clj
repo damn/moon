@@ -1,4 +1,4 @@
-(ns moon.world.info
+(ns moon.info
   (:require [clojure.math :as math]
             [clojure.string :as str]
             [moon.entity.stats :as stats]
