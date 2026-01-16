@@ -1,8 +1,8 @@
 (ns moon.ui.property-overview-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [moon.db :as db]
+            [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui.editor.property :as property]
             [moon.ui.image-button :as image-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Touchable)

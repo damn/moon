@@ -4,7 +4,6 @@
             [moon.schema :as schema]
             [moon.textures :as textures]
             [moon.property :as property]
-            [moon.ui.editor.property :as editor.property]
             [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
@@ -53,10 +52,10 @@
                  :skin skin})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)
-              texture-region (textures/texture-region textures (editor.property/image property))
+              texture-region (textures/texture-region textures (property/image property))
               image-widget (doto (Image. ^TextureRegion texture-region)
                              (.setUserObject property-id)
-                             (.addListener (TextTooltip. (editor.property/tooltip property) ^Skin skin)))]
+                             (.addListener (TextTooltip. (property/tooltip property) ^Skin skin)))]
           {:actor image-widget}))
       (for [id property-ids]
         {:actor (text-button/create
