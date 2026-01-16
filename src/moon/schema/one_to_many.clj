@@ -5,7 +5,7 @@
             [moon.textures :as textures]
             [moon.property :as property]
             [moon.ui.editor.property :as editor.property]
-            [moon.ui.editor.overview-window :as overview-window]
+            [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -42,7 +42,7 @@
                                                  ctx/textures]}]
                                (Stage/.addActor
                                 stage
-                                (overview-window/create
+                                (property-overview-window/create
                                  {:db db
                                   :textures textures
                                   :skin skin

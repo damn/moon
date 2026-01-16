@@ -5,7 +5,7 @@
             [moon.input :as input]
             [moon.ui :as ui]
             [moon.ui.dev-menu :as dev-menu]
-            [moon.ui.editor.overview-window :as overview-window]
+            [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.property-editor-window :as property-editor-window]
             [moon.utils :as utils]
             [moon.world :as world])
@@ -19,7 +19,7 @@
            ctx/textures]}
    property-type]
   (.addActor stage
-             (overview-window/create
+             (property-overview-window/create
               {:db db
                :textures textures
                :skin skin

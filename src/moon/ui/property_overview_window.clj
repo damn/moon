@@ -1,4 +1,4 @@
-(ns moon.ui.editor.overview-window
+(ns moon.ui.property-overview-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [moon.db :as db]
             [moon.textures :as textures]
