@@ -6,7 +6,7 @@
             [moon.db-impl :as db-impl]
             [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
-            [moon.tm-renderer :as tm-renderer]
+            [moon.tiled-map-renderer :as tiled-map-renderer]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
@@ -142,11 +142,11 @@
                                 ctx/tiled-map-renderer
                                 ctx/world-unit-scale
                                 ctx/world-viewport]}]
-  (tm-renderer/draw! sprite-batch
-                     world-unit-scale
-                     world-viewport
-                     tiled-map
-                     color-setter))
+  (tiled-map-renderer/draw! sprite-batch
+                            world-unit-scale
+                            world-viewport
+                            tiled-map
+                            color-setter))
 
 (defn- camera-movement-controls! [{:keys [ctx/input
                                           ctx/camera

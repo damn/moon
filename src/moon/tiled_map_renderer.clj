@@ -1,4 +1,4 @@
-(ns moon.tm-renderer
+(ns moon.tiled-map-renderer
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color])
   (:import (com.badlogic.gdx.maps MapLayers)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
