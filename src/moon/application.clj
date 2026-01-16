@@ -1,6 +1,5 @@
 (ns moon.application
-  (:import (com.badlogic.gdx ApplicationListener
-                             Gdx)))
+  (:import (com.badlogic.gdx ApplicationListener)))
 
 (def state (atom nil))
 
@@ -13,7 +12,7 @@
         [render-fn render-params] render!]
     (reify ApplicationListener
       (create [_]
-        (reset! state (create-fn Gdx/app create-params)))
+        (reset! state (create-fn create-params)))
 
       (dispose [_]
         (dispose! @state))

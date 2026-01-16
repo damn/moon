@@ -1,8 +1,7 @@
 (ns moon.listener.create
   (:require [moon.ctx :as ctx]
             [moon.tx-handler :as tx-handler]
-            [qrecord.core :as q])
-  (:import (com.badlogic.gdx Application)))
+            [qrecord.core :as q]))
 
 (def draw-fns
   (update-vals '{:draw/arc              moon.draw.arc/do!
@@ -106,13 +105,9 @@
       (apply (get draw-fns k) ctx (rest component)))))
 
 (defn do!
-  [^Application app create-fns]
+  [create-fns]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           (merge (map->Context {})
-                 {:ctx/audio (.getAudio app)
-                  :ctx/graphics (.getGraphics app)
-                  :ctx/files (.getFiles app)
-                  :ctx/input (.getInput app)
-                  :ctx/unit-scale (atom 1)})
+                 {:ctx/unit-scale (atom 1)})
           create-fns))
