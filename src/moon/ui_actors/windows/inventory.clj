@@ -133,7 +133,5 @@
       :clicked-cell-listener (fn [cell]
                                (proxy [ClickListener] []
                                  (clicked [event x y]
-                                   ((requiring-resolve clicked-inventory-cell)
-                                    cell
-                                    (.ctx (Event/.getStage event))))))
+                                   (clicked-inventory-cell cell (.ctx (Event/.getStage event))))))
       :slot->texture-region slot->texture-region})))

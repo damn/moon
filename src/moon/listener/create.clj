@@ -108,7 +108,7 @@
 (defn do!
   [^Application app create-fns]
   (reduce (fn [ctx [f & params]]
-            (apply (requiring-resolve f) ctx params))
+            (apply f ctx params))
           (merge (map->Context {})
                  {:ctx/audio (.getAudio app)
                   :ctx/graphics (.getGraphics app)
