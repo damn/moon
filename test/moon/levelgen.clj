@@ -144,7 +144,7 @@
                                 ctx/world-viewport]}]
   (tiled-map-renderer/draw! sprite-batch
                             world-unit-scale
-                            world-viewport
+                            (.getCamera world-viewport)
                             tiled-map
                             color-setter))
 

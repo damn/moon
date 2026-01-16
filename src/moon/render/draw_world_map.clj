@@ -58,7 +58,7 @@
     :as ctx}]
   (tiled-map-renderer/draw! batch
                             world-unit-scale
-                            world-viewport
+                            (.getCamera world-viewport)
                             (:world/tiled-map world)
                             (tile-color-setter
                              {:ray-blocked? (partial world/blocked? world)
