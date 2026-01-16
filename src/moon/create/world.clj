@@ -1,14 +1,18 @@
-; TODO SCHEMA ! what is world? active-entities/time/configs/settings raus?
-(ns moon.world.impl
-  (:require [clojure.grid2d :as g2d]
+(ns moon.create.world
+  (:require [clojure.edn :as edn]
+            [clojure.grid2d :as g2d]
+            [clojure.java.io :as io]
             [clojure.math.raycaster :as raycaster]
             [clojure.math.vector2 :as v]
+            [moon.db :as db]
+            [moon.textures :as textures]
             [moon.utils :as utils]
             [moon.world :as world]
             [moon.world.create.grid]
             [moon.world.content-grid :as content-grid]
             [moon.world.grid.cell :as cell]
-            [moon.world.tiled :as tiled]))
+            [moon.world.tiled :as tiled]
+            [moon.world-fns.creature-tiles]))
 
 (defn- create-double-ray-endpositions
   [[start-x start-y]
@@ -155,8 +159,53 @@
     :as world}]
   (assoc world :world/render-z-order (utils/define-order z-orders)))
 
-(defn create [initial-config world-fn-result]
+(defn- create-world [initial-config world-fn-result]
   (-> (merge (map->RWorld {}) initial-config)
       calculate-max-speed
       define-render-z-order
       (assoc-state world-fn-result)))
+
+(def ^:private world-params
+  {
+   :content-grid-cell-size 16
+   :world/factions-iterations {:good 15 :evil 5}
+   :world/max-delta 0.04
+   :world/minimum-size 0.39
+   :world/z-orders [:z-order/on-ground
+                    :z-order/ground
+                    :z-order/flying
+                    :z-order/effect]
+   :world/enemy-components {:entity/fsm {:fsm :fsms/npc
+                                         :initial-state :npc-sleeping}
+                            :entity/faction :evil}
+   :world/player-components {:creature-id :creatures/vampire
+                             :components {:entity/fsm {:fsm :fsms/player
+                                                       :initial-state :player-idle}
+                                          :entity/faction :good
+                                          :entity/player? true
+                                          :entity/free-skill-points 3
+                                          :entity/clickable {:type :clickable/player}
+                                          :entity/click-distance-tiles 1.5}}
+   })
+
+(defn- call-world-fn
+  [world-fn creature-properties textures]
+  (let [[f params] (->> world-fn
+                        io/resource
+                        slurp
+                        edn/read-string)]
+    ((requiring-resolve f)
+     (assoc params
+            :level/creature-properties (moon.world-fns.creature-tiles/prepare creature-properties
+                                                                             #(textures/texture-region textures %))
+            :textures textures))))
+
+(defn step
+  [{:keys [ctx/db
+           ctx/textures]
+    :as ctx}
+   world-fn]
+  (let [world-fn-result (call-world-fn world-fn
+                                       (db/all-raw db :properties/creatures)
+                                       textures)]
+    (assoc ctx :ctx/world (create-world world-params world-fn-result))))

@@ -24,16 +24,19 @@
            dispose!
            render!
            resize!]}]
-  (let [create! (requiring-resolve create!)
+  (let [[create-fn create-params] create!
+        create! (requiring-resolve create-fn)
+
         dispose! (requiring-resolve dispose!)
+
         [render-fn render-params] render!
         render! (requiring-resolve render-fn)
         render-params (map requiring-resolve render-params)
-        resize! (requiring-resolve resize!)
-        config (->> "config.edn" io/resource slurp edn/read-string)]
+
+        resize! (requiring-resolve resize!)]
     (reify ApplicationListener
       (create [_]
-        (reset! state (create! Gdx/app config)))
+        (reset! state (create! Gdx/app create-params)))
 
       (dispose [_]
         (dispose! @state))
