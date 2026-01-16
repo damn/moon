@@ -7,7 +7,6 @@
             [moon.ui.message :as message]
             [moon.ui.text-button :as text-button]
             [moon.ui.utils :as ui-utils]
-            [moon.ui.widgets :as widgets]
             [moon.ui.window :as window]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
@@ -31,15 +30,6 @@
 
 (extend-type moon.Stage
   moon.ui/UserInterface
-  (show-data-viewer! [this data skin]
-    (.addActor this
-               (widgets/data-viewer-window
-                {:title "Data View"
-                 :data data
-                 :width 500
-                 :height 500
-                 :skin skin})))
-
   (viewport-width  [stage]
     (Viewport/.getWorldWidth (.getViewport stage)))
 
