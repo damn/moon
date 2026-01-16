@@ -6,7 +6,7 @@
             [moon.schema :as schema]
             [moon.ui.error-window :as error-window]
             [moon.ui.text-button :as text-button]
-            [moon.ui.widgets :as widget]
+            [moon.ui.scroll-pane-cell :as scroll-pane-cell]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor)
@@ -64,7 +64,7 @@
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor save-button :center? true}
                            {:actor delete-button :center? true}]]
-        rows [[(widget/scroll-pane-cell skin
+        rows [[(scroll-pane-cell/create skin
                                         scroll-pane-height
                                         scroll-pane-rows)]]]
     (window/create

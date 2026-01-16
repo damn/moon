@@ -3,10 +3,10 @@
             [moon.db :as db]
             [moon.graphics.camera :as camera]
             [moon.input :as input]
+            [moon.ui.data-viewer-window :as data-viewer-window]
             [moon.ui.dev-menu :as dev-menu]
             [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.property-editor-window :as property-editor-window]
-            [moon.ui.widgets :as widgets]
             [moon.utils :as utils]
             [moon.world :as world])
   (:import (com.badlogic.gdx Graphics)
@@ -48,7 +48,7 @@
                                   :on-click (fn [_actor {:keys [ctx/skin
                                                                 ctx/stage] :as ctx}]
                                               (.addActor stage
-                                                         (widgets/data-viewer-window
+                                                         (data-viewer-window/create
                                                           {:title "Data View"
                                                            :data ctx
                                                            :width 500

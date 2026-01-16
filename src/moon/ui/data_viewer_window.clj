@@ -1,44 +1,10 @@
-(ns moon.ui.widgets
+(ns moon.ui.data-viewer-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane
                                                Skin)))
-
-(defn- create-scroll-pane
-  [{:keys [^Actor scroll-pane/actor
-           actor/name]}
-   ^Skin skin]
-  (doto (ScrollPane. actor skin)
-    (.setName name)))
-
-(defn scroll-pane-cell [skin viewport-height rows]
-  (let [table (table/create
-               {:rows rows
-                :actor/name "scroll-pane-table"
-                :cell-defaults {:pad 5}
-                :pack? true})]
-    {:actor (create-scroll-pane
-             {:actor/name "moon.ui.widget.scroll-pane-table"
-              :scroll-pane/actor table}
-             skin)
-     :width  (+ (.getWidth table) 50)
-     :height (min (- viewport-height 50)
-                  (.getHeight table))}))
-
-(defn scroll-pane-window
-  [{:keys [skin viewport-height rows]}]
-  (window/create
-   {:skin skin
-    :title "Choose"
-    :modal? true
-    :close-button? true
-    :center? true
-    :close-on-escape? true
-    :rows [[(scroll-pane-cell skin viewport-height rows)]]
-    :pack? true}))
 
 (defn- k->label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -58,7 +24,7 @@
    :else
    (str (class v))))
 
-(declare data-viewer-window)
+(declare create)
 
 (defn- v->actor [v skin]
   (if (map? v)
@@ -66,7 +32,7 @@
      {:text "Map"
       :on-clicked (fn [actor _ctx]
                     (.addActor (.getStage actor)
-                               (data-viewer-window
+                               (create
                                 {:title "title"
                                  :data v
                                  :width 500
@@ -75,7 +41,7 @@
       :skin skin})
     (Label. (v->text v) ^Skin skin)))
 
-(defn data-viewer-window
+(defn create
   [{:keys [title
            data
            width
@@ -93,10 +59,8 @@
                                       {:rows [[scroll-pane-table]]
                                        :cell-defaults {:pad 1}
                                        :pack? true})]
-                           {:actor (create-scroll-pane
-                                    {:actor/name "dbg scroll pane"
-                                     :scroll-pane/actor table}
-                                    skin)
+                           {:actor (doto (ScrollPane. table skin)
+                                     (.setName "dbg scroll pane"))
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]

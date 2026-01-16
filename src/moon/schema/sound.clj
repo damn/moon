@@ -4,7 +4,7 @@
             [moon.schema :as schema]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
-            [moon.ui.widgets :as widgets])
+            [moon.ui.scroll-pane-window :as scroll-pane-window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)))
 
@@ -27,7 +27,7 @@
                       ctx/skin
                       ctx/stage]}]
     (Stage/.addActor stage
-                      (widgets/scroll-pane-window
+                      (scroll-pane-window/create
                        {:skin skin
                         :viewport-height (.getWorldWidth (.getViewport stage))
                         :rows (for [sound-name (audio/sound-names audio)]
