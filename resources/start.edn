@@ -1,6 +1,8 @@
 {
+ ; => Domain entities ....
  :requires [
             moon.ui.impl
+            moon.txs-impl
 
             moon.schema.animation
             moon.schema.boolean
@@ -16,10 +18,6 @@
             moon.schema.string
             moon.schema.val-max
             moon.schema.vector
-
-            moon.ui.editor.window
-            moon.ui.editor.widgets-impl
-            moon.txs-impl
 
             moon.effects.target.audiovisual
             moon.effects.target.convert
