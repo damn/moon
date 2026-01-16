@@ -1,11 +1,10 @@
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            [moon.utils :as utils])
   (:import (com.badlogic.gdx ApplicationListener
-                             Gdx)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration))
+                             Gdx))
   (:gen-class))
 
 (defn edn-resource [path]
@@ -22,17 +21,7 @@
 
 (def state (atom nil))
 
-(defn apply* [[f params]]
-  (f params))
-
-(defn lwjgl-app-config [config]
-  (doto (Lwjgl3ApplicationConfiguration.)
-    (.setTitle (:title config))
-    (.setWindowedMode (:width (:window config))
-                      (:height (:window config)))
-    (.setForegroundFPS (:fps config))))
-
-(defn app-listener
+(defn listener
   [{:keys [create!
            dispose!
            render!
@@ -57,10 +46,4 @@
       (resume [_]))))
 
 (defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (let [{:keys [requires
-                listener
-                config]} (edn-resource "start.edn")]
-    (run! require requires)
-    (Lwjgl3Application. (apply* listener)
-                        (apply* config))))
+  (run! utils/apply* (edn-resource "start.edn")))
