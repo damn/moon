@@ -1,11 +1,7 @@
-;  This is the 'overview' .... !!
-; => create is too big !
-; what is schema ?
-; what is effects? - API ? etc.
-; what is ctx?
-; what is anything?
 {
  :requires [
+            moon.info-impl
+
             moon.schema.animation
             moon.schema.boolean
             moon.schema.enum
