@@ -6,15 +6,42 @@
             [moon.input :as input]
             [moon.skill :as skill]
             [moon.stage :as stage]
-            [moon.ui.action-bar :as action-bar]
-            [moon.ui.utils :as ui-utils])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx Graphics)))
+            [moon.ui.action-bar :as action-bar])
+  (:import (com.badlogic.gdx Graphics)
+           (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Button
+                                               Label
+                                               Window)))
 
-(defn- inventory-cell-with-item? [^Actor actor]
-  (and (.getParent actor)
-       (= "inventory-cell" (.getName (.getParent actor)))
-       (.getUserObject (.getParent actor))))
+(defn- button-class? [actor]
+  (some #(= Button %) (supers (class actor))))
+
+(defn- button?
+  "Returns true if the actor or its parent is a button."
+  [actor]
+  (or (button-class? actor)
+      (and (.getParent actor)
+           (button-class? (.getParent actor)))))
+
+; FIXME does not work
+(defn- window-title-bar?
+  "Returns true if the actor is a window title bar."
+  [actor]
+  (when (instance? Label actor)
+    (when-let [p (.getParent actor)]
+      (when-let [p (.getParent p)]
+        (and (instance? Window actor)
+             (= (.getTitleLabel ^Window p) actor))))))
+
+(defn- mouseover-actor-info [^Actor actor]
+  (let [inventory-slot (and (.getParent actor)
+                            (= "inventory-cell" (.getName (.getParent actor)))
+                            (.getUserObject (.getParent actor)))]
+    (cond
+     inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
+     (window-title-bar? actor) [:mouseover-actor/window-title-bar]
+     (button?           actor) [:mouseover-actor/button]
+     :else                     [:mouseover-actor/unspecified])))
 
 (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid
@@ -34,13 +61,7 @@
    mouseover-actor]
   (cond
    mouseover-actor
-   [:interaction-state/mouseover-actor (let [actor mouseover-actor
-                                             inventory-slot (inventory-cell-with-item? actor)]
-                                         (cond
-                                          inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
-                                          (ui-utils/window-title-bar? actor) [:mouseover-actor/window-title-bar]
-                                          (ui-utils/button?           actor) [:mouseover-actor/button]
-                                          :else                     [:mouseover-actor/unspecified]))]
+   [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
 
    (and mouseover-eid
         (:entity/clickable @mouseover-eid))
