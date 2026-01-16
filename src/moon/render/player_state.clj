@@ -5,8 +5,16 @@
             [moon.entity.state :as state]
             [moon.input :as input]
             [moon.skill :as skill]
-            [moon.ui :as ui])
-  (:import (com.badlogic.gdx Graphics)))
+            [moon.stage :as stage]
+            [moon.ui.action-bar :as action-bar]
+            [moon.ui.utils :as ui-utils])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx Graphics)))
+
+(defn- inventory-cell-with-item? [^Actor actor]
+  (and (.getParent actor)
+       (= "inventory-cell" (.getName (.getParent actor)))
+       (.getUserObject (.getParent actor))))
 
 (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid
@@ -26,7 +34,13 @@
    mouseover-actor]
   (cond
    mouseover-actor
-   [:interaction-state/mouseover-actor (ui/actor-information stage mouseover-actor)]
+   [:interaction-state/mouseover-actor (let [actor mouseover-actor
+                                             inventory-slot (inventory-cell-with-item? actor)]
+                                         (cond
+                                          inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
+                                          (ui-utils/window-title-bar? actor) [:mouseover-actor/window-title-bar]
+                                          (ui-utils/button?           actor) [:mouseover-actor/button]
+                                          :else                     [:mouseover-actor/unspecified]))]
 
    (and mouseover-eid
         (:entity/clickable @mouseover-eid))
@@ -37,7 +51,10 @@
                          (:entity/click-distance-tiles @player-eid))}]
 
    :else
-   (if-let [skill-id (ui/action-bar-selected-skill stage)]
+   (if-let [skill-id (-> stage
+                         .getRoot
+                         (.findActor "moon.ui.action-bar")
+                         action-bar/selected-skill)]
      (let [entity @player-eid
            skill (skill-id (:entity/skills entity))
            effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
@@ -59,7 +76,7 @@
                                                        world-mouse-position
                                                        mouseover-eid
                                                        player-eid
-                                                       (ui/mouseover-actor stage (input/mouse-position input)))))
+                                                       (stage/mouseover-actor stage (input/mouse-position input)))))
 
 (defn- set-cursor
   [{:keys [ctx/cursors

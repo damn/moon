@@ -94,7 +94,7 @@
                            [(text-button "Generate" #(try (generate-screen-ctx c (db/build db level-id))
                                                           (catch Throwable t
                                                             (pretty-pst t)
-                                                            (g/show-error-window! ctx t)
+                                                            (.addActor stage (error-window/create skin t))
                                                             (println t))))]]
                     :pack? true}))
 

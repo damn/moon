@@ -2,7 +2,6 @@
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.audio :as audio]
             [moon.schema :as schema]
-            [moon.ui :as ui]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
             [moon.ui.widgets :as widgets])
@@ -30,7 +29,7 @@
     (Stage/.addActor stage
                       (widgets/scroll-pane-window
                        {:skin skin
-                        :viewport-height (ui/viewport-width stage)
+                        :viewport-height (.getWorldWidth (.getViewport stage))
                         :rows (for [sound-name (audio/sound-names audio)]
                                 [{:actor (text-button/create
                                           {:text sound-name

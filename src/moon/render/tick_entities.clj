@@ -1,8 +1,8 @@
 (ns moon.render.tick-entities
   (:require [moon.ctx :as ctx]
             [moon.entity :as entity]
-            [moon.ui :as ui]
-            [moon.throwable :as throwable]))
+            [moon.throwable :as throwable]
+            [moon.ui.error-window :as error-window]))
 
 (defn do!
   [{:keys [ctx/skin
@@ -22,7 +22,7 @@
                                   (:world/active-entities world)))
          (catch Throwable t
            (throwable/pretty-pst t)
-           (ui/show-error-window! stage skin t)))
+           (.addActor stage (error-window/create skin t))))
         ctx)))
 
 (comment

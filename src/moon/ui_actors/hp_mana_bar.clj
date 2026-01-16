@@ -2,7 +2,6 @@
   (:require [moon.entity.stats :as stats]
             [moon.ctx :as ctx]
             [moon.textures :as textures]
-            [moon.ui :as ui]
             [moon.utils :as utils]
             [moon.val-max :as val-max])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
@@ -28,7 +27,7 @@
                   hpcontent-file
                   manacontent-file
                   y-mana]} config
-          [x y-mana] [(/ (ui/viewport-width stage) 2)
+          [x y-mana] [(/ (.getWorldWidth (.getViewport stage)) 2)
                       y-mana]
           rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
           y-hp (+ y-mana rahmenh)

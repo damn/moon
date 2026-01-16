@@ -20,3 +20,6 @@
           :when f]
     (f actor v))
   actor)
+
+(defn toggle-visible! [^Actor actor]
+  (.setVisible actor (not (.isVisible actor))))

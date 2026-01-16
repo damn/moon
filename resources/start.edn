@@ -1,7 +1,5 @@
 {
- ; => Domain entities ....
  :requires [
-            moon.ui.impl
             moon.txs-impl
 
             moon.schema.animation

@@ -1,6 +1,6 @@
 (ns moon.render.update-mouseover-eid
   (:require [moon.input :as input]
-            [moon.ui :as ui]
+            [moon.stage :as stage]
             [moon.world.grid :as grid]
             [moon.world :as world]
             [moon.utils :as utils]))
@@ -13,7 +13,7 @@
            ctx/world
            ctx/world-mouse-position]
     :as ctx}]
-  (let [mouseover-actor (ui/mouseover-actor stage (input/mouse-position input))
+  (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))
         {:keys [world/grid
                 world/raycaster
                 world/render-z-order]} world

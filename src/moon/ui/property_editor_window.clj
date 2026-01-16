@@ -4,12 +4,13 @@
             [moon.property :as property]
             [moon.throwable :as throwable]
             [moon.schema :as schema]
-            [moon.ui :as ui]
+            [moon.ui.error-window :as error-window]
             [moon.ui.text-button :as text-button]
             [moon.ui.widgets :as widget]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
 (defn create
@@ -24,7 +25,7 @@
         ; or find a way to find the widget from the context @ save button
         ; should be possible
         widget (schema/create schema property ctx)
-        scroll-pane-height (ui/viewport-height stage)
+        scroll-pane-height (Viewport/.getWorldHeight (.getViewport stage))
         get-widget-value #(schema/value schema widget schemas)
         property-id (:property/id property)
         with-window-close (fn [f]
@@ -38,7 +39,7 @@
                                (.remove (window/find-ancestor actor))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
-                                 (ui/show-error-window! stage skin t)))))
+                                 (.addActor stage (error-window/create skin t))))))
         clicked-delete-fn (with-window-close (fn [db]
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]

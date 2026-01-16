@@ -5,7 +5,7 @@
             [moon.textures :as textures]
             [moon.inventory :as inventory]
             [moon.input :as input]
-            [moon.ui :as ui])
+            [moon.stage :as stage])
   (:import (com.badlogic.gdx Input$Buttons)))
 
 (defmethod state/create :player-item-on-cursor
@@ -39,7 +39,7 @@
            ctx/world-mouse-position]}]
   ; TODO do not draw here, only at UI view
   ; then graphics can draw world without stage/input
-  (when (world-item? (ui/mouseover-actor stage (input/mouse-position input)))
+  (when (world-item? (stage/mouseover-actor stage (input/mouse-position input)))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image item))
       (item-place-position world-mouse-position entity)
@@ -114,7 +114,7 @@
   ; TODO see player-item-on-cursor at render layers
   ; always draw it here at right position, then render layers does not need input/stage
   ; can pass world to graphics, not handle here at application
-  (when (not (world-item? (ui/mouseover-actor stage (input/mouse-position input))))
+  (when (not (world-item? (stage/mouseover-actor stage (input/mouse-position input))))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
       ui-mouse-position
@@ -123,7 +123,7 @@
 (defmethod state/handle-input :player-item-on-cursor
   [_ eid {:keys [ctx/input
                  ctx/stage]}]
-  (let [mouseover-actor (ui/mouseover-actor stage (input/mouse-position input))]
+  (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))]
     (when (and (input/button-just-pressed? input Input$Buttons/LEFT)
                (world-item? mouseover-actor))
       [[:tx/event eid :drop-item]])))

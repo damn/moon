@@ -1,8 +1,7 @@
 (ns moon.entity.state.player-idle
   (:require [moon.entity.state :as state]
             [moon.input :as input]
-            [moon.inventory :as inventory]
-            [moon.ui :as ui])
+            [moon.inventory :as inventory])
   (:import (com.badlogic.gdx Input$Buttons)))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
@@ -20,7 +19,11 @@
           :clickable/item
           (let [item (:entity/item @clicked-eid)]
             (cond
-             (ui/inventory-window-visible? stage)
+             (-> stage
+                 .getRoot
+                 (.findActor "moon.ui.windows")
+                 (.findActor "moon.ui.windows.inventory")
+                 .isVisible)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]

@@ -1,8 +1,12 @@
 (ns moon.reaction-txs.remove-item
-  (:require [moon.ui :as ui]))
+  (:require [moon.ui.inventory :as inventory-window]))
 
 (defn do!
   [{:keys [ctx/stage] :as ctx} eid cell]
   (when (:entity/player? @eid)
-    (ui/remove-item! stage cell))
+    (-> stage
+        .getRoot
+        (.findActor "moon.ui.windows")
+        (.findActor "moon.ui.windows.inventory")
+        (inventory-window/remove-item! cell)))
   ctx)
