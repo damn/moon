@@ -5,10 +5,10 @@
             [moon.ui.error-window :as error-window]))
 
 (defn do!
-  [{:keys [ctx/skin
+  [{:keys [ctx/active-entities
+           ctx/skin
            ctx/stage
-           ctx/paused?
-           ctx/world]
+           ctx/paused?]
     :as ctx}]
   (if paused?
     ctx
@@ -19,7 +19,7 @@
                                                    (catch Throwable t
                                                      (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
                                             @eid))
-                                  (:world/active-entities world)))
+                                  active-entities))
          (catch Throwable t
            (throwable/pretty-pst t)
            (.addActor stage (error-window/create skin t))))

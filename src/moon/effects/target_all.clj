@@ -32,9 +32,9 @@
 (defmethod effect/handle :effects/target-all
   [[_ {:keys [entity-effects]}]
    {:keys [effect/source]}
-   {:keys [ctx/world]}]
-  (let [{:keys [world/active-entities]} world
-        source* @source]
+   {:keys [ctx/active-entities
+           ctx/world]}]
+  (let [source* @source]
     (apply concat
            (for [target (affected-targets active-entities world source*)]
              [[:tx/spawn-line
@@ -51,9 +51,9 @@
 (defmethod effect/render :effects/target-all
   [_
    {:keys [effect/source]}
-   {:keys [ctx/world]}]
-  (let [{:keys [world/active-entities]} world
-        source* @source]
+   {:keys [ctx/active-entities
+           ctx/world]}]
+  (let [source* @source]
     (for [target* (map deref (affected-targets active-entities world source*))]
       [:draw/line
        (:body/position (:entity/body source*)) #_(start-point source* target*)

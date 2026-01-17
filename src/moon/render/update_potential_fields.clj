@@ -103,14 +103,14 @@
                                              max-iterations)))))
 
 (defn do!
-  [{:keys [ctx/paused?
+  [{:keys [ctx/active-entities
+           ctx/paused?
            ctx/world]
     :as ctx}]
   (if paused?
     ctx
     (do
-     (let [{:keys [world/active-entities
-                   world/factions-iterations
+     (let [{:keys [world/factions-iterations
                    world/grid
                    world/potential-field-cache]} world]
        (doseq [[faction max-iterations] factions-iterations]

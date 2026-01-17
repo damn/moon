@@ -95,10 +95,11 @@
          (throwable/pretty-pst t))))
 
 (defn draw-entities
-  [{:keys [ctx/player-eid
+  [{:keys [ctx/active-entities
+           ctx/player-eid
            ctx/world]
     :as ctx}]
-  (let [entities (map deref (:world/active-entities world))
+  (let [entities (map deref active-entities)
         player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)

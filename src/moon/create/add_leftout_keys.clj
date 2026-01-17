@@ -8,4 +8,5 @@
          :ctx/ui-mouse-position nil
          :ctx/delta-time nil
          :ctx/elapsed-time 0
+         :ctx/active-entities nil
          ))

@@ -5,6 +5,7 @@
 (def ^:private schema
   (m/schema
    [:map {:closed true}
+    [:ctx/active-entities :any]
     [:ctx/audio :some] ; TODO map of 'sound-name->sound'
     [:ctx/cursors :some] ; map of cursor-key->cursor
     [:ctx/default-font :some] ; font -> API ?
