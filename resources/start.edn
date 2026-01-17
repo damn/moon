@@ -125,10 +125,21 @@
                                                                                          [moon.ui-actors.player-state-draw/create]
                                                                                          [moon.ui-actors.player-message/create]]]
 
-                                                     [moon.create.world/step #edn/resource  "world_fns/vampire.edn"
-                                                                                          ; "world_fns/uf_caves.edn"
-                                                                                           ; "world_fns/modules.edn"
+                                                     [moon.create.tiled-map-and-start-position/step
+                                                      #edn/resource
+                                                      "world_fns/vampire.edn"
+                                                      ; "world_fns/uf_caves.edn"
+                                                      ; "world_fns/modules.edn"
                                                       ]
+                                                     [moon.create.render-z-order/step]
+                                                     [moon.create.max-speed/step]
+                                                     [moon.create.grid/step]
+                                                     [moon.create.content-grid/step 16]
+                                                     [moon.create.explored-tile-corners/step]
+                                                     [moon.create.raycaster/step]
+                                                     [moon.create.potential-field-cache/step]
+                                                     [moon.create.id-counter/step]
+                                                     [moon.create.entity-ids/step]
                                                      [moon.create.spawn-player-entity/step {:creature-id :creatures/vampire
                                                                                             :components {:entity/fsm {:fsm :fsms/player
                                                                                                                       :initial-state :player-idle}
