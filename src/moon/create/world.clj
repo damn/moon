@@ -127,7 +127,7 @@
            :world/tiled-map tiled-map
            :world/start-position start-position
            :world/grid grid
-           :world/content-grid (create-content-grid width height (:content-grid-cell-size world))
+           :world/content-grid (create-content-grid width height 16)
            :world/explored-tile-corners (create-explored-tile-corners width height)
            :world/raycaster (create-raycaster grid)
            :world/potential-field-cache (atom nil)
@@ -147,7 +147,6 @@
 
 (def ^:private world-params
   {
-   :content-grid-cell-size 16
    :world/factions-iterations {:good 15 :evil 5}
    :world/max-delta 0.04
    :world/minimum-size 0.39
