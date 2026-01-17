@@ -1,7 +1,5 @@
 (ns moon.create.world
-  (:require [clojure.edn :as edn]
-            [clojure.grid2d :as g2d]
-            [clojure.java.io :as io]
+  (:require [clojure.grid2d :as g2d]
             [clojure.math.raycaster :as raycaster]
             [clojure.math.vector2 :as v]
             [moon.db :as db]
@@ -188,24 +186,16 @@
                                           :entity/click-distance-tiles 1.5}}
    })
 
-(defn- call-world-fn
-  [world-fn creature-properties textures]
-  (let [[f params] (->> world-fn
-                        io/resource
-                        slurp
-                        edn/read-string)]
-    ((requiring-resolve f)
-     (assoc params
-            :level/creature-properties (moon.world-fns.creature-tiles/prepare creature-properties
-                                                                             #(textures/texture-region textures %))
-            :textures textures))))
-
 (defn step
   [{:keys [ctx/db
            ctx/textures]
     :as ctx}
    world-fn]
-  (let [world-fn-result (call-world-fn world-fn
-                                       (db/all-raw db :properties/creatures)
-                                       textures)]
+  (let [[f params] world-fn
+        world-fn-result (f
+                         (assoc params
+                                :level/creature-properties (moon.world-fns.creature-tiles/prepare
+                                                            (db/all-raw db :properties/creatures)
+                                                            #(textures/texture-region textures %))
+                                :textures textures))]
     (assoc ctx :ctx/world (create-world world-params world-fn-result))))

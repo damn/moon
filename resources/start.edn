@@ -119,9 +119,9 @@
                                                                                                                          [moon.ui-actors.windows.inventory/create moon.clicked-inventory-cell/do!]]]
                                                                                          [moon.ui-actors.player-state-draw/create]
                                                                                          [moon.ui-actors.player-message/create]]]
-                                                     [moon.create.world/step ; "world_fns/vampire.edn"
-                                                      ; "world_fns/uf_caves.edn"
-                                                      "world_fns/modules.edn"
+                                                     [moon.create.world/step #edn/resource ; "world_fns/vampire.edn"
+                                                                                            "world_fns/uf_caves.edn"
+                                                                                           ; "world_fns/modules.edn"
                                                       ]
                                                      [moon.create.spawn-player-entity/step]
                                                      [moon.create.spawn-enemies/step]
