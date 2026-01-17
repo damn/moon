@@ -155,17 +155,6 @@
                     :z-order/ground
                     :z-order/flying
                     :z-order/effect]
-   :world/enemy-components {:entity/fsm {:fsm :fsms/npc
-                                         :initial-state :npc-sleeping}
-                            :entity/faction :evil}
-   :world/player-components {:creature-id :creatures/vampire
-                             :components {:entity/fsm {:fsm :fsms/player
-                                                       :initial-state :player-idle}
-                                          :entity/faction :good
-                                          :entity/player? true
-                                          :entity/free-skill-points 3
-                                          :entity/clickable {:type :clickable/player}
-                                          :entity/click-distance-tiles 1.5}}
    })
 
 (defn step

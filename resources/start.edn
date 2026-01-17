@@ -130,8 +130,17 @@
                                                                                             "world_fns/uf_caves.edn"
                                                                                            ; "world_fns/modules.edn"
                                                       ]
-                                                     [moon.create.spawn-player-entity/step]
-                                                     [moon.create.spawn-enemies/step]
+                                                     [moon.create.spawn-player-entity/step {:creature-id :creatures/vampire
+                                                                                            :components {:entity/fsm {:fsm :fsms/player
+                                                                                                                      :initial-state :player-idle}
+                                                                                                         :entity/faction :good
+                                                                                                         :entity/player? true
+                                                                                                         :entity/free-skill-points 3
+                                                                                                         :entity/clickable {:type :clickable/player}
+                                                                                                         :entity/click-distance-tiles 1.5}}]
+                                                     [moon.create.spawn-enemies/step {:entity/fsm {:fsm :fsms/npc
+                                                                                                   :initial-state :npc-sleeping}
+                                                                                      :entity/faction :evil}]
                                                      ;;
 
                                                      [moon.create.add-leftout-keys/step]

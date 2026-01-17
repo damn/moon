@@ -5,13 +5,13 @@
 (defn step
   [{:keys [ctx/db
            ctx/world]
-    :as ctx}]
+    :as ctx}
+   {:keys [creature-id
+           components]}]
   (ctx/handle! ctx
-               [[:tx/spawn-creature (let [{:keys [creature-id
-                                                  components]} (:world/player-components world)]
-                                      {:position (mapv (partial + 0.5) (:world/start-position world))
-                                       :creature-property (db/build db creature-id)
-                                       :components components})]])
+               [[:tx/spawn-creature {:position (mapv (partial + 0.5) (:world/start-position world))
+                                     :creature-property (db/build db creature-id)
+                                     :components components}]])
   (let [eid (get @(:world/entity-ids world) 1)]
     (assert (:entity/player? @eid))
     (assoc ctx :ctx/player-eid eid)))
