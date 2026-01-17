@@ -15,6 +15,6 @@
         (.findActor "moon.ui.windows")
         (.findActor "moon.ui.windows.inventory")
         (inventory-window/set-item! cell {:texture-region (textures/texture-region textures (:entity/image item))
-                                          :tooltip-text (info/text item nil)}
+                                          :tooltip-text (info/text item ctx)}
                                     skin)))
   ctx)

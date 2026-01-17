@@ -11,11 +11,11 @@
                        :actor-name "moon.ui.windows.entity-info"
                        :visible? false
                        :position [(Viewport/.getWorldWidth (.getViewport stage)) 0]
-                       :set-label-text! (fn [{:keys [ctx/mouseover-eid
-                                                     ctx/world]}]
+                       :set-label-text! (fn [{:keys [ctx/mouseover-eid]
+                                              :as ctx}]
                                           (if-let [eid mouseover-eid]
                                             (info/text (apply dissoc @eid [:entity/skills
                                                                            :entity/faction
                                                                            :active-skill])
-                                                       world)
+                                                       ctx)
                                             ""))}))

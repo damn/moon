@@ -15,7 +15,6 @@
         (.findActor "moon.ui.action-bar")
         (action-bar/add-skill! {:skill-id (:property/id skill)
                                 :texture-region (textures/texture-region textures (:entity/image skill))
-                                :tooltip-text (fn [{:keys [ctx/world]}]
-                                                (info/text skill world))}
+                                :tooltip-text (info/text skill ctx)}
                                skin)))
   ctx)

@@ -102,10 +102,10 @@
    :entity-effects])
 
 (def ^:private info-fns
-  {:creature/level (fn [[_ v] _world]
+  {:creature/level (fn [[_ v] _ctx]
                      (str "Level: " v))
 
-   :entity/stats (fn [[_ stats] _world]
+   :entity/stats (fn [[_ stats] _ctx]
                    (str/join "\n" (concat
                                    ["*STATS*"
                                     (str "Mana: " (stats/get-mana stats))
@@ -114,10 +114,10 @@
                                      (str (str/capitalize (name stat-k)) ": "
                                           (stats/get-stat-value stats stat-k))))))
 
-   :effects.target/convert (fn [_ _world]
+   :effects.target/convert (fn [_ _ctx]
                              "Converts target to your side.")
 
-   :effects.target/damage (fn [[_ {[min max] :damage/min-max}] _world]
+   :effects.target/damage (fn [[_ {[min max] :damage/min-max}] _ctx]
                             (str min "-" max " damage")
                             #_(if source
                                 (let [modified (stats/damage @source damage)]
@@ -127,73 +127,73 @@
                                 (damage/info-text damage)) ; property menu no source,modifiers
                             )
 
-   :effects.target/kill (fn [_ _world]
+   :effects.target/kill (fn [_ _ctx]
                           "Kills target")
 
-   :effects.target/melee-damage (fn [_ _world]
+   :effects.target/melee-damage (fn [_ _ctx]
                                   (str "Damage based on entity strength."
                                        #_(when source
                                            (str "\n" (damage-info (entity->melee-damage @source))))))
 
-   :effects.target/spiderweb (fn [_ _world]
+   :effects.target/spiderweb (fn [_ _ctx]
                                "Spiderweb slows 50% for 5 seconds.")
 
-   :effects.target/stun (fn [[_ duration] _world]
+   :effects.target/stun (fn [[_ duration] _ctx]
                           (str "Stuns for " (utils/readable-number duration) " seconds"))
 
-   :effects/spawn (fn [[_ {:keys [property/pretty-name]}] _world]
+   :effects/spawn (fn [[_ {:keys [property/pretty-name]}] _ctx]
                     (str "Spawns a " pretty-name))
 
-   :effects/target-all (fn [_ _world]
+   :effects/target-all (fn [_ _ctx]
                          "All visible targets")
 
-   :entity/delete-after-duration (fn [[_ counter] {:keys [world/elapsed-time]}]
-                                   (str "Remaining: " (utils/readable-number (timer/ratio elapsed-time counter)) "/1"))
+   :entity/delete-after-duration (fn [[_ counter] {:keys [ctx/world]}]
+                                   (str "Remaining: " (utils/readable-number (timer/ratio (:world/elapsed-time world) counter)) "/1"))
 
-   :entity/faction (fn [[_ faction] _world]
+   :entity/faction (fn [[_ faction] _ctx]
                      (str "Faction: " (name faction)))
 
-   :entity/fsm (fn [[_ fsm] _world]
+   :entity/fsm (fn [[_ fsm] _ctx]
                  (str "State: " (name (:state fsm))))
 
-   :stats/modifiers (fn [[_ mods] _world]
+   :stats/modifiers (fn [[_ mods] _ctx]
                       (stats-modifiers-info mods))
 
-   :entity/skills (fn [[_ skills] _world]
+   :entity/skills (fn [[_ skills] _ctx]
                     ; => recursive info-text leads to endless text wall
                     (when (seq skills)
                       (str "Skills: " (str/join "," (map name (keys skills))))))
 
-   :entity/species (fn [[_ species] _world]
+   :entity/species (fn [[_ species] _ctx]
                      (str "Creature - " (str/capitalize (name species))))
 
-   :entity/temp-modifier (fn [[_ {:keys [counter]}] {:keys [world/elapsed-time]}]
-                           (str "Spiderweb - remaining: " (utils/readable-number (timer/ratio elapsed-time counter)) "/1"))
+   :entity/temp-modifier (fn [[_ {:keys [counter]}] {:keys [ctx/world]}]
+                           (str "Spiderweb - remaining: " (utils/readable-number (timer/ratio (:world/elapsed-time world) counter)) "/1"))
 
-   :projectile/piercing? (fn [_ _world]
+   :projectile/piercing? (fn [_ _ctx]
                            "Piercing")
 
-   :property/pretty-name (fn [[_ v] _world]
+   :property/pretty-name (fn [[_ v] _ctx]
                            v)
 
-   :skill/cooling-down? (fn [[_ counter] {:keys [world/elapsed-time]}]
-                          (str "Cooldown: " (utils/readable-number (timer/ratio elapsed-time counter)) "/1"))
+   :skill/cooling-down? (fn [[_ counter] {:keys [ctx/world]}]
+                          (str "Cooldown: " (utils/readable-number (timer/ratio (:world/elapsed-time world) counter)) "/1"))
 
-   :skill/action-time (fn [[_ v] _world]
+   :skill/action-time (fn [[_ v] _ctx]
                         (str "Action-Time: " (utils/readable-number v) " seconds"))
 
-   :skill/action-time-modifier-key (fn [[_ v] _world]
+   :skill/action-time-modifier-key (fn [[_ v] _ctx]
                                      (case v
                                        :stats/cast-speed "Spell"
                                        :stats/attack-speed "Attack"))
 
-   :skill/cooldown (fn [[_ v] _world]
+   :skill/cooldown (fn [[_ v] _ctx]
                      (str "Cooldown: " (utils/readable-number v) " seconds"))
 
-   :skill/cost (fn [[_ v] _world]
+   :skill/cost (fn [[_ v] _ctx]
                  (str "Cost: " v " Mana"))
 
-   :maxrange (fn [[_ v] _world]
+   :maxrange (fn [[_ v] _ctx]
                (str "Range: " v " Meters."))})
 
 (comment
@@ -202,11 +202,11 @@
  ; so not showing as ui not updated
  )
 
-(defmethod info/text :info/entity [entity world]
+(defmethod info/text :info/entity [entity ctx]
   (let [component-info (fn [[k v]]
                          (let [s (if-let [info-fn (info-fns k)]
                                    (do
-                                    (str k " - " (info-fn [k v] world))))]
+                                    (str k " - " (info-fn [k v] ctx))))]
                            (if-let [color (k->colors k)]
                              (str "[" color "]" s "[]")
                              s)))]
@@ -217,7 +217,7 @@
                            (catch Throwable t
                              (str "*info-error* " k)))
                       (when (map? v)
-                        (str "\n" (info/text v world))))))
+                        (str "\n" (info/text v ctx))))))
          (str/join "\n")
          remove-newlines)))
 
@@ -233,7 +233,7 @@
              :entity/image
              :item/slot} keyset))))
 
-(defmethod info/text :info/item [item _world]
+(defmethod info/text :info/item [item _ctx]
   (assert (valid-item? item))
   (str/join "\n"
             (remove nil?
@@ -293,7 +293,7 @@
 
   )
 
-(defn entity-info [entity world]
+(defn entity-info [entity ctx]
   ; dispatch entity type
   ; assert valid? projectile/creature/item/etc?
 
