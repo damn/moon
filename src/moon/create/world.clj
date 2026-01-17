@@ -145,12 +145,6 @@
     :as world}]
   (assoc world :world/render-z-order (utils/define-order z-orders)))
 
-(defn- create-world [initial-config world-fn-result]
-  (-> (merge (map->RWorld {}) initial-config)
-      calculate-max-speed
-      define-render-z-order
-      (assoc-state world-fn-result)))
-
 (def ^:private world-params
   {
    :content-grid-cell-size 16
@@ -186,4 +180,7 @@
                                                             (db/all-raw db :properties/creatures)
                                                             #(textures/texture-region textures %))
                                 :textures textures))]
-    (assoc ctx :ctx/world (create-world world-params world-fn-result))))
+    (assoc ctx :ctx/world (-> (merge (map->RWorld {}) world-params)
+                              calculate-max-speed
+                              define-render-z-order
+                              (assoc-state world-fn-result)))))
