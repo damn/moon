@@ -3,18 +3,19 @@
             [moon.effect :as effect]
             [moon.entity :as entity]
             [moon.skill :as skill]
-            [moon.world :as world]
+            [moon.raycaster :as raycaster]
             [moon.world.grid :as grid]
             [moon.world.potential-fields-movement :as potential-fields-movement]))
 
 (defn- npc-effect-ctx
-  [{:keys [world/grid]
+  [{:keys [world/grid
+           world/raycaster]
     :as world}
    eid]
   (let [entity @eid
         target (grid/nearest-enemy grid entity)
         target (when (and target
-                          (world/line-of-sight? world entity @target))
+                          (raycaster/line-of-sight? raycaster entity @target))
                  target)]
     {:effect/source eid
      :effect/target target

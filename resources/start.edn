@@ -126,8 +126,8 @@
                                                                                          [moon.ui-actors.player-message/create]]]
 
                                                      ;; ctx/world
-                                                     [moon.create.world/step #edn/resource ; "world_fns/vampire.edn"
-                                                                                            "world_fns/uf_caves.edn"
+                                                     [moon.create.world/step #edn/resource  "world_fns/vampire.edn"
+                                                                                          ; "world_fns/uf_caves.edn"
                                                                                            ; "world_fns/modules.edn"
                                                       ]
                                                      [moon.create.spawn-player-entity/step {:creature-id :creatures/vampire

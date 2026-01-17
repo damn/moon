@@ -1,11 +1,11 @@
 (ns moon.effects.target-all
   (:require [moon.effect :as effect]
-            [moon.world :as world]))
+            [moon.raycaster :as raycaster]))
 
-(defn affected-targets [active-entities world entity]
+(defn affected-targets [active-entities raycaster entity]
   (->> active-entities
        (filter #(:entity/species @%))
-       (filter #(world/line-of-sight? world entity @%))
+       (filter #(raycaster/line-of-sight? raycaster entity @%))
        (remove #(:entity/player? @%))))
 
 (comment
@@ -36,7 +36,7 @@
            ctx/world]}]
   (let [source* @source]
     (apply concat
-           (for [target (affected-targets active-entities world source*)]
+           (for [target (affected-targets active-entities (:world/raycaster world) source*)]
              [[:tx/spawn-line
                {:start (:body/position (:entity/body source*)) #_(start-point source* target*)
                 :end (:body/position (:entity/body @target))
@@ -54,7 +54,7 @@
    {:keys [ctx/active-entities
            ctx/world]}]
   (let [source* @source]
-    (for [target* (map deref (affected-targets active-entities world source*))]
+    (for [target* (map deref (affected-targets active-entities (:world/raycaster world) source*))]
       [:draw/line
        (:body/position (:entity/body source*)) #_(start-point source* target*)
        (:body/position (:entity/body target*))

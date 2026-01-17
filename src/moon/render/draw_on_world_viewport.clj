@@ -4,8 +4,8 @@
             [moon.color :as color]
             [moon.entity :as entity]
             [moon.graphics.camera :as camera]
+            [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]
-            [moon.world :as world]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.utils.viewport Viewport)))
@@ -103,7 +103,7 @@
         player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
-                           (world/line-of-sight? world player entity)))]
+                           (raycaster/line-of-sight? (:world/raycaster world) player entity)))]
     (doseq [[z-order entities] (utils/sort-by-order (group-by (comp :body/z-order :entity/body) entities)
                                                     first
                                                     (:world/render-z-order world))

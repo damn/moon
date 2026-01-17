@@ -7,8 +7,7 @@
             [moon.ui.dev-menu :as dev-menu]
             [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.property-editor-window :as property-editor-window]
-            [moon.utils :as utils]
-            [moon.world :as world])
+            [moon.utils :as utils])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
@@ -71,7 +70,7 @@
                                                   ui stage
                                                   stage (.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                               (rebuild-actors! ui ctx)
-                                              (world/dispose! (:ctx/world ctx))
+                                              #_(Disposable/.dispose (:world/tiled-map (:ctx/world ctx)))
                                               (set! (.ctx stage) (create-world ctx world-fn))))})}
         update-labels [{:label "elapsed-time"
                         :update-fn (fn [{:keys [ctx/elapsed-time]}]

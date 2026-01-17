@@ -1,7 +1,7 @@
 (ns moon.render.draw-world-map
-  (:require [moon.graphics.camera :as camera]
-            [moon.tiled-map-renderer :as tiled-map-renderer]
-            [moon.world :as world])
+  (:require [clojure.math.raycaster :as raycaster]
+            [moon.graphics.camera :as camera]
+            [moon.tiled-map-renderer :as tiled-map-renderer])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn- tile-color-setter
@@ -61,7 +61,7 @@
                             (.getCamera world-viewport)
                             (:world/tiled-map world)
                             (tile-color-setter
-                             {:ray-blocked? (partial world/blocked? world)
+                             {:ray-blocked? (partial raycaster/blocked? (:world/raycaster world))
                               :explored-tile-corners (:world/explored-tile-corners world)
                               :light-position (camera/position (Viewport/.getCamera world-viewport))
                               :see-all-tiles? false

@@ -5,7 +5,7 @@
             [moon.entity.stats :as stats]
             [moon.textures :as textures]
             [moon.timer :as timer]
-            [moon.world :as world]))
+            [moon.raycaster :as raycaster]))
 
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
@@ -25,7 +25,7 @@
   [world {:keys [effect/source effect/target] :as effect-ctx}]
   (if (and target
            (not (:entity/destroyed? @target))
-           (world/line-of-sight? world @source @target))
+           (raycaster/line-of-sight? (:world/raycaster world) @source @target))
     effect-ctx
     (dissoc effect-ctx :effect/target)))
 

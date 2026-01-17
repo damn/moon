@@ -1,33 +1,13 @@
 (ns moon.create.world
   (:require [clojure.grid2d :as g2d]
-            [clojure.math.raycaster :as raycaster]
-            [clojure.math.vector2 :as v]
             [moon.db :as db]
             [moon.textures :as textures]
             [moon.utils :as utils]
-            [moon.world :as world]
             [moon.world.create.grid]
             [moon.world.content-grid :as content-grid]
             [moon.world.grid.cell :as cell]
             [moon.world.tiled :as tiled]
             [moon.world-fns.creature-tiles]))
-
-(defn- create-double-ray-endpositions
-  [[start-x start-y]
-   [target-x target-y]
-   path-w]
-  {:pre [(< path-w 0.98)]} ; wieso 0.98??
-  (let [path-w (+ path-w 0.02) ;etwas gr�sser damit z.b. projektil nicht an ecken anst�sst
-        v (v/direction [start-x start-y]
-                       [target-y target-y])
-        [normal1 normal2] (v/normal-vectors v)
-        normal1 (v/scale normal1 (/ path-w 2))
-        normal2 (v/scale normal2 (/ path-w 2))
-        start1  (v/add [start-x  start-y]  normal1)
-        start2  (v/add [start-x  start-y]  normal2)
-        target1 (v/add [target-x target-y] normal1)
-        target2 (v/add [target-x target-y] normal2)]
-    [start1,target1,start2,target2]))
 
 (defn- create-world-grid [width height cell-movement]
   (g2d/create-grid width
@@ -94,26 +74,6 @@
         (aset arr x y (boolean blocked?)))
       [arr width height])))
 
-(defrecord RWorld []
-  moon.world/World
-  (dispose! [{:keys [world/tiled-map]}]
-    (assert tiled-map) ; only dispose after world was created
-    (.dispose tiled-map))
-
-  (blocked? [{:keys [world/raycaster]} start target]
-    (raycaster/blocked? raycaster start target))
-
-  (path-blocked? [{:keys [world/raycaster]} start target path-w]
-    (let [[start1,target1,start2,target2] (create-double-ray-endpositions start target path-w)]
-      (or
-       (raycaster/blocked? raycaster start1 target1)
-       (raycaster/blocked? raycaster start2 target2))))
-
-  (line-of-sight? [{:keys [world/raycaster]} source target]
-    (not (raycaster/blocked? raycaster
-                             (:body/position (:entity/body source))
-                             (:body/position (:entity/body target))))))
-
 (defn- assoc-state [world {:keys [tiled-map
                                   start-position]}]
   (let [width  (.get (.getProperties tiled-map) "width")
@@ -168,7 +128,7 @@
                                                             (db/all-raw db :properties/creatures)
                                                             #(textures/texture-region textures %))
                                 :textures textures))]
-    (assoc ctx :ctx/world (-> (merge (map->RWorld {}) world-params)
+    (assoc ctx :ctx/world (-> world-params
                               calculate-max-speed
                               define-render-z-order
                               (assoc-state world-fn-result)))))

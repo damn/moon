@@ -1,5 +1,4 @@
 (ns moon.listener.dispose
-  (:require [moon.world :as world])
   (:import (com.badlogic.gdx.utils Disposable)))
 
 (defn do!
@@ -18,5 +17,5 @@
   (Disposable/.dispose shape-drawer-texture)
   (Disposable/.dispose skin)
   (run! Disposable/.dispose (vals textures))
-  (world/dispose! world)
+  (Disposable/.dispose (:world/tiled-map world))
   nil)

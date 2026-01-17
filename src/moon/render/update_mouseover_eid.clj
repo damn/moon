@@ -2,7 +2,7 @@
   (:require [moon.input :as input]
             [moon.stage :as stage]
             [moon.world.grid :as grid]
-            [moon.world :as world]
+            [moon.raycaster :as raycaster]
             [moon.utils :as utils]))
 
 (defn do!
@@ -26,7 +26,7 @@
                     (->> render-z-order
                          (utils/sort-by-order hits #(:body/z-order (:entity/body @%)))
                          reverse
-                         (filter #(world/line-of-sight? world player @%))
+                         (filter #(raycaster/line-of-sight? raycaster player @%))
                          first)))]
     (when mouseover-eid
       (swap! mouseover-eid dissoc :entity/mouseover?))
