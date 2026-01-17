@@ -34,7 +34,7 @@
 (defmethod effect/useful? :effects/projectile
   [[_ {:keys [projectile/max-range] :as projectile}]
    {:keys [effect/source effect/target]}
-   {:keys [world/raycaster]}]
+   {:keys [ctx/raycaster]}]
   ; TODO valid params direction has to be  non-nil (entities not los player ) ?
   (let [source-p (:body/position (:entity/body @source))
         target-p (:body/position (:entity/body @target))]

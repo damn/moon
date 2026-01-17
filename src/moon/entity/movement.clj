@@ -31,21 +31,20 @@
      :as movement}]
    eid
    {:keys [ctx/delta-time
-           ctx/world]}]
-  (let [{:keys [world/grid
-                world/max-speed]} world]
-    (assert (<= 0 speed max-speed)
-            (pr-str speed))
-    (assert (vector? direction))
-    (assert (or (zero? (v/length direction))
-                (utils/nearly-equal? 1 (v/length direction)))
-            (str "cannot understand direction: " (pr-str direction)))
-    (when-not (or (zero? (v/length direction))
-                  (nil? speed)
-                  (zero? speed))
-      (let [movement (assoc movement :delta-time delta-time)
-            body (:entity/body @eid)]
-        (when-let [body (if (:body/collides? body)
-                          (try-move-solid-body grid body (:entity/id @eid) movement)
-                          (move-body body movement))]
-          [[:tx/move-entity eid body direction rotate-in-movement-direction?]])))))
+           ctx/grid
+           ctx/max-speed]}]
+  (assert (<= 0 speed max-speed)
+          (pr-str speed))
+  (assert (vector? direction))
+  (assert (or (zero? (v/length direction))
+              (utils/nearly-equal? 1 (v/length direction)))
+          (str "cannot understand direction: " (pr-str direction)))
+  (when-not (or (zero? (v/length direction))
+                (nil? speed)
+                (zero? speed))
+    (let [movement (assoc movement :delta-time delta-time)
+          body (:entity/body @eid)]
+      (when-let [body (if (:body/collides? body)
+                        (try-move-solid-body grid body (:entity/id @eid) movement)
+                        (move-body body movement))]
+        [[:tx/move-entity eid body direction rotate-in-movement-direction?]]))))

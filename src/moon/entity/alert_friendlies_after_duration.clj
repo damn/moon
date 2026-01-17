@@ -7,12 +7,11 @@
   [[_k {:keys [counter faction]}]
    eid
    {:keys [ctx/elapsed-time
-           ctx/world]}]
-  (let [{:keys [world/grid]} world]
-    (when (timer/stopped? elapsed-time counter)
-      (cons [:tx/mark-destroyed eid]
-            (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
-                                     :radius 4}
-                                    (grid/circle->entities grid)
-                                    (filter #(= (:entity/faction @%) faction)))]
-              [:tx/event friendly-eid :alert])))))
+           ctx/grid]}]
+  (when (timer/stopped? elapsed-time counter)
+    (cons [:tx/mark-destroyed eid]
+          (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
+                                   :radius 4}
+                                  (grid/circle->entities grid)
+                                  (filter #(= (:entity/faction @%) faction)))]
+            [:tx/event friendly-eid :alert]))))

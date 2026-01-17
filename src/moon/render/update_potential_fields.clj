@@ -105,18 +105,17 @@
 (defn do!
   [{:keys [ctx/active-entities
            ctx/paused?
-           ctx/world]
+           ctx/factions-iterations
+           ctx/grid
+           ctx/potential-field-cache]
     :as ctx}]
   (if paused?
     ctx
     (do
-     (let [{:keys [world/factions-iterations
-                   world/grid
-                   world/potential-field-cache]} world]
-       (doseq [[faction max-iterations] factions-iterations]
-         (tick! potential-field-cache
-                grid
-                faction
-                active-entities
-                max-iterations)))
+     (doseq [[faction max-iterations] factions-iterations]
+       (tick! potential-field-cache
+              grid
+              faction
+              active-entities
+              max-iterations))
      ctx)))

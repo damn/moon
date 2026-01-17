@@ -13,7 +13,7 @@
     k))
 
 (defmethod useful? :default
-  [_ _effect-ctx _world]
+  [_ _effect-ctx _ctx]
   true)
 
 (defmulti render

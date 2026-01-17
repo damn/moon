@@ -26,7 +26,7 @@
         ctx)))
 
 (comment
- (= (tick-entities! {:world/active-entities [(atom {:firstk :foo
+ (= (tick-entities! {:ctx/active-entities [(atom {:firstk :foo
                                                     :secondk :bar})
                                              (atom {:firstk2 :foo2
                                                     :secondk2 :bar2})]}

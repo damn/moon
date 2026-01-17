@@ -22,10 +22,10 @@
                  (timer/create elapsed-time))})
 
 (defn- update-effect-ctx
-  [world {:keys [effect/source effect/target] :as effect-ctx}]
+  [raycaster {:keys [effect/source effect/target] :as effect-ctx}]
   (if (and target
            (not (:entity/destroyed? @target))
-           (raycaster/line-of-sight? (:world/raycaster world) @source @target))
+           (raycaster/line-of-sight? raycaster @source @target))
     effect-ctx
     (dissoc effect-ctx :effect/target)))
 
@@ -33,8 +33,8 @@
   [[_k {:keys [skill effect-ctx counter]}]
    eid
    {:keys [ctx/elapsed-time
-           ctx/world]}]
-  (let [effect-ctx (update-effect-ctx world effect-ctx)]
+           ctx/raycaster]}]
+  (let [effect-ctx (update-effect-ctx raycaster effect-ctx)]
     (cond
      (not (seq (filter #(effect/applicable? % effect-ctx)
                        (:skill/effects skill))))

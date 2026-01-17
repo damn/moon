@@ -52,17 +52,19 @@
 
 (defn do!
   [{:keys [ctx/batch
-           ctx/world
+           ctx/tiled-map
            ctx/world-unit-scale
-           ctx/world-viewport]
+           ctx/world-viewport
+           ctx/raycaster
+           ctx/explored-tile-corners]
     :as ctx}]
   (tiled-map-renderer/draw! batch
                             world-unit-scale
                             (.getCamera world-viewport)
-                            (:world/tiled-map world)
+                            tiled-map
                             (tile-color-setter
-                             {:ray-blocked? (partial raycaster/blocked? (:world/raycaster world))
-                              :explored-tile-corners (:world/explored-tile-corners world)
+                             {:ray-blocked? (partial raycaster/blocked? raycaster)
+                              :explored-tile-corners explored-tile-corners
                               :light-position (camera/position (Viewport/.getCamera world-viewport))
                               :see-all-tiles? false
                               :explored-tile-color  [0.5 0.5 0.5 1]

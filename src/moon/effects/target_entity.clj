@@ -28,7 +28,7 @@
        (seq (filter #(effect/applicable? % effect-ctx) entity-effects))))
 
 (defmethod effect/useful? :effects/target-entity
-  [[_ {:keys [maxrange]}] {:keys [effect/source effect/target]} _world]
+  [[_ {:keys [maxrange]}] {:keys [effect/source effect/target]} _ctx]
   (in-range? (:entity/body @source)
              (:entity/body @target)
              maxrange))

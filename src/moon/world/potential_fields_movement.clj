@@ -90,7 +90,7 @@
     (and (= 1 (count cells))
          (= cell (first cells)))))
 
-(defn find-direction [{:keys [world/grid]} eid]
+(defn find-direction [grid eid]
   (let [position (:body/position (:entity/body @eid))
         own-cell (grid (mapv int position))
         {:keys [target-entity target-cell]} (find-next-cell grid eid own-cell)]

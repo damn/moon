@@ -10,13 +10,12 @@
            ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
-           ctx/world
+           ctx/grid
+           ctx/raycaster
+           ctx/render-z-order
            ctx/world-mouse-position]
     :as ctx}]
   (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))
-        {:keys [world/grid
-                world/raycaster
-                world/render-z-order]} world
         position world-mouse-position
         new-eid (if mouseover-actor
                   nil

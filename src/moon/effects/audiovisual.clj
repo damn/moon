@@ -6,7 +6,7 @@
   target-position)
 
 (defmethod effect/useful? :effects/audiovisual
-  [_ _effect-ctx _world]
+  [_ _effect-ctx _ctx]
   false)
 
 (defmethod effect/handle :effects/audiovisual

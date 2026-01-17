@@ -74,7 +74,7 @@
         (aset arr x y (boolean blocked?)))
       [arr width height])))
 
-(defn- assoc-state [world {:keys [tiled-map
+(defn- assoc-state [ctx {:keys [tiled-map
                                   start-position]}]
   (let [width  (.get (.getProperties tiled-map) "width")
         height (.get (.getProperties tiled-map) "height")
@@ -83,34 +83,34 @@
                                    "none" :none
                                    "air"  :air
                                    "all"  :all))]
-    (assoc world
-           :world/tiled-map tiled-map
-           :world/start-position start-position
-           :world/grid grid
-           :world/content-grid (create-content-grid width height 16)
-           :world/explored-tile-corners (create-explored-tile-corners width height)
-           :world/raycaster (create-raycaster grid)
-           :world/potential-field-cache (atom nil)
-           :world/id-counter (atom 0)
-           :world/entity-ids (atom {}))))
+    (assoc ctx
+           :ctx/tiled-map tiled-map
+           :ctx/start-position start-position
+           :ctx/grid grid
+           :ctx/content-grid (create-content-grid width height 16)
+           :ctx/explored-tile-corners (create-explored-tile-corners width height)
+           :ctx/raycaster (create-raycaster grid)
+           :ctx/potential-field-cache (atom nil)
+           :ctx/id-counter (atom 0)
+           :ctx/entity-ids (atom {}))))
 
 (defn- calculate-max-speed
-  [{:keys [world/minimum-size
-           world/max-delta]
-    :as world}]
-  (assoc world :world/max-speed (/ minimum-size max-delta)))
+  [{:keys [ctx/minimum-size
+           ctx/max-delta]
+    :as ctx}]
+  (assoc ctx :ctx/max-speed (/ minimum-size max-delta)))
 
 (defn- define-render-z-order
-  [{:keys [world/z-orders]
-    :as world}]
-  (assoc world :world/render-z-order (utils/define-order z-orders)))
+  [{:keys [ctx/z-orders]
+    :as ctx}]
+  (assoc ctx :ctx/render-z-order (utils/define-order z-orders)))
 
 (def ^:private world-params
   {
-   :world/factions-iterations {:good 15 :evil 5}
-   :world/max-delta 0.04
-   :world/minimum-size 0.39
-   :world/z-orders [:z-order/on-ground
+   :ctx/factions-iterations {:good 15 :evil 5}
+   :ctx/max-delta 0.04
+   :ctx/minimum-size 0.39
+   :ctx/z-orders [:z-order/on-ground
                     :z-order/ground
                     :z-order/flying
                     :z-order/effect]
@@ -128,7 +128,7 @@
                                                             (db/all-raw db :properties/creatures)
                                                             #(textures/texture-region textures %))
                                 :textures textures))]
-    (assoc ctx :ctx/world (-> world-params
-                              calculate-max-speed
-                              define-render-z-order
-                              (assoc-state world-fn-result)))))
+    (-> (merge ctx world-params)
+        calculate-max-speed
+        define-render-z-order
+        (assoc-state world-fn-result))))

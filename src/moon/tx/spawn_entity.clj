@@ -35,16 +35,14 @@
 (q/defrecord Entity [entity/body])
 
 (defn do!
-  [{:keys [ctx/world]
+  [{:keys [ctx/content-grid
+           ctx/entity-ids
+           ctx/grid
+           ctx/id-counter]
     :as ctx}
    entity]
   (mu/validate-humanize components-schema entity)
-  (let [{:keys [world/content-grid
-                world/entity-ids
-                world/grid
-                world/id-counter]
-         :as world} world
-        entity (reduce (fn [m [k v]]
+  (let [entity (reduce (fn [m [k v]]
                          (assoc m k (entity/create [k v] ctx)))
                        {}
                        entity)

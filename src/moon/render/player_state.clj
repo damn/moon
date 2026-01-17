@@ -90,7 +90,6 @@
            ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
-           ctx/world
            ctx/world-mouse-position]
     :as ctx}]
   (assoc ctx :ctx/interaction-state (interaction-state stage

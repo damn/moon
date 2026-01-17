@@ -70,7 +70,7 @@
                                                   ui stage
                                                   stage (.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                               (rebuild-actors! ui ctx)
-                                              #_(Disposable/.dispose (:world/tiled-map (:ctx/world ctx)))
+                                              #_(Disposable/.dispose (:ctx/tiled-map ctx))
                                               (set! (.ctx stage) (create-world ctx world-fn))))})}
         update-labels [{:label "elapsed-time"
                         :update-fn (fn [{:keys [ctx/elapsed-time]}]

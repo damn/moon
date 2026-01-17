@@ -4,11 +4,11 @@
 (defn do!
   [{:keys [ctx/graphics
            ctx/paused?
-           ctx/world]
+           ctx/max-delta]
     :as ctx}]
   (if paused?
     ctx
-    (let [delta-ms (min (Graphics/.getDeltaTime graphics) (:world/max-delta world))]
+    (let [delta-ms (min (Graphics/.getDeltaTime graphics) max-delta)]
       (-> ctx
           (assoc :ctx/delta-time delta-ms)
           (update :ctx/elapsed-time + delta-ms)))))

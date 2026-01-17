@@ -9,7 +9,7 @@
            ctx/shape-drawer-texture
            ctx/skin
            ctx/textures
-           ctx/world]}]
+           ctx/tiled-map]}]
   (run! Disposable/.dispose (vals audio))
   (Disposable/.dispose batch)
   (run! Disposable/.dispose (vals cursors))
@@ -17,5 +17,5 @@
   (Disposable/.dispose shape-drawer-texture)
   (Disposable/.dispose skin)
   (run! Disposable/.dispose (vals textures))
-  (Disposable/.dispose (:world/tiled-map world))
+  (Disposable/.dispose tiled-map)
   nil)

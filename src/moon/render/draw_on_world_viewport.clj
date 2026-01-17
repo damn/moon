@@ -26,10 +26,10 @@
         [1 1 1 0.8]]])))
 
 (defn- highlight-mouseover-tile
-  [{:keys [ctx/world
+  [{:keys [ctx/grid
            ctx/world-mouse-position]}]
   (let [[x y] (mapv int world-mouse-position)
-        cell ((:world/grid world) [x y])]
+        cell (grid [x y])]
     (when (and cell (#{:air :none} (:movement @cell)))
       [[:draw/rectangle x y 1 1
         (case (:movement @cell)
@@ -41,11 +41,12 @@
 (def ^:dbg-flag show-cell-occupied? false)
 
 (defn- draw-cell-debug
-  [{:keys [ctx/world
+  [{:keys [ctx/grid
+           ctx/factions-iterations
            ctx/world-viewport]}]
   (apply concat
          (for [[x y] (camera/visible-tiles (Viewport/.getCamera world-viewport))
-               :let [cell ((:world/grid world) [x y])]
+               :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]
            [(when (and show-cell-entities? (seq (:entities cell*)))
@@ -55,7 +56,7 @@
             (when-let [faction show-potential-field-colors?]
               (let [{:keys [distance]} (faction cell*)]
                 (when distance
-                  (let [ratio (/ distance ((:world/factions-iterations world) faction))]
+                  (let [ratio (/ distance (factions-iterations faction))]
                     [:draw/filled-rectangle x y 1 1 [ratio (- 1 ratio) ratio 0.6]]))))])))
 
 (def ^:private render-layers
@@ -97,16 +98,17 @@
 (defn draw-entities
   [{:keys [ctx/active-entities
            ctx/player-eid
-           ctx/world]
+           ctx/raycaster
+           ctx/render-z-order]
     :as ctx}]
   (let [entities (map deref active-entities)
         player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
-                           (raycaster/line-of-sight? (:world/raycaster world) player entity)))]
+                           (raycaster/line-of-sight? raycaster player entity)))]
     (doseq [[z-order entities] (utils/sort-by-order (group-by (comp :body/z-order :entity/body) entities)
                                                     first
-                                                    (:world/render-z-order world))
+                                                    render-z-order)
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]

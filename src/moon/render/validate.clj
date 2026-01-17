@@ -39,13 +39,24 @@
     [:ctx/ui-viewport :some] ; viewport API ?
     [:ctx/ui-mouse-position :any]
 
-    [:ctx/world :some] ; level - level API (not open) ?
-    ; TODO : remove :active-entities ?!
-    ; remove elapsed time ?
-    ; cant relly grep it because world-foo ctxzs
-
     [:ctx/world-viewport :some]
     [:ctx/world-mouse-position :any]
+
+    [:ctx/factions-iterations :some]
+    [:ctx/max-delta :some]
+    [:ctx/minimum-size :some]
+    [:ctx/z-orders :some]
+    [:ctx/max-speed :some]
+    [:ctx/render-z-order :some]
+    [:ctx/tiled-map :some]
+    [:ctx/start-position :some]
+    [:ctx/grid :some]
+    [:ctx/content-grid :some]
+    [:ctx/explored-tile-corners :some]
+    [:ctx/raycaster :some]
+    [:ctx/potential-field-cache :some]
+    [:ctx/id-counter :some]
+    [:ctx/entity-ids :some]
     ]))
 
 (defn do! [ctx]

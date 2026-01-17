@@ -53,8 +53,8 @@
            collides?
            z-order
            rotation-angle]}
-   {:keys [world/minimum-size
-           world/z-orders]}]
+   {:keys [ctx/minimum-size
+           ctx/z-orders]}]
   (assert position)
   (assert width)
   (assert height)

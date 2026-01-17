@@ -125,7 +125,6 @@
                                                                                          [moon.ui-actors.player-state-draw/create]
                                                                                          [moon.ui-actors.player-message/create]]]
 
-                                                     ;; ctx/world
                                                      [moon.create.world/step #edn/resource  "world_fns/vampire.edn"
                                                                                           ; "world_fns/uf_caves.edn"
                                                                                            ; "world_fns/modules.edn"

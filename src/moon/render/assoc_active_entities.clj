@@ -3,8 +3,7 @@
 
 (defn do!
   [{:keys [ctx/player-eid
-           ctx/world]
+           ctx/content-grid]
     :as ctx}]
   (assoc ctx :ctx/active-entities
-         (content-grid/active-entities (:world/content-grid world)
-                                       @player-eid)))
+         (content-grid/active-entities content-grid @player-eid)))

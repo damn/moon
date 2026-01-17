@@ -3,5 +3,5 @@
             [moon.entity :as entity]))
 
 (defmethod entity/create :entity/body
-  [[_ v] {:keys [ctx/world]}]
-  (moon.body/create v world))
+  [[_ v] ctx]
+  (moon.body/create v ctx))

@@ -5,12 +5,12 @@
 
 (defn step
   [{:keys [ctx/db
-           ctx/world]
+           ctx/tiled-map]
     :as ctx}
    components]
   (ctx/handle!
    ctx
-   (for [[position creature-id] (tiled-map/spawn-positions (:world/tiled-map world))]
+   (for [[position creature-id] (tiled-map/spawn-positions tiled-map)]
      [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
                           :creature-property (db/build db (keyword creature-id))
                           :components components}]))

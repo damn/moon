@@ -26,17 +26,17 @@
   true)
 
 (defmethod effect/useful? :effects/target-all
-  [_ _effect-ctx _world]
+  [_ _effect-ctx _ctx]
   false)
 
 (defmethod effect/handle :effects/target-all
   [[_ {:keys [entity-effects]}]
    {:keys [effect/source]}
    {:keys [ctx/active-entities
-           ctx/world]}]
+           ctx/raycaster]}]
   (let [source* @source]
     (apply concat
-           (for [target (affected-targets active-entities (:world/raycaster world) source*)]
+           (for [target (affected-targets active-entities raycaster source*)]
              [[:tx/spawn-line
                {:start (:body/position (:entity/body source*)) #_(start-point source* target*)
                 :end (:body/position (:entity/body @target))
@@ -52,9 +52,9 @@
   [_
    {:keys [effect/source]}
    {:keys [ctx/active-entities
-           ctx/world]}]
+           ctx/raycaster]}]
   (let [source* @source]
-    (for [target* (map deref (affected-targets active-entities (:world/raycaster world) source*))]
+    (for [target* (map deref (affected-targets active-entities raycaster source*))]
       [:draw/line
        (:body/position (:entity/body source*)) #_(start-point source* target*)
        (:body/position (:entity/body target*))
