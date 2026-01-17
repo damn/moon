@@ -60,9 +60,9 @@
                                  moon.entity.state.stunned
                                  ]
   ]
- [clj.api.com.badlogic.gdx.backends.lwjgl3.application.configuration/use-glfw-async!]
+ [clj.api.com.badlogic.gdx.backends.lwjgl3.application-configuration/use-glfw-async!]
  [clj.api.com.badlogic.gdx.backends.lwjgl3.application/create
-  {:config [clj.api.com.badlogic.gdx.backends.lwjgl3.application.configuration/create
+  {:config [clj.api.com.badlogic.gdx.backends.lwjgl3.application-configuration/create
             {:title "Moon"
              :window {:width 1440
                       :height 900}

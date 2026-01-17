@@ -1,4 +1,4 @@
-(ns clj.api.com.badlogic.gdx.backends.lwjgl3.application.configuration
+(ns clj.api.com.badlogic.gdx.backends.lwjgl3.application-configuration
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
 
 (defn use-glfw-async! []
