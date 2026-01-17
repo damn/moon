@@ -4,12 +4,12 @@
             [moon.timer :as timer]))
 
 (defmethod state/create :stunned
-  [[_k duration] _eid {:keys [ctx/world]}]
-  {:counter (timer/create (:world/elapsed-time world) duration)})
+  [[_k duration] _eid {:keys [ctx/elapsed-time]}]
+  {:counter (timer/create elapsed-time duration)})
 
 (defmethod entity/tick :stunned
-  [[_k {:keys [counter]}] eid {:keys [ctx/world]}]
-  (when (timer/stopped? (:world/elapsed-time world) counter)
+  [[_k {:keys [counter]}] eid {:keys [ctx/elapsed-time]}]
+  (when (timer/stopped? elapsed-time counter)
     [[:tx/event eid :effect-wears-off]]))
 
 (defmethod entity/render :stunned

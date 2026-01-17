@@ -13,10 +13,9 @@
   (:entity/stats @target))
 
 (defmethod effect/handle :effects.target/spiderweb
-  [_ {:keys [effect/target]} {:keys [ctx/world]}]
+  [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]
   ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
-  (let [{:keys [world/elapsed-time]} world]
-    (when-not (:entity/temp-modifier @target)
-      [[:tx/assoc target :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                                :counter (timer/create elapsed-time spiderweb-duration)}]
-       [:tx/update target :entity/stats stats/add spiderweb-modifiers]])))
+  (when-not (:entity/temp-modifier @target)
+    [[:tx/assoc target :entity/temp-modifier {:modifiers spiderweb-modifiers
+                                              :counter (timer/create elapsed-time spiderweb-duration)}]
+     [:tx/update target :entity/stats stats/add spiderweb-modifiers]]))

@@ -74,8 +74,8 @@
                                               (world/dispose! (:ctx/world ctx))
                                               (set! (.ctx stage) (create-world ctx world-fn))))})}
         update-labels [{:label "elapsed-time"
-                        :update-fn (fn [ctx]
-                                     (str (utils/readable-number (:world/elapsed-time (:ctx/world ctx))) " seconds"))
+                        :update-fn (fn [{:keys [ctx/elapsed-time]}]
+                                     (str (utils/readable-number elapsed-time) " seconds"))
                         :icon "images/clock.png"}
                        {:label "FPS"
                         :update-fn (fn [{:keys [ctx/graphics]}]

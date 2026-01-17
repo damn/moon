@@ -147,8 +147,8 @@
    :effects/target-all (fn [_ _ctx]
                          "All visible targets")
 
-   :entity/delete-after-duration (fn [[_ counter] {:keys [ctx/world]}]
-                                   (str "Remaining: " (utils/readable-number (timer/ratio (:world/elapsed-time world) counter)) "/1"))
+   :entity/delete-after-duration (fn [[_ counter] {:keys [ctx/elapsed-time]}]
+                                   (str "Remaining: " (utils/readable-number (timer/ratio elapsed-time counter)) "/1"))
 
    :entity/faction (fn [[_ faction] _ctx]
                      (str "Faction: " (name faction)))
@@ -167,8 +167,8 @@
    :entity/species (fn [[_ species] _ctx]
                      (str "Creature - " (str/capitalize (name species))))
 
-   :entity/temp-modifier (fn [[_ {:keys [counter]}] {:keys [ctx/world]}]
-                           (str "Spiderweb - remaining: " (utils/readable-number (timer/ratio (:world/elapsed-time world) counter)) "/1"))
+   :entity/temp-modifier (fn [[_ {:keys [counter]}] {:keys [ctx/elapsed-time]}]
+                           (str "Spiderweb - remaining: " (utils/readable-number (timer/ratio elapsed-time counter)) "/1"))
 
    :projectile/piercing? (fn [_ _ctx]
                            "Piercing")
@@ -176,8 +176,8 @@
    :property/pretty-name (fn [[_ v] _ctx]
                            v)
 
-   :skill/cooling-down? (fn [[_ counter] {:keys [ctx/world]}]
-                          (str "Cooldown: " (utils/readable-number (timer/ratio (:world/elapsed-time world) counter)) "/1"))
+   :skill/cooling-down? (fn [[_ counter] {:keys [ctx/elapsed-time]}]
+                          (str "Cooldown: " (utils/readable-number (timer/ratio elapsed-time counter)) "/1"))
 
    :skill/action-time (fn [[_ v] _ctx]
                         (str "Action-Time: " (utils/readable-number v) " seconds"))

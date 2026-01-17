@@ -6,9 +6,9 @@
 (defmethod entity/tick :entity/alert-friendlies-after-duration
   [[_k {:keys [counter faction]}]
    eid
-   {:keys [ctx/world]}]
-  (let [{:keys [world/elapsed-time
-                world/grid]} world]
+   {:keys [ctx/elapsed-time
+           ctx/world]}]
+  (let [{:keys [world/grid]} world]
     (when (timer/stopped? elapsed-time counter)
       (cons [:tx/mark-destroyed eid]
             (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))

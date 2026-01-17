@@ -3,10 +3,10 @@
             [moon.timer :as timer]))
 
 (defmethod entity/create :entity/delete-after-duration
-  [[_ duration] {:keys [ctx/world]}]
-  (timer/create (:world/elapsed-time world) duration))
+  [[_ duration] {:keys [ctx/elapsed-time]}]
+  (timer/create elapsed-time duration))
 
 (defmethod entity/tick :entity/delete-after-duration
-  [[_k counter] eid {:keys [ctx/world]}]
-  (when (timer/stopped? (:world/elapsed-time world) counter)
+  [[_k counter] eid {:keys [ctx/elapsed-time]}]
+  (when (timer/stopped? elapsed-time counter)
     [[:tx/mark-destroyed eid]]))

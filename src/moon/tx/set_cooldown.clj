@@ -2,9 +2,9 @@
   (:require [moon.timer :as timer]))
 
 (defn do!
-  [{:keys [ctx/world]} eid skill]
+  [{:keys [ctx/elapsed-time]} eid skill]
   (swap! eid assoc-in [:entity/skills
                        (:property/id skill)
                        :skill/cooling-down?]
-         (timer/create (:world/elapsed-time world) (:skill/cooldown skill)))
+         (timer/create elapsed-time (:skill/cooldown skill)))
   nil)

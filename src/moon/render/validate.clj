@@ -32,6 +32,8 @@
     [:ctx/db :some] ; moon.db ? :schemas?!
 
     [:ctx/paused? :some]
+    [:ctx/elapsed-time :some]
+    [:ctx/delta-time :any]
 
     [:ctx/ui-viewport :some] ; viewport API ?
     [:ctx/ui-mouse-position :any]

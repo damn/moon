@@ -100,15 +100,6 @@
     (assert tiled-map) ; only dispose after world was created
     (.dispose tiled-map))
 
-  (update-time
-    [{:keys [world/max-delta]
-      :as world}
-     delta-ms]
-    (let [delta-ms (min delta-ms max-delta)]
-      (-> world
-          (assoc :world/delta-time delta-ms)
-          (update :world/elapsed-time + delta-ms))))
-
   (blocked? [{:keys [world/raycaster]} start target]
     (raycaster/blocked? raycaster start target))
 
@@ -139,12 +130,6 @@
            :world/content-grid (create-content-grid width height (:content-grid-cell-size world))
            :world/explored-tile-corners (create-explored-tile-corners width height)
            :world/raycaster (create-raycaster grid)
-
-           :world/elapsed-time 0 ; out
-           ; entity/tick
-           ; info text
-           ; effect also pass ctx/world
-
            :world/potential-field-cache (atom nil)
            :world/id-counter (atom 0)
            :world/entity-ids (atom {}))))

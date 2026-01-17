@@ -13,13 +13,13 @@
          1)))
 
 (defmethod state/create :active-skill
-  [[_k [skill effect-ctx]] eid {:keys [ctx/world]}]
+  [[_k [skill effect-ctx]] eid {:keys [ctx/elapsed-time]}]
   {:skill skill
    :effect-ctx effect-ctx
    :counter (->> skill
                  :skill/action-time
                  (apply-action-speed-modifier @eid skill)
-                 (timer/create (:world/elapsed-time world)))})
+                 (timer/create elapsed-time))})
 
 (defn- update-effect-ctx
   [world {:keys [effect/source effect/target] :as effect-ctx}]
@@ -32,9 +32,9 @@
 (defmethod entity/tick :active-skill
   [[_k {:keys [skill effect-ctx counter]}]
    eid
-   {:keys [ctx/world]}]
-  (let [{:keys [world/elapsed-time]} world
-        effect-ctx (update-effect-ctx world effect-ctx)]
+   {:keys [ctx/elapsed-time
+           ctx/world]}]
+  (let [effect-ctx (update-effect-ctx world effect-ctx)]
     (cond
      (not (seq (filter #(effect/applicable? % effect-ctx)
                        (:skill/effects skill))))
@@ -68,14 +68,14 @@
 (defmethod entity/render :active-skill
   [[_k {:keys [skill effect-ctx counter]}]
    entity
-   {:keys [ctx/textures
-           ctx/world]
+   {:keys [ctx/elapsed-time
+           ctx/textures]
     :as ctx}]
   (let [{:keys [entity/image skill/effects]} skill]
     (concat (draw-skill-image (textures/texture-region textures image)
                               entity
                               (:body/position (:entity/body entity))
-                              (timer/ratio (:world/elapsed-time world) counter))
+                              (timer/ratio elapsed-time counter))
             (mapcat #(effect/render % effect-ctx ctx)  ; update-effect-ctx here too ?
                     effects))))
 

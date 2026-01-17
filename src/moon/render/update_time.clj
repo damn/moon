@@ -1,11 +1,14 @@
 (ns moon.render.update-time
-  (:require [moon.world :as world])
   (:import (com.badlogic.gdx Graphics)))
 
 (defn do!
   [{:keys [ctx/graphics
-           ctx/paused?]
+           ctx/paused?
+           ctx/world]
     :as ctx}]
   (if paused?
     ctx
-    (update ctx :ctx/world world/update-time (Graphics/.getDeltaTime graphics))))
+    (let [delta-ms (min (Graphics/.getDeltaTime graphics) (:world/max-delta world))]
+      (-> ctx
+          (assoc :ctx/delta-time delta-ms)
+          (update :ctx/elapsed-time + delta-ms)))))

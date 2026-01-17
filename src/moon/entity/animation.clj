@@ -40,8 +40,8 @@
     :delete-after-stopped? delete-after-stopped?}))
 
 (defmethod entity/tick :entity/animation
-  [[_k animation] eid {:keys [ctx/world]}]
-  [[:tx/assoc eid :entity/animation (tick animation (:world/delta-time world))]
+  [[_k animation] eid {:keys [ctx/delta-time]}]
+  [[:tx/assoc eid :entity/animation (tick animation delta-time)]
    (when (and (:delete-after-stopped? animation)
               (stopped? animation))
      [:tx/mark-destroyed eid])])
