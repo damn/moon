@@ -3,7 +3,7 @@
             [clojure.math.vector2 :as v]
             [moon.entity :as entity]
             [moon.utils :as utils]
-            [moon.world.grid :as grid]))
+            [moon.grid :as grid]))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))

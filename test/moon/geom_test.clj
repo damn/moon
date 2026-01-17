@@ -2,7 +2,7 @@
 ;(ns moon.application.render.draw-on-world-viewport.geom-test)
 ;
 ;(comment
-; (require '[moon.world.grid :as grid])
+; (require '[moon.grid :as grid])
 ; (require '[moon.circle :as circle])
 ;
 ; (defn geom-test

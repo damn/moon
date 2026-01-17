@@ -5,7 +5,7 @@
             [moon.world-fns.creature-layer :as creature-layer]
             [moon.world-fns.nads :as nads]
             [moon.world-fns.utils :as helper]
-            [moon.world.tiled :as tiled])
+            [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.maps MapProperties)
            (com.badlogic.gdx.maps.tiled TmxMapLoader)))
 
@@ -31,7 +31,7 @@
   (let [
 
 
-        can-spawn? #(= "all" (tiled/movement-property tiled-map %))
+        can-spawn? #(= "all" (tiled-map/movement-property tiled-map %))
 
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
 
@@ -85,7 +85,7 @@
 
 (defn- grid->tiled-map
   [schema-tiled-map grid]
-  (tiled/create-tiled-map
+  (tiled-map/create-tiled-map
    {:properties (merge (props->clj (.getProperties schema-tiled-map))
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})
@@ -99,7 +99,7 @@
                         (when (vector? local-position)
                           (when-let [cell (let [[x y] local-position]
                                             (.getCell layer x y))]
-                            [position (tiled/copy-tile (.getTile cell))])))})}))
+                            [position (tiled-map/copy-tile (.getTile cell))])))})}))
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid

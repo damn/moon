@@ -2,7 +2,7 @@
   (:require [moon.entity :as entity]
             [moon.entity.state :as state]
             [moon.entity.stats :as stats]
-            [moon.world.grid :as grid]))
+            [moon.grid :as grid]))
 
 (defmethod entity/tick :npc-sleeping
   [_ eid {:keys [ctx/grid]}]

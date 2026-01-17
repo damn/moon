@@ -1,4 +1,4 @@
-(ns moon.world.grid)
+(ns moon.grid)
 
 (defprotocol Grid
   (circle->cells [_ circle])

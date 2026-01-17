@@ -1,5 +1,5 @@
 (ns moon.render.assoc-active-entities
-  (:require [moon.world.content-grid :as content-grid]))
+  (:require [moon.content-grid :as content-grid]))
 
 (defn do!
   [{:keys [ctx/player-eid

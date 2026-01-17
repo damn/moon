@@ -5,7 +5,7 @@
             [moon.faction :as faction]
             [moon.position :as position]
             [moon.utils :as utils]
-            [moon.world.grid :as grid]
+            [moon.grid :as grid]
             [moon.cell :as cell]))
 
 (let [order (position/get-8-neighbours [0 0])]

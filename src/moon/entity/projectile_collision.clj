@@ -2,7 +2,7 @@
   (:require [clojure.grid2d :as g2d]
             [moon.body :as body]
             [moon.entity :as entity]
-            [moon.world.grid :as grid]
+            [moon.grid :as grid]
             [moon.cell :as cell]))
 
 (defmethod entity/create :entity/projectile-collision

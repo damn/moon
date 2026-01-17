@@ -1,4 +1,4 @@
-(ns moon.world.tiled
+(ns moon.tiled-map
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap
@@ -105,3 +105,20 @@
            movement-property-layers
            (some #(tile-movement-property tiled-map % position)))
       "none"))
+
+(defn spawn-positions
+  [tiled-map]
+  (let [layer-name "creatures"
+        property-key "id"
+        layer (.get (.getLayers tiled-map) layer-name)]
+    (for [x (range (.getWidth layer))
+          y (range (.getHeight layer))
+          :let [position [x y]
+                cell (.getCell layer x y)]
+          :when cell
+          :let [value (-> cell
+                          .getTile
+                          .getProperties
+                          (.get property-key))]
+          :when value]
+      [position value])))

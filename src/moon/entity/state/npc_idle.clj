@@ -4,7 +4,7 @@
             [moon.entity :as entity]
             [moon.skill :as skill]
             [moon.raycaster :as raycaster]
-            [moon.world.grid :as grid]
+            [moon.grid :as grid]
             [moon.world.potential-fields-movement :as potential-fields-movement]))
 
 (defn- npc-effect-ctx

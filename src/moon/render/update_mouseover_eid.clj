@@ -1,7 +1,7 @@
 (ns moon.render.update-mouseover-eid
   (:require [moon.input :as input]
             [moon.stage :as stage]
-            [moon.world.grid :as grid]
+            [moon.grid :as grid]
             [moon.raycaster :as raycaster]
             [moon.utils :as utils]))
 

@@ -4,9 +4,9 @@
             [moon.textures :as textures]
             [moon.utils :as utils]
             [moon.world.create.grid]
-            [moon.world.content-grid :as content-grid]
+            [moon.content-grid :as content-grid]
             [moon.cell :as cell]
-            [moon.world.tiled :as tiled]
+            [moon.tiled-map :as tiled-map]
             [moon.world-fns.creature-tiles]))
 
 (defn- create-world-grid [width height cell-movement]
@@ -79,7 +79,7 @@
   (let [width  (.get (.getProperties tiled-map) "width")
         height (.get (.getProperties tiled-map) "height")
         grid (create-world-grid width height
-                                #(case (tiled/movement-property tiled-map %)
+                                #(case (tiled-map/movement-property tiled-map %)
                                    "none" :none
                                    "air"  :air
                                    "all"  :all))]

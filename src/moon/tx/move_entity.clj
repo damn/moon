@@ -1,7 +1,7 @@
 (ns moon.tx.move-entity
   (:require [clojure.math.vector2 :as v]
-            [moon.world.content-grid :as content-grid]
-            [moon.world.grid :as grid]))
+            [moon.content-grid :as content-grid]
+            [moon.grid :as grid]))
 
 (defn do!
   [{:keys [ctx/content-grid

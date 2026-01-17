@@ -2,8 +2,8 @@
   (:require [malli.core :as m]
             [malli.utils :as mu]
             [moon.entity :as entity]
-            [moon.world.content-grid :as content-grid]
-            [moon.world.grid :as grid]
+            [moon.content-grid :as content-grid]
+            [moon.grid :as grid]
             [qrecord.core :as q]))
 
 (def ^:private components-schema

@@ -5,7 +5,7 @@
             [moon.world-fns.creature-layer :as creature-layer]
             [moon.world-fns.nads :as nads]
             [moon.world-fns.utils :as helper]
-            [moon.world.tiled :as tiled])
+            [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
@@ -79,7 +79,7 @@
         grid (assoc-transition-cells grid)
 
         position->tile (position->tile-fn grid)
-        tiled-map (tiled/create-tiled-map
+        tiled-map (tiled-map/create-tiled-map
                    {:properties {"width"  (g2d/width  grid)
                                  "height" (g2d/height grid)
                                  "tilewidth"  tile-size
@@ -90,7 +90,7 @@
                               :tiles (for [position (g2d/posis grid)]
                                        [position (create-tile (position->tile position))])}]})
 
-        can-spawn? #(= "all" (tiled/movement-property tiled-map %))
+        can-spawn? #(= "all" (tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)
@@ -140,7 +140,7 @@
                                 (memoize
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
-                                   (tiled/static-tiled-map-tile
+                                   (tiled-map/static-tiled-map-tile
                                     (TextureRegion. ^Texture texture
                                                     (* (sprite-idx 0) tile-size)
                                                     (* (sprite-idx 1) tile-size)

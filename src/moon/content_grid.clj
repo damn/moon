@@ -1,4 +1,4 @@
-(ns moon.world.content-grid)
+(ns moon.content-grid)
 
 (defprotocol ContentGrid
   (add-entity! [_ eid])
