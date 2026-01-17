@@ -3,7 +3,7 @@
             [moon.body :as body]
             [moon.entity :as entity]
             [moon.world.grid :as grid]
-            [moon.world.grid.cell :as cell]))
+            [moon.cell :as cell]))
 
 (defmethod entity/create :entity/projectile-collision
   [[_ v] _ctx]

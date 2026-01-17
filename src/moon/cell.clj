@@ -1,4 +1,4 @@
-(ns moon.world.grid.cell)
+(ns moon.cell)
 
 (defprotocol Cell
   (blocked? [_ z-order])

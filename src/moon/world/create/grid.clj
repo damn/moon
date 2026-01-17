@@ -6,7 +6,7 @@
             [moon.position :as position]
             [moon.rectangle :as rectangle]
             [moon.world.grid :as grid]
-            [moon.world.grid.cell :as cell])
+            [moon.cell :as cell])
   (:import (com.badlogic.gdx.math Circle
                                   Intersector
                                   Rectangle)))

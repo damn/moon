@@ -6,7 +6,7 @@
             [moon.position :as position]
             [moon.utils :as utils]
             [moon.world.grid :as grid]
-            [moon.world.grid.cell :as cell]))
+            [moon.cell :as cell]))
 
 (let [order (position/get-8-neighbours [0 0])]
   (def ^:private diagonal-check-indizes

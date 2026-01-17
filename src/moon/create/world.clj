@@ -5,7 +5,7 @@
             [moon.utils :as utils]
             [moon.world.create.grid]
             [moon.world.content-grid :as content-grid]
-            [moon.world.grid.cell :as cell]
+            [moon.cell :as cell]
             [moon.world.tiled :as tiled]
             [moon.world-fns.creature-tiles]))
 

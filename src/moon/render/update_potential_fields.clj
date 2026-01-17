@@ -1,7 +1,7 @@
 (ns moon.render.update-potential-fields
   (:require [moon.position :as position]
             [moon.world.grid :as grid]
-            [moon.world.grid.cell :as cell]))
+            [moon.cell :as cell]))
 
 ; Assumption: The map contains no not-allowed diagonal cells, diagonal wall cells where both
 ; adjacent cells are walls and blocked.
