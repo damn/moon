@@ -9,7 +9,9 @@
     [:ctx/cursors :some] ; map of cursor-key->cursor
     [:ctx/default-font :some] ; font -> API ?
     [:ctx/batch :some] ; batch -> API ?
+
     [:ctx/files :some]
+
     [:ctx/shape-drawer :some] ; sd -> API ?
     [:ctx/shape-drawer-texture :some]
     [:ctx/unit-scale :some] ; only relevant during drawing?
@@ -46,3 +48,7 @@
 (defn do! [ctx]
   (mu/validate-humanize schema ctx)
   ctx)
+
+; TODO create/render/etc. are all 'transactions' ?
+; remove need for ctx/handle!?
+; ctx/handle at ui? (see sound play)
