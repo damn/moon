@@ -105,17 +105,6 @@
     :as ctx}]
   (assoc ctx :ctx/render-z-order (utils/define-order z-orders)))
 
-(def ^:private world-params
-  {
-   :ctx/factions-iterations {:good 15 :evil 5}
-   :ctx/max-delta 0.04
-   :ctx/minimum-size 0.39
-   :ctx/z-orders [:z-order/on-ground
-                    :z-order/ground
-                    :z-order/flying
-                    :z-order/effect]
-   })
-
 (defn step
   [{:keys [ctx/db
            ctx/textures]
@@ -128,7 +117,7 @@
                                                             (db/all-raw db :properties/creatures)
                                                             #(textures/texture-region textures %))
                                 :textures textures))]
-    (-> (merge ctx world-params)
+    (-> ctx
         calculate-max-speed
         define-render-z-order
         (assoc-state world-fn-result))))

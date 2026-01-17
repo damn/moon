@@ -109,5 +109,14 @@
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           (merge (map->Context {})
-                 {:ctx/unit-scale (atom 1)})
+                 {
+                  :ctx/unit-scale (atom 1)
+                  :ctx/factions-iterations {:good 15 :evil 5}
+                  :ctx/max-delta 0.04
+                  :ctx/minimum-size 0.39
+                  :ctx/z-orders [:z-order/on-ground
+                                 :z-order/ground
+                                 :z-order/flying
+                                 :z-order/effect]
+                  })
           create-fns))
