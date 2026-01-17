@@ -7,6 +7,6 @@
   (timer/create (:world/elapsed-time world) duration))
 
 (defmethod entity/tick :entity/delete-after-duration
-  [[_k counter] eid {:keys [world/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
+  [[_k counter] eid {:keys [ctx/world]}]
+  (when (timer/stopped? (:world/elapsed-time world) counter)
     [[:tx/mark-destroyed eid]]))

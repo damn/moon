@@ -5,9 +5,9 @@
             [moon.world.grid :as grid]))
 
 (defmethod entity/tick :npc-sleeping
-  [_ eid {:keys [world/grid]}]
+  [_ eid {:keys [ctx/world]}]
   (let [entity @eid]
-    (when-let [distance (grid/nearest-enemy-distance grid entity)]
+    (when-let [distance (grid/nearest-enemy-distance (:world/grid world) entity)]
       (when (<= distance (stats/get-stat-value (:entity/stats entity) :stats/aggro-range))
         [[:tx/event eid :alert]]))))
 

@@ -32,9 +32,9 @@
 (defmethod entity/tick :active-skill
   [[_k {:keys [skill effect-ctx counter]}]
    eid
-   {:keys [world/elapsed-time]
-    :as world}]
-  (let [effect-ctx (update-effect-ctx world effect-ctx)]
+   {:keys [ctx/world]}]
+  (let [{:keys [world/elapsed-time]} world
+        effect-ctx (update-effect-ctx world effect-ctx)]
     (cond
      (not (seq (filter #(effect/applicable? % effect-ctx)
                        (:skill/effects skill))))

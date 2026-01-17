@@ -15,7 +15,7 @@
     (do (try
          (ctx/handle! ctx (mapcat (fn [eid]
                                     (mapcat (fn [[k v]]
-                                              (try (entity/tick [k v] eid world)
+                                              (try (entity/tick [k v] eid ctx)
                                                    (catch Throwable t
                                                      (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
                                             @eid))

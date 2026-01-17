@@ -8,8 +8,8 @@
   {:counter (timer/create (:world/elapsed-time world) duration)})
 
 (defmethod entity/tick :stunned
-  [[_k {:keys [counter]}] eid {:keys [world/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
+  [[_k {:keys [counter]}] eid {:keys [ctx/world]}]
+  (when (timer/stopped? (:world/elapsed-time world) counter)
     [[:tx/event eid :effect-wears-off]]))
 
 (defmethod entity/render :stunned

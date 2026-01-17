@@ -25,11 +25,11 @@
   nil)
 
 (defmulti tick
-  (fn [[k _v] _eid _world]
+  (fn [[k _v] _eid _ctx]
     k))
 
 (defmethod tick :default
-  [[_k _v] _eid _world]
+  [[_k _v] _eid _ctx]
   nil)
 
 (defmulti render

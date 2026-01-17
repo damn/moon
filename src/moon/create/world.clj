@@ -141,6 +141,9 @@
            :world/raycaster (create-raycaster grid)
 
            :world/elapsed-time 0 ; out
+           ; entity/tick
+           ; info text
+           ; effect also pass ctx/world
 
            :world/potential-field-cache (atom nil)
            :world/id-counter (atom 0)

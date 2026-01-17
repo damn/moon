@@ -6,8 +6,8 @@
 (defmethod entity/tick :entity/temp-modifier
   [[_k {:keys [modifiers counter]}]
    eid
-   {:keys [world/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
+   {:keys [ctx/world]}]
+  (when (timer/stopped? (:world/elapsed-time world) counter)
     [[:tx/dissoc eid :entity/temp-modifier]
      [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
 

@@ -12,8 +12,9 @@
 (defmethod entity/tick :entity/projectile-collision
   [[_k {:keys [entity-effects already-hit-bodies piercing?]}]
    eid
-   {:keys [world/grid]}]
-  (let [entity @eid
+   {:keys [ctx/world]}]
+  (let [grid (:world/grid world)
+        entity @eid
         cells* (map deref (g2d/get-cells grid (body/touched-tiles (:entity/body entity))))
         hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                         (not= (:entity/faction entity)

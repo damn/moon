@@ -5,8 +5,8 @@
 (defmethod entity/tick :entity/string-effect
   [[_k {:keys [counter]}]
    eid
-   {:keys [world/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
+   {:keys [ctx/world]}]
+  (when (timer/stopped? (:world/elapsed-time world) counter)
     [[:tx/dissoc eid :entity/string-effect]]))
 
 (defmethod entity/render :entity/string-effect

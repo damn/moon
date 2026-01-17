@@ -35,7 +35,7 @@
        first))
 
 (defmethod entity/tick :npc-idle
-  [_ eid world]
+  [_ eid {:keys [ctx/world]}]
   (let [effect-ctx (npc-effect-ctx world eid)]
     (if-let [skill (npc-choose-skill world @eid effect-ctx)]
       [[:tx/event eid :start-action [skill effect-ctx]]]

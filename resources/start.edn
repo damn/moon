@@ -90,8 +90,11 @@
                                                      [moon.create.ui-viewport/step {:width 1440
                                                                                     :height 900}]
                                                      [moon.create.batch/do!]
+
+                                                     ;; ctx/stage ?
                                                      [moon.create.stage/step]
                                                      [moon.create.set-input-processor/step]
+
                                                      [moon.create.skin/step "uiskin.json"]
                                                      [moon.create.textures/step {:folder "resources/"
                                                                                  :extensions #{"png" "bmp"}}]
@@ -110,6 +113,8 @@
                                                                                              :min-filter :linear
                                                                                              :mag-filter :linear}}]
                                                      [moon.create.shape-drawer/step]
+
+                                                     ;; ctx/stage
                                                      [moon.create.add-stage-actors/step [[moon.ui-actors.dev-menu/create]
                                                                                          [moon.ui-actors.action-bar/create]
                                                                                          [moon.ui-actors.hp-mana-bar/create]
@@ -119,12 +124,16 @@
                                                                                                                          [moon.ui-actors.windows.inventory/create moon.clicked-inventory-cell/do!]]]
                                                                                          [moon.ui-actors.player-state-draw/create]
                                                                                          [moon.ui-actors.player-message/create]]]
+
+                                                     ;; ctx/world
                                                      [moon.create.world/step #edn/resource ; "world_fns/vampire.edn"
                                                                                             "world_fns/uf_caves.edn"
                                                                                            ; "world_fns/modules.edn"
                                                       ]
                                                      [moon.create.spawn-player-entity/step]
                                                      [moon.create.spawn-enemies/step]
+                                                     ;;
+
                                                      [moon.create.add-leftout-keys/step]
                                                      ]
                                                     ]

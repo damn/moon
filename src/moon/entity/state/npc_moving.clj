@@ -14,8 +14,8 @@
                            reaction-time-multiplier))})
 
 (defmethod entity/tick :npc-moving
-  [[_k {:keys [timer]}] eid {:keys [world/elapsed-time]}]
-  (when (timer/stopped? elapsed-time timer)
+  [[_k {:keys [timer]}] eid {:keys [ctx/world]}]
+  (when (timer/stopped? (:world/elapsed-time world) timer)
     [[:tx/event eid :timer-finished]]))
 
 (defmethod state/enter :npc-moving
