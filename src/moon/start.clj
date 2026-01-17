@@ -1,8 +1,7 @@
 (ns moon.start
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.walk :as walk]
-            [moon.utils :as utils])
+            [clojure.walk :as walk])
   (:gen-class))
 
 (defn edn-resource [path]
@@ -18,4 +17,7 @@
                           form)))))
 
 (defn -main []
-  (run! utils/apply* (edn-resource "start.edn")))
+  (reduce (fn [ctx [f & params]]
+            (apply f ctx params))
+          {}
+          (edn-resource "start.edn")))

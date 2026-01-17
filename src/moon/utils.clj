@@ -1,12 +1,6 @@
 (ns moon.utils
   (:require [clojure.math :as math]))
 
-(defn apply* [[f & params]]
-  (apply f params))
-
-(defn require-namespaces [ns-symbols]
-  (run! require ns-symbols))
-
 (defn- index-of [k ^clojure.lang.PersistentVector v]
   (let [idx (.indexOf v k)]
     (if (= -1 idx)
