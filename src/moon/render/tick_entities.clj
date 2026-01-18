@@ -2,7 +2,7 @@
   (:require [moon.ctx :as ctx]
             [moon.entity :as entity]
             [moon.throwable :as throwable]
-            [moon.ui.error-window :as error-window]))
+            [moon.ui :as ui]))
 
 (defn do!
   [{:keys [ctx/active-entities
@@ -22,7 +22,9 @@
                                   active-entities))
          (catch Throwable t
            (throwable/pretty-pst t)
-           (.addActor stage (error-window/create skin t))))
+           (.addActor stage (ui/actor {:type :ui/error-window
+                                       :skin skin
+                                       :throwable t}))))
         ctx)))
 
 (comment

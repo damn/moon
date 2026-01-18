@@ -5,7 +5,8 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
 
-(defn create [skin throwable]
+(defn create
+  [{:keys [skin throwable]}]
   (ui/actor
    {:type :ui/window
     :title "Error"

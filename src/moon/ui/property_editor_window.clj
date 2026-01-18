@@ -5,7 +5,6 @@
             [moon.throwable :as throwable]
             [moon.schema :as schema]
             [moon.ui :as ui]
-            [moon.ui.error-window :as error-window]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
@@ -39,7 +38,9 @@
                                (.remove (window/find-ancestor actor))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
-                                 (.addActor stage (error-window/create skin t))))))
+                                 (.addActor stage (ui/actor {:type :ui/error-window
+                                                             :skin skin
+                                                             :throwable t}))))))
         clicked-delete-fn (with-window-close (fn [db]
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
