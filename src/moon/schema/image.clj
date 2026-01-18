@@ -1,10 +1,9 @@
 (ns moon.schema.image
-  (:require [moon.schema :as schema]
-            [moon.schemas :as schemas]
+  (:require [moon.schemas :as schemas]
             [moon.textures :as textures]
             [moon.ui.image-button :as image-button]))
 
-(defmethod schema/malli-form :s/image [_ schemas]
+(defn malli-form [_ schemas]
   (schemas/create-map-schema schemas
                              [:image/file
                               [:image/bounds {:optional true}]]))
@@ -18,7 +17,7 @@
       #_[(text-button/create file
                              (fn [_actor _ctx]))]))
 
-(defmethod schema/create :s/image
+(defn create
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
   (image-button/create

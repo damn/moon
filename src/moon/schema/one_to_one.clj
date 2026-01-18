@@ -1,7 +1,6 @@
 (ns moon.schema.one-to-one
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.db :as db]
-            [moon.schema :as schema]
             [moon.textures :as textures]
             [moon.property :as property]
             [moon.ui :as ui]
@@ -14,10 +13,10 @@
                                                Skin
                                                TextTooltip)))
 
-(defmethod schema/malli-form :s/one-to-one [[_ property-type] _schemas]
+(defn malli-form [[_ property-type] _schemas]
   [:qualified-keyword {:namespace (property/type->id-namespace property-type)}])
 
-(defmethod schema/create-value :s/one-to-one [_ property-id db]
+(defn create-value [_ property-id db]
   (db/build db property-id))
 
 (defn- add-one-to-one-rows
@@ -67,13 +66,13 @@
                                  (redo-rows ctx nil))
                    :skin skin})})]])))
 
-(defmethod schema/create :s/one-to-one [[_ property-type] property-id ctx]
+(defn create [[_ property-type] property-id ctx]
   (let [table (table/create
                {:cell-defaults {:pad 5}})]
     (add-one-to-one-rows ctx table property-type property-id)
     table))
 
-(defmethod schema/value :s/one-to-one [_  widget _schemas]
+(defn value [_  widget _schemas]
   (->> (.getChildren widget)
        (keep Actor/.getUserObject)
        first))

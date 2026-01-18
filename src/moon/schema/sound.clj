@@ -1,14 +1,13 @@
 (ns moon.schema.sound
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.audio :as audio]
-            [moon.schema :as schema]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
             [moon.ui.scroll-pane-window :as scroll-pane-window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)))
 
-(defmethod schema/malli-form :s/sound [_ _schemas]
+(defn malli-form [_ _schemas]
   :string)
 
 (declare sound-columns)
@@ -53,7 +52,7 @@
              :skin skin})}])
 
 
-(defmethod schema/create :s/sound [_  sound-name {:keys [ctx/skin]}]
+(defn create [_  sound-name {:keys [ctx/skin]}]
   (let [table (table/create {:cell-defaults {:pad 5}})]
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)

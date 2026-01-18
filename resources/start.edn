@@ -1,4 +1,24 @@
 [
+ [moon.start.add-methods/step
+  {:required [moon.schema/malli-form]
+   :optional [moon.schema/create
+              moon.schema/value
+              moon.schema/create-value]}
+  [[moon.schema.animation         :s/animation]
+   [moon.schema.boolean           :s/boolean]
+   [moon.schema.enum              :s/enum]
+   [moon.schema.image             :s/image]
+   [moon.schema.map               :s/map]
+   [moon.schema.number            :s/number]
+   [moon.schema.one-to-many       :s/one-to-many]
+   [moon.schema.one-to-one        :s/one-to-one]
+   [moon.schema.qualified-keyword :s/qualified-keyword]
+   [moon.schema.some              :s/some]
+   [moon.schema.sound             :s/sound]
+   [moon.schema.string            :s/string]
+   [moon.schema.val-max           :s/val-max]
+   [moon.schema.vector            :s/vector]]
+  ]
  [moon.start.require-namespaces/step #edn/resource "require_namespaces.edn"]
  [moon.start.use-glfw-async/step]
  [moon.start.create-config/step {:title "Moon"

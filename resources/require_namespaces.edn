@@ -2,21 +2,6 @@
  moon.ui-impl
  moon.info-impl
 
- moon.schema.animation
- moon.schema.boolean
- moon.schema.enum
- moon.schema.image
- moon.schema.map
- moon.schema.number
- moon.schema.one-to-many
- moon.schema.one-to-one
- moon.schema.qualified-keyword
- moon.schema.some
- moon.schema.sound
- moon.schema.string
- moon.schema.val-max
- moon.schema.vector
-
  moon.effects.target.audiovisual
  moon.effects.target.convert
  moon.effects.target.damage

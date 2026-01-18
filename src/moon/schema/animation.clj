@@ -1,17 +1,16 @@
 (ns moon.schema.animation
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.schema :as schema]
             [moon.schemas :as schemas]
             [moon.textures :as textures]
             [moon.ui.image-button :as image-button]))
 
-(defmethod schema/malli-form :s/animation [_ schemas]
+(defn malli-form [_ schemas]
   (schemas/create-map-schema schemas
                              [:animation/frames
                               :animation/frame-duration
                               :animation/looping?]))
 
-(defmethod schema/create :s/animation
+(defn create
   [_ animation {:keys [ctx/skin
                        ctx/textures]}]
   (table/create

@@ -12,10 +12,10 @@
                                                Skin)
            (moon Stage)))
 
-(defmethod schema/malli-form :s/map [[_ ks] schemas]
+(defn malli-form [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
 
-(defmethod schema/create-value :s/map [_ v db]
+(defn create-value [_ v db]
   (schemas/build-values (:db/schemas db) v db))
 
 (defn- map-widget-table-value [table schemas]
@@ -200,7 +200,7 @@
    :skill/cost
    :skill/cooldown])
 
-(defmethod schema/create :s/map
+(defn create
   [schema
    m
    {:keys [ctx/db
@@ -218,6 +218,6 @@
       :opt? (seq (set/difference (mu/optional-keyset (schema/malli-form schema schemas))
                                  (set (keys m))))})))
 
-(defmethod schema/value :s/map
+(defn value
   [_ table schemas]
   (map-widget-table-value table schemas))

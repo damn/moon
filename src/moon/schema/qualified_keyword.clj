@@ -1,5 +1,4 @@
-(ns moon.schema.qualified-keyword
-  (:require [moon.schema :as schema]))
+(ns moon.schema.qualified-keyword)
 
-(defmethod schema/malli-form :s/qualified-keyword [[_ & params] _schemas]
+(defn malli-form [[_ & params] _schemas]
   (apply vector :qualified-keyword params))
