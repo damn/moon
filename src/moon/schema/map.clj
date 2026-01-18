@@ -6,7 +6,6 @@
             [moon.schemas :as schemas]
             [moon.ui :as ui]
             [moon.ui.text-button :as text-button]
-            [moon.ui.property-editor-window :as property-editor-window]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
@@ -44,8 +43,9 @@
                              (.findActor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (.remove window)
-    (Stage/.addActor stage (property-editor-window/create
-                             {:ctx ctx
+    (Stage/.addActor stage (ui/actor
+                             {:type :ui/property-editor-window
+                              :ctx ctx
                               :property property}))))
 
 (defn- k->label-text [k]

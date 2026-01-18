@@ -5,7 +5,6 @@
             [moon.input :as input]
             [moon.ui :as ui]
             [moon.ui.dev-menu :as dev-menu]
-            [moon.ui.property-editor-window :as property-editor-window]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.utils.viewport Viewport)))
@@ -25,8 +24,9 @@
                :property-type property-type
                :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
                                 (.addActor stage
-                                           (property-editor-window/create
-                                            {:ctx ctx
+                                           (ui/actor
+                                            {:type :ui/property-editor-window
+                                             :ctx ctx
                                              :property (db/get-raw db id)})))})))
 
 (defn create
