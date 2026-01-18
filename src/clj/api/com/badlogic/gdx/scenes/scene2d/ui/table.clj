@@ -1,7 +1,7 @@
 (ns clj.api.com.badlogic.gdx.scenes.scene2d.ui.table
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [moon.ui.table :as table])
+            [moon.ui.table :as table]
+            [moon.ui.widget-group :as widget-group])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
 

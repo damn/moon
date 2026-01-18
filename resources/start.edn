@@ -91,7 +91,8 @@
    [moon.entity.state.stunned :stunned]
    ]
   ]
- [moon.start.require-namespaces/step [moon.ui-impl
+ [moon.start.require-namespaces/step [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
+                                      moon.ui-impl
                                       moon.info-impl]]
  [moon.start.use-glfw-async/step]
  [moon.start.create-config/step {:title "Moon"
