@@ -1,5 +1,5 @@
 (ns clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [moon.ui.group :as group]
             [moon.ui.widget-group])
   (:import (com.badlogic.gdx.scenes.scene2d.ui WidgetGroup)))
 

@@ -1,6 +1,5 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
-            [moon.ctx :as ctx]
+  (:require [moon.ctx :as ctx]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
             [moon.ui :as ui])
@@ -57,8 +56,9 @@
         ->cell (fn [slot & {:keys [position]}]
                  (let [cell [slot (or position [0 0])]
                        background-drawable (slot->drawable slot)]
-                   {:actor (stack/create
-                            {:actor/name "inventory-cell"
+                   {:actor (ui/actor
+                            {:type :ui/stack
+                             :actor/name "inventory-cell"
                              :actor/user-object cell
                              :actor/listener (clicked-cell-listener cell)
                              :group/actors [(draw-cell-rect-actor draw-cell-rect)

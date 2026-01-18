@@ -1,4 +1,5 @@
 (ns clj.api.com.badlogic.gdx.scenes.scene2d.actor
+  (:require [moon.ui.actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (def opts-fn-map
@@ -14,12 +15,12 @@
                                                 (- x (/ (Actor/.getWidth  a) 2))
                                                 (- y (/ (Actor/.getHeight a) 2))))})
 
-(defn set-opts! [actor opts]
-  (doseq [[k v] opts
-          :let [f (get opts-fn-map k)]
-          :when f]
-    (f actor v))
-  actor)
 
-(defn toggle-visible! [^Actor actor]
-  (.setVisible actor (not (.isVisible actor))))
+(extend-type Actor
+  moon.ui.actor/Actor
+  (set-opts! [actor opts]
+    (doseq [[k v] opts
+            :let [f (get opts-fn-map k)]
+            :when f]
+      (f actor v))
+    actor))

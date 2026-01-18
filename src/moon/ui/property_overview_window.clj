@@ -1,6 +1,5 @@
 (ns moon.ui.property-overview-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
-            [moon.db :as db]
+  (:require [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
             [moon.ui :as ui])
@@ -39,8 +38,9 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (stack/create
-               {:group/actors [(ui/actor
+      {:actor (ui/actor
+               {:type :ui/stack
+                :group/actors [(ui/actor
                                 {:type :ui/image-button
                                  :drawable/texture-region texture-region
                                  :on-clicked on-clicked

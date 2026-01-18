@@ -1,5 +1,5 @@
 (ns moon.reaction-txs.toggle-inventory-visible
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:require [moon.ui.actor :as actor]))
 
 (defn do!
   [{:keys [ctx/stage] :as ctx}]

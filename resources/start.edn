@@ -8,6 +8,8 @@
    [:ui/property-editor-window moon.ui.property-editor-window/create]
    [:ui/table clj.api.com.badlogic.gdx.scenes.scene2d.ui.table/create]
    [:ui/image-button moon.ui.image-button/create]
+   [:ui/stack clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack/create]
+   [:ui/group clj.api.com.badlogic.gdx.scenes.scene2d.group/create]
    ]
   ]
  [moon.start.add-methods/step
@@ -102,7 +104,8 @@
    [moon.entity.state.stunned :stunned]
    ]
   ]
- [moon.start.require-namespaces/step [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
+ [moon.start.require-namespaces/step [clj.api.com.badlogic.gdx.scenes.scene2d.actor
+                                      clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
                                       moon.info-impl]]
  [moon.start.use-glfw-async/step]
  [moon.start.create-config/step {:title "Moon"

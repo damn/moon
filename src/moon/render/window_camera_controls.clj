@@ -1,7 +1,7 @@
 (ns moon.render.window-camera-controls
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [moon.input :as input]
-            [moon.graphics.camera :as camera])
+  (:require [moon.input :as input]
+            [moon.graphics.camera :as camera]
+            [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def zoom-speed 0.025)
