@@ -1,5 +1,5 @@
 (ns moon.ui.window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table])
+  (:require [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton
                                                Window)

@@ -1,7 +1,7 @@
 (ns moon.schema.sound
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.audio :as audio]
+  (:require [moon.audio :as audio]
             [moon.ui :as ui]
+            [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
             [moon.ui.scroll-pane-window :as scroll-pane-window])

@@ -1,10 +1,10 @@
 (ns moon.schema.map
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.set :as set]
+  (:require [clojure.set :as set]
             [malli.utils :as mu]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
             [moon.ui :as ui]
+            [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)

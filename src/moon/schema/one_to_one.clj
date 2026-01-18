@@ -1,9 +1,9 @@
 (ns moon.schema.one-to-one
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.db :as db]
+  (:require [moon.db :as db]
             [moon.textures :as textures]
             [moon.property :as property]
             [moon.ui :as ui]
+            [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
