@@ -4,7 +4,6 @@
             [moon.property :as property]
             [moon.ui :as ui]
             [moon.ui.table :as table]
-            [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -32,8 +31,9 @@
                     (.pack (window/find-ancestor table)))]
     (table/add-rows!
      table
-     [[{:actor (text-button/create
-                {:text "+"
+     [[{:actor (ui/actor
+                {:type :ui/text-button
+                 :text "+"
                  :on-clicked (fn [_actor {:keys [ctx/db
                                                  ctx/skin
                                                  ctx/stage
@@ -58,8 +58,9 @@
                              (.addListener (TextTooltip. (property/tooltip property) ^Skin skin)))]
           {:actor image-widget}))
       (for [id property-ids]
-        {:actor (text-button/create
-                 {:text "-"
+        {:actor (ui/actor
+                 {:type :ui/text-button
+                  :text "-"
                   :on-clicked (fn [_actor ctx]
                                 (redo-rows ctx (disj property-ids id)))
                   :skin skin})})])))

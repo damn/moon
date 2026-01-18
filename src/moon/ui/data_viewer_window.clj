@@ -1,6 +1,5 @@
 (ns moon.ui.data-viewer-window
-  (:require [moon.ui.text-button :as text-button]
-            [moon.ui :as ui])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane
                                                Skin)))
@@ -27,8 +26,9 @@
 
 (defn- v->actor [v skin]
   (if (map? v)
-    (text-button/create
-     {:text "Map"
+    (ui/actor
+     {:type :ui/text-button
+      :text "Map"
       :on-clicked (fn [actor _ctx]
                     (.addActor (.getStage actor)
                                (create

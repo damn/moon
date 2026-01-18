@@ -6,7 +6,6 @@
             [moon.schema :as schema]
             [moon.ui :as ui]
             [moon.ui.error-window :as error-window]
-            [moon.ui.text-button :as text-button]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
@@ -54,12 +53,14 @@
                           (clicked-save-fn this ctx))))
                     (let [^Actor this this]
                       (proxy-super act delta))))]
-        save-button (text-button/create
-                     {:text "Save [LIGHT_GRAY](ENTER)[]"
+        save-button (ui/actor
+                     {:type :ui/text-button
+                      :text "Save [LIGHT_GRAY](ENTER)[]"
                       :on-clicked clicked-save-fn
                       :skin skin})
-        delete-button (text-button/create
-                       {:text "Delete"
+        delete-button (ui/actor
+                       {:type :ui/text-button
+                        :text "Delete"
                         :on-clicked clicked-delete-fn
                         :skin skin})
         scroll-pane-rows [[{:actor widget :colspan 2}]

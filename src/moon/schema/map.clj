@@ -5,7 +5,6 @@
             [moon.schemas :as schemas]
             [moon.ui :as ui]
             [moon.ui.table :as table]
-            [moon.ui.text-button :as text-button]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
@@ -63,8 +62,9 @@
             {:type :ui/table
              :cell-defaults {:pad 2}
              :rows [[{:actor (when display-remove-component-button?
-                               (text-button/create
-                                {:text "-"
+                               (ui/actor
+                                {:type :ui/text-button
+                                 :text "-"
                                  :on-clicked (fn [_actor ctx]
                                                (.remove (first (filter (fn [actor]
                                                                          (and (Actor/.getUserObject actor)
@@ -108,8 +108,9 @@
     (table/add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (text-button/create
-                 {:text (name k)
+       [{:actor (ui/actor
+                 {:type :ui/text-button
+                  :text (name k)
                   :on-clicked (fn [_actor ctx]
                                 (.remove window)
                                 (table/add-rows! map-widget-table [(component-row skin
@@ -160,8 +161,9 @@
     (table/add-rows!
      table
      (concat [(when opt?
-                [{:actor (text-button/create
-                          {:text "Add component"
+                [{:actor (ui/actor
+                          {:type :ui/text-button
+                           :text "Add component"
                            :on-clicked (fn [_actor {:keys [ctx/db
                                                            ctx/stage
                                                            ctx/skin]}]

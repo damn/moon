@@ -2,7 +2,6 @@
   (:require [moon.audio :as audio]
             [moon.ui :as ui]
             [moon.ui.table :as table]
-            [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
@@ -38,24 +37,28 @@
                        :rows [[(scroll-pane-cell/create skin
                                                         (.getWorldWidth (.getViewport stage))
                                                         (for [sound-name (audio/sound-names audio)]
-                                                          [{:actor (text-button/create
-                                                                    {:text sound-name
+                                                          [{:actor (ui/actor
+                                                                    {:type :ui/text-button
+                                                                     :text sound-name
                                                                      :on-clicked (rebuild-sound-widget! table sound-name)
                                                                      :skin skin})}
-                                                           {:actor (text-button/create
-                                                                    {:text "play!"
+                                                           {:actor (ui/actor
+                                                                    {:type :ui/text-button
+                                                                     :text "play!"
                                                                      :on-clicked (fn [_actor {:keys [ctx/audio]}]
                                                                                    (audio/play! audio sound-name))
                                                                      :skin skin})}]))]]
                        :pack? true}))))
 
 (defn- sound-columns [skin table sound-name]
-  [{:actor (text-button/create
-            {:text sound-name
+  [{:actor (ui/actor
+            {:type :ui/text-button
+             :text sound-name
              :on-clicked (open-select-sounds-handler table)
              :skin skin})}
-   {:actor (text-button/create
-            {:text "play!"
+   {:actor (ui/actor
+            {:type :ui/text-button
+             :text "play!"
              :on-clicked (fn [_actor {:keys [ctx/audio]}]
                            (audio/play! audio sound-name))
              :skin skin})}])
@@ -67,8 +70,9 @@
                 :cell-defaults {:pad 5}})]
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)
-                              [{:actor (text-button/create
-                                        {:text "No sound"
+                              [{:actor (ui/actor
+                                        {:type :ui/text-button
+                                         :text "No sound"
                                          :on-clicked (open-select-sounds-handler table)
                                          :skin skin})}])])
     table))

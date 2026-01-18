@@ -1,6 +1,5 @@
 (ns moon.reaction-txs.show-modal
-  (:require [moon.ui.text-button :as text-button]
-            [moon.ui :as ui])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)
            (com.badlogic.gdx.utils.viewport Viewport)
@@ -19,8 +18,9 @@
               {:type :ui/window
                :title title
                :rows [[{:actor (Label. text ^Skin skin)}]
-                      [{:actor (text-button/create
-                                {:text button-text
+                      [{:actor (ui/actor
+                                {:type :ui/text-button
+                                 :text button-text
                                  :on-clicked (fn [_actor _ctx]
                                                (.remove
                                                 (-> stage
