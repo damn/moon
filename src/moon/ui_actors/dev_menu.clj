@@ -5,7 +5,6 @@
             [moon.input :as input]
             [moon.ui :as ui]
             [moon.ui.dev-menu :as dev-menu]
-            [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.property-editor-window :as property-editor-window]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx Graphics)
@@ -18,8 +17,9 @@
            ctx/textures]}
    property-type]
   (.addActor stage
-             (property-overview-window/create
-              {:db db
+             (ui/actor
+              {:type :ui/property-overview-window
+               :db db
                :textures textures
                :skin skin
                :property-type property-type

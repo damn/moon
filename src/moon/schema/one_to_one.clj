@@ -4,7 +4,7 @@
             [moon.schema :as schema]
             [moon.textures :as textures]
             [moon.property :as property]
-            [moon.ui.property-overview-window :as property-overview-window]
+            [moon.ui :as ui]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -42,8 +42,9 @@
                                                    ctx/textures]}]
                                  (Stage/.addActor
                                   stage
-                                  (property-overview-window/create
-                                   {:db db
+                                  (ui/actor
+                                   {:type :ui/property-overview-window
+                                    :db db
                                     :textures textures
                                     :skin skin
                                     :property-type property-type
