@@ -4,7 +4,7 @@
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
-            [moon.ui.scroll-pane-window :as scroll-pane-window])
+            [moon.ui.scroll-pane-cell :as scroll-pane-cell])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)))
 
@@ -27,19 +27,27 @@
                       ctx/skin
                       ctx/stage]}]
     (Stage/.addActor stage
-                      (scroll-pane-window/create
-                       {:skin skin
-                        :viewport-height (.getWorldWidth (.getViewport stage))
-                        :rows (for [sound-name (audio/sound-names audio)]
-                                [{:actor (text-button/create
-                                          {:text sound-name
-                                           :on-clicked (rebuild-sound-widget! table sound-name)
-                                           :skin skin})}
-                                 {:actor (text-button/create
-                                          {:text "play!"
-                                           :on-clicked (fn [_actor {:keys [ctx/audio]}]
-                                                         (audio/play! audio sound-name))
-                                           :skin skin})}])}))))
+                     (ui/actor
+                      {:type :ui/window
+                       :skin skin
+                       :title "Choose"
+                       :modal? true
+                       :close-button? true
+                       :center? true
+                       :close-on-escape? true
+                       :rows [[(scroll-pane-cell/create skin
+                                                        (.getWorldWidth (.getViewport stage))
+                                                        (for [sound-name (audio/sound-names audio)]
+                                                          [{:actor (text-button/create
+                                                                    {:text sound-name
+                                                                     :on-clicked (rebuild-sound-widget! table sound-name)
+                                                                     :skin skin})}
+                                                           {:actor (text-button/create
+                                                                    {:text "play!"
+                                                                     :on-clicked (fn [_actor {:keys [ctx/audio]}]
+                                                                                   (audio/play! audio sound-name))
+                                                                     :skin skin})}]))]]
+                       :pack? true}))))
 
 (defn- sound-columns [skin table sound-name]
   [{:actor (text-button/create
