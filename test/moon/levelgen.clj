@@ -1,10 +1,15 @@
+; TODO thies doesnt work anymore
+; =? Write tests first ?
+; => editor separate/etc/different starters/manual test checkboxes program ?
+; project program read code, show LoC, generate docs button, generate ns graph button, start button, etc.
+; shows commit/branch/etc. ?
 (ns moon.levelgen
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [moon.create.textures]
             [moon.db :as db]
             [moon.db-impl :as db-impl]
-            [moon.files :as files-utils]
             [moon.graphics.camera :as camera]
             [moon.tiled-map-renderer :as tiled-map-renderer]
             [moon.world-fns.creature-tiles])
@@ -14,7 +19,6 @@
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Color
-                                      Texture
                                       OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
@@ -102,8 +106,11 @@
         _  (.setInputProcessor input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
-        ctx {:ctx/stage stage}
+        ctx {:ctx/stage stage
+             :ctx/files files}
         ctx (-> ctx
+                (moon.create.textures/step {:folder "resources/"
+                                            :extensions #{"png" "bmp"}})
                 (assoc :ctx/db (db-impl/create)))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
@@ -115,10 +122,6 @@
                    :ctx/input input
                    :ctx/world-viewport world-viewport
                    :ctx/ui-viewport ui-viewport
-                   :ctx/textures (into {} (for [path (files-utils/search files
-                                                                         {:folder "resources/"
-                                                                          :extensions #{"png" "bmp"}})]
-                                            [path (Texture. path)]))
                    :ctx/camera (.getCamera world-viewport)
                    :ctx/color-setter (constantly [1 1 1 1])
                    :ctx/zoom-speed 0.1
