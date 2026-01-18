@@ -1,15 +1,16 @@
 (ns moon.start.create-listener
-  (:require [moon.application :refer [state]])
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn step
   [ctx
-   {:keys [create!
+   {:keys [state
+           create!
            dispose!
            render!
            resize!]}]
   (assoc ctx :app/listener
-         (let [[create-fn create-params] create!
+         (let [state @state
+               [create-fn create-params] create!
                [render-fn render-params] render!]
            (reify ApplicationListener
              (create [_]
