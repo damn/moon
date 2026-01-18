@@ -2,19 +2,6 @@
  moon.ui-impl
  moon.info-impl
 
- moon.effects.target.audiovisual
- moon.effects.target.convert
- moon.effects.target.damage
- moon.effects.target.kill
- moon.effects.target.melee-damage
- moon.effects.target.spiderweb
- moon.effects.target.stun
- moon.effects.audiovisual
- moon.effects.projectile
- moon.effects.spawn
- moon.effects.target-all
- moon.effects.target-entity
-
  moon.entity.animation
  moon.entity.body
  moon.entity.delete-after-duration

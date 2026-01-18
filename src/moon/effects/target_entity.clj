@@ -22,18 +22,18 @@
         (float (/ (:body/width target-body) 2)))
      (float maxrange)))
 
-(defmethod effect/applicable? :effects/target-entity
+(defn applicable?
   [[_ {:keys [entity-effects]}] {:keys [effect/target] :as effect-ctx}]
   (and target
        (seq (filter #(effect/applicable? % effect-ctx) entity-effects))))
 
-(defmethod effect/useful? :effects/target-entity
+(defn useful?
   [[_ {:keys [maxrange]}] {:keys [effect/source effect/target]} _ctx]
   (in-range? (:entity/body @source)
              (:entity/body @target)
              maxrange))
 
-(defmethod effect/handle :effects/target-entity
+(defn handle
   [[_ {:keys [maxrange entity-effects]}]
    {:keys [effect/source effect/target] :as effect-ctx}
    _ctx]
@@ -50,7 +50,7 @@
         (end-point body target-body maxrange)
         :audiovisuals/hit-ground]])))
 
-(defmethod effect/render :effects/target-entity
+(defn render
   [[_ {:keys [maxrange]}]
    {:keys [effect/source effect/target]}
    _ctx]

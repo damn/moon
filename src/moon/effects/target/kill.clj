@@ -1,11 +1,10 @@
-(ns moon.effects.target.kill
-  (:require [moon.effect :as effect]))
+(ns moon.effects.target.kill)
 
-(defmethod effect/applicable? :effects.target/kill
+(defn applicable?
   [_ {:keys [effect/target]}]
   (and target
        (:entity/fsm @target)))
 
-(defmethod effect/handle :effects.target/kill
+(defn handle
   [_ {:keys [effect/target]} _ctx]
   [[:tx/event target :kill]])

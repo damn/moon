@@ -1,12 +1,11 @@
-(ns moon.effects.spawn
-  (:require [moon.effect :as effect]))
+(ns moon.effects.spawn)
 
-(defmethod effect/applicable? :effects/spawn
+(defn applicable?
   [_ {:keys [effect/source effect/target-position]}]
   (and (:entity/faction @source)
        target-position))
 
-(defmethod effect/handle :effects/spawn
+(defn handle
   [[_ {:keys [property/id] :as property}]
    {:keys [effect/source effect/target-position]}
    _ctx]

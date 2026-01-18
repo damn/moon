@@ -1,6 +1,5 @@
 (ns moon.effects.target.damage
   (:require [clojure.rand :refer [rand-int-between]]
-            [moon.effect :as effect]
             [moon.entity.stats :as stats]))
 
 ; not in stats because projectile as source doesnt have stats
@@ -34,12 +33,12 @@
                 (moon.entity.stats/apply-min (:stats/modifiers source) :modifier/damage-deal-min)
                 (moon.entity.stats/apply-max (:stats/modifiers source) :modifier/damage-deal-max)))))
 
-(defmethod effect/applicable? :effects.target/damage
+(defn applicable?
   [_ {:keys [effect/target]}]
   (and target
        #_(:stats/hp @target))) ; not exist anymore ... bugfix .... -> is 'creature?'
 
-(defmethod effect/handle :effects.target/damage
+(defn handle
   [[_ damage] {:keys [effect/source effect/target]} _ctx]
   (let [source* @source
         target* @target

@@ -1,6 +1,5 @@
 (ns moon.effects.target-all
-  (:require [moon.effect :as effect]
-            [moon.raycaster :as raycaster]))
+  (:require [moon.raycaster :as raycaster]))
 
 (defn affected-targets [active-entities raycaster entity]
   (->> active-entities
@@ -21,15 +20,15 @@
 
  )
 
-(defmethod effect/applicable? :effects/target-all
+(defn applicable?
   [_ _] ; TODO check ..
   true)
 
-(defmethod effect/useful? :effects/target-all
+(defn useful?
   [_ _effect-ctx _ctx]
   false)
 
-(defmethod effect/handle :effects/target-all
+(defn handle
   [[_ {:keys [entity-effects]}]
    {:keys [effect/source]}
    {:keys [ctx/active-entities
@@ -48,7 +47,7 @@
                 :effect/target target}
                entity-effects]]))))
 
-(defmethod effect/render :effects/target-all
+(defn render
   [_
    {:keys [effect/source]}
    {:keys [ctx/active-entities

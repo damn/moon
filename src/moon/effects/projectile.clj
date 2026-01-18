@@ -1,7 +1,6 @@
 (ns moon.effects.projectile
   (:require [clojure.math.vector2 :as v]
-            [clojure.math.raycaster :as raycaster]
-            [moon.effect :as effect]))
+            [clojure.math.raycaster :as raycaster]))
 
 (defn- create-double-ray-endpositions
   [[start-x start-y]
@@ -25,13 +24,13 @@
          (v/scale direction
                   (+ (/ (:body/width body) 2) size 0.1))))
 
-(defmethod effect/applicable? :effects/projectile
+(defn applicable?
   [_ {:keys [effect/target-direction]}]
   ; TODO for npcs need target -- anyway only with direction
   ; faction @ source also ?
   target-direction)
 
-(defmethod effect/useful? :effects/projectile
+(defn useful?
   [[_ {:keys [projectile/max-range] :as projectile}]
    {:keys [effect/source effect/target]}
    {:keys [ctx/raycaster]}]
@@ -48,7 +47,7 @@
                         target-p)
             max-range))))
 
-(defmethod effect/handle :effects/projectile
+(defn handle
   [[_ projectile] {:keys [effect/source effect/target-direction]} _ctx]
   [[:tx/spawn-projectile
     {:position (proj-start-point (:entity/body @source)

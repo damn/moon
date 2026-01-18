@@ -1,18 +1,17 @@
 (ns moon.effects.target.spiderweb
-  (:require [moon.effect :as effect]
-            [moon.entity.stats :as stats]
+  (:require [moon.entity.stats :as stats]
             [moon.timer :as timer]))
 
 (def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
 (def ^:private spiderweb-duration 5)
 
-(defmethod effect/applicable? :effects.target/spiderweb
+(defn applicable?
   [_ {:keys [effect/target]}]
   ; TODO has stats , for mod-add
   ; e,g, spiderweb on projectile leads to error
   (:entity/stats @target))
 
-(defmethod effect/handle :effects.target/spiderweb
+(defn handle
   [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]
   ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
   (when-not (:entity/temp-modifier @target)

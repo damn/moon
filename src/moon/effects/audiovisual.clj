@@ -1,14 +1,13 @@
-(ns moon.effects.audiovisual
-  (:require [moon.effect :as effect]))
+(ns moon.effects.audiovisual)
 
-(defmethod effect/applicable? :effects/audiovisual
+(defn applicable?
   [_ {:keys [effect/target-position]}]
   target-position)
 
-(defmethod effect/useful? :effects/audiovisual
+(defn useful?
   [_ _effect-ctx _ctx]
   false)
 
-(defmethod effect/handle :effects/audiovisual
+(defn handle
   [[_ audiovisual] {:keys [effect/target-position]} _ctx]
   [[:tx/audiovisual target-position audiovisual]])
