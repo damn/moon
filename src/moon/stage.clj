@@ -1,6 +1,4 @@
-(ns moon.stage
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]))
+(ns moon.stage)
 
-(defn mouseover-actor [stage position]
-  (let [[x y] (viewport/unproject (.getViewport stage) position)]
-    (.hit stage x y true)))
+(defprotocol Stage
+  (mouseover-actor [_ [x y]]))
