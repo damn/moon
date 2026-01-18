@@ -14,6 +14,8 @@
    [:ui/error-window moon.ui.error-window/create]
    ]
   ]
+ [moon.start.add-method/step moon.schema/create [[:default moon.schema.default/create]]]
+ [moon.start.add-method/step moon.schema/value  [[:default moon.schema.default/value]]]
  [moon.start.add-methods/step
   {:required [moon.schema/malli-form]
    :optional [moon.schema/create
