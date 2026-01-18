@@ -1,5 +1,5 @@
 (ns moon.entity.animation
-  (:require [moon.entity.image :as image]))
+  (:require [moon.entity :as entity]))
 
 (defprotocol Animation
   (tick [_ delta])
@@ -47,6 +47,6 @@
 
 (defn render
   [[_k animation] entity ctx]
-  (image/draw-image (current-frame animation)
-                    entity
-                    ctx))
+  (entity/render [:entity/image (current-frame animation)]
+                 entity
+                 ctx))
