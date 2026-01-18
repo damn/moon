@@ -4,9 +4,9 @@
             [malli.utils :as mu]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
+            [moon.ui :as ui]
             [moon.ui.text-button :as text-button]
             [moon.ui.property-editor-window :as property-editor-window]
-            [moon.ui.window :as window]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
@@ -93,8 +93,9 @@
 
 (defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (window/create
-                {:skin skin
+  (let [window (ui/actor
+                {:type :ui/window
+                 :skin skin
                  :title "Choose"
                  :modal? true
                  :close-button? true

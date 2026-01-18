@@ -1,6 +1,6 @@
 (ns moon.ui.dev-menu
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.ui.window :as window])
+            [moon.ui :as ui])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
@@ -33,8 +33,9 @@
      (.expandX (.right (.add table ^Actor label))))))
 
 (defn- create-window [skin label items]
-  (window/create
-   {:skin skin
+  (ui/actor
+   {:type :ui/window
+    :skin skin
     :pack? true
     :title label
     :rows [(for [{:keys [label on-click]} items]

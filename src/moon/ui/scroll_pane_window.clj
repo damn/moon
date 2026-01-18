@@ -1,11 +1,12 @@
 (ns moon.ui.scroll-pane-window
   (:require [moon.ui.scroll-pane-cell :as scroll-pane-cell]
-            [moon.ui.window :as window]))
+            [moon.ui :as ui]))
 
 (defn create
   [{:keys [skin viewport-height rows]}]
-  (window/create
-   {:skin skin
+  (ui/actor
+   {:type :ui/window
+    :skin skin
     :title "Choose"
     :modal? true
     :close-button? true

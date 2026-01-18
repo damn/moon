@@ -1,7 +1,7 @@
 (ns moon.ui.data-viewer-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.text-button :as text-button]
-            [moon.ui.window :as window])
+            [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane
                                                Skin)))
@@ -64,10 +64,12 @@
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (window/create {:skin skin
-                    :title title
-                    :close-button? true
-                    :close-on-escape? true
-                    :center? true
-                    :rows [[scroll-pane-cell]]
-                    :pack? true})))
+    (ui/actor
+     {:type :ui/window
+      :skin skin
+      :title title
+      :close-button? true
+      :close-on-escape? true
+      :center? true
+      :rows [[scroll-pane-cell]]
+      :pack? true})))

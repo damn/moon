@@ -4,6 +4,7 @@
             [moon.property :as property]
             [moon.throwable :as throwable]
             [moon.schema :as schema]
+            [moon.ui :as ui]
             [moon.ui.error-window :as error-window]
             [moon.ui.text-button :as text-button]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell]
@@ -67,8 +68,9 @@
         rows [[(scroll-pane-cell/create skin
                                         scroll-pane-height
                                         scroll-pane-rows)]]]
-    (window/create
-     {:skin skin
+    (ui/actor
+     {:type :ui/window
+      :skin skin
       :title "[SKY]Property[]"
       :actor/name "moon.ui.editor.window"
       :modal? true

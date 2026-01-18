@@ -4,7 +4,7 @@
             [moon.ctx :as ctx]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
-            [moon.ui.window :as window])
+            [moon.ui :as ui])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -67,8 +67,9 @@
                                               (.setName "image-widget")
                                               (.setUserObject {:background-drawable background-drawable
                                                                :cell-size cell-size}))]})}))]
-    (window/create
-     {:skin skin
+    (ui/actor
+     {:type :ui/window
+      :skin skin
       :title title
       :actor/name "moon.ui.windows.inventory"
       :actor/visible? visible?

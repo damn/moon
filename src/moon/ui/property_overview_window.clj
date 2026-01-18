@@ -3,8 +3,8 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui.image-button :as image-button]
-            [moon.ui.window :as window])
+            [moon.ui :as ui]
+            [moon.ui.image-button :as image-button])
   (:import (com.badlogic.gdx.scenes.scene2d Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
@@ -77,8 +77,9 @@
            skin
            property-type
            clicked-id-fn]}]
-  (window/create
-   {:skin skin
+  (ui/actor
+   {:type :ui/window
+    :skin skin
     :title "Edit"
     :modal? true
     :close-button? true
