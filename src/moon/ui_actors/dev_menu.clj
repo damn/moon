@@ -3,7 +3,7 @@
             [moon.db :as db]
             [moon.graphics.camera :as camera]
             [moon.input :as input]
-            [moon.ui.data-viewer-window :as data-viewer-window]
+            [moon.ui :as ui]
             [moon.ui.dev-menu :as dev-menu]
             [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.property-editor-window :as property-editor-window]
@@ -47,11 +47,12 @@
                                   :on-click (fn [_actor {:keys [ctx/skin
                                                                 ctx/stage] :as ctx}]
                                               (.addActor stage
-                                                         (data-viewer-window/create
-                                                          {:title "Data View"
+                                                         (ui/actor
+                                                          {:type :ui/data-viewer-window
+                                                           :title "Data View"
                                                            :data ctx
-                                                           :width 500
-                                                           :height 500
+                                                           :width 1000
+                                                           :height 1000
                                                            :skin skin})))}]}
         help-info-text {:label "Help"
                         :items [{:label input/info-text}]}

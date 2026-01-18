@@ -1,6 +1,6 @@
 (ns moon.render.check-open-debug
   (:require [moon.input :as input]
-            [moon.ui.data-viewer-window :as data-viewer-window]))
+            [moon.ui :as ui]))
 
 (defn do!
   [{:keys [ctx/input
@@ -15,8 +15,9 @@
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (.addActor stage
-                 (data-viewer-window/create
-                  {:title "Data View"
+                 (ui/actor
+                  {:type :ui/data-viewer-window
+                   :title "Data View"
                    :data data
                    :width 500
                    :height 500
