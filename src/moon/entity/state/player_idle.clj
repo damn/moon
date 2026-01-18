@@ -1,6 +1,5 @@
 (ns moon.entity.state.player-idle
-  (:require [moon.entity.state :as state]
-            [moon.input :as input]
+  (:require [moon.input :as input]
             [moon.inventory :as inventory])
   (:import (com.badlogic.gdx Input$Buttons)))
 
@@ -55,7 +54,7 @@
     [[:tx/sound "bfxr_denied"]
      [:tx/show-message "No selected skill"]]))
 
-(defmethod state/cursor :player-idle
+(defn cursor
   [_ eid {:keys [ctx/interaction-state]}]
   (let [[k params] interaction-state]
     (case k
@@ -98,18 +97,18 @@
       :interaction-state/no-skill-selected
       :cursors/no-skill-selected)))
 
-(defmethod state/pause-game? :player-idle
+(defn pause-game?
   [_]
   true)
 
-(defmethod state/clicked-inventory-cell :player-idle
+(defn clicked-inventory-cell
   [_ eid cell]
   (when-let [item (get-in (:entity/inventory @eid) cell)]
     [[:tx/sound "bfxr_takeit"]
      [:tx/event eid :pickup-item item]
      [:tx/remove-item eid cell]]))
 
-(defmethod state/handle-input :player-idle
+(defn handle-input
   [_ player-eid {:keys [ctx/input
                         ctx/interaction-state
                         ctx/stage] :as ctx}]

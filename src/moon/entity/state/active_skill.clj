@@ -1,7 +1,5 @@
 (ns moon.entity.state.active-skill
   (:require [moon.effect :as effect]
-            [moon.entity :as entity]
-            [moon.entity.state :as state]
             [moon.entity.stats :as stats]
             [moon.textures :as textures]
             [moon.timer :as timer]
@@ -12,7 +10,7 @@
      (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
          1)))
 
-(defmethod state/create :active-skill
+(defn create
   [[_k [skill effect-ctx]] eid {:keys [ctx/elapsed-time]}]
   {:skill skill
    :effect-ctx effect-ctx
@@ -29,7 +27,7 @@
     effect-ctx
     (dissoc effect-ctx :effect/target)))
 
-(defmethod entity/tick :active-skill
+(defn tick
   [[_k {:keys [skill effect-ctx counter]}]
    eid
    {:keys [ctx/elapsed-time
@@ -65,7 +63,7 @@
       [1 1 1 0.5]]
      [:draw/texture-region texture-region [(- (float x) radius) y]]]))
 
-(defmethod entity/render :active-skill
+(defn render
   [[_k {:keys [skill effect-ctx counter]}]
    entity
    {:keys [ctx/elapsed-time
@@ -79,16 +77,16 @@
             (mapcat #(effect/render % effect-ctx ctx)  ; update-effect-ctx here too ?
                     effects))))
 
-(defmethod state/enter :active-skill
+(defn enter
   [[_k {:keys [skill]}] eid]
   [[:tx/sound (:skill/start-action-sound skill)]
    [:tx/set-cooldown eid skill]
    [:tx/update eid :entity/stats stats/pay-mana-cost (:skill/cost skill)]])
 
-(defmethod state/cursor :active-skill
+(defn cursor
   [_ _eid _ctx]
   :cursors/sandclock)
 
-(defmethod state/pause-game? :active-skill
+(defn pause-game?
   [_]
   false)

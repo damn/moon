@@ -1,6 +1,5 @@
-(ns moon.entity.state.npc-dead
-  (:require [moon.entity.state :as state]))
+(ns moon.entity.state.npc-dead)
 
-(defmethod state/enter :npc-dead
+(defn enter
   [_ eid]
   [[:tx/mark-destroyed eid]])

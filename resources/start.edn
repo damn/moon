@@ -62,7 +62,37 @@
    [moon.entity.image :entity/image]
    [moon.entity.mouseover :entity/mouseover?]]
   ]
- [moon.start.require-namespaces/step #edn/resource "require_namespaces.edn"]
+ [moon.start.add-methods/step
+  {:required []
+   :optional [moon.entity/create
+              moon.entity/after-create
+              moon.entity/destroy
+              moon.entity/tick
+              moon.entity/render
+
+              moon.entity.state/create
+              moon.entity.state/enter
+              moon.entity.state/exit
+              moon.entity.state/cursor
+              moon.entity.state/pause-game?
+              moon.entity.state/clicked-inventory-cell
+              moon.entity.state/draw-ui-view
+              moon.entity.state/handle-input]}
+  [
+   [moon.entity.state.active-skill :active-skill]
+   [moon.entity.state.npc-dead :npc-dead]
+   [moon.entity.state.npc-idle :npc-idle]
+   [moon.entity.state.npc-moving :npc-moving]
+   [moon.entity.state.npc-sleeping :npc-sleeping]
+   [moon.entity.state.player-dead :player-dead]
+   [moon.entity.state.player-idle :player-idle]
+   [moon.entity.state.player-item-on-cursor :player-item-on-cursor]
+   [moon.entity.state.player-moving :player-moving]
+   [moon.entity.state.stunned :stunned]
+   ]
+  ]
+ [moon.start.require-namespaces/step [moon.ui-impl
+                                      moon.info-impl]]
  [moon.start.use-glfw-async/step]
  [moon.start.create-config/step {:title "Moon"
                                  :window {:width 1440

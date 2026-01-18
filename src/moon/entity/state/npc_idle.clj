@@ -4,7 +4,6 @@
             [moon.cell :as cell]
             [moon.body :as body]
             [moon.effect :as effect]
-            [moon.entity :as entity]
             [moon.faction :as faction]
             [moon.skill :as skill]
             [moon.raycaster :as raycaster]
@@ -138,7 +137,7 @@
                           (some (fn [e] (effect/useful? e effect-ctx ctx))))))
        first))
 
-(defmethod entity/tick :npc-idle
+(defn tick
   [_ eid ctx]
   (let [effect-ctx (npc-effect-ctx ctx eid)]
     (if-let [skill (npc-choose-skill ctx @eid effect-ctx)]

@@ -1,7 +1,6 @@
-(ns moon.entity.state.player-dead
-  (:require [moon.entity.state :as state]))
+(ns moon.entity.state.player-dead)
 
-(defmethod state/enter :player-dead
+(defn enter
   [_ _eid]
   [[:tx/sound "bfxr_playerdeath"]
    [:tx/show-modal {:title "YOU DIED - again!"
@@ -9,10 +8,10 @@
                     :button-text "OK"
                     :on-click (fn [])}]])
 
-(defmethod state/cursor :player-dead
+(defn cursor
   [_ _eid _ctx]
   :cursors/black-x)
 
-(defmethod state/pause-game? :player-dead
+(defn pause-game?
   [_]
   true)

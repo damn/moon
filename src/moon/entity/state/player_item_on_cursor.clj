@@ -1,14 +1,12 @@
 (ns moon.entity.state.player-item-on-cursor
   (:require [clojure.math.vector2 :as v]
-            [moon.entity :as entity]
-            [moon.entity.state :as state]
             [moon.textures :as textures]
             [moon.inventory :as inventory]
             [moon.input :as input]
             [moon.stage :as stage])
   (:import (com.badlogic.gdx Input$Buttons)))
 
-(defmethod state/create :player-item-on-cursor
+(defn create
   [[_k item] _eid _ctx]
   {:item item})
 
@@ -30,7 +28,7 @@
                    ; so you cannot put it out of your own reach
                    (- (:entity/click-distance-tiles entity) 0.1)))
 
-(defmethod entity/render :player-item-on-cursor
+(defn render
   [[_k {:keys [item]}]
    entity
    {:keys [ctx/input
@@ -45,11 +43,11 @@
       (item-place-position world-mouse-position entity)
       {:center? true}]]))
 
-(defmethod state/enter :player-item-on-cursor
+(defn enter
   [[_k {:keys [item]}] eid]
   [[:tx/assoc eid :entity/item-on-cursor item]])
 
-(defmethod state/exit :player-item-on-cursor
+(defn exit
   [_ eid {:keys [ctx/world-mouse-position]}]
   ; at clicked-cell when we put it into a inventory-cell
   ; we do not want to drop it on the ground too additonally,
@@ -63,15 +61,15 @@
         (item-place-position world-mouse-position entity)
         (:entity/item-on-cursor entity)]])))
 
-(defmethod state/cursor :player-item-on-cursor
+(defn cursor
   [_ _eid _ctx]
   :cursors/hand-grab)
 
-(defmethod state/pause-game? :player-item-on-cursor
+(defn pause-game?
   [_]
   true)
 
-(defmethod state/clicked-inventory-cell :player-item-on-cursor
+(defn clicked-inventory-cell
   [_ eid cell]
   (let [entity @eid
         inventory (:entity/inventory entity)
@@ -106,7 +104,7 @@
       [:tx/event eid :dropped-item]
       [:tx/event eid :pickup-item item-in-cell]])))
 
-(defmethod state/draw-ui-view :player-item-on-cursor
+(defn draw-ui-view
   [_ eid {:keys [ctx/input
                  ctx/stage
                  ctx/textures
@@ -120,7 +118,7 @@
       ui-mouse-position
       {:center? true}]]))
 
-(defmethod state/handle-input :player-item-on-cursor
+(defn handle-input
   [_ eid {:keys [ctx/input
                  ctx/stage]}]
   (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))]
