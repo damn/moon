@@ -1,7 +1,7 @@
 {:state moon.application/state
  :create!  [moon.listener.create/do!
             [
-             [moon.create.get-gdx-state/step]
+             [moon.create.get-gdx-state/step] ; why pass around if its global state, just use it directly ?
              [moon.create.colors/step {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
              [moon.create.cursors/do! {:path-format "cursors/%s.png"
                                        :data {:cursors/bag                   ["bag001"       [0   0]]

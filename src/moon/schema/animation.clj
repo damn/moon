@@ -1,8 +1,7 @@
 (ns moon.schema.animation
   (:require [moon.schemas :as schemas]
             [moon.textures :as textures]
-            [moon.ui :as ui]
-            [moon.ui.image-button :as image-button]))
+            [moon.ui :as ui]))
 
 (defn malli-form [_ schemas]
   (schemas/create-map-schema schemas
@@ -16,8 +15,9 @@
   (ui/actor
    {:type :ui/table
     :rows [(for [image (:animation/frames animation)]
-             {:actor (image-button/create
-                      {:drawable/texture-region (textures/texture-region textures image)
+             {:actor (ui/actor
+                      {:type :ui/image-button
+                       :drawable/texture-region (textures/texture-region textures image)
                        :drawable/scale 2
                        :skin skin})})]
     :cell-defaults {:pad 1}}))

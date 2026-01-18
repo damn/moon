@@ -1,7 +1,6 @@
 (ns moon.ui-actors.action-bar
   (:require [moon.ui :as ui]
-            [moon.ui.action-bar :as action-bar]
-            [moon.ui.image-button :as image-button])
+            [moon.ui.action-bar :as action-bar])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup
                                                HorizontalGroup
@@ -41,8 +40,9 @@
              tooltip-text]}
      skin]
     (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-          button (image-button/create
-                  {:actor/user-object skill-id
+          button (ui/actor
+                  {:type :ui/image-button
+                   :actor/user-object skill-id
                    :drawable/texture-region texture-region
                    :drawable/scale 2
                    :tooltip tooltip-text

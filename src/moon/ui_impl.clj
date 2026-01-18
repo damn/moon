@@ -2,6 +2,7 @@
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui :as ui]
             [moon.ui.data-viewer-window :as data-viewer-window]
+            [moon.ui.image-button :as image-button]
             [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.property-editor-window :as property-editor-window]
             [moon.ui.window :as window]))
@@ -25,3 +26,7 @@
 (defmethod ui/actor :ui/table
   [opts]
   (table/create opts))
+
+(defmethod ui/actor :ui/image-button
+  [opts]
+  (image-button/create opts))

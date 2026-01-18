@@ -3,8 +3,7 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui :as ui]
-            [moon.ui.image-button :as image-button])
+            [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
@@ -41,8 +40,9 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (stack/create
-               {:group/actors [(image-button/create
-                                {:drawable/texture-region texture-region
+               {:group/actors [(ui/actor
+                                {:type :ui/image-button
+                                 :drawable/texture-region texture-region
                                  :on-clicked on-clicked
                                  :drawable/scale image-scale
                                  :tooltip tooltip
