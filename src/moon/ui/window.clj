@@ -32,12 +32,3 @@
                         (.remove window))))))
     (.setModal window (boolean modal?))
     (table/set-opts! window opts)))
-
-(defn find-ancestor
-  "Finds the ancestor window of actor, otherwise throws an error if none of recursively searched parents of actors is a window actor."
-  [actor]
-  (if-let [parent (.getParent actor)]
-    (if (instance? Window parent)
-      parent
-      (find-ancestor parent))
-    (throw (Error. (str "Actor has no parent window " actor)))))

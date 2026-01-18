@@ -3,14 +3,15 @@
             [moon.textures :as textures]
             [moon.property :as property]
             [moon.ui :as ui]
-            [moon.ui.table :as table]
-            [moon.ui.window :as window])
+            [moon.ui.actor :as actor]
+            [moon.ui.table :as table])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Skin
-                                               TextTooltip)))
+                                               TextTooltip
+                                               Window)))
 
 (defn malli-form [[_ property-type] _schemas]
   [:qualified-keyword {:namespace (property/type->id-namespace property-type)}])
@@ -28,7 +29,7 @@
   (let [redo-rows (fn [ctx id]
                     (.clearChildren table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (.pack (window/find-ancestor table)))]
+                    (.pack (actor/find-ancestor table Window)))]
     (table/add-rows!
      table
      [[(when-not property-id
@@ -48,7 +49,7 @@
                                     :skin skin
                                     :property-type property-type
                                     :clicked-id-fn (fn [actor id ctx]
-                                                     (.remove (window/find-ancestor actor))
+                                                     (.remove (actor/find-ancestor actor Window))
                                                      (redo-rows ctx id))})))
                    :skin skin})})]
       [(when property-id

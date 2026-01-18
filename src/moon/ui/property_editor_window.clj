@@ -5,10 +5,11 @@
             [moon.throwable :as throwable]
             [moon.schema :as schema]
             [moon.ui :as ui]
-            [moon.ui.scroll-pane-cell :as scroll-pane-cell]
-            [moon.ui.window :as window])
+            [moon.ui.actor :as actor]
+            [moon.ui.scroll-pane-cell :as scroll-pane-cell])
   (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Window)
            (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
@@ -35,7 +36,7 @@
                                (let [new-ctx (update ctx :ctx/db f)
                                      stage (.getStage actor)]
                                  (set! (.ctx stage) new-ctx))
-                               (.remove (window/find-ancestor actor))
+                               (.remove (actor/find-ancestor actor Window))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (.addActor stage (ui/actor {:type :ui/error-window

@@ -1,11 +1,12 @@
 (ns moon.schema.sound
   (:require [moon.audio :as audio]
             [moon.ui :as ui]
+            [moon.ui.actor :as actor]
             [moon.ui.table :as table]
-            [moon.ui.window :as window]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Stage)))
+                                            Stage)
+           (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn malli-form [_ _schemas]
   :string)
@@ -16,8 +17,8 @@
   (fn [actor {:keys [ctx/skin]}]
     (.clearChildren table)
     (table/add-rows! table [(sound-columns skin table sound-name)])
-    (.remove (window/find-ancestor actor))
-    (.pack (window/find-ancestor table))
+    (.remove (actor/find-ancestor actor Window))
+    (.pack (actor/find-ancestor table Window))
     (let [[k _] (Actor/.getUserObject table)]
       (.setUserObject table [k sound-name]))))
 
