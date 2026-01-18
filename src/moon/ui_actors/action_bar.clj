@@ -1,5 +1,5 @@
 (ns moon.ui-actors.action-bar
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+  (:require [moon.ui :as ui]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.image-button :as image-button])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
@@ -13,8 +13,9 @@
      :button-group (.getUserObject group)}))
 
 (defn create [_ctx]
-  (table/create
-   {:rows [[{:actor (doto (doto (HorizontalGroup.)
+  (ui/actor
+   {:type :ui/table
+    :rows [[{:actor (doto (doto (HorizontalGroup.)
                             (.space 2)
                             (.pad 2))
                       (.setName "moon.ui.action-bar.horizontal-group")

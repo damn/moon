@@ -65,8 +65,9 @@
                   :skin skin})})])))
 
 (defn create [[_ property-type] property-ids ctx]
-  (let [table (table/create
-               {:cell-defaults {:pad 5}})]
+  (let [table (ui/actor
+               {:type :ui/table
+                :cell-defaults {:pad 5}})]
     (add-one-to-many-rows ctx table property-type property-ids)
     table))
 

@@ -1,6 +1,5 @@
 (ns moon.ui.data-viewer-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.ui.text-button :as text-button]
+  (:require [moon.ui.text-button :as text-button]
             [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane
@@ -51,12 +50,14 @@
   (let [rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
                 :actor (v->actor v skin)})
-        scroll-pane-table (table/create
-                           {:rows (for [{:keys [label actor]} rows]
+        scroll-pane-table (ui/actor
+                           {:type :ui/table
+                            :rows (for [{:keys [label actor]} rows]
                                     [{:actor (Label. label ^Skin skin)}
                                      {:actor actor}])})
-        scroll-pane-cell (let [table (table/create
-                                      {:rows [[scroll-pane-table]]
+        scroll-pane-cell (let [table (ui/actor
+                                      {:type :ui/table
+                                       :rows [[scroll-pane-table]]
                                        :cell-defaults {:pad 1}
                                        :pack? true})]
                            {:actor (doto (ScrollPane. table skin)

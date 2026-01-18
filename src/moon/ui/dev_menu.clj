@@ -1,6 +1,5 @@
 (ns moon.ui.dev-menu
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.ui :as ui])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
@@ -22,8 +21,9 @@
 (defn add-upd-label!
   ([skin table text-fn icon]
    (let [label (Label. "" ^Skin skin)
-         sub-table (table/create
-                    {:rows [[{:actor (Image. ^Texture icon)}
+         sub-table (ui/actor
+                    {:type :ui/table
+                     :rows [[{:actor (Image. ^Texture icon)}
                              label]]})]
      (.addActor table (set-label-text-actor label text-fn))
      (.expandX (.right (.add table ^Actor sub-table)))))
@@ -46,8 +46,9 @@
                             (on-click actor (.ctx (Event/.getStage event)))))))})]}))
 
 (defn- main-table [^Skin skin menus update-labels]
-  (let [table (table/create
-               {:rows [(for [{:keys [label items]} menus]
+  (let [table (ui/actor
+               {:type :ui/table
+                :rows [(for [{:keys [label items]} menus]
                          {:actor (doto (TextButton. label skin)
                                    (.addListener
                                     (proxy [ChangeListener] []
@@ -63,8 +64,9 @@
 
 (defn create
   [{:keys [menus update-labels skin]}]
-  (table/create
-   {:rows [[{:actor (main-table skin menus update-labels)
+  (ui/actor
+   {:type :ui/table
+    :rows [[{:actor (main-table skin menus update-labels)
              :expand-x? true
              :fill-x? true
              :colspan 1}]

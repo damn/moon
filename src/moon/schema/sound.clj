@@ -1,6 +1,7 @@
 (ns moon.schema.sound
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.audio :as audio]
+            [moon.ui :as ui]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window]
             [moon.ui.scroll-pane-window :as scroll-pane-window])
@@ -53,7 +54,9 @@
 
 
 (defn create [_  sound-name {:keys [ctx/skin]}]
-  (let [table (table/create {:cell-defaults {:pad 5}})]
+  (let [table (ui/actor
+               {:type :ui/table
+                :cell-defaults {:pad 5}})]
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)
                               [{:actor (text-button/create

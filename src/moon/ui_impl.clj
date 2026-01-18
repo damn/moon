@@ -1,5 +1,6 @@
 (ns moon.ui-impl
-  (:require [moon.ui :as ui]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [moon.ui :as ui]
             [moon.ui.data-viewer-window :as data-viewer-window]
             [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.property-editor-window :as property-editor-window]
@@ -20,3 +21,7 @@
 (defmethod ui/actor :ui/property-editor-window
   [opts]
   (property-editor-window/create opts))
+
+(defmethod ui/actor :ui/table
+  [opts]
+  (table/create opts))

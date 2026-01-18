@@ -1,6 +1,5 @@
 (ns moon.ui-actors.windows.inventory
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ctx :as ctx]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
@@ -75,8 +74,9 @@
       :actor/visible? visible?
       :pack? true
       :actor/position position
-      :rows [[{:actor (table/create
-                       {:actor/name "inventory-cell-table"
+      :rows [[{:actor (ui/actor
+                       {:type :ui/table
+                        :actor/name "inventory-cell-table"
                         :rows (concat [[nil nil
                                         (->cell :inventory.slot/helm)
                                         (->cell :inventory.slot/necklace)]

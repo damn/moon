@@ -1,12 +1,13 @@
 (ns moon.ui.scroll-pane-cell
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
                                                Skin)))
 
 (defn create [skin viewport-height rows]
-  (let [table (table/create
-               {:rows rows
+  (let [table (ui/actor
+               {:type :ui/table
+                :rows rows
                 :actor/name "scroll-pane-table"
                 :cell-defaults {:pad 5}
                 :pack? true})]

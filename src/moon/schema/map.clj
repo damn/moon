@@ -59,8 +59,9 @@
            k
            table
            label-text]}]
-  [{:actor (table/create
-            {:cell-defaults {:pad 2}
+  [{:actor (ui/actor
+            {:type :ui/table
+             :cell-defaults {:pad 2}
              :rows [[{:actor (when display-remove-component-button?
                                (text-button/create
                                 {:text "-"
@@ -143,8 +144,9 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (table/create
-               {:cell-defaults {:pad 5}
+  (let [table (ui/actor
+               {:type :ui/table
+                :cell-defaults {:pad 5}
                 :actor/name "moon.db.schema.map.ui.widget"})
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
