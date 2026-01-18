@@ -1,4 +1,15 @@
 [
+ [moon.start.add-method/step
+  moon.ui/actor
+  [
+   [:ui/data-viewer-window moon.ui.data-viewer-window/create]
+   [:ui/property-overview-window moon.ui.property-overview-window/create]
+   [:ui/window moon.ui.window/create]
+   [:ui/property-editor-window moon.ui.property-editor-window/create]
+   [:ui/table clj.api.com.badlogic.gdx.scenes.scene2d.ui.table/create]
+   [:ui/image-button moon.ui.image-button/create]
+   ]
+  ]
  [moon.start.add-methods/step
   {:required [moon.schema/malli-form]
    :optional [moon.schema/create
@@ -92,7 +103,6 @@
    ]
   ]
  [moon.start.require-namespaces/step [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
-                                      moon.ui-impl
                                       moon.info-impl]]
  [moon.start.use-glfw-async/step]
  [moon.start.create-config/step {:title "Moon"
