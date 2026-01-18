@@ -1,6 +1,5 @@
 (ns moon.entity.fsm
-  (:require [moon.entity :as entity]
-            [moon.entity.state :as state]
+  (:require [moon.entity.state :as state]
             [reduce-fsm :as fsm]))
 
 (comment
@@ -60,7 +59,7 @@
      :dropped-item -> :player-idle]
     [:player-dead]]))
 
-(defmethod entity/after-create :entity/fsm
+(defn after-create
   [[_k {:keys [fsm initial-state]}] eid ctx]
   ; fsm throws when initial-state is not part of states, so no need to assert initial-state
   ; initial state is nil, so associng it. make bug report at reduce-fsm?

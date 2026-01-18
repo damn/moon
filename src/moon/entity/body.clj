@@ -1,7 +1,6 @@
 (ns moon.entity.body
-  (:require [moon.body]
-            [moon.entity :as entity]))
+  (:require [moon.body]))
 
-(defmethod entity/create :entity/body
+(defn create
   [[_ v] ctx]
   (moon.body/create v ctx))

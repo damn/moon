@@ -1,6 +1,5 @@
 (ns moon.entity.image
-  (:require [moon.entity :as entity]
-            [moon.textures :as textures]))
+  (:require [moon.textures :as textures]))
 
 (defn draw-image
   [image
@@ -13,6 +12,6 @@
      :rotation (or (:body/rotation-angle body)
                    0)}]])
 
-(defmethod entity/render :entity/image
+(defn render
   [[_k image] entity ctx]
   (draw-image image entity ctx))

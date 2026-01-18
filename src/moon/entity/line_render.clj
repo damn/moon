@@ -1,7 +1,6 @@
-(ns moon.entity.line-render
-  (:require [moon.entity :as entity]))
+(ns moon.entity.line-render)
 
-(defmethod entity/render :entity/line-render
+(defn render
   [[_k {:keys [thick? end color]}]
    {:keys [entity/body]}
    _ctx]

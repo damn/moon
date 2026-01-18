@@ -1,9 +1,8 @@
 (ns moon.entity.alert-friendlies-after-duration
-  (:require [moon.entity :as entity]
-            [moon.timer :as timer]
+  (:require [moon.timer :as timer]
             [moon.grid :as grid]))
 
-(defmethod entity/tick :entity/alert-friendlies-after-duration
+(defn tick
   [[_k {:keys [counter faction]}]
    eid
    {:keys [ctx/elapsed-time

@@ -1,7 +1,6 @@
 (ns moon.entity.stats
   (:require [malli.core :as m]
             [moon.color :as color]
-            [moon.entity :as entity]
             [moon.ops :as ops]
             [moon.val-max :as val-max]))
 
@@ -67,7 +66,7 @@
            stats/modifiers]}]
   (apply-max hp modifiers :modifier/hp-max))
 
-(defmethod entity/create :entity/stats
+(defn create
   [[_ v] _ctx]
   (-> v
       (update :stats/mana (fn [v] [v v]))
@@ -104,7 +103,7 @@
         (- height          (* 2 border))
         (hpbar-color ratio)]])))
 
-(defmethod entity/render :entity/stats
+(defn render
   [_ entity {:keys [ctx/world-unit-scale]}]
   (let [ratio (val-max/ratio (get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))

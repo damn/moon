@@ -1,6 +1,5 @@
 (ns moon.entity.mouseover
-  (:require [moon.entity :as entity]
-            [moon.faction :as faction]))
+  (:require [moon.faction :as faction]))
 
 (def outline-alpha 0.4)
 (def enemy-color [1 0 0 outline-alpha])
@@ -8,7 +7,7 @@
 (def neutral-color [1 1 1 outline-alpha])
 (def mouseover-ellipse-width 5)
 
-(defmethod entity/render :entity/mouseover?
+(defn render
   [_
    {:keys [entity/body
            entity/faction]}

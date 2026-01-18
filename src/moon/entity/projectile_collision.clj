@@ -1,15 +1,14 @@
 (ns moon.entity.projectile-collision
   (:require [clojure.grid2d :as g2d]
             [moon.body :as body]
-            [moon.entity :as entity]
             [moon.grid :as grid]
             [moon.cell :as cell]))
 
-(defmethod entity/create :entity/projectile-collision
+(defn create
   [[_ v] _ctx]
   (assoc v :already-hit-bodies #{}))
 
-(defmethod entity/tick :entity/projectile-collision
+(defn tick
   [[_k {:keys [entity-effects already-hit-bodies piercing?]}]
    eid
    {:keys [ctx/grid]}]

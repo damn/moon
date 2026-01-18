@@ -1,7 +1,6 @@
-(ns moon.entity.clickable
-  (:require [moon.entity :as entity]))
+(ns moon.entity.clickable)
 
-(defmethod entity/render :entity/clickable
+(defn render
   [[_k {:keys [text]}]
    {:keys [entity/body
            entity/mouseover?]}

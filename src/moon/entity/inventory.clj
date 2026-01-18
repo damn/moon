@@ -1,9 +1,8 @@
 (ns moon.entity.inventory
   (:require [clojure.grid2d :as g2d]
-            [moon.entity :as entity]
             [moon.inventory :as inventory]))
 
-(defmethod entity/after-create :entity/inventory
+(defn after-create
   [[_k items] eid _ctx]
   (cons [:tx/assoc eid :entity/inventory (->> inventory/empty-inventory
                                               (map (fn [[slot [width height]]]

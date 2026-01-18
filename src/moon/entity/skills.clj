@@ -1,14 +1,13 @@
 (ns moon.entity.skills
-  (:require [moon.entity :as entity]
-            [moon.timer :as timer]))
+  (:require [moon.timer :as timer]))
 
-(defmethod entity/after-create :entity/skills
+(defn after-create
   [[_k skills] eid _ctx]
   (cons [:tx/assoc eid :entity/skills nil]
         (for [skill skills]
           [:tx/add-skill eid skill])))
 
-(defmethod entity/tick :entity/skills
+(defn tick
   [[_k skills] eid {:keys [ctx/elapsed-time]}]
   (for [{:keys [skill/cooling-down?] :as skill} (vals skills)
         :when (and cooling-down?

@@ -37,6 +37,31 @@
    [moon.effects.target-all          :effects/target-all]
    [moon.effects.target-entity       :effects/target-entity]]
   ]
+ [moon.start.add-methods/step
+  {:required []
+   :optional [moon.entity/create
+              moon.entity/after-create
+              moon.entity/destroy
+              moon.entity/tick
+              moon.entity/render]}
+  [[moon.entity.animation :entity/animation]
+   [moon.entity.body :entity/body]
+   [moon.entity.delete-after-duration :entity/delete-after-duration]
+   [moon.entity.destroy-audiovisual :entity/destroy-audiovisual]
+   [moon.entity.inventory :entity/inventory]
+   [moon.entity.fsm :entity/fsm]
+   [moon.entity.projectile-collision :entity/projectile-collision]
+   [moon.entity.skills :entity/skills]
+   [moon.entity.stats :entity/stats]
+   [moon.entity.alert-friendlies-after-duration :entity/alert-friendlies-after-duration]
+   [moon.entity.movement :entity/movement]
+   [moon.entity.string-effect :entity/string-effect]
+   [moon.entity.temp-modifier :entity/temp-modifier]
+   [moon.entity.clickable :entity/clickable]
+   [moon.entity.line-render :entity/line-render]
+   [moon.entity.image :entity/image]
+   [moon.entity.mouseover :entity/mouseover?]]
+  ]
  [moon.start.require-namespaces/step #edn/resource "require_namespaces.edn"]
  [moon.start.use-glfw-async/step]
  [moon.start.create-config/step {:title "Moon"

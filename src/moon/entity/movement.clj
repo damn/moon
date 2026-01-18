@@ -1,7 +1,6 @@
 (ns moon.entity.movement
   (:require [clojure.math :as math]
             [clojure.math.vector2 :as v]
-            [moon.entity :as entity]
             [moon.utils :as utils]
             [moon.grid :as grid]))
 
@@ -23,7 +22,7 @@
         (try-move grid body entity-id (assoc movement :direction [xdir 0]))
         (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
 
-(defmethod entity/tick :entity/movement
+(defn tick
   [[_k
     {:keys [direction
             speed

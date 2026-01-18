@@ -1,9 +1,8 @@
 (ns moon.entity.temp-modifier
-  (:require [moon.entity :as entity]
-            [moon.entity.stats :as stats]
+  (:require [moon.entity.stats :as stats]
             [moon.timer :as timer]))
 
-(defmethod entity/tick :entity/temp-modifier
+(defn tick
   [[_k {:keys [modifiers counter]}]
    eid
    {:keys [ctx/elapsed-time]}]
@@ -11,7 +10,7 @@
     [[:tx/dissoc eid :entity/temp-modifier]
      [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
 
-(defmethod entity/render :entity/temp-modifier
+(defn render
   [_ entity _ctx]
   [[:draw/filled-circle
     (:body/position (:entity/body entity))
