@@ -1,5 +1,6 @@
 (ns moon.ui-actors.player-message
   (:require [moon.ctx :as ctx]
+            [moon.stage :as stage]
             [moon.ui.message :as message])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.utils.viewport Viewport)))
@@ -20,8 +21,8 @@
             (when-let [stage (.getStage this)]
               (ctx/draw! (.ctx stage)
                          [(draw-message (Actor/.getUserObject this)
-                                        (Viewport/.getWorldWidth  (.getViewport stage))
-                                        (Viewport/.getWorldHeight (.getViewport stage)))])))
+                                        (Viewport/.getWorldWidth  (stage/viewport stage))
+                                        (Viewport/.getWorldHeight (stage/viewport stage)))])))
           (act [delta]
             (let [state (Actor/.getUserObject this)]
               (when (:text @state)

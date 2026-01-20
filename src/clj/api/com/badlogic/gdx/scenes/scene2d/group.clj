@@ -5,6 +5,9 @@
 
 (extend-type Group
   group/Group
+  (find-actor [group actor-name]
+    (.findActor group actor-name))
+
   (set-opts! [group opts]
     (run! (fn [actor]
             (.addActor group actor))

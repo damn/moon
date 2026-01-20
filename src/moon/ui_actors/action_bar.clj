@@ -1,13 +1,14 @@
 (ns moon.ui-actors.action-bar
   (:require [moon.ui :as ui]
-            [moon.ui.action-bar :as action-bar])
+            [moon.ui.action-bar :as action-bar]
+            [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup
                                                HorizontalGroup
                                                Table)))
 
 (defn- get-data [action-bar]
-  (let [group (.findActor action-bar "moon.ui.action-bar.horizontal-group")]
+  (let [group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
      :button-group (.getUserObject group)}))
 

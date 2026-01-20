@@ -1,5 +1,6 @@
 (ns moon.ui.dev-menu
-  (:require [moon.ui :as ui])
+  (:require [moon.stage :as stage]
+            [moon.ui :as ui])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
@@ -54,7 +55,7 @@
                                     (proxy [ChangeListener] []
 
                                       (changed [event actor]
-                                        (.addActor (Event/.getStage event) (create-window skin label items))))))})]})]
+                                        (stage/add-actor! (Event/.getStage event) (create-window skin label items))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon

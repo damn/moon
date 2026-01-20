@@ -3,6 +3,7 @@
             [moon.db :as db]
             [moon.graphics.camera :as camera]
             [moon.input :as input]
+            [moon.stage :as stage]
             [moon.ui :as ui]
             [moon.ui.dev-menu :as dev-menu]
             [moon.utils :as utils])
@@ -15,19 +16,19 @@
            ctx/stage
            ctx/textures]}
    property-type]
-  (.addActor stage
-             (ui/actor
-              {:type :ui/property-overview-window
-               :db db
-               :textures textures
-               :skin skin
-               :property-type property-type
-               :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                (.addActor stage
-                                           (ui/actor
-                                            {:type :ui/property-editor-window
-                                             :ctx ctx
-                                             :property (db/get-raw db id)})))})))
+  (stage/add-actor! stage
+                    (ui/actor
+                     {:type :ui/property-overview-window
+                      :db db
+                      :textures textures
+                      :skin skin
+                      :property-type property-type
+                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                       (stage/add-actor! stage
+                                                         (ui/actor
+                                                          {:type :ui/property-editor-window
+                                                           :ctx ctx
+                                                           :property (db/get-raw db id)})))})))
 
 (defn create
   [{:keys [ctx/db
@@ -46,14 +47,14 @@
                          :items [{:label "Show data"
                                   :on-click (fn [_actor {:keys [ctx/skin
                                                                 ctx/stage] :as ctx}]
-                                              (.addActor stage
-                                                         (ui/actor
-                                                          {:type :ui/data-viewer-window
-                                                           :title "Data View"
-                                                           :data ctx
-                                                           :width 1000
-                                                           :height 1000
-                                                           :skin skin})))}]}
+                                              (stage/add-actor! stage
+                                                                (ui/actor
+                                                                 {:type :ui/data-viewer-window
+                                                                  :title "Data View"
+                                                                  :data ctx
+                                                                  :width 1000
+                                                                  :height 1000
+                                                                  :skin skin})))}]}
         help-info-text {:label "Help"
                         :items [{:label input/info-text}]}
         select-world {:label "Select World"

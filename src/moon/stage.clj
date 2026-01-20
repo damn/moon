@@ -1,4 +1,7 @@
 (ns moon.stage)
 
 (defprotocol Stage
-  (mouseover-actor [_ [x y]]))
+  (add-actor! [_ actor])
+  (root [_])
+  (mouseover-actor [_ [x y]])
+  (viewport [_]))

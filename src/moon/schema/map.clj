@@ -3,13 +3,14 @@
             [malli.utils :as mu]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
+            [moon.stage :as stage]
             [moon.ui :as ui]
+            [moon.ui.group :as group]
             [moon.ui.table :as table]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)
-           (moon Stage)))
+                                               Skin)))
 
 (defn malli-form [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
@@ -34,18 +35,19 @@
            ctx/stage]
     :as ctx}]
   (let [window (-> stage
-                   .getRoot
-                   (.findActor "moon.ui.editor.window"))
+                   stage/root
+                   (group/find-actor "moon.ui.editor.window"))
         map-widget-table (-> window
-                             (.findActor "moon.ui.widget.scroll-pane-table")
-                             (.findActor "scroll-pane-table")
-                             (.findActor "moon.db.schema.map.ui.widget"))
+                             (group/find-actor "moon.ui.widget.scroll-pane-table")
+                             (group/find-actor "scroll-pane-table")
+                             (group/find-actor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (.remove window)
-    (Stage/.addActor stage (ui/actor
-                             {:type :ui/property-editor-window
-                              :ctx ctx
-                              :property property}))))
+    (stage/add-actor! stage
+                      (ui/actor
+                       {:type :ui/property-editor-window
+                        :ctx ctx
+                        :property property}))))
 
 (defn- k->label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
@@ -167,7 +169,7 @@
                            :on-clicked (fn [_actor {:keys [ctx/db
                                                            ctx/stage
                                                            ctx/skin]}]
-                                         (Stage/.addActor
+                                         (stage/add-actor!
                                           stage
                                           (add-component-window
                                            {:skin skin

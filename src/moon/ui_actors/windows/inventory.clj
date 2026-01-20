@@ -2,6 +2,7 @@
   (:require [moon.ctx :as ctx]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
+            [moon.stage :as stage]
             [moon.ui :as ui])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -129,8 +130,8 @@
      {:skin skin
       :title "Inventory"
       :actor/visible? false
-      :position [(.getWorldWidth (.getViewport stage))
-                 (.getWorldHeight (.getViewport stage))]
+      :position [(.getWorldWidth (stage/viewport stage))
+                 (.getWorldHeight (stage/viewport stage))]
       :clicked-cell-listener (fn [cell]
                                (proxy [ClickListener] []
                                  (clicked [event x y]

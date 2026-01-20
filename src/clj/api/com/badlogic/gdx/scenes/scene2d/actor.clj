@@ -18,6 +18,9 @@
 
 (extend-type Actor
   moon.ui.actor/Actor
+  (visible? [actor]
+    (.isVisible actor))
+
   (set-opts! [actor opts]
     (doseq [[k v] opts
             :let [f (get opts-fn-map k)]

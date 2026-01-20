@@ -1,10 +1,12 @@
 (ns moon.reaction-txs.show-message
-  (:require [moon.ui.message :as message]))
+  (:require [moon.stage :as stage]
+            [moon.ui.group :as group]
+            [moon.ui.message :as message]))
 
 (defn do!
   [{:keys [ctx/stage] :as ctx} message]
   (-> stage
-      .getRoot
-      (.findActor "player-message")
+      stage/root
+      (group/find-actor "player-message")
       (message/show! message))
   ctx)

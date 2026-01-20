@@ -1,10 +1,11 @@
 (ns moon.ui.actor)
 
 (defprotocol Actor
+  (visible? [_])
   (set-opts! [_ opts]))
 
 (defn toggle-visible! [^com.badlogic.gdx.scenes.scene2d.Actor actor]
-  (.setVisible actor (not (.isVisible actor))))
+  (.setVisible actor (not (visible? actor))))
 
 (defn find-ancestor
   [^com.badlogic.gdx.scenes.scene2d.Actor actor clazz]
