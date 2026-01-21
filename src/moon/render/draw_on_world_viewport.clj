@@ -1,13 +1,13 @@
 (ns moon.render.draw-on-world-viewport
-  (:require [clj.api.space.earlygrey.shape-drawer :as sd]
-            [moon.ctx :as ctx]
+  (:require [moon.ctx :as ctx]
             [moon.graphics.camera :as camera])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+           (com.badlogic.gdx.utils.viewport Viewport)
+           (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn do!
   [{:keys [^Batch ctx/batch
-           ctx/shape-drawer
+           ^ShapeDrawer ctx/shape-drawer
            ctx/unit-scale
            ctx/world-unit-scale
            ctx/world-viewport]
@@ -19,10 +19,12 @@
   (.setColor batch 1 1 1 1)
   (.setProjectionMatrix batch (camera/combined (Viewport/.getCamera world-viewport)))
   (.begin batch)
-  (sd/with-line-width shape-drawer world-unit-scale
+  (let [old-line-width (.getDefaultLineWidth shape-drawer)]
+    (.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
     (doseq [f draw-fns]
       (ctx/draw! ctx (f ctx)))
-    (reset! unit-scale 1))
+    (reset! unit-scale 1)
+    (.setDefaultLineWidth shape-drawer old-line-width))
   (.end batch)
   ctx)

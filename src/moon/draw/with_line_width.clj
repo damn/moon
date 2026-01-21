@@ -1,11 +1,13 @@
 (ns moon.draw.with-line-width
-  (:require [clj.api.space.earlygrey.shape-drawer :as sd]
-            [moon.ctx :as ctx]))
+  (:require [moon.ctx :as ctx])
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn do!
-  [{:keys [ctx/shape-drawer]
+  [{:keys [^ShapeDrawer ctx/shape-drawer]
     :as ctx}
    width
    draws]
-  (sd/with-line-width shape-drawer width
-    (ctx/draw! ctx draws)))
+  (let [old-line-width (.getDefaultLineWidth shape-drawer)]
+    (.setDefaultLineWidth shape-drawer (* width old-line-width))
+    (ctx/draw! ctx draws)
+    (.setDefaultLineWidth shape-drawer old-line-width)))

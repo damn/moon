@@ -2,7 +2,7 @@
   (:import (com.badlogic.gdx.graphics Color)))
 
 (defn float-bits
-  "Calls `Color/toFloatBits`[link]."
+  ^Float
   [[r g b a]]
   (Color/toFloatBits (float r)
                      (float g)

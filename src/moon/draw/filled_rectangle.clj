@@ -1,9 +1,9 @@
 (ns moon.draw.filled-rectangle
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [clj.api.space.earlygrey.shape-drawer :as sd]))
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color])
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn do!
-  [{:keys [ctx/shape-drawer]}
+  [{:keys [^ShapeDrawer ctx/shape-drawer]}
    x y w h color]
-  (sd/set-color! shape-drawer (color/float-bits color))
-  (sd/filled-rectangle! shape-drawer x y w h))
+  (.setColor shape-drawer (color/float-bits color))
+  (.filledRectangle shape-drawer (float x) (float y) (float w) (float h)))

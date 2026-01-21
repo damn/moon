@@ -1,15 +1,15 @@
 (ns moon.draw.sector
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [clj.api.space.earlygrey.shape-drawer :as sd]
-            [clojure.math :as math]))
+            [clojure.math :as math])
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn do!
-  [{:keys [ctx/shape-drawer]}
+  [{:keys [^ShapeDrawer ctx/shape-drawer]}
    [center-x center-y] radius start-angle degree color]
-  (sd/set-color! shape-drawer (color/float-bits color))
-  (sd/sector! shape-drawer
-              center-x
-              center-y
-              radius
-              (math/to-radians start-angle)
-              (math/to-radians degree)))
+  (.setColor shape-drawer (color/float-bits color))
+  (.sector shape-drawer
+           center-x
+           center-y
+           radius
+           (math/to-radians start-angle)
+           (math/to-radians degree)))
