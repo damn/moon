@@ -8,9 +8,7 @@
             [moon.ui.group :as group]
             [moon.ui.table :as table]
             [moon.utils :as utils])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn malli-form [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
@@ -75,7 +73,10 @@
                                                (rebuild! ctx))
                                  :skin skin}))
                       :left? true}
-                     {:actor (Label. label-text ^Skin skin)}]]})
+                     {:actor (ui/actor
+                              {:type :ui/label
+                               :label/text label-text
+                               :label/skin skin})}]]})
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
     :pad-top 2

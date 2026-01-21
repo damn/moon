@@ -1,9 +1,7 @@
 (ns moon.ui.data-viewer-window
   (:require [moon.stage :as stage]
             [moon.ui :as ui])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               ScrollPane
-                                               Skin)))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui ScrollPane)))
 
 (defn- k->label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -39,7 +37,10 @@
                                         :height 500
                                         :skin skin})))
       :skin skin})
-    (Label. (v->text v) ^Skin skin)))
+    (ui/actor
+     {:type :ui/label
+      :label/text (v->text v)
+      :label/skin skin})))
 
 (defn create
   [{:keys [title
@@ -54,7 +55,10 @@
         scroll-pane-table (ui/actor
                            {:type :ui/table
                             :rows (for [{:keys [label actor]} rows]
-                                    [{:actor (Label. label ^Skin skin)}
+                                    [{:actor (ui/actor
+                                              {:type :ui/label
+                                               :label/text label
+                                               :label/skin skin})}
                                      {:actor actor}])})
         scroll-pane-cell (let [table (ui/actor
                                       {:type :ui/table

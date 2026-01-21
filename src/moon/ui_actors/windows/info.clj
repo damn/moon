@@ -3,8 +3,6 @@
             [moon.stage :as stage]
             [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn- create*
@@ -14,7 +12,10 @@
            visible?
            position
            set-label-text!]}]
-  (let [label (Label. "" ^Skin skin)
+  (let [label (ui/actor
+               {:type :ui/label
+                :label/text ""
+                :label/skin skin})
         window (ui/actor
                 {:type :ui/window
                  :skin skin

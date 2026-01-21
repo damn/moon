@@ -1,19 +1,19 @@
 (ns moon.ui.error-window
   (:require [clojure.repl]
             [moon.ui :as ui]
-            [moon.utils :as utils])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)))
+            [moon.utils :as utils]))
 
 (defn create
   [{:keys [skin throwable]}]
   (ui/actor
    {:type :ui/window
     :title "Error"
-    :rows [[{:actor (Label. (binding [*print-level* 3]
-                              (utils/with-err-str
-                                (clojure.repl/pst throwable)))
-                            ^Skin skin)}]]
+    :rows [[{:actor (ui/actor
+                     {:type :ui/label
+                      :label/text (binding [*print-level* 3]
+                                    (utils/with-err-str
+                                      (clojure.repl/pst throwable)))
+                      :label/skin skin})}]]
     :modal? true
     :close-button? true
     :close-on-escape? true

@@ -12,6 +12,7 @@
    [:ui/group clj.api.com.badlogic.gdx.scenes.scene2d.group/create]
    [:ui/text-button moon.ui.text-button/create]
    [:ui/error-window moon.ui.error-window/create]
+   [:ui/label moon.ui.label/create]
    ]
   ]
  [moon.start.add-method/step moon.schema/create [[:default moon.schema.default/create]]]

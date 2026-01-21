@@ -3,9 +3,7 @@
             [moon.property :as property]
             [moon.textures :as textures]
             [moon.ui :as ui])
-  (:import (com.badlogic.gdx.scenes.scene2d Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)))
+  (:import (com.badlogic.gdx.scenes.scene2d Touchable)))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -47,7 +45,10 @@
                                  :drawable/scale image-scale
                                  :tooltip tooltip
                                  :skin skin})
-                               (doto (Label. extra-info-text ^Skin skin)
+                               (doto (ui/actor
+                                      {:type :ui/label
+                                       :label/text extra-info-text
+                                       :label/skin skin})
                                  (.setTouchable Touchable/disabled))]})})))
 
 (defn- overview-table-rows

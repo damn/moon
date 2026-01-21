@@ -1,12 +1,14 @@
 (ns moon.schema.default
-  (:require [moon.utils :as utils])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)))
+  (:require [moon.ui :as ui]
+            [moon.utils :as utils])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn create
-  [_ v {:keys [^Skin ctx/skin]}]
-  (Label. (utils/truncate (utils/->edn-str v) 60) skin))
+  [_ v {:keys [ctx/skin]}]
+  (ui/actor
+   {:type :ui/label
+    :label/text (utils/truncate (utils/->edn-str v) 60)
+    :label/skin skin}))
 
 (defn value
   [_  widget _schemas]
