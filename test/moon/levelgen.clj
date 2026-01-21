@@ -5,6 +5,7 @@
 ; shows commit/branch/etc. ?
 (ns moon.levelgen
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table]
+            [clj.api.com.badlogic.gdx.graphics.color :as color]
             [moon.ui.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -124,7 +125,7 @@
                    :ctx/world-viewport world-viewport
                    :ctx/ui-viewport ui-viewport
                    :ctx/camera (.getCamera world-viewport)
-                   :ctx/color-setter (constantly [1 1 1 1])
+                   :ctx/color-setter (constantly (color/float-bits [1 1 1 1]))
                    :ctx/zoom-speed 0.1
                    :ctx/camera-movement-speed 1
                    :ctx/sprite-batch sprite-batch
