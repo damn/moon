@@ -8,6 +8,9 @@
   (find-actor [group actor-name]
     (.findActor group actor-name))
 
+  (children [group]
+    (.getChildren group))
+
   (set-opts! [group opts]
     (run! (fn [actor]
             (.addActor group actor))

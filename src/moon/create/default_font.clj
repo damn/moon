@@ -1,5 +1,6 @@
 (ns moon.create.default-font
-  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
+  (:import (com.badlogic.gdx Files)
+           (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
@@ -22,7 +23,7 @@
     font))
 
 (defn do!
-  [{:keys [ctx/files]
+  [{:keys [^Files ctx/files]
     :as ctx}
    {:keys [path params]}]
   (assoc ctx :ctx/default-font (generate-font (.internal files path)

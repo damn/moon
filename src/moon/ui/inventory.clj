@@ -8,7 +8,7 @@
 
 (defn- find-cell [group cell]
   (first (filter #(= (Actor/.getUserObject %) cell)
-                 (.getChildren group))))
+                 (group/children group))))
 
 (defn- window->cell [inventory-window cell]
   (-> inventory-window

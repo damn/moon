@@ -5,6 +5,7 @@
             [moon.schemas :as schemas]
             [moon.stage :as stage]
             [moon.ui :as ui]
+            [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.table :as table]
             [moon.utils :as utils])
@@ -18,7 +19,7 @@
 
 (defn- map-widget-table-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? Actor/.getUserObject) (.getChildren table))
+        (for [widget (filter (comp vector? Actor/.getUserObject) (group/children table))
               :let [[k _] (Actor/.getUserObject widget)]]
           [k (schema/value (get schemas k) widget schemas)])))
 
@@ -40,7 +41,7 @@
                              (group/find-actor "scroll-pane-table")
                              (group/find-actor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
-    (.remove window)
+    (actor/remove! window)
     (stage/add-actor! stage
                       (ui/actor
                        {:type :ui/property-editor-window
@@ -66,10 +67,10 @@
                                 {:type :ui/text-button
                                  :text "-"
                                  :on-clicked (fn [_actor ctx]
-                                               (.remove (first (filter (fn [actor]
-                                                                         (and (Actor/.getUserObject actor)
-                                                                              (= k ((Actor/.getUserObject actor) 0))))
-                                                                       (.getChildren table))))
+                                               (actor/remove! (first (filter (fn [actor]
+                                                                               (and (Actor/.getUserObject actor)
+                                                                                    (= k ((Actor/.getUserObject actor) 0))))
+                                                                             (group/children table))))
                                                (rebuild! ctx))
                                  :skin skin}))
                       :left? true}
@@ -115,7 +116,7 @@
                  {:type :ui/text-button
                   :text (name k)
                   :on-clicked (fn [_actor ctx]
-                                (.remove window)
+                                (actor/remove! window)
                                 (table/add-rows! map-widget-table [(component-row skin
                                                                                   (build-value-widget ctx
                                                                                                       (get schemas k)

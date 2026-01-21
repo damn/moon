@@ -1,7 +1,9 @@
 (ns moon.ui.actor)
 
 (defprotocol Actor
+  (stage [_])
   (visible? [_])
+  (remove! [_])
   (set-opts! [_ opts]))
 
 (defn toggle-visible! [^com.badlogic.gdx.scenes.scene2d.Actor actor]

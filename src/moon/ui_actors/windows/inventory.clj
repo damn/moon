@@ -3,7 +3,8 @@
             [moon.inventory :as inventory]
             [moon.textures :as textures]
             [moon.stage :as stage]
-            [moon.ui :as ui])
+            [moon.ui :as ui]
+            [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -17,19 +18,18 @@
 (defn- draw-cell-rect-actor [draw-cell-rect]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
-      (when-let [stage (.getStage this)]
+      (when-let [stage (actor/stage this)]
         (let [{:keys [ctx/player-eid
                       ctx/ui-mouse-position]
-               :as ctx} (.ctx stage)]
-          ; TODO here just a simple callback ?
+               :as ctx} (stage/ctx stage)]
           (ctx/draw! ctx
                      (let [[x y] ui-mouse-position]
                        (draw-cell-rect @player-eid
-                                       (.getX this)
-                                       (.getY this)
-                                       (let [v2 (.stageToLocalCoordinates this (Vector2. x y))]
-                                         (.hit this (.x v2) (.y v2) true))
-                                       (Actor/.getUserObject (.getParent this))))))))))
+                                       (Actor/.getX this)
+                                       (Actor/.getY this)
+                                       (let [v2 (Actor/.stageToLocalCoordinates this (Vector2. x y))]
+                                         (Actor/.hit this (.x v2) (.y v2) true))
+                                       (Actor/.getUserObject (Actor/.getParent this))))))))))
 
 (defn- create-inventory-window*
   [{:keys [position
@@ -135,5 +135,5 @@
       :clicked-cell-listener (fn [cell]
                                (proxy [ClickListener] []
                                  (clicked [event x y]
-                                   (clicked-inventory-cell cell (.ctx (Event/.getStage event))))))
+                                   (clicked-inventory-cell cell (stage/ctx (Event/.getStage event))))))
       :slot->texture-region slot->texture-region})))

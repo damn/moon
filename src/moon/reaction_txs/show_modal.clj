@@ -25,7 +25,7 @@
                                        {:type :ui/text-button
                                         :text button-text
                                         :on-clicked (fn [_actor _ctx]
-                                                      (.remove
+                                                      (actor/remove!
                                                        (-> stage
                                                            stage/root
                                                            (group/find-actor "moon.ui.modal-window")))

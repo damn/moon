@@ -24,7 +24,7 @@
     (->> (-> stage
              stage/root
              (group/find-actor "moon.ui.windows"))
-         .getChildren
+         group/children
          (run! #(.setVisible % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory input/controls))

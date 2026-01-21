@@ -1,5 +1,6 @@
 (ns moon.ui-actors.action-bar
   (:require [moon.ui :as ui]
+            [moon.ui.actor :as actor]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
@@ -55,6 +56,6 @@
   (remove-skill! [action-bar skill-id]
     (let [{:keys [horizontal-group button-group]} (get-data action-bar)
           button (get horizontal-group skill-id)]
-      (.remove button)
+      (actor/remove! button)
       (ButtonGroup/.remove button-group ^Button button)
       nil)))

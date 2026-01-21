@@ -36,7 +36,7 @@
                                (let [new-ctx (update ctx :ctx/db f)
                                      stage (.getStage actor)]
                                  (set! (.ctx stage) new-ctx))
-                               (.remove (actor/find-ancestor actor Window))
+                               (actor/remove! (actor/find-ancestor actor Window))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage

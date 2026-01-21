@@ -11,7 +11,8 @@
            ctx/unit-scale
            ctx/world-unit-scale
            ctx/world-viewport]
-    :as ctx}]
+    :as ctx}
+   draw-fns]
   ; fix scene2d.ui.tooltip flickering
   ; _everything_ flickers with vis ui tooltip! it changes batch color somehow and does not
   ; change it back !
@@ -20,13 +21,8 @@
   (.begin batch)
   (sd/with-line-width shape-drawer world-unit-scale
     (reset! unit-scale world-unit-scale)
-    (doseq [f '[
-                #_moon.draw-on-world-viewport.draw-tile-grid/draws
-                moon.draw-on-world-viewport.draw-cell-debug/draws
-                moon.draw-on-world-viewport.draw-entities/do!
-                #_moon.application.render.draw-on-world-viewport.geom-test/do!
-                moon.draw-on-world-viewport.highlight-mouseover-tile/draws]]
-      (ctx/draw! ctx ((requiring-resolve f) ctx)))
+    (doseq [f draw-fns]
+      (ctx/draw! ctx (f ctx)))
     (reset! unit-scale 1))
   (.end batch)
   ctx)

@@ -18,8 +18,14 @@
 
 (extend-type Actor
   moon.ui.actor/Actor
+  (stage [actor]
+    (.getStage actor))
+
   (visible? [actor]
     (.isVisible actor))
+
+  (remove! [actor]
+    (.remove actor))
 
   (set-opts! [actor opts]
     (doseq [[k v] opts

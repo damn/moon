@@ -5,6 +5,9 @@
 
 (extend-type Stage
   moon.stage/Stage
+  (ctx [stage]
+    (.ctx stage))
+
   (add-actor! [stage actor]
     (.addActor stage actor))
 
