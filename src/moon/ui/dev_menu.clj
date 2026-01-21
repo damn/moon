@@ -13,8 +13,8 @@
 (defn- set-label-text-actor [label text-fn]
   (proxy [Actor] []
     (act [delta]
-      (when-let [stage (.getStage this)]
-        (.setText label (text-fn (.ctx stage))))
+      (when-let [stage (Actor/.getStage this)]
+        (.setText label (text-fn (stage/ctx stage))))
       (let [^Actor this this]
         (proxy-super act delta)))))
 
@@ -69,6 +69,8 @@
     table))
 
 (defn create
+  "Input: menus is : .. update-labels is: .. Skin is ..
+  Returns a table ui actor with ..."
   [{:keys [menus update-labels skin]}]
   (ui/actor
    {:type :ui/table

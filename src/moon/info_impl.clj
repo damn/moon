@@ -300,4 +300,8 @@
   ;  Now it gets interesting!
   ; We are not sure about the possible shape of our entities and which 'types' of shapes are there!!!
   ; => game data state space schema
+  ; => game is a play with a state space
+  ; e.g. change level
+  ; spawn somethinbg
+  ; ?
   )
