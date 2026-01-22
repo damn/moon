@@ -4,7 +4,7 @@
 ; project program read code, show LoC, generate docs button, generate ns graph button, start button, etc.
 ; shows commit/branch/etc. ?
 (ns moon.levelgen
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table]
+  (:require [moon.ui-impl.table]
             [clj.api.com.badlogic.gdx.graphics.color :as color]
             [moon.ui.table :as table]
             [clojure.edn :as edn]

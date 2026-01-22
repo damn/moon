@@ -1,9 +1,7 @@
 (ns moon.ui-impl.data-viewer-window
   (:require [moon.stage :as stage]
-            [moon.ui :as ui])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
-                                               Skin)))
+            [moon.ui :as ui]
+            [moon.ui.actor :as actor]))
 
 (defn- k->label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -25,24 +23,22 @@
 
 (declare create)
 
-(defn- v->actor [v skin]
+(defn- v->actor-decl [v skin]
   (if (map? v)
-    (ui/actor
-     {:type :ui/text-button
-      :text "Map"
-      :on-clicked (fn [actor _ctx]
-                    (stage/add-actor! (Actor/.getStage actor)
-                                      (create
-                                       {:title "title"
-                                        :data v
-                                        :width 500
-                                        :height 500
-                                        :skin skin})))
-      :skin skin})
-    (ui/actor
-     {:type :ui/label
-      :label/text (v->text v)
-      :label/skin skin})))
+    {:type :ui/text-button
+     :text "Map"
+     :on-clicked (fn [actor _ctx]
+                   (stage/add-actor! (actor/stage actor)
+                                     (create
+                                      {:title "title"
+                                       :data v
+                                       :width 500
+                                       :height 500
+                                       :skin skin})))
+     :skin skin}
+    {:type :ui/label
+     :label/text (v->text v)
+     :label/skin skin}))
 
 (defn create
   [{:keys [title
@@ -53,7 +49,7 @@
   {:pre [(map? data)]}
   (let [rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
-                :actor (v->actor v skin)})
+                :actor (ui/actor (v->actor-decl v skin))})
         scroll-pane-table (ui/actor
                            {:type :ui/table
                             :rows (for [{:keys [label actor]} rows]
@@ -67,8 +63,10 @@
                                        :rows [[scroll-pane-table]]
                                        :cell-defaults {:pad 1}
                                        :pack? true})]
-                           {:actor (doto (ScrollPane. ^Actor table ^Skin skin)
-                                     (.setName "dbg scroll pane"))
+                           {:actor (ui/actor
+                                    {:type :ui/scroll-pane
+                                     :scroll-pane/actor table
+                                     :scroll-pane/skin skin})
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]

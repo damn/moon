@@ -9,6 +9,7 @@
    [:ui/label                    moon.ui-impl.label/create]
    [:ui/property-editor-window   moon.ui-impl.property-editor-window/create]
    [:ui/property-overview-window moon.ui-impl.property-overview-window/create]
+   [:ui/scroll-pane              moon.ui-impl.scroll-pane/create]
    [:ui/stack                    moon.ui-impl.stack/create]
    [:ui/table                    moon.ui-impl.table/create]
    [:ui/text-button              moon.ui-impl.text-button/create]
