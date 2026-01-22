@@ -1,4 +1,4 @@
-(ns moon.ui.window
+(ns moon.ui-impl.window
   (:require [moon.ui.actor :as actor]
             [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin

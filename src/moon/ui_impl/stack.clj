@@ -1,4 +1,4 @@
-(ns clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack
+(ns moon.ui-impl.stack
   (:require [moon.ui.widget-group :as widget-group])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Stack)))
 

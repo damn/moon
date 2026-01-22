@@ -1,4 +1,4 @@
-(ns clj.api.com.badlogic.gdx.scenes.scene2d.ui.table
+(ns moon.ui-impl.table
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [moon.ui.table :as table]
             [moon.ui.widget-group :as widget-group])

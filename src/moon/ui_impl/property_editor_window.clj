@@ -1,4 +1,4 @@
-(ns moon.ui.property-editor-window
+(ns moon.ui-impl.property-editor-window
   (:require [moon.db :as db]
             [moon.input :as input]
             [moon.property :as property]

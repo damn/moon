@@ -1,4 +1,4 @@
-(ns moon.ui.property-overview-window
+(ns moon.ui-impl.property-overview-window
   (:require [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]

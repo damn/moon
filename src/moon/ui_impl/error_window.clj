@@ -1,4 +1,4 @@
-(ns moon.ui.error-window
+(ns moon.ui-impl.error-window
   (:require [clojure.repl]
             [moon.ui :as ui]
             [moon.utils :as utils]))

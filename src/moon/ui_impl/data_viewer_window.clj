@@ -1,4 +1,4 @@
-(ns moon.ui.data-viewer-window
+(ns moon.ui-impl.data-viewer-window
   (:require [moon.stage :as stage]
             [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
