@@ -5,8 +5,10 @@
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
                                             Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Image
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Image
                                                Skin
+                                               Table
                                                TextButton)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
@@ -14,12 +16,12 @@
   (proxy [Actor] []
     (act [delta]
       (when-let [stage (Actor/.getStage this)]
-        (.setText label (text-fn (stage/ctx stage))))
+        (Label/.setText label ^String (text-fn (stage/ctx stage))))
       (let [^Actor this this]
         (proxy-super act delta)))))
 
 (defn add-upd-label!
-  ([skin table text-fn icon]
+  ([skin ^Table table text-fn icon]
    (let [label (ui/actor
                 {:type :ui/label
                  :label/text ""
@@ -30,7 +32,7 @@
                              label]]})]
      (.addActor table (set-label-text-actor label text-fn))
      (.expandX (.right (.add table ^Actor sub-table)))))
-  ([skin table text-fn]
+  ([skin ^Table table text-fn]
    (let [label (ui/actor
                 {:type :ui/label
                  :label/text ""
@@ -45,17 +47,17 @@
     :pack? true
     :title label
     :rows [(for [{:keys [label on-click]} items]
-             {:actor (doto (TextButton. label ^Skin skin)
+             {:actor (doto (TextButton. ^String label ^Skin skin)
                        (.addListener
                         (proxy [ChangeListener] []
                           (changed [event actor]
-                            (on-click actor (.ctx (Event/.getStage event)))))))})]}))
+                            (on-click actor (stage/ctx (Event/.getStage event)))))))})]}))
 
 (defn- main-table [^Skin skin menus update-labels]
   (let [table (ui/actor
                {:type :ui/table
                 :rows [(for [{:keys [label items]} menus]
-                         {:actor (doto (TextButton. label skin)
+                         {:actor (doto (TextButton. ^String label skin)
                                    (.addListener
                                     (proxy [ChangeListener] []
 
@@ -69,8 +71,6 @@
     table))
 
 (defn create
-  "Input: menus is : .. update-labels is: .. Skin is ..
-  Returns a table ui actor with ..."
   [{:keys [menus update-labels skin]}]
   (ui/actor
    {:type :ui/table
@@ -82,7 +82,7 @@
                            {:type :ui/label
                             :label/text ""
                             :label/skin skin})
-                      (.setTouchable Touchable/disabled))
+                      (Actor/.setTouchable Touchable/disabled))
              :expand? true
              :fill-x? true
              :fill-y? true}]]

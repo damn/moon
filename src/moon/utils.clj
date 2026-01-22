@@ -84,7 +84,7 @@
   (assert (> (count ks) 1))
   (update-in m (drop-last ks) dissoc (last ks)))
 
-(defn ->edn-str [v]
+(defn ->edn-str ^String [v]
   (binding [*print-level* nil]
     (pr-str v)))
 

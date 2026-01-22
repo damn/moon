@@ -3,7 +3,8 @@
             [moon.stage :as stage]
             [moon.ui.message :as message])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+           (com.badlogic.gdx.utils.viewport Viewport)
+           (moon Stage)))
 
 (defn- draw-message [state vp-width vp-height]
   (when-let [text (:text @state)]
@@ -18,7 +19,7 @@
 (defn create [_ctx]
   (doto (proxy [Actor] []
           (draw [_batch _parent-alpha]
-            (when-let [stage (.getStage this)]
+            (when-let [^Stage stage (Actor/.getStage this)]
               (ctx/draw! (.ctx stage)
                          [(draw-message (Actor/.getUserObject this)
                                         (Viewport/.getWorldWidth  (stage/viewport stage))

@@ -26,8 +26,8 @@
       :height height}))
 
   (overlaps? [body other-body]
-    (Intersector/overlaps (body/rectangle body)
-                          (body/rectangle other-body)))
+    (Intersector/overlaps ^Rectangle (body/rectangle body)
+                          ^Rectangle (body/rectangle other-body)))
 
   (distance [body other-body]
     (v/distance (:body/position body)

@@ -11,7 +11,8 @@
   (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Window)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+           (com.badlogic.gdx.utils.viewport Viewport)
+           (moon Stage)))
 
 (defn create
   [{:keys [ctx
@@ -24,17 +25,17 @@
         ; build for get-widget-value
         ; or find a way to find the widget from the context @ save button
         ; should be possible
-        widget (schema/create schema property ctx)
+        widget (schema/create schema property ctx) ; FIXME here
         scroll-pane-height (Viewport/.getWorldHeight (stage/viewport stage))
         get-widget-value #(schema/value schema widget schemas)
         property-id (:property/id property)
         with-window-close (fn [f]
-                            (fn [actor {:keys [ctx/skin
-                                               ctx/stage]
-                                        :as ctx}]
+                            (fn [^Actor actor {:keys [ctx/skin
+                                                      ctx/stage]
+                                               :as ctx}]
                               (try
                                (let [new-ctx (update ctx :ctx/db f)
-                                     stage (.getStage actor)]
+                                     ^Stage stage (.getStage actor)]
                                  (set! (.ctx stage) new-ctx))
                                (actor/remove! (actor/find-ancestor actor Window))
                                (catch Throwable t
@@ -49,7 +50,7 @@
                                              (db/update! db (get-widget-value))))
         actors [(proxy [Actor] []
                   (act [delta]
-                    (when-let [stage (.getStage this)]
+                    (when-let [^Stage stage (Actor/.getStage this)]
                       (let [{:keys [ctx/input]
                              :as ctx} (.ctx stage)]
                         (when (input/key-just-pressed? input Input$Keys/ENTER)

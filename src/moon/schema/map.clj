@@ -9,7 +9,8 @@
             [moon.ui.group :as group]
             [moon.ui.table :as table]
             [moon.utils :as utils])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn malli-form [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
@@ -24,9 +25,9 @@
           [k (schema/value (get schemas k) widget schemas)])))
 
 (defn- build-value-widget [ctx schema k v]
-  (let [widget (schema/create schema v ctx)]
+  (let [widget (schema/create schema v ctx)] ; - wait its used also somewhere else w/o this schema/create?
     ; FIXME assert no user object !
-    (.setUserObject widget [k v])
+    (Actor/.setUserObject widget [k v])
     widget))
 
 (defn- rebuild!
@@ -127,7 +128,7 @@
                                                                                   map-widget-table)])
                                 (rebuild! ctx))
                   :skin skin})}]))
-    (.pack window)
+    (Window/.pack window)
     window))
 
 (defn- horiz-sep [colspan]

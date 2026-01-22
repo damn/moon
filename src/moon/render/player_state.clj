@@ -19,7 +19,7 @@
 
 (defn- button?
   "Returns true if the actor or its parent is a button."
-  [actor]
+  [^Actor actor]
   (or (button-class? actor)
       (and (.getParent actor)
            (button-class? (.getParent actor)))))
@@ -27,7 +27,7 @@
 ; FIXME does not work
 (defn- window-title-bar?
   "Returns true if the actor is a window title bar."
-  [actor]
+  [^Actor actor]
   (when (instance? Label actor)
     (when-let [p (.getParent actor)]
       (when-let [p (.getParent p)]

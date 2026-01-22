@@ -13,7 +13,8 @@
                                                Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
                                                   TextureRegionDrawable)
-           (com.badlogic.gdx.math Vector2)))
+           (com.badlogic.gdx.math Vector2)
+           (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
   (proxy [Widget] []
@@ -130,8 +131,8 @@
      {:skin skin
       :title "Inventory"
       :actor/visible? false
-      :position [(.getWorldWidth (stage/viewport stage))
-                 (.getWorldHeight (stage/viewport stage))]
+      :position [(Viewport/.getWorldWidth  (stage/viewport stage))
+                 (Viewport/.getWorldHeight (stage/viewport stage))]
       :clicked-cell-listener (fn [cell]
                                (proxy [ClickListener] []
                                  (clicked [event x y]

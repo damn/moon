@@ -21,7 +21,7 @@
   (or image
       (first (:animation/frames animation))))
 
-(defn tooltip [property]
+(defn tooltip ^String [property]
   (binding [*print-level* 2]
     (with-out-str
      (pprint property))))

@@ -11,6 +11,7 @@
            (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Skin
+                                               Table
                                                TextTooltip
                                                Window)))
 
@@ -24,13 +25,13 @@
   [{:keys [ctx/db
            ctx/skin
            ctx/textures]}
-   table
+   ^Table table
    property-type
    property-ids]
   (let [redo-rows (fn [ctx property-ids]
                     (.clearChildren table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (.pack (actor/find-ancestor table Window)))]
+                    (Window/.pack (actor/find-ancestor table Window)))]
     (table/add-rows!
      table
      [[{:actor (ui/actor

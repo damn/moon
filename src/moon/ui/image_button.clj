@@ -7,7 +7,8 @@
                                                TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener
                                                   Drawable
-                                                  TextureRegionDrawable)))
+                                                  TextureRegionDrawable)
+           (moon Stage)))
 
 (defn create
   [{:keys [^TextureRegion drawable/texture-region
@@ -24,7 +25,7 @@
     (when on-clicked
       (.addListener image-button (proxy [ChangeListener] []
                                    (changed [event actor]
-                                     (on-clicked actor (.ctx (Event/.getStage event)))))))
+                                     (on-clicked actor (.ctx ^Stage (Event/.getStage event)))))))
     (when-let [tooltip (:tooltip opts)]
       (.addListener image-button (TextTooltip. (str tooltip) skin)))
     (table/set-opts! image-button opts)))

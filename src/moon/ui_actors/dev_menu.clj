@@ -8,7 +8,9 @@
             [moon.ui.dev-menu :as dev-menu]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx Graphics)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+           (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.utils.viewport Viewport)
+           (moon Stage)))
 
 (defn- open-editor!
   [{:keys [ctx/db
@@ -70,10 +72,10 @@
                                                   create-world nil
                                                   #_(requiring-resolve 'moon.application.create.world/step)
                                                   ui stage
-                                                  stage (.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
+                                                  stage (Actor/.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                               (rebuild-actors! ui ctx)
                                               #_(Disposable/.dispose (:ctx/tiled-map ctx))
-                                              (set! (.ctx stage) (create-world ctx world-fn))))})}
+                                              (set! (.ctx ^Stage stage) (create-world ctx world-fn))))})}
         update-labels [{:label "elapsed-time"
                         :update-fn (fn [{:keys [ctx/elapsed-time]}]
                                      (str (utils/readable-number elapsed-time) " seconds"))

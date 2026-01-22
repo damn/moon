@@ -4,11 +4,11 @@
             [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group])
-  (:import (com.badlogic.gdx.utils.viewport Viewport)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def zoom-speed 0.025)
 
-; also does >1 thing, and stage inputlistener do ?
 (defn do!
   [{:keys [ctx/input
            ctx/stage
@@ -25,7 +25,7 @@
              stage/root
              (group/find-actor "moon.ui.windows"))
          group/children
-         (run! #(.setVisible % false))))
+         (run! #(Actor/.setVisible % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory input/controls))
     (-> stage

@@ -5,12 +5,14 @@
             [moon.stage :as stage]
             [moon.utils :as utils]
             [moon.val-max :as val-max])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.utils.viewport Viewport)
+           (moon Stage)))
 
 (defn- create-hp-mana-bar* [create-draws]
   (proxy [Actor] []
     (draw [_batch _parent-alpha]
-      (when-let [stage (.getStage this)]
+      (when-let [^Stage stage (Actor/.getStage this)]
         (ctx/draw! (.ctx stage)
                    (create-draws (.ctx stage)))))))
 
@@ -28,7 +30,7 @@
                   hpcontent-file
                   manacontent-file
                   y-mana]} config
-          [x y-mana] [(/ (.getWorldWidth (stage/viewport stage)) 2)
+          [x y-mana] [(/ (Viewport/.getWorldWidth (stage/viewport stage)) 2)
                       y-mana]
           rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
           y-hp (+ y-mana rahmenh)

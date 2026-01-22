@@ -3,7 +3,9 @@
             [moon.ui.actor :as actor]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.group :as group])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Group)
+           (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup
                                                HorizontalGroup
                                                Table)))
@@ -11,7 +13,7 @@
 (defn- get-data [action-bar]
   (let [group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
-     :button-group (.getUserObject group)}))
+     :button-group (Actor/.getUserObject group)}))
 
 (defn create [_ctx]
   (ui/actor
@@ -49,7 +51,7 @@
                    :drawable/scale 2
                    :tooltip tooltip-text
                    :skin skin})]
-      (.addActor horizontal-group button)
+      (Group/.addActor horizontal-group button)
       (ButtonGroup/.add button-group ^Button button)
       nil))
 

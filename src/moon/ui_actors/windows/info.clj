@@ -3,7 +3,10 @@
             [moon.stage :as stage]
             [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Window)
+           (com.badlogic.gdx.utils.viewport Viewport)
+           (moon Stage)))
 
 (defn- create*
   [skin
@@ -16,19 +19,19 @@
                {:type :ui/label
                 :label/text ""
                 :label/skin skin})
-        window (ui/actor
-                {:type :ui/window
-                 :skin skin
-                 :title title
-                 :actor/name actor-name
-                 :actor/visible? visible?
-                 :actor/position position
-                 :rows [[{:actor label
-                          :expand? true}]]})]
+        ^Window window (ui/actor
+                        {:type :ui/window
+                         :skin skin
+                         :title title
+                         :actor/name actor-name
+                         :actor/visible? visible?
+                         :actor/position position
+                         :rows [[{:actor label
+                                  :expand? true}]]})]
     (.addActor window (proxy [Actor] []
                         (act [delta]
-                          (when-let [stage (.getStage this)]
-                            (.setText label (set-label-text! (.ctx stage))))
+                          (when-let [^Stage stage (Actor/.getStage this)]
+                            (Label/.setText label ^String (set-label-text! (.ctx stage))))
                           (.pack window)
                           (let [^Actor this this]
                             (proxy-super act delta)))))

@@ -1,6 +1,7 @@
 (ns moon.tiled-map
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapProperties)
+           (com.badlogic.gdx.maps MapProperties
+                                  MapLayers)
            (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer
                                         TiledMapTileLayer$Cell)
@@ -34,7 +35,7 @@
 
 (defn add-layer!
   "`properties` is optional. Returns nil."
-  [tiled-map
+  [^TiledMap tiled-map
    {:keys [name
            visible?
            properties
@@ -74,7 +75,8 @@
     (.put (.getProperties tile) property-name property-value)
     tile))
 
-(defn- tile-movement-property [tiled-map layer [x y]]
+(defn- tile-movement-property
+  [^TiledMap tiled-map ^TiledMapTileLayer layer [x y]]
   (let [position [x y]]
     (when-let [cell (.getCell layer x y)]
       (let [value (-> cell
@@ -89,15 +91,16 @@
                      " and layer " (.getName layer) " is undefined."))
         value))))
 
-(defn- movement-property-layers [tiled-map]
+(defn- movement-property-layers
+  [^TiledMap tiled-map]
   (->> tiled-map
        .getLayers
        reverse
-       (filter #(.get (.getProperties %) "movement-properties"))))
+       (filter #(.get (TiledMapTileLayer/.getProperties %) "movement-properties"))))
 
 (defn movement-properties [tiled-map position]
   (for [layer (movement-property-layers tiled-map)]
-    [(.getName layer)
+    [(TiledMapTileLayer/.getName layer)
      (tile-movement-property tiled-map layer position)]))
 
 (defn movement-property [tiled-map position]
@@ -107,10 +110,10 @@
       "none"))
 
 (defn spawn-positions
-  [tiled-map]
+  [^TiledMap tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (.get (.getLayers tiled-map) layer-name)]
+        ^TiledMapTileLayer layer (.get (.getLayers tiled-map) layer-name)]
     (for [x (range (.getWidth layer))
           y (range (.getHeight layer))
           :let [position [x y]

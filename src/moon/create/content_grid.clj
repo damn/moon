@@ -1,6 +1,7 @@
 (ns moon.create.content-grid
   (:require [clojure.grid2d :as g2d]
-            [moon.content-grid :as content-grid]))
+            [moon.content-grid :as content-grid])
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn- update-entity! [{:keys [grid cell-w cell-h]} eid]
   (let [{:keys [moon.content-grid/content-cell
@@ -47,7 +48,7 @@
     :cell-w cell-size
     :cell-h cell-size}))
 
-(defn step [{:keys [ctx/tiled-map] :as ctx} cell-size]
+(defn step [{:keys [^TiledMap ctx/tiled-map] :as ctx} cell-size]
   (assoc ctx :ctx/content-grid (create-content-grid (.get (.getProperties tiled-map) "width")
                                                     (.get (.getProperties tiled-map) "height")
                                                     cell-size)))

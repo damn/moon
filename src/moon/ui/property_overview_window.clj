@@ -3,7 +3,8 @@
             [moon.property :as property]
             [moon.textures :as textures]
             [moon.ui :as ui])
-  (:import (com.badlogic.gdx.scenes.scene2d Touchable)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Touchable)))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -49,7 +50,7 @@
                                       {:type :ui/label
                                        :label/text extra-info-text
                                        :label/skin skin})
-                                 (.setTouchable Touchable/disabled))]})})))
+                                 (Actor/.setTouchable Touchable/disabled))]})})))
 
 (defn- overview-table-rows
   [db

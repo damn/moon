@@ -8,7 +8,8 @@
             [moon.tiled-map :as tiled-map]
             [moon.grid :as grid]
             [moon.cell :as cell])
-  (:import (com.badlogic.gdx.math Circle
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)
+           (com.badlogic.gdx.math Circle
                                   Intersector
                                   Rectangle)))
 
@@ -18,7 +19,7 @@
                    (fn [position]
                      (atom (cell/create position (cell-movement position))))))
 
-(defn step [{:keys [ctx/tiled-map] :as ctx}]
+(defn step [{:keys [^TiledMap ctx/tiled-map] :as ctx}]
   (assoc ctx :ctx/grid (create-world-grid (.get (.getProperties tiled-map) "width")
                                           (.get (.getProperties tiled-map) "height")
                                           #(case (tiled-map/movement-property tiled-map %)
@@ -50,7 +51,7 @@
          grid/cells->entities
          (filter #(Intersector/overlaps
                    (Circle. (position 0) (position 1) radius)
-                   (body/rectangle (:entity/body @%))))))
+                   ^Rectangle (body/rectangle (:entity/body @%))))))
 
   (cached-adjacent-cells [g2d cell]
     (if-let [result (:adjacent-cells @cell)]
@@ -103,8 +104,8 @@
                             (let [other-entity @other-entity]
                               (and (not= (:entity/id other-entity) entity-id)
                                    (:body/collides? (:entity/body other-entity))
-                                   (Intersector/overlaps (body/rectangle (:entity/body other-entity))
-                                                         (body/rectangle body))))))))))
+                                   (Intersector/overlaps ^Rectangle (body/rectangle (:entity/body other-entity))
+                                                         ^Rectangle (body/rectangle body))))))))))
 
   (nearest-enemy-distance [grid entity]
     (cell/nearest-entity-distance @(grid (mapv int (:body/position (:entity/body entity))))

@@ -6,19 +6,21 @@
             [moon.ui.table :as table]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Window)))
+           (com.badlogic.gdx.scenes.scene2d.ui Table
+                                               Window)
+           (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn malli-form [_ _schemas]
   :string)
 
 (declare sound-columns)
 
-(defn- rebuild-sound-widget! [table sound-name]
+(defn- rebuild-sound-widget! [^Table table sound-name]
   (fn [actor {:keys [ctx/skin]}]
     (.clearChildren table)
     (table/add-rows! table [(sound-columns skin table sound-name)])
     (actor/remove! (actor/find-ancestor actor Window))
-    (.pack (actor/find-ancestor table Window))
+    (Window/.pack (actor/find-ancestor table Window))
     (let [[k _] (Actor/.getUserObject table)]
       (.setUserObject table [k sound-name]))))
 
@@ -36,7 +38,7 @@
                         :center? true
                         :close-on-escape? true
                         :rows [[(scroll-pane-cell/create skin
-                                                         (.getWorldWidth (stage/viewport stage))
+                                                         (Viewport/.getWorldWidth (stage/viewport stage))
                                                          (for [sound-name (audio/sound-names audio)]
                                                            [{:actor (ui/actor
                                                                      {:type :ui/text-button

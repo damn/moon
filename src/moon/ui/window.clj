@@ -24,7 +24,7 @@
 
 (defn create
   [{:keys [^Skin skin modal?] :as opts}]
-  (let [window (create* opts skin)]
+  (let [^Window window (create* opts skin)]
     (.add (.getTitleTable window)
           ^Actor (doto (TextButton. "X" skin)
                    (.addListener

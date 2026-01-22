@@ -1,7 +1,9 @@
 (ns moon.ui.data-viewer-window
   (:require [moon.stage :as stage]
             [moon.ui :as ui])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui ScrollPane)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
+                                               Skin)))
 
 (defn- k->label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -29,7 +31,7 @@
      {:type :ui/text-button
       :text "Map"
       :on-clicked (fn [actor _ctx]
-                    (stage/add-actor! (.getStage actor)
+                    (stage/add-actor! (Actor/.getStage actor)
                                       (create
                                        {:title "title"
                                         :data v
@@ -65,7 +67,7 @@
                                        :rows [[scroll-pane-table]]
                                        :cell-defaults {:pad 1}
                                        :pack? true})]
-                           {:actor (doto (ScrollPane. table skin)
+                           {:actor (doto (ScrollPane. ^Actor table ^Skin skin)
                                      (.setName "dbg scroll pane"))
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))

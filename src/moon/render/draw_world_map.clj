@@ -1,11 +1,12 @@
-(ns moon.render.draw-world-map
-  (:require [moon.tiled-map-renderer :as tiled-map-renderer]))
+(ns moon.render.draw-world-map ; TODO rename to 'draw-tiled-map'
+  (:require [moon.tiled-map-renderer :as tiled-map-renderer])
+  (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn do!
   [{:keys [ctx/batch
            ctx/tiled-map
            ctx/world-unit-scale
-           ctx/world-viewport]
+           ^Viewport ctx/world-viewport]
     :as ctx}
    tile-color-setter]
   (tiled-map-renderer/draw! batch
