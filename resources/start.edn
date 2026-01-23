@@ -38,6 +38,9 @@
    [moon.schema.val-max           :s/val-max]
    [moon.schema.vector            :s/vector]]
   ]
+ ; make no 'or this or that' effect-context
+ ; decide on one context and then make effects/ or target-effects/
+ ; not nested ns
  [moon.start.add-methods/step
   {:required [moon.effect/applicable?
               moon.effect/handle]
@@ -56,6 +59,7 @@
    [moon.effects.target-all          :effects/target-all]
    [moon.effects.target-entity       :effects/target-entity]]
   ]
+ ; 'entity/' folder only this
  [moon.start.add-methods/step
   {:required []
    :optional [moon.entity/create
@@ -81,6 +85,8 @@
    [moon.entity.image :entity/image]
    [moon.entity.mouseover :entity/mouseover?]]
   ]
+ ; moon.entity-state/
+ ; 'moon.entity-state'
  [moon.start.add-methods/step
   {:required []
    :optional [moon.entity/create

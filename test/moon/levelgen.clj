@@ -1,8 +1,4 @@
-; TODO thies doesnt work anymore
-; =? Write tests first ?
-; => editor separate/etc/different starters/manual test checkboxes program ?
-; project program read code, show LoC, generate docs button, generate ns graph button, start button, etc.
-; shows commit/branch/etc. ?
+; java.lang.IllegalArgumentException: No method in multimethod 'malli-form' for dispatch value: :s/map
 (ns moon.levelgen
   (:require [moon.ui-impl.table]
             [clj.api.com.badlogic.gdx.graphics.color :as color]

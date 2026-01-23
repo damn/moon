@@ -1,7 +1,12 @@
 (ns moon.ui-impl.error-window
-  (:require [clojure.repl]
-            [moon.ui :as ui]
-            [moon.utils :as utils]))
+  (:require [clojure.repl :as repl]
+            [moon.ui :as ui]))
+
+(defmacro ^:private with-err-str [& body]
+  `(let [s# (new java.io.StringWriter)]
+     (binding [*err* s#]
+       ~@body
+       (str s#))))
 
 (defn create
   [{:keys [skin throwable]}]
@@ -11,8 +16,8 @@
     :rows [[{:actor (ui/actor
                      {:type :ui/label
                       :label/text (binding [*print-level* 3]
-                                    (utils/with-err-str
-                                      (clojure.repl/pst throwable)))
+                                    (with-err-str
+                                      (repl/pst throwable)))
                       :label/skin skin})}]]
     :modal? true
     :close-button? true

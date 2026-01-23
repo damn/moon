@@ -1,7 +1,7 @@
 {:state moon.application/state
  :create!  [moon.listener.create/do!
             [
-             [moon.create.get-gdx-state/step] ; why pass around if its global state, just use it directly ?
+             [moon.create.get-gdx-state/step] ; TODO pass at listener create
              [moon.create.colors/step {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
              [moon.create.cursors/do! {:path-format "cursors/%s.png"
                                        :data {:cursors/bag                   ["bag001"       [0   0]]
@@ -88,7 +88,7 @@
              [moon.create.add-leftout-keys/step]
              ]
             ]
- :render!  [moon.listener.render/do!
+ :render!  [moon.listener.render/do! ; TODO use InputMultiplexer for all input (will work for WASD movement?)
             [[moon.render.get-stage-ctx/do!]
              [moon.render.validate/do!]
              [moon.render.update-mouse/do!]
@@ -99,7 +99,7 @@
              ; document graphicc draw layers somewhere (cursor, ui, world-vp (..) , world-map, backgr color )
              ; reverse of that is the interaction state click handle (per render layer)
              [moon.render.clear-screen/do!]
-             [moon.render.draw-world-map/do! moon.tile-color-setter/create]
+             [moon.render.draw-world-map/do! moon.tile-color-setter/create] ; TODO 'draw-tiled-map'
              [moon.render.draw-on-world-viewport/do! [
                                                       #_moon.draw-on-world-viewport.draw-tile-grid/draws
                                                       moon.draw-on-world-viewport.draw-cell-debug/draws
@@ -107,9 +107,10 @@
                                                       #_moon.application.render.draw-on-world-viewport.geom-test/do!
                                                       moon.draw-on-world-viewport.highlight-mouseover-tile/draws
                                                       ]]
-             [moon.render.player-state/do!]
+             ; TODO 'draw-ui'
+             [moon.render.player-state/do!] ; TODO multiple
              [moon.render.assoc-paused/do!]
-             ; render/when-not-paused [fns]  or update-game?
+             ; TODO render/when-not-paused [fns]  or update-game?
              ; when-not-paused/ ( == game logic ?)
              [moon.render.update-time/do!]
              [moon.render.update-potential-fields/do!]

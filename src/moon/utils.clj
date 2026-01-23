@@ -93,12 +93,6 @@
     (str (subs s 0 limit) "...")
     s))
 
-(defmacro with-err-str [& body]
-  `(let [s# (new java.io.StringWriter)]
-     (binding [*err* s#]
-       ~@body
-       (str s#))))
-
 (defn apply-kvs [m f]
   (reduce (fn [m k]
             (assoc m k (f k (get m k))))
