@@ -10,7 +10,7 @@
            on-clicked
            ^Skin skin]}]
   (doto (TextButton. (str text) skin)
-    (.addListener
+    (.addListener ; TODO this is actor opts/listener !
      (proxy [ChangeListener] []
        (changed [^Event event actor]
          (on-clicked actor (.ctx ^Stage (.getStage event))))))))
