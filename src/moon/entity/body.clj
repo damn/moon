@@ -1,41 +1,12 @@
 (ns moon.entity.body
-  (:require [clojure.math.vector2 :as v]
-            [moon.body :as body]
-            [moon.rectangle :as rectangle]
-            [qrecord.core :as q])
-  (:import (com.badlogic.gdx.math Intersector
-                                  Rectangle)))
+  (:require [qrecord.core :as q]))
 
 (q/defrecord Body [body/position
                    body/width
                    body/height
                    body/collides?
                    body/z-order
-                   body/rotation-angle]
-  body/Body
-  (rectangle [_]
-    (let [[x y] [(- (position 0) (/ width  2))
-                 (- (position 1) (/ height 2))]]
-      (Rectangle. x y width height)))
-
-  (touched-tiles [_]
-    (rectangle/touched-tiles
-     {:x (- (position 0) (/ width  2))
-      :y (- (position 1) (/ height 2))
-      :width  width
-      :height height}))
-
-  (overlaps? [body other-body]
-    (Intersector/overlaps ^Rectangle (body/rectangle body)
-                          ^Rectangle (body/rectangle other-body)))
-
-  (distance [body other-body]
-    (v/distance (:body/position body)
-                (:body/position other-body)))
-
-  (direction [body other-body]
-    (v/direction (:body/position body)
-                 (:body/position other-body))))
+                   body/rotation-angle])
 
 
 (defn create
