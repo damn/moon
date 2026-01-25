@@ -1,6 +1,7 @@
 (ns moon.entity.stats
-  (:require [malli.core :as m]
-            [moon.color :as color]
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [malli.core :as m]
+            [moon.color :as colors]
             [moon.ops :as ops]
             [moon.val-max :as val-max]))
 
@@ -73,10 +74,10 @@
       (update :stats/hp   (fn [v] [v v]))))
 
 (def ^:private hpbar-colors
-  {:green     [0 0.8 0 1]
-   :darkgreen [0 0.5 0 1]
-   :yellow    [0.5 0.5 0 1]
-   :red       [0.5 0 0 1]})
+  {:green     (color/float-bits [0 0.8 0 1])
+   :darkgreen (color/float-bits [0 0.5 0 1])
+   :yellow    (color/float-bits [0.5 0.5 0 1])
+   :red       (color/float-bits [0.5 0 0 1])})
 
 (defn- hpbar-color [ratio]
   (let [ratio (float ratio)
@@ -95,7 +96,7 @@
           y (+ y (/ height 2))
           height (* 5          world-unit-scale)
           border (* borders-px world-unit-scale)]
-      [[:draw/filled-rectangle x y width height color/black]
+      [[:draw/filled-rectangle x y width height (color/float-bits colors/black)]
        [:draw/filled-rectangle
         (+ x border)
         (+ y border)

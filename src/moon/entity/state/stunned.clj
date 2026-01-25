@@ -1,5 +1,6 @@
 (ns moon.entity.state.stunned
-  (:require [moon.timer :as timer]))
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [moon.timer :as timer]))
 
 (defn create
   [[_k duration] _eid {:keys [ctx/elapsed-time]}]
@@ -15,7 +16,7 @@
   [[:draw/circle
     (:body/position body)
     0.5
-    [1 1 1 0.6]]])
+    (color/float-bits [1 1 1 0.6])]])
 
 (defn cursor
   [_ _eid _ctx]

@@ -1,5 +1,6 @@
 (ns moon.effects.target-entity
-  (:require [clojure.math.vector2 :as v]
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [clojure.math.vector2 :as v]
             [moon.effect :as effect]))
 
 ; TODO use at projectile & also adjust rotation
@@ -43,7 +44,7 @@
       [[:tx/spawn-line {:start (start-point body target-body)
                         :end (:body/position target-body)
                         :duration 0.05
-                        :color [1 0 0 0.75]
+                        :color (color/float-bits [1 0 0 0.75])
                         :thick? true}]
        [:tx/effect effect-ctx entity-effects]]
       [[:tx/audiovisual
@@ -61,5 +62,5 @@
         (start-point body target-body)
         (end-point body target-body maxrange)
         (if (in-range? body target-body maxrange)
-          [1 0 0 0.5]
-          [1 1 0 0.5])]])))
+          (color/float-bits [1 0 0 0.5])
+          (color/float-bits [1 1 0 0.5]))]])))

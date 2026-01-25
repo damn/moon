@@ -1,10 +1,11 @@
 (ns moon.entity.mouseover
-  (:require [moon.faction :as faction]))
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [moon.faction :as faction]))
 
 (def outline-alpha 0.4)
-(def enemy-color [1 0 0 outline-alpha])
-(def friendly-color [0 1 0 outline-alpha])
-(def neutral-color [1 1 1 outline-alpha])
+(def enemy-color    (color/float-bits [1 0 0 outline-alpha]))
+(def friendly-color (color/float-bits [0 1 0 outline-alpha]))
+(def neutral-color  (color/float-bits [1 1 1 outline-alpha]))
 (def mouseover-ellipse-width 5)
 
 (defn render

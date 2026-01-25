@@ -1,5 +1,6 @@
 (ns moon.draw-on-world-viewport.draw-cell-debug
-  (:require [moon.graphics.camera :as camera])
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [moon.graphics.camera :as camera])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
@@ -16,11 +17,11 @@
                :when cell
                :let [cell* @cell]]
            [(when (and show-cell-entities? (seq (:entities cell*)))
-              [:draw/filled-rectangle x y 1 1 [1 0 0 0.6]])
+              [:draw/filled-rectangle x y 1 1 (color/float-bits [1 0 0 0.6])])
             (when (and show-cell-occupied? (seq (:occupied cell*)))
-              [:draw/filled-rectangle x y 1 1 [0 0 1 0.6]])
+              [:draw/filled-rectangle x y 1 1 (color/float-bits [0 0 1 0.6])])
             (when-let [faction show-potential-field-colors?]
               (let [{:keys [distance]} (faction cell*)]
                 (when distance
                   (let [ratio (/ distance (factions-iterations faction))]
-                    [:draw/filled-rectangle x y 1 1 [ratio (- 1 ratio) ratio 0.6]]))))])))
+                    [:draw/filled-rectangle x y 1 1 (color/float-bits [ratio (- 1 ratio) ratio 0.6])]))))])))

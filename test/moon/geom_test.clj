@@ -1,5 +1,6 @@
 (ns moon.geom-test)
 ;(ns moon.application.render.draw-on-world-viewport.geom-test)
+;(:require [clj.api.com.badlogic.gdx.graphics.color :as color])
 ;
 ;(comment
 ; (require '[moon.grid :as grid])
@@ -12,10 +13,10 @@
 ;         radius 0.8
 ;         circle {:position position
 ;                 :radius radius}]
-;     (conj (cons [:draw/circle position radius [1 0 0 0.5]]
+;     (conj (cons [:draw/circle position radius (color/float-bits [1 0 0 0.5])]
 ;                 (for [[x y] (map #(:position @%) (grid/circle->cells grid circle))]
-;                   [:draw/rectangle x y 1 1 [1 0 0 0.5]]))
+;                   [:draw/rectangle x y 1 1 (color/float-bits [1 0 0 0.5])]))
 ;           (let [{:keys [x y width height]} (circle/outer-rectangle circle)]
-;             [:draw/rectangle x y width height [0 0 1 1]]))))
+;             [:draw/rectangle x y width height (color/float-bits [0 0 1 1])]))))
 ;
 ; )

@@ -1,5 +1,6 @@
 (ns moon.entity.temp-modifier
-  (:require [moon.entity.stats :as stats]
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [moon.entity.stats :as stats]
             [moon.timer :as timer]))
 
 (defn tick
@@ -15,4 +16,4 @@
   [[:draw/filled-circle
     (:body/position (:entity/body entity))
     0.5
-    [0.5 0.5 0.5 0.4]]])
+    (color/float-bits [0.5 0.5 0.5 0.4])]])

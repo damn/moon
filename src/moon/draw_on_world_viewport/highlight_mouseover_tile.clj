@@ -1,4 +1,5 @@
-(ns moon.draw-on-world-viewport.highlight-mouseover-tile)
+(ns moon.draw-on-world-viewport.highlight-mouseover-tile
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]))
 
 (defn draws
   [{:keys [ctx/grid
@@ -8,5 +9,5 @@
     (when (and cell (#{:air :none} (:movement @cell)))
       [[:draw/rectangle x y 1 1
         (case (:movement @cell)
-          :air  [1 1 0 0.5]
-          :none [1 0 0 0.5])]])))
+          :air  (color/float-bits [1 1 0 0.5])
+          :none (color/float-bits [1 0 0 0.5]))]])))

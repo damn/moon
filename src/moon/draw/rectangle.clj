@@ -1,9 +1,8 @@
 (ns moon.draw.rectangle
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color])
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn do!
   [{:keys [^ShapeDrawer ctx/shape-drawer]}
-   x y w h color]
-  (.setColor shape-drawer (color/float-bits color))
+   x y w h color-float-bits]
+  (.setColor shape-drawer (float color-float-bits))
   (.rectangle shape-drawer x y w h))

@@ -1,5 +1,7 @@
 (ns moon.entity.state.active-skill
-  (:require [moon.effect :as effect]
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [clojure.math :as math]
+            [moon.effect :as effect]
             [moon.entity.stats :as stats]
             [moon.textures :as textures]
             [moon.timer :as timer]
@@ -54,13 +56,13 @@
              (float (/ (:body/height (:entity/body entity)) 2))
              (float 0.15))
         center [x (+ y radius)]]
-    [[:draw/filled-circle center radius [1 1 1 0.125]]
+    [[:draw/filled-circle center radius (color/float-bits [1 1 1 0.125])]
      [:draw/sector
       center
       radius
-      90 ; start-angle
-      (* (float action-counter-ratio) 360) ; degree
-      [1 1 1 0.5]]
+      (math/to-radians 90) ; start-angle
+      (math/to-radians (* (float action-counter-ratio) 360)) ; degree
+      (color/float-bits [1 1 1 0.5])]
      [:draw/texture-region texture-region [(- (float x) radius) y]]]))
 
 (defn render

@@ -1,5 +1,6 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [moon.ctx :as ctx]
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [moon.ctx :as ctx]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
             [moon.stage :as stage]
@@ -44,10 +45,10 @@
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
                            (.tint (Color. 1 1 1 0.4))))
-        droppable-color   [0   0.6 0 0.8 1]
-        not-allowed-color [0.6 0   0 0.8 1]
+        droppable-color   (color/float-bits [0   0.6 0 0.8 1])
+        not-allowed-color (color/float-bits [0.6 0   0 0.8 1])
         draw-cell-rect (fn [player-entity x y mouseover? cell]
-                         [[:draw/rectangle x y cell-size cell-size [0.5 0.5 0.5 1]]
+                         [[:draw/rectangle x y cell-size cell-size (color/float-bits [0.5 0.5 0.5 1])]
                           (when (and mouseover?
                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                             (let [item (:entity/item-on-cursor player-entity)
