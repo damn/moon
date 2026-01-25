@@ -4,11 +4,9 @@
             [qrecord.core :as q]))
 
 (def draw-fns
-  (update-vals '{:draw/arc              moon.draw.arc/do! ; TODO unused
-                 :draw/circle           moon.draw.circle/do!
+  (update-vals '{:draw/circle           moon.draw.circle/do!
                  :draw/ellipse          moon.draw.ellipse/do!
                  :draw/filled-circle    moon.draw.filled-circle/do!
-                 :draw/filled-ellipse   moon.draw.filled-ellipse/do!
                  :draw/filled-rectangle moon.draw.filled-rectangle/do!
                  :draw/grid             moon.draw.grid/do!
                  :draw/line             moon.draw.line/do!
