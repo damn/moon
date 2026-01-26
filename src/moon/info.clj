@@ -5,4 +5,3 @@
                        :info/item
                        :else
                        :info/entity)))
-

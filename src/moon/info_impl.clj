@@ -1,3 +1,5 @@
+; TODO
+; 1. step like item - validate incoming data - only then can I create info string if I know what data
 (ns moon.info-impl
   (:require [clojure.math :as math]
             [clojure.string :as str]

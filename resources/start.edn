@@ -1,4 +1,10 @@
 [
+
+ ; TODO remove defprotocols they are all useless somehow?
+ ; just indirection
+
+ ; also 'require-namespaces'
+
  [moon.start.add-method/step
   moon.ui/actor
   [
