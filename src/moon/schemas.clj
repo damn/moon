@@ -1,10 +1,15 @@
 (ns moon.schemas
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [malli.core :as m]
+  (:require [malli.core :as m]
             [malli.utils :as mu]
             [moon.schema :as schema]
             [moon.utils :as utils]))
+
+; create-value
+; malli-form
+; only used here (map widget doesnt need to know)
+; apply-kvs only used here
+; => so only malli here !?
+; => defmethods together !?... wtf
 
 (defn build-values [schemas property db]
   (utils/apply-kvs property

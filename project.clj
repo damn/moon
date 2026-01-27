@@ -2,6 +2,7 @@
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
                  ;; libgdx stuff
+                 ; TODO pull in?
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
@@ -11,7 +12,7 @@
                  ;;
 
 
-                 ;; my libs
+                 ;; my libs TODO pull in
                  [com.github.damn/clojure.grid2d "538fc4c44b"]
                  [com.github.damn/clojure.math.raycaster "0956fc0e9b"]
                  [com.github.damn/clojure.math.vector2 "9b3fd73f9b"]
@@ -32,13 +33,14 @@
                  ; clojure
                  [org.clojure/clojure "1.12.0"]
 
-                 ;; dev-only:
+                 ;; dev-only: TODO set for dev-only
 
                  [nrepl "0.9.0"]
                  [org.clojure/tools.namespace "1.3.0"]
                  [lein-hiera "2.0.0"]
 
                  ; my lib
+                 ; TODO pull in
                  [com.github.damn/clojure.dev-loop "ef54a03"]
                  ;
                  ]
