@@ -2,7 +2,8 @@
   (:require [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui :as ui])
+            [moon.ui :as ui]
+            [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Touchable)))
 
@@ -37,20 +38,19 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (ui/actor
-               {:type :ui/stack
-                :group/actors [(ui/actor
-                                {:type :ui/image-button
-                                 :drawable/texture-region texture-region
-                                 :on-clicked on-clicked
-                                 :drawable/scale image-scale
-                                 :tooltip tooltip
-                                 :skin skin})
-                               (doto (ui/actor
-                                      {:type :ui/label
-                                       :label/text extra-info-text
-                                       :label/skin skin})
-                                 (Actor/.setTouchable Touchable/disabled))]})})))
+      {:actor (doto (ui/actor {:type :ui/stack})
+                (group/add-actors! [(ui/actor
+                                     {:type :ui/image-button
+                                      :drawable/texture-region texture-region
+                                      :on-clicked on-clicked
+                                      :drawable/scale image-scale
+                                      :tooltip tooltip
+                                      :skin skin})
+                                    (doto (ui/actor
+                                           {:type :ui/label
+                                            :label/text extra-info-text
+                                            :label/skin skin})
+                                      (Actor/.setTouchable Touchable/disabled))]))})))
 
 (defn- overview-table-rows
   [db

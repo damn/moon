@@ -6,6 +6,7 @@
             [moon.schema :as schema]
             [moon.ui :as ui]
             [moon.ui.actor :as actor]
+            [moon.ui.group :as group]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell])
   (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor)
@@ -80,8 +81,8 @@
             :close-button? true
             :center? true
             :close-on-escape? true
-            :group/actors actors
             :rows rows
             :cell-defaults {:pad 5}
             :pack? true})
+      (group/add-actors! actors)
       (.setName "moon.ui.editor.window"))))

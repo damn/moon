@@ -5,7 +5,8 @@
             [moon.inventory :as inventory]
             [moon.textures :as textures]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor])
+            [moon.ui.actor :as actor]
+            [moon.ui.group :as group])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -67,13 +68,12 @@
         ->cell (fn [slot & {:keys [position]}]
                  (let [cell [slot (or position [0 0])]
                        background-drawable (slot->drawable slot)]
-                   {:actor (doto (ui/actor
-                                  {:type :ui/stack
-                                   :group/actors [(draw-cell-rect-actor draw-cell-rect)
-                                                  (doto (Image. ^TextureRegionDrawable background-drawable)
-                                                    (.setName "image-widget")
-                                                    (.setUserObject {:background-drawable background-drawable
-                                                                     :cell-size cell-size}))]})
+                   {:actor (doto (ui/actor {:type :ui/stack})
+                             (group/add-actors! [(draw-cell-rect-actor draw-cell-rect)
+                                                 (doto (Image. ^TextureRegionDrawable background-drawable)
+                                                   (.setName "image-widget")
+                                                   (.setUserObject {:background-drawable background-drawable
+                                                                    :cell-size cell-size}))])
                              (.setName "inventory-cell")
                              (.setUserObject cell)
                              (.addListener (clicked-cell-listener cell))
