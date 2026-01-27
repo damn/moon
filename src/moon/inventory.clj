@@ -1,9 +1,6 @@
 (ns moon.inventory
   (:require [clojure.grid2d :as g2d]))
 
-(defprotocol Inventory
-  (can-pickup-item? [_ item]))
-
 (def empty-inventory
   #:inventory.slot{:bag      [6 4]
                    :weapon   [1 1]
@@ -58,10 +55,8 @@
   (assert (:item/slot item)
           (str "Item not valid: " (pr-str item))))
 
-(extend-type clojure.lang.PersistentHashMap
-  Inventory
-  (can-pickup-item? [inventory item]
-    (assert-valid-item? item)
-    (or
-     (free-cell inventory (:item/slot item)   item)
-     (free-cell inventory :inventory.slot/bag item))))
+(defn can-pickup-item? [inventory item]
+  (assert-valid-item? item)
+  (or
+   (free-cell inventory (:item/slot item)   item)
+   (free-cell inventory :inventory.slot/bag item)))
