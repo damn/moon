@@ -1,4 +1,4 @@
-(ns moon.world-fns.caves
+(ns moon.caves
   (:require [clojure.grid2d :as g2d]
             [clojure.rand :as rand]))
 

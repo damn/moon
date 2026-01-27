@@ -60,9 +60,9 @@
 
              [moon.create.tiled-map-and-start-position/step
               #edn/resource
-              "world_fns/vampire.edn"
+              ; "world_fns/vampire.edn"
               ; "world_fns/uf_caves.edn"
-              ; "world_fns/modules.edn"
+               "world_fns/modules.edn"
               ]
              [moon.create.render-z-order/step]
              [moon.create.max-speed/step]

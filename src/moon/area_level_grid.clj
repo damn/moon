@@ -1,4 +1,4 @@
-(ns moon.world-fns.area-level-grid
+(ns moon.area-level-grid
   (:require [clojure.grid2d :as g2d]))
 
 ; can adjust:

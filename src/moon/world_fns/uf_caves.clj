@@ -1,9 +1,9 @@
 (ns moon.world-fns.uf-caves
   (:require [clojure.grid2d :as g2d]
             [clojure.rand :as rand]
-            [moon.world-fns.caves :as caves]
+            [moon.caves :as caves]
             [moon.world-fns.creature-layer :as creature-layer]
-            [moon.world-fns.nads :as nads]
+            [moon.nads :as nads]
             [moon.world-fns.utils :as helper]
             [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.graphics Texture)

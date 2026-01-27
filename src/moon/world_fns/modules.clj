@@ -1,9 +1,9 @@
 (ns moon.world-fns.modules
   (:require [clojure.grid2d :as g2d]
-            [moon.world-fns.area-level-grid :as area-level-grid]
-            [moon.world-fns.caves :as caves]
+            [moon.area-level-grid :as area-level-grid]
+            [moon.caves :as caves]
             [moon.world-fns.creature-layer :as creature-layer]
-            [moon.world-fns.nads :as nads]
+            [moon.nads :as nads]
             [moon.world-fns.utils :as helper]
             [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.maps MapProperties)

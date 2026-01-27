@@ -1,4 +1,4 @@
-(ns moon.world-fns.nads
+(ns moon.nads
   (:require [clojure.grid2d :as g2d]))
 
 (comment
