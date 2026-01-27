@@ -13,9 +13,6 @@
    ; 3 usage
    :actor/visible?    Actor/.setVisible
 
-   ; no usage
-   :actor/touchable   Actor/.setTouchable
-
    ; 1 usage
    :actor/listener    Actor/.addListener
 
