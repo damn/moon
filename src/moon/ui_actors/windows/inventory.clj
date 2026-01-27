@@ -4,7 +4,8 @@
             [moon.state :as state]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
-            [moon.ui :as ui])
+            [moon.ui :as ui]
+            [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -77,36 +78,36 @@
                                               (.setName "image-widget")
                                               (.setUserObject {:background-drawable background-drawable
                                                                :cell-size cell-size}))]})}))]
-    (ui/actor
-     {:type :ui/window
-      :skin skin
-      :title title
-      :actor/name "moon.ui.windows.inventory"
-      :actor/visible? visible?
-      :pack? true
-      :actor/position position
-      :rows [[{:actor (ui/actor
-                       {:type :ui/table
-                        :actor/name "inventory-cell-table"
-                        :rows (concat [[nil nil
-                                        (->cell :inventory.slot/helm)
-                                        (->cell :inventory.slot/necklace)]
-                                       [nil
-                                        (->cell :inventory.slot/weapon)
-                                        (->cell :inventory.slot/chest)
-                                        (->cell :inventory.slot/cloak)
-                                        (->cell :inventory.slot/shield)]
-                                       [nil nil
-                                        (->cell :inventory.slot/leg)]
-                                       [nil
-                                        (->cell :inventory.slot/glove)
-                                        (->cell :inventory.slot/rings :position [0 0])
-                                        (->cell :inventory.slot/rings :position [1 0])
-                                        (->cell :inventory.slot/boot)]]
-                                      (for [y (range 4)]
-                                        (for [x (range 6)]
-                                          (->cell :inventory.slot/bag :position [x y]))))})
-               :pad 4}]]})))
+    (doto (ui/actor
+           {:type :ui/window
+            :skin skin
+            :title title
+            :actor/name "moon.ui.windows.inventory"
+            :actor/visible? visible?
+            :pack? true
+            :rows [[{:actor (ui/actor
+                             {:type :ui/table
+                              :actor/name "inventory-cell-table"
+                              :rows (concat [[nil nil
+                                              (->cell :inventory.slot/helm)
+                                              (->cell :inventory.slot/necklace)]
+                                             [nil
+                                              (->cell :inventory.slot/weapon)
+                                              (->cell :inventory.slot/chest)
+                                              (->cell :inventory.slot/cloak)
+                                              (->cell :inventory.slot/shield)]
+                                             [nil nil
+                                              (->cell :inventory.slot/leg)]
+                                             [nil
+                                              (->cell :inventory.slot/glove)
+                                              (->cell :inventory.slot/rings :position [0 0])
+                                              (->cell :inventory.slot/rings :position [1 0])
+                                              (->cell :inventory.slot/boot)]]
+                                            (for [y (range 4)]
+                                              (for [x (range 6)]
+                                                (->cell :inventory.slot/bag :position [x y]))))})
+                     :pad 4}]]})
+      (actor/set-position! position))))
 
 (defn create
   [{:keys [ctx/skin

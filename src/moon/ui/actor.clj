@@ -19,10 +19,10 @@
    ; 1 usage
    :actor/listener    Actor/.addListener
 
-   ; 2 usage
-   :actor/position (fn [a [x y]]
-                     (Actor/.setPosition a x y))
    })
+
+(defn set-position! [^Actor actor [x y]]
+  (.setPosition actor x y))
 
 ; setPosition has alignment param -> maybe can use?
 ; but anyway prefer to write clojure instead of java
