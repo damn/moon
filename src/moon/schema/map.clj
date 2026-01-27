@@ -149,10 +149,10 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (ui/actor
-               {:type :ui/table
-                :cell-defaults {:pad 5}
-                :actor/name "moon.db.schema.map.ui.widget"})
+  (let [table (doto (ui/actor
+                     {:type :ui/table
+                      :cell-defaults {:pad 5}})
+                (.setName "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
                                     (map (fn [k]

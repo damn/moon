@@ -5,12 +5,12 @@
                                                Skin)))
 
 (defn create [^Skin skin viewport-height rows]
-  (let [^Actor table (ui/actor
-                      {:type :ui/table
-                       :rows rows
-                       :actor/name "scroll-pane-table"
-                       :cell-defaults {:pad 5}
-                       :pack? true})]
+  (let [^Actor table (doto (ui/actor
+                            {:type :ui/table
+                             :rows rows
+                             :cell-defaults {:pad 5}
+                             :pack? true})
+                       (.setName "scroll-pane-table"))]
     {:actor (doto (ScrollPane. table skin)
               (.setName "moon.ui.widget.scroll-pane-table"))
      :width  (+ (.getWidth table) 50)

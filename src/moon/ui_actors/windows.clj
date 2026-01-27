@@ -3,7 +3,7 @@
 
 (defn create
   [ctx actors]
-  (ui/actor
-   {:type :ui/group
-    :actor/name "moon.ui.windows"
-    :group/actors (map (fn [[f & params]] (apply f ctx params)) actors)}))
+  (doto (ui/actor
+         {:type :ui/group
+          :group/actors (map (fn [[f & params]] (apply f ctx params)) actors)})
+    (.setName "moon.ui.windows")))

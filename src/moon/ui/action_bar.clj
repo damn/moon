@@ -8,20 +8,20 @@
                                                Table)))
 
 (defn create []
-  (ui/actor
-   {:type :ui/table
-    :rows [[{:actor (doto (doto (HorizontalGroup.)
-                            (.space 2)
-                            (.pad 2))
-                      (.setName "moon.ui.action-bar.horizontal-group")
-                      (.setUserObject (doto (ButtonGroup.)
-                                        (.setMaxCheckCount 1)
-                                        (.setMinCheckCount 0))))
-             :expand? true
-             :bottom? true}]]
-    :actor/name "moon.ui.action-bar"
-    :cell-defaults {:pad 2}
-    :fill-parent? true}))
+  (doto (ui/actor
+         {:type :ui/table
+          :rows [[{:actor (doto (doto (HorizontalGroup.)
+                                  (.space 2)
+                                  (.pad 2))
+                            (.setName "moon.ui.action-bar.horizontal-group")
+                            (.setUserObject (doto (ButtonGroup.)
+                                              (.setMaxCheckCount 1)
+                                              (.setMinCheckCount 0))))
+                   :expand? true
+                   :bottom? true}]]
+          :cell-defaults {:pad 2}
+          :fill-parent? true})
+    (.setName "moon.ui.action-bar")))
 
 (defn- get-data [^Table action-bar]
   (let [group (.findActor action-bar "moon.ui.action-bar.horizontal-group")]

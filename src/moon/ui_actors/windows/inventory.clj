@@ -69,12 +69,12 @@
                        background-drawable (slot->drawable slot)]
                    {:actor (doto (ui/actor
                                   {:type :ui/stack
-                                   :actor/name "inventory-cell"
                                    :group/actors [(draw-cell-rect-actor draw-cell-rect)
                                                   (doto (Image. ^TextureRegionDrawable background-drawable)
                                                     (.setName "image-widget")
                                                     (.setUserObject {:background-drawable background-drawable
                                                                      :cell-size cell-size}))]})
+                             (.setName "inventory-cell")
                              (.setUserObject cell)
                              (.addListener (clicked-cell-listener cell))
                              )}))]
@@ -82,30 +82,31 @@
            {:type :ui/window
             :skin skin
             :title title
-            :actor/name "moon.ui.windows.inventory"
             :pack? true
-            :rows [[{:actor (ui/actor
-                             {:type :ui/table
-                              :actor/name "inventory-cell-table"
-                              :rows (concat [[nil nil
-                                              (->cell :inventory.slot/helm)
-                                              (->cell :inventory.slot/necklace)]
-                                             [nil
-                                              (->cell :inventory.slot/weapon)
-                                              (->cell :inventory.slot/chest)
-                                              (->cell :inventory.slot/cloak)
-                                              (->cell :inventory.slot/shield)]
-                                             [nil nil
-                                              (->cell :inventory.slot/leg)]
-                                             [nil
-                                              (->cell :inventory.slot/glove)
-                                              (->cell :inventory.slot/rings :position [0 0])
-                                              (->cell :inventory.slot/rings :position [1 0])
-                                              (->cell :inventory.slot/boot)]]
-                                            (for [y (range 4)]
-                                              (for [x (range 6)]
-                                                (->cell :inventory.slot/bag :position [x y]))))})
+            :rows [[{:actor (doto
+                              (ui/actor
+                               {:type :ui/table
+                                :rows (concat [[nil nil
+                                                (->cell :inventory.slot/helm)
+                                                (->cell :inventory.slot/necklace)]
+                                               [nil
+                                                (->cell :inventory.slot/weapon)
+                                                (->cell :inventory.slot/chest)
+                                                (->cell :inventory.slot/cloak)
+                                                (->cell :inventory.slot/shield)]
+                                               [nil nil
+                                                (->cell :inventory.slot/leg)]
+                                               [nil
+                                                (->cell :inventory.slot/glove)
+                                                (->cell :inventory.slot/rings :position [0 0])
+                                                (->cell :inventory.slot/rings :position [1 0])
+                                                (->cell :inventory.slot/boot)]]
+                                              (for [y (range 4)]
+                                                (for [x (range 6)]
+                                                  (->cell :inventory.slot/bag :position [x y]))))})
+                              (.setName "inventory-cell-table"))
                      :pad 4}]]})
+      (.setName "moon.ui.windows.inventory")
       (.setVisible false)
       (actor/set-position! position))))
 

@@ -23,9 +23,9 @@
                               {:type :ui/window
                                :skin skin
                                :title title
-                               :actor/name actor-name
                                :rows [[{:actor label
                                         :expand? true}]]})
+                         (.setName actor-name)
                          (.setVisible visible?)
                          (actor/set-position! position))]
     (.addActor window (proxy [Actor] []

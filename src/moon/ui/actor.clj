@@ -4,8 +4,6 @@
 
 (def ^:private opts-fn-map
   {
-   ; 10 usage
-   :actor/name        Actor/.setName
    })
 
 (defn set-position! [^Actor actor [x y]]

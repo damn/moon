@@ -72,16 +72,16 @@
         rows [[(scroll-pane-cell/create skin
                                         scroll-pane-height
                                         scroll-pane-rows)]]]
-    (ui/actor
-     {:type :ui/window
-      :skin skin
-      :title "[SKY]Property[]"
-      :actor/name "moon.ui.editor.window"
-      :modal? true
-      :close-button? true
-      :center? true
-      :close-on-escape? true
-      :group/actors actors
-      :rows rows
-      :cell-defaults {:pad 5}
-      :pack? true})))
+    (doto (ui/actor
+           {:type :ui/window
+            :skin skin
+            :title "[SKY]Property[]"
+            :modal? true
+            :close-button? true
+            :center? true
+            :close-on-escape? true
+            :group/actors actors
+            :rows rows
+            :cell-defaults {:pad 5}
+            :pack? true})
+      (.setName "moon.ui.editor.window"))))
