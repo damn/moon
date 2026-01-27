@@ -1,7 +1,6 @@
 (ns moon.ui-actors.dev-menu
   (:require [clojure.string :as str]
             [moon.db :as db]
-            [moon.graphics.camera :as camera]
             [moon.input :as input]
             [moon.stage :as stage]
             [moon.ui :as ui]
@@ -99,7 +98,7 @@
                                      (mapv int world-mouse-position))}
                        {:label "Zoom"
                         :update-fn (fn [{:keys [ctx/world-viewport]}]
-                                     (camera/zoom (Viewport/.getCamera world-viewport)))
+                                     (.zoom (Viewport/.getCamera world-viewport)))
                         :icon "images/zoom.png"}]]
     (dev-menu/create
      {:menus [ctx-data-viewer

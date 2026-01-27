@@ -1,7 +1,7 @@
 (ns moon.tile-color-setter
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [clojure.math.raycaster :as raycaster]
-            [moon.graphics.camera :as camera])
+            [clj.api.com.badlogic.gdx.math.vector3 :as vector3]
+            [clojure.math.raycaster :as raycaster])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn- tile-color-setter
@@ -57,7 +57,7 @@
   (tile-color-setter
    {:ray-blocked? (partial raycaster/blocked? raycaster)
     :explored-tile-corners explored-tile-corners
-    :light-position (camera/position (Viewport/.getCamera world-viewport))
+    :light-position (vector3/->clj (.position (Viewport/.getCamera world-viewport)))
     :see-all-tiles? false
     :explored-tile-color  (color/float-bits [0.5 0.5 0.5 1])
     :visible-tile-color   (color/float-bits [1 1 1 1])

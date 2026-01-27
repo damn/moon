@@ -1,6 +1,5 @@
 (ns moon.render.draw-on-world-viewport
-  (:require [moon.ctx :as ctx]
-            [moon.graphics.camera :as camera])
+  (:require [moon.ctx :as ctx])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
@@ -17,7 +16,7 @@
   ; _everything_ flickers with vis ui tooltip! it changes batch color somehow and does not
   ; change it back !
   (.setColor batch 1 1 1 1)
-  (.setProjectionMatrix batch (camera/combined (Viewport/.getCamera world-viewport)))
+  (.setProjectionMatrix batch (.combined (Viewport/.getCamera world-viewport)))
   (.begin batch)
   (let [old-line-width (.getDefaultLineWidth shape-drawer)]
     (.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))

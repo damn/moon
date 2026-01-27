@@ -2,6 +2,7 @@
 (ns moon.levelgen
   (:require [moon.ui-impl.table]
             [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [clj.api.com.badlogic.gdx.math.vector3 :as vector3]
             [moon.ui.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -154,7 +155,7 @@
                                           ctx/camera-movement-speed]}]
   (let [apply-position (fn [idx f]
                          (camera/set-position! camera
-                                               (update (camera/position camera)
+                                               (update (vector3/->clj (.position camera))
                                                        idx
                                                        #(f % camera-movement-speed))))]
     (if (.isKeyPressed input Input$Keys/LEFT)  (apply-position 0 -))
