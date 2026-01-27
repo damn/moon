@@ -6,8 +6,7 @@
             [moon.input :as input]
             [moon.skill :as skill]
             [moon.stage :as stage]
-            [moon.ui.action-bar :as action-bar]
-            [moon.ui.group :as group])
+            [moon.ui.action-bar :as action-bar])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
@@ -76,7 +75,7 @@
    :else
    (if-let [skill-id (-> stage
                          Stage/.getRoot
-                         (group/find-actor "moon.ui.action-bar")
+                         (.findActor "moon.ui.action-bar")
                          action-bar/selected-skill)]
      (let [entity @player-eid
            skill (skill-id (:entity/skills entity))

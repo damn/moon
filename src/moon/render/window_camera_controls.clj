@@ -1,9 +1,9 @@
 (ns moon.render.window-camera-controls
   (:require [moon.input :as input]
             [moon.graphics.camera :as camera]
-            [moon.ui.actor :as actor]
-            [moon.ui.group :as group])
+            [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Group
                                             Stage)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
@@ -23,21 +23,21 @@
   (when (input/key-just-pressed? input (:close-windows-key input/controls))
     (->> (-> stage
              Stage/.getRoot
-             (group/find-actor "moon.ui.windows"))
-         group/children
+             (Group/.findActor "moon.ui.windows"))
+         Group/.getChildren
          (run! #(Actor/.setVisible % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory input/controls))
     (-> stage
         Stage/.getRoot
-        (group/find-actor "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.inventory")
+        (Group/.findActor "moon.ui.windows")
+        (Group/.findActor "moon.ui.windows.inventory")
         actor/toggle-visible!))
 
   (when (input/key-just-pressed? input (:toggle-entity-info input/controls))
     (-> stage
         Stage/.getRoot
-        (group/find-actor "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.entity-info")
+        (Group/.findActor "moon.ui.windows")
+        (Group/.findActor "moon.ui.windows.entity-info")
         actor/toggle-visible!))
   ctx)

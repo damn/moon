@@ -4,10 +4,10 @@
             [moon.property :as property]
             [moon.ui :as ui]
             [moon.ui.actor :as actor]
-            [moon.ui.group :as group]
             [moon.ui.table :as table])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
+                                            Group
                                             Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Skin
@@ -76,6 +76,6 @@
     table))
 
 (defn value [_  widget _schemas]
-  (->> (group/children widget)
+  (->> (Group/.getChildren widget)
        (keep Actor/.getUserObject)
        set))

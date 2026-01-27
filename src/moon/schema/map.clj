@@ -4,10 +4,10 @@
             [moon.schema :as schema]
             [moon.schemas :as schemas]
             [moon.ui :as ui]
-            [moon.ui.group :as group]
             [moon.ui.table :as table]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Group
                                             Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
@@ -19,7 +19,7 @@
 
 (defn- map-widget-table-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? Actor/.getUserObject) (group/children table))
+        (for [widget (filter (comp vector? Actor/.getUserObject) (Group/.getChildren table))
               :let [[k _] (Actor/.getUserObject widget)]]
           [k (schema/value (get schemas k) widget schemas)])))
 
@@ -35,11 +35,11 @@
     :as ctx}]
   (let [window (-> stage
                    Stage/.getRoot
-                   (group/find-actor "moon.ui.editor.window"))
+                   (Group/.findActor "moon.ui.editor.window"))
         map-widget-table (-> window
-                             (group/find-actor "moon.ui.widget.scroll-pane-table")
-                             (group/find-actor "scroll-pane-table")
-                             (group/find-actor "moon.db.schema.map.ui.widget"))
+                             (Group/.findActor "moon.ui.widget.scroll-pane-table")
+                             (Group/.findActor "scroll-pane-table")
+                             (Group/.findActor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (Actor/.remove window)
     (Stage/.addActor stage
@@ -70,7 +70,7 @@
                                                (Actor/.remove (first (filter (fn [actor]
                                                                                (and (Actor/.getUserObject actor)
                                                                                     (= k ((Actor/.getUserObject actor) 0))))
-                                                                             (group/children table))))
+                                                                             (Group/.getChildren table))))
                                                (rebuild! ctx))
                                  :skin skin}))
                       :left? true}
