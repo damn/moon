@@ -1,9 +1,9 @@
 (ns moon.reaction-txs.show-modal
   (:require [moon.stage :as stage]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor]
             [moon.ui.group :as group])
-  (:import (com.badlogic.gdx.utils.viewport Viewport)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn do!
   [{:keys [ctx/skin
@@ -25,7 +25,7 @@
                                        {:type :ui/text-button
                                         :text button-text
                                         :on-clicked (fn [_actor _ctx]
-                                                      (actor/remove!
+                                                      (Actor/.remove
                                                        (-> stage
                                                            stage/root
                                                            (group/find-actor "moon.ui.modal-window")))

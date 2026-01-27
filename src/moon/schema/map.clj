@@ -5,7 +5,6 @@
             [moon.schemas :as schemas]
             [moon.stage :as stage]
             [moon.ui :as ui]
-            [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.table :as table]
             [moon.utils :as utils])
@@ -42,7 +41,7 @@
                              (group/find-actor "scroll-pane-table")
                              (group/find-actor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
-    (actor/remove! window)
+    (Actor/.remove window)
     (stage/add-actor! stage
                       (ui/actor
                        {:type :ui/property-editor-window
@@ -68,7 +67,7 @@
                                 {:type :ui/text-button
                                  :text "-"
                                  :on-clicked (fn [_actor ctx]
-                                               (actor/remove! (first (filter (fn [actor]
+                                               (Actor/.remove (first (filter (fn [actor]
                                                                                (and (Actor/.getUserObject actor)
                                                                                     (= k ((Actor/.getUserObject actor) 0))))
                                                                              (group/children table))))
@@ -117,7 +116,7 @@
                  {:type :ui/text-button
                   :text (name k)
                   :on-clicked (fn [_actor ctx]
-                                (actor/remove! window)
+                                (Actor/.remove window)
                                 (table/add-rows! map-widget-table [(component-row skin
                                                                                   (build-value-widget ctx
                                                                                                       (get schemas k)

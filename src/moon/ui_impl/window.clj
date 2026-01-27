@@ -1,7 +1,7 @@
 (ns moon.ui-impl.window
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.table :as table])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
+  (:require [moon.ui.table :as table])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton
                                                Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
@@ -30,6 +30,6 @@
                    (.addListener
                     (proxy [ChangeListener] []
                       (changed [_event _actor]
-                        (actor/remove! window))))))
+                        (Actor/.remove window))))))
     (.setModal window (boolean modal?))
     (table/set-opts! window opts)))

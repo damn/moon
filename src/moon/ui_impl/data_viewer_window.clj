@@ -1,7 +1,7 @@
 (ns moon.ui-impl.data-viewer-window
   (:require [moon.stage :as stage]
-            [moon.ui :as ui]
-            [moon.ui.actor :as actor]))
+            [moon.ui :as ui])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn- k->label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -28,7 +28,7 @@
     {:type :ui/text-button
      :text "Map"
      :on-clicked (fn [actor _ctx]
-                   (stage/add-actor! (actor/stage actor)
+                   (stage/add-actor! (Actor/.getStage actor)
                                      (create
                                       {:title "title"
                                        :data v

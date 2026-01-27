@@ -19,7 +19,7 @@
   (fn [actor {:keys [ctx/skin]}]
     (.clearChildren table)
     (table/add-rows! table [(sound-columns skin table sound-name)])
-    (actor/remove! (actor/find-ancestor actor Window))
+    (Actor/.remove (actor/find-ancestor actor Window))
     (Window/.pack (actor/find-ancestor table Window))
     (let [[k _] (Actor/.getUserObject table)]
       (.setUserObject table [k sound-name]))))

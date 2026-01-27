@@ -2,9 +2,9 @@
   (:require [moon.input :as input]
             [moon.inventory :as inventory]
             [moon.stage :as stage]
-            [moon.ui.actor :as actor]
             [moon.ui.group :as group])
-  (:import (com.badlogic.gdx Input$Buttons)))
+  (:import (com.badlogic.gdx Input$Buttons)
+           (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
   (case k
@@ -25,7 +25,7 @@
                  stage/root
                  (group/find-actor "moon.ui.windows")
                  (group/find-actor "moon.ui.windows.inventory")
-                 actor/visible?)
+                 Actor/.isVisible)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]

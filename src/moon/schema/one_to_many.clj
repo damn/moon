@@ -50,7 +50,7 @@
                                   :skin skin
                                   :property-type property-type
                                   :clicked-id-fn (fn [actor id ctx]
-                                                   (actor/remove! (actor/find-ancestor actor Window))
+                                                   (Actor/.remove (actor/find-ancestor actor Window))
                                                    (redo-rows ctx (conj property-ids id)))})))
                  :skin skin})}]
       (for [property-id property-ids]

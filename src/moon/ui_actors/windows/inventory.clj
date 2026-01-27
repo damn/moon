@@ -4,8 +4,7 @@
             [moon.inventory :as inventory]
             [moon.textures :as textures]
             [moon.stage :as stage]
-            [moon.ui :as ui]
-            [moon.ui.actor :as actor])
+            [moon.ui :as ui])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -20,7 +19,7 @@
 (defn- draw-cell-rect-actor [draw-cell-rect]
   (proxy [Widget] []
     (draw [_batch _parent-alpha]
-      (when-let [stage (actor/stage this)]
+      (when-let [stage (Actor/.getStage this)]
         (let [{:keys [ctx/player-eid
                       ctx/ui-mouse-position]
                :as ctx} (stage/ctx stage)]
