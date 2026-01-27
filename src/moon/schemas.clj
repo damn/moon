@@ -1,22 +1,23 @@
 (ns moon.schemas
   (:require [malli.core :as m]
             [malli.utils :as mu]
-            [moon.schema :as schema]
-            [moon.utils :as utils]))
+            [moon.schema :as schema]))
 
 ; create-value
 ; malli-form
 ; only used here (map widget doesnt need to know)
-; apply-kvs only used here
 ; => so only malli here !?
 ; => defmethods together !?... wtf
 
 (defn build-values [schemas property db]
-  (utils/apply-kvs property
-                   (fn [k v]
-                     (try (schema/create-value (get schemas k) v db)
-                          (catch Throwable t
-                            (throw (ex-info " " {:k k :v v} t)))))))
+  (reduce (fn [m k]
+            (assoc m k
+                   (try (schema/create-value (get schemas k) (k m) db)
+                        (catch Throwable t
+                          (throw (ex-info " " {:k k
+                                               :v (k m)} t))))))
+          property
+          (keys property)))
 
 (defn default-value [schemas k]
   (let [schema (get schemas k)]

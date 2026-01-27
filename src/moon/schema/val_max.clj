@@ -1,6 +1,6 @@
 (ns moon.schema.val-max
   (:require [clojure.edn :as edn]
-            [moon.utils :as utils]
+            [moon.edn]
             [moon.val-max :as val-max])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextField
@@ -11,7 +11,7 @@
 
 (defn create
   [schema v {:keys [^Skin ctx/skin]}]
-  (doto (TextField. (utils/->edn-str v) skin)
+  (doto (TextField. (moon.edn/->str v) skin)
     (.addListener (TextTooltip. (str schema) skin))))
 
 (defn value

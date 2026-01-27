@@ -1,4 +1,4 @@
-(ns moon.tx-handler) ; to moon.utils?
+(ns moon.tx-handler)
 
 (defn actions!
   [txs-fn-map ctx txs]

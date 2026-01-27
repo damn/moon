@@ -5,7 +5,7 @@
             [moon.schemas :as schemas]
             [moon.ui :as ui]
             [moon.ui.table :as table]
-            [moon.utils :as utils])
+            [moon.order :as order])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Group
                                             Stage)
@@ -222,7 +222,7 @@
                        (for [[k v] m]
                          [k (build-value-widget ctx (get schemas k) k v)]))
       :k->optional? #(mu/optional? % (schema/malli-form schema schemas))
-      :ks-sorted (map first (utils/sort-by-k-order property-k-sort-order m))
+      :ks-sorted (map first (order/sort-by-k-order property-k-sort-order m))
       :opt? (seq (set/difference (mu/optional-keyset (schema/malli-form schema schemas))
                                  (set (keys m))))})))
 

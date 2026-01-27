@@ -2,13 +2,13 @@
   (:require [clojure.pprint :as pprint]
             [moon.schemas :as schemas]
             [moon.property :as property]
-            [moon.utils :as utils]))
+            [moon.map :as map]))
 
 (defn- save!
   [{:keys [db/data db/file]}]
   (let [data (->> (vals data)
                   (sort-by property/type)
-                  (map utils/recur-sort-map)
+                  (map map/recur-sort)
                   doall)]
     (.start
      (Thread.

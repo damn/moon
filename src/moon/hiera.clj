@@ -27,7 +27,6 @@
   '#{
      dev,
      moon.throwable
-     moon.utils
      clojure.math
      clojure.scene2d.actor,
      }

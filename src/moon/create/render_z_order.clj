@@ -1,7 +1,7 @@
 (ns moon.create.render-z-order
-  (:require [moon.utils :as utils]))
+  (:require [moon.order :as order]))
 
 (defn step
   [{:keys [ctx/z-orders]
     :as ctx}]
-  (assoc ctx :ctx/render-z-order (utils/define-order z-orders)))
+  (assoc ctx :ctx/render-z-order (order/define-order z-orders)))

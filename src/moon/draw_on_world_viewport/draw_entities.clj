@@ -5,7 +5,7 @@
             [moon.entity :as entity]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]
-            [moon.utils :as utils]))
+            [moon.order :as order]))
 
 (def ^:private render-layers ; TODO move external - simple TODO/checklist / state pass
   [#{:entity/mouseover?
@@ -54,7 +54,7 @@
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
                            (raycaster/line-of-sight? raycaster player entity)))]
-    (doseq [[z-order entities] (utils/sort-by-order (group-by (comp :body/z-order :entity/body) entities)
+    (doseq [[z-order entities] (order/sort-by-order (group-by (comp :body/z-order :entity/body) entities)
                                                     first
                                                     render-z-order)
             render-layer render-layers

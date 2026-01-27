@@ -1,5 +1,5 @@
 (ns moon.grid2d.utils-test
-  (:require [moon.world-fns.caves :as caves]
+  (:require [moon.caves :as caves]
             [moon.world-fns.utils :as utils]))
 
 (comment

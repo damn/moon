@@ -1,5 +1,5 @@
 (ns moon.tx.spawn-creature
-  (:require [moon.utils :as utils]))
+  (:require [moon.map :as map]))
 
 (defn do!
   [_ctx
@@ -16,4 +16,4 @@
                                :collides? true
                                :z-order :z-order/ground #_(if flying? :z-order/flying :z-order/ground)}))
         (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-        (utils/safe-merge components))]])
+        (map/safe-merge components))]])

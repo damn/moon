@@ -8,14 +8,27 @@
             [moon.skill :as skill]
             [moon.raycaster :as raycaster]
             [moon.position :as position]
-            [moon.grid :as grid]
-            [moon.utils :as utils]))
+            [moon.grid :as grid]))
+
+(defn- indexed
+  "Returns a lazy sequence of [index, item] pairs, where items come
+  from 's' and indexes count up from zero.
+
+  (indexed '(a b c d)) => ([0 a] [1 b] [2 c] [3 d])"
+  [s]
+  (map vector (iterate inc 0) s))
+
+(defn- positions
+  "Returns a lazy sequence containing the positions at which pred
+  is true for items in coll."
+  [pred coll]
+  (for [[idx elt] (indexed coll) :when (pred elt)] idx))
 
 (let [order (position/get-8-neighbours [0 0])]
   (def ^:private diagonal-check-indizes
     (into {} (for [[x y] (filter v/diagonal-direction? order)]
-               [(first (utils/positions #(= % [x y]) order))
-                (vec (utils/positions #(some #{%} [[x 0] [0 y]])
+               [(first (positions #(= % [x y]) order))
+                (vec (positions #(some #{%} [[x 0] [0 y]])
                                      order))]))))
 
 (defn- is-not-allowed-diagonal? [at-idx adjacent-cells]
@@ -42,8 +55,13 @@
              %)
           adjacent-cells)))
 
+(defmacro ^:private when-seq [[aseq bind] & body]
+  `(let [~aseq ~bind]
+     (when (seq ~aseq)
+       ~@body)))
+
 (defn- get-min-dist-cell [distance-to cells]
-  (utils/when-seq [cells (filter distance-to cells)]
+  (when-seq [cells (filter distance-to cells)]
     (apply min-key distance-to cells)))
 
 ; rarely called -> no performance bottleneck

@@ -4,7 +4,7 @@
             [moon.input :as input]
             [moon.ui :as ui]
             [moon.ui.dev-menu :as dev-menu]
-            [moon.utils :as utils])
+            [moon.readable :as readable])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d Actor)
@@ -77,7 +77,7 @@
                                               (set! (.ctx ^Stage stage) (create-world ctx world-fn))))})}
         update-labels [{:label "elapsed-time"
                         :update-fn (fn [{:keys [ctx/elapsed-time]}]
-                                     (str (utils/readable-number elapsed-time) " seconds"))
+                                     (str (readable/number elapsed-time) " seconds"))
                         :icon "images/clock.png"}
                        {:label "FPS"
                         :update-fn (fn [{:keys [ctx/graphics]}]

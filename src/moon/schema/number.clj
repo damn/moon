@@ -1,6 +1,6 @@
 (ns moon.schema.number
   (:require [clojure.edn :as edn]
-            [moon.utils :as utils])
+            [moon.edn])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextField
                                                TextTooltip)))
@@ -15,7 +15,7 @@
 
 (defn create
   [schema v {:keys [^Skin ctx/skin]}]
-  (doto (TextField. (utils/->edn-str v) skin)
+  (doto (TextField. (moon.edn/->str v) skin)
     (.addListener (TextTooltip. (str schema) skin))))
 
 (defn value

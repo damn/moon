@@ -1,7 +1,7 @@
 (ns moon.entity.movement
   (:require [clojure.math :as math]
             [clojure.math.vector2 :as v]
-            [moon.utils :as utils]
+            [moon.math]
             [moon.grid :as grid]))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
@@ -36,7 +36,7 @@
           (pr-str speed))
   (assert (vector? direction))
   (assert (or (zero? (v/length direction))
-              (utils/nearly-equal? 1 (v/length direction)))
+              (moon.math/nearly-equal? 1 (v/length direction)))
           (str "cannot understand direction: " (pr-str direction)))
   (when-not (or (zero? (v/length direction))
                 (nil? speed)

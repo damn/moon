@@ -3,7 +3,7 @@
             [moon.stage :as stage]
             [moon.grid :as grid]
             [moon.raycaster :as raycaster]
-            [moon.utils :as utils]))
+            [moon.order :as order]))
 
 (defn do!
   [{:keys [ctx/input
@@ -23,7 +23,7 @@
                         hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
                                      (grid/point->entities grid position))]
                     (->> render-z-order
-                         (utils/sort-by-order hits #(:body/z-order (:entity/body @%)))
+                         (order/sort-by-order hits #(:body/z-order (:entity/body @%)))
                          reverse
                          (filter #(raycaster/line-of-sight? raycaster player @%))
                          first)))]

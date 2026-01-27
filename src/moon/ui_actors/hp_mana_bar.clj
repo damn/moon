@@ -2,7 +2,7 @@
   (:require [moon.stats :as stats]
             [moon.ctx :as ctx]
             [moon.textures :as textures]
-            [moon.utils :as utils]
+            [moon.readable :as readable]
             [moon.val-max :as val-max])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.utils.viewport Viewport)
@@ -40,7 +40,7 @@
                                                          {:image/file content-file
                                                           :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
                                 [x y]]
-                               [:draw/text {:text (str (utils/readable-number (minmaxval 0))
+                               [:draw/text {:text (str (readable/number (minmaxval 0))
                                                        "/"
                                                        (minmaxval 1)
                                                        " "
