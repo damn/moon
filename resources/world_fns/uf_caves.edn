@@ -4,4 +4,8 @@
   :spawn-rate 0.02
   :scaling 3
   :cave-size 200
-  :cave-style :wide}]
+  :cave-style :wide
+  :steps [moon.uf-caves.initial-grid/step
+          moon.uf-caves.fix-nads/step
+          moon.uf-caves.last-steps/step]
+  }]
