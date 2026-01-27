@@ -125,7 +125,6 @@
  [moon.start.require-namespaces/step [clj.api.com.badlogic.gdx.scenes.scene2d.actor
                                       clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
                                       moon.info-impl
-                                      moon.stage-impl
                                       ]]
  [moon.start.use-glfw-async/step]
  [moon.start.create-config/step {:title "Moon"
