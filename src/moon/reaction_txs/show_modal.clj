@@ -3,6 +3,8 @@
             [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Skin)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn do!
@@ -17,10 +19,7 @@
                    (doto (ui/actor
                           {:type :ui/window
                            :title title
-                           :rows [[{:actor (ui/actor
-                                            {:type :ui/label
-                                             :label/text text
-                                             :label/skin skin})}]
+                           :rows [[{:actor (Label. ^String text ^Skin skin)}]
                                   [{:actor (ui/actor
                                             {:type :ui/text-button
                                              :text button-text

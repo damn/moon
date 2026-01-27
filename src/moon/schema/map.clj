@@ -9,7 +9,9 @@
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Group
                                             Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Window)))
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Skin
+                                               Window)))
 
 (defn malli-form [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
@@ -74,10 +76,7 @@
                                                (rebuild! ctx))
                                  :skin skin}))
                       :left? true}
-                     {:actor (ui/actor
-                              {:type :ui/label
-                               :label/text label-text
-                               :label/skin skin})}]]})
+                     {:actor (Label. ^String label-text ^Skin skin)}]]})
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
     :pad-top 2

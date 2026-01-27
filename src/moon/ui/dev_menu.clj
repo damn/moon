@@ -22,10 +22,7 @@
 
 (defn add-upd-label!
   ([skin ^Table table text-fn icon]
-   (let [label (ui/actor
-                {:type :ui/label
-                 :label/text ""
-                 :label/skin skin})
+   (let [label (Label. "" ^Skin skin)
          sub-table (ui/actor
                     {:type :ui/table
                      :rows [[{:actor (Image. ^Texture icon)}
@@ -33,10 +30,7 @@
      (.addActor table (set-label-text-actor label text-fn))
      (.expandX (.right (.add table ^Actor sub-table)))))
   ([skin ^Table table text-fn]
-   (let [label (ui/actor
-                {:type :ui/label
-                 :label/text ""
-                 :label/skin skin})]
+   (let [label (Label. "" ^Skin skin)]
      (.addActor table (set-label-text-actor label text-fn))
      (.expandX (.right (.add table ^Actor label))))))
 
@@ -78,10 +72,7 @@
                    :expand-x? true
                    :fill-x? true
                    :colspan 1}]
-                 [{:actor (doto (ui/actor
-                                 {:type :ui/label
-                                  :label/text ""
-                                  :label/skin skin})
+                 [{:actor (doto (Label. "" ^Skin skin)
                             (Actor/.setTouchable Touchable/disabled))
                    :expand? true
                    :fill-x? true

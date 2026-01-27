@@ -6,7 +6,9 @@
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Stack)))
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               Skin
+                                               Stack)))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -47,11 +49,8 @@
                                       :drawable/scale image-scale
                                       :tooltip tooltip
                                       :skin skin})
-                                    (doto (ui/actor
-                                           {:type :ui/label
-                                            :label/text extra-info-text
-                                            :label/skin skin})
-                                      (Actor/.setTouchable Touchable/disabled))]))})))
+                                    (doto (Label. ^String extra-info-text ^Skin skin)
+                                      (.setTouchable Touchable/disabled))]))})))
 
 (defn- overview-table-rows
   [db

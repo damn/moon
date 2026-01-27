@@ -8,7 +8,6 @@
    [:ui/data-viewer-window       moon.ui-impl.data-viewer-window/create]
    [:ui/error-window             moon.ui-impl.error-window/create]
    [:ui/image-button             moon.ui-impl.image-button/create]
-   [:ui/label                    moon.ui-impl.label/create]
    [:ui/property-editor-window   moon.ui-impl.property-editor-window/create]
    [:ui/property-overview-window moon.ui-impl.property-overview-window/create]
    [:ui/table                    moon.ui-impl.table/create]

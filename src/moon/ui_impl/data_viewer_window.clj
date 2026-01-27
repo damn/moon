@@ -1,7 +1,8 @@
 (ns moon.ui-impl.data-viewer-window
   (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               ScrollPane
                                                Skin)))
 
 (defn- k->label-str [k]
@@ -26,20 +27,19 @@
 
 (defn- v->actor-decl [v skin]
   (if (map? v)
-    {:type :ui/text-button
-     :text "Map"
-     :on-clicked (fn [actor _ctx]
-                   (.addActor (Actor/.getStage actor)
-                              (create
-                               {:title "title"
-                                :data v
-                                :width 500
-                                :height 500
-                                :skin skin})))
-     :skin skin}
-    {:type :ui/label
-     :label/text (v->text v)
-     :label/skin skin}))
+    (ui/actor
+     {:type :ui/text-button
+      :text "Map"
+      :on-clicked (fn [actor _ctx]
+                    (.addActor (Actor/.getStage actor)
+                               (create
+                                {:title "title"
+                                 :data v
+                                 :width 500
+                                 :height 500
+                                 :skin skin})))
+      :skin skin})
+    (Label. ^String (v->text v) ^Skin skin)))
 
 (defn create
   [{:keys [title
@@ -50,14 +50,11 @@
   {:pre [(map? data)]}
   (let [rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
-                :actor (ui/actor (v->actor-decl v skin))})
+                :actor (v->actor-decl v skin)})
         scroll-pane-table (ui/actor
                            {:type :ui/table
                             :rows (for [{:keys [label actor]} rows]
-                                    [{:actor (ui/actor
-                                              {:type :ui/label
-                                               :label/text label
-                                               :label/skin skin})}
+                                    [{:actor (Label. ^String label ^Skin skin)}
                                      {:actor actor}])})
         scroll-pane-cell (let [table (doto (ui/actor
                                             {:type :ui/table
