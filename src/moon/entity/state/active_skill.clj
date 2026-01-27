@@ -2,7 +2,7 @@
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [clojure.math :as math]
             [moon.effect :as effect]
-            [moon.entity.stats :as stats]
+            [moon.stats :as stats]
             [moon.textures :as textures]
             [moon.timer :as timer]
             [moon.raycaster :as raycaster]))

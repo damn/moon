@@ -1,5 +1,5 @@
 (ns moon.tx.set-item
-  (:require [moon.entity.stats :as stats]
+  (:require [moon.stats :as stats]
             [moon.inventory :as inventory]))
 
 (defn do!

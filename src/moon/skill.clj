@@ -1,6 +1,6 @@
 (ns moon.skill
   (:require [moon.effect :as effect]
-            [moon.entity.stats :as stats]))
+            [moon.stats :as stats]))
 
 (defn usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}

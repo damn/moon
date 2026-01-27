@@ -1,5 +1,5 @@
 (ns moon.entity.state.npc-sleeping
-  (:require [moon.entity.stats :as stats]
+  (:require [moon.stats :as stats]
             [moon.grid :as grid]))
 
 (defn tick

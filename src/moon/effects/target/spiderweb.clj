@@ -1,5 +1,5 @@
 (ns moon.effects.target.spiderweb
-  (:require [moon.entity.stats :as stats]
+  (:require [moon.stats :as stats]
             [moon.timer :as timer]))
 
 (def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})

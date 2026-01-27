@@ -1,5 +1,5 @@
 (ns moon.entity.state.npc-moving
-  (:require [moon.entity.stats :as stats]
+  (:require [moon.stats :as stats]
             [moon.timer :as timer]))
 
 (def reaction-time-multiplier 0.016)

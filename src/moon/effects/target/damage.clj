@@ -1,6 +1,6 @@
 (ns moon.effects.target.damage
   (:require [clojure.rand :refer [rand-int-between]]
-            [moon.entity.stats :as stats]))
+            [moon.stats :as stats]))
 
 ; not in stats because projectile as source doesnt have stats
 ; FIXME I don't see it triggering with 10 armor save ... !
@@ -23,15 +23,15 @@
   ([source target damage]
    (update (calc-damage source damage)
            :damage/min-max
-           moon.entity.stats/apply-max
+           stats/apply-max
            (:stats/modifiers target)
            :modifier/damage-receive-max))
   ([source damage]
    (update damage
            :damage/min-max
            #(-> %
-                (moon.entity.stats/apply-min (:stats/modifiers source) :modifier/damage-deal-min)
-                (moon.entity.stats/apply-max (:stats/modifiers source) :modifier/damage-deal-max)))))
+                (stats/apply-min (:stats/modifiers source) :modifier/damage-deal-min)
+                (stats/apply-max (:stats/modifiers source) :modifier/damage-deal-max)))))
 
 (defn applicable?
   [_ {:keys [effect/target]}]

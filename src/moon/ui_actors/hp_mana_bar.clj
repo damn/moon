@@ -1,5 +1,5 @@
 (ns moon.ui-actors.hp-mana-bar
-  (:require [moon.entity.stats :as stats]
+  (:require [moon.stats :as stats]
             [moon.ctx :as ctx]
             [moon.textures :as textures]
             [moon.utils :as utils]

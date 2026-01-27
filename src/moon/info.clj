@@ -3,7 +3,7 @@
 (ns moon.info
   (:require [clojure.math :as math]
             [clojure.string :as str]
-            [moon.entity.stats :as stats]
+            [moon.stats :as stats]
             [moon.ops :as ops]
             [moon.timer :as timer]
             [moon.utils :as utils]))

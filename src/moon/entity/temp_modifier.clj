@@ -1,6 +1,6 @@
 (ns moon.entity.temp-modifier
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [moon.entity.stats :as stats]
+            [moon.stats :as stats]
             [moon.timer :as timer]))
 
 (defn tick
