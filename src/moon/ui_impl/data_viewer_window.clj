@@ -57,11 +57,11 @@
                                                :label/text label
                                                :label/skin skin})}
                                      {:actor actor}])})
-        scroll-pane-cell (let [table (ui/actor
-                                      {:type :ui/table
-                                       :rows [[scroll-pane-table]]
-                                       :cell-defaults {:pad 1}
-                                       :pack? true})]
+        scroll-pane-cell (let [table (doto (ui/actor
+                                            {:type :ui/table
+                                             :rows [[scroll-pane-table]]
+                                             :cell-defaults {:pad 1}})
+                                       (.pack))]
                            {:actor (ui/actor
                                     {:type :ui/scroll-pane
                                      :scroll-pane/actor table
@@ -69,12 +69,12 @@
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (ui/actor
-     {:type :ui/window
-      :skin skin
-      :title title
-      :close-button? true
-      :close-on-escape? true
-      :center? true
-      :rows [[scroll-pane-cell]]
-      :pack? true})))
+    (doto (ui/actor
+           {:type :ui/window
+            :skin skin
+            :title title
+            :close-button? true
+            :close-on-escape? true
+            :center? true
+            :rows [[scroll-pane-cell]]})
+      (.pack))))

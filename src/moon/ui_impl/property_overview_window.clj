@@ -79,17 +79,17 @@
            skin
            property-type
            clicked-id-fn]}]
-  (ui/actor
-   {:type :ui/window
-    :skin skin
-    :title "Edit"
-    :modal? true
-    :close-button? true
-    :center? true
-    :close-on-escape? true
-    :pack? true
-    :rows (overview-table-rows db
-                               skin
-                               textures
-                               property-type
-                               clicked-id-fn)}))
+  (doto (ui/actor
+         {:type :ui/window
+          :skin skin
+          :title "Edit"
+          :modal? true
+          :close-button? true
+          :center? true
+          :close-on-escape? true
+          :rows (overview-table-rows db
+                                     skin
+                                     textures
+                                     property-type
+                                     clicked-id-fn)})
+    (.pack)))

@@ -82,7 +82,6 @@
            {:type :ui/window
             :skin skin
             :title title
-            :pack? true
             :rows [[{:actor (doto
                               (ui/actor
                                {:type :ui/table
@@ -106,6 +105,7 @@
                                                   (->cell :inventory.slot/bag :position [x y]))))})
                               (.setName "inventory-cell-table"))
                      :pad 4}]]})
+      (.pack)
       (.setName "moon.ui.windows.inventory")
       (.setVisible false)
       (actor/set-position! position))))

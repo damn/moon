@@ -88,15 +88,15 @@
     (layer/set-visible! (.get (tiled-map/layers this) "creatures") true)))
 
 #_(defn ->generate-map-window [c level-id]
-    (window/create {:title "Properties"
-                    :cell-defaults {:pad 10}
-                    :rows [[(label/create {:label/text (with-out-str (pprint (db/build db level-id)))})]
-                           [(text-button "Generate" #(try (generate-screen-ctx c (db/build db level-id))
-                                                          (catch Throwable t
-                                                            (pretty-pst t)
-                                                            (.addActor stage (error-window/create skin t))
-                                                            (println t))))]]
-                    :pack? true}))
+    (doto (window/create {:title "Properties"
+                          :cell-defaults {:pad 10}
+                          :rows [[(label/create {:label/text (with-out-str (pprint (db/build db level-id)))})]
+                                 [(text-button "Generate" #(try (generate-screen-ctx c (db/build db level-id))
+                                                                (catch Throwable t
+                                                                  (pretty-pst t)
+                                                                  (.addActor stage (error-window/create skin t))
+                                                                  (println t))))]] })
+      (.pack)))
 
 (defn render [_]
   #_(moon.graphics/draw-on-world-view @state render-on-map)

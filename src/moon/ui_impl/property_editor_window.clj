@@ -82,7 +82,7 @@
             :center? true
             :close-on-escape? true
             :rows rows
-            :cell-defaults {:pad 5}
-            :pack? true})
+            :cell-defaults {:pad 5}})
+      (.pack)
       (group/add-actors! actors)
       (.setName "moon.ui.editor.window"))))

@@ -8,8 +8,8 @@
   (let [^Actor table (doto (ui/actor
                             {:type :ui/table
                              :rows rows
-                             :cell-defaults {:pad 5}
-                             :pack? true})
+                             :cell-defaults {:pad 5}})
+                       (.pack)
                        (.setName "scroll-pane-table"))]
     {:actor (doto (ScrollPane. table skin)
               (.setName "moon.ui.widget.scroll-pane-table"))

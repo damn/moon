@@ -1,6 +1,5 @@
 (ns moon.ui.table
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
-            [moon.ui.widget-group :as widget-group])
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
@@ -18,6 +17,5 @@
 ; TODO use doto.
 (defn set-opts! [^Table table {:keys [rows cell-defaults] :as opts}]
   (cell/set-opts! (.defaults table) cell-defaults)
-  (doto table
-    (add-rows! rows)
-    (widget-group/set-opts! opts)))
+  (add-rows! table rows)
+  table)

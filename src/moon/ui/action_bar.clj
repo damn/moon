@@ -19,8 +19,8 @@
                                               (.setMinCheckCount 0))))
                    :expand? true
                    :bottom? true}]]
-          :cell-defaults {:pad 2}
-          :fill-parent? true})
+          :cell-defaults {:pad 2}})
+    (.setFillParent true)
     (.setName "moon.ui.action-bar")))
 
 (defn- get-data [^Table action-bar]

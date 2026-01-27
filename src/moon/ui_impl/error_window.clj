@@ -10,18 +10,18 @@
 
 (defn create
   [{:keys [skin throwable]}]
-  (ui/actor
-   {:type :ui/window
-    :title "Error"
-    :rows [[{:actor (ui/actor
-                     {:type :ui/label
-                      :label/text (binding [*print-level* 3]
-                                    (with-err-str
-                                      (repl/pst throwable)))
-                      :label/skin skin})}]]
-    :modal? true
-    :close-button? true
-    :close-on-escape? true
-    :center? true
-    :skin skin
-    :pack? true}))
+  (doto (ui/actor
+         {:type :ui/window
+          :title "Error"
+          :rows [[{:actor (ui/actor
+                           {:type :ui/label
+                            :label/text (binding [*print-level* 3]
+                                          (with-err-str
+                                            (repl/pst throwable)))
+                            :label/skin skin})}]]
+          :modal? true
+          :close-button? true
+          :close-on-escape? true
+          :center? true
+          :skin skin})
+    (.pack)))

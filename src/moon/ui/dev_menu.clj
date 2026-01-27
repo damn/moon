@@ -41,17 +41,17 @@
      (.expandX (.right (.add table ^Actor label))))))
 
 (defn- create-window [skin label items]
-  (ui/actor
-   {:type :ui/window
-    :skin skin
-    :pack? true
-    :title label
-    :rows [(for [{:keys [label on-click]} items]
-             {:actor (doto (TextButton. ^String label ^Skin skin)
-                       (.addListener
-                        (proxy [ChangeListener] []
-                          (changed [event actor]
-                            (on-click actor (.ctx ^Stage (Event/.getStage event)))))))})]}))
+  (doto (ui/actor
+         {:type :ui/window
+          :skin skin
+          :title label
+          :rows [(for [{:keys [label on-click]} items]
+                   {:actor (doto (TextButton. ^String label ^Skin skin)
+                             (.addListener
+                              (proxy [ChangeListener] []
+                                (changed [event actor]
+                                  (on-click actor (.ctx ^Stage (Event/.getStage event)))))))})]})
+    (.pack)))
 
 (defn- main-table [^Skin skin menus update-labels]
   (let [table (ui/actor
@@ -72,18 +72,18 @@
 
 (defn create
   [{:keys [menus update-labels skin]}]
-  (ui/actor
-   {:type :ui/table
-    :rows [[{:actor (main-table skin menus update-labels)
-             :expand-x? true
-             :fill-x? true
-             :colspan 1}]
-           [{:actor (doto (ui/actor
-                           {:type :ui/label
-                            :label/text ""
-                            :label/skin skin})
-                      (Actor/.setTouchable Touchable/disabled))
-             :expand? true
-             :fill-x? true
-             :fill-y? true}]]
-    :fill-parent? true}))
+  (doto (ui/actor
+         {:type :ui/table
+          :rows [[{:actor (main-table skin menus update-labels)
+                   :expand-x? true
+                   :fill-x? true
+                   :colspan 1}]
+                 [{:actor (doto (ui/actor
+                                 {:type :ui/label
+                                  :label/text ""
+                                  :label/skin skin})
+                            (Actor/.setTouchable Touchable/disabled))
+                   :expand? true
+                   :fill-x? true
+                   :fill-y? true}]]})
+    (.setFillParent true)))
