@@ -1,14 +1,27 @@
 (ns moon.cell)
 
-(defprotocol Cell
-  (blocked? [_ z-order])
-  (blocks-vision? [_])
-  (occupied-by-other? [_ eid]
-                      "returns true if there is some occupying body with center-tile = this cell
-                      or a multiple-cell-size body which touches this cell.")
-  (nearest-entity          [_ faction])
-  (nearest-entity-distance [_ faction])
-  (pf-blocked? [_]))
+(defn blocked? [{:keys [movement]} z-order]
+  (case movement
+    :none true
+    :air (case z-order
+           :z-order/flying false
+           :z-order/ground true)
+    :all false))
+
+(defn blocks-vision? [{:keys [movement]}]
+  (= movement :none))
+
+(defn occupied-by-other? [{:keys [occupied]} eid]
+  (some #(not= % eid) occupied))
+
+(defn nearest-entity [this faction]
+  (-> this faction :eid))
+
+(defn nearest-entity-distance [this faction]
+  (-> this faction :distance))
+
+(defn pf-blocked? [this]
+  (blocked? this :z-order/ground))
 
 (defrecord FieldData [distance eid])
 
@@ -25,30 +38,7 @@
                   entities
                   occupied
                   good
-                  evil]
-  Cell
-  (blocked? [_ z-order]
-    (case movement
-      :none true
-      :air (case z-order
-             :z-order/flying false
-             :z-order/ground true)
-      :all false))
-
-  (blocks-vision? [_]
-    (= movement :none))
-
-  (occupied-by-other? [_ eid]
-    (some #(not= % eid) occupied))
-
-  (nearest-entity [this faction]
-    (-> this faction :eid))
-
-  (nearest-entity-distance [this faction]
-    (-> this faction :distance))
-
-  (pf-blocked? [this]
-    (blocked? this :z-order/ground)))
+                  evil])
 
 (defn create [position movement]
   {:pre [(#{:none :air :all} movement)]}
