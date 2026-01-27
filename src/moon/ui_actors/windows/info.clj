@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.info
   (:require [moon.info :as info]
-            [moon.ui :as ui]
-            [moon.ui.actor :as actor])
+            [moon.ui.actor :as actor]
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
@@ -17,9 +17,8 @@
            position
            set-label-text!]}]
   (let [label (Label. "" ^Skin skin)
-        ^Window window (doto (ui/actor
-                              {:type :ui/window
-                               :skin skin
+        ^Window window (doto (window/create
+                              {:skin skin
                                :title title
                                :rows [[{:actor label
                                         :expand? true}]]})

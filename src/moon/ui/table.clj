@@ -19,3 +19,7 @@
   (cell/set-opts! (.defaults table) cell-defaults)
   (add-rows! table rows)
   table)
+
+(defn create [opts]
+  (-> (Table.)
+      (set-opts! opts)))

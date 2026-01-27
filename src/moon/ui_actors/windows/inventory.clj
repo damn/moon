@@ -4,9 +4,10 @@
             [moon.state :as state]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
-            [moon.ui :as ui]
             [moon.ui.actor :as actor]
-            [moon.ui.group :as group])
+            [moon.ui.group :as group]
+            [moon.ui.table :as table]
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -79,14 +80,12 @@
                              (.setUserObject cell)
                              (.addListener (clicked-cell-listener cell))
                              )}))]
-    (doto (ui/actor
-           {:type :ui/window
-            :skin skin
+    (doto (window/create
+           {:skin skin
             :title title
             :rows [[{:actor (doto
-                              (ui/actor
-                               {:type :ui/table
-                                :rows (concat [[nil nil
+                              (table/create
+                               {:rows (concat [[nil nil
                                                 (->cell :inventory.slot/helm)
                                                 (->cell :inventory.slot/necklace)]
                                                [nil

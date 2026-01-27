@@ -1,5 +1,7 @@
-(ns moon.ui-impl.data-viewer-window
-  (:require [moon.ui :as ui])
+(ns moon.ui.data-viewer-window
+  (:require [moon.ui.table :as table]
+            [moon.ui.text-button :as text-button]
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane
@@ -27,9 +29,8 @@
 
 (defn- v->actor-decl [v skin]
   (if (map? v)
-    (ui/actor
-     {:type :ui/text-button
-      :text "Map"
+    (text-button/create
+     {:text "Map"
       :on-clicked (fn [actor _ctx]
                     (.addActor (Actor/.getStage actor)
                                (create
@@ -51,23 +52,20 @@
   (let [rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
                 :actor (v->actor-decl v skin)})
-        scroll-pane-table (ui/actor
-                           {:type :ui/table
-                            :rows (for [{:keys [label actor]} rows]
+        scroll-pane-table (table/create
+                           {:rows (for [{:keys [label actor]} rows]
                                     [{:actor (Label. ^String label ^Skin skin)}
                                      {:actor actor}])})
-        scroll-pane-cell (let [table (doto (ui/actor
-                                            {:type :ui/table
-                                             :rows [[scroll-pane-table]]
+        scroll-pane-cell (let [table (doto (table/create
+                                            {:rows [[scroll-pane-table]]
                                              :cell-defaults {:pad 1}})
                                        (.pack))]
                            {:actor (ScrollPane. table skin)
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (doto (ui/actor
-           {:type :ui/window
-            :skin skin
+    (doto (window/create
+           {:skin skin
             :title title
             :close-button? true
             :close-on-escape? true

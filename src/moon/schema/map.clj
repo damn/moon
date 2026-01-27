@@ -3,8 +3,10 @@
             [malli.utils :as mu]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
-            [moon.ui :as ui]
+            [moon.ui.property-editor-window :as property-editor-window]
             [moon.ui.table :as table]
+            [moon.ui.text-button :as text-button]
+            [moon.ui.window :as window]
             [moon.order :as order])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Group
@@ -45,9 +47,8 @@
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (Actor/.remove window)
     (Stage/.addActor stage
-                     (ui/actor
-                      {:type :ui/property-editor-window
-                       :ctx ctx
+                     (property-editor-window/create
+                      {:ctx ctx
                        :property property}))))
 
 (defn- k->label-text [k]
@@ -61,13 +62,11 @@
            k
            table
            label-text]}]
-  [{:actor (ui/actor
-            {:type :ui/table
-             :cell-defaults {:pad 2}
+  [{:actor (table/create
+            {:cell-defaults {:pad 2}
              :rows [[{:actor (when display-remove-component-button?
-                               (ui/actor
-                                {:type :ui/text-button
-                                 :text "-"
+                               (text-button/create
+                                {:text "-"
                                  :on-clicked (fn [_actor ctx]
                                                (Actor/.remove (first (filter (fn [actor]
                                                                                (and (Actor/.getUserObject actor)
@@ -97,9 +96,8 @@
 
 (defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (ui/actor
-                {:type :ui/window
-                 :skin skin
+  (let [window (window/create
+                {:skin skin
                  :title "Choose"
                  :modal? true
                  :close-button? true
@@ -111,9 +109,8 @@
     (table/add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (ui/actor
-                 {:type :ui/text-button
-                  :text (name k)
+       [{:actor (text-button/create
+                 {:text (name k)
                   :on-clicked (fn [_actor ctx]
                                 (Actor/.remove window)
                                 (table/add-rows! map-widget-table [(component-row skin
@@ -148,9 +145,7 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (doto (ui/actor
-                     {:type :ui/table
-                      :cell-defaults {:pad 5}})
+  (let [table (doto (table/create {:cell-defaults {:pad 5}})
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
@@ -164,9 +159,8 @@
     (table/add-rows!
      table
      (concat [(when opt?
-                [{:actor (ui/actor
-                          {:type :ui/text-button
-                           :text "Add component"
+                [{:actor (text-button/create
+                          {:text "Add component"
                            :on-clicked (fn [_actor {:keys [ctx/db
                                                            ctx/stage
                                                            ctx/skin]}]

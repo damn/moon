@@ -2,7 +2,7 @@
   (:require [moon.ctx :as ctx]
             [moon.entity :as entity]
             [moon.throwable :as throwable]
-            [moon.ui :as ui])
+            [moon.ui.error-window :as error-window])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!
@@ -24,9 +24,9 @@
          (catch Throwable t
            (throwable/pretty-pst t)
            (Stage/.addActor stage
-                            (ui/actor {:type :ui/error-window
-                                       :skin skin
-                                       :throwable t}))))
+                            (error-window/create
+                             {:skin skin
+                              :throwable t}))))
         ctx)))
 
 (comment

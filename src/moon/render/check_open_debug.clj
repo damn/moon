@@ -1,6 +1,6 @@
 (ns moon.render.check-open-debug
   (:require [moon.input :as input]
-            [moon.ui :as ui])
+            [moon.ui.data-viewer-window :as data-viewer-window])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!
@@ -16,9 +16,8 @@
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (Stage/.addActor stage
-                       (ui/actor
-                        {:type :ui/data-viewer-window
-                         :title "Data View"
+                       (data-viewer-window/create
+                        {:title "Data View"
                          :data data
                          :width 500
                          :height 500

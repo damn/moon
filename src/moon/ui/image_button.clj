@@ -1,4 +1,4 @@
-(ns moon.ui-impl.image-button
+(ns moon.ui.image-button
   (:require [moon.ui.table :as table])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)

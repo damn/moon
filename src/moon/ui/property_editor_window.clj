@@ -1,13 +1,15 @@
-(ns moon.ui-impl.property-editor-window
+(ns moon.ui.property-editor-window
   (:require [moon.db :as db]
             [moon.input :as input]
             [moon.property :as property]
             [moon.throwable :as throwable]
             [moon.schema :as schema]
-            [moon.ui :as ui]
             [moon.ui.actor :as actor]
+            [moon.ui.error-window :as error-window]
             [moon.ui.group :as group]
-            [moon.ui.scroll-pane-cell :as scroll-pane-cell])
+            [moon.ui.scroll-pane-cell :as scroll-pane-cell]
+            [moon.ui.text-button :as text-button]
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Window)
@@ -41,9 +43,9 @@
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (Stage/.addActor stage
-                                                  (ui/actor {:type :ui/error-window
-                                                             :skin skin
-                                                             :throwable t}))))))
+                                                  (error-window/create
+                                                   {:skin skin
+                                                    :throwable t}))))))
         clicked-delete-fn (with-window-close (fn [db]
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
@@ -57,14 +59,12 @@
                           (clicked-save-fn this ctx))))
                     (let [^Actor this this]
                       (proxy-super act delta))))]
-        save-button (ui/actor
-                     {:type :ui/text-button
-                      :text "Save [LIGHT_GRAY](ENTER)[]"
+        save-button (text-button/create
+                     {:text "Save [LIGHT_GRAY](ENTER)[]"
                       :on-clicked clicked-save-fn
                       :skin skin})
-        delete-button (ui/actor
-                       {:type :ui/text-button
-                        :text "Delete"
+        delete-button (text-button/create
+                       {:text "Delete"
                         :on-clicked clicked-delete-fn
                         :skin skin})
         scroll-pane-rows [[{:actor widget :colspan 2}]
@@ -73,9 +73,8 @@
         rows [[(scroll-pane-cell/create skin
                                         scroll-pane-height
                                         scroll-pane-rows)]]]
-    (doto (ui/actor
-           {:type :ui/window
-            :skin skin
+    (doto (window/create
+           {:skin skin
             :title "[SKY]Property[]"
             :modal? true
             :close-button? true

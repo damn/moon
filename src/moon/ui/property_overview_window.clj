@@ -1,9 +1,10 @@
-(ns moon.ui-impl.property-overview-window
+(ns moon.ui.property-overview-window
   (:require [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui :as ui]
-            [moon.ui.group :as group])
+            [moon.ui.group :as group]
+            [moon.ui.image-button :as image-button]
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
@@ -42,9 +43,8 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (doto (Stack.)
-                (group/add-actors! [(ui/actor
-                                     {:type :ui/image-button
-                                      :drawable/texture-region texture-region
+                (group/add-actors! [(image-button/create
+                                     {:drawable/texture-region texture-region
                                       :on-clicked on-clicked
                                       :drawable/scale image-scale
                                       :tooltip tooltip
@@ -79,9 +79,8 @@
            skin
            property-type
            clicked-id-fn]}]
-  (doto (ui/actor
-         {:type :ui/window
-          :skin skin
+  (doto (window/create
+         {:skin skin
           :title "Edit"
           :modal? true
           :close-button? true

@@ -2,19 +2,6 @@
 ; and just document where what how to extend?
 ; but then is not minimal anymore
 [
- [moon.start.add-method/step
-  moon.ui/actor
-  [
-   [:ui/data-viewer-window       moon.ui-impl.data-viewer-window/create]
-   [:ui/error-window             moon.ui-impl.error-window/create]
-   [:ui/image-button             moon.ui-impl.image-button/create]
-   [:ui/property-editor-window   moon.ui-impl.property-editor-window/create]
-   [:ui/property-overview-window moon.ui-impl.property-overview-window/create]
-   [:ui/table                    moon.ui-impl.table/create]
-   [:ui/text-button              moon.ui-impl.text-button/create]
-   [:ui/window                   moon.ui-impl.window/create]
-   ]
-  ]
  [moon.start.add-method/step moon.schema/create [[:default moon.schema.default/create]]]
  [moon.start.add-method/step moon.schema/value  [[:default moon.schema.default/value]]]
  [moon.start.add-methods/step

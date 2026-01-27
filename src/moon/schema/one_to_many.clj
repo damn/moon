@@ -2,9 +2,10 @@
   (:require [moon.db :as db]
             [moon.textures :as textures]
             [moon.property :as property]
-            [moon.ui :as ui]
             [moon.ui.actor :as actor]
-            [moon.ui.table :as table])
+            [moon.ui.property-overview-window :as property-overview-window]
+            [moon.ui.table :as table]
+            [moon.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Group
@@ -34,18 +35,16 @@
                     (Window/.pack (actor/find-ancestor table Window)))]
     (table/add-rows!
      table
-     [[{:actor (ui/actor
-                {:type :ui/text-button
-                 :text "+"
+     [[{:actor (text-button/create
+                {:text "+"
                  :on-clicked (fn [_actor {:keys [ctx/db
                                                  ctx/skin
                                                  ctx/stage
                                                  ctx/textures]}]
                                (Stage/.addActor
                                 stage
-                                (ui/actor
-                                 {:type :ui/property-overview-window
-                                  :db db
+                                (property-overview-window/create
+                                 {:db db
                                   :textures textures
                                   :skin skin
                                   :property-type property-type
@@ -61,17 +60,14 @@
                              (.addListener (TextTooltip. (property/tooltip property) ^Skin skin)))]
           {:actor image-widget}))
       (for [id property-ids]
-        {:actor (ui/actor
-                 {:type :ui/text-button
-                  :text "-"
+        {:actor (text-button/create
+                 {:text "-"
                   :on-clicked (fn [_actor ctx]
                                 (redo-rows ctx (disj property-ids id)))
                   :skin skin})})])))
 
 (defn create [[_ property-type] property-ids ctx]
-  (let [table (ui/actor
-               {:type :ui/table
-                :cell-defaults {:pad 5}})]
+  (let [table (table/create {:cell-defaults {:pad 5}})]
     (add-one-to-many-rows ctx table property-type property-ids)
     table))
 

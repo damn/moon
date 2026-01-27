@@ -1,6 +1,7 @@
 (ns moon.reaction-txs.show-modal
-  (:require [moon.ui :as ui]
-            [moon.ui.actor :as actor])
+  (:require [moon.ui.actor :as actor]
+            [moon.ui.text-button :as text-button]
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Label
@@ -16,13 +17,11 @@
                    Stage/.getRoot
                    (.findActor "moon.ui.modal-window"))))
   (Stage/.addActor stage
-                   (doto (ui/actor
-                          {:type :ui/window
-                           :title title
+                   (doto (window/create
+                          {:title title
                            :rows [[{:actor (Label. ^String text ^Skin skin)}]
-                                  [{:actor (ui/actor
-                                            {:type :ui/text-button
-                                             :text button-text
+                                  [{:actor (text-button/create
+                                            {:text button-text
                                              :on-clicked (fn [_actor _ctx]
                                                            (Actor/.remove
                                                             (-> stage

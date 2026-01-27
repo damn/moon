@@ -2,8 +2,10 @@
   (:require [clojure.string :as str]
             [moon.db :as db]
             [moon.input :as input]
-            [moon.ui :as ui]
+            [moon.ui.data-viewer-window :as data-viewer-window]
             [moon.ui.dev-menu :as dev-menu]
+            [moon.ui.property-editor-window :as property-editor-window]
+            [moon.ui.property-overview-window :as property-overview-window]
             [moon.readable :as readable])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics OrthographicCamera)
@@ -18,17 +20,15 @@
            ctx/textures]}
    property-type]
   (Stage/.addActor stage
-                   (ui/actor
-                    {:type :ui/property-overview-window
-                     :db db
+                   (property-overview-window/create
+                    {:db db
                      :textures textures
                      :skin skin
                      :property-type property-type
                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
                                       (Stage/.addActor stage
-                                                       (ui/actor
-                                                        {:type :ui/property-editor-window
-                                                         :ctx ctx
+                                                       (property-editor-window/create
+                                                        {:ctx ctx
                                                          :property (db/get-raw db id)})))})))
 
 (defn create
@@ -49,9 +49,8 @@
                                   :on-click (fn [_actor {:keys [ctx/skin
                                                                 ctx/stage] :as ctx}]
                                               (Stage/.addActor stage
-                                                               (ui/actor
-                                                                {:type :ui/data-viewer-window
-                                                                 :title "Data View"
+                                                               (data-viewer-window/create
+                                                                {:title "Data View"
                                                                  :data ctx
                                                                  :width 1000
                                                                  :height 1000

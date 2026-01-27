@@ -2,9 +2,10 @@
   (:require [moon.db :as db]
             [moon.textures :as textures]
             [moon.property :as property]
-            [moon.ui :as ui]
             [moon.ui.actor :as actor]
-            [moon.ui.table :as table])
+            [moon.ui.property-overview-window :as property-overview-window]
+            [moon.ui.table :as table]
+            [moon.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Group
@@ -35,18 +36,16 @@
     (table/add-rows!
      table
      [[(when-not property-id
-         {:actor (ui/actor
-                  {:type :ui/text-button
-                   :text "+"
+         {:actor (text-button/create
+                  {:text "+"
                    :on-clicked (fn [_actor {:keys [ctx/db
                                                    ctx/skin
                                                    ctx/stage
                                                    ctx/textures]}]
                                  (Stage/.addActor
                                   stage
-                                  (ui/actor
-                                   {:type :ui/property-overview-window
-                                    :db db
+                                  (property-overview-window/create
+                                   {:db db
                                     :textures textures
                                     :skin skin
                                     :property-type property-type
@@ -63,17 +62,14 @@
            {:actor image-widget}
            image-widget))]
       [(when property-id
-         {:actor (ui/actor
-                  {:type :ui/text-button
-                   :text "-"
+         {:actor (text-button/create
+                  {:text "-"
                    :on-clicked (fn [_actor ctx]
                                  (redo-rows ctx nil))
                    :skin skin})})]])))
 
 (defn create [[_ property-type] property-id ctx]
-  (let [table (ui/actor
-               {:type :ui/table
-                :cell-defaults {:pad 5}})]
+  (let [table (table/create {:cell-defaults {:pad 5}})]
     (add-one-to-one-rows ctx table property-type property-id)
     table))
 

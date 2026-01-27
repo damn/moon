@@ -1,6 +1,6 @@
-(ns moon.ui-impl.error-window
+(ns moon.ui.error-window
   (:require [clojure.repl :as repl]
-            [moon.ui :as ui])
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
 
@@ -12,9 +12,8 @@
 
 (defn create
   [{:keys [skin throwable]}]
-  (doto (ui/actor
-         {:type :ui/window
-          :title "Error"
+  (doto (window/create
+         {:title "Error"
           :rows [[{:actor (Label. ^String (binding [*print-level* 3]
                                             (with-err-str
                                               (repl/pst throwable)))

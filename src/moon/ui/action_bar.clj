@@ -1,5 +1,6 @@
 (ns moon.ui.action-bar
-  (:require [moon.ui :as ui])
+  (:require [moon.ui.image-button :as image-button]
+            [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Group)
            (com.badlogic.gdx.scenes.scene2d.ui Button
@@ -8,9 +9,8 @@
                                                Table)))
 
 (defn create []
-  (doto (ui/actor
-         {:type :ui/table
-          :rows [[{:actor (doto (doto (HorizontalGroup.)
+  (doto (table/create
+         {:rows [[{:actor (doto (doto (HorizontalGroup.)
                                   (.space 2)
                                   (.pad 2))
                             (.setName "moon.ui.action-bar.horizontal-group")
@@ -39,14 +39,12 @@
            tooltip-text]}
    skin]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-        button (doto (ui/actor
-                      {:type :ui/image-button
-                       :drawable/texture-region texture-region
+        button (doto (image-button/create
+                      {:drawable/texture-region texture-region
                        :drawable/scale 2
                        :tooltip tooltip-text
                        :skin skin})
-                 (.setUserObject skill-id)
-                 )]
+                 (.setUserObject skill-id))]
     (Group/.addActor horizontal-group button)
     (ButtonGroup/.add button-group ^Button button)
     nil))
