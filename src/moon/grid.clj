@@ -5,7 +5,6 @@
             [moon.faction :as faction]
             [moon.position :as position]
             [moon.rectangle :as rectangle]
-            [moon.grid :as grid]
             [moon.cell :as cell])
   (:import (com.badlogic.gdx.math Circle
                                   Intersector
