@@ -2,13 +2,13 @@
   (:require [moon.db :as db]
             [moon.textures :as textures]
             [moon.property :as property]
-            [moon.stage :as stage]
             [moon.ui :as ui]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.table :as table])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Skin
                                                Table
@@ -42,7 +42,7 @@
                                                    ctx/skin
                                                    ctx/stage
                                                    ctx/textures]}]
-                                 (stage/add-actor!
+                                 (Stage/.addActor
                                   stage
                                   (ui/actor
                                    {:type :ui/property-overview-window

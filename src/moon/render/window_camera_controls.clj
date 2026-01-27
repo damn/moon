@@ -1,10 +1,10 @@
 (ns moon.render.window-camera-controls
   (:require [moon.input :as input]
             [moon.graphics.camera :as camera]
-            [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def zoom-speed 0.025)
@@ -22,21 +22,21 @@
 
   (when (input/key-just-pressed? input (:close-windows-key input/controls))
     (->> (-> stage
-             stage/root
+             Stage/.getRoot
              (group/find-actor "moon.ui.windows"))
          group/children
          (run! #(Actor/.setVisible % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory input/controls))
     (-> stage
-        stage/root
+        Stage/.getRoot
         (group/find-actor "moon.ui.windows")
         (group/find-actor "moon.ui.windows.inventory")
         actor/toggle-visible!))
 
   (when (input/key-just-pressed? input (:toggle-entity-info input/controls))
     (-> stage
-        stage/root
+        Stage/.getRoot
         (group/find-actor "moon.ui.windows")
         (group/find-actor "moon.ui.windows.entity-info")
         actor/toggle-visible!))

@@ -1,9 +1,9 @@
 (ns moon.reaction-txs.add-skill
   (:require [moon.info :as info]
             [moon.textures :as textures]
-            [moon.stage :as stage]
             [moon.ui.action-bar :as action-bar]
-            [moon.ui.group :as group]))
+            [moon.ui.group :as group])
+  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!
   [{:keys [ctx/skin
@@ -13,7 +13,7 @@
    eid skill]
   (when (:entity/player? @eid)
     (-> stage
-        stage/root
+        Stage/.getRoot
         (group/find-actor "moon.ui.action-bar")
         (action-bar/add-skill! {:skill-id (:property/id skill)
                                 :texture-region (textures/texture-region textures (:entity/image skill))

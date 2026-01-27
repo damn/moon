@@ -1,7 +1,7 @@
 (ns moon.render.check-open-debug
   (:require [moon.input :as input]
-            [moon.stage :as stage]
-            [moon.ui :as ui]))
+            [moon.ui :as ui])
+  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!
   [{:keys [ctx/input
@@ -15,12 +15,12 @@
     ; (or mouseover-entity world-grid-cell)
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
-      (stage/add-actor! stage
-                        (ui/actor
-                         {:type :ui/data-viewer-window
-                          :title "Data View"
-                          :data data
-                          :width 500
-                          :height 500
-                          :skin skin}))))
+      (Stage/.addActor stage
+                       (ui/actor
+                        {:type :ui/data-viewer-window
+                         :title "Data View"
+                         :data data
+                         :width 500
+                         :height 500
+                         :skin skin}))))
   ctx)

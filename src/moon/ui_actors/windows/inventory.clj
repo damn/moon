@@ -3,7 +3,6 @@
             [moon.ctx :as ctx]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
-            [moon.stage :as stage]
             [moon.ui :as ui])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -14,7 +13,8 @@
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
                                                   TextureRegionDrawable)
            (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+           (com.badlogic.gdx.utils.viewport Viewport)
+           (moon Stage)))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
   (proxy [Widget] []
@@ -22,7 +22,7 @@
       (when-let [stage (Actor/.getStage this)]
         (let [{:keys [ctx/player-eid
                       ctx/ui-mouse-position]
-               :as ctx} (stage/ctx stage)]
+               :as ctx} (.ctx ^Stage stage)]
           (ctx/draw! ctx
                      (let [[x y] ui-mouse-position]
                        (draw-cell-rect @player-eid
@@ -131,10 +131,10 @@
      {:skin skin
       :title "Inventory"
       :actor/visible? false
-      :position [(Viewport/.getWorldWidth  (stage/viewport stage))
-                 (Viewport/.getWorldHeight (stage/viewport stage))]
+      :position [(Viewport/.getWorldWidth  (Stage/.getViewport stage))
+                 (Viewport/.getWorldHeight (Stage/.getViewport stage))]
       :clicked-cell-listener (fn [cell]
                                (proxy [ClickListener] []
                                  (clicked [event x y]
-                                   (clicked-inventory-cell cell (stage/ctx (Event/.getStage event))))))
+                                   (clicked-inventory-cell cell (.ctx ^Stage (Event/.getStage event))))))
       :slot->texture-region slot->texture-region})))

@@ -9,7 +9,8 @@
             [moon.ui.action-bar :as action-bar]
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx Graphics)
-           (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))
@@ -74,7 +75,7 @@
 
    :else
    (if-let [skill-id (-> stage
-                         stage/root
+                         Stage/.getRoot
                          (group/find-actor "moon.ui.action-bar")
                          action-bar/selected-skill)]
      (let [entity @player-eid

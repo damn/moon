@@ -1,10 +1,10 @@
 (ns moon.entity.state.player-idle
   (:require [moon.input :as input]
             [moon.inventory :as inventory]
-            [moon.stage :as stage]
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx Input$Buttons)
-           (com.badlogic.gdx.scenes.scene2d Actor)))
+           (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
   (case k
@@ -22,7 +22,7 @@
           (let [item (:entity/item @clicked-eid)]
             (cond
              (-> stage
-                 stage/root
+                 Stage/.getRoot
                  (group/find-actor "moon.ui.windows")
                  (group/find-actor "moon.ui.windows.inventory")
                  Actor/.isVisible)

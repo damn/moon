@@ -2,11 +2,11 @@
   (:require [clojure.string :as str]
             [moon.db :as db]
             [moon.input :as input]
-            [moon.stage :as stage]
             [moon.ui :as ui]
             [moon.ui.dev-menu :as dev-menu]
             [moon.utils :as utils])
   (:import (com.badlogic.gdx Graphics)
+           (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
@@ -17,19 +17,19 @@
            ctx/stage
            ctx/textures]}
    property-type]
-  (stage/add-actor! stage
-                    (ui/actor
-                     {:type :ui/property-overview-window
-                      :db db
-                      :textures textures
-                      :skin skin
-                      :property-type property-type
-                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                       (stage/add-actor! stage
-                                                         (ui/actor
-                                                          {:type :ui/property-editor-window
-                                                           :ctx ctx
-                                                           :property (db/get-raw db id)})))})))
+  (Stage/.addActor stage
+                   (ui/actor
+                    {:type :ui/property-overview-window
+                     :db db
+                     :textures textures
+                     :skin skin
+                     :property-type property-type
+                     :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                      (Stage/.addActor stage
+                                                       (ui/actor
+                                                        {:type :ui/property-editor-window
+                                                         :ctx ctx
+                                                         :property (db/get-raw db id)})))})))
 
 (defn create
   [{:keys [ctx/db
@@ -48,14 +48,14 @@
                          :items [{:label "Show data"
                                   :on-click (fn [_actor {:keys [ctx/skin
                                                                 ctx/stage] :as ctx}]
-                                              (stage/add-actor! stage
-                                                                (ui/actor
-                                                                 {:type :ui/data-viewer-window
-                                                                  :title "Data View"
-                                                                  :data ctx
-                                                                  :width 1000
-                                                                  :height 1000
-                                                                  :skin skin})))}]}
+                                              (Stage/.addActor stage
+                                                               (ui/actor
+                                                                {:type :ui/data-viewer-window
+                                                                 :title "Data View"
+                                                                 :data ctx
+                                                                 :width 1000
+                                                                 :height 1000
+                                                                 :skin skin})))}]}
         help-info-text {:label "Help"
                         :items [{:label input/info-text}]}
         select-world {:label "Select World"
@@ -98,7 +98,7 @@
                                      (mapv int world-mouse-position))}
                        {:label "Zoom"
                         :update-fn (fn [{:keys [ctx/world-viewport]}]
-                                     (.zoom (Viewport/.getCamera world-viewport)))
+                                     (.zoom ^OrthographicCamera (Viewport/.getCamera world-viewport)))
                         :icon "images/zoom.png"}]]
     (dev-menu/create
      {:menus [ctx-data-viewer

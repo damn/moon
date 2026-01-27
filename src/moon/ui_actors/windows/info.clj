@@ -1,6 +1,5 @@
 (ns moon.ui-actors.windows.info
   (:require [moon.info :as info]
-            [moon.stage :as stage]
             [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
@@ -44,7 +43,7 @@
            {:title "Entity Info"
             :actor-name "moon.ui.windows.entity-info"
             :visible? false
-            :position [(Viewport/.getWorldWidth (stage/viewport stage)) 0]
+            :position [(Viewport/.getWorldWidth (Stage/.getViewport stage)) 0]
             :set-label-text! (fn [{:keys [ctx/mouseover-eid]
                                    :as ctx}]
                                (if-let [eid mouseover-eid]

@@ -3,12 +3,12 @@
             [malli.utils :as mu]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
-            [moon.stage :as stage]
             [moon.ui :as ui]
             [moon.ui.group :as group]
             [moon.ui.table :as table]
             [moon.utils :as utils])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn malli-form [[_ ks] schemas]
@@ -34,7 +34,7 @@
            ctx/stage]
     :as ctx}]
   (let [window (-> stage
-                   stage/root
+                   Stage/.getRoot
                    (group/find-actor "moon.ui.editor.window"))
         map-widget-table (-> window
                              (group/find-actor "moon.ui.widget.scroll-pane-table")
@@ -42,11 +42,11 @@
                              (group/find-actor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (Actor/.remove window)
-    (stage/add-actor! stage
-                      (ui/actor
-                       {:type :ui/property-editor-window
-                        :ctx ctx
-                        :property property}))))
+    (Stage/.addActor stage
+                     (ui/actor
+                      {:type :ui/property-editor-window
+                       :ctx ctx
+                       :property property}))))
 
 (defn- k->label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
@@ -171,7 +171,7 @@
                            :on-clicked (fn [_actor {:keys [ctx/db
                                                            ctx/stage
                                                            ctx/skin]}]
-                                         (stage/add-actor!
+                                         (Stage/.addActor
                                           stage
                                           (add-component-window
                                            {:skin skin

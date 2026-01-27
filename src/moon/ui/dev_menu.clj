@@ -1,6 +1,5 @@
 (ns moon.ui.dev-menu
-  (:require [moon.stage :as stage]
-            [moon.ui :as ui])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
@@ -10,13 +9,14 @@
                                                Skin
                                                Table
                                                TextButton)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
+           (moon Stage)))
 
 (defn- set-label-text-actor [label text-fn]
   (proxy [Actor] []
     (act [delta]
       (when-let [stage (Actor/.getStage this)]
-        (Label/.setText label ^String (text-fn (stage/ctx stage))))
+        (Label/.setText label ^String (text-fn (.ctx ^Stage stage))))
       (let [^Actor this this]
         (proxy-super act delta)))))
 
@@ -51,7 +51,7 @@
                        (.addListener
                         (proxy [ChangeListener] []
                           (changed [event actor]
-                            (on-click actor (stage/ctx (Event/.getStage event)))))))})]}))
+                            (on-click actor (.ctx ^Stage (Event/.getStage event)))))))})]}))
 
 (defn- main-table [^Skin skin menus update-labels]
   (let [table (ui/actor
@@ -62,7 +62,7 @@
                                     (proxy [ChangeListener] []
 
                                       (changed [event actor]
-                                        (stage/add-actor! (Event/.getStage event) (create-window skin label items))))))})]})]
+                                        (Stage/.addActor (Event/.getStage event) (create-window skin label items))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon

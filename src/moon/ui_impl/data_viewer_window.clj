@@ -1,6 +1,5 @@
 (ns moon.ui-impl.data-viewer-window
-  (:require [moon.stage :as stage]
-            [moon.ui :as ui])
+  (:require [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn- k->label-str [k]
@@ -28,13 +27,13 @@
     {:type :ui/text-button
      :text "Map"
      :on-clicked (fn [actor _ctx]
-                   (stage/add-actor! (Actor/.getStage actor)
-                                     (create
-                                      {:title "title"
-                                       :data v
-                                       :width 500
-                                       :height 500
-                                       :skin skin})))
+                   (.addActor (Actor/.getStage actor)
+                              (create
+                               {:title "title"
+                                :data v
+                                :width 500
+                                :height 500
+                                :skin skin})))
      :skin skin}
     {:type :ui/label
      :label/text (v->text v)
