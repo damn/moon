@@ -7,13 +7,11 @@
   [
    [:ui/data-viewer-window       moon.ui-impl.data-viewer-window/create]
    [:ui/error-window             moon.ui-impl.error-window/create]
-   [:ui/group                    moon.ui-impl.group/create]
    [:ui/image-button             moon.ui-impl.image-button/create]
    [:ui/label                    moon.ui-impl.label/create]
    [:ui/property-editor-window   moon.ui-impl.property-editor-window/create]
    [:ui/property-overview-window moon.ui-impl.property-overview-window/create]
    [:ui/scroll-pane              moon.ui-impl.scroll-pane/create]
-   [:ui/stack                    moon.ui-impl.stack/create]
    [:ui/table                    moon.ui-impl.table/create]
    [:ui/text-button              moon.ui-impl.text-button/create]
    [:ui/window                   moon.ui-impl.window/create]

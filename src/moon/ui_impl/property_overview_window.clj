@@ -5,7 +5,8 @@
             [moon.ui :as ui]
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Touchable)))
+                                            Touchable)
+           (com.badlogic.gdx.scenes.scene2d.ui Stack)))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -38,7 +39,7 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (doto (ui/actor {:type :ui/stack})
+      {:actor (doto (Stack.)
                 (group/add-actors! [(ui/actor
                                      {:type :ui/image-button
                                       :drawable/texture-region texture-region

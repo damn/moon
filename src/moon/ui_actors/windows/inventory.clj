@@ -12,7 +12,8 @@
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event)
            (com.badlogic.gdx.scenes.scene2d.ui Image
-                                               Widget)
+                                               Widget
+                                               Stack)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
                                                   TextureRegionDrawable)
            (com.badlogic.gdx.math Vector2)
@@ -68,7 +69,7 @@
         ->cell (fn [slot & {:keys [position]}]
                  (let [cell [slot (or position [0 0])]
                        background-drawable (slot->drawable slot)]
-                   {:actor (doto (ui/actor {:type :ui/stack})
+                   {:actor (doto (Stack.)
                              (group/add-actors! [(draw-cell-rect-actor draw-cell-rect)
                                                  (doto (Image. ^TextureRegionDrawable background-drawable)
                                                    (.setName "image-widget")
