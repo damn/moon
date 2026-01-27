@@ -13,7 +13,7 @@
 
 
                  ;; my libs TODO pull in
-                 [com.github.damn/clojure.grid2d "538fc4c44b"]
+                 [com.github.damn/clojure.grid2d "538fc4c44b"] ; => TODO just use plain data?
                  [com.github.damn/clojure.math.raycaster "0956fc0e9b"]
                  [com.github.damn/clojure.math.vector2 "9b3fd73f9b"]
                  [com.github.damn/clojure.rand "6a273c942b"]

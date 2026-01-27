@@ -1,4 +1,15 @@
 [moon.world-fns.modules/create
  {:world/map-size 5,
   :world/max-area-level 3,
-  :world/spawn-rate 0.05}]
+  :world/spawn-rate 0.05
+  :steps [moon.modules.initial-grid/step
+          moon.modules.print/step
+          moon.modules.assoc-transitions/step
+          moon.modules.print/step
+          moon.modules.create-scaled-grid/step
+          moon.modules.load-schema-tiled-map/step
+          moon.modules.place-modules/step
+          moon.modules.convert-to-tiled-map/step
+          moon.modules.calculate-start-position/step
+          moon.modules.last-steps/step]
+  }]
