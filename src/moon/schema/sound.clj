@@ -33,7 +33,6 @@
                      (doto (window/create
                             {:skin skin
                              :title "Choose"
-                             :modal? true
                              :close-button? true
                              :center? true
                              :close-on-escape? true
@@ -49,6 +48,7 @@
                                                                            :on-clicked (fn [_actor {:keys [ctx/audio]}]
                                                                                          (audio/play! audio sound-name))
                                                                            :skin skin})}]))]]})
+                       (.setModal true)
                        (.pack)
                        ))))
 

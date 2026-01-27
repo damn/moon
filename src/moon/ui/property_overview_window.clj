@@ -82,7 +82,6 @@
   (doto (window/create
          {:skin skin
           :title "Edit"
-          :modal? true
           :close-button? true
           :center? true
           :close-on-escape? true
@@ -91,4 +90,5 @@
                                      textures
                                      property-type
                                      clicked-id-fn)})
+    (.setModal true)
     (.pack)))

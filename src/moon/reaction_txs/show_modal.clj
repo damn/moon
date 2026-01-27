@@ -29,8 +29,8 @@
                                                                 (.findActor "moon.ui.modal-window")))
                                                            (on-click))
                                              :skin skin})}]]
-                           :modal? true
                            :skin skin})
+                     (.setModal true)
                      (.pack)
                      (.setName "moon.ui.modal-window")
                      (actor/set-center! [(/ (Viewport/.getWorldWidth  (Stage/.getViewport stage)) 2)

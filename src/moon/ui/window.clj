@@ -8,8 +8,7 @@
 
 (defn create
   [{:keys [title
-           ^Skin skin
-           modal?]
+           ^Skin skin]
     :as opts}]
   (let [window (Window. (str title) skin)]
     (.add (.getTitleTable window)
@@ -18,5 +17,4 @@
                     (proxy [ChangeListener] []
                       (changed [_event _actor]
                         (Actor/.remove window))))))
-    (.setModal window (boolean modal?))
     (table/set-opts! window opts)))

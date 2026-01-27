@@ -76,12 +76,12 @@
     (doto (window/create
            {:skin skin
             :title "[SKY]Property[]"
-            :modal? true
             :close-button? true
             :center? true
             :close-on-escape? true
             :rows rows
             :cell-defaults {:pad 5}})
+      (.setModal true)
       (.pack)
       (group/add-actors! actors)
       (.setName "moon.ui.editor.window"))))
