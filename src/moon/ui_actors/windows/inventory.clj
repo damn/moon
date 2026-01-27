@@ -1,6 +1,7 @@
 (ns moon.ui-actors.windows.inventory
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [moon.ctx :as ctx]
+            [moon.entity.state :as state]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
             [moon.ui :as ui])
@@ -15,6 +16,14 @@
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
+
+(defn- clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
+  (let [entity @player-eid
+        state-k (:state (:entity/fsm entity))]
+    (ctx/handle! ctx
+                 (state/clicked-inventory-cell [state-k (state-k entity)]
+                                               player-eid
+                                               cell))))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
   (proxy [Widget] []
@@ -102,8 +111,7 @@
 (defn create
   [{:keys [ctx/skin
            ctx/stage
-           ctx/textures]}
-   clicked-inventory-cell]
+           ctx/textures]}]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
                                              :shield   1
                                              :rings    2
