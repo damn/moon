@@ -1,4 +1,4 @@
-(ns moon.graphics.camera
+(ns moon.camera
   (:require [clj.api.com.badlogic.gdx.math.vector3 :as vector3])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 

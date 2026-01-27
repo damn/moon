@@ -1,5 +1,5 @@
 (ns moon.render.set-camera-on-player
-  (:require [moon.graphics.camera :as camera])
+  (:require [moon.camera :as camera])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn do!

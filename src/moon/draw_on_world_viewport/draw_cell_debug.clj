@@ -1,6 +1,6 @@
 (ns moon.draw-on-world-viewport.draw-cell-debug
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [moon.graphics.camera :as camera])
+            [moon.camera :as camera])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil

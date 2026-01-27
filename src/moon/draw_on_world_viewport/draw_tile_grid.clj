@@ -1,5 +1,5 @@
 (ns moon.draw-on-world-viewport.draw-tile-grid
-  (:require [moon.graphics.camera :as camera])
+  (:require [moon.camera :as camera])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn draws
