@@ -1,19 +1,36 @@
+; finally the whole thing is 'clj.api.*'?
 (ns moon.ui.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (def ^:private opts-fn-map
-  {:actor/name        Actor/.setName
+  {
+   ; 10 usage
+   :actor/name        Actor/.setName
+
+   ; 2 usage
    :actor/user-object Actor/.setUserObject
+
+   ; 3 usage
    :actor/visible?    Actor/.setVisible
+
+   ; no usage
    :actor/touchable   Actor/.setTouchable
+
+   ; 1 usage
    :actor/listener    Actor/.addListener
+
+   ; 2 usage
    :actor/position (fn [a [x y]]
                      (Actor/.setPosition a x y))
+
+   ; 1 usage - just a plain fn ? doto set-center!
+   ; setPosition has alignment param
    :actor/center-position (fn [a [x y]]
                             (Actor/.setPosition a
                                                 (- x (/ (Actor/.getWidth  a) 2))
                                                 (- y (/ (Actor/.getHeight a) 2))))})
 
+; finnally just expose the functions and do 'doto ' on a more top lvl ?
 (defn set-opts! [actor opts]
   (doseq [[k v] opts
           :let [f (get opts-fn-map k)]
@@ -21,10 +38,12 @@
     (f actor v))
   actor)
 
-(defn toggle-visible! [^Actor actor]
+; these two are simple 'clj.api.com.badlogic.gdx.scenes.scene2d.actor' fns ?!
+
+(defn toggle-visible! [^Actor actor] ; maybe make PR @ libgdx?
   (.setVisible actor (not (.isVisible actor))))
 
-(defn find-ancestor
+(defn find-ancestor ; maybe function exists already? firstAscendant ?
   [^Actor actor clazz]
   (if-let [parent (.getParent actor)]
     (if (instance? clazz parent)

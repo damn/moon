@@ -2,6 +2,7 @@
   (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport])
   (:import (moon Stage)))
 
+; TODO unnecessary fns !
 (defn ctx [^Stage stage]
   (.ctx stage))
 
