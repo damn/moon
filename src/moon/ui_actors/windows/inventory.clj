@@ -68,16 +68,17 @@
         ->cell (fn [slot & {:keys [position]}]
                  (let [cell [slot (or position [0 0])]
                        background-drawable (slot->drawable slot)]
-                   {:actor (ui/actor
-                            {:type :ui/stack
-                             :actor/name "inventory-cell"
-                             :actor/user-object cell
-                             :actor/listener (clicked-cell-listener cell)
-                             :group/actors [(draw-cell-rect-actor draw-cell-rect)
-                                            (doto (Image. ^TextureRegionDrawable background-drawable)
-                                              (.setName "image-widget")
-                                              (.setUserObject {:background-drawable background-drawable
-                                                               :cell-size cell-size}))]})}))]
+                   {:actor (doto (ui/actor
+                                  {:type :ui/stack
+                                   :actor/name "inventory-cell"
+                                   :actor/user-object cell
+                                   :group/actors [(draw-cell-rect-actor draw-cell-rect)
+                                                  (doto (Image. ^TextureRegionDrawable background-drawable)
+                                                    (.setName "image-widget")
+                                                    (.setUserObject {:background-drawable background-drawable
+                                                                     :cell-size cell-size}))]})
+                             (.addListener (clicked-cell-listener cell))
+                             )}))]
     (doto (ui/actor
            {:type :ui/window
             :skin skin

@@ -13,9 +13,6 @@
    ; 3 usage
    :actor/visible?    Actor/.setVisible
 
-   ; 1 usage
-   :actor/listener    Actor/.addListener
-
    })
 
 (defn set-position! [^Actor actor [x y]]
