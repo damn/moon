@@ -70,12 +70,12 @@
                    {:actor (doto (ui/actor
                                   {:type :ui/stack
                                    :actor/name "inventory-cell"
-                                   :actor/user-object cell
                                    :group/actors [(draw-cell-rect-actor draw-cell-rect)
                                                   (doto (Image. ^TextureRegionDrawable background-drawable)
                                                     (.setName "image-widget")
                                                     (.setUserObject {:background-drawable background-drawable
                                                                      :cell-size cell-size}))]})
+                             (.setUserObject cell)
                              (.addListener (clicked-cell-listener cell))
                              )}))]
     (doto (ui/actor

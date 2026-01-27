@@ -39,13 +39,14 @@
            tooltip-text]}
    skin]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-        button (ui/actor
-                {:type :ui/image-button
-                 :actor/user-object skill-id
-                 :drawable/texture-region texture-region
-                 :drawable/scale 2
-                 :tooltip tooltip-text
-                 :skin skin})]
+        button (doto (ui/actor
+                      {:type :ui/image-button
+                       :drawable/texture-region texture-region
+                       :drawable/scale 2
+                       :tooltip tooltip-text
+                       :skin skin})
+                 (.setUserObject skill-id)
+                 )]
     (Group/.addActor horizontal-group button)
     (ButtonGroup/.add button-group ^Button button)
     nil))

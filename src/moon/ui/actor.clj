@@ -6,10 +6,6 @@
   {
    ; 10 usage
    :actor/name        Actor/.setName
-
-   ; 2 usage
-   :actor/user-object Actor/.setUserObject
-
    })
 
 (defn set-position! [^Actor actor [x y]]
