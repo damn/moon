@@ -1,5 +1,4 @@
 [
- [moon.start.require-namespaces/step [moon.info-impl]]
  [moon.start.add-method/step
   moon.ui/actor
   [
