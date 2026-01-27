@@ -1,4 +1,4 @@
-(ns moon.entity.state.npc-dead)
+(ns moon.state.npc-dead)
 
 (defn enter
   [_ eid]

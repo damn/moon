@@ -9,7 +9,7 @@
             [moon.create.db]
             [moon.create.textures]
             [moon.db :as db]
-            [moon.graphics.camera :as camera]
+            [moon.camera :as camera]
             [moon.tiled-map-renderer :as tiled-map-renderer]
             [moon.world-fns.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener

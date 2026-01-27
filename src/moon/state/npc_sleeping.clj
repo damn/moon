@@ -1,4 +1,4 @@
-(ns moon.entity.state.npc-sleeping
+(ns moon.state.npc-sleeping
   (:require [moon.stats :as stats]
             [moon.grid :as grid]))
 

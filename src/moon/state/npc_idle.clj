@@ -1,4 +1,4 @@
-(ns moon.entity.state.npc-idle
+(ns moon.state.npc-idle
   (:require [clojure.grid2d :as g2d]
             [clojure.math.vector2 :as v]
             [moon.cell :as cell]

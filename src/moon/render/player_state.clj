@@ -2,7 +2,7 @@
   (:require [clojure.math.vector2 :as v]
             [moon.ctx :as ctx]
             [moon.body :as body]
-            [moon.entity.state :as state]
+            [moon.state :as state]
             [moon.input :as input]
             [moon.skill :as skill]
             [moon.stage :as stage]

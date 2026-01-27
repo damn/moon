@@ -1,4 +1,4 @@
-(ns moon.entity.state.player-idle
+(ns moon.state.player-idle
   (:require [moon.input :as input]
             [moon.inventory :as inventory])
   (:import (com.badlogic.gdx Input$Buttons)

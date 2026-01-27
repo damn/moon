@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.inventory
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [moon.ctx :as ctx]
-            [moon.entity.state :as state]
+            [moon.state :as state]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
             [moon.ui :as ui])

@@ -1,5 +1,5 @@
 (ns moon.tx.event
-  (:require [moon.entity.state :as state]
+  (:require [moon.state :as state]
             [reduce-fsm :as fsm]))
 
 (defn do!

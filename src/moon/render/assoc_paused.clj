@@ -1,5 +1,5 @@
 (ns moon.render.assoc-paused
-  (:require [moon.entity.state :as state]
+  (:require [moon.state :as state]
             [moon.input :as input]))
 
 (def pausing? true)

@@ -1,4 +1,4 @@
-(ns moon.entity.state)
+(ns moon.state)
 
 (defmulti create
   (fn [[k _v] _eid _ctx]

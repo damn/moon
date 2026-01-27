@@ -1,4 +1,4 @@
-(ns moon.entity.state.player-moving
+(ns moon.state.player-moving
   (:require [moon.stats :as stats]
             [moon.input :as input]))
 

@@ -1,4 +1,4 @@
-(ns moon.entity.state.npc-moving
+(ns moon.state.npc-moving
   (:require [moon.stats :as stats]
             [moon.timer :as timer]))
 

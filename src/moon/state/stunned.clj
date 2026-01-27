@@ -1,4 +1,4 @@
-(ns moon.entity.state.stunned
+(ns moon.state.stunned
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [moon.timer :as timer]))
 

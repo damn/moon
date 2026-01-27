@@ -1,4 +1,4 @@
-(ns moon.entity.state.player-dead)
+(ns moon.state.player-dead)
 
 (defn enter
   [_ _eid]

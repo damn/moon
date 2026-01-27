@@ -1,4 +1,4 @@
-(ns moon.entity.state.player-item-on-cursor
+(ns moon.state.player-item-on-cursor
   (:require [clojure.math.vector2 :as v]
             [moon.textures :as textures]
             [moon.inventory :as inventory]

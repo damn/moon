@@ -1,4 +1,4 @@
-(ns moon.entity.state.active-skill
+(ns moon.state.active-skill
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [clojure.math :as math]
             [moon.effect :as effect]
