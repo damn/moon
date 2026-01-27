@@ -10,9 +10,6 @@
    ; 2 usage
    :actor/user-object Actor/.setUserObject
 
-   ; 3 usage
-   :actor/visible?    Actor/.setVisible
-
    })
 
 (defn set-position! [^Actor actor [x y]]

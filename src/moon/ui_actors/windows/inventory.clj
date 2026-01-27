@@ -45,7 +45,6 @@
 (defn- create-inventory-window*
   [{:keys [position
            title
-           actor/visible?
            clicked-cell-listener
            slot->texture-region
            skin]}]
@@ -84,7 +83,6 @@
             :skin skin
             :title title
             :actor/name "moon.ui.windows.inventory"
-            :actor/visible? visible?
             :pack? true
             :rows [[{:actor (ui/actor
                              {:type :ui/table
@@ -108,6 +106,7 @@
                                               (for [x (range 6)]
                                                 (->cell :inventory.slot/bag :position [x y]))))})
                      :pad 4}]]})
+      (.setVisible false)
       (actor/set-position! position))))
 
 (defn create
@@ -140,7 +139,6 @@
     (create-inventory-window*
      {:skin skin
       :title "Inventory"
-      :actor/visible? false
       :position [(Viewport/.getWorldWidth  (Stage/.getViewport stage))
                  (Viewport/.getWorldHeight (Stage/.getViewport stage))]
       :clicked-cell-listener (fn [cell]

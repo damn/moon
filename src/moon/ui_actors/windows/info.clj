@@ -24,9 +24,9 @@
                                :skin skin
                                :title title
                                :actor/name actor-name
-                               :actor/visible? visible?
                                :rows [[{:actor label
                                         :expand? true}]]})
+                         (.setVisible visible?)
                          (actor/set-position! position))]
     (.addActor window (proxy [Actor] []
                         (act [delta]
