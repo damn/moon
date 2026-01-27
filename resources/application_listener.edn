@@ -18,7 +18,8 @@
                                               :cursors/skill-not-usable      ["x007"         [0   0]]
                                               :cursors/use-skill             ["pointer004"   [0   0]]
                                               :cursors/walking               ["walking"      [16 16]]}}]
-             [moon.create.db/step moon.db-impl/create]
+             [moon.create.db/step {:schemas "schema.edn"
+                                   :properties "properties.edn"}]
              [moon.create.ui-viewport/step {:width 1440
                                             :height 900}]
              [moon.create.batch/do!]

@@ -6,9 +6,9 @@
             [moon.ui.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [moon.create.db]
             [moon.create.textures]
             [moon.db :as db]
-            [moon.db-impl :as db-impl]
             [moon.graphics.camera :as camera]
             [moon.tiled-map-renderer :as tiled-map-renderer]
             [moon.world-fns.creature-tiles])
@@ -110,7 +110,8 @@
         ctx (-> ctx
                 (moon.create.textures/step {:folder "resources/"
                                             :extensions #{"png" "bmp"}})
-                (assoc :ctx/db (db-impl/create)))
+                (moon.create.db/step {:schemas "schema.edn"
+                                      :properties "properties.edn"}))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
