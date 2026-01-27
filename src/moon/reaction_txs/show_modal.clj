@@ -1,5 +1,6 @@
 (ns moon.reaction-txs.show-modal
-  (:require [moon.ui :as ui])
+  (:require [moon.ui :as ui]
+            [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
            (com.badlogic.gdx.utils.viewport Viewport)))
@@ -13,29 +14,30 @@
                    Stage/.getRoot
                    (.findActor "moon.ui.modal-window"))))
   (Stage/.addActor stage
-                   (ui/actor
-                    {:type :ui/window
-                     :title title
-                     :rows [[{:actor (ui/actor
-                                      {:type :ui/label
-                                       :label/text text
-                                       :label/skin skin})}]
-                            [{:actor (ui/actor
-                                      {:type :ui/text-button
-                                       :text button-text
-                                       :on-clicked (fn [_actor _ctx]
-                                                     (Actor/.remove
-                                                      (-> stage
-                                                          Stage/.getRoot
-                                                          (.findActor "moon.ui.modal-window")))
-                                                     (on-click))
-                                       :skin skin})}]]
-                     :actor/name "moon.ui.modal-window"
-                     :modal? true
-                     :skin skin
-                     :actor/center-position [(/ (Viewport/.getWorldWidth  (Stage/.getViewport stage)) 2)
-                                             (* (Viewport/.getWorldHeight (Stage/.getViewport stage)) (/ 3 4))]
-                     :pack? true}))
+                   (doto (ui/actor
+                          {:type :ui/window
+                           :title title
+                           :rows [[{:actor (ui/actor
+                                            {:type :ui/label
+                                             :label/text text
+                                             :label/skin skin})}]
+                                  [{:actor (ui/actor
+                                            {:type :ui/text-button
+                                             :text button-text
+                                             :on-clicked (fn [_actor _ctx]
+                                                           (Actor/.remove
+                                                            (-> stage
+                                                                Stage/.getRoot
+                                                                (.findActor "moon.ui.modal-window")))
+                                                           (on-click))
+                                             :skin skin})}]]
+                           :actor/name "moon.ui.modal-window"
+                           :modal? true
+                           :skin skin
+                           :pack? true})
+                     (actor/set-center! [(/ (Viewport/.getWorldWidth  (Stage/.getViewport stage)) 2)
+                                         (* (Viewport/.getWorldHeight (Stage/.getViewport stage)) (/ 3 4))])
+                     ))
   ctx)
 
 

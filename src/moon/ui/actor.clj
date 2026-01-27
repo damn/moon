@@ -22,13 +22,14 @@
    ; 2 usage
    :actor/position (fn [a [x y]]
                      (Actor/.setPosition a x y))
+   })
 
-   ; 1 usage - just a plain fn ? doto set-center!
-   ; setPosition has alignment param
-   :actor/center-position (fn [a [x y]]
-                            (Actor/.setPosition a
-                                                (- x (/ (Actor/.getWidth  a) 2))
-                                                (- y (/ (Actor/.getHeight a) 2))))})
+; setPosition has alignment param -> maybe can use?
+; but anyway prefer to write clojure instead of java
+(defn set-center! [^Actor actor [x y]]
+  (.setPosition actor
+                (- x (/ (.getWidth  actor) 2))
+                (- y (/ (.getHeight actor) 2))))
 
 ; finnally just expose the functions and do 'doto ' on a more top lvl ?
 (defn set-opts! [actor opts]
