@@ -2,10 +2,6 @@
 (ns moon.ui.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(def ^:private opts-fn-map
-  {
-   })
-
 (defn set-position! [^Actor actor [x y]]
   (.setPosition actor x y))
 
@@ -15,14 +11,6 @@
   (.setPosition actor
                 (- x (/ (.getWidth  actor) 2))
                 (- y (/ (.getHeight actor) 2))))
-
-; finnally just expose the functions and do 'doto ' on a more top lvl ?
-(defn set-opts! [actor opts]
-  (doseq [[k v] opts
-          :let [f (get opts-fn-map k)]
-          :when f]
-    (f actor v))
-  actor)
 
 ; these two are simple 'clj.api.com.badlogic.gdx.scenes.scene2d.actor' fns ?!
 
