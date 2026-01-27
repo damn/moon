@@ -1,6 +1,8 @@
 (ns moon.ui-impl.data-viewer-window
   (:require [moon.ui :as ui])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
+                                               Skin)))
 
 (defn- k->label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -44,7 +46,7 @@
            data
            width
            height
-           skin]}]
+           ^Skin skin]}]
   {:pre [(map? data)]}
   (let [rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
@@ -62,10 +64,7 @@
                                              :rows [[scroll-pane-table]]
                                              :cell-defaults {:pad 1}})
                                        (.pack))]
-                           {:actor (ui/actor
-                                    {:type :ui/scroll-pane
-                                     :scroll-pane/actor table
-                                     :scroll-pane/skin skin})
+                           {:actor (ScrollPane. table skin)
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
