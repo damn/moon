@@ -1,7 +1,6 @@
 (ns moon.ui-actors.player-message
   (:require [moon.ctx :as ctx]
-            [moon.stage :as stage]
-            [moon.ui.message :as message])
+            [moon.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
@@ -34,9 +33,3 @@
               (proxy-super act delta))))
     (.setName "player-message")
     (.setUserObject (atom nil))))
-
-(extend-type Actor
-  message/PlayerMessage
-  (show! [this text]
-    (.setUserObject this (atom {:text text
-                                :counter 0}))))

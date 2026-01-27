@@ -1,4 +1,6 @@
-(ns moon.ui.message)
+(ns moon.ui.message
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defprotocol PlayerMessage
-  (show! [_ text]))
+(defn show! [^Actor this text]
+  (.setUserObject this (atom {:text text
+                              :counter 0})))

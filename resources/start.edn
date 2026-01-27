@@ -1,10 +1,5 @@
 [
-
- ; TODO remove defprotocols they are all useless somehow?
- ; just indirection
-
- ; also 'require-namespaces'
-
+ [moon.start.require-namespaces/step [moon.info-impl]]
  [moon.start.add-method/step
   moon.ui/actor
   [
@@ -122,10 +117,6 @@
    [moon.entity.state.stunned :stunned]
    ]
   ]
- [moon.start.require-namespaces/step [clj.api.com.badlogic.gdx.scenes.scene2d.actor
-                                      clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
-                                      moon.info-impl
-                                      ]]
  [moon.start.use-glfw-async/step]
  [moon.start.create-config/step {:title "Moon"
                                  :window {:width 1440
