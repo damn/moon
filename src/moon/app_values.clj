@@ -1,4 +1,4 @@
-(ns moon.dev.app-values
+(ns moon.app-values
   (:require [clojure.pprint :refer [pprint]]
             [clojure.string :as str]))
 

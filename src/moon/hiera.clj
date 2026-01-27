@@ -1,4 +1,4 @@
-(ns moon.dev.hiera
+(ns moon.hiera
   (:require [clojure.string :as str]
             [hiera.main :as hiera])
   (:import (java.io File)))

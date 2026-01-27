@@ -1,4 +1,4 @@
-(ns moon.dev.rename
+(ns moon.rename
   (:require [clojure.java.io :as io]
             [clojure.string :as str])
   (:import (java.nio.file Files
