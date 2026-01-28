@@ -82,9 +82,6 @@
   (doto (window/create
          {:skin skin
           :title "Edit"
-          ;:close-button? true
-          ;:center? true
-          ;:close-on-escape? true
           :rows (overview-table-rows db
                                      skin
                                      textures

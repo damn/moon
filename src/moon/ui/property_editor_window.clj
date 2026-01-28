@@ -76,9 +76,6 @@
     (doto (window/create
            {:skin skin
             :title "[SKY]Property[]"
-            ;:close-button? true
-            ;:center? true
-            ;:close-on-escape? true
             :rows rows
             :cell-defaults {:pad 5}})
       (.setModal true)

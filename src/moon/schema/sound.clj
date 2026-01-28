@@ -33,9 +33,6 @@
                      (doto (window/create
                             {:skin skin
                              :title "Choose"
-                             ;:close-button? true
-                             ;:center? true
-                             ;:close-on-escape? true
                              :rows [[(scroll-pane-cell/create skin
                                                               (Viewport/.getWorldWidth (Stage/.getViewport stage))
                                                               (for [sound-name (audio/sound-names audio)]
