@@ -1,6 +1,5 @@
 (ns moon.effects.target-all
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [moon.raycaster :as raycaster]))
+  (:require [moon.raycaster :as raycaster]))
 
 (defn affected-targets [active-entities raycaster entity]
   (->> active-entities
@@ -33,6 +32,7 @@
   [[_ {:keys [entity-effects]}]
    {:keys [effect/source]}
    {:keys [ctx/active-entities
+           ctx/colors
            ctx/raycaster]}]
   (let [source* @source]
     (apply concat
@@ -41,7 +41,7 @@
                {:start (:body/position (:entity/body source*)) #_(start-point source* target*)
                 :end (:body/position (:entity/body @target))
                 :duration 0.05
-                :color (color/float-bits [1 0 0 0.75])
+                :color (:colors/target-all-line colors)
                 :thick? true}]
               [:tx/effect
                {:effect/source source
@@ -52,10 +52,12 @@
   [_
    {:keys [effect/source]}
    {:keys [ctx/active-entities
+           ctx/colors
            ctx/raycaster]}]
   (let [source* @source]
     (for [target* (map deref (affected-targets active-entities raycaster source*))]
       [:draw/line
        (:body/position (:entity/body source*)) #_(start-point source* target*)
        (:body/position (:entity/body target*))
-       (color/float-bits [1 0 0 0.5])])))
+
+       (:colors/target-all-render colors)])))

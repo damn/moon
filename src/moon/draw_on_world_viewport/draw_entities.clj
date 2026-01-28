@@ -1,7 +1,5 @@
 (ns moon.draw-on-world-viewport.draw-entities
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [moon.ctx :as ctx]
-            [moon.color :as colors]
+  (:require [moon.ctx :as ctx]
             [moon.entity :as entity]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]
@@ -29,18 +27,18 @@
     [[:draw/rectangle x y width height color-float-bits]]))
 
 (defn- draw-entity
-  [ctx entity render-layer]
+  [{:keys [ctx/colors] :as ctx} entity render-layer]
   (try (do
         (when show-body-bounds?
           (ctx/draw! ctx (draw-body-rect (:entity/body entity)
                                          (if (:body/collides? (:entity/body entity))
-                                           (color/float-bits colors/white)
-                                           (color/float-bits colors/gray)))))
+                                           (:colors/debug-body-outline-collides colors)
+                                           (:colors/debug-body-outline colors)))))
         (doseq [[k v] entity
                 :when (get render-layer k)]
           (ctx/draw! ctx (entity/render [k v] entity ctx))))
        (catch Throwable t
-         (ctx/draw! ctx (draw-body-rect (:entity/body entity) (color/float-bits colors/red)))
+         (ctx/draw! ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
          (throwable/pretty-pst t))))
 
 (defn do!

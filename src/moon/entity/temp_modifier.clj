@@ -1,6 +1,5 @@
 (ns moon.entity.temp-modifier
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [moon.stats :as stats]
+  (:require [moon.stats :as stats]
             [moon.timer :as timer]))
 
 (defn tick
@@ -12,8 +11,8 @@
      [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
 
 (defn render
-  [_ entity _ctx]
+  [_ entity {:keys [ctx/colors]}]
   [[:draw/filled-circle
     (:body/position (:entity/body entity))
     0.5
-    (color/float-bits [0.5 0.5 0.5 0.4])]])
+    (:colors/temp-modifier colors)]])

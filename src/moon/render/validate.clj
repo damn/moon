@@ -7,6 +7,7 @@
    [:map {:closed true}
     [:ctx/active-entities :any]
     [:ctx/audio :some] ; TODO map of 'sound-name->sound'
+    [:ctx/colors :some]
     [:ctx/cursors :some] ; map of cursor-key->cursor
     [:ctx/default-font :some] ; font -> API ?
     [:ctx/batch :some] ; batch -> API ?

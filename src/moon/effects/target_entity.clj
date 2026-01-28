@@ -1,6 +1,5 @@
 (ns moon.effects.target-entity
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2 :as v]
             [moon.effect :as effect]))
 
 ; TODO use at projectile & also adjust rotation
@@ -37,14 +36,14 @@
 (defn handle
   [[_ {:keys [maxrange entity-effects]}]
    {:keys [effect/source effect/target] :as effect-ctx}
-   _ctx]
+   {:keys [ctx/colors]}]
   (let [body        (:entity/body @source)
         target-body (:entity/body @target)]
     (if (in-range? body target-body maxrange)
       [[:tx/spawn-line {:start (start-point body target-body)
                         :end (:body/position target-body)
                         :duration 0.05
-                        :color (color/float-bits [1 0 0 0.75])
+                        :color (:colors/target-entity-line colors)
                         :thick? true}]
        [:tx/effect effect-ctx entity-effects]]
       [[:tx/audiovisual
@@ -54,7 +53,7 @@
 (defn render
   [[_ {:keys [maxrange]}]
    {:keys [effect/source effect/target]}
-   _ctx]
+   {:keys [ctx/colors]}]
   (when target
     (let [body        (:entity/body @source)
           target-body (:entity/body @target)]
@@ -62,5 +61,5 @@
         (start-point body target-body)
         (end-point body target-body maxrange)
         (if (in-range? body target-body maxrange)
-          (color/float-bits [1 0 0 0.5])
-          (color/float-bits [1 1 0 0.5]))]])))
+          (:colors/target-entity-in-range colors)
+          (:colors/target-entity-not-in-range colors))]])))

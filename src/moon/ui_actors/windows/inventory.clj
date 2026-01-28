@@ -1,6 +1,5 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [moon.ctx :as ctx]
+  (:require [moon.ctx :as ctx]
             [moon.state :as state]
             [moon.inventory :as inventory]
             [moon.textures :as textures]
@@ -46,7 +45,8 @@
                                        (Actor/.getUserObject (Actor/.getParent this))))))))))
 
 (defn- create-inventory-window*
-  [{:keys [position
+  [{:keys [colors
+           position
            title
            clicked-cell-listener
            slot->texture-region
@@ -56,16 +56,14 @@
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
                            (.tint (Color. 1 1 1 0.4))))
-        droppable-color   (color/float-bits [0   0.6 0 0.8 1])
-        not-allowed-color (color/float-bits [0.6 0   0 0.8 1])
         draw-cell-rect (fn [player-entity x y mouseover? cell]
-                         [[:draw/rectangle x y cell-size cell-size (color/float-bits [0.5 0.5 0.5 1])]
+                         [[:draw/rectangle x y cell-size cell-size (:colors/item-rect colors)]
                           (when (and mouseover?
                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                             (let [item (:entity/item-on-cursor player-entity)
                                   color (if (inventory/valid-slot? cell item)
-                                          droppable-color
-                                          not-allowed-color)]
+                                          (:colors/droppable-item colors)
+                                          (:colors/not-allowed-drop-item colors))]
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
         ->cell (fn [slot & {:keys [position]}]
                  (let [cell [slot (or position [0 0])]
@@ -111,7 +109,8 @@
       (actor/set-position! position))))
 
 (defn create
-  [{:keys [ctx/skin
+  [{:keys [ctx/colors
+           ctx/skin
            ctx/stage
            ctx/textures]}]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
@@ -138,7 +137,8 @@
                                                           {:image/file "images/items.png"
                                                            :image/bounds bounds})))]
     (create-inventory-window*
-     {:skin skin
+     {:colors colors
+      :skin skin
       :title "Inventory"
       :position [(Viewport/.getWorldWidth  (Stage/.getViewport stage))
                  (Viewport/.getWorldHeight (Stage/.getViewport stage))]

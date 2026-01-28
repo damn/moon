@@ -1,6 +1,5 @@
 (ns moon.state.active-skill
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [clojure.math :as math]
+  (:require [clojure.math :as math]
             [moon.effect :as effect]
             [moon.stats :as stats]
             [moon.textures :as textures]
@@ -49,33 +48,30 @@
         image-width 32]
     (/ (/ image-width tile-size) 2)))
 
-(defn- draw-skill-image
-  [texture-region entity [x y] action-counter-ratio]
-  (let [radius skill-image-radius-world-units
-        y (+ (float y)
-             (float (/ (:body/height (:entity/body entity)) 2))
-             (float 0.15))
-        center [x (+ y radius)]]
-    [[:draw/filled-circle center radius (color/float-bits [1 1 1 0.125])]
-     [:draw/sector
-      center
-      radius
-      (math/to-radians 90) ; start-angle
-      (math/to-radians (* (float action-counter-ratio) 360)) ; degree
-      (color/float-bits [1 1 1 0.5])]
-     [:draw/texture-region texture-region [(- (float x) radius) y]]]))
-
 (defn render
   [[_k {:keys [skill effect-ctx counter]}]
    entity
-   {:keys [ctx/elapsed-time
+   {:keys [ctx/colors
+           ctx/elapsed-time
            ctx/textures]
     :as ctx}]
   (let [{:keys [entity/image skill/effects]} skill]
-    (concat (draw-skill-image (textures/texture-region textures image)
-                              entity
-                              (:body/position (:entity/body entity))
-                              (timer/ratio elapsed-time counter))
+    (concat (let [action-counter-ratio (timer/ratio elapsed-time counter)
+                  texture-region (textures/texture-region textures image)
+                  radius skill-image-radius-world-units
+                  [x y] (:body/position (:entity/body entity))
+                  y (+ (float y)
+                       (float (/ (:body/height (:entity/body entity)) 2))
+                       (float 0.15))
+                  center [x (+ y radius)]]
+              [[:draw/filled-circle center radius (:colors/active-skill-circle colors)]
+               [:draw/sector
+                center
+                radius
+                (math/to-radians 90) ; start-angle
+                (math/to-radians (* (float action-counter-ratio) 360)) ; degree
+                (:colors/active-skill-sector colors)]
+               [:draw/texture-region texture-region [(- (float x) radius) y]]])
             (mapcat #(effect/render % effect-ctx ctx)  ; update-effect-ctx here too ?
                     effects))))
 
