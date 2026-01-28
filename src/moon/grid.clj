@@ -10,12 +10,6 @@
                                   Intersector
                                   Rectangle)))
 
-(defn create [width height cell-movement]
-  (g2d/create-grid width
-                   height
-                   (fn [position]
-                     (atom (cell/create position (cell-movement position))))))
-
 (defn cells->entities [cells]
   (into #{} (mapcat :entities) cells))
 
