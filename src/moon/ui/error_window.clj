@@ -18,9 +18,9 @@
                                             (with-err-str
                                               (repl/pst throwable)))
                                   ^Skin skin)}]]
-          :close-button? true
-          :close-on-escape? true
-          :center? true
+          ;:close-button? true
+          ;:close-on-escape? true
+          ;:center? true
           :skin skin})
     (.setModal true)
     (.pack)))

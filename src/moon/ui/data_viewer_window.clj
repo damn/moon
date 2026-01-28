@@ -67,8 +67,8 @@
     (doto (window/create
            {:skin skin
             :title title
-            :close-button? true
-            :close-on-escape? true
-            :center? true
+            ;:close-button? true
+            ;:close-on-escape? true
+            ;:center? true
             :rows [[scroll-pane-cell]]})
       (.pack))))

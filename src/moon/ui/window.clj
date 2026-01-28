@@ -16,5 +16,5 @@
                    (.addListener
                     (proxy [ChangeListener] []
                       (changed [_event _actor]
-                        (Actor/.remove window))))))
+                        (Actor/.remove window)))))) ; TODO this will permanently remove ui and entity info window?
     (table/set-opts! window opts)))

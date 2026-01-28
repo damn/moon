@@ -99,9 +99,9 @@
   (let [window (doto (window/create
                       {:skin skin
                        :title "Choose"
-                       :close-button? true
-                       :center? true
-                       :close-on-escape? true
+                       ;:close-button? true
+                       ;:center? true
+                       ;:close-on-escape? true
                        :cell-defaults {:pad 5}})
                  (.setModal true))
         remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))

@@ -1,41 +1,36 @@
 (ns moon.reaction-txs.show-modal
   (:require [moon.ui.actor :as actor]
-            [moon.ui.text-button :as text-button]
-            [moon.ui.window :as window])
+            [moon.ui.table :as table]
+            [moon.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)
+                                               Skin
+                                               Window)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn do!
-  [{:keys [ctx/skin
-           ctx/stage]
+  [{:keys [^Skin ctx/skin
+           ^Stage ctx/stage]
     :as ctx}
    {:keys [title text button-text on-click]}]
   (assert (not (-> stage
-                   Stage/.getRoot
+                   .getRoot
                    (.findActor "moon.ui.modal-window"))))
-  (Stage/.addActor stage
-                   (doto (window/create
-                          {:title title
-                           :rows [[{:actor (Label. ^String text ^Skin skin)}]
-                                  [{:actor (text-button/create
-                                            {:text button-text
-                                             :on-clicked (fn [_actor _ctx]
-                                                           (Actor/.remove
-                                                            (-> stage
-                                                                Stage/.getRoot
-                                                                (.findActor "moon.ui.modal-window")))
-                                                           (on-click))
-                                             :skin skin})}]]
-                           :skin skin})
-                     (.setModal true)
-                     (.pack)
-                     (.setName "moon.ui.modal-window")
-                     (actor/set-center! [(/ (Viewport/.getWorldWidth  (Stage/.getViewport stage)) 2)
-                                         (* (Viewport/.getWorldHeight (Stage/.getViewport stage)) (/ 3 4))])
-                     ))
+  (.addActor stage
+             (doto (Window. ^String title skin)
+               (table/add-rows! [[{:actor (Label. ^String text skin)}]
+                                 [{:actor (text-button/create
+                                           {:text button-text
+                                            :on-clicked (fn [_actor _ctx]
+                                                          (.remove (-> stage .getRoot (.findActor "moon.ui.modal-window")))
+                                                          (on-click))
+                                            :skin skin})}]])
+               (.setModal true)
+               (.pack)
+               (.setName "moon.ui.modal-window")
+               (actor/set-center! [(/ (.getWorldWidth  (.getViewport stage)) 2)
+                                   (* (.getWorldHeight (.getViewport stage)) (/ 3 4))])))
   ctx)
 
 
