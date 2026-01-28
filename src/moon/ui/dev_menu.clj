@@ -37,13 +37,13 @@
 (defn- create-window [skin label items]
   (doto (window/create
          {:skin skin
-          :title label
-          :rows [(for [{:keys [label on-click]} items]
-                   {:actor (doto (TextButton. ^String label ^Skin skin)
-                             (.addListener
-                              (proxy [ChangeListener] []
-                                (changed [event actor]
-                                  (on-click actor (.ctx ^Stage (Event/.getStage event)))))))})]})
+          :title label})
+    (table/set-opts! {:rows [(for [{:keys [label on-click]} items]
+                               {:actor (doto (TextButton. ^String label ^Skin skin)
+                                         (.addListener
+                                          (proxy [ChangeListener] []
+                                            (changed [event actor]
+                                              (on-click actor (.ctx ^Stage (Event/.getStage event)))))))})]})
     (.pack)))
 
 (defn- main-table [^Skin skin menus update-labels]

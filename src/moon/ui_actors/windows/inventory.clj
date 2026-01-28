@@ -82,29 +82,29 @@
                              )}))]
     (doto (window/create
            {:skin skin
-            :title title
-            :rows [[{:actor (doto
-                              (table/create
-                               {:rows (concat [[nil nil
-                                                (->cell :inventory.slot/helm)
-                                                (->cell :inventory.slot/necklace)]
-                                               [nil
-                                                (->cell :inventory.slot/weapon)
-                                                (->cell :inventory.slot/chest)
-                                                (->cell :inventory.slot/cloak)
-                                                (->cell :inventory.slot/shield)]
-                                               [nil nil
-                                                (->cell :inventory.slot/leg)]
-                                               [nil
-                                                (->cell :inventory.slot/glove)
-                                                (->cell :inventory.slot/rings :position [0 0])
-                                                (->cell :inventory.slot/rings :position [1 0])
-                                                (->cell :inventory.slot/boot)]]
-                                              (for [y (range 4)]
-                                                (for [x (range 6)]
-                                                  (->cell :inventory.slot/bag :position [x y]))))})
-                              (.setName "inventory-cell-table"))
-                     :pad 4}]]})
+            :title title})
+      (table/set-opts! {:rows [[{:actor (doto
+                                          (table/create
+                                           {:rows (concat [[nil nil
+                                                            (->cell :inventory.slot/helm)
+                                                            (->cell :inventory.slot/necklace)]
+                                                           [nil
+                                                            (->cell :inventory.slot/weapon)
+                                                            (->cell :inventory.slot/chest)
+                                                            (->cell :inventory.slot/cloak)
+                                                            (->cell :inventory.slot/shield)]
+                                                           [nil nil
+                                                            (->cell :inventory.slot/leg)]
+                                                           [nil
+                                                            (->cell :inventory.slot/glove)
+                                                            (->cell :inventory.slot/rings :position [0 0])
+                                                            (->cell :inventory.slot/rings :position [1 0])
+                                                            (->cell :inventory.slot/boot)]]
+                                                          (for [y (range 4)]
+                                                            (for [x (range 6)]
+                                                              (->cell :inventory.slot/bag :position [x y]))))})
+                                          (.setName "inventory-cell-table"))
+                                 :pad 4}]]})
       (.pack)
       (.setName "moon.ui.windows.inventory")
       (.setVisible false)

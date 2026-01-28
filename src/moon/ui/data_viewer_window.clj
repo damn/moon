@@ -66,6 +66,6 @@
                             })]
     (doto (window/create
            {:skin skin
-            :title title
-            :rows [[scroll-pane-cell]]})
+            :title title})
+      (table/set-opts! {:rows [[scroll-pane-cell]]})
       (.pack))))

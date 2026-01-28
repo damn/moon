@@ -98,8 +98,8 @@
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (doto (window/create
                       {:skin skin
-                       :title "Choose"
-                       :cell-defaults {:pad 5}})
+                       :title "Choose"})
+                 (table/set-opts! {:cell-defaults {:pad 5}})
                  (.setModal true))
         remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))
                                    (mu/map-keys (schema/malli-form schema schemas))))]

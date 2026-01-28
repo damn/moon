@@ -4,6 +4,7 @@
             [moon.textures :as textures]
             [moon.ui.group :as group]
             [moon.ui.image-button :as image-button]
+            [moon.ui.table :as table]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Touchable)
@@ -81,11 +82,7 @@
            clicked-id-fn]}]
   (doto (window/create
          {:skin skin
-          :title "Edit"
-          :rows (overview-table-rows db
-                                     skin
-                                     textures
-                                     property-type
-                                     clicked-id-fn)})
+          :title "Edit"})
+    (table/set-opts! {:rows (overview-table-rows db skin textures property-type clicked-id-fn)})
     (.setModal true)
     (.pack)))

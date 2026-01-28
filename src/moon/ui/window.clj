@@ -1,5 +1,4 @@
 (ns moon.ui.window
-  (:require [moon.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton
@@ -17,4 +16,4 @@
                     (proxy [ChangeListener] []
                       (changed [_event _actor]
                         (Actor/.remove window)))))) ; TODO this will permanently remove ui and entity info window?
-    (table/set-opts! window opts)))
+    window))

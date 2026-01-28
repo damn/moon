@@ -8,6 +8,7 @@
             [moon.ui.error-window :as error-window]
             [moon.ui.group :as group]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell]
+            [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
@@ -75,9 +76,9 @@
                                         scroll-pane-rows)]]]
     (doto (window/create
            {:skin skin
-            :title "[SKY]Property[]"
-            :rows rows
-            :cell-defaults {:pad 5}})
+            :title "[SKY]Property[]"})
+      (table/set-opts! {:rows rows
+                        :cell-defaults {:pad 5}})
       (.setModal true)
       (.pack)
       (group/add-actors! actors)
