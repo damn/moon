@@ -12,10 +12,13 @@
                  [fr.reuz/qrecord "0.1.0"]
                  [org.clj-commons/pretty "3.2.0"]
                  [org.clojure/clojure "1.12.0"]
+
+                 ; DEV:
                  [nrepl "0.9.0"]
                  [org.clojure/tools.namespace "1.3.0"]
+
+                 ; Unused:
                  [lein-hiera "2.0.0"]
-                 [com.github.damn/clojure.dev-loop "ef54a03"]
                  ]
   :source-paths ["src"]
   :java-source-paths ["java-src"]
