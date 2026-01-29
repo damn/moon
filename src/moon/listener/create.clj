@@ -1,27 +1,7 @@
 (ns moon.listener.create
-  (:require [moon.ctx :as ctx]
-            [qrecord.core :as q]))
+  (:require [qrecord.core :as q]))
 
-(def draw-fns
-  (update-vals '{:draw/circle           moon.draw.circle/do!
-                 :draw/ellipse          moon.draw.ellipse/do!
-                 :draw/filled-circle    moon.draw.filled-circle/do!
-                 :draw/filled-rectangle moon.draw.filled-rectangle/do!
-                 :draw/grid             moon.draw.grid/do!
-                 :draw/line             moon.draw.line/do!
-                 :draw/rectangle        moon.draw.rectangle/do!
-                 :draw/sector           moon.draw.sector/do!
-                 :draw/text             moon.draw.text/do!
-                 :draw/texture-region   moon.draw.texture-region/do!
-                 :draw/with-line-width  moon.draw.with-line-width/do!}
-               requiring-resolve))
-
-(q/defrecord Context []
-  ctx/Graphics
-  (draw! [ctx draws]
-    (doseq [{k 0 :as component} draws
-            :when component]
-      (apply (get draw-fns k) ctx (rest component)))))
+(q/defrecord Context [])
 
 (defn do!
   [create-fns]

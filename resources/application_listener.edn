@@ -3,6 +3,7 @@
             [
              [moon.create.impl-handle/step {:txs-fn-map #edn/resource "txs-fn-map.edn"
                                             :reaction-txs-fn-map #edn/resource "reaction-txs-fn-map.edn"}]
+             [moon.create.impl-draw/step #edn/resource "draw-fns.edn"]
              [moon.create.game-colors/step]
              [moon.create.get-gdx-state/step] ; TODO pass at listener create
              [moon.create.colors/step {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
