@@ -1,3 +1,12 @@
+; This is the new main idea of project organization
+; I can share it, its about 'pipelining' & simple 1 step one file (they dont need to know about each other)
+; => know nothing
+; => context protocol/functions? e.g. ctx/line-of-sight? ctx ?
+; => write a test where something is calling line of sight ...
+; hmm.. we are always getting one key and calling on it ... (dat)a
+; ctx = game = 'moon.g' ?
+
+
 ; TODO just defmethod where defmulti
 ; and just document where what how to extend?
 ; but then is not minimal anymore
