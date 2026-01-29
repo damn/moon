@@ -114,6 +114,12 @@
                                  :window {:width 1440
                                           :height 900}
                                  :fps 60}]
- [moon.start.create-listener/step #edn/resource "application_listener.edn"]
+ [moon.start.create-listener/step {
+                                   :state moon.application/state
+                                   :create! [moon.listener.create/do! #edn/resource "create-pipeline.edn"]
+                                   :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
+                                   :dispose! moon.listener.dispose/do!
+                                   :resize!  moon.listener.resize/do!
+                                   }]
  [moon.start.lwjgl-application/step]
  ]
