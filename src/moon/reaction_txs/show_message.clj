@@ -1,5 +1,4 @@
 (ns moon.reaction-txs.show-message
-  (:require [moon.ui.message :as message])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!
@@ -7,5 +6,6 @@
   (-> stage
       Stage/.getRoot
       (.findActor "player-message")
-      (message/show! message))
+      (.setUserObject (atom {:text message
+                             :counter 0})))
   ctx)
