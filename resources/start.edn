@@ -1,15 +1,3 @@
-; This is the new main idea of project organization
-; I can share it, its about 'pipelining' & simple 1 step one file (they dont need to know about each other)
-; => know nothing
-; => context protocol/functions? e.g. ctx/line-of-sight? ctx ?
-; => write a test where something is calling line of sight ...
-; hmm.. we are always getting one key and calling on it ... (dat)a
-; ctx = game = 'moon.g' ?
-
-
-; TODO just defmethod where defmulti
-; and just document where what how to extend?
-; but then is not minimal anymore
 [
  [moon.start.add-method/step moon.schema/create [[:default moon.schema.default/create]]]
  [moon.start.add-method/step moon.schema/value  [[:default moon.schema.default/value]]]
@@ -33,9 +21,6 @@
    [moon.schema.val-max           :s/val-max]
    [moon.schema.vector            :s/vector]]
   ]
- ; make no 'or this or that' effect-context
- ; decide on one context and then make effects/ or target-effects/
- ; not nested ns
  [moon.start.add-methods/step
   {:required [moon.effect/applicable?
               moon.effect/handle]
@@ -54,7 +39,6 @@
    [moon.effects.target-all          :effects/target-all]
    [moon.effects.target-entity       :effects/target-entity]]
   ]
- ; 'entity/' folder only this
  [moon.start.add-methods/step
   {:required []
    :optional [moon.entity/create
