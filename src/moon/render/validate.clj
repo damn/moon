@@ -6,43 +6,31 @@
   (m/schema
    [:map {:closed true}
     [:ctx/active-entities :any]
-    [:ctx/audio :some] ; TODO map of 'sound-name->sound'
+    [:ctx/audio :some]
     [:ctx/colors :some]
-    [:ctx/cursors :some] ; map of cursor-key->cursor
-    [:ctx/default-font :some] ; font -> API ?
-    [:ctx/batch :some] ; batch -> API ?
-
+    [:ctx/cursors :some]
+    [:ctx/default-font :some]
+    [:ctx/batch :some]
     [:ctx/files :some]
-
-    [:ctx/shape-drawer :some] ; sd -> API ?
+    [:ctx/shape-drawer :some]
     [:ctx/shape-drawer-texture :some]
-    [:ctx/unit-scale :some] ; only relevant during drawing?
+    [:ctx/unit-scale :some]
     [:ctx/world-unit-scale :some]
-
-    [:ctx/graphics :some] ; 'moon.graphics' -> set-cursor/fps/etc.?
-
-    [:ctx/input :some] ; make protocol
-
-    [:ctx/mouseover-eid :any] ; entity protocol/descirin?
-    [:ctx/player-eid :some]   ; entity protocol/descirin?
-
-    [:ctx/stage :some] ; moon.ui remove, moon.stage API ?
-    [:ctx/skin :some] ; ?
-
-    [:ctx/textures :some]  ; map of path to Texture
-
-    [:ctx/db :some] ; moon.db ? :schemas?!
-
+    [:ctx/graphics :some]
+    [:ctx/input :some]
+    [:ctx/mouseover-eid :any]
+    [:ctx/player-eid :some]
+    [:ctx/stage :some]
+    [:ctx/skin :some]
+    [:ctx/textures :some]
+    [:ctx/db :some]
     [:ctx/paused? :some]
     [:ctx/elapsed-time :some]
     [:ctx/delta-time :any]
-
-    [:ctx/ui-viewport :some] ; viewport API ?
+    [:ctx/ui-viewport :some]
     [:ctx/ui-mouse-position :any]
-
     [:ctx/world-viewport :some]
     [:ctx/world-mouse-position :any]
-
     [:ctx/factions-iterations :some]
     [:ctx/max-delta :some]
     [:ctx/minimum-size :some]
@@ -63,7 +51,3 @@
 (defn do! [ctx]
   (mu/validate-humanize schema ctx)
   ctx)
-
-; TODO create/render/etc. are all 'transactions' ?
-; remove need for ctx/handle!?
-; ctx/handle at ui? (see sound play)
