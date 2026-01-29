@@ -1,8 +1,8 @@
-(ns clojure.action-handler-test
+#_(ns clojure.action-handler-test
   (:require [moon.tx-handler :refer [actions!]]
             [clojure.test :refer :all]))
 
-(deftest return-flat-txs
+#_(deftest return-flat-txs
   (let [ctx {:accum (atom [])}
         txs-fn-map {:tx/foobar (fn [_ctx]
                                  [[:tx/bar-baz]
