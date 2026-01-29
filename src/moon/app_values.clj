@@ -19,7 +19,6 @@
   (not (or (fn? value)
            (instance? clojure.lang.MultiFn value)
            (protocol? value)
-           ; anonymous class (proxy)
            (instance? java.lang.Class value))))
 
 (defn- get-non-fn-vars [nmspace]

@@ -1,9 +1,6 @@
 (ns clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
-; TODO just fns?
-; namespaced keys?
-; see @ table
 (defn set-opts! [^Cell cell opts]
   (doseq [[option arg] opts]
     (case option

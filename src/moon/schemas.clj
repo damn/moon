@@ -3,12 +3,6 @@
             [malli.utils :as mu]
             [moon.schema :as schema]))
 
-; create-value
-; malli-form
-; only used here (map widget doesnt need to know)
-; => so only malli here !?
-; => defmethods together !?... wtf
-
 (defn build-values [schemas property db]
   (reduce (fn [m k]
             (assoc m k

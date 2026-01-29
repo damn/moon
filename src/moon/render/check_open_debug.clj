@@ -12,7 +12,6 @@
            ctx/world-mouse-position]
     :as ctx}]
   (when (input/button-just-pressed? input (:open-debug-button input/controls))
-    ; (or mouseover-entity world-grid-cell)
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (Stage/.addActor stage

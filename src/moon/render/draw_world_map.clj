@@ -1,4 +1,3 @@
-; TODO rename to 'draw-tiled-map'
 (ns moon.render.draw-world-map
   (:require [moon.tiled-map-renderer :as tiled-map-renderer])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
