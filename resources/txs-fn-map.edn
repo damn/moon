@@ -13,6 +13,7 @@
  :tx/remove-item              moon.tx.remove-item/do!
  :tx/pickup-item              moon.tx.pickup-item/do!
  :tx/event                    moon.tx.event/do!
+ :tx/register-eid             moon.tx.register-eid/do!
  :tx/state-enter              moon.tx.state-enter/do!
  :tx/effect                   moon.tx.effect/do!
  :tx/spawn-alert              moon.tx.spawn-alert/do!
