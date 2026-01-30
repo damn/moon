@@ -1,26 +1,16 @@
 (ns moon.render.remove-destroyed-entities
-  (:require [moon.content-grid :as content-grid]
-            [moon.ctx :as ctx]
-            [moon.entity :as entity]
-            [moon.grid :as grid]))
+  (:require [moon.ctx :as ctx]
+            [moon.entity :as entity]))
 
 (defn do!
-  [{:keys [ctx/content-grid
-           ctx/entity-ids
-           ctx/grid]
-    :as ctx}]
+  [ctx]
   (ctx/handle! ctx (mapcat
                     (fn [eid]
-                      (let [id (:entity/id @eid)]
-                        (assert (contains? @entity-ids id))
-                        (swap! entity-ids dissoc id))
-                      (content-grid/remove-entity! content-grid eid)
-                      (grid/remove-from-touched-cells! grid eid)
-                      (when (:body/collides? (:entity/body @eid))
-                        (grid/remove-from-occupied-cells! grid eid))
-                      (mapcat (fn [[k v]]
-                                (entity/destroy [k v] eid))
-                              @eid))
+                      (cons
+                       [:tx/unregister-eid eid]
+                       (mapcat (fn [[k v]]
+                                 (entity/destroy [k v] eid))
+                               @eid)))
                     (filter (comp :entity/destroyed? deref)
-                            (vals @entity-ids))))
+                            (vals @(:ctx/entity-ids ctx)))))
   ctx)
