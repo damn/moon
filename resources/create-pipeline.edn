@@ -26,6 +26,7 @@
                                 :height 900}]
  [moon.create.batch/do!]
  [moon.create.stage/step]
+ [moon.create.tooltip-config/step {:initial-time 0}]
  [moon.create.set-input-processor/step]
  [moon.create.skin/step "uiskin.json"]
  [moon.create.textures/step {:folder "resources/"
