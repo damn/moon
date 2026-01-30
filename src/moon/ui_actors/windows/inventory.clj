@@ -16,7 +16,7 @@
                                                Stack
                                                Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
-              TextureRegionDrawable)
+                                                  TextureRegionDrawable)
            (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
@@ -76,8 +76,7 @@
                                                                     :cell-size cell-size}))])
                              (.setName "inventory-cell")
                              (.setUserObject cell)
-                             (.addListener (clicked-cell-listener cell))
-                             )}))]
+                             (.addListener (clicked-cell-listener cell)))}))]
     (doto (window/create
            {:skin skin
             :title title})
