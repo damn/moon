@@ -16,10 +16,6 @@
                        {}
                        entity)
 
-        ; this part of add to entity/ids ?
-        _ (assert (and (not (contains? entity :entity/id))))
-        entity (assoc entity :entity/id (swap! (:ctx/id-counter ctx) inc))
-
         ; The record can be given as of the type?
         ; e.g. from database item 'moon.info/text' on an item which is resolved at db get
         ; into a record Item with behaviour
@@ -27,8 +23,12 @@
         eid (atom entity)]
 
 
-    (let [id (:entity/id @eid)]
+    ; (ctx/add-entity! ctx entity)  ; <- returns eid
+
+    (assert (and (not (contains? @eid :entity/id))))
+    (let [id (swap! (:ctx/id-counter ctx) inc)]
       (assert (number? id))
+      (swap! eid assoc :entity/id id)
       (swap! (:ctx/entity-ids ctx) assoc id eid))
 
     (assert (:entity/body @eid)) ; -< inside content grid
