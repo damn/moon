@@ -12,7 +12,7 @@
         ; TODO this can do before ? @ property/entity/db/denormalize?
         ; or is okay here and can re-use at 'tx/assoc' ? tx/assoc-in ??
         entity (reduce (fn [m [k v]]
-                         (assoc m k (entity/create [k v] ctx)))
+                         (assoc m k (entity/create [k v] ctx))) ; TODO state doesnt impl this? 2 creates?
                        {}
                        entity)
 
