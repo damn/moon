@@ -1,9 +1,9 @@
 (ns moon.render.update-mouseover-eid
-  (:require [moon.input :as input]
-            [moon.stage :as stage]
-            [moon.grid :as grid]
+  (:require [moon.grid :as grid]
+            [moon.input :as input]
+            [moon.order :as order]
             [moon.raycaster :as raycaster]
-            [moon.order :as order]))
+            [moon.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/input

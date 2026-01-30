@@ -1,7 +1,7 @@
 (ns moon.schema.one-to-many
   (:require [moon.db :as db]
-            [moon.textures :as textures]
             [moon.property :as property]
+            [moon.textures :as textures]
             [moon.ui.actor :as actor]
             [moon.ui.property-overview-window :as property-overview-window]
             [moon.ui.table :as table]

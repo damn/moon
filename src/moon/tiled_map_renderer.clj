@@ -1,8 +1,6 @@
 (ns moon.tiled-map-renderer
-  (:import (com.badlogic.gdx.maps MapLayers)
-           (com.badlogic.gdx.maps.tiled TiledMap
+  (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)
-           (com.badlogic.gdx.utils.viewport Viewport)
            (moon TiledMapRenderer
                  TiledMapRenderer$ColorSetter)))
 

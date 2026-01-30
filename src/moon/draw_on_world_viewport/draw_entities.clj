@@ -1,9 +1,9 @@
 (ns moon.draw-on-world-viewport.draw-entities
   (:require [moon.ctx :as ctx]
             [moon.entity :as entity]
+            [moon.order :as order]
             [moon.raycaster :as raycaster]
-            [moon.throwable :as throwable]
-            [moon.order :as order]))
+            [moon.throwable :as throwable]))
 
 (def ^:private render-layers ; TODO move external - simple TODO/checklist / state pass
   [#{:entity/mouseover?

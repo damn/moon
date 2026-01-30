@@ -1,7 +1,6 @@
 (ns moon.tiled-map
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapProperties
-                                  MapLayers)
+           (com.badlogic.gdx.maps MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer
                                         TiledMapTileLayer$Cell)

@@ -5,8 +5,8 @@
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
                                             Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Image
+           (com.badlogic.gdx.scenes.scene2d.ui Image
+                                               Label
                                                Skin
                                                Table
                                                TextButton)

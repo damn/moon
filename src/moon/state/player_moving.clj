@@ -1,6 +1,6 @@
 (ns moon.state.player-moving
-  (:require [moon.stats :as stats]
-            [moon.input :as input]))
+  (:require [moon.input :as input]
+            [moon.stats :as stats]))
 
 (defn- speed [{:keys [entity/stats]}]
   (or (stats/get-stat-value stats :stats/movement-speed)

@@ -1,5 +1,4 @@
-(ns moon.inventory
-  (:require [clojure.grid2d :as g2d]))
+(ns moon.inventory)
 
 (def empty-inventory
   #:inventory.slot{:bag      [6 4]

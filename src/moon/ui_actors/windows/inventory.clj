@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.inventory
   (:require [moon.ctx :as ctx]
-            [moon.state :as state]
             [moon.inventory :as inventory]
+            [moon.state :as state]
             [moon.textures :as textures]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
@@ -9,14 +9,14 @@
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event)
            (com.badlogic.gdx.scenes.scene2d.ui Image
-                                               Widget
-                                               Stack)
+                                               Stack
+                                               Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
-                                                  TextureRegionDrawable)
-           (com.badlogic.gdx.math Vector2)
+              TextureRegionDrawable)
            (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 

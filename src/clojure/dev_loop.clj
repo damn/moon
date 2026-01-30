@@ -1,8 +1,8 @@
 (ns clojure.dev-loop
-  (:require clj-commons.pretty.repl
-            clojure.java.io
-            clojure.tools.namespace.repl
-            nrepl.server))
+  (:require [clj-commons.pretty.repl]
+            [clojure.java.io]
+            [clojure.tools.namespace.repl]
+            [nrepl.server]))
 
 (clojure.tools.namespace.repl/disable-reload!) ; keep same connection/nrepl-server up throughout refreshs
 

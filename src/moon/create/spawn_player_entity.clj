@@ -1,6 +1,6 @@
 (ns moon.create.spawn-player-entity
-  (:require [moon.db :as db]
-            [moon.ctx :as ctx]))
+  (:require [moon.ctx :as ctx]
+            [moon.db :as db]))
 
 (defn step
   [{:keys [ctx/db

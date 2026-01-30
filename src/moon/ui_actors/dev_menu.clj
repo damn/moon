@@ -2,11 +2,11 @@
   (:require [clojure.string :as str]
             [moon.db :as db]
             [moon.input :as input]
+            [moon.readable :as readable]
             [moon.ui.data-viewer-window :as data-viewer-window]
             [moon.ui.dev-menu :as dev-menu]
             [moon.ui.property-editor-window :as property-editor-window]
-            [moon.ui.property-overview-window :as property-overview-window]
-            [moon.readable :as readable])
+            [moon.ui.property-overview-window :as property-overview-window])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d Actor)

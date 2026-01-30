@@ -1,9 +1,9 @@
 (ns moon.uf-caves.last-steps
   (:require [clojure.grid2d :as g2d]
             [clojure.rand :as rand]
+            [moon.tiled-map :as tiled-map]
             [moon.world-fns.creature-layer :as creature-layer]
-            [moon.world-fns.utils :as helper]
-            [moon.tiled-map :as tiled-map]))
+            [moon.world-fns.utils :as helper]))
 
 (defn- assoc-transition-cells [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid

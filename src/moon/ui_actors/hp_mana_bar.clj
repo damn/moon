@@ -1,8 +1,8 @@
 (ns moon.ui-actors.hp-mana-bar
-  (:require [moon.stats :as stats]
-            [moon.ctx :as ctx]
-            [moon.textures :as textures]
+  (:require [moon.ctx :as ctx]
             [moon.readable :as readable]
+            [moon.stats :as stats]
+            [moon.textures :as textures]
             [moon.val-max :as val-max])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.utils.viewport Viewport)

@@ -1,6 +1,6 @@
 (ns moon.state.npc-sleeping
-  (:require [moon.stats :as stats]
-            [moon.grid :as grid]))
+  (:require [moon.grid :as grid]
+            [moon.stats :as stats]))
 
 (defn tick
   [_ eid {:keys [ctx/grid]}]

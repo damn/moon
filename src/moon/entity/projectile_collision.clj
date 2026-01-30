@@ -1,8 +1,8 @@
 (ns moon.entity.projectile-collision
   (:require [clojure.grid2d :as g2d]
             [moon.body :as body]
-            [moon.grid :as grid]
-            [moon.cell :as cell]))
+            [moon.cell :as cell]
+            [moon.grid :as grid]))
 
 (defn create
   [[_ v] _ctx]

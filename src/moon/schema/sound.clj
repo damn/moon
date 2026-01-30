@@ -1,8 +1,8 @@
 (ns moon.schema.sound
   (:require [moon.audio :as audio]
             [moon.ui.actor :as actor]
-            [moon.ui.table :as table]
             [moon.ui.scroll-pane-cell :as scroll-pane-cell]
+            [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor

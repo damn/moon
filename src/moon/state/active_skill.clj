@@ -1,10 +1,10 @@
 (ns moon.state.active-skill
   (:require [clojure.math :as math]
             [moon.effect :as effect]
+            [moon.raycaster :as raycaster]
             [moon.stats :as stats]
             [moon.textures :as textures]
-            [moon.timer :as timer]
-            [moon.raycaster :as raycaster]))
+            [moon.timer :as timer]))
 
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time

@@ -1,6 +1,6 @@
 (ns moon.tx.set-item
-  (:require [moon.stats :as stats]
-            [moon.inventory :as inventory]))
+  (:require [moon.inventory :as inventory]
+            [moon.stats :as stats]))
 
 (defn do!
   [_ctx eid cell item]

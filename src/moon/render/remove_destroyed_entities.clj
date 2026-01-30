@@ -1,7 +1,7 @@
 (ns moon.render.remove-destroyed-entities
-  (:require [moon.ctx :as ctx]
+  (:require [moon.content-grid :as content-grid]
+            [moon.ctx :as ctx]
             [moon.entity :as entity]
-            [moon.content-grid :as content-grid]
             [moon.grid :as grid]))
 
 (defn do!

@@ -1,6 +1,6 @@
 (ns moon.render.window-camera-controls
-  (:require [moon.input :as input]
-            [moon.camera :as camera]
+  (:require [moon.camera :as camera]
+            [moon.input :as input]
             [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Group

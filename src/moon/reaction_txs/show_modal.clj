@@ -2,12 +2,10 @@
   (:require [moon.ui.actor :as actor]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Stage)
+  (:import (com.badlogic.gdx.scenes.scene2d Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
-                                               Window)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+                                               Window)))
 
 (defn do!
   [{:keys [^Skin ctx/skin

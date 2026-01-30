@@ -1,8 +1,8 @@
 (ns moon.entity.movement
   (:require [clojure.math :as math]
             [clojure.math.vector2 :as v]
-            [moon.math]
-            [moon.grid :as grid]))
+            [moon.grid :as grid]
+            [moon.math]))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))

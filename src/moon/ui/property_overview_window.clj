@@ -6,8 +6,7 @@
             [moon.ui.image-button :as image-button]
             [moon.ui.table :as table]
             [moon.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Touchable)
+  (:import (com.badlogic.gdx.scenes.scene2d Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
                                                Stack)))

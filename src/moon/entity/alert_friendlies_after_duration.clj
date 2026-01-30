@@ -1,6 +1,6 @@
 (ns moon.entity.alert-friendlies-after-duration
-  (:require [moon.timer :as timer]
-            [moon.grid :as grid]))
+  (:require [moon.grid :as grid]
+            [moon.timer :as timer]))
 
 (defn tick
   [[_k {:keys [counter faction]}]

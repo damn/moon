@@ -1,13 +1,13 @@
 (ns moon.schema.map
   (:require [clojure.set :as set]
             [malli.utils :as mu]
+            [moon.order :as order]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
             [moon.ui.property-editor-window :as property-editor-window]
             [moon.ui.table :as table]
             [moon.ui.text-button :as text-button]
-            [moon.ui.window :as window]
-            [moon.order :as order])
+            [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Group
                                             Stage)

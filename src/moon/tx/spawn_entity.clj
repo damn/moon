@@ -1,8 +1,8 @@
 (ns moon.tx.spawn-entity
   (:require [malli.core :as m]
             [malli.utils :as mu]
-            [moon.entity :as entity]
             [moon.content-grid :as content-grid]
+            [moon.entity :as entity]
             [moon.grid :as grid]
             [qrecord.core :as q]))
 

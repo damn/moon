@@ -1,6 +1,6 @@
 (ns moon.ui-actors.player-state-draw
-  (:require [moon.state :as state]
-            [moon.ctx :as ctx])
+  (:require [moon.ctx :as ctx]
+            [moon.state :as state])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (moon Stage)))
 

@@ -3,11 +3,11 @@
 (ns moon.info
   (:require [clojure.math :as math]
             [clojure.string :as str]
-            [moon.stats :as stats]
             [moon.ops :as ops]
-            [moon.timer :as timer]
             [moon.order :as order]
-            [moon.readable :as readable]))
+            [moon.readable :as readable]
+            [moon.stats :as stats]
+            [moon.timer :as timer]))
 
 (defmulti text (fn [object ctx]
                  (cond (:item/slot object)

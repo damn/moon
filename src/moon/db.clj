@@ -1,8 +1,8 @@
 (ns moon.db
   (:require [clojure.pprint :as pprint]
-            [moon.schemas :as schemas]
+            [moon.map :as map]
             [moon.property :as property]
-            [moon.map :as map]))
+            [moon.schemas :as schemas]))
 
 (defn- save!
   [{:keys [db/data db/file]}]

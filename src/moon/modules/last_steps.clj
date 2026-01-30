@@ -1,9 +1,9 @@
 (ns moon.modules.last-steps
   (:require [clojure.grid2d :as g2d]
             [moon.area-level-grid :as area-level-grid]
+            [moon.tiled-map :as tiled-map]
             [moon.world-fns.creature-layer :as creature-layer]
-            [moon.world-fns.utils :as helper]
-            [moon.tiled-map :as tiled-map])
+            [moon.world-fns.utils :as helper])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)))
 
