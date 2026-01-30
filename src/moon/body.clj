@@ -5,6 +5,7 @@
                                   Rectangle)))
 
 (defn rectangle
+  ^Rectangle
   [{:keys [body/position
            body/width
            body/height]}]
@@ -23,8 +24,8 @@
     :height height}))
 
 (defn overlaps? [body other-body]
-  (Intersector/overlaps ^Rectangle (rectangle body)
-                        ^Rectangle (rectangle other-body)))
+  (Intersector/overlaps (rectangle body)
+                        (rectangle other-body)))
 
 (defn distance [body other-body]
   (v/distance (:body/position body)

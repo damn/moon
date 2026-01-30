@@ -35,7 +35,7 @@
        cells->entities
        (filter #(Intersector/overlaps
                  (Circle. (position 0) (position 1) radius)
-                 ^Rectangle (body/rectangle (:entity/body @%))))))
+                 (body/rectangle (:entity/body @%))))))
 
 (defn cached-adjacent-cells [g2d cell]
   (if-let [result (:adjacent-cells @cell)]
@@ -88,8 +88,8 @@
                           (let [other-entity @other-entity]
                             (and (not= (:entity/id other-entity) entity-id)
                                  (:body/collides? (:entity/body other-entity))
-                                 (Intersector/overlaps ^Rectangle (body/rectangle (:entity/body other-entity))
-                                                       ^Rectangle (body/rectangle body))))))))))
+                                 (Intersector/overlaps (body/rectangle (:entity/body other-entity))
+                                                       (body/rectangle body))))))))))
 
 (defn nearest-enemy-distance [grid entity]
   (cell/nearest-entity-distance @(grid (mapv int (:body/position (:entity/body entity))))
