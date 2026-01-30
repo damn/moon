@@ -6,6 +6,8 @@
             [moon.grid :as grid]
             [qrecord.core :as q]))
 
+; TODO this really does nothing, but could remove default behavior of create/after-create
+; ...
 (def ^:private components-schema
   (m/schema [:map {:closed true}
              [:entity/body :some]
@@ -34,29 +36,42 @@
 
 (q/defrecord Entity [entity/body])
 
-(defn do!
-  [{:keys [ctx/content-grid
-           ctx/entity-ids
-           ctx/grid
-           ctx/id-counter]
-    :as ctx}
-   entity]
+(defn do! [ctx entity]
   (mu/validate-humanize components-schema entity)
-  (let [entity (reduce (fn [m [k v]]
+  (let [
+
+        ; TODO this can do before ? @ property/entity/db/denormalize?
+        ; or is okay here and can re-use at 'tx/assoc' ? tx/assoc-in ??
+        entity (reduce (fn [m [k v]]
                          (assoc m k (entity/create [k v] ctx)))
                        {}
                        entity)
+
+        ; this part of add to entity/ids ?
         _ (assert (and (not (contains? entity :entity/id))))
-        entity (assoc entity :entity/id (swap! id-counter inc))
+        entity (assoc entity :entity/id (swap! (:ctx/id-counter ctx) inc))
+
+        ; The record can be given as of the type?
+        ; e.g. from database item 'moon.info/text' on an item which is resolved at db get
+        ; into a record Item with behaviour
         entity (merge (map->Entity {}) entity)
         eid (atom entity)]
+
+
     (let [id (:entity/id @eid)]
       (assert (number? id))
-      (swap! entity-ids assoc id eid))
-    (content-grid/add-entity! content-grid eid)
-    ; https://github.com/damn/core/issues/58
-    ;(assert (valid-position? grid @eid))
-    (grid/set-touched-cells! grid eid)
+      (swap! (:ctx/entity-ids ctx) assoc id eid))
+
+    (content-grid/add-entity! (:ctx/content-grid ctx) eid)
+
     (when (:body/collides? (:entity/body @eid))
-      (grid/set-occupied-cells! grid eid))
+      (assert (grid/valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
+    (grid/set-touched-cells! (:ctx/grid ctx) eid)
+    (when (:body/collides? (:entity/body @eid)) ; entity/collides? separate fooziboosh, no 'when' just a callback?
+      (grid/set-occupied-cells! (:ctx/grid ctx) eid))
+
+
     (mapcat #(entity/after-create % eid ctx) @eid)))
+
+; TODO testability / protocols ? / ctx/register-new-entity?
+; TODO after-create code smell ? can do before? just player callbacks? simple fns?
