@@ -2,12 +2,11 @@
   (:require [clojure.grid2d :as g2d]
             [clojure.rand :as rand]
             [moon.tiled-map :as tiled-map]
-            [moon.world-fns.creature-layer :as creature-layer]
-            [moon.world-fns.utils :as helper]))
+            [moon.world-fns.creature-layer :as creature-layer]))
 
 (defn- assoc-transition-cells [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid
-                     (helper/adjacent-wall-positions grid))]
+                     (g2d/adjacent-wall-positions grid))]
     (assert (or
              (= #{:wall :ground :transition} (set (g2d/cells grid)))
              (= #{:ground :transition}       (set (g2d/cells grid))))
@@ -17,7 +16,7 @@
     grid))
 
 (defn- scale-grid [grid start scale]
-  (let [grid (helper/scalegrid grid scale)]
+  (let [grid (g2d/scalegrid grid scale)]
     ;_ (printgrid grid)
     ;_ (println)
     {:start-position (mapv #(* % scale) start)
@@ -90,7 +89,7 @@
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)
-        spawn-positions (helper/flood-fill grid start-position can-spawn?)
+        spawn-positions (g2d/flood-fill grid start-position can-spawn?)
         creatures (for [position spawn-positions
                         :when (<= (rand) spawn-rate)]
                     [position (rand-nth creatures)])]

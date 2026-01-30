@@ -1,6 +1,5 @@
 (ns moon.modules.place-modules
-  (:require [clojure.grid2d :as g2d]
-            [moon.world-fns.utils :as helper])
+  (:require [clojure.grid2d :as g2d])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (def ^:private number-modules-x 8)
@@ -38,7 +37,7 @@
                                 transition-neighbor?]}]
   (let [[modules-width modules-height] modules-scale
         idxvalue (if transition?
-                   (helper/transition-idx-value unscaled-position transition-neighbor?)
+                   (g2d/transition-idx-value unscaled-position transition-neighbor?)
                    floor-idxvalue)
         tiled-map-positions (module-index->tiled-map-positions
                              (if transition?

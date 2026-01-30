@@ -1,5 +1,5 @@
 (ns moon.modules.create-scaled-grid
-  (:require [moon.world-fns.utils :as helper]))
+  (:require [clojure.grid2d :as g2d]))
 
 (defn step [w]
-  (assoc w :scaled-grid (helper/scale-grid (:grid w) (:scale w))))
+  (assoc w :scaled-grid (g2d/scale-grid (:grid w) (:scale w))))

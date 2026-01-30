@@ -2,8 +2,7 @@
   (:require [clojure.grid2d :as g2d]
             [moon.area-level-grid :as area-level-grid]
             [moon.tiled-map :as tiled-map]
-            [moon.world-fns.creature-layer :as creature-layer]
-            [moon.world-fns.utils :as helper])
+            [moon.world-fns.creature-layer :as creature-layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)))
 
@@ -33,7 +32,7 @@
 
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
 
-        spawn-positions (helper/flood-fill scaled-grid start-position can-spawn?)
+        spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
         ;_ (println "scaled grid with filled nil: '?' \n")
         ;_ (printgrid (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
         ;_ (println "\n")
@@ -50,7 +49,7 @@
                    (= (set (concat [:wall max-area-level] (range max-area-level)))
                       (set (g2d/cells area-level-grid)))))
 
-        scaled-area-level-grid (helper/scale-grid area-level-grid scale)
+        scaled-area-level-grid (g2d/scale-grid area-level-grid scale)
 
         get-free-position-in-area-level (fn [area-level]
                                           (rand-nth
