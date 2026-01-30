@@ -22,6 +22,7 @@
         (try-move grid body entity-id (assoc movement :direction [xdir 0]))
         (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
 
+; TODO even this should be testable ...
 (defn tick
   [[_k
     {:keys [direction
@@ -46,4 +47,5 @@
       (when-let [body (if (:body/collides? body)
                         (try-move-solid-body grid body (:entity/id @eid) movement)
                         (move-body body movement))]
+        ; TODO move-entity just requires new 'position'
         [[:tx/move-entity eid body direction rotate-in-movement-direction?]]))))

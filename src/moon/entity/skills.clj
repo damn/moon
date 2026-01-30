@@ -1,7 +1,7 @@
 (ns moon.entity.skills
   (:require [moon.timer :as timer]))
 
-(defn after-create
+(defn after-create ; TODO same like inventory ?
   [[_k skills] eid _ctx]
   (cons [:tx/assoc eid :entity/skills nil]
         (for [skill skills]

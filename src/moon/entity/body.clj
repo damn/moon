@@ -1,6 +1,8 @@
 (ns moon.entity.body
   (:require [qrecord.core :as q]))
 
+; TODO is a body really necessary? just entity/foo ?
+; pull stuff out which is not used together w. body functions ?
 (q/defrecord Body [body/position
                    body/width
                    body/height

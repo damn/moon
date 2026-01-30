@@ -59,7 +59,7 @@
      :dropped-item -> :player-idle]
     [:player-dead]]))
 
-(defn after-create
+(defn after-create ; TODO do @ creature?
   [[_k {:keys [fsm initial-state]}] eid ctx]
   ; fsm throws when initial-state is not part of states, so no need to assert initial-state
   ; initial state is nil, so associng it. make bug report at reduce-fsm?

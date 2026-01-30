@@ -56,7 +56,7 @@
 (defn set-touched-cells! [grid eid]
   (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body @eid)))]
     (assert (not-any? nil? cells))
-    (swap! eid assoc ::touched-cells cells)
+    (swap! eid assoc ::touched-cells cells) ; TODO :entity/touched-cells ....
     (doseq [cell cells]
       (assert (not (get (:entities @cell) eid)))
       (swap! cell update :entities conj eid))))
@@ -78,6 +78,7 @@
     (assert (get (:occupied @cell) eid))
     (swap! cell update :occupied disj eid)))
 
+; TODO take entity ! some things not required @ body !?
 (defn valid-position? [g2d {:keys [body/z-order] :as body} entity-id]
   {:pre [(:body/collides? body)]}
   (let [cells* (into [] (map deref) (g2d/get-cells g2d (body/touched-tiles body)))]
