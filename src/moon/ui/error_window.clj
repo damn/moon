@@ -13,12 +13,13 @@
 
 (defn create
   [{:keys [skin throwable]}]
-  (doto (window/create
-         {:title "Error"
-          :skin skin})
-    (table/set-opts! {:rows [[{:actor (Label. ^String (binding [*print-level* 3]
-                                                        (with-err-str
-                                                          (repl/pst throwable)))
-                                              ^Skin skin)}]]})
-    (.setModal true)
-    (.pack)))
+  (let [label-text (binding [*print-level* 3]
+                     (with-err-str
+                       (repl/pst throwable)))]
+    (doto (window/create
+           {:title "Error"
+            :skin skin})
+      (table/set-opts! {:rows [[{:actor (Label. ^String label-text
+                                                ^Skin skin)}]]})
+      (.setModal true)
+      (.pack))))

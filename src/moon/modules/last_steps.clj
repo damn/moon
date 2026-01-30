@@ -3,9 +3,11 @@
             [moon.area-level-grid :as area-level-grid]
             [moon.world-fns.creature-layer :as creature-layer]
             [moon.world-fns.utils :as helper]
-            [moon.tiled-map :as tiled-map]))
+            [moon.tiled-map :as tiled-map])
+  (:import (com.badlogic.gdx.maps.tiled TiledMap
+                                        TiledMapTileLayer)))
 
-(defn- property-value [layer [x y] property-key]
+(defn- property-value [^TiledMapTileLayer layer [x y] property-key]
   (if-let [cell (.getCell layer x y)]
     (if-let [value (.get (.getProperties (.getTile cell)) property-key)]
       value
@@ -21,7 +23,7 @@
            start
            scale
            scaled-grid
-           tiled-map
+           ^TiledMap tiled-map
            start-position
            ]}]
   (let [

@@ -1,6 +1,7 @@
 (ns moon.modules.place-modules
   (:require [clojure.grid2d :as g2d]
-            [moon.world-fns.utils :as helper]))
+            [moon.world-fns.utils :as helper])
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (def ^:private number-modules-x 8)
 (def ^:private number-modules-y 4)
@@ -57,7 +58,7 @@
             offsets)))
 
 (defn- place-modules*
-  [modules-tiled-map
+  [^TiledMap modules-tiled-map
    modules-scale
    scaled-grid
    unscaled-grid

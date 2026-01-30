@@ -6,6 +6,7 @@
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (defn create
+  ^Window
   [{:keys [title
            ^Skin skin]
     :as opts}]

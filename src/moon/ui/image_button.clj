@@ -11,6 +11,7 @@
            (moon Stage)))
 
 (defn create
+  ^ImageButton
   [{:keys [^TextureRegion drawable/texture-region
            on-clicked
            drawable/scale

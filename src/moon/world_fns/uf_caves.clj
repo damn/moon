@@ -25,10 +25,10 @@
                                    {:pre [#{"all" "air" "none"} movement]}
                                    (tiled-map/static-tiled-map-tile
                                     (TextureRegion. ^Texture texture
-                                                    (* (sprite-idx 0) tile-size)
-                                                    (* (sprite-idx 1) tile-size)
-                                                    tile-size
-                                                    tile-size)
+                                                    (int (* (sprite-idx 0) tile-size))
+                                                    (int (* (sprite-idx 1) tile-size))
+                                                    (int tile-size)
+                                                    (int tile-size))
                                     "movement" movement))))
            :level/spawn-rate spawn-rate
            :level/scaling scaling
