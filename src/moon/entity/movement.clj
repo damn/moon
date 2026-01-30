@@ -47,5 +47,7 @@
       (when-let [body (if (:body/collides? body)
                         (try-move-solid-body grid body (:entity/id @eid) movement)
                         (move-body body movement))]
-        ; TODO move-entity just requires new 'position'
-        [[:tx/move-entity eid body direction rotate-in-movement-direction?]]))))
+        [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
+         (when rotate-in-movement-direction?
+           [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v/angle-from-vector direction)])
+         [:tx/move-entity eid]]))))
