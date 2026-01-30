@@ -1,43 +1,12 @@
 (ns moon.tx.spawn-entity
-  (:require [malli.core :as m]
-            [malli.utils :as mu]
-            [moon.content-grid :as content-grid]
+  (:require [moon.content-grid :as content-grid]
             [moon.entity :as entity]
             [moon.grid :as grid]
             [qrecord.core :as q]))
 
-; TODO this really does nothing, but could remove default behavior of create/after-create
-; ...
-(def ^:private components-schema
-  (m/schema [:map {:closed true}
-             [:entity/body :some]
-             [:entity/image {:optional true} :some]
-             [:entity/animation {:optional true} :some]
-             [:entity/alert-friendlies-after-duration {:optional true} :some]
-             [:entity/line-render {:optional true} :some]
-             [:entity/delete-after-duration {:optional true} :some]
-             [:entity/destroy-audiovisual {:optional true} :some]
-             [:entity/fsm {:optional true} :some]
-             [:entity/player? {:optional true} :some]
-             [:entity/free-skill-points {:optional true} :some]
-             [:entity/click-distance-tiles {:optional true} :some]
-             [:entity/clickable {:optional true} :some]
-             [:property/id {:optional true} :some]
-             [:property/pretty-name {:optional true} :some]
-             [:creature/level {:optional true} :some]
-             [:entity/faction {:optional true} :some]
-             [:entity/species {:optional true} :some]
-             [:entity/movement {:optional true} :some]
-             [:entity/skills {:optional true} :some]
-             [:entity/stats {:optional true} :some]
-             [:entity/inventory    {:optional true} :some]
-             [:entity/item {:optional true} :some]
-             [:entity/projectile-collision {:optional true} :some]]))
-
 (q/defrecord Entity [entity/body])
 
 (defn do! [ctx entity]
-  (mu/validate-humanize components-schema entity)
   (let [
 
         ; TODO this can do before ? @ property/entity/db/denormalize?
@@ -62,8 +31,10 @@
       (assert (number? id))
       (swap! (:ctx/entity-ids ctx) assoc id eid))
 
+    (assert (:entity/body @eid)) ; -< inside content grid
     (content-grid/add-entity! (:ctx/content-grid ctx) eid)
 
+    (assert (:entity/body @eid)) ; <- inside the grid add fn ?
     (when (:body/collides? (:entity/body @eid))
       (assert (grid/valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
     (grid/set-touched-cells! (:ctx/grid ctx) eid)
