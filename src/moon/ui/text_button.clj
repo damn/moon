@@ -6,6 +6,7 @@
            (moon Stage)))
 
 (defn create
+  ^TextButton
   [{:keys [text
            on-clicked
            ^Skin skin]}]

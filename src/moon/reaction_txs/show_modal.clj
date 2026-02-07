@@ -1,11 +1,10 @@
 (ns moon.reaction-txs.show-modal
-  (:require [moon.ui.actor :as actor]
-            [moon.ui.table :as table]
-            [moon.ui.text-button :as text-button])
+  (:require [moon.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
-                                               Window)))
+                                               Window)
+           (com.badlogic.gdx.utils Align)))
 
 (defn do!
   [{:keys [^Skin ctx/skin
@@ -17,18 +16,20 @@
                    (.findActor "moon.ui.modal-window"))))
   (.addActor stage
              (doto (Window. ^String title skin)
-               (table/add-rows! [[{:actor (Label. ^String text skin)}]
-                                 [{:actor (text-button/create
-                                           {:text button-text
-                                            :on-clicked (fn [_actor _ctx]
-                                                          (.remove (-> stage .getRoot (.findActor "moon.ui.modal-window")))
-                                                          (on-click))
-                                            :skin skin})}]])
+               (.add (Label. ^String text skin))
+               (.row)
+               (.add (text-button/create
+                      {:text button-text
+                       :on-clicked (fn [_actor _ctx]
+                                     (.remove (-> stage .getRoot (.findActor "moon.ui.modal-window")))
+                                     (on-click))
+                       :skin skin}))
                (.setModal true)
                (.pack)
                (.setName "moon.ui.modal-window")
-               (actor/set-center! [(/ (.getWorldWidth  (.getViewport stage)) 2)
-                                   (* (.getWorldHeight (.getViewport stage)) (/ 3 4))])))
+               (.setPosition (/ (.getWorldWidth  (.getViewport stage)) 2)
+                             (* (.getWorldHeight (.getViewport stage)) (/ 3 4))
+                             Align/center)))
   ctx)
 
 
@@ -36,3 +37,14 @@
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
 ; => input events handling
 ; hmmm interesting ... can disable @ item in cursor  / moving / etc.
+
+(comment
+ (.postRunnable com.badlogic.gdx.Gdx/app
+                (fn []
+                  (do! @moon.application/state
+                       {:title "TestTitle"
+                        :text "TextTEXT"
+                        :button-text "testbuttonTEXT"
+                        :on-click (fn [])})))
+
+ )

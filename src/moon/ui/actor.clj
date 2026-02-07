@@ -4,11 +4,6 @@
 (defn set-position! [^Actor actor [x y]]
   (.setPosition actor x y))
 
-(defn set-center! [^Actor actor [x y]]
-  (.setPosition actor
-                (- x (/ (.getWidth  actor) 2))
-                (- y (/ (.getHeight actor) 2))))
-
 (defn toggle-visible! [^Actor actor]
   (.setVisible actor (not (.isVisible actor))))
 
