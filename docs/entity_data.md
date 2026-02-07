@@ -52,6 +52,10 @@ entity/projectile-collision
 :entity/fsm
 :entity/faction
 :entity/player?
+    * set-item callback
+    * remove-item callback
+    * add skill (remoove skill) callback
+    * affected targets w/o player (can make w/o effect id ? )
 :entity/free-skill-points
 :entity/clickable
 :entity/click-distance-tiles
