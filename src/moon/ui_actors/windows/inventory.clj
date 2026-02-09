@@ -5,16 +5,17 @@
             [moon.textures :as textures]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [moon.ui.table :as table]
-            [moon.ui.window :as window])
+            [moon.ui.table :as table])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event)
            (com.badlogic.gdx.scenes.scene2d.ui Image
+                                               Skin
                                                Stack
-                                               Widget)
+                                               Widget
+                                               Window)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
                                                   TextureRegionDrawable)
            (com.badlogic.gdx.utils.viewport Viewport)
@@ -77,9 +78,7 @@
                              (.setName "inventory-cell")
                              (.setUserObject cell)
                              (.addListener (clicked-cell-listener cell)))}))]
-    (doto (window/create
-           {:skin skin
-            :title title})
+    (doto (Window. ^String title ^Skin skin)
       (table/set-opts! {:rows [[{:actor (doto
                                           (table/create
                                            {:rows (concat [[nil nil

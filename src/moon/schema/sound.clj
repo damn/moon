@@ -7,7 +7,8 @@
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Table
+           (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               Table
                                                Window)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
@@ -30,9 +31,8 @@
                       ctx/skin
                       ctx/stage]}]
     (Stage/.addActor stage
-                     (doto (window/create
-                            {:skin skin
-                             :title "Choose"})
+                     (doto (Window. "Choose" ^Skin skin)
+                       (window/add-close-button! skin)
                        (table/set-opts! {:rows [[(scroll-pane-cell/create skin
                                                                           (Viewport/.getWorldWidth (Stage/.getViewport stage))
                                                                           (for [sound-name (audio/sound-names audio)]

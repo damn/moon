@@ -13,7 +13,8 @@
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Window)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               Window)
            (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
@@ -74,9 +75,8 @@
         rows [[(scroll-pane-cell/create skin
                                         scroll-pane-height
                                         scroll-pane-rows)]]]
-    (doto (window/create
-           {:skin skin
-            :title "[SKY]Property[]"})
+    (doto (Window. "[SKY]Property[]" ^Skin skin)
+      (window/add-close-button! skin)
       (table/set-opts! {:rows rows
                         :cell-defaults {:pad 5}})
       (.setModal true)

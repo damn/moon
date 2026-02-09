@@ -9,7 +9,8 @@
                                                Label
                                                Skin
                                                Table
-                                               TextButton)
+                                               TextButton
+                                               Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (moon Stage)))
 
@@ -34,12 +35,11 @@
      (.addActor table (set-label-text-actor label text-fn))
      (.expandX (.right (.add table ^Actor label))))))
 
-(defn- create-window [skin label items]
-  (doto (window/create
-         {:skin skin
-          :title label})
-    (table/set-opts! {:rows [(for [{:keys [label on-click]} items]
-                               {:actor (doto (TextButton. ^String label ^Skin skin)
+(defn- create-window [^Skin skin ^String label items]
+  (doto (Window. label skin)
+    (window/add-close-button! skin)
+    (table/set-opts! {:rows [(for [{:keys [^String label on-click]} items]
+                               {:actor (doto (TextButton. label skin)
                                          (.addListener
                                           (proxy [ChangeListener] []
                                             (changed [event actor]

@@ -9,7 +9,8 @@
   (:import (com.badlogic.gdx.scenes.scene2d Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
-                                               Stack)))
+                                               Stack
+                                               Window)))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -79,9 +80,8 @@
            skin
            property-type
            clicked-id-fn]}]
-  (doto (window/create
-         {:skin skin
-          :title "Edit"})
+  (doto (Window. "Edit" ^Skin skin)
+    (window/add-close-button! skin)
     (table/set-opts! {:rows (overview-table-rows db skin textures property-type clicked-id-fn)})
     (.setModal true)
     (.pack)))

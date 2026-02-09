@@ -96,9 +96,8 @@
 
 (defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (doto (window/create
-                      {:skin skin
-                       :title "Choose"})
+  (let [window (doto (Window. "Choose" ^Skin skin)
+                 (window/add-close-button! skin)
                  (table/set-opts! {:cell-defaults {:pad 5}})
                  (.setModal true))
         remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))

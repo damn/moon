@@ -5,7 +5,8 @@
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane
-                                               Skin)))
+                                               Skin
+                                               Window)))
 
 (defn- k->label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -43,7 +44,7 @@
     (Label. ^String (v->text v) ^Skin skin)))
 
 (defn create
-  [{:keys [title
+  [{:keys [^String title
            data
            width
            height
@@ -64,8 +65,7 @@
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (doto (window/create
-           {:skin skin
-            :title title})
+    (doto (Window. title skin)
+      (window/add-close-button! skin)
       (table/set-opts! {:rows [[scroll-pane-cell]]})
       (.pack))))
