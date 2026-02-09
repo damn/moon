@@ -46,8 +46,7 @@
                                                                                                      (audio/play! audio sound-name))
                                                                                        :skin skin})}]))]]})
                        (.setModal true)
-                       (.pack)
-                       ))))
+                       (.pack)))))
 
 (defn- sound-columns [skin table sound-name]
   [{:actor (text-button/create
