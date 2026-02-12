@@ -6,14 +6,16 @@
             [moon.schemas :as schemas]
             [moon.ui.property-editor-window :as property-editor-window]
             [moon.ui.table :as table]
-            [moon.ui.text-button :as text-button]
             [moon.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Group
-                                            Stage)
+                                            Event
+                                            Group)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
-                                               Window)))
+                                               TextButton
+                                               Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
+           (moon Stage)))
 
 (defn malli-form [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
@@ -65,15 +67,15 @@
   [{:actor (table/create
             {:cell-defaults {:pad 2}
              :rows [[{:actor (when display-remove-component-button?
-                               (text-button/create
-                                {:text "-"
-                                 :on-clicked (fn [_actor ctx]
-                                               (Actor/.remove (first (filter (fn [actor]
-                                                                               (and (Actor/.getUserObject actor)
-                                                                                    (= k ((Actor/.getUserObject actor) 0))))
-                                                                             (Group/.getChildren table))))
-                                               (rebuild! ctx))
-                                 :skin skin}))
+                               (doto (TextButton. "-" ^Skin skin)
+                                 (.addListener
+                                  (proxy [ChangeListener] []
+                                    (changed [event _actor]
+                                      (Actor/.remove (first (filter (fn [actor]
+                                                                      (and (Actor/.getUserObject actor)
+                                                                           (= k ((Actor/.getUserObject actor) 0))))
+                                                                    (Group/.getChildren table))))
+                                      (rebuild! (.ctx ^Stage (Event/.getStage event))))))))
                       :left? true}
                      {:actor (Label. ^String label-text ^Skin skin)}]]})
     :right? true}
@@ -105,20 +107,21 @@
     (table/add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (text-button/create
-                 {:text (name k)
-                  :on-clicked (fn [_actor ctx]
-                                (Actor/.remove window)
-                                (table/add-rows! map-widget-table [(component-row skin
-                                                                                  (build-value-widget ctx
-                                                                                                      (get schemas k)
-                                                                                                      k
-                                                                                                      (schemas/default-value schemas k))
-                                                                                  k
-                                                                                  (mu/optional? k (schema/malli-form schema schemas))
-                                                                                  map-widget-table)])
-                                (rebuild! ctx))
-                  :skin skin})}]))
+       [{:actor (doto (TextButton. (name k) ^Skin skin)
+                  (.addListener
+                   (proxy [ChangeListener] []
+                     (changed [^Event event _actor]
+                       (Actor/.remove window)
+                       (let [ctx (.ctx ^Stage (.getStage event))]
+                         (table/add-rows! map-widget-table [(component-row skin
+                                                                           (build-value-widget ctx
+                                                                                               (get schemas k)
+                                                                                               k
+                                                                                               (schemas/default-value schemas k))
+                                                                           k
+                                                                           (mu/optional? k (schema/malli-form schema schemas))
+                                                                           map-widget-table)])
+                         (rebuild! ctx))))))}]))
     (Window/.pack window)
     window))
 
@@ -155,19 +158,20 @@
     (table/add-rows!
      table
      (concat [(when opt?
-                [{:actor (text-button/create
-                          {:text "Add component"
-                           :on-clicked (fn [_actor {:keys [ctx/db
-                                                           ctx/stage
-                                                           ctx/skin]}]
-                                         (Stage/.addActor
-                                          stage
-                                          (add-component-window
-                                           {:skin skin
-                                            :schemas (:db/schemas db)
-                                            :schema schema
-                                            :map-widget-table table})))
-                           :skin skin})
+                [{:actor (doto (TextButton. "Add component" ^Skin skin)
+                           (.addListener
+                            (proxy [ChangeListener] []
+                              (changed [^Event event actor]
+                                (let [{:keys [ctx/db
+                                              ctx/stage
+                                              ctx/skin]} (.ctx ^Stage (.getStage event))]
+                                  (Stage/.addActor
+                                   stage
+                                   (add-component-window
+                                    {:skin skin
+                                     :schemas (:db/schemas db)
+                                     :schema schema
+                                     :map-widget-table table})))))))
                   :colspan colspan}])]
              [(when opt?
                 [{:actor  nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
