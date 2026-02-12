@@ -1,9 +1,10 @@
 (ns moon.reaction-txs.show-modal
-  (:require [moon.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
+                                               TextButton
                                                Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (com.badlogic.gdx.utils Align)))
 
 (defn do!
@@ -18,12 +19,12 @@
              (doto (Window. ^String title skin)
                (.add (Label. ^String text skin))
                (.row)
-               (.add (text-button/create
-                      {:text button-text
-                       :on-clicked (fn [_actor _ctx]
-                                     (.remove (-> stage .getRoot (.findActor "moon.ui.modal-window")))
-                                     (on-click))
-                       :skin skin}))
+               (.add (doto (TextButton. ^String button-text skin)
+                       (.addListener
+                        (proxy [ChangeListener] []
+                          (changed [_event _actor]
+                            (.remove (-> stage .getRoot (.findActor "moon.ui.modal-window")))
+                            (on-click))))))
                (.setModal true)
                (.pack)
                (.setName "moon.ui.modal-window")
