@@ -4,17 +4,19 @@
             [moon.textures :as textures]
             [moon.ui.actor :as actor]
             [moon.ui.property-overview-window :as property-overview-window]
-            [moon.ui.table :as table]
-            [moon.ui.text-button :as text-button])
+            [moon.ui.table :as table])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
-                                            Group
-                                            Stage)
+                                            Event
+                                            Group)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Skin
                                                Table
+                                               TextButton
                                                TextTooltip
-                                               Window)))
+                                               Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
+           (moon Stage)))
 
 (defn malli-form [[_ property-type] _schemas]
   [:qualified-keyword {:namespace (property/type->id-namespace property-type)}])
@@ -36,23 +38,24 @@
     (table/add-rows!
      table
      [[(when-not property-id
-         {:actor (text-button/create
-                  {:text "+"
-                   :on-clicked (fn [_actor {:keys [ctx/db
-                                                   ctx/skin
-                                                   ctx/stage
-                                                   ctx/textures]}]
-                                 (Stage/.addActor
-                                  stage
-                                  (property-overview-window/create
-                                   {:db db
-                                    :textures textures
-                                    :skin skin
-                                    :property-type property-type
-                                    :clicked-id-fn (fn [actor id ctx]
-                                                     (Actor/.remove (actor/find-ancestor actor Window))
-                                                     (redo-rows ctx id))})))
-                   :skin skin})})]
+         {:actor (doto (TextButton. "+" ^Skin skin)
+                   (.addListener
+                    (proxy [ChangeListener] []
+                      (changed [^Event event _actor]
+                        (let [{:keys [ctx/db
+                                      ctx/skin
+                                      ctx/stage
+                                      ctx/textures]} (.ctx ^Stage (.getStage event))]
+                          (Stage/.addActor
+                           stage
+                           (property-overview-window/create
+                            {:db db
+                             :textures textures
+                             :skin skin
+                             :property-type property-type
+                             :clicked-id-fn (fn [actor id ctx]
+                                              (Actor/.remove (actor/find-ancestor actor Window))
+                                              (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (db/get-raw db property-id)
                texture-region (textures/texture-region textures (property/image property))
@@ -62,11 +65,12 @@
            {:actor image-widget}
            image-widget))]
       [(when property-id
-         {:actor (text-button/create
-                  {:text "-"
-                   :on-clicked (fn [_actor ctx]
-                                 (redo-rows ctx nil))
-                   :skin skin})})]])))
+         {:actor (doto (TextButton. "-" ^Skin skin)
+                   (.addListener
+                    (proxy [ChangeListener] []
+                      (changed [^Event event _actor]
+                        (redo-rows (.ctx ^Stage (.getStage event))
+                                   nil)))))})]])))
 
 (defn create [[_ property-type] property-id ctx]
   (let [table (table/create {:cell-defaults {:pad 5}})]
