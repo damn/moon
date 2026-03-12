@@ -1,4 +1,9 @@
-## Entity 'types':
+For fixing 'info-text' we want to know what entity types/components are there
+
+Maybe even create a 'schema' ? by passing what goes to info text for entity?
+
+
+## Entity 'types'
 
 Search tx/spawn-entity:
 
