@@ -1,5 +1,5 @@
 (ns moon.render.update-mouse
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+  (:require [moon.viewport :as viewport]
             [moon.input :as input]))
 
 (defn do!

@@ -1,4 +1,4 @@
-(ns clj.api.com.badlogic.gdx.utils.viewport
+(ns moon.viewport
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
