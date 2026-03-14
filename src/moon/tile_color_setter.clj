@@ -1,6 +1,6 @@
 (ns moon.tile-color-setter
   (:require [clj.api.com.badlogic.gdx.math.vector3 :as vector3]
-            [clojure.math.raycaster :as raycaster])
+            [moon.raycaster :as raycaster])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn- tile-color-setter
