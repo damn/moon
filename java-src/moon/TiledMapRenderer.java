@@ -16,26 +16,24 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Disposable;
 
 import static com.badlogic.gdx.graphics.g2d.Batch.*;
 
-public class TiledMapRenderer implements Disposable {
+public class TiledMapRenderer {
 
   public interface ColorSetter {
 
     public float apply(Color color, float x, float y);
   }
 
-	static protected final int NUM_VERTICES = 20;
-	protected TiledMap map;
-	protected float unitScale;
-	protected Batch batch;
-	protected Rectangle viewBounds;
-	protected Rectangle imageBounds = new Rectangle();
-	protected Rectangle repeatedImageBounds = new Rectangle();
-	protected boolean ownsBatch;
-	protected float[] vertices = new float[NUM_VERTICES];
+	static private final int NUM_VERTICES = 20;
+	private TiledMap map;
+	private float unitScale;
+	private Batch batch;
+	private Rectangle viewBounds;
+	private Rectangle imageBounds = new Rectangle();
+	private Rectangle repeatedImageBounds = new Rectangle();
+	private float[] vertices = new float[NUM_VERTICES];
 	private ColorSetter colorSetter;
 
 	public TiledMapRenderer (TiledMap map, float unitScale, Batch batch) {
@@ -43,14 +41,13 @@ public class TiledMapRenderer implements Disposable {
 		this.unitScale = unitScale;
 		this.viewBounds = new Rectangle();
 		this.batch = batch;
-		this.ownsBatch = false;
 	}
 
   public void setColorSetter(ColorSetter colorSetter) {
     this.colorSetter = colorSetter;
   }
 
-	public void renderTileLayer (TiledMapTileLayer layer) {
+	private void renderTileLayer (TiledMapTileLayer layer) {
 		final Color batchColor = batch.getColor();
 
 		final int layerWidth = layer.getWidth();
@@ -211,26 +208,6 @@ public class TiledMapRenderer implements Disposable {
 		}
 	}
 
-	public TiledMap getMap () {
-		return map;
-	}
-
-	public void setMap (TiledMap map) {
-		this.map = map;
-	}
-
-	public float getUnitScale () {
-		return unitScale;
-	}
-
-	public Batch getBatch () {
-		return batch;
-	}
-
-	public Rectangle getViewBounds () {
-		return viewBounds;
-	}
-
 	public void setView (OrthographicCamera camera) {
 		batch.setProjectionMatrix(camera.combined);
 		float width = camera.viewportWidth * camera.zoom;
@@ -238,19 +215,6 @@ public class TiledMapRenderer implements Disposable {
 		float w = width * Math.abs(camera.up.y) + height * Math.abs(camera.up.x);
 		float h = height * Math.abs(camera.up.y) + width * Math.abs(camera.up.x);
 		viewBounds.set(camera.position.x - w / 2, camera.position.y - h / 2, w, h);
-	}
-
-	public void setView (Matrix4 projection, float x, float y, float width, float height) {
-		batch.setProjectionMatrix(projection);
-		viewBounds.set(x, y, width, height);
-	}
-
-	public void render () {
-		beginRender();
-		for (MapLayer layer : map.getLayers()) {
-			renderMapLayer(layer);
-		}
-		endRender();
 	}
 
 	public void render (int[] layers) {
@@ -262,7 +226,7 @@ public class TiledMapRenderer implements Disposable {
 		endRender();
 	}
 
-	public void renderMapLayer (MapLayer layer) {
+	private void renderMapLayer (MapLayer layer) {
 		if (!layer.isVisible()) return;
 		if (layer instanceof MapGroupLayer) {
 			MapLayers childLayers = ((MapGroupLayer)layer).getLayers();
@@ -282,17 +246,17 @@ public class TiledMapRenderer implements Disposable {
 		}
 	}
 
-	public void renderObjects (MapLayer layer) {
+	private void renderObjects (MapLayer layer) {
 		for (MapObject object : layer.getObjects()) {
 			renderObject(object);
 		}
 	}
 
-	public void renderObject (MapObject object) {
+	private void renderObject (MapObject object) {
 
 	}
 
-	public void renderImageLayer (TiledMapImageLayer layer) {
+	private void renderImageLayer (TiledMapImageLayer layer) {
 		final Color batchColor = batch.getColor();
 
 		final float color = getImageLayerColor(layer, batchColor);
@@ -424,7 +388,7 @@ public class TiledMapRenderer implements Disposable {
 	 * @param layer The layer to render.
 	 * @param batchColor The current color of the batch.
 	 * @return The float color value to use for rendering. */
-	protected float getImageLayerColor (TiledMapImageLayer layer, Color batchColor) {
+	private float getImageLayerColor (TiledMapImageLayer layer, Color batchColor) {
 
 		final Color combinedTint = layer.getCombinedTintColor();
 
@@ -449,26 +413,19 @@ public class TiledMapRenderer implements Disposable {
 	 *
 	 * @param layer
 	 * @param batchColor */
-	protected float getTileLayerColor (TiledMapTileLayer layer, Color batchColor) {
+	private float getTileLayerColor (TiledMapTileLayer layer, Color batchColor) {
 		return Color.toFloatBits(batchColor.r * layer.getCombinedTintColor().r, batchColor.g * layer.getCombinedTintColor().g,
 			batchColor.b * layer.getCombinedTintColor().b, batchColor.a * layer.getCombinedTintColor().a * layer.getOpacity());
 	}
 
 	/** Called before the rendering of all layers starts. */
-	protected void beginRender () {
+	private void beginRender () {
 		AnimatedTiledMapTile.updateAnimationBaseTime();
 		batch.begin();
 	}
 
 	/** Called after the rendering of all layers ended. */
-	protected void endRender () {
+	private void endRender () {
 		batch.end();
-	}
-
-	@Override
-	public void dispose () {
-		if (ownsBatch) {
-			batch.dispose();
-		}
 	}
 }
