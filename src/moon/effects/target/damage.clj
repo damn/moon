@@ -1,5 +1,5 @@
 (ns moon.effects.target.damage
-  (:require [clojure.rand :refer [rand-int-between]]
+  (:require [moon.rand :refer [rand-int-between]]
             [moon.stats :as stats]))
 
 ; not in stats because projectile as source doesnt have stats

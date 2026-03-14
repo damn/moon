@@ -1,6 +1,6 @@
 (ns moon.uf-caves.last-steps
   (:require [clojure.grid2d :as g2d]
-            [clojure.rand :as rand]
+            [moon.rand :as rand]
             [moon.tiled-map :as tiled-map]
             [moon.world-fns.creature-layer :as creature-layer]))
 
