@@ -1,5 +1,6 @@
 (ns moon.ui-actors.windows.inventory
   (:require [moon.ctx :as ctx]
+            [moon.draws :as draws]
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.textures :as textures]
@@ -36,14 +37,14 @@
         (let [{:keys [ctx/player-eid
                       ctx/ui-mouse-position]
                :as ctx} (.ctx ^Stage stage)]
-          (ctx/draw! ctx
-                     (let [[x y] ui-mouse-position]
-                       (draw-cell-rect @player-eid
-                                       (Actor/.getX this)
-                                       (Actor/.getY this)
-                                       (let [v2 (Actor/.stageToLocalCoordinates this (Vector2. x y))]
-                                         (Actor/.hit this (.x v2) (.y v2) true))
-                                       (Actor/.getUserObject (Actor/.getParent this))))))))))
+          (draws/handle! ctx
+                         (let [[x y] ui-mouse-position]
+                           (draw-cell-rect @player-eid
+                                           (Actor/.getX this)
+                                           (Actor/.getY this)
+                                           (let [v2 (Actor/.stageToLocalCoordinates this (Vector2. x y))]
+                                             (Actor/.hit this (.x v2) (.y v2) true))
+                                           (Actor/.getUserObject (Actor/.getParent this))))))))))
 
 (defn- create-inventory-window*
   [{:keys [colors

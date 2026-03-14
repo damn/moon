@@ -1,5 +1,5 @@
 (ns moon.draw.grid
-  (:require [moon.ctx :as ctx]))
+  (:require [moon.draws :as draws]))
 
 (defn do!
   [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
@@ -9,9 +9,9 @@
         rightx (+ (float leftx) (float w))]
     (doseq [idx (range (inc (float gridw)))
             :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-      (ctx/draw! ctx
-                 [[:draw/line [linex topy] [linex bottomy] color-float-bits]]))
+      (draws/handle! ctx
+                     [[:draw/line [linex topy] [linex bottomy] color-float-bits]]))
     (doseq [idx (range (inc (float gridh)))
             :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-      (ctx/draw! ctx
-                 [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))
+      (draws/handle! ctx
+                     [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))

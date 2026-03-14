@@ -1,12 +1,12 @@
 (ns moon.create.impl-draw
-  (:require [moon.ctx :as ctx]))
+  (:require [moon.draws :as draws]))
 
 (defn step
   [ctx
    draw-fns]
   (extend-type (class ctx)
-    ctx/Graphics
-    (draw! [ctx draws]
+    draws/Draws
+    (handle! [ctx draws]
       (doseq [{k 0 :as component} draws
               :when component]
         (apply (get draw-fns k) ctx (rest component)))))

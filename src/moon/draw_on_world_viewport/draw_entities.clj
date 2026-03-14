@@ -1,5 +1,5 @@
 (ns moon.draw-on-world-viewport.draw-entities
-  (:require [moon.ctx :as ctx]
+  (:require [moon.draws :as draws]
             [moon.entity :as entity]
             [moon.order :as order]
             [moon.raycaster :as raycaster]
@@ -30,15 +30,15 @@
   [{:keys [ctx/colors] :as ctx} entity render-layer]
   (try (do
         (when show-body-bounds?
-          (ctx/draw! ctx (draw-body-rect (:entity/body entity)
-                                         (if (:body/collides? (:entity/body entity))
-                                           (:colors/debug-body-outline-collides colors)
-                                           (:colors/debug-body-outline colors)))))
+          (draws/handle! ctx (draw-body-rect (:entity/body entity)
+                                             (if (:body/collides? (:entity/body entity))
+                                               (:colors/debug-body-outline-collides colors)
+                                               (:colors/debug-body-outline colors)))))
         (doseq [[k v] entity
                 :when (get render-layer k)]
-          (ctx/draw! ctx (entity/render [k v] entity ctx))))
+          (draws/handle! ctx (entity/render [k v] entity ctx))))
        (catch Throwable t
-         (ctx/draw! ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
+         (draws/handle! ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
          (throwable/pretty-pst t))))
 
 (defn do!

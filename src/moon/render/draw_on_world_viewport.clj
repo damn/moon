@@ -1,5 +1,5 @@
 (ns moon.render.draw-on-world-viewport
-  (:require [moon.ctx :as ctx])
+  (:require [moon.draws :as draws])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.utils.viewport Viewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
@@ -22,7 +22,7 @@
     (.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
     (doseq [f draw-fns]
-      (ctx/draw! ctx (f ctx)))
+      (draws/handle! ctx (f ctx)))
     (reset! unit-scale 1)
     (.setDefaultLineWidth shape-drawer old-line-width))
   (.end batch)

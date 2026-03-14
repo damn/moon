@@ -1,5 +1,5 @@
 (ns moon.draw.with-line-width
-  (:require [moon.ctx :as ctx])
+  (:require [moon.draws :as draws])
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn do!
@@ -9,5 +9,5 @@
    draws]
   (let [old-line-width (.getDefaultLineWidth shape-drawer)]
     (.setDefaultLineWidth shape-drawer (* width old-line-width))
-    (ctx/draw! ctx draws)
+    (draws/handle! ctx draws)
     (.setDefaultLineWidth shape-drawer old-line-width)))
