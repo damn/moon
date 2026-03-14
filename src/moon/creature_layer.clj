@@ -1,4 +1,4 @@
-(ns moon.world-fns.creature-layer
+(ns moon.creature-layer
   (:require [moon.tiled-map :as tiled-map]))
 
 ; out of memory error -> each texture region is a new object

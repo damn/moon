@@ -1,7 +1,7 @@
 (ns moon.create.tiled-map-and-start-position
   (:require [moon.db :as db]
             [moon.textures :as textures]
-            [moon.world-fns.creature-tiles]))
+            [moon.creature-tiles]))
 
 (defn step
   [{:keys [ctx/db
@@ -12,7 +12,7 @@
         {:keys [tiled-map
                 start-position]} (f
                                   (assoc params
-                                         :level/creature-properties (moon.world-fns.creature-tiles/prepare
+                                         :level/creature-properties (moon.creature-tiles/prepare
                                                                      (db/all-raw db :properties/creatures)
                                                                      #(textures/texture-region textures %))
                                          :textures textures))]

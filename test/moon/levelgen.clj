@@ -10,7 +10,7 @@
             [moon.db :as db]
             [moon.camera :as camera]
             [moon.tiled-map-renderer :as tiled-map-renderer]
-            [moon.world-fns.creature-tiles])
+            [moon.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
                              Input$Keys)
@@ -61,7 +61,7 @@
                                    edn/read-string)]
                 ((requiring-resolve f)
                  (assoc params
-                        :level/creature-properties (moon.world-fns.creature-tiles/prepare
+                        :level/creature-properties (moon.creature-tiles/prepare
                                                     (db/all-raw db :properties/creatures)
                                                     (fn [{:keys [image/file image/bounds]}]
                                                       (assert file)

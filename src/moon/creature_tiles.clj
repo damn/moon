@@ -1,4 +1,4 @@
-(ns moon.world-fns.creature-tiles)
+(ns moon.creature-tiles)
 
 (defn prepare [creature-properties image->texture-region]
   (for [{:keys [entity/animation

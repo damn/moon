@@ -2,7 +2,7 @@
   (:require [moon.grid2d :as g2d]
             [moon.rand :as rand]
             [moon.tiled-map :as tiled-map]
-            [moon.world-fns.creature-layer :as creature-layer]))
+            [moon.creature-layer :as creature-layer]))
 
 (defn- assoc-transition-cells [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid
