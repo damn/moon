@@ -1,5 +1,5 @@
 (ns moon.modules.print
-  (:require [clojure.grid2d :as g2d]))
+  (:require [moon.grid2d :as g2d]))
 
 (defn step [{:keys [grid] :as world-fn-ctx}]
   (g2d/printgrid grid)

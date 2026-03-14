@@ -1,5 +1,5 @@
 (ns moon.caves
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.rand :as rand]))
 
 ;Cave Algorithmus.

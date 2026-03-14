@@ -1,5 +1,5 @@
 (ns moon.modules.convert-to-tiled-map
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.maps MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap

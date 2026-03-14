@@ -1,5 +1,5 @@
 (ns moon.uf-caves.fix-nads
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.nads :as nads]))
 
 (defn step

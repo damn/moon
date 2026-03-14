@@ -1,5 +1,5 @@
 (ns moon.uf-caves.initial-grid
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.caves :as caves]))
 
 (defn step

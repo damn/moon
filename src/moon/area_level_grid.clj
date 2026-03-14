@@ -1,5 +1,5 @@
 (ns moon.area-level-grid
-  (:require [clojure.grid2d :as g2d]))
+  (:require [moon.grid2d :as g2d]))
 
 ; can adjust:
 ; * split percentage , for higher level areas may scale faster (need to be more careful)

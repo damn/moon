@@ -1,5 +1,5 @@
 (ns moon.nads
-  (:require [clojure.grid2d :as g2d]))
+  (:require [moon.grid2d :as g2d]))
 
 (comment
   (def found (atom false))

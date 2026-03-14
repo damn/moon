@@ -1,4 +1,4 @@
-(ns clojure.grid2d)
+(ns moon.grid2d)
 ; 2dimvector is 7x faster than a hashmap of [x y] to values
 ; like in rich hickey ant demo vectors of vectors:
 ; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj

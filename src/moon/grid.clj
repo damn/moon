@@ -1,5 +1,5 @@
 (ns moon.grid
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.circle :as circle]

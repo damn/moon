@@ -1,5 +1,5 @@
 (ns moon.entity.inventory
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.inventory :as inventory]))
 
 (defn after-create ; TODO do @ creature

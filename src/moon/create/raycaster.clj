@@ -1,5 +1,5 @@
 (ns moon.create.raycaster
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.cell :as cell]))
 
 (defn step [{:keys [ctx/grid] :as ctx}]

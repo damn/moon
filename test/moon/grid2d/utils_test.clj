@@ -1,6 +1,6 @@
 (ns moon.grid2d.utils-test
   (:require [moon.caves :as caves]
-            [clojure.grid2d :as g2d]))
+            [moon.grid2d :as g2d]))
 
 (comment
  (let [{:keys [start grid]} (caves/create (java.util.Random.) 15 15 :wide)

@@ -1,5 +1,5 @@
 (ns moon.create.explored-tile-corners
-  (:require [clojure.grid2d :as g2d])
+  (:require [moon.grid2d :as g2d])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn step [{:keys [^TiledMap ctx/tiled-map] :as ctx}]

@@ -1,5 +1,5 @@
 (ns moon.content-grid
-  (:require [clojure.grid2d :as g2d]))
+  (:require [moon.grid2d :as g2d]))
 
 (defn create [width height cell-size]
   {:grid (g2d/create-grid

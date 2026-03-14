@@ -1,5 +1,5 @@
 (ns moon.modules.place-modules
-  (:require [clojure.grid2d :as g2d])
+  (:require [moon.grid2d :as g2d])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (def ^:private number-modules-x 8)

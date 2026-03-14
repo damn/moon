@@ -1,5 +1,5 @@
 (ns moon.modules.initial-grid
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.caves :as caves]
             [moon.nads :as nads])
   (:import (java.util Random)))

@@ -1,5 +1,5 @@
 (ns moon.create.grid
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.cell :as cell]
             [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
