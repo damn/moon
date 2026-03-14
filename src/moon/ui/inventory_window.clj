@@ -1,4 +1,4 @@
-(ns moon.ui.inventory
+(ns moon.ui.inventory-window
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Group)
