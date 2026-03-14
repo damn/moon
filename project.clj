@@ -23,9 +23,9 @@
   :source-paths ["src"]
   :java-source-paths ["java-src"]
   :resource-paths ["resources/"]
-  :aliases {"dev"      ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'moon.start/-main))"]
-            "levelgen" ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'moon.levelgen/-main))"]
-            "nsgraph"  ["run" "-m" "clojure.dev-loop" "((requiring-resolve 'ns-graph.core/-main))"]
+  :aliases {"dev"      ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.start/-main))"]
+            "levelgen" ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.levelgen/-main))"]
+            "nsgraph"  ["run" "-m" "moon.dev-loop" "((requiring-resolve 'ns-graph.core/-main))"]
             "ns"       ["hiera" ":layout" ":horizontal"]}
   :plugins [[lein-hiera "2.0.0"]
             [lein-codox "0.10.8"]]
