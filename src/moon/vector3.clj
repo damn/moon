@@ -1,4 +1,4 @@
-(ns clj.api.com.badlogic.gdx.math.vector3
+(ns moon.vector3
   (:import (com.badlogic.gdx.math Vector3)))
 
 (defn ->clj [^Vector3 v3]

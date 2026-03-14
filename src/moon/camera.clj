@@ -1,5 +1,5 @@
 (ns moon.camera
-  (:require [clj.api.com.badlogic.gdx.math.vector3 :as vector3])
+  (:require [moon.vector3 :as vector3])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn set-position! [^OrthographicCamera camera [x y]]
