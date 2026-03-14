@@ -1,5 +1,5 @@
 (ns moon.dev-menu.menus.ctx-data-viewer
-  (:require [moon.ui.data-viewer-window :as data-viewer-window])
+  (:require [moon.data-viewer-window :as data-viewer-window])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn create [_ctx]

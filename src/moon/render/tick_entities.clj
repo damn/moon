@@ -2,7 +2,7 @@
   (:require [moon.ctx :as ctx]
             [moon.entity :as entity]
             [moon.throwable :as throwable]
-            [moon.ui.error-window :as error-window])
+            [moon.error-window :as error-window])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!

@@ -3,9 +3,9 @@
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.textures :as textures]
-            [moon.ui.actor :as actor]
-            [moon.ui.group :as group]
-            [moon.ui.table :as table])
+            [moon.actor :as actor]
+            [moon.group :as group]
+            [moon.table :as table])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.math Vector2)

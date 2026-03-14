@@ -1,6 +1,6 @@
-(ns moon.ui.dev-menu
-  (:require [moon.ui.table :as table]
-            [moon.ui.window :as window])
+(ns moon.dev-menu
+  (:require [moon.table :as table]
+            [moon.window :as window])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event

@@ -1,8 +1,8 @@
 (ns moon.schema.animation
   (:require [moon.schemas :as schemas]
             [moon.textures :as textures]
-            [moon.ui.image-button :as image-button]
-            [moon.ui.table :as table]))
+            [moon.image-button :as image-button]
+            [moon.table :as table]))
 
 (defn malli-form [_ schemas]
   (schemas/create-map-schema schemas

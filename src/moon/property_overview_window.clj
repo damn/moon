@@ -1,11 +1,11 @@
-(ns moon.ui.property-overview-window
+(ns moon.property-overview-window
   (:require [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui.group :as group]
-            [moon.ui.image-button :as image-button]
-            [moon.ui.table :as table]
-            [moon.ui.window :as window])
+            [moon.group :as group]
+            [moon.image-button :as image-button]
+            [moon.table :as table]
+            [moon.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin

@@ -1,7 +1,7 @@
-(ns moon.ui.data-viewer-window
-  (:require [moon.ui.table :as table]
-            [moon.ui.text-button :as text-button]
-            [moon.ui.window :as window])
+(ns moon.data-viewer-window
+  (:require [moon.table :as table]
+            [moon.text-button :as text-button]
+            [moon.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane

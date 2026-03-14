@@ -1,8 +1,8 @@
 (ns moon.dev-menu.menus.open-editor
   (:require [clojure.string :as str]
             [moon.db :as db]
-            [moon.ui.property-editor-window :as property-editor-window]
-            [moon.ui.property-overview-window :as property-overview-window])
+            [moon.property-editor-window :as property-editor-window]
+            [moon.property-overview-window :as property-overview-window])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn create [{:keys [ctx/db]}]

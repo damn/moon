@@ -1,4 +1,4 @@
-(ns moon.ui.table
+(ns moon.table
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))

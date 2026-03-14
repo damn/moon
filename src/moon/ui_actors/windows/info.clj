@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.info
   (:require [moon.info :as info]
-            [moon.ui.actor :as actor]
-            [moon.ui.table :as table])
+            [moon.actor :as actor]
+            [moon.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin

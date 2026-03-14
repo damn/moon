@@ -2,7 +2,7 @@
 (ns moon.levelgen
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [clj.api.com.badlogic.gdx.math.vector3 :as vector3]
-            [moon.ui.table :as table]
+            [moon.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.create.db]

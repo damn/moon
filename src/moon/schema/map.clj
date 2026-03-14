@@ -4,9 +4,9 @@
             [moon.order :as order]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
-            [moon.ui.property-editor-window :as property-editor-window]
-            [moon.ui.table :as table]
-            [moon.ui.window :as window])
+            [moon.property-editor-window :as property-editor-window]
+            [moon.table :as table]
+            [moon.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Event
                                             Group)

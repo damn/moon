@@ -6,7 +6,7 @@
             [moon.skill :as skill]
             [moon.stage :as stage]
             [moon.state :as state]
-            [moon.ui.action-bar :as action-bar])
+            [moon.action-bar :as action-bar])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)

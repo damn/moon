@@ -1,6 +1,6 @@
-(ns moon.ui.action-bar
-  (:require [moon.ui.image-button :as image-button]
-            [moon.ui.table :as table])
+(ns moon.action-bar
+  (:require [moon.image-button :as image-button]
+            [moon.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Group)
            (com.badlogic.gdx.scenes.scene2d.ui Button

@@ -1,5 +1,5 @@
 (ns moon.reaction-txs.toggle-inventory-visible
-  (:require [moon.ui.actor :as actor])
+  (:require [moon.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Group
                                             Stage)))
 

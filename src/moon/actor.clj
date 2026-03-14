@@ -1,4 +1,4 @@
-(ns moon.ui.actor
+(ns moon.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn set-position! [^Actor actor [x y]]

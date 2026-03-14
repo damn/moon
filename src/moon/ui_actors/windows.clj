@@ -1,5 +1,5 @@
 (ns moon.ui-actors.windows
-  (:require [moon.ui.group :as group])
+  (:require [moon.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn create

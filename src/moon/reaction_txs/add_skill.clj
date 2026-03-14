@@ -1,7 +1,7 @@
 (ns moon.reaction-txs.add-skill
   (:require [moon.info :as info]
             [moon.textures :as textures]
-            [moon.ui.action-bar :as action-bar])
+            [moon.action-bar :as action-bar])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!

@@ -2,9 +2,9 @@
   (:require [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui.actor :as actor]
-            [moon.ui.property-overview-window :as property-overview-window]
-            [moon.ui.table :as table])
+            [moon.actor :as actor]
+            [moon.property-overview-window :as property-overview-window]
+            [moon.table :as table])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event

@@ -1,5 +1,5 @@
 (ns moon.reaction-txs.remove-item
-  (:require [moon.ui.inventory-window :as inventory-window])
+  (:require [moon.inventory-window :as inventory-window])
   (:import (com.badlogic.gdx.scenes.scene2d Group
                                             Stage)))
 

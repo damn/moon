@@ -1,4 +1,4 @@
-(ns moon.ui.window
+(ns moon.window
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton
                                                Window)

@@ -1,5 +1,5 @@
 (ns moon.ui-actors.dev-menu
-  (:require [moon.ui.dev-menu :as dev-menu]))
+  (:require [moon.dev-menu :as dev-menu]))
 
 (defn create
   [{:keys [ctx/skin

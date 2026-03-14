@@ -1,5 +1,5 @@
-(ns moon.ui.scroll-pane-cell
-  (:require [moon.ui.table :as table])
+(ns moon.scroll-pane-cell
+  (:require [moon.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
                                                Skin)))
