@@ -1,5 +1,5 @@
 (ns moon.create.game-colors
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]))
+  (:require [moon.color :as color]))
 
 (def black [0 0 0 1])
 (def white [1 1 1 1])

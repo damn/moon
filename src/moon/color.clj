@@ -1,4 +1,4 @@
-(ns clj.api.com.badlogic.gdx.graphics.color
+(ns moon.color
   (:import (com.badlogic.gdx.graphics Color)))
 
 (defn float-bits
