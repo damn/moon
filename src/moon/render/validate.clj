@@ -1,6 +1,5 @@
 (ns moon.render.validate
-  (:require [malli.core :as m]
-            [malli.utils :as mu]))
+  (:require [moon.malli :as m]))
 
 (def ^:private schema
   (m/schema
@@ -49,5 +48,5 @@
     ]))
 
 (defn do! [ctx]
-  (mu/validate-humanize schema ctx)
+  (m/validate-humanize schema ctx)
   ctx)

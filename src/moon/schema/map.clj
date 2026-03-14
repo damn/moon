@@ -1,6 +1,6 @@
 (ns moon.schema.map
   (:require [clojure.set :as set]
-            [malli.utils :as mu]
+            [moon.malli :as mu]
             [moon.order :as order]
             [moon.schema :as schema]
             [moon.schemas :as schemas]

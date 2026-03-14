@@ -1,5 +1,5 @@
 (ns moon.stats
-  (:require [malli.core :as m]
+  (:require [moon.malli :as m]
             [moon.ops :as ops]
             [moon.val-max :as val-max]))
 

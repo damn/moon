@@ -1,6 +1,5 @@
 (ns moon.schemas
-  (:require [malli.core :as m]
-            [malli.utils :as mu]
+  (:require [moon.malli :as m]
             [moon.schema :as schema]))
 
 (defn build-values [schemas property db]
@@ -23,8 +22,8 @@
   (-> (get schemas k)
       (schema/malli-form schemas)
       m/schema
-      (mu/validate-humanize value)))
+      (m/validate-humanize value)))
 
 (defn create-map-schema [schemas ks]
-  (mu/create-map-schema ks (fn [k]
-                             (schema/malli-form (get schemas k) schemas))))
+  (m/create-map-schema ks (fn [k]
+                            (schema/malli-form (get schemas k) schemas))))

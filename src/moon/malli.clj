@@ -1,6 +1,9 @@
-(ns malli.utils
+(ns moon.malli
   (:require [malli.core :as m]
             [malli.error :as me]))
+
+(def schema m/schema)
+(def validate m/validate)
 
 (defn validate-humanize [schema value]
   (when-not (m/validate schema value)
