@@ -1,6 +1,6 @@
 (ns moon.state.npc-idle
   (:require [moon.grid2d :as g2d]
-            [clojure.math.vector2 :as v]
+            [moon.vector2 :as v]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.effect :as effect]

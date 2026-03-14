@@ -1,5 +1,5 @@
 (ns moon.state.player-item-on-cursor
-  (:require [clojure.math.vector2 :as v]
+  (:require [moon.vector2 :as v]
             [moon.input :as input]
             [moon.inventory :as inventory]
             [moon.stage :as stage]

@@ -1,5 +1,5 @@
 (ns moon.body
-  (:require [clojure.math.vector2 :as v]
+  (:require [moon.vector2 :as v]
             [moon.rectangle :as rectangle])
   (:import (com.badlogic.gdx.math Intersector
                                   Rectangle)))

@@ -1,5 +1,5 @@
 (ns moon.render.player-state
-  (:require [clojure.math.vector2 :as v]
+  (:require [moon.vector2 :as v]
             [moon.body :as body]
             [moon.ctx :as ctx]
             [moon.input :as input]

@@ -1,5 +1,5 @@
 (ns moon.tx.spawn-projectile
-  (:require [clojure.math.vector2 :as v]))
+  (:require [moon.vector2 :as v]))
 
 (defn do!
   [_ctx

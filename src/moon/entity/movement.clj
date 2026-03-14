@@ -1,6 +1,6 @@
 (ns moon.entity.movement
   (:require [clojure.math :as math]
-            [clojure.math.vector2 :as v]
+            [moon.vector2 :as v]
             [moon.grid :as grid]
             [moon.math]))
 

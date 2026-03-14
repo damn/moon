@@ -1,5 +1,5 @@
 (ns moon.input
-  (:require [clojure.math.vector2 :as v]
+  (:require [moon.vector2 :as v]
             [clojure.string :as str])
   (:import (com.badlogic.gdx Input
                              Input$Buttons
