@@ -1,10 +1,10 @@
 (ns moon.render.remove-destroyed-entities
-  (:require [moon.ctx :as ctx]
+  (:require [moon.txs :as txs]
             [moon.entity :as entity]))
 
 (defn do!
   [ctx]
-  (ctx/handle! ctx (mapcat
+  (txs/handle! ctx (mapcat
                     (fn [eid]
                       (cons
                        [:tx/unregister-eid eid]

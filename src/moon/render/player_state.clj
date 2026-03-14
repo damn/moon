@@ -1,7 +1,7 @@
 (ns moon.render.player-state
   (:require [moon.vector2 :as v]
             [moon.body :as body]
-            [moon.ctx :as ctx]
+            [moon.txs :as txs]
             [moon.input :as input]
             [moon.skill :as skill]
             [moon.stage :as stage]
@@ -119,7 +119,7 @@
         entity @eid
         state-k (:state (:entity/fsm entity))
         txs (state/handle-input [state-k (state-k entity)] eid ctx)]
-    (ctx/handle! ctx txs))
+    (txs/handle! ctx txs))
   ctx)
 
 (defn- dissoc-interaction-state [ctx]

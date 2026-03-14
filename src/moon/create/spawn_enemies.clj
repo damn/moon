@@ -1,5 +1,5 @@
 (ns moon.create.spawn-enemies
-  (:require [moon.ctx :as ctx]
+  (:require [moon.txs :as txs]
             [moon.db :as db]
             [moon.tiled-map :as tiled-map]))
 
@@ -8,7 +8,7 @@
            ctx/tiled-map]
     :as ctx}
    components]
-  (ctx/handle!
+  (txs/handle!
    ctx
    (for [[position creature-id] (tiled-map/spawn-positions tiled-map)]
      [:tx/spawn-creature {:position (mapv (partial + 0.5) position)

@@ -1,5 +1,5 @@
 (ns moon.create.spawn-player-entity
-  (:require [moon.ctx :as ctx]
+  (:require [moon.txs :as txs]
             [moon.db :as db]))
 
 (defn step
@@ -9,7 +9,7 @@
     :as ctx}
    {:keys [creature-id
            components]}]
-  (ctx/handle! ctx
+  (txs/handle! ctx
                [[:tx/spawn-creature {:position (mapv (partial + 0.5) start-position)
                                      :creature-property (db/build db creature-id)
                                      :components components}]])

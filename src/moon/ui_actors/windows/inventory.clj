@@ -1,5 +1,5 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [moon.ctx :as ctx]
+  (:require [moon.txs :as txs]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [moon.state :as state]
@@ -25,7 +25,7 @@
 (defn- clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
   (let [entity @player-eid
         state-k (:state (:entity/fsm entity))]
-    (ctx/handle! ctx
+    (txs/handle! ctx
                  (state/clicked-inventory-cell [state-k (state-k entity)]
                                                player-eid
                                                cell))))

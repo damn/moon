@@ -1,5 +1,5 @@
 (ns moon.render.tick-entities
-  (:require [moon.ctx :as ctx]
+  (:require [moon.txs :as txs]
             [moon.entity :as entity]
             [moon.throwable :as throwable]
             [moon.error-window :as error-window])
@@ -14,7 +14,7 @@
   (if paused?
     ctx
     (do (try
-         (ctx/handle! ctx (mapcat (fn [eid]
+         (txs/handle! ctx (mapcat (fn [eid]
                                     (mapcat (fn [[k v]]
                                               (try (entity/tick [k v] eid ctx)
                                                    (catch Throwable t

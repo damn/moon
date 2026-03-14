@@ -1,5 +1,5 @@
 (ns moon.create.impl-handle
-  (:require [moon.ctx :as ctx]))
+  (:require [moon.txs :as txs]))
 
 (defn- actions!
   [txs-fn-map ctx txs]
@@ -54,7 +54,7 @@
    {:keys [txs-fn-map
            reaction-txs-fn-map]}]
   (extend-type (class ctx)
-    ctx/TransactionHandler
+    txs/TransactionHandler
     (handle! [ctx txs]
       (let [handled-txs (try (actions! txs-fn-map ctx txs)
                              (catch Throwable t
