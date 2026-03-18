@@ -1,15 +1,15 @@
 (ns moon.property-editor-window
-  (:require [moon.db :as db]
+  (:require [moon.actor :as actor]
+            [moon.db :as db]
+            [moon.error-window :as error-window]
+            [moon.group :as group]
             [moon.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
-            [moon.throwable :as throwable]
-            [moon.actor :as actor]
-            [moon.error-window :as error-window]
-            [moon.group :as group]
             [moon.scroll-pane-cell :as scroll-pane-cell]
             [moon.table :as table]
             [moon.text-button :as text-button]
+            [moon.throwable :as throwable]
             [moon.window :as window])
   (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.scenes.scene2d Actor)

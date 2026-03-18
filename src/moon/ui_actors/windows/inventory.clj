@@ -1,12 +1,12 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [moon.txs :as txs]
+  (:require [moon.actor :as actor]
             [moon.draws :as draws]
+            [moon.group :as group]
             [moon.inventory :as inventory]
             [moon.state :as state]
+            [moon.table :as table]
             [moon.textures :as textures]
-            [moon.actor :as actor]
-            [moon.group :as group]
-            [moon.table :as table])
+            [moon.txs :as txs])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.math Vector2)

@@ -1,7 +1,7 @@
 (ns moon.create.tiled-map-and-start-position
-  (:require [moon.db :as db]
-            [moon.textures :as textures]
-            [moon.creature-tiles]))
+  (:require [moon.creature-tiles]
+            [moon.db :as db]
+            [moon.textures :as textures]))
 
 (defn step
   [{:keys [ctx/db

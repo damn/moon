@@ -1,9 +1,9 @@
 (ns moon.state.player-item-on-cursor
-  (:require [moon.vector2 :as v]
-            [moon.input :as input]
+  (:require [moon.input :as input]
             [moon.inventory :as inventory]
             [moon.stage :as stage]
-            [moon.textures :as textures])
+            [moon.textures :as textures]
+            [moon.vector2 :as v])
   (:import (com.badlogic.gdx Input$Buttons)))
 
 (defn create

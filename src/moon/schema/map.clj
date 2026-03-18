@@ -2,9 +2,9 @@
   (:require [clojure.set :as set]
             [moon.malli :as mu]
             [moon.order :as order]
+            [moon.property-editor-window :as property-editor-window]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
-            [moon.property-editor-window :as property-editor-window]
             [moon.table :as table]
             [moon.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor

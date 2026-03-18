@@ -1,6 +1,6 @@
 (ns moon.schema.sound
-  (:require [moon.audio :as audio]
-            [moon.actor :as actor]
+  (:require [moon.actor :as actor]
+            [moon.audio :as audio]
             [moon.scroll-pane-cell :as scroll-pane-cell]
             [moon.table :as table]
             [moon.text-button :as text-button]

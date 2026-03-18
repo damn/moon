@@ -1,6 +1,6 @@
 (ns moon.body
-  (:require [moon.vector2 :as v]
-            [moon.rectangle :as rectangle])
+  (:require [moon.rectangle :as rectangle]
+            [moon.vector2 :as v])
   (:import (com.badlogic.gdx.math Intersector
                                   Rectangle)))
 

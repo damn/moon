@@ -1,7 +1,7 @@
 (ns moon.reaction-txs.set-item
   (:require [moon.info :as info]
-            [moon.textures :as textures]
-            [moon.inventory-window :as inventory-window])
+            [moon.inventory-window :as inventory-window]
+            [moon.textures :as textures])
   (:import (com.badlogic.gdx.scenes.scene2d Group
                                             Stage)))
 

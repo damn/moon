@@ -1,10 +1,10 @@
 (ns moon.schema.one-to-one
-  (:require [moon.db :as db]
+  (:require [moon.actor :as actor]
+            [moon.db :as db]
             [moon.property :as property]
-            [moon.textures :as textures]
-            [moon.actor :as actor]
             [moon.property-overview-window :as property-overview-window]
-            [moon.table :as table])
+            [moon.table :as table]
+            [moon.textures :as textures])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Event

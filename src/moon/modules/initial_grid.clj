@@ -1,6 +1,6 @@
 (ns moon.modules.initial-grid
-  (:require [moon.grid2d :as g2d]
-            [moon.caves :as caves]
+  (:require [moon.caves :as caves]
+            [moon.grid2d :as g2d]
             [moon.nads :as nads])
   (:import (java.util Random)))
 

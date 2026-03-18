@@ -1,10 +1,10 @@
 (ns moon.property-overview-window
   (:require [moon.db :as db]
-            [moon.property :as property]
-            [moon.textures :as textures]
             [moon.group :as group]
             [moon.image-button :as image-button]
+            [moon.property :as property]
             [moon.table :as table]
+            [moon.textures :as textures]
             [moon.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Label

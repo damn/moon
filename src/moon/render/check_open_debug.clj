@@ -1,6 +1,6 @@
 (ns moon.render.check-open-debug
-  (:require [moon.input :as input]
-            [moon.data-viewer-window :as data-viewer-window])
+  (:require [moon.data-viewer-window :as data-viewer-window]
+            [moon.input :as input])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!

@@ -1,6 +1,6 @@
 (ns moon.create.raycaster
-  (:require [moon.grid2d :as g2d]
-            [moon.cell :as cell]))
+  (:require [moon.cell :as cell]
+            [moon.grid2d :as g2d]))
 
 (defn step [{:keys [ctx/grid] :as ctx}]
   (assoc ctx :ctx/raycaster (let [width  (g2d/width  grid)

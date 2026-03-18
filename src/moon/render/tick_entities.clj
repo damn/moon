@@ -1,8 +1,8 @@
 (ns moon.render.tick-entities
-  (:require [moon.txs :as txs]
-            [moon.entity :as entity]
+  (:require [moon.entity :as entity]
+            [moon.error-window :as error-window]
             [moon.throwable :as throwable]
-            [moon.error-window :as error-window])
+            [moon.txs :as txs])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!

@@ -1,8 +1,8 @@
 (ns moon.modules.last-steps
-  (:require [moon.grid2d :as g2d]
-            [moon.area-level-grid :as area-level-grid]
-            [moon.tiled-map :as tiled-map]
-            [moon.creature-layer :as creature-layer])
+  (:require [moon.area-level-grid :as area-level-grid]
+            [moon.creature-layer :as creature-layer]
+            [moon.grid2d :as g2d]
+            [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)))
 

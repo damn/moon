@@ -1,12 +1,12 @@
 (ns moon.render.player-state
-  (:require [moon.vector2 :as v]
+  (:require [moon.action-bar :as action-bar]
             [moon.body :as body]
-            [moon.txs :as txs]
             [moon.input :as input]
             [moon.skill :as skill]
             [moon.stage :as stage]
             [moon.state :as state]
-            [moon.action-bar :as action-bar])
+            [moon.txs :as txs]
+            [moon.vector2 :as v])
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)

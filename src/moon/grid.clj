@@ -1,9 +1,9 @@
 (ns moon.grid
-  (:require [moon.grid2d :as g2d]
-            [moon.body :as body]
+  (:require [moon.body :as body]
             [moon.cell :as cell]
             [moon.circle :as circle]
             [moon.faction :as faction]
+            [moon.grid2d :as g2d]
             [moon.position :as position]
             [moon.rectangle :as rectangle])
   (:import (com.badlogic.gdx.math Circle

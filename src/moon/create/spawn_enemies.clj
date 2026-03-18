@@ -1,7 +1,7 @@
 (ns moon.create.spawn-enemies
-  (:require [moon.txs :as txs]
-            [moon.db :as db]
-            [moon.tiled-map :as tiled-map]))
+  (:require [moon.db :as db]
+            [moon.tiled-map :as tiled-map]
+            [moon.txs :as txs]))
 
 (defn step
   [{:keys [ctx/db

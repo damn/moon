@@ -1,6 +1,6 @@
 (ns moon.render.remove-destroyed-entities
-  (:require [moon.txs :as txs]
-            [moon.entity :as entity]))
+  (:require [moon.entity :as entity]
+            [moon.txs :as txs]))
 
 (defn do!
   [ctx]

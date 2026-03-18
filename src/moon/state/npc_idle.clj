@@ -1,14 +1,14 @@
 (ns moon.state.npc-idle
-  (:require [moon.grid2d :as g2d]
-            [moon.vector2 :as v]
-            [moon.body :as body]
+  (:require [moon.body :as body]
             [moon.cell :as cell]
             [moon.effect :as effect]
             [moon.faction :as faction]
             [moon.grid :as grid]
+            [moon.grid2d :as g2d]
             [moon.position :as position]
             [moon.raycaster :as raycaster]
-            [moon.skill :as skill]))
+            [moon.skill :as skill]
+            [moon.vector2 :as v]))
 
 (defn- indexed
   "Returns a lazy sequence of [index, item] pairs, where items come

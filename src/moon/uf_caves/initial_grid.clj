@@ -1,6 +1,6 @@
 (ns moon.uf-caves.initial-grid
-  (:require [moon.grid2d :as g2d]
-            [moon.caves :as caves]))
+  (:require [moon.caves :as caves]
+            [moon.grid2d :as g2d]))
 
 (defn step
   [{:keys [size

@@ -1,6 +1,6 @@
 (ns moon.create.grid
-  (:require [moon.grid2d :as g2d]
-            [moon.cell :as cell]
+  (:require [moon.cell :as cell]
+            [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 

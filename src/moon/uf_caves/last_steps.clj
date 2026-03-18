@@ -1,8 +1,8 @@
 (ns moon.uf-caves.last-steps
-  (:require [moon.grid2d :as g2d]
+  (:require [moon.creature-layer :as creature-layer]
+            [moon.grid2d :as g2d]
             [moon.rand :as rand]
-            [moon.tiled-map :as tiled-map]
-            [moon.creature-layer :as creature-layer]))
+            [moon.tiled-map :as tiled-map]))
 
 (defn- assoc-transition-cells [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid
