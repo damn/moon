@@ -13,7 +13,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapImageLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
-import com.badlogic.gdx.maps.tiled.tiles.AnimatedTiledMapTile;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -218,12 +217,12 @@ public class TiledMapRenderer {
 	}
 
 	public void render (int[] layers) {
-		beginRender();
+		batch.begin();
 		for (int layerIdx : layers) {
 			MapLayer layer = map.getLayers().get(layerIdx);
 			renderMapLayer(layer);
 		}
-		endRender();
+		batch.end();
 	}
 
 	private void renderMapLayer (MapLayer layer) {
@@ -416,16 +415,5 @@ public class TiledMapRenderer {
 	private float getTileLayerColor (TiledMapTileLayer layer, Color batchColor) {
 		return Color.toFloatBits(batchColor.r * layer.getCombinedTintColor().r, batchColor.g * layer.getCombinedTintColor().g,
 			batchColor.b * layer.getCombinedTintColor().b, batchColor.a * layer.getCombinedTintColor().a * layer.getOpacity());
-	}
-
-	/** Called before the rendering of all layers starts. */
-	private void beginRender () {
-		AnimatedTiledMapTile.updateAnimationBaseTime();
-		batch.begin();
-	}
-
-	/** Called after the rendering of all layers ended. */
-	private void endRender () {
-		batch.end();
 	}
 }
