@@ -1,7 +1,9 @@
 (ns moon.reaction-txs.sound
-  (:require [moon.audio :as audio]))
+  (:import (com.badlogic.gdx.audio Sound)))
 
 (defn do!
   [{:keys [ctx/audio] :as ctx} sound-name]
-  (audio/play! audio sound-name)
+  (let [sounds audio]
+    (assert (contains? sounds sound-name) (str sound-name))
+    (Sound/.play (get sounds sound-name)))
   ctx)
