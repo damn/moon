@@ -14,4 +14,13 @@
   moon.shape-drawer/ShapeDrawer
   (line! [this [sx sy] [ex ey] color-float-bits]
     (.setColor this (float color-float-bits))
-    (.line this (float sx) (float sy) (float ex) (float ey))))
+    (.line this (float sx) (float sy) (float ex) (float ey)))
+
+  (circle! [this [x y] radius color-float-bits]
+    (.setColor this (float color-float-bits))
+    (.circle this x y radius))
+
+  (ellipse! [this [x y] radius-x radius-y color-float-bits]
+    (.setColor this (float color-float-bits))
+    (.ellipse this x y radius-x radius-y))
+  )
