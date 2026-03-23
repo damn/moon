@@ -16,3 +16,5 @@
            {:db/data (zipmap (map :property/id properties) properties)
             :db/file properties-file
             :db/schemas schemas})))
+
+; TODO schema separate ctx key ?

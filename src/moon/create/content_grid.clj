@@ -9,3 +9,5 @@
   (assoc ctx :ctx/content-grid (content-grid/create (.get (.getProperties tiled-map) "width")
                                                     (.get (.getProperties tiled-map) "height")
                                                     cell-size)))
+
+; TODO content-grid protocol

@@ -1,3 +1,6 @@
+; TODO start with what is 'green' and mark it
+; keep saved somewhere info green/red/?
+; test coverage?
 (ns moon.math
   (:require [clojure.math :as math]))
 

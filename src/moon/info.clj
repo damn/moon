@@ -1,5 +1,8 @@
+; TODO # 1
 ; TODO
 ; 1. step like item - validate incoming data - only then can I create info string if I know what data
+; means what _schema_ is there !
+; or every has 'info-depth' 'info' 'debug' 'player-info' ?
 (ns moon.info
   (:require [clojure.math :as math]
             [clojure.string :as str]
@@ -223,11 +226,17 @@
          (keep (fn [{k 0 v 1 :as component}]
                  (str (try (component-info component)
                            (catch Throwable t
-                             (str "*info-error* " k)))
+                             (str "*info-error* " k))) ; TODO this try/catch FIXME design error
                       (when (map? v)
                         (str "\n" (text v ctx))))))
          (str/join "\n")
          remove-newlines)))
+
+
+
+
+
+
 
 (defn- valid-item? [item]
   (let [keyset (set (keys item))]
@@ -263,6 +272,20 @@
   :property/id :items/shield-mystic-great,
   :property/pretty-name "Great Mystic Shield"}
  )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (defn- valid-skill? [skill]
   (= #{:property/id

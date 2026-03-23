@@ -1,3 +1,7 @@
+; TODO use protocols for actor/camera/group/input (ctx protocol?) stage/etc. ?
+; viewport ...
+; => tests.
+; InputMultiplex?
 (ns moon.render.window-camera-controls
   (:require [moon.actor :as actor]
             [moon.camera :as camera]
@@ -7,8 +11,9 @@
                                             Stage)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
-(def zoom-speed 0.025)
+(def zoom-speed 0.025) ; TODO FIXME pull out
 
+; TODO Stage handlers somehow?
 (defn do!
   [{:keys [ctx/input
            ctx/stage

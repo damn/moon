@@ -279,6 +279,7 @@
                              (get-8-neighbour-positions p))))
           (posis grid)))
 
+; TODO moon.grid2d.flood-fill - 1 transformation function ... ?
 (defn flood-fill [grid start walk-on-position?]
   (loop [next-positions [start]
          filled []

@@ -28,3 +28,5 @@
    {:keys [path params]}]
   (assoc ctx :ctx/default-font (generate-font (.internal files path)
                                               params)))
+
+; TODO one fn ? protocol?

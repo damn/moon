@@ -6,7 +6,7 @@
 (defn do!
   [create-fns]
   (reduce (fn [ctx [f & params]]
-            (apply f ctx params))
+            (apply f ctx params)) ; this is good, you separated the function in sub-parts, simplieifieng an abstraction
           (merge (map->Context {})
                  {
                   :ctx/unit-scale (atom 1)
@@ -19,3 +19,5 @@
                                  :z-order/effect]
                   })
           create-fns))
+
+; TODO does too much, just pipelineing?

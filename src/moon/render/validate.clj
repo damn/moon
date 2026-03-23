@@ -1,10 +1,13 @@
 (ns moon.render.validate
   (:require [moon.malli :as m]))
 
+; TODO This move out to 'config.edn' or 'start.edn'
+; resources/config/
+; also the validate is not a render step, can do before/after ?
 (def ^:private schema
   (m/schema
    [:map {:closed true}
-    [:ctx/active-entities :any]
+    [:ctx/active-entities :any] ; its a 'derived' key , can cache once per frame count (game logic frame not time frame)
     [:ctx/audio :some]
     [:ctx/batch :some]
     [:ctx/colors :some]

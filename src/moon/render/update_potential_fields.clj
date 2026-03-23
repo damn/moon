@@ -102,6 +102,7 @@
                                              tiles->entities
                                              max-iterations)))))
 
+; TODO can simplify tick! dont need 2 know ?
 (defn do!
   [{:keys [ctx/active-entities
            ctx/paused?

@@ -8,3 +8,6 @@
   (doseq [actor (map (fn [[f & params]] (apply f ctx params)) actor-fns)]
     (Stage/.addActor stage actor))
   ctx)
+
+; TODO test?
+; ctx.stage?

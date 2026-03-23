@@ -3,3 +3,5 @@
 
 (defn do! [ctx]
   (assoc ctx :ctx/batch (SpriteBatch.)))
+
+; TODO assoc* stuff -> where other stuff? create*/?

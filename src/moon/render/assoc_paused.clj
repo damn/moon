@@ -2,7 +2,7 @@
   (:require [moon.input :as input]
             [moon.state :as state]))
 
-(def pausing? true)
+(def pausing? true) ; TODO FIXME
 
 (defn do!
   [{:keys [ctx/input
