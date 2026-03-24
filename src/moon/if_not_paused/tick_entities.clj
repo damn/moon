@@ -1,4 +1,4 @@
-(ns moon.render.tick-entities
+(ns moon.if-not-paused.tick-entities
   (:require [moon.entity :as entity]
             [moon.error-window :as error-window]
             [moon.throwable :as throwable]
@@ -8,26 +8,23 @@
 (defn do!
   [{:keys [ctx/active-entities
            ctx/skin
-           ctx/stage
-           ctx/paused?]
+           ctx/stage]
     :as ctx}]
-  (if paused?
-    ctx
-    (do (try
-         (txs/handle! ctx (mapcat (fn [eid]
-                                    (mapcat (fn [[k v]]
-                                              (try (entity/tick [k v] eid ctx)
-                                                   (catch Throwable t
-                                                     (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
-                                            @eid))
-                                  active-entities))
-         (catch Throwable t
-           (throwable/pretty-pst t)
-           (Stage/.addActor stage
-                            (error-window/create
-                             {:skin skin
-                              :throwable t}))))
-        ctx)))
+  (try
+   (txs/handle! ctx (mapcat (fn [eid]
+                              (mapcat (fn [[k v]]
+                                        (try (entity/tick [k v] eid ctx)
+                                             (catch Throwable t
+                                               (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
+                                      @eid))
+                            active-entities))
+   (catch Throwable t
+     (throwable/pretty-pst t)
+     (Stage/.addActor stage
+                      (error-window/create
+                       {:skin skin
+                        :throwable t}))))
+  ctx)
 
 (comment
  (= (tick-entities! {:ctx/active-entities [(atom {:firstk :foo

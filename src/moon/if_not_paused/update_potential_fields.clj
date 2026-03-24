@@ -1,4 +1,4 @@
-(ns moon.render.update-potential-fields
+(ns moon.if-not-paused.update-potential-fields
   (:require [moon.cell :as cell]
             [moon.grid :as grid]
             [moon.position :as position]))
@@ -105,18 +105,14 @@
 ; TODO can simplify tick! dont need 2 know ?
 (defn do!
   [{:keys [ctx/active-entities
-           ctx/paused?
            ctx/factions-iterations
            ctx/grid
            ctx/potential-field-cache]
     :as ctx}]
-  (if paused?
-    ctx
-    (do
-     (doseq [[faction max-iterations] factions-iterations]
-       (tick! potential-field-cache
-              grid
-              faction
-              active-entities
-              max-iterations))
-     ctx)))
+  (doseq [[faction max-iterations] factions-iterations]
+    (tick! potential-field-cache
+           grid
+           faction
+           active-entities
+           max-iterations))
+  ctx)
