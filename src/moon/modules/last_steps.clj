@@ -1,6 +1,5 @@
 (ns moon.modules.last-steps
   (:require [moon.area-level-grid :as area-level-grid]
-            [moon.creature-layer :as creature-layer]
             [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
@@ -71,7 +70,7 @@
                                    (<= (rand) spawn-rate)
                                    (seq creatures))]
                     [position (rand-nth creatures)])]
-    (creature-layer/add-creatures-layer! tiled-map creatures)
+    (tiled-map/add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position (get-free-position-in-area-level 0)
      :area-level-grid scaled-area-level-grid}))

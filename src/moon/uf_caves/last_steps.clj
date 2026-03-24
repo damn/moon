@@ -1,6 +1,5 @@
 (ns moon.uf-caves.last-steps
-  (:require [moon.creature-layer :as creature-layer]
-            [moon.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.rand :as rand]
             [moon.tiled-map :as tiled-map]))
 
@@ -93,6 +92,6 @@
         creatures (for [position spawn-positions
                         :when (<= (rand) spawn-rate)]
                     [position (rand-nth creatures)])]
-    (creature-layer/add-creatures-layer! tiled-map creatures)
+    (tiled-map/add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position start-position}))
