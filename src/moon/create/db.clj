@@ -4,7 +4,9 @@
             [clojure.pprint :as pprint]
             [moon.db :as db]
             [moon.property :as property]
+            [moon.malli :as m]
             [moon.map :as map]
+            [moon.schema :as schema]
             [moon.schemas :as schemas]))
 
 (defn step [ctx {:keys [schemas properties]}]
@@ -72,3 +74,31 @@
   (build-all [{:keys [db/schemas] :as this} property-type]
     (map #(schemas/build-values schemas % this)
          (db/all-raw this property-type))))
+
+(extend-type clojure.lang.PersistentHashMap
+  schemas/Schemas
+  (build-values [schemas property db]
+    (reduce (fn [m k]
+              (assoc m k
+                     (try (schema/create-value (get schemas k) (k m) db)
+                          (catch Throwable t
+                            (throw (ex-info " " {:k k
+                                                 :v (k m)} t))))))
+            property
+            (keys property)))
+
+  (default-value [schemas k]
+    (let [schema (get schemas k)]
+      (cond
+       (#{:s/map} (schema 0)) {}
+       :else nil)))
+
+  (validate [schemas k value]
+    (-> (get schemas k)
+        (schema/malli-form schemas)
+        m/schema
+        (m/validate-humanize value)))
+
+  (create-map-schema [schemas ks]
+    (m/create-map-schema ks (fn [k]
+                              (schema/malli-form (get schemas k) schemas)))))
