@@ -14,7 +14,9 @@
     (into {}
           (for [[sound-name file-handle] sound-name->file-handle]
             [sound-name
-             (Audio/.newSound audio file-handle)]))))
+             (Audio/.newSound audio file-handle)
+             ;(audio/new-sound ctx file-handle)
+             ]))))
 
 (defn do!
   [{:keys [ctx/audio

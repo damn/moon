@@ -1,3 +1,5 @@
+; TODO only Gdx stuff here ( which requires Gdx state)
+; and first tsep get gdx state
 [
  [moon.create.impl-handle/step {:txs-fn-map #edn/resource "txs-fn-map.edn"
                                 :reaction-txs-fn-map #edn/resource "reaction-txs-fn-map.edn"}]
