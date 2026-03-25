@@ -6,9 +6,16 @@
 (defn do!
   [create-fns]
   (reduce (fn [ctx [f & params]]
-            (apply f ctx params)) ; this is good, you separated the function in sub-parts, simplieifieng an abstraction
+            (apply f ctx params))
           (merge (map->Context {})
                  {
+                  :ctx/active-entities nil
+                  :ctx/delta-time nil
+                  :ctx/mouseover-eid nil
+                  :ctx/ui-mouse-position nil
+                  :ctx/world-mouse-position nil
+                  :ctx/elapsed-time 0
+                  :ctx/paused? false
                   :ctx/unit-scale (atom 1)
                   :ctx/factions-iterations {:good 15 :evil 5}
                   :ctx/max-delta 0.04
@@ -19,5 +26,3 @@
                                  :z-order/effect]
                   })
           create-fns))
-
-; TODO does too much, just pipelineing?
