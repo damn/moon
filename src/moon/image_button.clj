@@ -1,5 +1,4 @@
 (ns moon.image-button
-  (:require [moon.table :as table])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui ImageButton
@@ -29,4 +28,4 @@
                                      (on-clicked actor (.ctx ^Stage (Event/.getStage event)))))))
     (when-let [tooltip (:tooltip opts)]
       (.addListener image-button (TextTooltip. (str tooltip) skin)))
-    (table/set-opts! image-button opts)))
+    image-button))

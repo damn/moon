@@ -73,8 +73,8 @@
                                    nil)))))})]])))
 
 (defn create [[_ property-type] property-id ctx]
-  (let [table (-> (Table.)
-                  (table/set-opts! {:cell-defaults {:pad 5}}))]
+  (let [table (doto (Table.)
+                (table/set-cell-defaults! {:pad 5}))]
     (add-one-to-one-rows ctx table property-type property-id)
     table))
 

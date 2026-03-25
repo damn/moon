@@ -58,10 +58,9 @@
                               (table/add-rows! (for [{:keys [label actor]} rows]
                                                  [{:actor (Label. ^String label ^Skin skin)}
                                                   {:actor actor}])))
-        scroll-pane-cell (let [table (doto (-> (Table.)
-                                               (table/set-opts!
-                                                {:rows [[scroll-pane-table]]
-                                                 :cell-defaults {:pad 1}}))
+        scroll-pane-cell (let [table (doto (Table.)
+                                       (table/set-cell-defaults! {:pad 1})
+                                       (table/add-rows! [[scroll-pane-table]])
                                        (.pack))]
                            {:actor (ScrollPane. table skin)
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))

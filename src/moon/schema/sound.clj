@@ -33,18 +33,19 @@
     (Stage/.addActor stage
                      (doto (Window. "Choose" ^Skin skin)
                        (window/add-close-button! skin)
-                       (table/set-opts! {:rows [[(scroll-pane-cell/create skin
-                                                                          (Viewport/.getWorldWidth (Stage/.getViewport stage))
-                                                                          (for [sound-name (map first audio)]
-                                                                            [{:actor (text-button/create
-                                                                                      {:text sound-name
-                                                                                       :on-clicked (rebuild-sound-widget! table sound-name)
-                                                                                       :skin skin})}
-                                                                             {:actor (text-button/create
-                                                                                      {:text "play!"
-                                                                                       :on-clicked (fn [_actor ctx]
-                                                                                                     (txs/handle! ctx [[:tx/sound sound-name]]))
-                                                                                       :skin skin})}]))]]})
+                       (table/add-rows!
+                        [[(scroll-pane-cell/create skin
+                                                   (Viewport/.getWorldWidth (Stage/.getViewport stage))
+                                                   (for [sound-name (map first audio)]
+                                                     [{:actor (text-button/create
+                                                               {:text sound-name
+                                                                :on-clicked (rebuild-sound-widget! table sound-name)
+                                                                :skin skin})}
+                                                      {:actor (text-button/create
+                                                               {:text "play!"
+                                                                :on-clicked (fn [_actor ctx]
+                                                                              (txs/handle! ctx [[:tx/sound sound-name]]))
+                                                                :skin skin})}]))]])
                        (.setModal true)
                        (.pack)))))
 
@@ -61,8 +62,8 @@
 
 
 (defn create [_  sound-name {:keys [ctx/skin]}]
-  (let [table (-> (Table.)
-                  (table/set-opts! {:cell-defaults {:pad 5}}))]
+  (let [table (doto (Table.)
+                (table/set-cell-defaults! {:pad 5}))]
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)
                               [{:actor (text-button/create

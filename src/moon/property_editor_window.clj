@@ -77,8 +77,8 @@
                                         scroll-pane-rows)]]]
     (doto (Window. "[SKY]Property[]" ^Skin skin)
       (window/add-close-button! skin)
-      (table/set-opts! {:rows rows
-                        :cell-defaults {:pad 5}})
+      (table/set-cell-defaults! {:pad 5})
+      (table/add-rows! rows)
       (.setModal true)
       (.pack)
       (group/add-actors! actors)

@@ -18,8 +18,7 @@
            set-label-text!]}]
   (let [label (Label. "" skin)
         window (doto (Window. ^String title skin)
-                 (table/set-opts! {:rows [[{:actor label
-                                            :expand? true}]]})
+                 (table/add-rows! [[{:actor label :expand? true}]])
                  (.setName actor-name)
                  (.setVisible visible?)
                  (actor/set-position! position))]

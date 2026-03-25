@@ -19,7 +19,6 @@
                        (repl/pst throwable)))]
     (doto (Window. "Error" skin)
       (window/add-close-button! skin)
-      (table/set-opts! {:rows [[{:actor (Label. ^String label-text
-                                                ^Skin skin)}]]})
+      (table/add-rows! [[{:actor (Label. ^String label-text ^Skin skin)}]])
       (.setModal true)
       (.pack))))

@@ -65,21 +65,20 @@
            k
            table
            label-text]}]
-  [{:actor (-> (Table.)
-               (table/set-opts!
-                {:cell-defaults {:pad 2}
-                 :rows [[{:actor (when display-remove-component-button?
-                                   (doto (TextButton. "-" ^Skin skin)
-                                     (.addListener
-                                      (proxy [ChangeListener] []
-                                        (changed [event _actor]
-                                          (Actor/.remove (first (filter (fn [actor]
-                                                                          (and (Actor/.getUserObject actor)
-                                                                               (= k ((Actor/.getUserObject actor) 0))))
-                                                                        (Group/.getChildren table))))
-                                          (rebuild! (.ctx ^Stage (Event/.getStage event))))))))
-                          :left? true}
-                         {:actor (Label. ^String label-text ^Skin skin)}]]}))
+  [{:actor (doto (Table.)
+             (table/set-cell-defaults! {:pad 2})
+             (table/add-rows! [[{:actor (when display-remove-component-button?
+                                          (doto (TextButton. "-" ^Skin skin)
+                                            (.addListener
+                                             (proxy [ChangeListener] []
+                                               (changed [event _actor]
+                                                 (Actor/.remove (first (filter (fn [actor]
+                                                                                 (and (Actor/.getUserObject actor)
+                                                                                      (= k ((Actor/.getUserObject actor) 0))))
+                                                                               (Group/.getChildren table))))
+                                                 (rebuild! (.ctx ^Stage (Event/.getStage event))))))))
+                                 :left? true}
+                                {:actor (Label. ^String label-text ^Skin skin)}]]))
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
     :pad-top 2
@@ -102,7 +101,7 @@
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (doto (Window. "Choose" ^Skin skin)
                  (window/add-close-button! skin)
-                 (table/set-opts! {:cell-defaults {:pad 5}})
+                 (table/set-cell-defaults! {:pad 5})
                  (.setModal true))
         remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))
                                    (mu/map-keys (schema/malli-form schema schemas))))]
@@ -146,8 +145,8 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (doto (-> (Table.)
-                        (table/set-opts! {:cell-defaults {:pad 5}}))
+  (let [table (doto (Table.)
+                (table/set-cell-defaults! {:pad 5})
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)

@@ -26,15 +26,15 @@
   (doseq [row rows]
     (doseq [props-or-actor row]
       (cond
-       (map? props-or-actor) (-> (.add table ^Actor (:actor props-or-actor))
-                                 (set-cell-opts! (dissoc props-or-actor :actor)))
+       (map? props-or-actor)
+       ;(cell-fn table)
+       (-> (.add table ^Actor (:actor props-or-actor))
+           (set-cell-opts! (dissoc props-or-actor :actor)))
        ; TODO Remove else case
        :else (.add table ^Actor props-or-actor)))
     (.row table))
   table)
 
-; TODO use doto.
-(defn set-opts! [^Table table {:keys [rows cell-defaults] :as opts}]
-  (set-cell-opts! (.defaults table) cell-defaults)
-  (add-rows! table rows)
+(defn set-cell-defaults! [^Table table cell-opts]
+  (set-cell-opts! (.defaults table) cell-opts)
   table)

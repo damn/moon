@@ -6,10 +6,9 @@
                                                Table)))
 
 (defn create [^Skin skin viewport-height rows]
-  (let [^Actor table (doto (-> (Table.)
-                               (table/set-opts!
-                                {:rows rows
-                                 :cell-defaults {:pad 5}}))
+  (let [^Actor table (doto (Table.)
+                       (table/set-cell-defaults! {:pad 5})
+                       (table/add-rows! rows)
                        (.pack)
                        (.setName "scroll-pane-table"))]
     {:actor (doto (ScrollPane. table skin)

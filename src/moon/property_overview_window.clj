@@ -82,6 +82,6 @@
            clicked-id-fn]}]
   (doto (Window. "Edit" ^Skin skin)
     (window/add-close-button! skin)
-    (table/set-opts! {:rows (overview-table-rows db skin textures property-type clicked-id-fn)})
+    (table/add-rows! (overview-table-rows db skin textures property-type clicked-id-fn))
     (.setModal true)
     (.pack)))

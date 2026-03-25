@@ -14,11 +14,10 @@
 (defn create
   [_ animation {:keys [ctx/skin
                        ctx/textures]}]
-  (-> (Table.)
-      (table/set-opts!
-       {:rows [(for [image (:animation/frames animation)]
-                 {:actor (image-button/create
-                          {:drawable/texture-region (textures/texture-region textures image)
-                           :drawable/scale 2
-                           :skin skin})})]
-        :cell-defaults {:pad 1}})))
+  (doto (Table.)
+    (table/set-cell-defaults! {:pad 1})
+    (table/add-rows! [(for [image (:animation/frames animation)]
+                        {:actor (image-button/create
+                                 {:drawable/texture-region (textures/texture-region textures image)
+                                  :drawable/scale 2
+                                  :skin skin})})])))
