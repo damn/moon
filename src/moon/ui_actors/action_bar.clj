@@ -10,17 +10,18 @@
                                                Table)))
 
 (defn create [_ctx]
-  (doto (table/create
-         {:rows [[{:actor (doto (doto (HorizontalGroup.)
-                                  (.space 2)
-                                  (.pad 2))
-                            (.setName "moon.ui.action-bar.horizontal-group")
-                            (.setUserObject (doto (ButtonGroup.)
-                                              (.setMaxCheckCount 1)
-                                              (.setMinCheckCount 0))))
-                   :expand? true
-                   :bottom? true}]]
-          :cell-defaults {:pad 2}})
+  (doto (-> (Table.)
+            (table/set-opts!
+             {:rows [[{:actor (doto (doto (HorizontalGroup.)
+                                      (.space 2)
+                                      (.pad 2))
+                                (.setName "moon.ui.action-bar.horizontal-group")
+                                (.setUserObject (doto (ButtonGroup.)
+                                                  (.setMaxCheckCount 1)
+                                                  (.setMinCheckCount 0))))
+                       :expand? true
+                       :bottom? true}]]
+              :cell-defaults {:pad 2}}))
     (.setFillParent true)
     (.setName "moon.ui.action-bar")))
 

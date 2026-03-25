@@ -12,6 +12,7 @@
                                             Group)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
+                                               Table
                                                TextButton
                                                Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
@@ -64,20 +65,21 @@
            k
            table
            label-text]}]
-  [{:actor (table/create
-            {:cell-defaults {:pad 2}
-             :rows [[{:actor (when display-remove-component-button?
-                               (doto (TextButton. "-" ^Skin skin)
-                                 (.addListener
-                                  (proxy [ChangeListener] []
-                                    (changed [event _actor]
-                                      (Actor/.remove (first (filter (fn [actor]
-                                                                      (and (Actor/.getUserObject actor)
-                                                                           (= k ((Actor/.getUserObject actor) 0))))
-                                                                    (Group/.getChildren table))))
-                                      (rebuild! (.ctx ^Stage (Event/.getStage event))))))))
-                      :left? true}
-                     {:actor (Label. ^String label-text ^Skin skin)}]]})
+  [{:actor (-> (Table.)
+               (table/set-opts!
+                {:cell-defaults {:pad 2}
+                 :rows [[{:actor (when display-remove-component-button?
+                                   (doto (TextButton. "-" ^Skin skin)
+                                     (.addListener
+                                      (proxy [ChangeListener] []
+                                        (changed [event _actor]
+                                          (Actor/.remove (first (filter (fn [actor]
+                                                                          (and (Actor/.getUserObject actor)
+                                                                               (= k ((Actor/.getUserObject actor) 0))))
+                                                                        (Group/.getChildren table))))
+                                          (rebuild! (.ctx ^Stage (Event/.getStage event))))))))
+                          :left? true}
+                         {:actor (Label. ^String label-text ^Skin skin)}]]}))
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
     :pad-top 2
@@ -144,7 +146,8 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (doto (table/create {:cell-defaults {:pad 5}})
+  (let [table (doto (-> (Table.)
+                        (table/set-opts! {:cell-defaults {:pad 5}}))
                 (.setName "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)

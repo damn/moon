@@ -2,7 +2,8 @@
   (:require [moon.image-button :as image-button]
             [moon.schemas :as schemas]
             [moon.table :as table]
-            [moon.textures :as textures]))
+            [moon.textures :as textures])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn malli-form [_ schemas]
   (schemas/create-map-schema schemas
@@ -13,10 +14,11 @@
 (defn create
   [_ animation {:keys [ctx/skin
                        ctx/textures]}]
-  (table/create
-   {:rows [(for [image (:animation/frames animation)]
-             {:actor (image-button/create
-                      {:drawable/texture-region (textures/texture-region textures image)
-                       :drawable/scale 2
-                       :skin skin})})]
-    :cell-defaults {:pad 1}}))
+  (-> (Table.)
+      (table/set-opts!
+       {:rows [(for [image (:animation/frames animation)]
+                 {:actor (image-button/create
+                          {:drawable/texture-region (textures/texture-region textures image)
+                           :drawable/scale 2
+                           :skin skin})})]
+        :cell-defaults {:pad 1}})))

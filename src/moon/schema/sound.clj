@@ -61,7 +61,8 @@
 
 
 (defn create [_  sound-name {:keys [ctx/skin]}]
-  (let [table (table/create {:cell-defaults {:pad 5}})]
+  (let [table (-> (Table.)
+                  (table/set-opts! {:cell-defaults {:pad 5}}))]
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)
                               [{:actor (text-button/create

@@ -38,7 +38,3 @@
   (set-cell-opts! (.defaults table) cell-defaults)
   (add-rows! table rows)
   table)
-
-(defn create ^Table [opts]
-  (-> (Table.)
-      (set-opts! opts)))

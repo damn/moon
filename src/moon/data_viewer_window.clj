@@ -6,6 +6,7 @@
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane
                                                Skin
+                                               Table
                                                Window)))
 
 (defn- k->label-str [k]
@@ -53,13 +54,14 @@
   (let [rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
                 :actor (v->actor-decl v skin)})
-        scroll-pane-table (table/create
-                           {:rows (for [{:keys [label actor]} rows]
-                                    [{:actor (Label. ^String label ^Skin skin)}
-                                     {:actor actor}])})
-        scroll-pane-cell (let [table (doto (table/create
-                                            {:rows [[scroll-pane-table]]
-                                             :cell-defaults {:pad 1}})
+        scroll-pane-table (-> (Table.)
+                              (table/add-rows! (for [{:keys [label actor]} rows]
+                                                 [{:actor (Label. ^String label ^Skin skin)}
+                                                  {:actor actor}])))
+        scroll-pane-cell (let [table (doto (-> (Table.)
+                                               (table/set-opts!
+                                                {:rows [[scroll-pane-table]]
+                                                 :cell-defaults {:pad 1}}))
                                        (.pack))]
                            {:actor (ScrollPane. table skin)
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
@@ -67,5 +69,5 @@
                             })]
     (doto (Window. title skin)
       (window/add-close-button! skin)
-      (table/set-opts! {:rows [[scroll-pane-cell]]})
+      (table/add-rows! [[scroll-pane-cell]])
       (.pack))))

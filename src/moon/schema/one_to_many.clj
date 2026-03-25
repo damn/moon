@@ -71,7 +71,8 @@
                                   (disj property-ids id))))))})])))
 
 (defn create [[_ property-type] property-ids ctx]
-  (let [table (table/create {:cell-defaults {:pad 5}})]
+  (let [table (-> (Table.)
+                  (table/set-opts! {:cell-defaults {:pad 5}}))]
     (add-one-to-many-rows ctx table property-type property-ids)
     table))
 

@@ -25,9 +25,10 @@
 (defn add-upd-label!
   ([skin ^Table table text-fn icon]
    (let [label (Label. "" ^Skin skin)
-         sub-table (table/create
-                    {:rows [[{:actor (Image. ^Texture icon)}
-                             label]]})]
+         sub-table (-> (Table.)
+                       (table/set-opts!
+                        {:rows [[{:actor (Image. ^Texture icon)}
+                                 label]]}))]
      (.addActor table (set-label-text-actor label text-fn))
      (.expandX (.right (.add table ^Actor sub-table)))))
   ([skin ^Table table text-fn]
@@ -47,14 +48,15 @@
     (.pack)))
 
 (defn- main-table [^Skin skin menus update-labels]
-  (let [table (table/create
-               {:rows [(for [{:keys [label items]} menus]
-                         {:actor (doto (TextButton. ^String label skin)
-                                   (.addListener
-                                    (proxy [ChangeListener] []
+  (let [table (-> (Table.)
+                  (table/set-opts!
+                   {:rows [(for [{:keys [label items]} menus]
+                             {:actor (doto (TextButton. ^String label skin)
+                                       (.addListener
+                                        (proxy [ChangeListener] []
 
-                                      (changed [event actor]
-                                        (Stage/.addActor (Event/.getStage event) (create-window skin label items))))))})]})]
+                                          (changed [event actor]
+                                            (Stage/.addActor (Event/.getStage event) (create-window skin label items))))))})]}))]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
@@ -64,16 +66,17 @@
 
 (defn- create*
   [{:keys [menus update-labels skin]}]
-  (doto (table/create
-         {:rows [[{:actor (main-table skin menus update-labels)
-                   :expand-x? true
-                   :fill-x? true
-                   :colspan 1}]
-                 [{:actor (doto (Label. "" ^Skin skin)
-                            (Actor/.setTouchable Touchable/disabled))
-                   :expand? true
-                   :fill-x? true
-                   :fill-y? true}]]})
+  (doto (-> (Table.)
+            (table/set-opts!
+             {:rows [[{:actor (main-table skin menus update-labels)
+                       :expand-x? true
+                       :fill-x? true
+                       :colspan 1}]
+                     [{:actor (doto (Label. "" ^Skin skin)
+                                (Actor/.setTouchable Touchable/disabled))
+                       :expand? true
+                       :fill-x? true
+                       :fill-y? true}]]}))
     (.setFillParent true)))
 
 (defn create
