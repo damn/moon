@@ -4,6 +4,9 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
+; TODO requires 'Gdx.app'
+; so part of gdx context? 'clojure.truetype/generate-font gdx file-handle size minfilter magfilter'
+
 (defn- generate-font
   [file-handle {:keys [size
                        quality-scaling
