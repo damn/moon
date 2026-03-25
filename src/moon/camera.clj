@@ -11,9 +11,6 @@
   (set! (.zoom camera) amount)
   (.update camera))
 
-(defn reset-zoom! [cam]
-  (set-zoom! cam 1))
-
 (defn inc-zoom! [^OrthographicCamera cam by]
   (set-zoom! cam (max 0.1 (+ (.zoom cam) by))))
 
