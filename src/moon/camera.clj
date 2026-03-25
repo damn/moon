@@ -3,14 +3,11 @@
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn set-position! [^OrthographicCamera camera [x y]]
-  ; (set! (.position camera) (Vector3. x y 0))
-  ; update separate
   (set! (.x (.position camera)) (float x))
   (set! (.y (.position camera)) (float y))
   (.update camera))
 
 (defn set-zoom! [^OrthographicCamera camera amount]
-  ; also split
   (set! (.zoom camera) amount)
   (.update camera))
 
