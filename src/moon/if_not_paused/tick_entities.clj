@@ -1,9 +1,9 @@
 (ns moon.if-not-paused.tick-entities
   (:require [moon.entity :as entity]
             [moon.error-window :as error-window]
+            [moon.stage :as stage]
             [moon.throwable :as throwable]
-            [moon.txs :as txs])
-  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
+            [moon.txs :as txs]))
 
 (defn do!
   [{:keys [ctx/active-entities
@@ -20,10 +20,10 @@
                             active-entities))
    (catch Throwable t
      (throwable/pretty-pst t)
-     (Stage/.addActor stage
-                      (error-window/create
-                       {:skin skin
-                        :throwable t}))))
+     (stage/add-actor! stage
+                       (error-window/create
+                        {:skin skin
+                         :throwable t}))))
   ctx)
 
 (comment
