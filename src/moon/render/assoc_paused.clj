@@ -5,12 +5,13 @@
 (def pausing? true) ; TODO FIXME
 
 (defn do!
-  [{:keys [ctx/input
+  [{:keys [ctx/controls
+           ctx/input
            ctx/player-eid]
     :as ctx}]
   (assoc ctx :ctx/paused?
          (or #_error
              (and pausing?
                   (state/pause-game? (:state (:entity/fsm @player-eid)))
-                  (not (or (input/key-just-pressed? input (:unpause-once input/controls))
-                           (input/key-pressed? input (:unpause-continously input/controls))))))))
+                  (not (or (input/key-just-pressed? input (:unpause-once controls))
+                           (input/key-pressed? input (:unpause-continously controls))))))))

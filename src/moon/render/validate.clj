@@ -12,6 +12,8 @@
     [:ctx/batch :some]
     [:ctx/colors :some]
     [:ctx/content-grid :some]
+    [:ctx/controls :some]
+    [:ctx/controls-info :some]
     [:ctx/cursors :some]
     [:ctx/db :some]
     [:ctx/default-font :some]

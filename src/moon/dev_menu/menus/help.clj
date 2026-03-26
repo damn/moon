@@ -1,6 +1,5 @@
-(ns moon.dev-menu.menus.help
-  (:require [moon.input :as input]))
+(ns moon.dev-menu.menus.help)
 
-(defn create [_ctx]
+(defn create [{:keys [ctx/controls-info]}]
   {:label "Help"
-   :items [{:label input/info-text}]})
+   :items [{:label controls-info}]})

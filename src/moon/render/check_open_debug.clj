@@ -4,14 +4,15 @@
   (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!
-  [{:keys [ctx/input
+  [{:keys [ctx/controls
+           ctx/input
            ctx/mouseover-eid
            ctx/skin
            ctx/stage
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
-  (when (input/button-just-pressed? input (:open-debug-button input/controls))
+  (when (input/button-just-pressed? input (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (Stage/.addActor stage

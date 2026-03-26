@@ -15,31 +15,32 @@
 
 ; TODO Stage handlers somehow?
 (defn do!
-  [{:keys [ctx/input
+  [{:keys [ctx/controls
+           ctx/input
            ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (when (input/key-pressed? input (:zoom-in input/controls))
+  (when (input/key-pressed? input (:zoom-in controls))
     (camera/inc-zoom! (Viewport/.getCamera world-viewport) zoom-speed))
 
-  (when (input/key-pressed? input (:zoom-out input/controls))
+  (when (input/key-pressed? input (:zoom-out controls))
     (camera/inc-zoom! (Viewport/.getCamera world-viewport) (- zoom-speed)))
 
-  (when (input/key-just-pressed? input (:close-windows-key input/controls))
+  (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (-> stage
              Stage/.getRoot
              (Group/.findActor "moon.ui.windows"))
          Group/.getChildren
          (run! #(Actor/.setVisible % false))))
 
-  (when (input/key-just-pressed? input (:toggle-inventory input/controls))
+  (when (input/key-just-pressed? input (:toggle-inventory controls))
     (-> stage
         Stage/.getRoot
         (Group/.findActor "moon.ui.windows")
         (Group/.findActor "moon.ui.windows.inventory")
         actor/toggle-visible!))
 
-  (when (input/key-just-pressed? input (:toggle-entity-info input/controls))
+  (when (input/key-just-pressed? input (:toggle-entity-info controls))
     (-> stage
         Stage/.getRoot
         (Group/.findActor "moon.ui.windows")
