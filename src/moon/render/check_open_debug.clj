@@ -1,7 +1,7 @@
 (ns moon.render.check-open-debug
   (:require [moon.data-viewer-window :as data-viewer-window]
-            [moon.input :as input])
-  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
+            [moon.input :as input]
+            [moon.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/controls
@@ -15,11 +15,11 @@
   (when (input/button-just-pressed? input (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
-      (Stage/.addActor stage
-                       (data-viewer-window/create
-                        {:title "Data View"
-                         :data data
-                         :width 500
-                         :height 500
-                         :skin skin}))))
+      (stage/add-actor! stage
+                        (data-viewer-window/create
+                         {:title "Data View"
+                          :data data
+                          :width 500
+                          :height 500
+                          :skin skin}))))
   ctx)

@@ -5,6 +5,7 @@
             [moon.property-editor-window :as property-editor-window]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
+            [moon.stage :as stage]
             [moon.table :as table]
             [moon.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
@@ -49,10 +50,10 @@
                              (Group/.findActor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (Actor/.remove window)
-    (Stage/.addActor stage
-                     (property-editor-window/create
-                      {:ctx ctx
-                       :property property}))))
+    (stage/add-actor! stage
+                      (property-editor-window/create
+                       {:ctx ctx
+                        :property property}))))
 
 (defn- k->label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
@@ -167,7 +168,7 @@
                                 (let [{:keys [ctx/db
                                               ctx/stage
                                               ctx/skin]} (.ctx ^Stage (.getStage event))]
-                                  (Stage/.addActor
+                                  (stage/add-actor!
                                    stage
                                    (add-component-window
                                     {:skin skin

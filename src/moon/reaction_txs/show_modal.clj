@@ -1,4 +1,5 @@
 (ns moon.reaction-txs.show-modal
+  (:require [moon.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
@@ -15,22 +16,22 @@
   (assert (not (-> stage
                    .getRoot
                    (.findActor "moon.ui.modal-window"))))
-  (.addActor stage
-             (doto (Window. ^String title skin)
-               (.add (Label. ^String text skin))
-               (.row)
-               (.add (doto (TextButton. ^String button-text skin)
-                       (.addListener
-                        (proxy [ChangeListener] []
-                          (changed [_event _actor]
-                            (.remove (-> stage .getRoot (.findActor "moon.ui.modal-window")))
-                            (on-click))))))
-               (.setModal true)
-               (.pack)
-               (.setName "moon.ui.modal-window")
-               (.setPosition (/ (.getWorldWidth  (.getViewport stage)) 2)
-                             (* (.getWorldHeight (.getViewport stage)) (/ 3 4))
-                             Align/center)))
+  (stage/add-actor! stage
+                    (doto (Window. ^String title skin)
+                      (.add (Label. ^String text skin))
+                      (.row)
+                      (.add (doto (TextButton. ^String button-text skin)
+                              (.addListener
+                               (proxy [ChangeListener] []
+                                 (changed [_event _actor]
+                                   (.remove (-> stage .getRoot (.findActor "moon.ui.modal-window")))
+                                   (on-click))))))
+                      (.setModal true)
+                      (.pack)
+                      (.setName "moon.ui.modal-window")
+                      (.setPosition (/ (.getWorldWidth  (.getViewport stage)) 2)
+                                    (* (.getWorldHeight (.getViewport stage)) (/ 3 4))
+                                    Align/center)))
   ctx)
 
 

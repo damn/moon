@@ -7,6 +7,7 @@
             [moon.property :as property]
             [moon.schema :as schema]
             [moon.scroll-pane-cell :as scroll-pane-cell]
+            [moon.stage :as stage]
             [moon.table :as table]
             [moon.text-button :as text-button]
             [moon.throwable :as throwable]
@@ -44,10 +45,10 @@
                                (Actor/.remove (actor/find-ancestor actor Window))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
-                                 (Stage/.addActor stage
-                                                  (error-window/create
-                                                   {:skin skin
-                                                    :throwable t}))))))
+                                 (stage/add-actor! stage
+                                                   (error-window/create
+                                                    {:skin skin
+                                                     :throwable t}))))))
         clicked-delete-fn (with-window-close (fn [db]
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]

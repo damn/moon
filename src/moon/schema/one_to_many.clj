@@ -3,6 +3,7 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.property-overview-window :as property-overview-window]
+            [moon.stage :as stage]
             [moon.table :as table]
             [moon.textures :as textures])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -45,7 +46,7 @@
                                     ctx/skin
                                     ctx/stage
                                     ctx/textures]} (.ctx ^Stage (.getStage event))]
-                        (Stage/.addActor
+                        (stage/add-actor!
                          stage
                          (property-overview-window/create
                           {:db db

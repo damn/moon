@@ -1,6 +1,7 @@
 (ns moon.schema.sound
   (:require [moon.actor :as actor]
             [moon.scroll-pane-cell :as scroll-pane-cell]
+            [moon.stage :as stage]
             [moon.table :as table]
             [moon.text-button :as text-button]
             [moon.txs :as txs]
@@ -30,24 +31,24 @@
   (fn [_actor {:keys [ctx/audio
                       ctx/skin
                       ctx/stage]}]
-    (Stage/.addActor stage
-                     (doto (Window. "Choose" ^Skin skin)
-                       (window/add-close-button! skin)
-                       (table/add-rows!
-                        [[(scroll-pane-cell/create skin
-                                                   (Viewport/.getWorldWidth (Stage/.getViewport stage))
-                                                   (for [sound-name (map first audio)]
-                                                     [{:actor (text-button/create
-                                                               {:text sound-name
-                                                                :on-clicked (rebuild-sound-widget! table sound-name)
-                                                                :skin skin})}
-                                                      {:actor (text-button/create
-                                                               {:text "play!"
-                                                                :on-clicked (fn [_actor ctx]
-                                                                              (txs/handle! ctx [[:tx/sound sound-name]]))
-                                                                :skin skin})}]))]])
-                       (.setModal true)
-                       (.pack)))))
+    (stage/add-actor! stage
+                      (doto (Window. "Choose" ^Skin skin)
+                        (window/add-close-button! skin)
+                        (table/add-rows!
+                         [[(scroll-pane-cell/create skin
+                                                    (Viewport/.getWorldWidth (Stage/.getViewport stage))
+                                                    (for [sound-name (map first audio)]
+                                                      [{:actor (text-button/create
+                                                                {:text sound-name
+                                                                 :on-clicked (rebuild-sound-widget! table sound-name)
+                                                                 :skin skin})}
+                                                       {:actor (text-button/create
+                                                                {:text "play!"
+                                                                 :on-clicked (fn [_actor ctx]
+                                                                               (txs/handle! ctx [[:tx/sound sound-name]]))
+                                                                 :skin skin})}]))]])
+                        (.setModal true)
+                        (.pack)))))
 
 (defn- sound-columns [skin table sound-name]
   [{:actor (text-button/create
