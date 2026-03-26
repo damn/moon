@@ -1,7 +1,7 @@
 (ns moon.actor)
 
 (defprotocol Actor
-  (add-listener! [actor listener])
+  (add-listener! [_ listener])
   (user-object [_])
   (stage [_])
   (set-position! [_ [x y]])
