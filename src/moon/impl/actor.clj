@@ -4,6 +4,15 @@
 
 (extend-type Actor
   actor/Actor
+  (add-listener! [actor listener]
+    (.addListener actor listener))
+
+  (user-object [actor]
+    (.getUserObject actor))
+
+  (stage [actor]
+    (.getStage actor))
+
   (set-position! [actor [x y]]
     (.setPosition actor x y))
 

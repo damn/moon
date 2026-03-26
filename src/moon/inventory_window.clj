@@ -1,14 +1,14 @@
 (ns moon.inventory-window
+  (:require [moon.actor :as actor])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor
-                                            Group)
+           (com.badlogic.gdx.scenes.scene2d Group)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Skin
                                                TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
 (defn- find-cell [^Group group cell]
-  (first (filter #(= (Actor/.getUserObject %) cell)
+  (first (filter #(= (actor/user-object %) cell)
                  (.getChildren group))))
 
 (defn- window->cell [inventory-window cell]
@@ -19,17 +19,17 @@
 (defn set-item! [inventory-window cell {:keys [^TextureRegion texture-region tooltip-text]} skin]
   (let [cell-widget (window->cell inventory-window cell)
         image-widget (Group/.findActor cell-widget "image-widget")
-        cell-size (:cell-size (Actor/.getUserObject image-widget))
+        cell-size (:cell-size (actor/user-object image-widget))
         drawable (doto (TextureRegionDrawable. texture-region)
                    (.setMinSize cell-size cell-size))]
     (Image/.setDrawable image-widget drawable)
-    (Actor/.addListener cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
+    (actor/add-listener! cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
     nil))
 
 (defn remove-item! [inventory-window cell]
   (let [cell-widget (window->cell inventory-window cell)
         image-widget (Group/.findActor cell-widget "image-widget")]
-    (Image/.setDrawable image-widget (:background-drawable (Actor/.getUserObject image-widget)))
+    (Image/.setDrawable image-widget (:background-drawable (actor/user-object image-widget)))
     ; TODO
     ;(.removeListener actor (.getListeners actor))
     ; ... first find the listener

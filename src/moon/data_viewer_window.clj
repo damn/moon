@@ -1,10 +1,10 @@
 (ns moon.data-viewer-window
-  (:require [moon.stage :as stage]
+  (:require [moon.actor :as actor]
+            [moon.stage :as stage]
             [moon.table :as table]
             [moon.text-button :as text-button]
             [moon.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                ScrollPane
                                                Skin
                                                Table
@@ -35,7 +35,7 @@
     (text-button/create
      {:text "Map"
       :on-clicked (fn [actor _ctx]
-                    (stage/add-actor! (Actor/.getStage actor)
+                    (stage/add-actor! (actor/stage actor)
                                       (create
                                        {:title "title"
                                         :data v
