@@ -1,15 +1,17 @@
-(ns moon.actor
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+(ns moon.actor)
 
-(defn set-position! [^Actor actor [x y]]
-  (.setPosition actor x y))
+(defprotocol Actor
+  (set-position! [_ [x y]])
+  (set-visible! [_ visible?])
+  (visible? [_])
+  (parent [_]))
 
-(defn toggle-visible! [^Actor actor]
-  (.setVisible actor (not (.isVisible actor))))
+(defn toggle-visible! [actor]
+  (set-visible! actor (not (visible? actor))))
 
 (defn find-ancestor
-  [^Actor actor clazz]
-  (if-let [parent (.getParent actor)]
+  [actor clazz]
+  (if-let [parent (parent actor)]
     (if (instance? clazz parent)
       parent
       (find-ancestor parent clazz))
