@@ -1,13 +1,11 @@
 (ns moon.create.audio
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io])
   (:import (com.badlogic.gdx Audio
                              Files)))
 
 (defn- load-sounds*
   [audio files {:keys [sound-names path-format]}]
   (let [sound-name->file-handle (into {}
-                                      (for [sound-name (->> sound-names io/resource slurp edn/read-string)
+                                      (for [sound-name sound-names
                                             :let [path (format path-format sound-name)]]
                                         [sound-name
                                          (Files/.internal files path)]))]
