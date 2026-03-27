@@ -12,9 +12,7 @@
     (into {}
           (for [[sound-name file-handle] sound-name->file-handle]
             [sound-name
-             (Audio/.newSound audio file-handle)
-             ;(audio/new-sound ctx file-handle)
-             ]))))
+             (Audio/.newSound audio file-handle)]))))
 
 (defn do!
   [{:keys [ctx/audio
@@ -22,5 +20,3 @@
     :as ctx}
    config]
   (assoc ctx :ctx/audio (load-sounds* audio files config)))
-
-; TODO files stuff, one fn
