@@ -1,6 +1,6 @@
 (ns moon.create.world-viewport
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)
-           (com.badlogic.gdx.utils.viewport FitViewport)))
+  (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera])
+  (:import (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn step
   [{:keys [ctx/world-unit-scale]
@@ -11,5 +11,5 @@
                world-height (* height world-unit-scale)]
            (FitViewport. world-width
                          world-height
-                         (doto (OrthographicCamera.)
-                           (.setToOrtho false world-width world-height))))))
+                         (doto (orthographic-camera/create)
+                           (orthographic-camera/set-to-ortho! false world-width world-height))))))

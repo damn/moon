@@ -1,21 +1,23 @@
 (ns moon.camera
-  (:require [moon.vector3 :as vector3])
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as camera]
+            [clj.api.com.badlogic.gdx.math.frustum :as frustum]
+            [moon.vector3 :as vector3])
+  (:import (com.badlogic.gdx.math Vector3)))
 
-(defn set-position! [^OrthographicCamera camera [x y]]
-  (set! (.x (.position camera)) (float x))
-  (set! (.y (.position camera)) (float y))
-  (.update camera))
+(defn set-position! [camera [x y]]
+  (set! (.x ^Vector3 (camera/position camera)) (float x))
+  (set! (.y ^Vector3 (camera/position camera)) (float y))
+  (camera/update! camera))
 
-(defn set-zoom! [^OrthographicCamera camera amount]
-  (set! (.zoom camera) amount)
-  (.update camera))
+(defn set-zoom! [camera amount]
+  (camera/set-zoom! camera amount)
+  (camera/update! camera))
 
-(defn inc-zoom! [^OrthographicCamera cam by]
-  (set-zoom! cam (max 0.1 (+ (.zoom cam) by))))
+(defn inc-zoom! [cam by]
+  (set-zoom! cam (max 0.1 (+ (camera/zoom cam) by))))
 
-(defn frustum [^OrthographicCamera camera]
-  (let [plane-points (mapv vector3/->clj (.planePoints (.frustum camera)))
+(defn frustum [camera]
+  (let [plane-points (mapv vector3/->clj (frustum/plane-points (camera/frustum camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))
@@ -31,10 +33,10 @@
 
 (defn calculate-zoom
   "calculates the zoom value for camera to see all the 4 points."
-  [^OrthographicCamera camera & {:keys [left top right bottom]}]
-  (let [viewport-width  (.viewportWidth  camera)
-        viewport-height (.viewportHeight camera)
-        [px py] (vector3/->clj (.position camera))
+  [camera & {:keys [left top right bottom]}]
+  (let [viewport-width  (camera/viewport-width  camera)
+        viewport-height (camera/viewport-height camera)
+        [px py] (vector3/->clj (camera/position camera))
         px (float px)
         py (float py)
         leftx (float (left 0))
