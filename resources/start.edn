@@ -1,4 +1,11 @@
 [
+ [moon.start.extend-types/step
+  [[
+    space.earlygrey.shapedrawer.ShapeDrawer
+    clj.api.space.earlygrey.shape-drawer
+    moon.shape-drawer/ShapeDrawer
+    ]
+   ]]
  [moon.start.require/step [
                            moon.info-impl
                            moon.impl.actor
