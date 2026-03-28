@@ -1,17 +1,15 @@
 (ns moon.body
-  (:require [moon.rectangle :as rectangle]
-            [moon.vector2 :as v])
-  (:import (com.badlogic.gdx.math Intersector
-                                  Rectangle)))
+  (:require [clj.api.com.badlogic.gdx.math.rectangle :as gdx-rectangle]
+            [moon.rectangle :as rectangle]
+            [moon.vector2 :as v]))
 
 (defn rectangle
-  ^Rectangle
   [{:keys [body/position
            body/width
            body/height]}]
   (let [[x y] [(- (position 0) (/ width  2))
                (- (position 1) (/ height 2))]]
-    (Rectangle. x y width height)))
+    (gdx-rectangle/create x y width height)))
 
 (defn touched-tiles
   [{:keys [body/position
@@ -24,8 +22,8 @@
     :height height}))
 
 (defn overlaps? [body other-body]
-  (Intersector/overlaps (rectangle body)
-                        (rectangle other-body)))
+  (gdx-rectangle/overlaps? (rectangle body)
+                           (rectangle other-body)))
 
 (defn distance [body other-body]
   (v/distance (:body/position body)

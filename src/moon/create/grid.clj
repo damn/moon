@@ -1,5 +1,8 @@
 (ns moon.create.grid
-  (:require [moon.body :as body]
+  (:require [clj.api.com.badlogic.gdx.math.circle :as gdx-circle]
+            [clj.api.com.badlogic.gdx.math.intersector :as intersector]
+            [clj.api.com.badlogic.gdx.math.rectangle :as gdx-rectangle]
+            [moon.body :as body]
             [moon.cell :as cell]
             [moon.circle :as circle]
             [moon.faction :as faction]
@@ -8,10 +11,7 @@
             [moon.position :as position]
             [moon.rectangle :as rectangle]
             [moon.tiled-map :as tiled-map])
-  (:import (com.badlogic.gdx.maps.tiled TiledMap)
-           (com.badlogic.gdx.math Circle
-                                  Intersector
-                                  Rectangle)))
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn- body->occupied-cells
   [grid
@@ -45,8 +45,8 @@
     (->> (grid/circle->cells g2d circle)
          (map deref)
          grid/cells->entities
-         (filter #(Intersector/overlaps
-                   (Circle. (position 0) (position 1) radius)
+         (filter #(intersector/overlaps?
+                   (gdx-circle/create position radius)
                    (body/rectangle (:entity/body @%))))))
 
   (cached-adjacent-cells [g2d cell]
@@ -61,9 +61,8 @@
 
   (point->entities [g2d position]
     (when-let [cell (g2d (mapv int position))]
-      (let [[x y] position]
-        (filter #(Rectangle/.contains (body/rectangle (:entity/body @%)) x y)
-                (:entities @cell)))))
+      (filter #(gdx-rectangle/contains? (body/rectangle (:entity/body @%)) position)
+              (:entities @cell))))
 
   (set-touched-cells! [grid eid]
     (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body @eid)))]
@@ -101,8 +100,8 @@
                             (let [other-entity @other-entity]
                               (and (not= (:entity/id other-entity) entity-id)
                                    (:body/collides? (:entity/body other-entity))
-                                   (Intersector/overlaps (body/rectangle (:entity/body other-entity))
-                                                         (body/rectangle body))))))))))
+                                   (gdx-rectangle/overlaps? (body/rectangle (:entity/body other-entity))
+                                                            (body/rectangle body))))))))))
 
   (nearest-enemy-distance [grid entity]
     (cell/nearest-entity-distance @(grid (mapv int (:body/position (:entity/body entity))))
