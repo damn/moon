@@ -1,14 +1,15 @@
 (ns moon.property-overview-window
-  (:require [moon.db :as db]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [moon.db :as db]
             [moon.group :as group]
             [moon.image-button :as image-button]
             [moon.property :as property]
             [moon.table :as table]
             [moon.textures :as textures]
             [moon.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Touchable)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Stack
                                                Window)))
 
@@ -50,8 +51,8 @@
                                       :drawable/scale image-scale
                                       :tooltip tooltip
                                       :skin skin})
-                                    (doto (Label. ^String extra-info-text ^Skin skin)
-                                      (.setTouchable Touchable/disabled))]))})))
+                                    (doto (label/create extra-info-text skin)
+                                      (Actor/.setTouchable Touchable/disabled))]))})))
 
 (defn- overview-table-rows
   [db
