@@ -1,8 +1,7 @@
 (ns moon.draw.filled-circle
-  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [moon.shape-drawer :as shape-drawer]))
 
 (defn do!
-  [{:keys [^ShapeDrawer ctx/shape-drawer]}
-   [x y] radius color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.filledCircle shape-drawer (float x) (float y) (float radius)))
+  [{:keys [ctx/shape-drawer]} position radius color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/filled-circle! shape-drawer position radius))

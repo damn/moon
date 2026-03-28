@@ -1,13 +1,7 @@
 (ns moon.draw.sector
-  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [moon.shape-drawer :as shape-drawer]))
 
 (defn do!
-  [{:keys [^ShapeDrawer ctx/shape-drawer]}
-   [center-x center-y] radius start-radians radians color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.sector shape-drawer
-           center-x
-           center-y
-           radius
-           start-radians
-           radians))
+  [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/sector! shape-drawer center-x center-y radius start-radians radians))

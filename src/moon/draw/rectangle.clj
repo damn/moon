@@ -1,8 +1,7 @@
 (ns moon.draw.rectangle
-  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [moon.shape-drawer :as shape-drawer]))
 
 (defn do!
-  [{:keys [^ShapeDrawer ctx/shape-drawer]}
-   x y w h color-float-bits]
-  (.setColor shape-drawer (float color-float-bits))
-  (.rectangle shape-drawer x y w h))
+  [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/rectangle! shape-drawer x y w h))
