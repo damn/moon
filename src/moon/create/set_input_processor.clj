@@ -1,9 +1,9 @@
 (ns moon.create.set-input-processor
-  (:import (com.badlogic.gdx Input)))
+  (:require [clj.api.com.badlogic.gdx.input :as input]))
 
 (defn step
   [{:keys [ctx/input
            ctx/stage]
     :as ctx}]
-  (Input/.setInputProcessor input stage)
+  (input/set-processor! input stage)
   ctx)

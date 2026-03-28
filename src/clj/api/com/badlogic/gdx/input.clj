@@ -15,3 +15,6 @@
 
 (defn y [^Input input]
   (.getY input))
+
+(defn set-processor! [^Input input input-processor]
+  (.setInputProcessor input input-processor))

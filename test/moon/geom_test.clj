@@ -1,6 +1,6 @@
 (ns moon.geom-test)
 ;(ns moon.application.render.draw-on-world-viewport.geom-test)
-;(:require [moon.color :as color])
+;(:require [clj.api.com.badlogic.gdx.graphics.color :as color])
 ;
 ;(comment
 ; (require '[moon.grid :as grid])
