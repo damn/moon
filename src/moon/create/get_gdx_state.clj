@@ -1,11 +1,9 @@
 (ns moon.create.get-gdx-state
-  (:import (com.badlogic.gdx Gdx)))
+  (:require [clj.api.com.badlogic.gdx.gdx :as gdx]))
 
 (defn step [ctx]
   (assoc ctx
-         :ctx/audio    Gdx/audio
-         :ctx/graphics Gdx/graphics
-         :ctx/files    Gdx/files
-         :ctx/input    Gdx/input))
-
-; TODO one step up at listener/create?
+         :ctx/audio    (gdx/audio)
+         :ctx/graphics (gdx/graphics)
+         :ctx/files    (gdx/files)
+         :ctx/input    (gdx/input)))
