@@ -1,7 +1,5 @@
 (ns moon.create.batch
-  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch)))
+  (:require [clj.api.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]))
 
 (defn do! [ctx]
-  (assoc ctx :ctx/batch (SpriteBatch.)))
-
-; TODO assoc* stuff -> where other stuff? create*/?
+  (assoc ctx :ctx/batch (sprite-batch/create)))

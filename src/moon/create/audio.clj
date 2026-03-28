@@ -1,6 +1,6 @@
 (ns moon.create.audio
-  (:import (com.badlogic.gdx Audio
-                             Files)))
+  (:require [clj.api.com.badlogic.gdx.audio :as audio]
+            [clj.api.com.badlogic.gdx.files :as files]))
 
 (defn- load-sounds*
   [audio files {:keys [sound-names path-format]}]
@@ -8,11 +8,11 @@
                                       (for [sound-name sound-names
                                             :let [path (format path-format sound-name)]]
                                         [sound-name
-                                         (Files/.internal files path)]))]
+                                         (files/internal files path)]))]
     (into {}
           (for [[sound-name file-handle] sound-name->file-handle]
             [sound-name
-             (Audio/.newSound audio file-handle)]))))
+             (audio/new-sound audio file-handle)]))))
 
 (defn do!
   [{:keys [ctx/audio
