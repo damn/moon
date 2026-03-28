@@ -1,7 +1,7 @@
 ; java.lang.IllegalArgumentException: No method in multimethod 'malli-form' for dispatch value: :s/map
 (ns moon.levelgen
   (:require [moon.color :as color]
-            [moon.vector3 :as vector3]
+            [clj.api.com.badlogic.gdx.math.vector3 :as vector3]
             [moon.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]

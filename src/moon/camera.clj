@@ -1,12 +1,11 @@
 (ns moon.camera
   (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [clj.api.com.badlogic.gdx.math.frustum :as frustum]
-            [moon.vector3 :as vector3])
-  (:import (com.badlogic.gdx.math Vector3)))
+            [clj.api.com.badlogic.gdx.math.vector3 :as vector3]))
 
 (defn set-position! [camera [x y]]
-  (set! (.x ^Vector3 (camera/position camera)) (float x))
-  (set! (.y ^Vector3 (camera/position camera)) (float y))
+  (vector3/set-x! (camera/position camera) x)
+  (vector3/set-y! (camera/position camera) y)
   (camera/update! camera))
 
 (defn set-zoom! [camera amount]
