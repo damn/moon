@@ -3,4 +3,7 @@
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 (defn region [^Texture texture x y width height]
-  (TextureRegion. texture x y width height))
+  (TextureRegion. texture (int x) (int y) (int width) (int height)))
+
+(defn create [^String path]
+  (Texture. path))

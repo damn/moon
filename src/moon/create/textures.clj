@@ -1,29 +1,29 @@
 (ns moon.create.textures
-  (:require [clojure.string :as str])
-  (:import (com.badlogic.gdx Files) ; TODO load as edn assets before for deploy also
-           (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Texture)))
+  (:require [clj.api.com.badlogic.gdx.files :as files]
+            [clj.api.com.badlogic.gdx.files.file-handle :as file-handle]
+            [clj.api.com.badlogic.gdx.graphics.texture :as texture]
+            [clojure.string :as str]))
 
 (defn- recursively-search
-  [^FileHandle folder extensions]
-  (loop [[^FileHandle file & remaining] (.list folder)
+  [folder extensions]
+  (loop [[file & remaining] (file-handle/list folder)
          result []]
     (cond (nil? file)
           result
 
-          (.isDirectory file)
-          (recur (concat remaining (.list file)) result)
+          (file-handle/directory? file)
+          (recur (concat remaining (file-handle/list file)) result)
 
-          (extensions (.extension file))
-          (recur remaining (conj result (.path file)))
+          (extensions (file-handle/extension file))
+          (recur remaining (conj result (file-handle/path file)))
 
           :else
           (recur remaining result))))
 
-(defn- search [^Files files {:keys [folder extensions]}]
+(defn- search [files {:keys [folder extensions]}]
   (map (fn [path]
          (str/replace-first path folder ""))
-       (recursively-search (.internal files folder) extensions)))
+       (recursively-search (files/internal files folder) extensions)))
 
 (defn step
   [{:keys [ctx/files]
@@ -31,4 +31,4 @@
    folder]
   (assoc ctx :ctx/textures
          (into {} (for [path (search files folder)]
-                    [path (Texture. ^String path)]))))
+                    [path (texture/create path)]))))
