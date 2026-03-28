@@ -1,12 +1,12 @@
 (ns moon.data-viewer-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.table :as table]
             [moon.text-button :as text-button]
             [moon.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
-                                               Skin
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Table
                                                Window)))
 
@@ -63,7 +63,7 @@
                                        (table/set-cell-defaults! {:pad 1})
                                        (table/add-rows! [[scroll-pane-table]])
                                        (.pack))]
-                           {:actor (ScrollPane. table skin)
+                           {:actor (scroll-pane/create table skin)
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]

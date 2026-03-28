@@ -1,7 +1,8 @@
 (ns moon.reaction-txs.show-modal
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [moon.stage :as stage])
-  (:import (com.badlogic.gdx.scenes.scene2d Stage)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton
                                                Window)
@@ -18,7 +19,7 @@
                    (.findActor "moon.ui.modal-window"))))
   (stage/add-actor! stage
                     (doto (Window. ^String title skin)
-                      (.add (label/create text skin))
+                      (.add ^Actor (label/create text skin))
                       (.row)
                       (.add (doto (TextButton. ^String button-text skin)
                               (.addListener
