@@ -1,6 +1,6 @@
 (ns moon.create.textures
   (:require [clojure.string :as str])
-  (:import (com.badlogic.gdx Files)
+  (:import (com.badlogic.gdx Files) ; TODO load as edn assets before for deploy also
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Texture)))
 
