@@ -1,6 +1,7 @@
 ; TODO FIXME
 (ns moon.render.player-state
-  (:require [moon.action-bar :as action-bar]
+  (:require [clj.api.com.badlogic.gdx.graphics :as graphics]
+            [moon.action-bar :as action-bar]
             [moon.body :as body]
             [moon.input :as input]
             [moon.skill :as skill]
@@ -8,8 +9,7 @@
             [moon.state :as state]
             [moon.txs :as txs]
             [moon.vector2 :as v])
-  (:import (com.badlogic.gdx Graphics)
-           (com.badlogic.gdx.scenes.scene2d Actor
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
@@ -110,7 +110,7 @@
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (Graphics/.setCursor graphics (get cursors cursor-key)))
+    (graphics/set-cursor! graphics (get cursors cursor-key)))
   ctx)
 
 (defn- player-state-handle-input

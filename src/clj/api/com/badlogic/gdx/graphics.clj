@@ -6,3 +6,9 @@
 
 (defn frames-per-second [^Graphics graphics]
   (.getFramesPerSecond graphics))
+
+(defn delta-time [^Graphics graphics]
+  (.getDeltaTime graphics))
+
+(defn set-cursor! [^Graphics graphics cursor]
+  (.setCursor graphics cursor))
