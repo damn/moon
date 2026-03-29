@@ -1,8 +1,8 @@
 (ns moon.dev-menu.update-labels.fps
-  (:import (com.badlogic.gdx Graphics)))
+  (:require [clj.api.com.badlogic.gdx.graphics :as graphics]))
 
 (def item
   {:label "FPS"
    :update-fn (fn [{:keys [ctx/graphics]}]
-                (Graphics/.getFramesPerSecond graphics))
+                (graphics/frames-per-second graphics))
    :icon "images/fps.png"})

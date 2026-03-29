@@ -1,25 +1,26 @@
 (ns moon.draw.text
-  (:require [clojure.string :as str])
-  (:import (com.badlogic.gdx.graphics.g2d BitmapFont)
-           (com.badlogic.gdx.utils Align)))
+  (:require [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+            [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font.data :as bitmap-font.data]
+            [clj.api.com.badlogic.gdx.utils.align :as align]
+            [clojure.string :as str]))
 
-(defn- draw-text! [^BitmapFont font batch {:keys [scale text x y up? h-align target-width wrap?]}]
+(defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
   (let [text-height (fn []
                       (-> text
                           (str/split #"\n")
                           count
-                          (* (.getLineHeight font))))
-        old-scale (.scaleX (.getData font))]
-    (.setScale (.getData font) (* old-scale scale))
-    (.draw font
-           batch
-           text
-           (float x)
-           (float (+ y (if up? (text-height) 0)))
-           (float target-width)
-           (or h-align Align/center)
-           wrap?)
-    (.setScale (.getData font) old-scale)))
+                          (* (bitmap-font/line-height font))))
+        old-scale (bitmap-font.data/scale-x (bitmap-font/data font))]
+    (bitmap-font.data/set-scale! (bitmap-font/data font) (* old-scale scale))
+    (bitmap-font/draw! font
+                       batch
+                       text
+                       x
+                       (+ y (if up? (text-height) 0))
+                       target-width
+                       (or h-align align/center)
+                       wrap?)
+    (bitmap-font.data/set-scale! (bitmap-font/data font) old-scale)))
 
 (defn do!
   [{:keys [ctx/batch
