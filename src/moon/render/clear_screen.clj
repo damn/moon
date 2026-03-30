@@ -1,7 +1,7 @@
 (ns moon.render.clear-screen
-  (:import (com.badlogic.gdx.utils ScreenUtils)))
+  (:require [clj.api.com.badlogic.gdx.utils.screen :as screen]))
 
 (defn do!
   [ctx]
-  (ScreenUtils/clear 0 0 0 0)
+  (screen/clear! 0 0 0 0)
   ctx)
