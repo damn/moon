@@ -4,3 +4,6 @@
 
 (defn create [^String text ^Skin skin]
   (Label. text skin))
+
+(defn set-text! [^Label label ^String text]
+  (.setText label text))

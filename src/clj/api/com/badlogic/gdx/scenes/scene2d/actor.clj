@@ -1,6 +1,13 @@
 (ns clj.api.com.badlogic.gdx.scenes.scene2d.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
+(defn create [{:keys [act!]}]
+  (proxy [Actor] []
+    (act [delta]
+      (act! this delta)
+      (let [^Actor this this]
+        (proxy-super act delta)))))
+
 (defn add-listener! [^Actor actor listener]
   (.addListener actor listener))
 

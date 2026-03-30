@@ -1,34 +1,33 @@
 (ns moon.ui-actors.windows.info
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.actor :as actor]
             [moon.info :as info]
-            [moon.table :as table])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin
-                                               Window)
-           (moon Stage)))
+            [moon.stage :as stage]
+            [moon.table :as table]))
 
 (defn- create*
-  [^Skin skin
+  [skin
    {:keys [title
            actor-name
            visible?
            position
            set-label-text!]}]
-  (let [label (Label. "" skin)
-        window (doto (Window. ^String title skin)
+  (let [label (label/create "" skin)
+        window (doto (window/create title skin)
                  (table/add-rows! [[{:actor label :expand? true}]])
-                 (.setName actor-name)
-                 (.setVisible visible?)
+                 (actor/set-name! actor-name)
+                 (actor/set-visible! visible?)
                  (actor/set-position! position))]
-    (.addActor window (proxy [Actor] []
-                        (act [delta]
-                          (when-let [^Stage stage (Actor/.getStage this)]
-                            (Label/.setText label ^String (set-label-text! (.ctx stage))))
-                          (.pack window)
-                          (let [^Actor this this]
-                            (proxy-super act delta)))))
+    (group/add-actor! window (gdx-actor/create
+                              {:act! (fn [this delta]
+                                       (when-let [stage (actor/stage this)]
+                                         (label/set-text! label (set-label-text! (stage/ctx stage))))
+                                       (widget-group/pack! window))}))
     window))
 
 (defn create
@@ -38,7 +37,7 @@
            {:title "Entity Info"
             :actor-name "moon.ui.windows.entity-info"
             :visible? false
-            :position [(viewport/world-width (Stage/.getViewport stage)) 0]
+            :position [(viewport/world-width (stage/viewport stage)) 0]
             :set-label-text! (fn [{:keys [ctx/mouseover-eid]
                                    :as ctx}]
                                (if-let [eid mouseover-eid]
