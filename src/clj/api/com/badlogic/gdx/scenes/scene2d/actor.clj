@@ -24,3 +24,6 @@
 
 (defn remove! [^Actor actor]
   (.remove actor))
+
+(defn set-name! [^Actor actor name]
+  (.setName actor name))

@@ -4,6 +4,7 @@
   (add-listener! [_ listener])
   (user-object [_])
   (stage [_])
+  (set-name! [_ name])
   (set-position! [_ [x y]])
   (set-visible! [_ visible?])
   (visible? [_])
