@@ -1,13 +1,13 @@
 (ns moon.reaction-txs.toggle-inventory-visible
-  (:require [moon.actor :as actor])
-  (:import (com.badlogic.gdx.scenes.scene2d Group
-                                            Stage)))
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [moon.actor :as actor])
+  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!
   [{:keys [ctx/stage] :as ctx}]
   (-> stage
       Stage/.getRoot
-      (Group/.findActor "moon.ui.windows")
-      (Group/.findActor "moon.ui.windows.inventory")
+      (group/find-actor "moon.ui.windows")
+      (group/find-actor "moon.ui.windows.inventory")
       actor/toggle-visible!)
   ctx)

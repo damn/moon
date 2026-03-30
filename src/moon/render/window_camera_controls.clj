@@ -3,12 +3,12 @@
 ; => tests.
 ; InputMultiplex?
 (ns moon.render.window-camera-controls
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.actor :as actor]
             [moon.camera :as camera]
             [moon.input :as input])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Group
                                             Stage)))
 
 (def zoom-speed 0.025) ; TODO FIXME pull out
@@ -29,21 +29,21 @@
   (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (-> stage
              Stage/.getRoot
-             (Group/.findActor "moon.ui.windows"))
-         Group/.getChildren
+             (group/find-actor "moon.ui.windows"))
+         group/children
          (run! #(Actor/.setVisible % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory controls))
     (-> stage
         Stage/.getRoot
-        (Group/.findActor "moon.ui.windows")
-        (Group/.findActor "moon.ui.windows.inventory")
+        (group/find-actor "moon.ui.windows")
+        (group/find-actor "moon.ui.windows.inventory")
         actor/toggle-visible!))
 
   (when (input/key-just-pressed? input (:toggle-entity-info controls))
     (-> stage
         Stage/.getRoot
-        (Group/.findActor "moon.ui.windows")
-        (Group/.findActor "moon.ui.windows.entity-info")
+        (group/find-actor "moon.ui.windows")
+        (group/find-actor "moon.ui.windows.entity-info")
         actor/toggle-visible!))
   ctx)

@@ -1,5 +1,5 @@
 (ns moon.group
-  (:import (com.badlogic.gdx.scenes.scene2d Group)))
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]))
 
-(defn add-actors! [^Group group actors]
-  (run! #(.addActor group %) actors))
+(defn add-actors! [group actors]
+  (run! #(group/add-actor! group %) actors))

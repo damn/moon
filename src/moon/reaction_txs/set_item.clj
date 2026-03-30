@@ -1,9 +1,9 @@
 (ns moon.reaction-txs.set-item
-  (:require [moon.info :as info]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [moon.info :as info]
             [moon.inventory-window :as inventory-window]
             [moon.textures :as textures])
-  (:import (com.badlogic.gdx.scenes.scene2d Group
-                                            Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn do!
   [{:keys [ctx/skin
@@ -14,8 +14,8 @@
   (when (:entity/player? @eid)
     (-> stage
         Stage/.getRoot
-        (Group/.findActor "moon.ui.windows")
-        (Group/.findActor "moon.ui.windows.inventory")
+        (group/find-actor "moon.ui.windows")
+        (group/find-actor "moon.ui.windows.inventory")
         (inventory-window/set-item! cell {:texture-region (textures/texture-region textures (:entity/image item))
                                           :tooltip-text (info/text item ctx)}
                                     skin)))

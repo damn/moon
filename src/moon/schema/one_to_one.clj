@@ -1,5 +1,6 @@
 (ns moon.schema.one-to-one
-  (:require [moon.actor :as actor]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [moon.actor :as actor]
             [moon.db :as db]
             [moon.property :as property]
             [moon.property-overview-window :as property-overview-window]
@@ -8,8 +9,7 @@
             [moon.textures :as textures])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event
-                                            Group)
+                                            Event)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Skin
                                                Table
@@ -80,6 +80,6 @@
     table))
 
 (defn value [_  widget _schemas]
-  (->> (Group/.getChildren widget)
+  (->> (group/children widget)
        (keep Actor/.getUserObject)
        first))

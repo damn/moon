@@ -1,9 +1,9 @@
 (ns moon.ui-actors.action-bar
-  (:require [moon.action-bar :as action-bar]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [moon.action-bar :as action-bar]
             [moon.image-button :as image-button]
             [moon.table :as table])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Group)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup
                                                HorizontalGroup
@@ -48,7 +48,7 @@
                          :tooltip tooltip-text
                          :skin skin})
                    (.setUserObject skill-id))]
-      (Group/.addActor horizontal-group button)
+      (group/add-actor! horizontal-group button)
       (ButtonGroup/.add button-group ^Button button)
       nil))
 

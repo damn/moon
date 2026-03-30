@@ -1,9 +1,9 @@
 (ns moon.state.player-idle
-  (:require [moon.input :as input]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [moon.input :as input]
             [moon.inventory :as inventory])
   (:import (com.badlogic.gdx Input$Buttons)
            (com.badlogic.gdx.scenes.scene2d Actor
-                                            Group
                                             Stage)))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
@@ -23,8 +23,8 @@
             (cond
              (-> stage
                  Stage/.getRoot
-                 (Group/.findActor "moon.ui.windows")
-                 (Group/.findActor "moon.ui.windows.inventory")
+                 (group/find-actor "moon.ui.windows")
+                 (group/find-actor "moon.ui.windows.inventory")
                  Actor/.isVisible)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]

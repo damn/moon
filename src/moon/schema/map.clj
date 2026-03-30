@@ -1,5 +1,6 @@
 (ns moon.schema.map
-  (:require [clojure.set :as set]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clojure.set :as set]
             [moon.malli :as mu]
             [moon.order :as order]
             [moon.property-editor-window :as property-editor-window]
@@ -9,8 +10,7 @@
             [moon.table :as table]
             [moon.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event
-                                            Group)
+                                            Event)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
                                                Table
@@ -27,7 +27,7 @@
 
 (defn- map-widget-table-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? Actor/.getUserObject) (Group/.getChildren table))
+        (for [widget (filter (comp vector? Actor/.getUserObject) (group/children table))
               :let [[k _] (Actor/.getUserObject widget)]]
           [k (schema/value (get schemas k) widget schemas)])))
 
@@ -43,11 +43,11 @@
     :as ctx}]
   (let [window (-> stage
                    Stage/.getRoot
-                   (Group/.findActor "moon.ui.editor.window"))
+                   (group/find-actor "moon.ui.editor.window"))
         map-widget-table (-> window
-                             (Group/.findActor "moon.ui.widget.scroll-pane-table")
-                             (Group/.findActor "scroll-pane-table")
-                             (Group/.findActor "moon.db.schema.map.ui.widget"))
+                             (group/find-actor "moon.ui.widget.scroll-pane-table")
+                             (group/find-actor "scroll-pane-table")
+                             (group/find-actor "moon.db.schema.map.ui.widget"))
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (Actor/.remove window)
     (stage/add-actor! stage
@@ -76,7 +76,7 @@
                                                  (Actor/.remove (first (filter (fn [actor]
                                                                                  (and (Actor/.getUserObject actor)
                                                                                       (= k ((Actor/.getUserObject actor) 0))))
-                                                                               (Group/.getChildren table))))
+                                                                               (group/children table))))
                                                  (rebuild! (.ctx ^Stage (Event/.getStage event))))))))
                                  :left? true}
                                 {:actor (Label. ^String label-text ^Skin skin)}]]))
