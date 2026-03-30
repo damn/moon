@@ -1,27 +1,26 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.group :as group]
             [moon.inventory :as inventory]
+            [moon.stage :as stage]
             [moon.state :as state]
             [moon.table :as table]
             [moon.textures :as textures]
-            [moon.txs :as txs])
-  (:import (com.badlogic.gdx.graphics Color)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Image
-                                               Skin
-                                               Stack
-                                               Table
-                                               Widget
-                                               Window)
-           (com.badlogic.gdx.scenes.scene2d.utils ClickListener
-                                                  TextureRegionDrawable)
-           (moon Stage)))
+            [moon.txs :as txs]))
 
 (defn- clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
   (let [entity @player-eid
@@ -32,20 +31,20 @@
                                                cell))))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
-  (proxy [Widget] []
-    (draw [_batch _parent-alpha]
-      (when-let [stage (Actor/.getStage this)]
+  (widget/create
+    (fn [this _batch _parent-alpha]
+      (when-let [stage (actor/stage this)]
         (let [{:keys [ctx/player-eid
                       ctx/ui-mouse-position]
-               :as ctx} (.ctx ^Stage stage)]
+               :as ctx} (stage/ctx stage)]
           (draws/handle! ctx
-                         (let [[x y] ui-mouse-position]
-                           (draw-cell-rect @player-eid
-                                           (Actor/.getX this)
-                                           (Actor/.getY this)
-                                           (let [v2 (Actor/.stageToLocalCoordinates this (Vector2. x y))]
-                                             (Actor/.hit this (.x v2) (.y v2) true))
-                                           (Actor/.getUserObject (Actor/.getParent this))))))))))
+                         (draw-cell-rect @player-eid
+                                         (actor/x this)
+                                         (actor/y this)
+                                         (actor/hit this
+                                                    (vector2/->clj (actor/stage->local-coordinates this (vector2/->java ui-mouse-position)))
+                                                    true)
+                                         (actor/user-object (actor/parent this)))))))))
 
 (defn- create-inventory-window*
   [{:keys [colors
@@ -56,9 +55,9 @@
            skin]}]
   (let [cell-size 48
         slot->drawable (fn [slot]
-                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
-                           (.setMinSize cell-size cell-size)
-                           (.tint (Color. 1 1 1 0.4))))
+                         (doto (texture-region-drawable/create (slot->texture-region slot))
+                           (drawable/set-min-size! cell-size cell-size)
+                           (texture-region-drawable/tint (color/create [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size (:colors/item-rect colors)]
                           (when (and mouseover?
@@ -71,19 +70,19 @@
         ->cell (fn [slot & {:keys [position]}]
                  (let [cell [slot (or position [0 0])]
                        background-drawable (slot->drawable slot)]
-                   {:actor (doto (Stack.)
+                   {:actor (doto (stack/create)
                              (group/add-actors! [(draw-cell-rect-actor draw-cell-rect)
-                                                 (doto (Image. ^TextureRegionDrawable background-drawable)
-                                                   (.setName "image-widget")
-                                                   (.setUserObject {:background-drawable background-drawable
-                                                                    :cell-size cell-size}))])
-                             (.setName "inventory-cell")
-                             (.setUserObject cell)
-                             (.addListener (clicked-cell-listener cell)))}))]
-    (doto (Window. ^String title ^Skin skin)
+                                                 (doto (image/create background-drawable)
+                                                   (actor/set-name! "image-widget")
+                                                   (actor/set-user-object! {:background-drawable background-drawable
+                                                                            :cell-size cell-size}))])
+                             (actor/set-name! "inventory-cell")
+                             (actor/set-user-object! cell)
+                             (actor/add-listener! (clicked-cell-listener cell)))}))]
+    (doto (window/create title skin)
       (table/add-rows!
-       [[{:actor (doto (Table.)
-                   (.setName "inventory-cell-table")
+       [[{:actor (doto (gdx-table/create)
+                   (actor/set-name! "inventory-cell-table")
                    (table/add-rows!
                     (concat [[nil nil
                               (->cell :inventory.slot/helm)
@@ -104,9 +103,9 @@
                               (for [x (range 6)]
                                 (->cell :inventory.slot/bag :position [x y]))))))
           :pad 4}]])
-      (.pack)
-      (.setName "moon.ui.windows.inventory")
-      (.setVisible false)
+      (widget-group/pack!)
+      (actor/set-name! "moon.ui.windows.inventory")
+      (actor/set-visible! false)
       (actor/set-position! position))))
 
 (defn create
@@ -141,10 +140,10 @@
      {:colors colors
       :skin skin
       :title "Inventory"
-      :position [(viewport/world-width  (Stage/.getViewport stage))
-                 (viewport/world-height (Stage/.getViewport stage))]
+      :position [(viewport/world-width  (stage/viewport stage))
+                 (viewport/world-height (stage/viewport stage))]
       :clicked-cell-listener (fn [cell]
-                               (proxy [ClickListener] []
-                                 (clicked [event x y]
-                                   (clicked-inventory-cell cell (.ctx ^Stage (Event/.getStage event))))))
+                               (click-listener/create
+                                 (fn [event _x _y]
+                                   (clicked-inventory-cell cell (stage/ctx (event/stage event))))))
       :slot->texture-region slot->texture-region})))

@@ -1,13 +1,18 @@
 (ns moon.actor)
 
 (defprotocol Actor
+  (x [_])
+  (y [_])
+  (stage->local-coordinates [_ vector2])
   (add-listener! [_ listener])
   (user-object [_])
   (stage [_])
   (set-name! [_ name])
+  (set-user-object! [_ object])
   (set-position! [_ [x y]])
   (set-visible! [_ visible?])
   (visible? [_])
+  (hit [_ [x y] touchable?])
   (remove! [_])
   (parent [_]))
 

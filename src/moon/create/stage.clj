@@ -12,9 +12,15 @@
 
 (extend-type Stage
   moon.stage/Stage
+  (ctx [stage]
+    (.ctx stage))
+
   (add-actor! [stage actor]
     (.addActor stage actor))
 
   (mouseover-actor [stage position]
     (let [[x y] (viewport/unproject (.getViewport stage) position)]
-      (.hit stage x y true))))
+      (.hit stage x y true)))
+
+  (viewport [stage]
+    (.getViewport stage)))
