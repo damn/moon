@@ -1,8 +1,8 @@
 (ns moon.viewport
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport])
-  (:import (com.badlogic.gdx.math Vector2)))
+  (:require [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
+            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]))
 
-(defn unproject [viewport [x y]]
-  (let [^Vector2 v2 (viewport/unproject viewport (Vector2. x y))]
-    [(.x v2)
-     (.y v2)]))
+(defn unproject [viewport position]
+  (-> viewport
+      (viewport/unproject (vector2/->java position))
+      vector2/->clj))
