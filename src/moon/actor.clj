@@ -7,6 +7,7 @@
   (set-position! [_ [x y]])
   (set-visible! [_ visible?])
   (visible? [_])
+  (remove! [_])
   (parent [_]))
 
 (defn toggle-visible! [actor]

@@ -21,3 +21,6 @@
 
 (defn parent [^Actor actor]
   (.getParent actor))
+
+(defn remove! [^Actor actor]
+  (.remove actor))
