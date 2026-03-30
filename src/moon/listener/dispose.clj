@@ -1,5 +1,5 @@
 (ns moon.listener.dispose
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clj.api.com.badlogic.gdx.utils.disposable :as disposable]))
 
 (defn do!
   [{:keys [ctx/audio
@@ -10,12 +10,12 @@
            ctx/skin
            ctx/textures
            ctx/tiled-map]}]
-  (run! Disposable/.dispose (vals audio))
-  (Disposable/.dispose batch)
-  (run! Disposable/.dispose (vals cursors))
-  (Disposable/.dispose default-font)
-  (Disposable/.dispose shape-drawer-texture)
-  (Disposable/.dispose skin)
-  (run! Disposable/.dispose (vals textures))
-  (Disposable/.dispose tiled-map)
+  (run! disposable/dispose! (vals audio))
+  (disposable/dispose! batch)
+  (run! disposable/dispose! (vals cursors))
+  (disposable/dispose! default-font)
+  (disposable/dispose! shape-drawer-texture)
+  (disposable/dispose! skin)
+  (run! disposable/dispose! (vals textures))
+  (disposable/dispose! tiled-map)
   nil)

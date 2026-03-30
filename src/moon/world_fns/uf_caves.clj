@@ -1,7 +1,6 @@
 (ns moon.world-fns.uf-caves
-  (:require [moon.tiled-map :as tiled-map])
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)))
+  (:require [clj.api.com.badlogic.gdx.graphics.texture :as texture]
+            [moon.tiled-map :as tiled-map]))
 
 (defn create
   [{:keys [level/creature-properties
@@ -24,11 +23,11 @@
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
                                    (tiled-map/static-tiled-map-tile
-                                    (TextureRegion. ^Texture texture
-                                                    (int (* (sprite-idx 0) tile-size))
-                                                    (int (* (sprite-idx 1) tile-size))
-                                                    (int tile-size)
-                                                    (int tile-size))
+                                    (texture/region texture
+                                                    (* (sprite-idx 0) tile-size)
+                                                    (* (sprite-idx 1) tile-size)
+                                                    tile-size
+                                                    tile-size)
                                     "movement" movement))))
            :level/spawn-rate spawn-rate
            :level/scaling scaling
