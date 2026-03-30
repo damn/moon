@@ -1,12 +1,12 @@
 (ns moon.ui-actors.windows.info
-  (:require [moon.actor :as actor]
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.actor :as actor]
             [moon.info :as info]
             [moon.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin
                                                Window)
-           (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
 (defn- create*
@@ -38,7 +38,7 @@
            {:title "Entity Info"
             :actor-name "moon.ui.windows.entity-info"
             :visible? false
-            :position [(Viewport/.getWorldWidth (Stage/.getViewport stage)) 0]
+            :position [(viewport/world-width (Stage/.getViewport stage)) 0]
             :set-label-text! (fn [{:keys [ctx/mouseover-eid]
                                    :as ctx}]
                                (if-let [eid mouseover-eid]

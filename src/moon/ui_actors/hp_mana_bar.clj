@@ -1,11 +1,11 @@
 (ns moon.ui-actors.hp-mana-bar
-  (:require [moon.draws :as draws]
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.draws :as draws]
             [moon.readable :as readable]
             [moon.stats :as stats]
             [moon.textures :as textures]
             [moon.val-max :as val-max])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
 (defn- create-hp-mana-bar* [create-draws]
@@ -29,7 +29,7 @@
                   hpcontent-file
                   manacontent-file
                   y-mana]} config
-          [x y-mana] [(/ (Viewport/.getWorldWidth (Stage/.getViewport stage)) 2)
+          [x y-mana] [(/ (viewport/world-width (Stage/.getViewport stage)) 2)
                       y-mana]
           rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
           y-hp (+ y-mana rahmenh)

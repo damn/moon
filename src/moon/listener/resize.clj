@@ -1,10 +1,10 @@
 (ns moon.listener.resize
-  (:import (com.badlogic.gdx.utils.viewport Viewport)))
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/ui-viewport
            ctx/world-viewport]}
    width height]
-  (Viewport/.update ui-viewport width height true)
-  (Viewport/.update world-viewport width height false)
+  (viewport/update! ui-viewport width height true)
+  (viewport/update! world-viewport width height false)
   nil)

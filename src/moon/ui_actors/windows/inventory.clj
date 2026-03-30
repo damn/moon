@@ -1,5 +1,6 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [moon.actor :as actor]
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.group :as group]
             [moon.inventory :as inventory]
@@ -20,7 +21,6 @@
                                                Window)
            (com.badlogic.gdx.scenes.scene2d.utils ClickListener
                                                   TextureRegionDrawable)
-           (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
 (defn- clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
@@ -141,8 +141,8 @@
      {:colors colors
       :skin skin
       :title "Inventory"
-      :position [(Viewport/.getWorldWidth  (Stage/.getViewport stage))
-                 (Viewport/.getWorldHeight (Stage/.getViewport stage))]
+      :position [(viewport/world-width  (Stage/.getViewport stage))
+                 (viewport/world-height (Stage/.getViewport stage))]
       :clicked-cell-listener (fn [cell]
                                (proxy [ClickListener] []
                                  (clicked [event x y]

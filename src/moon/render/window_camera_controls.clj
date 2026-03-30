@@ -3,13 +3,13 @@
 ; => tests.
 ; InputMultiplex?
 (ns moon.render.window-camera-controls
-  (:require [moon.actor :as actor]
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.actor :as actor]
             [moon.camera :as camera]
             [moon.input :as input])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Group
-                                            Stage)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+                                            Stage)))
 
 (def zoom-speed 0.025) ; TODO FIXME pull out
 
@@ -21,10 +21,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (input/key-pressed? input (:zoom-in controls))
-    (camera/inc-zoom! (Viewport/.getCamera world-viewport) zoom-speed))
+    (camera/inc-zoom! (viewport/camera world-viewport) zoom-speed))
 
   (when (input/key-pressed? input (:zoom-out controls))
-    (camera/inc-zoom! (Viewport/.getCamera world-viewport) (- zoom-speed)))
+    (camera/inc-zoom! (viewport/camera world-viewport) (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (-> stage

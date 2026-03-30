@@ -27,3 +27,6 @@
 
 (defn set-to-ortho! [^OrthographicCamera camera y-down? viewport-width viewport-height]
   (.setToOrtho camera y-down? viewport-width viewport-height))
+
+(defn combined [^OrthographicCamera camera]
+  (.combined camera))

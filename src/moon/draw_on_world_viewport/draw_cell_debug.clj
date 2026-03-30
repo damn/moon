@@ -1,6 +1,6 @@
 (ns moon.draw-on-world-viewport.draw-cell-debug
-  (:require [moon.camera :as camera])
-  (:import (com.badlogic.gdx.utils.viewport Viewport)))
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.camera :as camera]))
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)
@@ -12,7 +12,7 @@
            ctx/factions-iterations
            ctx/world-viewport]}]
   (apply concat
-         (for [[x y] (camera/visible-tiles (Viewport/.getCamera world-viewport))
+         (for [[x y] (camera/visible-tiles (viewport/camera world-viewport))
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]

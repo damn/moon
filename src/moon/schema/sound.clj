@@ -1,5 +1,6 @@
 (ns moon.schema.sound
-  (:require [moon.actor :as actor]
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.actor :as actor]
             [moon.scroll-pane-cell :as scroll-pane-cell]
             [moon.stage :as stage]
             [moon.table :as table]
@@ -10,8 +11,7 @@
                                             Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Table
-                                               Window)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+                                               Window)))
 
 (defn malli-form [_ _schemas]
   :string)
@@ -36,7 +36,7 @@
                         (window/add-close-button! skin)
                         (table/add-rows!
                          [[(scroll-pane-cell/create skin
-                                                    (Viewport/.getWorldWidth (Stage/.getViewport stage))
+                                                    (viewport/world-width (Stage/.getViewport stage))
                                                     (for [sound-name (map first audio)]
                                                       [{:actor (text-button/create
                                                                 {:text sound-name

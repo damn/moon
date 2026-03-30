@@ -1,5 +1,6 @@
 (ns moon.property-editor-window
-  (:require [moon.actor :as actor]
+  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.actor :as actor]
             [moon.db :as db]
             [moon.error-window :as error-window]
             [moon.group :as group]
@@ -16,7 +17,6 @@
            (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)
-           (com.badlogic.gdx.utils.viewport Viewport)
            (moon Stage)))
 
 (defn create
@@ -31,7 +31,7 @@
         ; or find a way to find the widget from the context @ save button
         ; should be possible
         widget (schema/create schema property ctx) ; FIXME here no set user object k v ?
-        scroll-pane-height (Viewport/.getWorldHeight (Stage/.getViewport stage))
+        scroll-pane-height (viewport/world-height (Stage/.getViewport stage))
         get-widget-value #(schema/value schema widget schemas)
         property-id (:property/id property)
         with-window-close (fn [f]

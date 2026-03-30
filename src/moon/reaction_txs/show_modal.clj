@@ -1,5 +1,6 @@
 (ns moon.reaction-txs.show-modal
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.stage :as stage])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Stage)
@@ -30,8 +31,8 @@
                       (.setModal true)
                       (.pack)
                       (.setName "moon.ui.modal-window")
-                      (.setPosition (/ (.getWorldWidth  (.getViewport stage)) 2)
-                                    (* (.getWorldHeight (.getViewport stage)) (/ 3 4))
+                      (.setPosition (/ (viewport/world-width  (.getViewport stage)) 2)
+                                    (* (viewport/world-height (.getViewport stage)) (/ 3 4))
                                     Align/center)))
   ctx)
 
