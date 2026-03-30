@@ -1,63 +1,61 @@
 (ns moon.ui-actors.dev-menu
-  (:require [moon.stage :as stage]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [moon.actor :as actor]
+            [moon.stage :as stage]
             [moon.table :as table]
-            [moon.window :as window])
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event
-                                            Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Image
-                                               Label
-                                               Skin
-                                               Table
-                                               TextButton
-                                               Window)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
-           (moon Stage)))
+            [moon.window :as window]))
 
 (defn- set-label-text-actor [label text-fn]
-  (proxy [Actor] []
-    (act [delta]
-      (when-let [stage (Actor/.getStage this)]
-        (Label/.setText label ^String (text-fn (.ctx ^Stage stage))))
-      (let [^Actor this this]
-        (proxy-super act delta)))))
+  (gdx-actor/create
+   {:act! (fn [this _delta]
+            (when-let [stage (actor/stage this)]
+              (label/set-text! label (text-fn (stage/ctx stage)))))}))
 
 (defn add-upd-label!
-  ([skin ^Table table text-fn icon]
-   (let [label (Label. "" ^Skin skin)
-         sub-table (doto (Table.)
+  ([skin table text-fn icon]
+   (let [label (label/create "" skin)
+         sub-table (doto (gdx-table/create)
                      (table/add-rows!
-                      [[{:actor (Image. ^Texture icon)}
+                      [[{:actor (image/create icon)}
                         label]]))]
-     (.addActor table (set-label-text-actor label text-fn))
-     (.expandX (.right (.add table ^Actor sub-table)))))
-  ([skin ^Table table text-fn]
-   (let [label (Label. "" ^Skin skin)]
-     (.addActor table (set-label-text-actor label text-fn))
-     (.expandX (.right (.add table ^Actor label))))))
+     (group/add-actor! table (set-label-text-actor label text-fn))
+     (cell/expand-x! (cell/right! (gdx-table/add! table sub-table)))))
+  ([skin table text-fn]
+   (let [label (label/create "" skin)]
+     (group/add-actor! table (set-label-text-actor label text-fn))
+     (cell/expand-x! (cell/right! (gdx-table/add! table label))))))
 
-(defn- create-window [^Skin skin ^String label items]
-  (doto (Window. label skin)
+(defn- create-window [skin label items]
+  (doto (gdx-window/create label skin)
     (window/add-close-button! skin)
-    (table/add-rows! [(for [{:keys [^String label on-click]} items]
-                        {:actor (doto (TextButton. label skin)
-                                  (.addListener
-                                   (proxy [ChangeListener] []
-                                     (changed [event actor]
-                                       (on-click actor (.ctx ^Stage (Event/.getStage event)))))))})])
-    (.pack)))
+    (table/add-rows! [(for [{:keys [label on-click]} items]
+                        {:actor (doto (text-button/create label skin)
+                                  (actor/add-listener!
+                                   (change-listener/create
+                                     (fn [event actor]
+                                       (on-click actor (stage/ctx (event/stage event)))))))})])
+    (widget-group/pack!)))
 
-(defn- main-table [^Skin skin menus update-labels]
-  (let [table (doto (Table.)
+(defn- main-table [skin menus update-labels]
+  (let [table (doto (gdx-table/create)
                 (table/add-rows!
                  [(for [{:keys [label items]} menus]
-                    {:actor (doto (TextButton. ^String label skin)
-                              (.addListener
-                               (proxy [ChangeListener] []
-
-                                 (changed [event actor]
-                                   (stage/add-actor! (Event/.getStage event) (create-window skin label items))))))})]))]
+                    {:actor (doto (text-button/create label skin)
+                              (actor/add-listener!
+                               (change-listener/create
+                                 (fn [event actor]
+                                   (stage/add-actor! (event/stage event) (create-window skin label items))))))})]))]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
@@ -67,18 +65,18 @@
 
 (defn- create*
   [{:keys [menus update-labels skin]}]
-  (doto (Table.)
+  (doto (gdx-table/create)
     (table/add-rows!
      [[{:actor (main-table skin menus update-labels)
         :expand-x? true
         :fill-x? true
         :colspan 1}]
-      [{:actor (doto (Label. "" ^Skin skin)
-                 (Actor/.setTouchable Touchable/disabled))
+      [{:actor (doto (label/create "" skin)
+                 (actor/set-touchable! touchable/disabled))
         :expand? true
         :fill-x? true
         :fill-y? true}]])
-    (.setFillParent true)))
+    (widget-group/set-fill-parent! true)))
 
 (defn create
   [{:keys [ctx/skin

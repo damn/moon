@@ -11,6 +11,7 @@
   (set-user-object! [_ object])
   (set-position! [_ [x y]])
   (set-visible! [_ visible?])
+  (set-touchable! [_ touchable])
   (visible? [_])
   (hit [_ [x y] touchable?])
   (remove! [_])

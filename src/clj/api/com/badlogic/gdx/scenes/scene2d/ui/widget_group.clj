@@ -3,3 +3,6 @@
 
 (defn pack! [^WidgetGroup widget-group]
   (.pack widget-group))
+
+(defn set-fill-parent! [^WidgetGroup widget-group fill-parent?]
+  (.setFillParent widget-group fill-parent?))

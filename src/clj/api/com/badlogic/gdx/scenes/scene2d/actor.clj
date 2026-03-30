@@ -1,12 +1,16 @@
 (ns clj.api.com.badlogic.gdx.scenes.scene2d.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn create [{:keys [act!]}]
+(defn create [{:keys [act! draw!]}]
   (proxy [Actor] []
     (act [delta]
-      (act! this delta)
+      (when act!
+        (act! this delta))
       (let [^Actor this this]
-        (proxy-super act delta)))))
+        (proxy-super act delta)))
+    (draw [batch parent-alpha]
+      (when draw!
+        (draw! this batch parent-alpha)))))
 
 (defn add-listener! [^Actor actor listener]
   (.addListener actor listener))
@@ -49,3 +53,6 @@
 
 (defn stage->local-coordinates [^Actor actor vector2]
   (.stageToLocalCoordinates actor vector2))
+
+(defn set-touchable! [^Actor actor touchable]
+  (.setTouchable actor touchable))

@@ -1,19 +1,20 @@
 (ns moon.ui-actors.hp-mana-bar
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
+            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.readable :as readable]
+            [moon.stage :as stage]
             [moon.stats :as stats]
             [moon.textures :as textures]
-            [moon.val-max :as val-max])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (moon Stage)))
+            [moon.val-max :as val-max]))
 
 (defn- create-hp-mana-bar* [create-draws]
-  (proxy [Actor] []
-    (draw [_batch _parent-alpha]
-      (when-let [^Stage stage (Actor/.getStage this)]
-        (draws/handle! (.ctx stage)
-                       (create-draws (.ctx stage)))))))
+  (gdx-actor/create
+   {:draw! (fn [this _batch _parent-alpha]
+             (when-let [stage (actor/stage this)]
+               (draws/handle! (stage/ctx stage)
+                              (create-draws (stage/ctx stage)))))}))
 
 (let [config {:rahmen-file "images/rahmen.png"
               :rahmenw 150
@@ -29,7 +30,7 @@
                   hpcontent-file
                   manacontent-file
                   y-mana]} config
-          [x y-mana] [(/ (viewport/world-width (Stage/.getViewport stage)) 2)
+          [x y-mana] [(/ (viewport/world-width (stage/viewport stage)) 2)
                       y-mana]
           rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
           y-hp (+ y-mana rahmenh)
