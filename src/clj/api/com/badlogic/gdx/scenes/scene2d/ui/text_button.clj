@@ -2,5 +2,5 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton)))
 
-(defn create [text skin]
+(defn create [^String text ^Skin skin]
   (TextButton. text skin))

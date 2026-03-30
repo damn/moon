@@ -1,6 +1,6 @@
 (ns moon.start.use-glfw-async
-  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
+  (:require [clj.api.com.badlogic.gdx.backends.lwjgl3.application.config :as config]))
 
 (defn step [ctx]
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (config/use-glfw-async!)
   ctx)

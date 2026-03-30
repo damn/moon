@@ -1,7 +1,7 @@
 (ns moon.start.lwjgl-application
-  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)))
+  (:require [clj.api.com.badlogic.gdx.backends.lwjgl3.application :as application]))
 
 (defn step
   [{:keys [app/config
            app/listener]}]
-  (Lwjgl3Application. listener config))
+  (application/create listener config))
