@@ -1,9 +1,9 @@
 (ns moon.schema.number
-  (:require [clojure.edn :as edn]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.edn :as edn]
             [moon.edn])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               TextField
-                                               TextTooltip)))
+                                               TextField)))
 
 (defn malli-form [[_ predicate] _schemas]
   (case predicate
@@ -14,9 +14,9 @@
     :pos-int pos-int?))
 
 (defn create
-  [schema v {:keys [^Skin ctx/skin]}]
-  (doto (TextField. (moon.edn/->str v) skin)
-    (.addListener (TextTooltip. (str schema) skin))))
+  [schema v {:keys [ctx/skin]}]
+  (doto (TextField. (moon.edn/->str v) ^Skin skin)
+    (.addListener (text-tooltip/create (str schema) skin))))
 
 (defn value
   [_  widget _schemas]

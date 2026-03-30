@@ -1,10 +1,9 @@
 (ns moon.inventory-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [moon.actor :as actor])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui Image
-                                               Skin
-                                               TextTooltip)
+           (com.badlogic.gdx.scenes.scene2d.ui Image)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
 (defn- find-cell [group cell]
@@ -23,7 +22,7 @@
         drawable (doto (TextureRegionDrawable. texture-region)
                    (.setMinSize cell-size cell-size))]
     (Image/.setDrawable image-widget drawable)
-    (actor/add-listener! cell-widget (TextTooltip. ^String tooltip-text ^Skin skin))
+    (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
 (defn remove-item! [inventory-window cell]

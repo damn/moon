@@ -1,5 +1,6 @@
 (ns moon.schema.one-to-many
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [moon.actor :as actor]
             [moon.db :as db]
             [moon.property :as property]
@@ -14,7 +15,6 @@
                                                Skin
                                                Table
                                                TextButton
-                                               TextTooltip
                                                Window)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (moon Stage)))
@@ -61,7 +61,7 @@
               texture-region (textures/texture-region textures (property/image property))
               image-widget (doto (Image. ^TextureRegion texture-region)
                              (.setUserObject property-id)
-                             (.addListener (TextTooltip. (property/tooltip property) ^Skin skin)))]
+                             (.addListener (text-tooltip/create (property/tooltip property) skin)))]
           {:actor image-widget}))
       (for [id property-ids]
         {:actor (doto (TextButton. "-" ^Skin skin)
