@@ -1,4 +1,5 @@
 (ns moon.tiled-map-renderer
+  (:require [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)
            (moon TiledMapRenderer
@@ -12,7 +13,7 @@
                    (.setView camera))
         layers (.getLayers tiled-map)]
     (->> layers
-         (filter TiledMapTileLayer/.isVisible)
+         (filter layer/visible?)
          (map #(.getIndex layers ^TiledMapTileLayer %))
          int-array
          (.render renderer))))

@@ -1,13 +1,16 @@
 (ns moon.modules.last-steps
-  (:require [moon.area-level-grid :as area-level-grid]
+  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
+            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
+            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [moon.area-level-grid :as area-level-grid]
             [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map])
-  (:import (com.badlogic.gdx.maps.tiled TiledMap
-                                        TiledMapTileLayer)))
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
-(defn- property-value [^TiledMapTileLayer layer [x y] property-key]
-  (if-let [cell (.getCell layer x y)]
-    (if-let [value (.get (.getProperties (.getTile cell)) property-key)]
+(defn- property-value [layer xy property-key]
+  (if-let [cell (layer/cell layer xy)]
+    (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
       value
       :undefined)
     :no-cell))

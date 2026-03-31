@@ -16,3 +16,6 @@
 
 (defn put! [^MapProperties properties k v]
   (.put properties k v))
+
+(defn put-all! [^MapProperties properties map-properties]
+  (.putAll properties map-properties))
