@@ -3,6 +3,8 @@
 (defprotocol Actor
   (x [_])
   (y [_])
+  (width [_])
+  (height [_])
   (stage->local-coordinates [_ vector2])
   (add-listener! [_ listener])
   (user-object [_])

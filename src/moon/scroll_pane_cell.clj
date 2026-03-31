@@ -1,18 +1,18 @@
 (ns moon.scroll-pane-cell
-  (:require [moon.table :as table])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
-                                               Skin
-                                               Table)))
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [moon.actor :as actor]
+            [moon.table :as table]))
 
-(defn create [^Skin skin viewport-height rows]
-  (let [^Actor table (doto (Table.)
-                       (table/set-cell-defaults! {:pad 5})
-                       (table/add-rows! rows)
-                       (.pack)
-                       (.setName "scroll-pane-table"))]
-    {:actor (doto (ScrollPane. table skin)
-              (.setName "moon.ui.widget.scroll-pane-table"))
-     :width  (+ (.getWidth table) 50)
+(defn create [skin viewport-height rows]
+  (let [table (doto (gdx-table/create)
+                (actor/set-name! "scroll-pane-table")
+                (table/set-cell-defaults! {:pad 5})
+                (table/add-rows! rows)
+                (widget-group/pack!))]
+    {:actor (doto (scroll-pane/create table skin)
+              (actor/set-name! "moon.ui.widget.scroll-pane-table"))
+     :width  (+ (actor/width table) 50)
      :height (min (- viewport-height 50)
-                  (.getHeight table))}))
+                  (actor/height table))}))

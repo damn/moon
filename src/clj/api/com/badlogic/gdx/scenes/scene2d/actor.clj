@@ -56,3 +56,9 @@
 
 (defn set-touchable! [^Actor actor touchable]
   (.setTouchable actor touchable))
+
+(defn width [^Actor actor]
+  (.getWidth actor))
+
+(defn height [^Actor actor]
+  (.getHeight actor))
