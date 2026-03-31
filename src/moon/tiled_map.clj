@@ -1,10 +1,11 @@
 (ns moon.tiled-map
   (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
+            [clj.api.com.badlogic.gdx.maps.map-layers :as layers]
+            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile])
-  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
+            [clj.api.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn- create-layer
   [{:keys [width
@@ -36,12 +37,12 @@
 
 (defn- add-layer!
   "`properties` is optional. Returns nil."
-  [^TiledMap tiled-map
+  [tiled-map
    {:keys [name
            visible?
            properties
            tiles]}]
-  (let [props (.getProperties tiled-map)
+  (let [props (tiled-map/properties tiled-map)
         layer (create-layer {:width      (props/get props "width")
                              :height     (props/get props "height")
                              :tilewidth  (props/get props "tilewidth")
@@ -51,13 +52,13 @@
                              :map-properties (doto (props/create)
                                                (add! properties))
                              :tiles tiles})]
-    (.add (.getLayers tiled-map) layer))
+    (layers/add! (tiled-map/layers tiled-map) layer))
   nil)
 
 (defn create-tiled-map [{:keys [properties
                                 layers]}]
-  (let [tiled-map (TiledMap.)]
-    (add! (.getProperties tiled-map) properties)
+  (let [tiled-map (tiled-map/create)]
+    (add! (tiled-map/properties tiled-map) properties)
     (doseq [layer layers]
       (add-layer! tiled-map layer))
     tiled-map))
@@ -77,7 +78,7 @@
     tile))
 
 (defn- tile-movement-property
-  [^TiledMap tiled-map layer [x y]]
+  [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (layer/cell layer position)]
       (let [value (-> cell
@@ -87,15 +88,15 @@
         (assert value
                 (str "Value for :movement at position "
                      position  " / mapeditor inverted position: " [(position 0)
-                                                                   (- (dec (props/get (.getProperties tiled-map) "height"))
+                                                                   (- (dec (props/get (tiled-map/properties tiled-map) "height"))
                                                                       (position 1))]
                      " and layer " (layer/name layer) " is undefined."))
         value))))
 
 (defn- movement-property-layers
-  [^TiledMap tiled-map]
+  [tiled-map]
   (->> tiled-map
-       .getLayers
+       tiled-map/layers
        reverse
        (filter #(props/get (layer/properties %) "movement-properties"))))
 
@@ -111,10 +112,10 @@
       "none"))
 
 (defn spawn-positions
-  [^TiledMap tiled-map]
+  [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (.get (.getLayers tiled-map) layer-name)]
+        layer (layers/get (tiled-map/layers tiled-map) layer-name)]
     (for [x (range (layer/width layer))
           y (range (layer/height layer))
           :let [position [x y]
