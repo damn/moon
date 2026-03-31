@@ -10,3 +10,6 @@
 
 (defmethod create Texture [^Texture texture]
   (Image. texture))
+
+(defn set-drawable! [^Image image drawable]
+  (.setDrawable image drawable))
