@@ -1,13 +1,13 @@
 (ns moon.modules.convert-to-tiled-map
-  (:require [moon.grid2d :as g2d]
+  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
+            [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map])
-  (:import (com.badlogic.gdx.maps MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMap
+  (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)))
 
-(defn- props->clj [^MapProperties map-properties]
-  (zipmap (.getKeys   map-properties)
-          (.getValues map-properties)))
+(defn- props->clj [map-properties]
+  (zipmap (props/keys   map-properties)
+          (props/values map-properties)))
 
 (defn- grid->tiled-map
   [^TiledMap schema-tiled-map grid]

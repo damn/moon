@@ -1,6 +1,6 @@
 (ns moon.tiled-map
+  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer
                                         TiledMapTileLayer$Cell)
@@ -27,10 +27,10 @@
                             (.setTile tiled-map-tile))))
     layer))
 
-(defn- add! [^MapProperties map-properties m]
+(defn- add! [map-properties m]
   (doseq [[k v] m]
     (assert (string? k))
-    (.put map-properties k v)))
+    (props/put! map-properties k v)))
 
 (defn- add-layer!
   "`properties` is optional. Returns nil."
@@ -46,7 +46,7 @@
                              :tileheight (.get props "tileheight")
                              :name name
                              :visible? visible?
-                             :map-properties (doto (MapProperties.)
+                             :map-properties (doto (props/create)
                                                (add! properties))
                              :tiles tiles})]
     (.add (.getLayers tiled-map) layer))
