@@ -1,14 +1,14 @@
 (ns moon.data-viewer-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.table :as table]
             [moon.text-button :as text-button]
-            [moon.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               Table
-                                               Window)))
+            [moon.window :as window]))
 
 (defn- k->label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -46,28 +46,28 @@
     (label/create (v->text v) skin)))
 
 (defn create
-  [{:keys [^String title
+  [{:keys [title
            data
            width
            height
-           ^Skin skin]}]
+           skin]}]
   {:pre [(map? data)]}
   (let [rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
                 :actor (v->actor-decl v skin)})
-        scroll-pane-table (-> (Table.)
+        scroll-pane-table (-> (gdx-table/create)
                               (table/add-rows! (for [{:keys [label actor]} rows]
                                                  [{:actor (label/create label skin)}
                                                   {:actor actor}])))
-        scroll-pane-cell (let [table (doto (Table.)
+        scroll-pane-cell (let [table (doto (gdx-table/create)
                                        (table/set-cell-defaults! {:pad 1})
                                        (table/add-rows! [[scroll-pane-table]])
-                                       (.pack))]
+                                       (widget-group/pack!))]
                            {:actor (scroll-pane/create table skin)
                             :width width ; (- (viewport/world-width viewport) 100) ; (+ 100 (/ (viewport/world-width viewport) 2))
                             :height height ; (- (viewport/world-height viewport) 200) ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (doto (Window. title skin)
+    (doto (gdx-window/create title skin)
       (window/add-close-button! skin)
       (table/add-rows! [[scroll-pane-cell]])
-      (.pack))))
+      (widget-group/pack!))))
