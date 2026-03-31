@@ -7,3 +7,6 @@
 
 (defn title-table [^Window window]
   (.getTitleTable window))
+
+(defn set-modal! [^Window window modal?]
+  (.setModal window modal?))
