@@ -2,10 +2,9 @@
   (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps.tiled TiledMap)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
+            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [clj.api.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile])
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn- create-layer
   [{:keys [width
@@ -65,16 +64,16 @@
 
 (def copy-tile
   (memoize
-   (fn copy [^StaticTiledMapTile tile]
+   (fn copy [tile]
      (assert tile)
-     (StaticTiledMapTile. tile))))
+     (static-tiled-map-tile/copy tile))))
 
 (defn static-tiled-map-tile
   [texture-region property-name property-value]
   {:pre [texture-region
          (string? property-name)]}
-  (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-    (.put (.getProperties tile) property-name property-value)
+  (let [tile (static-tiled-map-tile/create texture-region)]
+    (props/put! (tile/properties tile) property-name property-value)
     tile))
 
 (defn- tile-movement-property
