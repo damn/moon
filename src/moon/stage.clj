@@ -5,4 +5,5 @@
   (set-ctx! [_ ctx])
   (add-actor! [_ actor])
   (mouseover-actor [_ [x y]])
-  (viewport [_]))
+  (viewport [_])
+  (find-actor [_ name]))

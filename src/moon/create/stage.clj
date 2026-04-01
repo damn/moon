@@ -21,6 +21,11 @@
   (add-actor! [stage actor]
     (.addActor stage actor))
 
+  (find-actor [stage name]
+    (-> stage
+        .getRoot
+        (.findActor name)))
+
   (mouseover-actor [stage position]
     (let [[x y] (viewport/unproject (.getViewport stage) position)]
       (.hit stage x y true)))
