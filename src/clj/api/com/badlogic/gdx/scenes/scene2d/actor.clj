@@ -1,4 +1,5 @@
 (ns clj.api.com.badlogic.gdx.scenes.scene2d.actor
+  (:refer-clojure :exclude [name])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn create [{:keys [act! draw!]}]
@@ -11,6 +12,9 @@
     (draw [batch parent-alpha]
       (when draw!
         (draw! this batch parent-alpha)))))
+
+(defn name [^Actor actor]
+  (.getName actor))
 
 (defn add-listener! [^Actor actor listener]
   (.addListener actor listener))

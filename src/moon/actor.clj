@@ -1,6 +1,8 @@
-(ns moon.actor)
+(ns moon.actor
+  (:refer-clojure :exclude [name]))
 
 (defprotocol Actor
+  (name [_])
   (x [_])
   (y [_])
   (width [_])

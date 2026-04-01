@@ -10,3 +10,6 @@
 
 (defn set-modal! [^Window window modal?]
   (.setModal window modal?))
+
+(defn title-label [^Window window]
+  (.getTitleLabel window))
