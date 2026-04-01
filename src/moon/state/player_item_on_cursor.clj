@@ -1,10 +1,10 @@
 (ns moon.state.player-item-on-cursor
-  (:require [moon.input :as input]
+  (:require [clj.api.com.badlogic.gdx.input.buttons :as input.buttons]
+            [moon.input :as input]
             [moon.inventory :as inventory]
             [moon.stage :as stage]
             [moon.textures :as textures]
-            [moon.vector2 :as v])
-  (:import (com.badlogic.gdx Input$Buttons)))
+            [moon.vector2 :as v]))
 
 (defn create
   [[_k item] _eid _ctx]
@@ -122,6 +122,6 @@
   [_ eid {:keys [ctx/input
                  ctx/stage]}]
   (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))]
-    (when (and (input/button-just-pressed? input Input$Buttons/LEFT)
+    (when (and (input/button-just-pressed? input input.buttons/left)
                (world-item? mouseover-actor))
       [[:tx/event eid :drop-item]])))

@@ -1,10 +1,10 @@
 (ns moon.state.player-idle
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [clj.api.com.badlogic.gdx.input.buttons :as input.buttons]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [moon.actor :as actor]
             [moon.input :as input]
-            [moon.inventory :as inventory])
-  (:import (com.badlogic.gdx Input$Buttons)
-           (com.badlogic.gdx.scenes.scene2d Actor
-                                            Stage)))
+            [moon.inventory :as inventory]
+            [moon.stage :as stage]))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
   (case k
@@ -22,10 +22,8 @@
           (let [item (:entity/item @clicked-eid)]
             (cond
              (-> stage
-                 Stage/.getRoot
-                 (group/find-actor "moon.ui.windows")
-                 (group/find-actor "moon.ui.windows.inventory")
-                 Actor/.isVisible)
+                 (stage/find-actor "moon.ui.windows.inventory")
+                 actor/visible?)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]
@@ -117,7 +115,7 @@
                         ctx/stage] :as ctx}]
   (if-let [movement-vector (input/player-movement-vector input)]
     [[:tx/event player-eid :movement-input movement-vector]]
-    (when (input/button-just-pressed? input Input$Buttons/LEFT)
+    (when (input/button-just-pressed? input input.buttons/left)
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))
