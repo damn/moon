@@ -1,5 +1,9 @@
 (ns moon.property-editor-window
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+  (:require [clj.api.com.badlogic.gdx.input.keys :as input.keys]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.actor :as actor]
             [moon.db :as db]
             [moon.error-window :as error-window]
@@ -13,11 +17,7 @@
             [moon.text-button :as text-button]
             [moon.throwable :as throwable]
             [moon.window :as window])
-  (:import (com.badlogic.gdx Input$Keys)
-           (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               Window)
-           (moon Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn create
   [{:keys [ctx
@@ -31,18 +31,18 @@
         ; or find a way to find the widget from the context @ save button
         ; should be possible
         widget (schema/create schema property ctx) ; FIXME here no set user object k v ?
-        scroll-pane-height (viewport/world-height (Stage/.getViewport stage))
+        scroll-pane-height (viewport/world-height (stage/viewport stage))
         get-widget-value #(schema/value schema widget schemas)
         property-id (:property/id property)
         with-window-close (fn [f]
-                            (fn [^Actor actor {:keys [ctx/skin
-                                                      ctx/stage]
-                                               :as ctx}]
+                            (fn [actor {:keys [ctx/skin
+                                               ctx/stage]
+                                        :as ctx}]
                               (try
                                (let [new-ctx (update ctx :ctx/db f)
-                                     ^Stage stage (.getStage actor)]
-                                 (set! (.ctx stage) new-ctx))
-                               (Actor/.remove (actor/find-ancestor actor Window))
+                                     stage (actor/stage actor)]
+                                 (stage/set-ctx! stage new-ctx))
+                               (actor/remove! (actor/find-ancestor actor Window))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage
@@ -53,15 +53,12 @@
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
-        actors [(proxy [Actor] []
-                  (act [delta]
-                    (when-let [^Stage stage (Actor/.getStage this)]
-                      (let [{:keys [ctx/input]
-                             :as ctx} (.ctx stage)]
-                        (when (input/key-just-pressed? input Input$Keys/ENTER)
-                          (clicked-save-fn this ctx))))
-                    (let [^Actor this this]
-                      (proxy-super act delta))))]
+        actors [(gdx-actor/create
+                 {:act! (fn [this delta]
+                          (when-let [stage (actor/stage this)]
+                            (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
+                              (when (input/key-just-pressed? input input.keys/enter)
+                                (clicked-save-fn this ctx)))))})]
         save-button (text-button/create
                      {:text "Save [LIGHT_GRAY](ENTER)[]"
                       :on-clicked clicked-save-fn
@@ -76,11 +73,11 @@
         rows [[(scroll-pane-cell/create skin
                                         scroll-pane-height
                                         scroll-pane-rows)]]]
-    (doto (Window. "[SKY]Property[]" ^Skin skin)
+    (doto (gdx-window/create "[SKY]Property[]" skin)
       (window/add-close-button! skin)
       (table/set-cell-defaults! {:pad 5})
       (table/add-rows! rows)
-      (.setModal true)
-      (.pack)
+      (gdx-window/set-modal! true)
+      (widget-group/pack!)
       (group/add-actors! actors)
-      (.setName "moon.ui.editor.window"))))
+      (actor/set-name! "moon.ui.editor.window"))))

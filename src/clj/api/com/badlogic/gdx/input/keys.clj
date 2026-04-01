@@ -12,3 +12,4 @@
 (def escape Input$Keys/ESCAPE)
 (def i Input$Keys/I)
 (def e Input$Keys/E)
+(def enter Input$Keys/ENTER)

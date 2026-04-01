@@ -15,6 +15,9 @@
   (ctx [stage]
     (.ctx stage))
 
+  (set-ctx! [stage ctx]
+    (set! (.ctx stage) ctx))
+
   (add-actor! [stage actor]
     (.addActor stage actor))
 
