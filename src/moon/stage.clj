@@ -6,4 +6,6 @@
   (add-actor! [_ actor])
   (mouseover-actor [_ [x y]])
   (viewport [_])
-  (find-actor [_ name]))
+  (find-actor [_ name])
+  (act! [_])
+  (draw! [_]))

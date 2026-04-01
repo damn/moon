@@ -31,4 +31,10 @@
       (.hit stage x y true)))
 
   (viewport [stage]
-    (.getViewport stage)))
+    (.getViewport stage))
+
+  (act! [stage]
+    (.act stage))
+
+  (draw! [stage]
+    (.draw stage)))

@@ -1,8 +1,8 @@
 (ns moon.render.get-stage-ctx
-  (:import (moon Stage)))
+  (:require [moon.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/stage]
     :as ctx}]
-  (or (.ctx ^Stage stage)
+  (or (stage/ctx stage)
       ctx)) ; first render stage does not have ctx set.

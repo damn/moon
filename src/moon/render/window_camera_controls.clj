@@ -7,9 +7,8 @@
             [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.actor :as actor]
             [moon.camera :as camera]
-            [moon.input :as input])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Stage)))
+            [moon.input :as input]
+            [moon.stage :as stage]))
 
 (def zoom-speed 0.025) ; TODO FIXME pull out
 
@@ -27,23 +26,17 @@
     (camera/inc-zoom! (viewport/camera world-viewport) (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key controls))
-    (->> (-> stage
-             Stage/.getRoot
-             (group/find-actor "moon.ui.windows"))
+    (->> (stage/find-actor stage "moon.ui.windows")
          group/children
-         (run! #(Actor/.setVisible % false))))
+         (run! #(actor/set-visible! % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory controls))
     (-> stage
-        Stage/.getRoot
-        (group/find-actor "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.inventory")
+        (stage/find-actor "moon.ui.windows.inventory")
         actor/toggle-visible!))
 
   (when (input/key-just-pressed? input (:toggle-entity-info controls))
     (-> stage
-        Stage/.getRoot
-        (group/find-actor "moon.ui.windows")
-        (group/find-actor "moon.ui.windows.entity-info")
+        (stage/find-actor "moon.ui.windows.entity-info")
         actor/toggle-visible!))
   ctx)
