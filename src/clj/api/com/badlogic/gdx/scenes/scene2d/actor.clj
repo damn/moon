@@ -21,8 +21,11 @@
 (defn stage [^Actor actor]
   (.getStage actor))
 
-(defn set-position! [^Actor actor [x y]]
-  (.setPosition actor x y))
+(defn set-position!
+  ([^Actor actor [x y]]
+   (.setPosition actor x y))
+  ([^Actor actor x y align]
+   (.setPosition actor x y align)))
 
 (defn set-visible! [^Actor actor visible?]
   (.setVisible actor visible?))

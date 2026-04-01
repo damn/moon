@@ -11,7 +11,8 @@
   (stage [_])
   (set-name! [_ name])
   (set-user-object! [_ object])
-  (set-position! [_ [x y]])
+  (set-position! [_ [x y]]
+                 [_ x y align])
   (set-visible! [_ visible?])
   (set-touchable! [_ touchable])
   (visible? [_])

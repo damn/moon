@@ -7,3 +7,6 @@
 
 (defn add! [^Table table ^Actor actor]
   (.add table actor))
+
+(defn row! [^Table table]
+  (.row table))
