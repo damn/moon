@@ -1,17 +1,14 @@
 (ns moon.text-button
-  (:import (com.badlogic.gdx.scenes.scene2d Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               TextButton)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
-           (moon Stage)))
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [moon.actor :as actor]
+            [moon.stage :as stage]))
 
 (defn create
-  ^TextButton
-  [{:keys [text
-           on-clicked
-           ^Skin skin]}]
-  (doto (TextButton. (str text) skin)
-    (.addListener
-     (proxy [ChangeListener] []
-       (changed [^Event event actor]
-         (on-clicked actor (.ctx ^Stage (.getStage event))))))))
+  [{:keys [text on-clicked skin]}]
+  (doto (text-button/create (str text) skin)
+    (actor/add-listener!
+     (change-listener/create
+       (fn [event actor]
+         (on-clicked actor (stage/ctx (event/stage event))))))))

@@ -1,8 +1,8 @@
 (ns moon.schema.default
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [moon.actor :as actor]
             [moon.edn :as edn]
-            [moon.string :as string])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+            [moon.string :as string]))
 
 (defn create
   [_ v {:keys [ctx/skin]}]
@@ -10,4 +10,4 @@
 
 (defn value
   [_  widget _schemas]
-  ((Actor/.getUserObject widget) 1))
+  ((actor/user-object widget) 1))
