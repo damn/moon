@@ -1,17 +1,17 @@
 (ns moon.property-overview-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+            [moon.actor :as actor]
             [moon.db :as db]
             [moon.group :as group]
             [moon.image-button :as image-button]
             [moon.property :as property]
             [moon.table :as table]
             [moon.textures :as textures]
-            [moon.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Touchable)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               Stack
-                                               Window)))
+            [moon.window :as window]))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -44,7 +44,7 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (doto (Stack.)
+      {:actor (doto (stack/create)
                 (group/add-actors! [(image-button/create
                                      {:drawable/texture-region texture-region
                                       :on-clicked on-clicked
@@ -52,7 +52,7 @@
                                       :tooltip tooltip
                                       :skin skin})
                                     (doto (label/create extra-info-text skin)
-                                      (Actor/.setTouchable Touchable/disabled))]))})))
+                                      (actor/set-touchable! touchable/disabled))]))})))
 
 (defn- overview-table-rows
   [db
@@ -81,8 +81,8 @@
            skin
            property-type
            clicked-id-fn]}]
-  (doto (Window. "Edit" ^Skin skin)
+  (doto (gdx-window/create "Edit" skin)
     (window/add-close-button! skin)
     (table/add-rows! (overview-table-rows db skin textures property-type clicked-id-fn))
-    (.setModal true)
-    (.pack)))
+    (gdx-window/set-modal! true)
+    (widget-group/pack!)))
