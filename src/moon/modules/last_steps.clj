@@ -1,12 +1,13 @@
 (ns moon.modules.last-steps
   (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
+            [clj.api.com.badlogic.gdx.maps.map-layers :as layers]
+            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [moon.area-level-grid :as area-level-grid]
             [moon.grid2d :as g2d]
-            [moon.tiled-map :as tiled-map])
-  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
+            [moon.tiled-map :as tiled-map]))
 
 (defn- property-value [layer xy property-key]
   (if-let [cell (layer/cell layer xy)]
@@ -24,7 +25,7 @@
            start
            scale
            scaled-grid
-           ^TiledMap tiled-map
+           tiled-map
            start-position
            ]}]
   (let [
@@ -59,7 +60,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (.get (.getLayers tiled-map) "creatures")
+                                                    (property-value (layers/get (gdx-tiled-map/layers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))
