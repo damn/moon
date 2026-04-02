@@ -1,8 +1,8 @@
 (ns moon.table
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Cell
-                                               Table)))
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
+; TODO order is important, reduce?
 (defn- set-cell-opts! [^Cell cell opts]
   (doseq [[option arg] opts]
     (case option
@@ -22,19 +22,19 @@
       :right?     (.right     cell)
       :left?      (.left      cell))))
 
-(defn add-rows! [^Table table rows]
+(defn add-rows! [table rows]
   (doseq [row rows]
     (doseq [props-or-actor row]
       (cond
        (map? props-or-actor)
        ;(cell-fn table)
-       (-> (.add table ^Actor (:actor props-or-actor))
+       (-> (table/add! table (:actor props-or-actor))
            (set-cell-opts! (dissoc props-or-actor :actor)))
        ; TODO Remove else case
-       :else (.add table ^Actor props-or-actor)))
-    (.row table))
+       :else (table/add! table props-or-actor)))
+    (table/row! table))
   table)
 
-(defn set-cell-defaults! [^Table table cell-opts]
-  (set-cell-opts! (.defaults table) cell-opts)
+(defn set-cell-defaults! [table cell-opts]
+  (set-cell-opts! (table/defaults table) cell-opts)
   table)
