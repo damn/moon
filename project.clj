@@ -1,31 +1,6 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-
-                 ;; ---
-
-                 ;; # Simplified libgdx what I use
-                 ;; based on protocols
-                 ;; and keep it as it is !
-
-                 ;; # first layer - what do I use from each class -> then extend-types
-
-                 ;; # second layer - protocols (not a layer really) => add docstrings there from gdx?
-
-                 ;; => BOUNDARIES
-
-                 ;; => NEXT LAYER CTX PROTOCOLS (camera/inc-zoom! ctx 0.1 )
-                 ;; => not dependend on data
-
-                 ;; ---
-
-                 ;;; we create an API for this
-                 ;; call it 'gdl'
-                 ;; implemented by libgdx stuff
-                 ;; we dont knouw about classs (thats clj.api for)
-                 ;; and we dont know about clj.api == gdl game engine cross plattform
-
-                 ;; - we can add tests / make separate lib / change implementation / port java / without touching the game code
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
