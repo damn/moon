@@ -3,6 +3,7 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [moon.actor :as actor]
             [moon.action-bar :as action-bar]
@@ -46,8 +47,8 @@
           button (doto (image-button/create
                         {:drawable/texture-region texture-region
                          :drawable/scale 2
-                         :tooltip tooltip-text
                          :skin skin})
+                   (actor/add-listener! (text-tooltip/create tooltip-text skin))
                    (actor/set-user-object! skill-id))]
       (group/add-actor! horizontal-group button)
       (button-group/add! button-group button)

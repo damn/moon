@@ -2,6 +2,7 @@
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [moon.actor :as actor]
@@ -45,12 +46,12 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (doto (stack/create)
-                (group/add-actors! [(image-button/create
-                                     {:drawable/texture-region texture-region
-                                      :on-clicked on-clicked
-                                      :drawable/scale image-scale
-                                      :tooltip tooltip
-                                      :skin skin})
+                (group/add-actors! [(doto (image-button/create
+                                           {:drawable/texture-region texture-region
+                                            :on-clicked on-clicked
+                                            :drawable/scale image-scale
+                                            :skin skin})
+                                      (actor/add-listener! (text-tooltip/create tooltip skin)))
                                     (doto (label/create extra-info-text skin)
                                       (actor/set-touchable! touchable/disabled))]))})))
 
