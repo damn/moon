@@ -1,14 +1,16 @@
 (ns moon.schema.sound
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.actor :as actor]
             [moon.scroll-pane-cell :as scroll-pane-cell]
             [moon.stage :as stage]
             [moon.table :as table]
-            [moon.text-button :as text-button]
             [moon.txs :as txs]
             [moon.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
@@ -28,9 +30,9 @@
       (actor/set-user-object! table [k sound-name]))))
 
 (defn- open-select-sounds-handler [table]
-  (fn [_actor {:keys [ctx/audio
-                      ctx/skin
-                      ctx/stage]}]
+  (fn [{:keys [ctx/audio
+               ctx/skin
+               ctx/stage]}]
     (stage/add-actor! stage
                       (doto (gdx-window/create "Choose" skin)
                         (window/add-close-button! skin)
@@ -38,36 +40,41 @@
                          [[(scroll-pane-cell/create skin
                                                     (viewport/world-width (stage/viewport stage))
                                                     (for [sound-name (map first audio)]
-                                                      [{:actor (text-button/create
-                                                                {:text sound-name
-                                                                 :on-clicked (rebuild-sound-widget! table sound-name)
-                                                                 :skin skin})}
-                                                       {:actor (text-button/create
-                                                                {:text "play!"
-                                                                 :on-clicked (fn [_actor ctx]
-                                                                               (txs/handle! ctx [[:tx/sound sound-name]]))
-                                                                 :skin skin})}]))]])
+                                                      [{:actor (doto (text-button/create sound-name skin)
+                                                                 (actor/add-listener!
+                                                                  (change-listener/create
+                                                                   (fn [event actor]
+                                                                     ((rebuild-sound-widget! table sound-name) actor (stage/ctx (event/stage event)))))))}
+                                                       {:actor (doto (text-button/create "play!" skin)
+                                                                 (actor/add-listener!
+                                                                  (change-listener/create
+                                                                   (fn [event _actor]
+                                                                     (txs/handle! (stage/ctx (event/stage event))
+                                                                                  [[:tx/sound sound-name]])))))}]))]])
                         (gdx-window/set-modal! true)
                         (widget-group/pack!)))))
 
 (defn- sound-columns [skin table sound-name]
-  [{:actor (text-button/create
-            {:text sound-name
-             :on-clicked (open-select-sounds-handler table)
-             :skin skin})}
-   {:actor (text-button/create
-            {:text "play!"
-             :on-clicked (fn [_actor ctx]
-                           (txs/handle! ctx [[:tx/sound sound-name]]))
-             :skin skin})}])
+  [{:actor (doto (text-button/create sound-name skin)
+             (actor/add-listener!
+              (change-listener/create
+               (fn [event _actor]
+                 ((open-select-sounds-handler table) (stage/ctx (event/stage event)))))))}
+   {:actor (doto (text-button/create "play!" skin)
+             (actor/add-listener!
+              (change-listener/create
+               (fn [event _actor]
+                 (txs/handle! (stage/ctx (event/stage event))
+                              [[:tx/sound sound-name]])))))}])
 
 (defn create [_  sound-name {:keys [ctx/skin]}]
   (let [table (doto (gdx-table/create)
                 (table/set-cell-defaults! {:pad 5}))]
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)
-                              [{:actor (text-button/create
-                                        {:text "No sound"
-                                         :on-clicked (open-select-sounds-handler table)
-                                         :skin skin})}])])
+                              [{:actor (doto (text-button/create "No sound" skin)
+                                         (actor/add-listener!
+                                          (change-listener/create
+                                           (fn [event _actor]
+                                             ((open-select-sounds-handler table) (stage/ctx (event/stage event)))))))}])])
     table))

@@ -2,12 +2,13 @@
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.table :as table]
-            [moon.text-button :as text-button]
             [moon.window :as window]))
 
 (defn- k->label-str [k]
@@ -32,17 +33,17 @@
 
 (defn- v->actor-decl [v skin]
   (if (map? v)
-    (text-button/create
-     {:text "Map"
-      :on-clicked (fn [actor _ctx]
-                    (stage/add-actor! (actor/stage actor)
-                                      (create
-                                       {:title "title"
-                                        :data v
-                                        :width 500
-                                        :height 500
-                                        :skin skin})))
-      :skin skin})
+    (doto (text-button/create "Map" skin)
+      (actor/add-listener!
+       (change-listener/create
+        (fn [_event actor]
+          (stage/add-actor! (actor/stage actor)
+                            (create
+                             {:title "title"
+                              :data v
+                              :width 500
+                              :height 500
+                              :skin skin}))))))
     (label/create (v->text v) skin)))
 
 (defn create
