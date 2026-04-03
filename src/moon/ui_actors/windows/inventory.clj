@@ -2,9 +2,11 @@
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
             [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as gdx-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
@@ -16,6 +18,7 @@
             [moon.draws :as draws]
             [moon.group :as group]
             [moon.inventory :as inventory]
+            [moon.inventory-window]
             [moon.stage :as stage]
             [moon.state :as state]
             [moon.table :as table]
@@ -147,3 +150,34 @@
                                  (fn [event _x _y]
                                    (clicked-inventory-cell cell (stage/ctx (event/stage event))))))
       :slot->texture-region slot->texture-region})))
+
+(defn- find-cell [group cell]
+  (first (filter #(= (actor/user-object %) cell)
+                 (gdx-group/children group))))
+
+(defn- window->cell [inventory-window cell]
+  (-> inventory-window
+      (gdx-group/find-actor "inventory-cell-table")
+      (find-cell cell)))
+
+(extend-type com.badlogic.gdx.scenes.scene2d.ui.Window
+  moon.inventory-window/InventoryWindow
+  (set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
+    (let [cell-widget (window->cell inventory-window cell)
+          image-widget (gdx-group/find-actor cell-widget "image-widget")
+          cell-size (:cell-size (actor/user-object image-widget))
+          drawable (doto (texture-region-drawable/create texture-region)
+                     (drawable/set-min-size! cell-size cell-size))]
+      (image/set-drawable! image-widget drawable)
+      (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
+      nil))
+
+  (remove-item! [inventory-window cell]
+    (let [cell-widget (window->cell inventory-window cell)
+          image-widget (gdx-group/find-actor cell-widget "image-widget")]
+      (image/set-drawable! image-widget (:background-drawable (actor/user-object image-widget)))
+      ; TODO
+      ;(.removeListener actor (.getListeners actor))
+      ; ... first find the listener
+      #_(tooltip/remove! cell-widget)
+      nil)))

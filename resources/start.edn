@@ -10,6 +10,11 @@
     clj.api.com.badlogic.gdx.scenes.scene2d.actor
     moon.actor/Actor
     ]
+   [
+    com.badlogic.gdx.scenes.scene2d.ui.Window
+    moon.impl.window
+    moon.window/Window
+    ]
    ]]
  [moon.start.require/step [
                            moon.info-impl
