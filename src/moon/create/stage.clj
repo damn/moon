@@ -1,8 +1,9 @@
 (ns moon.create.stage
-  (:require [clj.api.moon.stage :as stage]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clj.api.moon.stage :as stage]
             [moon.stage]
             [moon.viewport :as viewport])
-  (:import (moon Stage))) ; TODO ??? for extend-type ..., combine w. stuff ? skin ? ui ?
+  (:import (moon Stage)))
 
 (defn step
   [{:keys [ctx/batch
@@ -13,28 +14,29 @@
 (extend-type Stage
   moon.stage/Stage
   (ctx [stage]
-    (.ctx stage))
+    (stage/ctx stage))
 
   (set-ctx! [stage ctx]
-    (set! (.ctx stage) ctx))
+    (stage/set-ctx! stage ctx))
 
   (add-actor! [stage actor]
-    (.addActor stage actor))
+    (stage/add-actor! stage actor))
 
   (find-actor [stage name]
     (-> stage
-        .getRoot
-        (.findActor name)))
+        stage/root
+        (group/find-actor name)))
 
   (mouseover-actor [stage position]
-    (let [[x y] (viewport/unproject (.getViewport stage) position)]
-      (.hit stage x y true)))
+    (stage/hit stage
+               (viewport/unproject (stage/viewport stage) position)
+               true))
 
   (viewport [stage]
-    (.getViewport stage))
+    (stage/viewport stage))
 
   (act! [stage]
-    (.act stage))
+    (stage/act! stage))
 
   (draw! [stage]
-    (.draw stage)))
+    (stage/draw! stage)))
