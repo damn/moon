@@ -8,6 +8,7 @@
   (m/schema
    [:map {:closed true}
     [:ctx/active-entities :any] ; its a 'derived' key , can cache once per frame count (game logic frame not time frame)
+    [:ctx/actor-fns :some]
     [:ctx/audio :some]
     [:ctx/batch :some]
     [:ctx/colors :some]

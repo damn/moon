@@ -1,6 +1,14 @@
 ; TODO only Gdx stuff here ( which requires Gdx state)
 ; and first tsep get gdx state
 [
+ [moon.create.actor-fns/step
+  {
+   :ui/data-viewer-window       moon.actor-fns.data-viewer-window/create
+   :ui/error-window             moon.actor-fns.error-window/create
+   :ui/property-editor-window   moon.actor-fns.property-editor-window/create
+   :ui/property-overview-window moon.actor-fns.property-overview-window/create
+   }
+  ]
  [moon.create.impl-handle/step {:txs-fn-map #edn/resource "txs-fn-map.edn"
                                 :reaction-txs-fn-map #edn/resource "reaction-txs-fn-map.edn"}]
  [moon.create.impl-draw/step #edn/resource "draw-fns.edn"]

@@ -10,7 +10,6 @@
             [moon.actor :as actor]
             [moon.db :as db]
             [moon.property :as property]
-            [moon.property-overview-window :as property-overview-window]
             [moon.stage :as stage]
             [moon.table :as table]
             [moon.textures :as textures])
@@ -43,10 +42,11 @@
                         (let [{:keys [ctx/db
                                       ctx/skin
                                       ctx/stage
-                                      ctx/textures]} (stage/ctx (event/stage event))]
+                                      ctx/textures]
+                               :as ctx} (stage/ctx (event/stage event))]
                           (stage/add-actor!
                            stage
-                           (property-overview-window/create
+                           ((get (:ctx/actor-fns ctx) :ui/property-overview-window)
                             {:db db
                              :textures textures
                              :skin skin

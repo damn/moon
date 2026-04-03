@@ -11,7 +11,6 @@
             [moon.actor :as actor]
             [moon.malli :as mu]
             [moon.order :as order]
-            [moon.property-editor-window :as property-editor-window]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
             [moon.stage :as stage]
@@ -49,7 +48,7 @@
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
     (stage/add-actor! stage
-                      (property-editor-window/create
+                      ((get (:ctx/actor-fns ctx) :ui/property-editor-window)
                        {:ctx ctx
                         :property property}))))
 

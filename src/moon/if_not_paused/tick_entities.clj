@@ -1,6 +1,5 @@
 (ns moon.if-not-paused.tick-entities
   (:require [moon.entity :as entity]
-            [moon.error-window :as error-window]
             [moon.stage :as stage]
             [moon.throwable :as throwable]
             [moon.txs :as txs]))
@@ -21,7 +20,7 @@
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage
-                       (error-window/create
+                       ((get (:ctx/actor-fns ctx) :ui/error-window)
                         {:skin skin
                          :throwable t}))))
   ctx)

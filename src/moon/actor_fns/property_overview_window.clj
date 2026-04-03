@@ -1,4 +1,4 @@
-(ns moon.property-overview-window
+(ns moon.actor-fns.property-overview-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]

@@ -1,4 +1,4 @@
-(ns moon.property-editor-window
+(ns moon.actor-fns.property-editor-window
   (:require [clj.api.com.badlogic.gdx.input.keys :as input.keys]
             [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
@@ -6,7 +6,6 @@
             [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.actor :as actor]
             [moon.db :as db]
-            [moon.error-window :as error-window]
             [moon.group :as group]
             [moon.input :as input]
             [moon.property :as property]
@@ -46,7 +45,7 @@
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage
-                                                   (error-window/create
+                                                   ((get (:ctx/actor-fns ctx) :ui/error-window)
                                                     {:skin skin
                                                      :throwable t}))))))
         clicked-delete-fn (with-window-close (fn [db]

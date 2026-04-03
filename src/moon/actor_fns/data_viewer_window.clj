@@ -1,4 +1,4 @@
-(ns moon.data-viewer-window
+(ns moon.actor-fns.data-viewer-window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]

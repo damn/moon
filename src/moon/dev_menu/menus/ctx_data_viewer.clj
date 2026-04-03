@@ -1,6 +1,5 @@
 (ns moon.dev-menu.menus.ctx-data-viewer
-  (:require [moon.data-viewer-window :as data-viewer-window]
-            [moon.stage :as stage]))
+  (:require [moon.stage :as stage]))
 
 (defn create [_ctx]
   {:label "Ctx Data"
@@ -8,7 +7,7 @@
             :on-click (fn [_actor {:keys [ctx/skin
                                           ctx/stage] :as ctx}]
                         (stage/add-actor! stage
-                                          (data-viewer-window/create
+                                          ((get (:ctx/actor-fns ctx) :ui/data-viewer-window)
                                            {:title "Data View"
                                             :data ctx
                                             :width 1000
