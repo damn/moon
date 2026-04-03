@@ -1,13 +1,16 @@
 (ns moon.ui-actors.action-bar
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [clj.api.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [moon.actor :as actor]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.action-bar :as action-bar]
-            [moon.image-button :as image-button]
+            [moon.actor :as actor]
             [moon.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
@@ -44,10 +47,9 @@
              tooltip-text]}
      skin]
     (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-          button (doto (image-button/create
-                        {:drawable/texture-region texture-region
-                         :drawable/scale 2
-                         :skin skin})
+          button (doto (image-button/create (doto (texture-region-drawable/create texture-region)
+                                              (drawable/set-min-size! (* 2 (texture-region/width texture-region))
+                                                                      (* 2 (texture-region/height texture-region)))))
                    (actor/add-listener! (text-tooltip/create tooltip-text skin))
                    (actor/set-user-object! skill-id))]
       (group/add-actor! horizontal-group button)

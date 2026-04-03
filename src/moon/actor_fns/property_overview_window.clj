@@ -1,16 +1,19 @@
 (ns moon.actor-fns.property-overview-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clj.api.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
             [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.actor :as actor]
             [moon.db :as db]
             [moon.group :as group]
-            [moon.image-button :as image-button]
             [moon.property :as property]
             [moon.stage :as stage]
             [moon.table :as table]
@@ -49,10 +52,9 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (doto (stack/create)
-                (group/add-actors! [(doto (image-button/create
-                                           {:drawable/texture-region texture-region
-                                            :drawable/scale image-scale
-                                            :skin skin})
+                (group/add-actors! [(doto (image-button/create (doto (texture-region-drawable/create texture-region)
+                                                                 (drawable/set-min-size! (* image-scale (texture-region/width texture-region))
+                                                                                         (* image-scale (texture-region/height texture-region)))))
                                       (actor/add-listener! (change-listener/create
                                                             (fn [event actor]
                                                               (on-clicked actor (stage/ctx (event/stage event))))))
