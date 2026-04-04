@@ -25,13 +25,16 @@
 (defn add-rows! [table rows]
   (doseq [row rows]
     (doseq [props-or-actor row]
+
       (cond
        (map? props-or-actor)
-       ;(cell-fn table)
        (-> (table/add! table (:actor props-or-actor))
            (set-cell-opts! (dissoc props-or-actor :actor)))
+
        ; TODO Remove else case
-       :else (table/add! table props-or-actor)))
+       :else (table/add! table props-or-actor)
+
+       ))
     (table/row! table))
   table)
 
