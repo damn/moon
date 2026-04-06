@@ -1,5 +1,5 @@
 (ns moon.reaction-txs.sound
-  (:require [clj.api.com.badlogic.gdx.audio.sound :as sound]))
+  (:require [gdl.audio.sound :as sound]))
 
 (defn do!
   [{:keys [ctx/audio] :as ctx} sound-name]

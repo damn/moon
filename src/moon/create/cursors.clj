@@ -1,6 +1,6 @@
 (ns moon.create.cursors
-  (:require [clj.api.com.badlogic.gdx.files :as files]
-            [clj.api.com.badlogic.gdx.graphics :as graphics]
+  (:require [gdl.files :as files]
+            [gdl.graphics :as graphics]
             [clj.api.com.badlogic.gdx.graphics.pixmap :as pixmap]
             [clj.api.com.badlogic.gdx.utils.disposable :as disposable]))
 

@@ -1,6 +1,28 @@
 [
  [moon.start.extend-types/step
-  [[
+  [
+   [com.badlogic.gdx.Audio
+    clj.api.com.badlogic.gdx.audio
+    gdl.audio/Audio]
+   [com.badlogic.gdx.audio.Sound
+    clj.api.com.badlogic.gdx.audio.sound
+    gdl.audio.sound/Sound]
+   [com.badlogic.gdx.Files
+    clj.api.com.badlogic.gdx.files
+    gdl.files/Files]
+   [com.badlogic.gdx.files.FileHandle
+    clj.api.com.badlogic.gdx.files.file-handle
+    gdl.files.file-handle/FileHandle]
+   [com.badlogic.gdx.Graphics
+    clj.api.com.badlogic.gdx.graphics
+    gdl.graphics/Graphics]
+   [com.badlogic.gdx.Input
+    clj.api.com.badlogic.gdx.input
+    gdl.input/Input]
+
+   ; TODO go through clj.api classes and don't depend on them
+
+   [
     space.earlygrey.shapedrawer.ShapeDrawer
     clj.api.space.earlygrey.shape-drawer
     moon.shape-drawer/ShapeDrawer
@@ -113,17 +135,16 @@
    [moon.state.stunned :stunned]
    ]
   ]
- [moon.start.use-glfw-async/step]
- [moon.start.create-config/step {:title "Moon"
-                                 :window {:width 1440
-                                          :height 900}
-                                 :fps 60}]
- [moon.start.create-listener/step {
-                                   :state moon.application/state
-                                   :create! [moon.listener.create/do! #edn/resource "create-pipeline.edn"]
-                                   :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
-                                   :dispose! moon.listener.dispose/do!
-                                   :resize!  moon.listener.resize/do!
-                                   }]
- [moon.start.lwjgl-application/step]
+ [moon.start.lwjgl-application/step
+  {:title "Moon"
+   :window {:width 1440
+            :height 900}
+   :fps 60
+   :state moon.application/state
+   :create! [moon.listener.create/do! #edn/resource "create-pipeline.edn"]
+   :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
+   :dispose! moon.listener.dispose/do!
+   :resize!  moon.listener.resize/do!
+   }
+  ]
  ]

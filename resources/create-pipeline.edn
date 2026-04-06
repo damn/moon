@@ -13,7 +13,6 @@
                                 :reaction-txs-fn-map #edn/resource "reaction-txs-fn-map.edn"}]
  [moon.create.impl-draw/step #edn/resource "draw-fns.edn"]
  [moon.create.game-colors/step]
- [moon.create.get-gdx-state/step]
  [moon.create.input/step]
  [moon.create.colors/step {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [moon.create.cursors/do! #edn/resource "cursors.edn"]

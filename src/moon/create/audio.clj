@@ -1,6 +1,6 @@
 (ns moon.create.audio
-  (:require [clj.api.com.badlogic.gdx.audio :as audio]
-            [clj.api.com.badlogic.gdx.files :as files]))
+  (:require [gdl.audio :as audio]
+            [gdl.files :as files]))
 
 (defn do!
   [ctx {:keys [sound-names path-format]}]

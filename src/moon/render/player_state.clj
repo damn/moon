@@ -1,6 +1,6 @@
 ; TODO FIXME
 (ns moon.render.player-state
-  (:require [clj.api.com.badlogic.gdx.graphics :as graphics]
+  (:require [gdl.graphics :as graphics]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [moon.action-bar :as action-bar]
             [moon.actor :as actor]

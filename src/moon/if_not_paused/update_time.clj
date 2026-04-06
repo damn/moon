@@ -1,5 +1,5 @@
 (ns moon.if-not-paused.update-time
-  (:require [clj.api.com.badlogic.gdx.graphics :as graphics]))
+  (:require [gdl.graphics :as graphics]))
 
 (defn do!
   [{:keys [ctx/graphics

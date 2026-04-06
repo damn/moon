@@ -1,5 +1,5 @@
 (ns moon.create.input
-  (:require [clj.api.com.badlogic.gdx.input :as gdx-input]
+  (:require [gdl.input :as gdx-input]
             [clj.api.com.badlogic.gdx.input.buttons :as input.buttons]
             [clj.api.com.badlogic.gdx.input.keys :as input.keys]
             [clojure.string :as str]

@@ -1,5 +1,5 @@
 (ns moon.dev-menu.update-labels.fps
-  (:require [clj.api.com.badlogic.gdx.graphics :as graphics]))
+  (:require [gdl.graphics :as graphics]))
 
 (def item
   {:label "FPS"

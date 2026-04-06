@@ -1,5 +1,5 @@
 (ns moon.create.default-font
-  (:require [clj.api.com.badlogic.gdx.files :as files]
+  (:require [gdl.files :as files]
             [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font.data :as bitmap-font.data]
             [clj.api.com.badlogic.gdx.graphics.g2d.freetype.font-generator :as font-generator]

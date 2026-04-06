@@ -4,10 +4,11 @@
 (q/defrecord Context [])
 
 (defn do!
-  [create-fns]
+  [ctx create-fns]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           (merge (map->Context {})
+                 ctx
                  {
                   :ctx/active-entities nil
                   :ctx/delta-time nil
