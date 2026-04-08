@@ -1,6 +1,6 @@
 (ns moon.render.draw-on-world-viewport
   (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as camera]
-            [clj.api.com.badlogic.gdx.graphics.g2d.batch :as batch]
+            [gdl.graphics.batch :as batch]
             [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
             [moon.draws :as draws]
             [moon.shape-drawer :as shape-drawer]))

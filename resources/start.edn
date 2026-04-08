@@ -21,6 +21,9 @@
     gdl.input/Input]
 
    ; TODO go through clj.api classes and don't depend on them
+   [com.badlogic.gdx.graphics.g2d.Batch
+    clj.api.com.badlogic.gdx.graphics.g2d.batch
+    gdl.graphics.batch/Batch]
 
    [
     space.earlygrey.shapedrawer.ShapeDrawer

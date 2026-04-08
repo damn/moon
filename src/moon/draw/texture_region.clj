@@ -1,5 +1,5 @@
 (ns moon.draw.texture-region
-  (:require [clj.api.com.badlogic.gdx.graphics.g2d.batch :as batch]
+  (:require [gdl.graphics.batch :as batch]
             [clj.api.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
 (defn do!
