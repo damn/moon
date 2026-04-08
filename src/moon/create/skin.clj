@@ -1,7 +1,6 @@
 (ns moon.create.skin
   (:require [gdl.files :as files]
-            [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font.data :as bitmap-font.data]
+            [gdl.graphics.bitmap-font :as bitmap-font]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
 (defn step
@@ -9,8 +8,5 @@
     :as ctx}
    path]
   (assoc ctx :ctx/skin (let [skin (skin/create (files/internal files path))]
-                         (bitmap-font.data/enable-markup! (-> skin
-                                                              (skin/font "default-font")
-                                                              bitmap-font/data)
-                                                          true)
+                         (bitmap-font/enable-markup! (skin/font skin "default-font") true)
                          skin)))

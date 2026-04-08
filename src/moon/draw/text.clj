@@ -1,26 +1,19 @@
 (ns moon.draw.text
-  (:require [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font.data :as bitmap-font.data]
-            [clj.api.com.badlogic.gdx.utils.align :as align]
-            [clojure.string :as str]))
+  (:require [gdl.graphics.bitmap-font :as bitmap-font]
+            [clj.api.com.badlogic.gdx.utils.align :as align]))
 
 (defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
-  (let [text-height (fn []
-                      (-> text
-                          (str/split #"\n")
-                          count
-                          (* (bitmap-font/line-height font))))
-        old-scale (bitmap-font.data/scale-x (bitmap-font/data font))]
-    (bitmap-font.data/set-scale! (bitmap-font/data font) (* old-scale scale))
+  (let [old-scale (bitmap-font/scale-x font)]
+    (bitmap-font/set-scale! font (* old-scale scale))
     (bitmap-font/draw! font
                        batch
                        text
                        x
-                       (+ y (if up? (text-height) 0))
+                       (+ y (if up? (bitmap-font/text-height font text) 0))
                        target-width
                        (or h-align align/center)
                        wrap?)
-    (bitmap-font.data/set-scale! (bitmap-font/data font) old-scale)))
+    (bitmap-font/set-scale! font old-scale)))
 
 (defn do!
   [{:keys [ctx/batch

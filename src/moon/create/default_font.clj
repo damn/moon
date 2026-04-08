@@ -1,7 +1,6 @@
 (ns moon.create.default-font
   (:require [gdl.files :as files]
-            [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font.data :as bitmap-font.data]
+            [gdl.graphics.bitmap-font :as bitmap-font]
             [clj.api.com.badlogic.gdx.graphics.g2d.freetype.font-generator :as font-generator]
             [clj.api.com.badlogic.gdx.graphics.g2d.freetype.font-generator.parameter :as parameter]
             [clj.api.com.badlogic.gdx.graphics.texture.filter :as texture.filter]
@@ -19,8 +18,8 @@
                                              (parameter/set-min-filter! texture.filter/linear)
                                              (parameter/set-mag-filter! texture.filter/linear)))]
     (disposable/dispose! generator)
-    (bitmap-font.data/set-scale! (bitmap-font/data font) (/ quality-scaling))
-    (bitmap-font.data/enable-markup! (bitmap-font/data font) enable-markup?)
+    (bitmap-font/set-scale! font (/ quality-scaling))
+    (bitmap-font/enable-markup! font enable-markup?)
     (bitmap-font/use-integer-positions! font use-integer-positions?)
     font))
 
