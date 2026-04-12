@@ -4,7 +4,7 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.info :as info]
             [moon.stage :as stage]

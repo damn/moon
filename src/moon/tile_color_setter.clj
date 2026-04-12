@@ -1,7 +1,7 @@
 (ns moon.tile-color-setter
   (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [clj.api.com.badlogic.gdx.math.vector3 :as vector3]
-            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [gdl.viewport :as viewport]
             [moon.raycaster :as raycaster]))
 
 (defn- tile-color-setter

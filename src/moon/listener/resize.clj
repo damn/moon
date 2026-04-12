@@ -1,5 +1,5 @@
 (ns moon.listener.resize
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]))
+  (:require [gdl.viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/ui-viewport

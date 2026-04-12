@@ -2,7 +2,7 @@
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
             [clj.api.moon.stage :as stage]
             [moon.stage]
-            [moon.viewport :as viewport])
+            [gdl.viewport :as viewport])
   (:import (moon Stage)))
 
 (defn step

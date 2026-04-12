@@ -13,7 +13,7 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.group :as group]

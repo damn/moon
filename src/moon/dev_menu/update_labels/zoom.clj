@@ -1,6 +1,6 @@
 (ns moon.dev-menu.update-labels.zoom
   (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]))
+            [gdl.viewport :as viewport]))
 
 (def item
   {:label "Zoom"

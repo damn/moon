@@ -1,5 +1,5 @@
 (ns moon.render.draw-world-map
-  (:require [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+  (:require [gdl.viewport :as viewport]
             [moon.tiled-map-renderer :as tiled-map-renderer]))
 
 (defn do!

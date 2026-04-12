@@ -6,7 +6,7 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.scroll-pane-cell :as scroll-pane-cell]
             [moon.stage :as stage]

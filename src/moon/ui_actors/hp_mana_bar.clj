@@ -1,6 +1,6 @@
 (ns moon.ui-actors.hp-mana-bar
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
-            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]
+            [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.readable :as readable]
