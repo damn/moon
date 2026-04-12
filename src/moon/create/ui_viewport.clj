@@ -1,6 +1,5 @@
 (ns moon.create.ui-viewport
-  (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [clj.api.com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]))
+  (:require [gdl.context :as context]))
 
 (defn step [ctx {:keys [width height]}]
-  (assoc ctx :ctx/ui-viewport (fit-viewport/create width height (orthographic-camera/create))))
+  (assoc ctx :ctx/ui-viewport (context/ui-viewport width height)))
