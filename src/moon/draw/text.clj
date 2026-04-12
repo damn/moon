@@ -1,6 +1,5 @@
 (ns moon.draw.text
-  (:require [gdl.graphics.bitmap-font :as bitmap-font]
-            [clj.api.com.badlogic.gdx.utils.align :as align]))
+  (:require [gdl.graphics.bitmap-font :as bitmap-font]))
 
 (defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
   (let [old-scale (bitmap-font/scale-x font)]
@@ -11,7 +10,7 @@
                        x
                        (+ y (if up? (bitmap-font/text-height font text) 0))
                        target-width
-                       (or h-align align/center)
+                       (or h-align :align/center)
                        wrap?)
     (bitmap-font/set-scale! font old-scale)))
 

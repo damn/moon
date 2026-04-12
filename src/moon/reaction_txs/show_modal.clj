@@ -31,7 +31,7 @@
                       (actor/set-name! "moon.ui.modal-window")
                       (actor/set-position! (/ (viewport/world-width  (stage/viewport stage)) 2)
                                            (* (viewport/world-height (stage/viewport stage)) (/ 3 4))
-                                           align/center)))
+                                           (align/k->value :align/center))))
   ctx)
 
 
