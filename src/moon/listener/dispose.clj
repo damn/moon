@@ -1,5 +1,5 @@
 (ns moon.listener.dispose
-  (:require [clj.api.com.badlogic.gdx.utils.disposable :as disposable]))
+  (:require [gdl.disposable :as disposable]))
 
 (defn do!
   [{:keys [ctx/audio

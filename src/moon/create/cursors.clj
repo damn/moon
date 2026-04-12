@@ -1,18 +1,16 @@
 (ns moon.create.cursors
   (:require [gdl.files :as files]
-            [gdl.graphics :as graphics]
-            [clj.api.com.badlogic.gdx.graphics.pixmap :as pixmap]
-            [clj.api.com.badlogic.gdx.utils.disposable :as disposable]))
+            [gdl.graphics :as graphics]))
 
 (defn- create-cursor
   [{:keys [ctx/files
            ctx/graphics]}
    path-format
    [path [hotspot-x hotspot-y]]]
-  (let [pixmap (pixmap/create (files/internal files (format path-format path)))
-        cursor (graphics/new-cursor graphics pixmap hotspot-x hotspot-y)]
-    (disposable/dispose! pixmap)
-    cursor))
+  (graphics/new-cursor* graphics
+                        (files/internal files (format path-format path))
+                        hotspot-x
+                        hotspot-y))
 
 (defn do!
   [ctx {:keys [data path-format]}]

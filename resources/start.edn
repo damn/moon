@@ -40,6 +40,10 @@
     moon.impl.window
     moon.window/Window
     ]
+
+   [com.badlogic.gdx.utils.Disposable
+    clj.api.com.badlogic.gdx.utils.disposable
+    gdl.disposable/Disposable]
    ]]
  [moon.start.require/step [
                            moon.info-impl
