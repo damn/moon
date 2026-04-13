@@ -1,11 +1,7 @@
 (ns moon.schema.map
   (:require [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [gdl.scene2d.ui.widget-group :as widget-group]
             [clojure.set :as set]
             [moon.actor :as actor]
             [moon.malli :as mu]
@@ -14,8 +10,7 @@
             [moon.schemas :as schemas]
             [moon.stage :as stage]
             [moon.table :as table]
-            [moon.ui :as ui]
-            [moon.window :as window]))
+            [moon.ui :as ui]))
 
 (defn malli-form [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
@@ -63,23 +58,26 @@
            k
            table
            label-text]}]
-  [{:actor (doto (gdx-table/create)
-             (table/set-cell-defaults! {:pad 2})
-             (table/add-rows! [[{:actor (when display-remove-component-button?
-                                          (doto (text-button/create "-" skin)
-                                            (actor/add-listener!
-                                             (change-listener/create
-                                               (fn [event _actor]
-                                                 (actor/remove! (first (filter (fn [actor]
-                                                                                 (and (actor/user-object actor)
-                                                                                      (= k ((actor/user-object actor) 0))))
-                                                                               (group/children table))))
-                                                 (rebuild! (stage/ctx (event/stage event))))))))
-                                 :left? true}
-                                {:actor (ui/create
-                                         {:type :ui/label
-                                          :text label-text
-                                          :skin skin})}]]))
+  [{:actor (ui/create
+            {:type :ui/table
+             :table/cell-defaults {:pad 2}
+             :table/rows [[{:actor (when display-remove-component-button?
+                                     (ui/create
+                                      {:type :ui/text-button
+                                       :text "-"
+                                       :skin skin
+                                       :actor/listeners {:listener/change
+                                                         (fn [event _actor]
+                                                           (actor/remove! (first (filter (fn [actor]
+                                                                                           (and (actor/user-object actor)
+                                                                                                (= k ((actor/user-object actor) 0))))
+                                                                                         (group/children table))))
+                                                           (rebuild! (stage/ctx (event/stage event))))}}))
+                            :left? true}
+                           {:actor (ui/create
+                                    {:type :ui/label
+                                     :text label-text
+                                     :skin skin})}]]})
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
     :pad-top 2
@@ -100,30 +98,35 @@
 
 (defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (doto (gdx-window/create "Choose" skin)
-                 (window/add-close-button! skin)
-                 (table/set-cell-defaults! {:pad 5})
-                 (gdx-window/set-modal! true))
+  (let [window (ui/create
+                {:type :ui/window
+                 :title "Choose"
+                 :skin skin
+                 :window/close-button? skin
+                 :window/modal? true
+                 :table/cell-defaults {:pad 5}})
         remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))
                                    (mu/map-keys (schema/malli-form schema schemas))))]
     (table/add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (doto (text-button/create (name k) skin)
-                  (actor/add-listener!
-                   (change-listener/create
-                     (fn [event _actor]
-                       (actor/remove! window)
-                       (let [ctx (stage/ctx (event/stage event))]
-                         (table/add-rows! map-widget-table [(component-row skin
-                                                                           (build-value-widget ctx
-                                                                                               (get schemas k)
-                                                                                               k
-                                                                                               (schemas/default-value schemas k))
-                                                                           k
-                                                                           (mu/optional? k (schema/malli-form schema schemas))
-                                                                           map-widget-table)])
-                         (rebuild! ctx))))))}]))
+       [{:actor (ui/create
+                 {:type :ui/text-button
+                  :skin skin
+                  :text (name k)
+                  :actor/listeners {:listener/change
+                                    (fn [event _actor]
+                                      (actor/remove! window)
+                                      (let [ctx (stage/ctx (event/stage event))]
+                                        (table/add-rows! map-widget-table [(component-row skin
+                                                                                          (build-value-widget ctx
+                                                                                                              (get schemas k)
+                                                                                                              k
+                                                                                                              (schemas/default-value schemas k))
+                                                                                          k
+                                                                                          (mu/optional? k (schema/malli-form schema schemas))
+                                                                                          map-widget-table)])
+                                        (rebuild! ctx)))}})}]))
     (widget-group/pack! window)
     window))
 
@@ -146,9 +149,10 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (doto (gdx-table/create)
-                (table/set-cell-defaults! {:pad 5})
-                (actor/set-name! "moon.db.schema.map.ui.widget"))
+  (let [table (ui/create
+               {:type :ui/table
+                :table/cell-defaults {:pad 5}
+                :actor/name "moon.db.schema.map.ui.widget"})
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
                                     (map (fn [k]
@@ -161,20 +165,22 @@
     (table/add-rows!
      table
      (concat [(when opt?
-                [{:actor (doto (text-button/create "Add component" skin)
-                           (actor/add-listener!
-                            (change-listener/create
-                              (fn [event actor]
-                                (let [{:keys [ctx/db
-                                              ctx/stage
-                                              ctx/skin]} (stage/ctx (event/stage event))]
-                                  (stage/add-actor!
-                                   stage
-                                   (add-component-window
-                                    {:skin skin
-                                     :schemas (:db/schemas db)
-                                     :schema schema
-                                     :map-widget-table table})))))))
+                [{:actor (ui/create
+                          {:type :ui/text-button
+                           :text "Add component"
+                           :skin skin
+                           :actor/listeners {:listener/change
+                                             (fn [event actor]
+                                               (let [{:keys [ctx/db
+                                                             ctx/stage
+                                                             ctx/skin]} (stage/ctx (event/stage event))]
+                                                 (stage/add-actor!
+                                                  stage
+                                                  (add-component-window
+                                                   {:skin skin
+                                                    :schemas (:db/schemas db)
+                                                    :schema schema
+                                                    :map-widget-table table}))))}})
                   :colspan colspan}])]
              [(when opt?
                 [{:actor  nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
