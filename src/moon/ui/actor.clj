@@ -7,7 +7,7 @@
 
 (defn set-opts!
   [actor opts]
-  (when-let [user-object (:actor/user-object actor)]
+  (when-let [user-object (:actor/user-object opts)]
     (actor/set-user-object! actor user-object))
 
   (when (:actor/position opts)
