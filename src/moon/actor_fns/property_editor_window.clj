@@ -1,6 +1,5 @@
 (ns moon.actor-fns.property-editor-window
-  (:require [clj.api.com.badlogic.gdx.input.keys :as input.keys]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
@@ -58,7 +57,7 @@
                   :act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
                             (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
-                              (when (input/key-just-pressed? input input.keys/enter)
+                              (when (input/key-just-pressed? input :input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
         save-button (doto (text-button/create "Save [LIGHT_GRAY](ENTER)[]" skin)
                       (actor/add-listener!

@@ -37,7 +37,10 @@
     (gdx-input/key-pressed? input key))
 
   (key-just-pressed? [input key]
-    (gdx-input/key-just-pressed? input key))
+    (gdx-input/key-just-pressed? input (if (keyword? key)
+                                         (case key
+                                           :input.keys/enter input.keys/enter)
+                                         key)))
 
   (button-just-pressed? [input button]
     (gdx-input/button-just-pressed? input button))
