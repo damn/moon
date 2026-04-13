@@ -1,14 +1,10 @@
 (ns moon.actor-fns.property-overview-window
   (:require [gdl.scene2d.event :as event]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [moon.db :as db]
             [moon.property :as property]
             [moon.stage :as stage]
-            [moon.table :as table]
             [moon.textures :as textures]
-            [moon.ui :as ui]
-            [moon.window :as window]))
+            [moon.ui :as ui]))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -83,8 +79,10 @@
            skin
            property-type
            clicked-id-fn]}]
-  (doto (gdx-window/create "Edit" skin)
-    (window/add-close-button! skin)
-    (table/add-rows! (overview-table-rows db skin textures property-type clicked-id-fn))
-    (gdx-window/set-modal! true)
-    (widget-group/pack!)))
+  (ui/create
+   {:type :ui/window
+    :title "Edit"
+    :skin skin
+    :window/close-button? skin
+    :window/modal? true
+    :table/rows (overview-table-rows db skin textures property-type clicked-id-fn)}))
