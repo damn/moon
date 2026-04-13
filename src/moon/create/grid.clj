@@ -1,7 +1,5 @@
 (ns moon.create.grid
-  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as map-properties]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
-            [clj.api.com.badlogic.gdx.math.circle :as gdx-circle]
+  (:require [clj.api.com.badlogic.gdx.math.circle :as gdx-circle]
             [clj.api.com.badlogic.gdx.math.intersector :as intersector]
             [clj.api.com.badlogic.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
@@ -25,8 +23,8 @@
     [(grid (mapv int position))]))
 
 (defn step [{:keys [ctx/tiled-map] :as ctx}]
-  (assoc ctx :ctx/grid (g2d/create-grid (map-properties/get (gdx-tiled-map/properties tiled-map) "width")
-                                        (map-properties/get (gdx-tiled-map/properties tiled-map) "height")
+  (assoc ctx :ctx/grid (g2d/create-grid (tiled-map/width tiled-map)
+                                        (tiled-map/height tiled-map)
                                         (fn [position]
                                           (atom (cell/create position
                                                              (case (tiled-map/movement-property tiled-map position)
