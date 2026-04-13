@@ -1,15 +1,8 @@
 (ns moon.reaction-txs.show-modal
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [clj.api.com.badlogic.gdx.utils.align :as align]
-            [gdl.viewport :as viewport]
+  (:require [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.stage :as stage]
-            [moon.table]))
+            [moon.ui :as ui]))
 
 (defn do!
   [{:keys [ctx/skin
@@ -18,20 +11,26 @@
    {:keys [title text button-text on-click]}]
   (assert (not (stage/find-actor stage "moon.ui.modal-window")))
   (stage/add-actor! stage
-                    (doto (window/create title skin)
-                      (moon.table/add-rows! [[{:actor (label/create text skin)}]
-                                             [{:actor (doto (text-button/create button-text skin)
-                                                        (actor/add-listener!
-                                                         (change-listener/create
-                                                          (fn [_event _actor]
-                                                            (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
-                                                            (on-click)))))}] ])
-                      (window/set-modal! true)
-                      (widget-group/pack!)
-                      (actor/set-name! "moon.ui.modal-window")
-                      (actor/set-position! (/ (viewport/world-width  (stage/viewport stage)) 2)
-                                           (* (viewport/world-height (stage/viewport stage)) (/ 3 4))
-                                           (align/k->value :align/center))))
+                    (ui/create
+                     {:type :ui/window
+                      :title title
+                      :skin skin
+                      :window/modal? true
+                      :table/rows [[{:actor (ui/create
+                                             {:type :ui/label
+                                              :text text
+                                              :skin skin})}]
+                                   [{:actor (ui/create
+                                             {:type :ui/text-button
+                                              :text button-text
+                                              :skin skin
+                                              :actor/listeners {:listener/change (fn [_event _actor]
+                                                                                   (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
+                                                                                   (on-click))}})}]]
+                      :actor/name "moon.ui.modal-window"
+                      :actor/position [(/ (viewport/world-width  (stage/viewport stage)) 2)
+                                       (* (viewport/world-height (stage/viewport stage)) (/ 3 4))
+                                       :align/center]}))
   ctx)
 
 

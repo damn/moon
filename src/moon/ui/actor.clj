@@ -2,10 +2,15 @@
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [clj.api.com.badlogic.gdx.utils.align :as align]))
 
 (defn set-opts!
   [actor opts]
+  (when (:actor/position opts)
+    (let [[x y align] (:actor/position opts)]
+      (actor/set-position! actor x y (align/k->value align))))
+
   (when-let [touchable (:actor/touchable opts)]
     (actor/set-touchable! actor (case touchable
                                   :touchable/disabled touchable/disabled)))
