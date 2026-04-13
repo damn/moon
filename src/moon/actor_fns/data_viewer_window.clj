@@ -1,11 +1,7 @@
 (ns moon.actor-fns.data-viewer-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [moon.actor :as actor]
+  (:require [moon.actor :as actor]
             [moon.stage :as stage]
-            [moon.table :as table]
-            [moon.ui :as ui]
-            [moon.window :as window]))
+            [moon.ui :as ui]))
 
 (defn create
   [{:keys [title
@@ -35,7 +31,7 @@
                      {:type :ui/text-button
                       :text "Map"
                       :skin skin
-                      :actor/listener (change-listener/create
+                      :actor/listener [:listener/change
                                        (fn [_event actor]
                                          (stage/add-actor! (actor/stage actor)
                                                            (create
@@ -43,36 +39,36 @@
                                                              :data v
                                                              :width 500
                                                              :height 500
-                                                             :skin skin}))))}
+                                                             :skin skin})))]}
                      {:type :ui/label
                       :text (v->text v)
                       :skin skin}))
         rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
-                :actor (ui/create (v->actor v skin))})
-        scroll-pane-table (-> (ui/create {:type :ui/table})
-                              (table/add-rows! (for [{:keys [label actor]} rows]
-                                                 [{:actor (ui/create {:type :ui/label
-                                                                      :text label
-                                                                      :skin skin})}
-                                                  {:actor actor}])))
-        scroll-pane-cell (let [table (doto (ui/create {:type :ui/table})
-                                       (table/set-cell-defaults! {:pad 1})
-                                       (table/add-rows! [[scroll-pane-table]])
-                                       (widget-group/pack!))]
+                :actor (v->actor v skin)})
+        scroll-pane-table (ui/create {:type :ui/table
+                                      :table/rows (for [{:keys [label actor]} rows]
+                                                    [{:actor (ui/create {:type :ui/label
+                                                                         :text label
+                                                                         :skin skin})}
+                                                     {:actor (ui/create actor)}])})
+
+        ; TODO use moon.scroll-pane-cell
+        scroll-pane-cell (let [table (ui/create {:type :ui/table
+                                                 :table/cell-defaults {:pad 1}
+                                                 :table/rows [[scroll-pane-table]]})]
                            {:actor (ui/create {:type :ui/scroll-pane
                                                :actor table
                                                :skin skin})
                             :width width
                             ; (- (viewport/world-width viewport) 100)
                             ; (+ 100 (/ (viewport/world-width viewport) 2))
-                            :height height
+                            :height 800
                             ; (- (viewport/world-height viewport) 200)
                             ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (doto (ui/create {:type :ui/window
-                      :title title
-                      :skin skin})
-      (window/add-close-button! skin)
-      (table/add-rows! [[scroll-pane-cell]])
-      (widget-group/pack!))))
+    (ui/create {:type :ui/window
+                :title title
+                :skin skin
+                :table/rows [[scroll-pane-cell]]
+                :window/close-button? skin})))

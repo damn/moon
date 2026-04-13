@@ -1,11 +1,10 @@
 (ns moon.ui.actor
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor]))
-
-#_(def ^:private opts
-  [[:actor/listener actor/add-listener!]]
-  )
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn set-opts!
   [actor opts]
-  (when-let [listener (:actor/listener opts)]
-    (actor/add-listener! actor listener)))
+  (when-let [[listener-k listener-fn] (:actor/listener opts)]
+    (actor/add-listener! actor
+                         (case listener-k
+                           :listener/change (change-listener/create listener-fn)))))
