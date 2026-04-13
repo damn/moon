@@ -1,12 +1,15 @@
 (ns moon.schema.default
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [moon.actor :as actor]
+  (:require [moon.actor :as actor]
             [moon.edn :as edn]
-            [moon.string :as string]))
+            [moon.string :as string]
+            [moon.ui :as ui]))
 
 (defn create
   [_ v {:keys [ctx/skin]}]
-  (label/create (string/truncate (edn/->str v) 60) skin))
+  (ui/create
+   {:type :ui/label
+    :text (string/truncate (edn/->str v) 60)
+    :skin skin}))
 
 (defn value
   [_  widget _schemas]
