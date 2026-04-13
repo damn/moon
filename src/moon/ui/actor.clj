@@ -12,7 +12,12 @@
 
   (when (:actor/position opts)
     (let [[x y align] (:actor/position opts)]
-      (actor/set-position! actor x y (align/k->value align))))
+      (if align
+        (actor/set-position! actor x y (align/k->value align))
+        (actor/set-position! actor [x y]))))
+
+  (when-let [visible? (:actor/visible? opts)]
+    (actor/set-visible! actor visible?))
 
   (when-let [touchable (:actor/touchable opts)]
     (actor/set-touchable! actor (case touchable
