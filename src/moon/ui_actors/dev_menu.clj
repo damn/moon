@@ -1,8 +1,6 @@
 (ns moon.ui-actors.dev-menu
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
-            [gdl.scene2d.event :as event]
+  (:require [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
@@ -14,11 +12,13 @@
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.table :as table]
+            [moon.ui :as ui]
             [moon.window :as window]))
 
 (defn- set-label-text-actor [label text-fn]
-  (gdx-actor/create
-   {:act! (fn [this _delta]
+  (ui/create
+   {:type :ui/actor
+    :act! (fn [this _delta]
             (when-let [stage (actor/stage this)]
               (label/set-text! label (text-fn (stage/ctx stage)))))}))
 
@@ -71,8 +71,11 @@
         :expand-x? true
         :fill-x? true
         :colspan 1}]
-      [{:actor (doto (label/create "" skin)
-                 (actor/set-touchable! touchable/disabled))
+      [{:actor (ui/create
+                {:type :ui/label
+                 :text ""
+                 :skin skin
+                 :actor/touchable :touchable/disabled})
         :expand? true
         :fill-x? true
         :fill-y? true}]])
