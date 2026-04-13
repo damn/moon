@@ -1,7 +1,7 @@
 (ns moon.ui-actors.dev-menu
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [gdl.scene2d.event :as event]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [gdl.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]

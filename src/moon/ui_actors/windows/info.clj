@@ -1,6 +1,6 @@
 (ns moon.ui-actors.windows.info
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [gdl.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]

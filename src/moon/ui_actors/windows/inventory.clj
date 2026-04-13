@@ -2,7 +2,7 @@
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
             [gdl.scene2d.event :as event]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as gdx-group]
+            [gdl.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
@@ -16,7 +16,6 @@
             [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.draws :as draws]
-            [moon.group :as group]
             [moon.inventory :as inventory]
             [moon.inventory-window]
             [moon.stage :as stage]
@@ -153,18 +152,18 @@
 
 (defn- find-cell [group cell]
   (first (filter #(= (actor/user-object %) cell)
-                 (gdx-group/children group))))
+                 (group/children group))))
 
 (defn- window->cell [inventory-window cell]
   (-> inventory-window
-      (gdx-group/find-actor "inventory-cell-table")
+      (group/find-actor "inventory-cell-table")
       (find-cell cell)))
 
 (extend-type com.badlogic.gdx.scenes.scene2d.ui.Window
   moon.inventory-window/InventoryWindow
   (set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
     (let [cell-widget (window->cell inventory-window cell)
-          image-widget (gdx-group/find-actor cell-widget "image-widget")
+          image-widget (group/find-actor cell-widget "image-widget")
           cell-size (:cell-size (actor/user-object image-widget))
           drawable (doto (texture-region-drawable/create texture-region)
                      (drawable/set-min-size! cell-size cell-size))]
@@ -174,7 +173,7 @@
 
   (remove-item! [inventory-window cell]
     (let [cell-widget (window->cell inventory-window cell)
-          image-widget (gdx-group/find-actor cell-widget "image-widget")]
+          image-widget (group/find-actor cell-widget "image-widget")]
       (image/set-drawable! image-widget (:background-drawable (actor/user-object image-widget)))
       ; TODO
       ;(.removeListener actor (.getListeners actor))

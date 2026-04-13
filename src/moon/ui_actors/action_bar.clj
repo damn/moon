@@ -1,6 +1,6 @@
 (ns moon.ui-actors.action-bar
   (:require [gdl.texture-region :as texture-region]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [gdl.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]

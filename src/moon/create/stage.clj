@@ -1,5 +1,5 @@
 (ns moon.create.stage
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [gdl.scene2d.group :as group]
             [clj.api.moon.stage :as stage]
             [moon.stage]
             [gdl.viewport :as viewport])

@@ -1,6 +1,6 @@
 (ns moon.schema.map
   (:require [gdl.scene2d.event :as event]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+            [gdl.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]

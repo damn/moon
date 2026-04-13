@@ -1,5 +1,5 @@
 (ns moon.state.player-idle
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [gdl.scene2d.group :as group]
             [moon.actor :as actor]
             [moon.input :as input]
             [moon.inventory :as inventory]

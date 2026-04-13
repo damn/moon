@@ -1,7 +1,7 @@
 (ns moon.ui.group
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as gdx-group]
             [moon.ui.actor :as actor]
-            [moon.group :as group]))
+            [gdl.scene2d.group :as group]))
 
 (defn set-opts! [group opts]
   (when-let [actors (:group/actors opts)]

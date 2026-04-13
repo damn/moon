@@ -3,7 +3,7 @@
 ; => tests.
 ; InputMultiplex?
 (ns moon.render.window-camera-controls
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [gdl.scene2d.group :as group]
             [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.camera :as camera]
