@@ -61,6 +61,7 @@
  [moon.start.add-method/step moon.ui/create
   [
    [:ui/actor moon.ui.actor/create]
+   [:ui/check-box moon.ui.check-box/create]
    [:ui/group moon.ui.group/create]
    [:ui/label moon.ui.label/create]
    [:ui/image-button moon.ui.image-button/create]
