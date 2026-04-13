@@ -1,7 +1,9 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 ;
+                 ; gdl/moon/cdq ?
+                 ; all deps == 'moon engine' without ctx/?
+                 ; (ctx is wiring)
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
