@@ -1,5 +1,5 @@
 (ns moon.textures
-  (:require [clj.api.com.badlogic.gdx.graphics.texture :as texture]))
+  (:require [gdl.texture :as texture]))
 
 (defn texture-region
   [textures

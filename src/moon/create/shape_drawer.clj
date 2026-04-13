@@ -1,5 +1,5 @@
 (ns moon.create.shape-drawer
-  (:require [clj.api.com.badlogic.gdx.graphics.texture :as texture]
+  (:require [gdl.texture :as texture]
             [clj.api.space.earlygrey.shape-drawer :as shape-drawer]))
 
 (defn step

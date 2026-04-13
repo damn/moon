@@ -1,5 +1,5 @@
 (ns moon.world-fns.uf-caves
-  (:require [clj.api.com.badlogic.gdx.graphics.texture :as texture]
+  (:require [gdl.texture :as texture]
             [moon.tiled-map :as tiled-map]))
 
 (defn create
