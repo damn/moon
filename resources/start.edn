@@ -67,6 +67,7 @@
    [:ui/label moon.ui.label/create]
    [:ui/image-button moon.ui.image-button/create]
    [:ui/scroll-pane moon.ui.scroll-pane/create]
+   [:ui/stack moon.ui.stack/create]
    [:ui/table moon.ui.table/create]
    [:ui/text-button moon.ui.text-button/create]
    [:ui/window moon.ui.window/create]

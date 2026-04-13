@@ -1,13 +1,11 @@
 (ns moon.actor-fns.property-overview-window
   (:require [gdl.texture-region :as texture-region]
             [gdl.scene2d.event :as event]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.db :as db]
-            [moon.group :as group]
             [moon.property :as property]
             [moon.stage :as stage]
             [moon.table :as table]
@@ -46,20 +44,21 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (doto (stack/create)
-                (group/add-actors! [(ui/create
-                                     {:type :ui/image-button
-                                      :drawable (doto (texture-region-drawable/create texture-region)
-                                                  (drawable/set-min-size! (* image-scale (texture-region/width texture-region))
-                                                                          (* image-scale (texture-region/height texture-region))))
-                                      :actor/listeners {:listener/change (fn [event actor]
-                                                                           (on-clicked actor (stage/ctx (event/stage event))))
-                                                        :listener/text-tooltip [tooltip skin]}})
-                                    (ui/create
-                                     {:type :ui/label
-                                      :text extra-info-text
-                                      :skin skin
-                                      :actor/touchable :touchable/disabled})]))})))
+      {:actor (ui/create
+               {:type :ui/stack
+                :group/actors [(ui/create
+                                {:type :ui/image-button
+                                 :drawable (doto (texture-region-drawable/create texture-region)
+                                             (drawable/set-min-size! (* image-scale (texture-region/width texture-region))
+                                                                     (* image-scale (texture-region/height texture-region))))
+                                 :actor/listeners {:listener/change (fn [event actor]
+                                                                      (on-clicked actor (stage/ctx (event/stage event))))
+                                                   :listener/text-tooltip [tooltip skin]}})
+                               (ui/create
+                                {:type :ui/label
+                                 :text extra-info-text
+                                 :skin skin
+                                 :actor/touchable :touchable/disabled})]})})))
 
 (defn- overview-table-rows
   [db
