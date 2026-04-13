@@ -1,8 +1,6 @@
 (ns moon.actor-fns.property-editor-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [gdl.scene2d.event :as event]
             [gdl.viewport :as viewport]
             [moon.actor :as actor]
@@ -59,19 +57,21 @@
                             (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
                               (when (input/key-just-pressed? input :input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
-        save-button (doto (text-button/create "Save [LIGHT_GRAY](ENTER)[]" skin)
-                      (actor/add-listener!
-                       (change-listener/create
-                        (fn [event actor]
-                          (clicked-save-fn actor (stage/ctx (event/stage event)))))))
-        delete-button (doto (text-button/create "Delete" skin)
-                        (actor/add-listener!
-                         (change-listener/create
-                          (fn [event actor]
-                            (clicked-delete-fn actor (stage/ctx (event/stage event)))))))
+        save-button {:type :ui/text-button
+                     :text "Save [LIGHT_GRAY](ENTER)[]"
+                     :skin skin
+                     :actor/listener [:listener/change
+                                      (fn [event actor]
+                                        (clicked-save-fn actor (stage/ctx (event/stage event))))]}
+        delete-button {:type :ui/text-button
+                       :text "Delete"
+                       :skin skin
+                       :actor/listener [:listener/change
+                                        (fn [event actor]
+                                          (clicked-delete-fn actor (stage/ctx (event/stage event))))]}
         scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor save-button :center? true}
-                           {:actor delete-button :center? true}]]
+                          [{:actor (ui/create save-button) :center? true}
+                           {:actor (ui/create delete-button) :center? true}]]
         rows [[(scroll-pane-cell/create skin
                                         scroll-pane-height
                                         scroll-pane-rows)]]]
