@@ -9,13 +9,6 @@
             [moon.textures :as textures]
             [moon.val-max :as val-max]))
 
-(defn- create-hp-mana-bar* [create-draws]
-  (gdx-actor/create
-   {:draw! (fn [this _batch _parent-alpha]
-             (when-let [stage (actor/stage this)]
-               (draws/handle! (stage/ctx stage)
-                              (create-draws (stage/ctx stage)))))}))
-
 (let [config {:rahmen-file "images/rahmen.png"
               :rahmenw 150
               :rahmenh 26
@@ -59,4 +52,9 @@
 (defn create
   [{:keys [ctx/textures
            ctx/stage]}]
-  (create-hp-mana-bar* (hp-mana-bar-config textures stage)))
+  (let [create-draws (hp-mana-bar-config textures stage)]
+    (gdx-actor/create
+     {:draw! (fn [this _batch _parent-alpha]
+               (when-let [stage (actor/stage this)]
+                 (draws/handle! (stage/ctx stage)
+                                (create-draws (stage/ctx stage)))))})))

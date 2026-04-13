@@ -7,6 +7,9 @@
 
 (defn set-opts!
   [actor opts]
+  (when-let [user-object (:actor/user-object actor)]
+    (actor/set-user-object! actor user-object))
+
   (when (:actor/position opts)
     (let [[x y align] (:actor/position opts)]
       (actor/set-position! actor x y (align/k->value align))))
