@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.inventory
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
             [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+            [gdl.scene2d.event :as event]
             [clj.api.com.badlogic.gdx.scenes.scene2d.group :as gdx-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]

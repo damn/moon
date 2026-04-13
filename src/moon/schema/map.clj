@@ -1,5 +1,5 @@
 (ns moon.schema.map
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [gdl.scene2d.event :as event]
             [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]

@@ -42,6 +42,9 @@
     clj.api.com.badlogic.gdx.scenes.scene2d.actor
     moon.actor/Actor
     ]
+   [com.badlogic.gdx.scenes.scene2d.Event
+    clj.api.com.badlogic.gdx.scenes.scene2d.event
+    gdl.scene2d.event/Event]
    [
     com.badlogic.gdx.scenes.scene2d.ui.Window
     moon.impl.window

@@ -1,6 +1,6 @@
 (ns moon.actor-fns.property-overview-window
   (:require [clj.api.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+            [gdl.scene2d.event :as event]
             [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]

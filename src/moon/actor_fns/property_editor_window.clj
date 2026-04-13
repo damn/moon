@@ -1,9 +1,9 @@
 (ns moon.actor-fns.property-editor-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [gdl.scene2d.event :as event]
             [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.db :as db]

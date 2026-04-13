@@ -1,5 +1,5 @@
 (ns moon.schema.sound
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [gdl.scene2d.event :as event]
             [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
