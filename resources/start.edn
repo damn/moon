@@ -61,6 +61,7 @@
  [moon.start.add-method/step moon.ui/create
   [
    [:ui/actor moon.ui.actor/create]
+   [:ui/group moon.ui.group/create]
    [:ui/label moon.ui.label/create]
    [:ui/image-button moon.ui.image-button/create]
    [:ui/scroll-pane moon.ui.scroll-pane/create]
