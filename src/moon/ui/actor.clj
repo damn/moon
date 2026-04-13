@@ -8,3 +8,7 @@
     (actor/add-listener! actor
                          (case listener-k
                            :listener/change (change-listener/create listener-fn)))))
+
+(defn create
+  [opts]
+  (actor/create opts))

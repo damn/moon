@@ -1,6 +1,5 @@
 (ns moon.actor-fns.property-editor-window
   (:require [clj.api.com.badlogic.gdx.input.keys :as input.keys]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [clj.api.com.badlogic.gdx.scenes.scene2d.event :as event]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
@@ -17,6 +16,7 @@
             [moon.stage :as stage]
             [moon.table :as table]
             [moon.throwable :as throwable]
+            [moon.ui :as ui]
             [moon.window :as window]))
 
 (defn create
@@ -53,8 +53,9 @@
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
-        actors [(gdx-actor/create
-                 {:act! (fn [this delta]
+        actors [(ui/create
+                 {:type :ui/actor
+                  :act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
                             (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
                               (when (input/key-just-pressed? input input.keys/enter)
