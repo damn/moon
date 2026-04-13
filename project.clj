@@ -4,6 +4,7 @@
                  ; gdl/moon/cdq ?
                  ; all deps == 'moon engine' without ctx/?
                  ; (ctx is wiring)
+                 ; where does the 'engine' or 'libraries' end and the 'game' start?
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]

@@ -1,7 +1,6 @@
 (ns moon.schema.map
   (:require [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
@@ -15,6 +14,7 @@
             [moon.schemas :as schemas]
             [moon.stage :as stage]
             [moon.table :as table]
+            [moon.ui :as ui]
             [moon.window :as window]))
 
 (defn malli-form [[_ ks] schemas]
@@ -76,7 +76,10 @@
                                                                                (group/children table))))
                                                  (rebuild! (stage/ctx (event/stage event))))))))
                                  :left? true}
-                                {:actor (label/create label-text skin)}]]))
+                                {:actor (ui/create
+                                         {:type :ui/label
+                                          :text label-text
+                                          :skin skin})}]]))
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
     :pad-top 2
