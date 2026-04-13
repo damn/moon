@@ -31,15 +31,15 @@
                      {:type :ui/text-button
                       :text "Map"
                       :skin skin
-                      :actor/listener [:listener/change
-                                       (fn [_event actor]
-                                         (stage/add-actor! (actor/stage actor)
-                                                           (create
-                                                            {:title "title"
-                                                             :data v
-                                                             :width 500
-                                                             :height 500
-                                                             :skin skin})))]}
+                      :actor/listeners [[:listener/change
+                                         (fn [_event actor]
+                                           (stage/add-actor! (actor/stage actor)
+                                                             (create
+                                                              {:title "title"
+                                                               :data v
+                                                               :width 500
+                                                               :height 500
+                                                               :skin skin})))]]}
                      {:type :ui/label
                       :text (v->text v)
                       :skin skin}))

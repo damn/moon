@@ -55,15 +55,15 @@
         save-button {:type :ui/text-button
                      :text "Save [LIGHT_GRAY](ENTER)[]"
                      :skin skin
-                     :actor/listener [:listener/change
-                                      (fn [event actor]
-                                        (clicked-save-fn actor (stage/ctx (event/stage event))))]}
+                     :actor/listeners [[:listener/change
+                                        (fn [event actor]
+                                          (clicked-save-fn actor (stage/ctx (event/stage event))))]]}
         delete-button {:type :ui/text-button
                        :text "Delete"
                        :skin skin
-                       :actor/listener [:listener/change
-                                        (fn [event actor]
-                                          (clicked-delete-fn actor (stage/ctx (event/stage event))))]}
+                       :actor/listeners [[:listener/change
+                                          (fn [event actor]
+                                            (clicked-delete-fn actor (stage/ctx (event/stage event))))]]}
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor (ui/create save-button) :center? true}
                            {:actor (ui/create delete-button) :center? true}]]
