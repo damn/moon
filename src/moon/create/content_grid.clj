@@ -1,8 +1,7 @@
 (ns moon.create.content-grid
-  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as map-properties]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [moon.content-grid :as content-grid]
-            [moon.grid2d :as g2d]))
+  (:require [moon.content-grid :as content-grid]
+            [moon.grid2d :as g2d]
+            [moon.tiled-map :as tiled-map]))
 
 (defn- create* [width height cell-size]
   {:grid (g2d/create-grid
@@ -52,8 +51,8 @@
   [{:keys [ctx/tiled-map]
     :as ctx}
    cell-size]
-  (assoc ctx :ctx/content-grid (create* (map-properties/get (tiled-map/properties tiled-map) "width")
-                                        (map-properties/get (tiled-map/properties tiled-map) "height")
+  (assoc ctx :ctx/content-grid (create* (tiled-map/width tiled-map)
+                                        (tiled-map/height tiled-map)
                                         cell-size)))
 
 ; TODO content-grid protocol
