@@ -1,20 +1,15 @@
 (ns moon.actor-fns.property-editor-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
-            [gdl.scene2d.event :as event]
+  (:require [gdl.scene2d.event :as event]
             [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.db :as db]
-            [moon.group :as group]
             [moon.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
             [moon.scroll-pane-cell :as scroll-pane-cell]
             [moon.stage :as stage]
-            [moon.table :as table]
             [moon.throwable :as throwable]
-            [moon.ui :as ui]
-            [moon.window :as window]))
+            [moon.ui :as ui]))
 
 (defn create
   [{:keys [ctx
@@ -75,11 +70,13 @@
         rows [[(scroll-pane-cell/create skin
                                         scroll-pane-height
                                         scroll-pane-rows)]]]
-    (doto (gdx-window/create "[SKY]Property[]" skin)
-      (window/add-close-button! skin)
-      (table/set-cell-defaults! {:pad 5})
-      (table/add-rows! rows)
-      (gdx-window/set-modal! true)
-      (widget-group/pack!)
-      (group/add-actors! actors)
-      (actor/set-name! "moon.ui.editor.window"))))
+    (ui/create
+     {:type :ui/window
+      :title "[SKY]Property[]"
+      :skin skin
+      :window/close-button? skin
+      :window/modal? true
+      :table/cell-defaults {:pad 5}
+      :table/rows rows
+      :group/actors actors
+      :actor/name "moon.ui.editor.window"})))

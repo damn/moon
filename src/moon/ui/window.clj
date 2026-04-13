@@ -7,10 +7,10 @@
   (when (:window/modal? opts)
     (window/set-modal! window true))
   (when-let [skin (:window/close-button? opts)]
-    (x-window/add-close-button! window skin)))
+    (x-window/add-close-button! window skin))
+  (table/set-opts! opts))
 
 (defn create
   [{:keys [title skin] :as opts}]
   (doto (window/create title skin)
-    (set-opts! opts)
-    (table/set-opts! opts)))
+    (set-opts! opts)))

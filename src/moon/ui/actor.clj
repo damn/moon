@@ -4,6 +4,8 @@
 
 (defn set-opts!
   [actor opts]
+  (when-let [name (:actor/name opts)]
+    (actor/set-name! actor name))
   (when-let [[listener-k listener-fn] (:actor/listener opts)]
     (actor/add-listener! actor
                          (case listener-k
