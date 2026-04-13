@@ -1,14 +1,10 @@
 (ns moon.actor-fns.data-viewer-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.table :as table]
+            [moon.ui :as ui]
             [moon.window :as window]))
 
 (defn create
@@ -36,30 +32,37 @@
                    (str (class v))))
         v->actor (fn [v skin]
                    (if (map? v)
-                     (doto (text-button/create "Map" skin)
-                       (actor/add-listener!
-                        (change-listener/create
-                         (fn [_event actor]
-                           (stage/add-actor! (actor/stage actor)
-                                             (create
-                                              {:title "title"
-                                               :data v
-                                               :width 500
-                                               :height 500
-                                               :skin skin}))))))
-                     (label/create (v->text v) skin)))
+                     {:type :ui/text-button
+                      :text "Map"
+                      :skin skin
+                      :actor/listener (change-listener/create
+                                       (fn [_event actor]
+                                         (stage/add-actor! (actor/stage actor)
+                                                           (create
+                                                            {:title "title"
+                                                             :data v
+                                                             :width 500
+                                                             :height 500
+                                                             :skin skin}))))}
+                     {:type :ui/label
+                      :text (v->text v)
+                      :skin skin}))
         rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
-                :actor (v->actor v skin)})
-        scroll-pane-table (-> (gdx-table/create)
+                :actor (ui/create (v->actor v skin))})
+        scroll-pane-table (-> (ui/create {:type :ui/table})
                               (table/add-rows! (for [{:keys [label actor]} rows]
-                                                 [{:actor (label/create label skin)}
+                                                 [{:actor (ui/create {:type :ui/label
+                                                                      :text label
+                                                                      :skin skin})}
                                                   {:actor actor}])))
-        scroll-pane-cell (let [table (doto (gdx-table/create)
+        scroll-pane-cell (let [table (doto (ui/create {:type :ui/table})
                                        (table/set-cell-defaults! {:pad 1})
                                        (table/add-rows! [[scroll-pane-table]])
                                        (widget-group/pack!))]
-                           {:actor (scroll-pane/create table skin)
+                           {:actor (ui/create {:type :ui/scroll-pane
+                                               :actor table
+                                               :skin skin})
                             :width width
                             ; (- (viewport/world-width viewport) 100)
                             ; (+ 100 (/ (viewport/world-width viewport) 2))
@@ -67,7 +70,9 @@
                             ; (- (viewport/world-height viewport) 200)
                             ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (doto (gdx-window/create title skin)
+    (doto (ui/create {:type :ui/window
+                      :title title
+                      :skin skin})
       (window/add-close-button! skin)
       (table/add-rows! [[scroll-pane-cell]])
       (widget-group/pack!))))

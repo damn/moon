@@ -1,3 +1,10 @@
+
+; TODO !!!
+; WHAT IS THE CODE REALLY DOING
+; WITNHOUT SMART STUFF !!!
+; !!!
+; Ju'sT LAY IT WHERE IT IS ANDMAKE FEATURE TESTS??
+
 [
  [moon.start.extend-types/step
   [
@@ -48,6 +55,14 @@
  [moon.start.require/step [
                            moon.info-impl
                            ]]
+ [moon.start.add-method/step moon.ui/create
+  [
+   [:ui/label moon.ui.label/create]
+   [:ui/scroll-pane moon.ui.scroll-pane/create]
+   [:ui/table moon.ui.table/create]
+   [:ui/text-button moon.ui.text-button/create]
+   [:ui/window moon.ui.window/create]
+   ]]
  [moon.start.add-method/step moon.schema/create [[:default moon.schema.default/create]]]
  [moon.start.add-method/step moon.schema/value  [[:default moon.schema.default/value]]]
  [moon.start.add-methods/step
