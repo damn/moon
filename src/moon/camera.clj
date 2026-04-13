@@ -1,22 +1,23 @@
 (ns moon.camera
-  (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as camera]
-            [clj.api.com.badlogic.gdx.math.frustum :as frustum]
-            [clj.api.com.badlogic.gdx.math.vector3 :as vector3]))
+  (:require [gdl.camera :as camera]))
 
-(defn set-position! [camera [x y]]
-  (vector3/set-x! (camera/position camera) x)
-  (vector3/set-y! (camera/position camera) y)
-  (camera/update! camera))
+(def position camera/position)
+
+(def combined camera/combined)
+
+(def zoom camera/zoom)
+
+(defn set-position! [camera xy]
+  (camera/set-position! camera xy))
 
 (defn set-zoom! [camera amount]
-  (camera/set-zoom! camera amount)
-  (camera/update! camera))
+  (camera/set-zoom! camera amount))
 
 (defn inc-zoom! [cam by]
   (set-zoom! cam (max 0.1 (+ (camera/zoom cam) by))))
 
 (defn frustum [camera]
-  (let [plane-points (mapv vector3/->clj (frustum/plane-points (camera/frustum camera)))
+  (let [plane-points (camera/frustum camera)
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))
@@ -35,7 +36,7 @@
   [camera & {:keys [left top right bottom]}]
   (let [viewport-width  (camera/viewport-width  camera)
         viewport-height (camera/viewport-height camera)
-        [px py] (vector3/->clj (camera/position camera))
+        [px py] (camera/position camera)
         px (float px)
         py (float py)
         leftx (float (left 0))
