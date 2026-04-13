@@ -1,10 +1,6 @@
 (ns moon.actor-fns.error-window
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
-            [clojure.repl :as repl]
-            [moon.table :as table]
-            [moon.window :as window]))
+  (:require [clojure.repl :as repl]
+            [moon.ui :as ui]))
 
 (defmacro ^:private with-err-str [& body]
   `(let [s# (new java.io.StringWriter)]
@@ -17,8 +13,11 @@
   (let [label-text (binding [*print-level* 3]
                      (with-err-str
                        (repl/pst throwable)))]
-    (doto (gdx-window/create "Error" skin)
-      (window/add-close-button! skin)
-      (table/add-rows! [[{:actor (label/create label-text skin)}]])
-      (gdx-window/set-modal! true)
-      (widget-group/pack!))))
+    (ui/create {:type :ui/window
+                :title "Error"
+                :skin skin
+                :window/close-button? skin
+                :table/rows [[{:actor (ui/create {:type :ui/label
+                                                  :text label-text
+                                                  :skin skin})}]]
+                :window/modal? true})))

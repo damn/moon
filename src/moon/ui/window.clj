@@ -4,6 +4,8 @@
             [moon.window :as x-window]))
 
 (defn set-opts! [window opts]
+  (when (:window/modal? opts)
+    (window/set-modal! window true))
   (when-let [skin (:window/close-button? opts)]
     (x-window/add-close-button! window skin)))
 
