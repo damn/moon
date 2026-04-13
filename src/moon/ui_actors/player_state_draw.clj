@@ -1,13 +1,14 @@
 (ns moon.ui-actors.player-state-draw
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
-            [moon.actor :as actor]
+  (:require [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.stage :as stage]
-            [moon.state :as state]))
+            [moon.state :as state]
+            [moon.ui :as ui]))
 
 (defn create [_ctx]
-  (gdx-actor/create
-   {:draw! (fn [this _batch _parent-alpha]
+  (ui/create
+   {:type :ui/actor
+    :draw! (fn [this _batch _parent-alpha]
              (let [{:keys [ctx/player-eid] :as ctx} (stage/ctx (actor/stage this))
                    entity @player-eid
                    state-k (:state (:entity/fsm entity))]

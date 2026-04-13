@@ -31,4 +31,5 @@
 
 (defn create
   [opts]
-  (actor/create opts))
+  (doto (actor/create opts)
+    (set-opts! opts)))
