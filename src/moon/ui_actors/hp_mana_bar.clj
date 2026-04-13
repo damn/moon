@@ -1,13 +1,13 @@
 (ns moon.ui-actors.hp-mana-bar
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
-            [gdl.viewport :as viewport]
+  (:require [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.readable :as readable]
             [moon.stage :as stage]
             [moon.stats :as stats]
             [moon.textures :as textures]
-            [moon.val-max :as val-max]))
+            [moon.val-max :as val-max]
+            [moon.ui :as ui]))
 
 (let [config {:rahmen-file "images/rahmen.png"
               :rahmenw 150
@@ -53,8 +53,9 @@
   [{:keys [ctx/textures
            ctx/stage]}]
   (let [create-draws (hp-mana-bar-config textures stage)]
-    (gdx-actor/create
-     {:draw! (fn [this _batch _parent-alpha]
+    (ui/create
+     {:type :ui/actor
+      :draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]
                  (draws/handle! (stage/ctx stage)
                                 (create-draws (stage/ctx stage)))))})))
