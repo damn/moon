@@ -1,9 +1,7 @@
 (ns moon.actor-fns.property-overview-window
-  (:require [clj.api.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+  (:require [gdl.texture-region :as texture-region]
             [gdl.scene2d.event :as event]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
@@ -18,6 +16,7 @@
             [moon.stage :as stage]
             [moon.table :as table]
             [moon.textures :as textures]
+            [moon.ui :as ui]
             [moon.window :as window]))
 
 (def ^:private property-type->overview-table-props
@@ -59,8 +58,11 @@
                                                             (fn [event actor]
                                                               (on-clicked actor (stage/ctx (event/stage event))))))
                                       (actor/add-listener! (text-tooltip/create tooltip skin)))
-                                    (doto (label/create extra-info-text skin)
-                                      (actor/set-touchable! touchable/disabled))]))})))
+                                    (ui/create
+                                     {:type :ui/label
+                                      :text extra-info-text
+                                      :skin skin
+                                      :actor/touchable :touchable/disabled})]))})))
 
 (defn- overview-table-rows
   [db

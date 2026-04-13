@@ -23,6 +23,9 @@
    [com.badlogic.gdx.Graphics
     clj.api.com.badlogic.gdx.graphics
     gdl.graphics/Graphics]
+   [com.badlogic.gdx.graphics.g2d.TextureRegion
+    clj.api.com.badlogic.gdx.graphics.g2d.texture-region
+    gdl.texture-region/TextureRegion]
    [com.badlogic.gdx.Input
     clj.api.com.badlogic.gdx.input
     gdl.input/Input]

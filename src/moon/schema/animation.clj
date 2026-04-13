@@ -1,5 +1,5 @@
 (ns moon.schema.animation
-  (:require [clj.api.com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+  (:require [gdl.texture-region :as texture-region]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]

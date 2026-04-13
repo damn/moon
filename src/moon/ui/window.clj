@@ -8,7 +8,7 @@
     (window/set-modal! window true))
   (when-let [skin (:window/close-button? opts)]
     (x-window/add-close-button! window skin))
-  (table/set-opts! opts))
+  (table/set-opts! window opts))
 
 (defn create
   [{:keys [title skin] :as opts}]
