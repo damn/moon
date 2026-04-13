@@ -1,6 +1,5 @@
 (ns moon.state.player-idle
-  (:require [clj.api.com.badlogic.gdx.input.buttons :as input.buttons]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
             [moon.actor :as actor]
             [moon.input :as input]
             [moon.inventory :as inventory]
@@ -115,7 +114,7 @@
                         ctx/stage] :as ctx}]
   (if-let [movement-vector (input/player-movement-vector input)]
     [[:tx/event player-eid :movement-input movement-vector]]
-    (when (input/button-just-pressed? input input.buttons/left)
+    (when (input/button-just-pressed? input :input.buttons/left)
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))

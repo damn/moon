@@ -1,6 +1,5 @@
 (ns moon.state.player-item-on-cursor
-  (:require [clj.api.com.badlogic.gdx.input.buttons :as input.buttons]
-            [moon.input :as input]
+  (:require [moon.input :as input]
             [moon.inventory :as inventory]
             [moon.stage :as stage]
             [moon.textures :as textures]
@@ -122,6 +121,6 @@
   [_ eid {:keys [ctx/input
                  ctx/stage]}]
   (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))]
-    (when (and (input/button-just-pressed? input input.buttons/left)
+    (when (and (input/button-just-pressed? input :input.buttons/left)
                (world-item? mouseover-actor))
       [[:tx/event eid :drop-item]])))
