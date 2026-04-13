@@ -8,7 +8,8 @@
             [clj.api.com.badlogic.gdx.utils.align :as align]
             [gdl.viewport :as viewport]
             [moon.actor :as actor]
-            [moon.stage :as stage]))
+            [moon.stage :as stage]
+            [moon.table]))
 
 (defn do!
   [{:keys [ctx/skin
@@ -18,14 +19,13 @@
   (assert (not (stage/find-actor stage "moon.ui.modal-window")))
   (stage/add-actor! stage
                     (doto (window/create title skin)
-                      (table/add! (label/create text skin))
-                      (table/row!)
-                      (table/add! (doto (text-button/create button-text skin)
-                                    (actor/add-listener!
-                                     (change-listener/create
-                                      (fn [_event _actor]
-                                        (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
-                                        (on-click))))))
+                      (moon.table/add-rows! [[{:actor (label/create text skin)}]
+                                             [{:actor (doto (text-button/create button-text skin)
+                                                        (actor/add-listener!
+                                                         (change-listener/create
+                                                          (fn [_event _actor]
+                                                            (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
+                                                            (on-click)))))}] ])
                       (window/set-modal! true)
                       (widget-group/pack!)
                       (actor/set-name! "moon.ui.modal-window")
