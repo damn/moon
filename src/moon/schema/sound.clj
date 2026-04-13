@@ -12,8 +12,7 @@
             [moon.stage :as stage]
             [moon.table :as table]
             [moon.txs :as txs]
-            [moon.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
+            [moon.window :as window]))
 
 (defn malli-form [_ _schemas]
   :string)
@@ -24,8 +23,8 @@
   (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
     (table/add-rows! table [(sound-columns skin table sound-name)])
-    (actor/remove! (actor/find-ancestor actor Window))
-    (widget-group/pack! (actor/find-ancestor table Window))
+    (actor/remove! (actor/find-ancestor actor :ui/window))
+    (widget-group/pack! (actor/find-ancestor table :ui/window))
     (let [[k _] (actor/user-object table)]
       (actor/set-user-object! table [k sound-name]))))
 

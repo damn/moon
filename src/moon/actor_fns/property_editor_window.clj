@@ -17,8 +17,7 @@
             [moon.stage :as stage]
             [moon.table :as table]
             [moon.throwable :as throwable]
-            [moon.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
+            [moon.window :as window]))
 
 (defn create
   [{:keys [ctx
@@ -43,7 +42,7 @@
                                (let [new-ctx (update ctx :ctx/db f)
                                      stage (actor/stage actor)]
                                  (stage/set-ctx! stage new-ctx))
-                               (actor/remove! (actor/find-ancestor actor Window))
+                               (actor/remove! (actor/find-ancestor actor :ui/window))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage

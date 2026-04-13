@@ -25,10 +25,14 @@
 (defn toggle-visible! [actor]
   (set-visible! actor (not (visible? actor))))
 
+(defn- ui-type->class [k]
+  (case k
+    :ui/window com.badlogic.gdx.scenes.scene2d.ui.Window))
+
 (defn find-ancestor
-  [actor clazz]
+  [actor ui-type-k]
   (if-let [parent (parent actor)]
-    (if (instance? clazz parent)
+    (if (instance? (ui-type->class ui-type-k) parent)
       parent
-      (find-ancestor parent clazz))
+      (find-ancestor parent ui-type-k))
     (throw (Error. (str "Actor has no parent window " actor)))))

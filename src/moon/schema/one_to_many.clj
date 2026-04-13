@@ -12,8 +12,7 @@
             [moon.property :as property]
             [moon.stage :as stage]
             [moon.table :as table]
-            [moon.textures :as textures])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
+            [moon.textures :as textures]))
 
 (defn malli-form [[_ property-type] _schemas]
   [:set [:qualified-keyword {:namespace (property/type->id-namespace property-type)}]])
@@ -31,7 +30,7 @@
   (let [redo-rows (fn [ctx property-ids]
                     (group/clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (widget-group/pack! (actor/find-ancestor table Window)))]
+                    (widget-group/pack! (actor/find-ancestor table :ui/window)))]
     (table/add-rows!
      table
      [[{:actor (doto (text-button/create "+" skin)
@@ -51,7 +50,7 @@
                            :skin skin
                            :property-type property-type
                            :clicked-id-fn (fn [actor id ctx]
-                                            (actor/remove! (actor/find-ancestor actor Window))
+                                            (actor/remove! (actor/find-ancestor actor :ui/window))
                                             (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)
