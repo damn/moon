@@ -3,9 +3,8 @@
             [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
             [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+            [gdl.scene2d.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
@@ -22,7 +21,8 @@
             [moon.state :as state]
             [moon.table :as table]
             [moon.textures :as textures]
-            [moon.txs :as txs]))
+            [moon.txs :as txs]
+            [moon.ui :as ui]))
 
 (defn- clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
   (let [entity @player-eid
@@ -74,36 +74,38 @@
                        background-drawable (slot->drawable slot)]
                    {:actor (doto (stack/create)
                              (group/add-actors! [(draw-cell-rect-actor draw-cell-rect)
-                                                 (doto (image/create background-drawable)
-                                                   (actor/set-name! "image-widget")
-                                                   (actor/set-user-object! {:background-drawable background-drawable
-                                                                            :cell-size cell-size}))])
+                                                 (ui/create
+                                                  {:type :ui/image
+                                                   :texture-region background-drawable
+                                                   :actor/name "image-widget"
+                                                   :actor/user-object {:background-drawable background-drawable
+                                                                       :cell-size cell-size}})])
                              (actor/set-name! "inventory-cell")
                              (actor/set-user-object! cell)
                              (actor/add-listener! (clicked-cell-listener cell)))}))]
     (doto (window/create title skin)
       (table/add-rows!
-       [[{:actor (doto (gdx-table/create)
-                   (actor/set-name! "inventory-cell-table")
-                   (table/add-rows!
-                    (concat [[nil nil
-                              (->cell :inventory.slot/helm)
-                              (->cell :inventory.slot/necklace)]
-                             [nil
-                              (->cell :inventory.slot/weapon)
-                              (->cell :inventory.slot/chest)
-                              (->cell :inventory.slot/cloak)
-                              (->cell :inventory.slot/shield)]
-                             [nil nil
-                              (->cell :inventory.slot/leg)]
-                             [nil
-                              (->cell :inventory.slot/glove)
-                              (->cell :inventory.slot/rings :position [0 0])
-                              (->cell :inventory.slot/rings :position [1 0])
-                              (->cell :inventory.slot/boot)]]
-                            (for [y (range 4)]
-                              (for [x (range 6)]
-                                (->cell :inventory.slot/bag :position [x y]))))))
+       [[{:actor (ui/create
+                  {:type :ui/table
+                   :actor/name "inventory-cell-table"
+                   :table/rows (concat [[nil nil
+                                         (->cell :inventory.slot/helm)
+                                         (->cell :inventory.slot/necklace)]
+                                        [nil
+                                         (->cell :inventory.slot/weapon)
+                                         (->cell :inventory.slot/chest)
+                                         (->cell :inventory.slot/cloak)
+                                         (->cell :inventory.slot/shield)]
+                                        [nil nil
+                                         (->cell :inventory.slot/leg)]
+                                        [nil
+                                         (->cell :inventory.slot/glove)
+                                         (->cell :inventory.slot/rings :position [0 0])
+                                         (->cell :inventory.slot/rings :position [1 0])
+                                         (->cell :inventory.slot/boot)]]
+                                       (for [y (range 4)]
+                                         (for [x (range 6)]
+                                           (->cell :inventory.slot/bag :position [x y]))))})
           :pad 4}]])
       (widget-group/pack!)
       (actor/set-name! "moon.ui.windows.inventory")

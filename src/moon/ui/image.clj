@@ -3,6 +3,6 @@
             [moon.ui.actor :as actor]))
 
 (defn create
-  [{:keys [texture-region] :as opts}]
+  [{:keys [texture-region] :as opts}] ; FIXME name , can be drawable/texture,texture-region
   (doto (image/create texture-region)
     (actor/set-opts! opts)))
