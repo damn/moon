@@ -1,10 +1,8 @@
 (ns moon.ui-actors.windows.inventory
   (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
-            [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
             [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.ui.image :as image]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.viewport :as viewport]
@@ -38,7 +36,7 @@
                                                (actor/x this)
                                                (actor/y this)
                                                (actor/hit this
-                                                          (vector2/->clj (actor/stage->local-coordinates this (vector2/->java ui-mouse-position)))
+                                                          (actor/stage->local-coordinates this ui-mouse-position)
                                                           true)
                                                (actor/user-object (actor/parent this)))))))})
 
@@ -176,7 +174,7 @@
           drawable (doto (texture-region-drawable/create texture-region)
                      (drawable/set-min-size! cell-size cell-size))]
       (image/set-drawable! image-widget drawable)
-      (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
+      (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
       nil))
 
   (remove-item! [inventory-window cell]

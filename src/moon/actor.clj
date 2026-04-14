@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [name]))
 
 (defprotocol Actor
+  (set-opts! [_ opts])
   (name [_])
   (x [_])
   (y [_])
@@ -20,19 +21,6 @@
   (visible? [_])
   (hit [_ [x y] touchable?])
   (remove! [_])
-  (parent [_]))
-
-(defn toggle-visible! [actor]
-  (set-visible! actor (not (visible? actor))))
-
-(defn- ui-type->class [k]
-  (case k
-    :ui/window com.badlogic.gdx.scenes.scene2d.ui.Window))
-
-(defn find-ancestor
-  [actor ui-type-k]
-  (if-let [parent (parent actor)]
-    (if (instance? (ui-type->class ui-type-k) parent)
-      parent
-      (find-ancestor parent ui-type-k))
-    (throw (Error. (str "Actor has no parent window " actor)))))
+  (parent [_])
+  (toggle-visible! [_])
+  (find-ancestor [_ ui-type-k]))

@@ -2,7 +2,6 @@
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [moon.actor :as actor]
             [moon.ui.table :as table]))
 
@@ -11,9 +10,8 @@
    (window/title-table window)
    (doto (text-button/create "X" skin)
      (actor/add-listener!
-      (change-listener/create
-       (fn [_event _actor]
-         (actor/remove! window)))))))
+      [:listener/change (fn [_event _actor]
+                          (actor/remove! window))]))))
 
 (defn set-opts! [window opts]
   (when (:window/modal? opts)

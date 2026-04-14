@@ -23,6 +23,9 @@
    [com.badlogic.gdx.Graphics
     clj.api.com.badlogic.gdx.graphics
     gdl.graphics/Graphics]
+   [com.badlogic.gdx.graphics.Texture
+    clj.api.com.badlogic.gdx.graphics.texture
+    gdl.texture/Texture]
    [com.badlogic.gdx.graphics.g2d.TextureRegion
     clj.api.com.badlogic.gdx.graphics.g2d.texture-region
     gdl.texture-region/TextureRegion]
@@ -39,7 +42,7 @@
     ]
    [
     com.badlogic.gdx.scenes.scene2d.Actor
-    clj.api.com.badlogic.gdx.scenes.scene2d.actor
+    moon.ui.actor
     moon.actor/Actor
     ]
    [com.badlogic.gdx.scenes.scene2d.Event

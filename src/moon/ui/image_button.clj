@@ -3,7 +3,7 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.texture-region :as texture-region]
-            [moon.ui.actor :as actor]))
+            [moon.actor :as actor]))
 
 (defn- create-drawable*
   [{:keys [drawable/texture-region drawable/scale]}]

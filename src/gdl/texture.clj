@@ -1,4 +1,5 @@
-(ns gdl.texture
-  (:require [clj.api.com.badlogic.gdx.graphics.texture :as texture]))
+(ns gdl.texture)
 
-(def region texture/region)
+(defprotocol Texture
+  (region [_]
+          [_ x y width height]))
