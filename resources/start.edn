@@ -72,6 +72,9 @@
    [com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
     clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
     gdl.scene2d.ui.widget-group/WidgetGroup]
+   [com.badlogic.gdx.scenes.scene2d.Group
+    moon.ui.group
+    gdl.scene2d.group/Group]
    [com.badlogic.gdx.utils.Disposable
     clj.api.com.badlogic.gdx.utils.disposable
     gdl.disposable/Disposable]

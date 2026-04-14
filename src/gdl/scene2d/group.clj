@@ -1,10 +1,8 @@
-(ns gdl.scene2d.group
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]))
+(ns gdl.scene2d.group)
 
-(def add-actor! group/add-actor!)
-(def children group/children)
-(def find-actor group/find-actor)
-(def clear-children! group/clear-children!)
-
-(defn add-actors! [group actors]
-  (run! #(add-actor! group %) actors))
+(defprotocol Group
+  (add-actor! [_ actor])
+  (children [_])
+  (find-actor [_ name])
+  (clear-children! [_])
+  (set-opts! [_ opts]))
