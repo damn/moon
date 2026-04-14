@@ -6,12 +6,10 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.table :as table]
-            [moon.ui :as ui]
-            [moon.window :as window]))
+            [moon.ui :as ui]))
 
 (defn- set-label-text-actor [label text-fn]
   (ui/create
@@ -35,17 +33,19 @@
      (cell/expand-x! (cell/right! (gdx-table/add! table label))))))
 
 (defn- create-window [skin label items]
-  (doto (gdx-window/create label skin)
-    (window/add-close-button! skin)
-    (table/add-rows! [(for [{:keys [label on-click]} items]
-                        {:actor
-                         (ui/create
-                          {:type :ui/text-button
-                           :text label
-                           :skin skin
-                           :actor/listeners {:listener/change (fn [event actor]
-                                                                (on-click actor (stage/ctx (event/stage event))))}})})])
-    (widget-group/pack!)))
+  (ui/create
+   {:type :ui/window
+    :title label
+    :skin skin
+    :window/close-button? skin
+    :table/rows [(for [{:keys [label on-click]} items]
+                   {:actor
+                    (ui/create
+                     {:type :ui/text-button
+                      :text label
+                      :skin skin
+                      :actor/listeners {:listener/change (fn [event actor]
+                                                           (on-click actor (stage/ctx (event/stage event))))}})})]}))
 
 (defn- main-table [skin menus update-labels]
   (let [table (ui/create
