@@ -1,5 +1,5 @@
 (ns moon.create.batch
-  (:require [gdl.context :as context]))
+  (:require [clj.api.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]))
 
 (defn do! [ctx]
-  (assoc ctx :ctx/batch (context/sprite-batch)))
+  (assoc ctx :ctx/batch (sprite-batch/create)))
