@@ -73,6 +73,7 @@
    [:ui/table moon.ui.table/create]
    [:ui/text-button moon.ui.text-button/create]
    [:ui/text-field moon.ui.text-field/create]
+   [:ui/widget moon.ui.widget/create]
    [:ui/window moon.ui.window/create]
    ]]
  [moon.start.add-method/step moon.schema/create [[:default moon.schema.default/create]]]

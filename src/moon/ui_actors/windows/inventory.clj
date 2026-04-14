@@ -5,7 +5,6 @@
             [gdl.scene2d.group :as group]
             [gdl.scene2d.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
@@ -31,20 +30,20 @@
                                                cell))))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
-  (widget/create
-    (fn [this _batch _parent-alpha]
-      (when-let [stage (actor/stage this)]
-        (let [{:keys [ctx/player-eid
-                      ctx/ui-mouse-position]
-               :as ctx} (stage/ctx stage)]
-          (draws/handle! ctx
-                         (draw-cell-rect @player-eid
-                                         (actor/x this)
-                                         (actor/y this)
-                                         (actor/hit this
-                                                    (vector2/->clj (actor/stage->local-coordinates this (vector2/->java ui-mouse-position)))
-                                                    true)
-                                         (actor/user-object (actor/parent this)))))))))
+  {:type :ui/widget
+   :draw! (fn [this _batch _parent-alpha]
+            (when-let [stage (actor/stage this)]
+              (let [{:keys [ctx/player-eid
+                            ctx/ui-mouse-position]
+                     :as ctx} (stage/ctx stage)]
+                (draws/handle! ctx
+                               (draw-cell-rect @player-eid
+                                               (actor/x this)
+                                               (actor/y this)
+                                               (actor/hit this
+                                                          (vector2/->clj (actor/stage->local-coordinates this (vector2/->java ui-mouse-position)))
+                                                          true)
+                                               (actor/user-object (actor/parent this)))))))})
 
 (defn- create-inventory-window*
   [{:keys [colors
@@ -76,7 +75,8 @@
                       :actor/name "inventory-cell"
                       :actor/user-object cell
                       :actor/listeners {:listener/click (clicked-cell-listener cell)}
-                      :group/actors [(draw-cell-rect-actor draw-cell-rect)
+                      :group/actors [(ui/create
+                                      (draw-cell-rect-actor draw-cell-rect))
                                      (ui/create
                                       {:type :ui/image
                                        :texture-region background-drawable
