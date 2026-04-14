@@ -42,6 +42,12 @@
                                                           true)
                                                (actor/user-object (actor/parent this)))))))})
 
+(defn- create-drawable
+  [{:keys [drawable/texture-region drawable/min-size drawable/tint]}]
+  (doto (texture-region-drawable/create texture-region)
+    (drawable/set-min-size! (min-size 0) (min-size 1))
+    (texture-region-drawable/tint (color/create tint))))
+
 (defn- create-inventory-window*
   [{:keys [colors
            position
@@ -51,9 +57,12 @@
            skin]}]
   (let [cell-size 48
         slot->drawable (fn [slot]
-                         (doto (texture-region-drawable/create (slot->texture-region slot))
-                           (drawable/set-min-size! cell-size cell-size)
-                           (texture-region-drawable/tint (color/create [1 1 1 0.4]))))
+                         {
+                          :drawable/texture-region (slot->texture-region slot)
+                          :drawable/min-size [cell-size cell-size]
+                          :drawable/tint [1 1 1 0.4]
+                          }
+                         )
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size (:colors/item-rect colors)]
                           (when (and mouseover?
@@ -76,7 +85,7 @@
                                       (draw-cell-rect-actor draw-cell-rect))
                                      (ui/create
                                       {:type :ui/image
-                                       :content background-drawable
+                                       :content (create-drawable background-drawable)
                                        :actor/name "image-widget"
                                        :actor/user-object {:background-drawable background-drawable
                                                            :cell-size cell-size}})]})}))]
@@ -173,8 +182,8 @@
   (remove-item! [inventory-window cell]
     (let [cell-widget (window->cell inventory-window cell)
           image-widget (group/find-actor cell-widget "image-widget")]
-      (image/set-drawable! image-widget (:background-drawable (actor/user-object image-widget)))
-      ; TODO
+      (image/set-drawable! image-widget (create-drawable (:background-drawable (actor/user-object image-widget))))
+      ; !! TODO FIXME FIXME FIXME !!!
       ;(.removeListener actor (.getListeners actor))
       ; ... first find the listener
       #_(tooltip/remove! cell-widget)
