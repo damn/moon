@@ -4,12 +4,10 @@
             [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.ui.image :as image]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.viewport :as viewport]
@@ -72,17 +70,19 @@
         ->cell (fn [slot & {:keys [position]}]
                  (let [cell [slot (or position [0 0])]
                        background-drawable (slot->drawable slot)]
-                   {:actor (doto (stack/create)
-                             (group/add-actors! [(draw-cell-rect-actor draw-cell-rect)
-                                                 (ui/create
-                                                  {:type :ui/image
-                                                   :texture-region background-drawable
-                                                   :actor/name "image-widget"
-                                                   :actor/user-object {:background-drawable background-drawable
-                                                                       :cell-size cell-size}})])
-                             (actor/set-name! "inventory-cell")
-                             (actor/set-user-object! cell)
-                             (actor/add-listener! (clicked-cell-listener cell)))}))]
+                   {:actor
+                    (ui/create
+                     {:type :ui/stack
+                      :actor/name "inventory-cell"
+                      :actor/user-object cell
+                      :actor/listeners {:listener/click (clicked-cell-listener cell)}
+                      :group/actors [(draw-cell-rect-actor draw-cell-rect)
+                                     (ui/create
+                                      {:type :ui/image
+                                       :texture-region background-drawable
+                                       :actor/name "image-widget"
+                                       :actor/user-object {:background-drawable background-drawable
+                                                           :cell-size cell-size}})]})}))]
     (doto (window/create title skin)
       (table/add-rows!
        [[{:actor (ui/create
@@ -147,9 +147,8 @@
       :position [(viewport/world-width  (stage/viewport stage))
                  (viewport/world-height (stage/viewport stage))]
       :clicked-cell-listener (fn [cell]
-                               (click-listener/create
-                                 (fn [event _x _y]
-                                   (clicked-inventory-cell cell (stage/ctx (event/stage event))))))
+                               (fn [event _x _y]
+                                 (clicked-inventory-cell cell (stage/ctx (event/stage event)))))
       :slot->texture-region slot->texture-region})))
 
 (defn- find-cell [group cell]

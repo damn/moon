@@ -3,6 +3,7 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [clj.api.com.badlogic.gdx.utils.align :as align]))
 
 (defn set-opts!
@@ -24,6 +25,7 @@
                                   :touchable/disabled touchable/disabled)))
   (when-let [name (:actor/name opts)]
     (actor/set-name! actor name))
+
   (when-let [listeners (:actor/listeners opts)]
     (doseq [[listener-k listener-params] listeners]
       (actor/add-listener! actor
@@ -32,6 +34,8 @@
                                                 (change-listener/create f))
                              :listener/text-tooltip (let [[tooltip skin] listener-params]
                                                       (text-tooltip/create tooltip skin))
+                             :listener/click (let [f listener-params]
+                                               (click-listener/create f))
                              )))))
 
 (defn create
