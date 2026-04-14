@@ -4,7 +4,6 @@
             [gdl.scene2d.ui.widget-group :as widget-group]
             [gdl.viewport :as viewport]
             [moon.actor :as actor]
-            [moon.scroll-pane-cell :as scroll-pane-cell]
             [moon.stage :as stage]
             [moon.table :as table]
             [moon.txs :as txs]
@@ -36,24 +35,30 @@
                         :window/close-button? skin
                         :window/modal? true
                         :table/rows
-                        [[(scroll-pane-cell/create
-                           skin
-                           (viewport/world-width (stage/viewport stage))
-                           (for [sound-name (map first audio)]
-                             [{:actor (ui/create
-                                       {:type :ui/text-button
-                                        :text sound-name
-                                        :skin skin
-                                        :actor/listeners {:listener/change
-                                                          (fn [event actor]
-                                                            ((rebuild-sound-widget! table sound-name) actor (stage/ctx (event/stage event))))}})}
-                              {:actor (ui/create
-                                       {:type :ui/text-button
-                                        :text "play!"
-                                        :skin skin
-                                        :actor/listeners {:listener/change (fn [event _actor]
-                                                                             (txs/handle! (stage/ctx (event/stage event))
-                                                                                          [[:tx/sound sound-name]]))}})}]))]]}))))
+                        [[(let [table (ui/create
+                                       {:type :ui/table
+                                        :table/cell-defaults {:pad 5}
+                                        :table/rows (for [sound-name (map first audio)]
+                                                      [{:actor (ui/create
+                                                                {:type :ui/text-button
+                                                                 :text sound-name
+                                                                 :skin skin
+                                                                 :actor/listeners {:listener/change
+                                                                                   (fn [event actor]
+                                                                                     ((rebuild-sound-widget! table sound-name) actor (stage/ctx (event/stage event))))}})}
+                                                       {:actor (ui/create
+                                                                {:type :ui/text-button
+                                                                 :text "play!"
+                                                                 :skin skin
+                                                                 :actor/listeners {:listener/change (fn [event _actor]
+                                                                                                      (txs/handle! (stage/ctx (event/stage event))
+                                                                                                                   [[:tx/sound sound-name]]))}})}])} )]
+                            {:actor (ui/create {:type :ui/scroll-pane
+                                                :actor table
+                                                :skin skin})
+                             :width  (+ (actor/width table) 50)
+                             :height (min (- (viewport/world-height (stage/viewport stage)) 50)
+                                          (actor/height table))})]]}))))
 
 (defn- sound-columns [skin table sound-name]
   [{:actor (ui/create

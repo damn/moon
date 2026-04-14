@@ -6,7 +6,6 @@
             [moon.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
-            [moon.scroll-pane-cell :as scroll-pane-cell]
             [moon.stage :as stage]
             [moon.throwable :as throwable]
             [moon.ui :as ui]))
@@ -67,9 +66,16 @@
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor (ui/create save-button) :center? true}
                            {:actor (ui/create delete-button) :center? true}]]
-        rows [[(scroll-pane-cell/create skin
-                                        scroll-pane-height
-                                        scroll-pane-rows)]]]
+        rows [[(let [table (ui/create
+                            {:type :ui/table
+                             :table/cell-defaults {:pad 5}
+                             :table/rows scroll-pane-rows})]
+                 {:actor (ui/create {:type :ui/scroll-pane
+                                     :actor table
+                                     :skin skin})
+                  :width  (+ (actor/width table) 50)
+                  :height (min (- scroll-pane-height 50)
+                               (actor/height table))})]]]
     (ui/create
      {:type :ui/window
       :title "[SKY]Property[]"
