@@ -4,7 +4,7 @@
             [clj.api.com.badlogic.gdx.graphics.g2d.freetype.font-generator.parameter :as parameter]
             [clj.api.com.badlogic.gdx.utils.disposable :as disposable]
             [gdl.files :as files]
-            [gdl.graphics.bitmap-font :as font]))
+            [gdl.bitmap-font :as font]))
 
 (defn- generate-font*
   [file-handle
