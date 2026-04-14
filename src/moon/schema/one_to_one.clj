@@ -54,7 +54,7 @@
          (let [property (db/get-raw db property-id)]
            {:actor (ui/create
                     {:type :ui/image
-                     :texture-region (textures/texture-region textures (property/image property))
+                     :content (textures/texture-region textures (property/image property))
                      :actor/user-object property-id
                      :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))]
       [(when property-id

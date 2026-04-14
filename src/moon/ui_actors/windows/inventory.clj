@@ -76,7 +76,7 @@
                                       (draw-cell-rect-actor draw-cell-rect))
                                      (ui/create
                                       {:type :ui/image
-                                       :texture-region background-drawable
+                                       :content background-drawable
                                        :actor/name "image-widget"
                                        :actor/user-object {:background-drawable background-drawable
                                                            :cell-size cell-size}})]})}))]

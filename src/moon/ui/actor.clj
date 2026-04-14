@@ -23,6 +23,7 @@
   (when-let [touchable (:actor/touchable opts)]
     (actor/set-touchable! actor (case touchable
                                   :touchable/disabled touchable/disabled)))
+
   (when-let [name (:actor/name opts)]
     (actor/set-name! actor name))
 
