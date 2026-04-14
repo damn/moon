@@ -23,10 +23,10 @@
 (defn add-upd-label!
   ([skin table text-fn icon]
    (let [label (label/create "" skin)
-         sub-table (doto (gdx-table/create)
-                     (table/add-rows!
-                      [[{:actor (image/create icon)}
-                        label]]))]
+         sub-table (ui/create
+                    {:type :ui/table
+                     :table/rows [[{:actor (image/create icon)}
+                                   label]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (cell/expand-x! (cell/right! (gdx-table/add! table sub-table)))))
   ([skin table text-fn]
@@ -48,16 +48,16 @@
     (widget-group/pack!)))
 
 (defn- main-table [skin menus update-labels]
-  (let [table (doto (gdx-table/create)
-                (table/add-rows!
-                 [(for [{:keys [label items]} menus]
-                    {:actor
-                     (ui/create
-                      {:type :ui/text-button
-                       :text label
-                       :skin skin
-                       :actor/listeners {:listener/change (fn [event actor]
-                                                            (stage/add-actor! (event/stage event) (create-window skin label items)))}})})]))]
+  (let [table (ui/create
+               {:type :ui/table
+                :table/rows [(for [{:keys [label items]} menus]
+                               {:actor
+                                (ui/create
+                                 {:type :ui/text-button
+                                  :text label
+                                  :skin skin
+                                  :actor/listeners {:listener/change (fn [event actor]
+                                                                       (stage/add-actor! (event/stage event) (create-window skin label items)))}})})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
@@ -67,20 +67,20 @@
 
 (defn- create*
   [{:keys [menus update-labels skin]}]
-  (doto (gdx-table/create)
-    (table/add-rows!
-     [[{:actor (main-table skin menus update-labels)
-        :expand-x? true
-        :fill-x? true
-        :colspan 1}]
-      [{:actor (ui/create
-                {:type :ui/label
-                 :text ""
-                 :skin skin
-                 :actor/touchable :touchable/disabled})
-        :expand? true
-        :fill-x? true
-        :fill-y? true}]])
+  (doto (ui/create
+         {:type :ui/table
+          :table/rows [[{:actor (main-table skin menus update-labels)
+                         :expand-x? true
+                         :fill-x? true
+                         :colspan 1}]
+                       [{:actor (ui/create
+                                 {:type :ui/label
+                                  :text ""
+                                  :skin skin
+                                  :actor/touchable :touchable/disabled})
+                         :expand? true
+                         :fill-x? true
+                         :fill-y? true}]]})
     (widget-group/set-fill-parent! true)))
 
 (defn create
