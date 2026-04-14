@@ -2,8 +2,6 @@
   (:require [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.ui.label :as label]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [moon.actor :as actor]
             [moon.stage :as stage]
@@ -17,7 +15,7 @@
             (when-let [stage (actor/stage this)]
               (label/set-text! label (text-fn (stage/ctx stage)))))}))
 
-(defn add-upd-label!
+(defn- add-upd-label!
   ([skin table text-fn icon]
    (let [label (ui/create {:type :ui/label
                            :text ""
@@ -29,13 +27,17 @@
                                              :content icon})}
                                    label]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
-     (cell/expand-x! (cell/right! (gdx-table/add! table sub-table)))))
+     (table/add! table {:actor sub-table
+                        :right? true
+                        :expand-x? true})))
   ([skin table text-fn]
    (let [label (ui/create {:type :ui/label
                            :text ""
                            :skin skin})]
      (group/add-actor! table (set-label-text-actor label text-fn))
-     (cell/expand-x! (cell/right! (gdx-table/add! table label))))))
+     (table/add! table {:actor label
+                        :right? true
+                        :expand-x? true}))))
 
 (defn- create-window [skin label items]
   (ui/create

@@ -22,14 +22,17 @@
       :right?     (cell/right!      cell)
       :left?      (cell/left!       cell))))
 
+(defn add! [table cell-declaration]
+  (-> (table/add! table (:actor cell-declaration))
+      (set-cell-opts! (dissoc cell-declaration :actor))))
+
 (defn add-rows! [table rows]
   (doseq [row rows]
     (doseq [props-or-actor row]
 
       (cond
        (map? props-or-actor)
-       (-> (table/add! table (:actor props-or-actor))
-           (set-cell-opts! (dissoc props-or-actor :actor)))
+       (add! table props-or-actor)
 
        ; TODO Remove else case
        :else (table/add! table props-or-actor)
