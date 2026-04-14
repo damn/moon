@@ -1,4 +1,4 @@
-(ns gdl.scene2d.ui.widget-group
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]))
+(ns gdl.scene2d.ui.widget-group)
 
-(def pack! widget-group/pack!)
+(defprotocol WidgetGroup
+  (pack! [_]))

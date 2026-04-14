@@ -69,6 +69,9 @@
    [com.badlogic.gdx.scenes.scene2d.ui.TextField
     clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-field
     gdl.scene2d.ui.text-field/TextField]
+   [com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
+    clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
+    gdl.scene2d.ui.widget-group/WidgetGroup]
    [com.badlogic.gdx.utils.Disposable
     clj.api.com.badlogic.gdx.utils.disposable
     gdl.disposable/Disposable]
