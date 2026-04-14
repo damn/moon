@@ -1,4 +1,4 @@
-(ns gdl.scene2d.ui.image
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]))
+(ns gdl.scene2d.ui.image)
 
-(def set-drawable! image/set-drawable!)
+(defprotocol Image
+  (set-drawable! [_ drawable]))

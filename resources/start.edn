@@ -57,6 +57,9 @@
    [com.badlogic.gdx.scenes.scene2d.ui.CheckBox
     clj.api.com.badlogic.gdx.scenes.scene2d.ui.check-box
     gdl.scene2d.ui.check-box/CheckBox]
+   [com.badlogic.gdx.scenes.scene2d.ui.Image
+    clj.api.com.badlogic.gdx.scenes.scene2d.ui.image
+    gdl.scene2d.ui.image/Image]
    [com.badlogic.gdx.scenes.scene2d.ui.SelectBox
     clj.api.com.badlogic.gdx.scenes.scene2d.ui.select-box
     gdl.scene2d.ui.select-box/SelectBox]
