@@ -8,6 +8,9 @@
 [
  [moon.start.extend-types/step
   [
+   [com.badlogic.gdx.Input
+    clojure.gdx.input
+    gdl.input/Input]
    [com.badlogic.gdx.graphics.g2d.BitmapFont
     gdl.graphics.bitmap-font
     gdl.bitmap-font/BitmapFont]
