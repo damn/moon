@@ -1,6 +1,5 @@
 (ns moon.ui-actors.action-bar
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [gdl.scene2d.group :as group]
+  (:require [gdl.scene2d.group :as group]
             [gdl.scene2d.ui.button-group :as button-group]
             [moon.action-bar :as action-bar]
             [moon.actor :as actor]
@@ -8,21 +7,21 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn create [_ctx]
-  (doto (ui/create
-         {:type :ui/table
-          :table/cell-defaults {:pad 2}
-          :table/rows [[{:actor (ui/create
-                                 {:type :ui/horizontal-group
-                                  :space 2
-                                  :pad 2
-                                  :actor/name "moon.ui.action-bar.horizontal-group"
-                                  :actor/user-object (button-group/create
-                                                      {:max-check-count 1
-                                                       :min-check-count 0})})
-                         :expand? true
-                         :bottom? true}]]
-          :actor/name "moon.ui.action-bar"})
-    (widget-group/set-fill-parent! true)))
+  (ui/create
+   {:type :ui/table
+    :table/cell-defaults {:pad 2}
+    :table/rows [[{:actor (ui/create
+                           {:type :ui/horizontal-group
+                            :space 2
+                            :pad 2
+                            :actor/name "moon.ui.action-bar.horizontal-group"
+                            :actor/user-object (button-group/create
+                                                {:max-check-count 1
+                                                 :min-check-count 0})})
+                   :expand? true
+                   :bottom? true}]]
+    :actor/name "moon.ui.action-bar"
+    :widget-group/fill-parent? true}))
 
 (defn- get-data [action-bar]
   {:post [(:horizontal-group %)

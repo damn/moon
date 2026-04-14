@@ -2,7 +2,6 @@
   (:require [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.ui.label :as label]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.table :as table]
@@ -74,21 +73,21 @@
 
 (defn- create*
   [{:keys [menus update-labels skin]}]
-  (doto (ui/create
-         {:type :ui/table
-          :table/rows [[{:actor (main-table skin menus update-labels)
-                         :expand-x? true
-                         :fill-x? true
-                         :colspan 1}]
-                       [{:actor (ui/create
-                                 {:type :ui/label
-                                  :text ""
-                                  :skin skin
-                                  :actor/touchable :touchable/disabled})
-                         :expand? true
-                         :fill-x? true
-                         :fill-y? true}]]})
-    (widget-group/set-fill-parent! true)))
+  (ui/create
+   {:type :ui/table
+    :table/rows [[{:actor (main-table skin menus update-labels)
+                   :expand-x? true
+                   :fill-x? true
+                   :colspan 1}]
+                 [{:actor (ui/create
+                           {:type :ui/label
+                            :text ""
+                            :skin skin
+                            :actor/touchable :touchable/disabled})
+                   :expand? true
+                   :fill-x? true
+                   :fill-y? true}]]
+    :widget-group/fill-parent? true}))
 
 (defn create
   [{:keys [ctx/skin

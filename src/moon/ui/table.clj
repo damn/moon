@@ -1,8 +1,8 @@
 (ns moon.ui.table
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [moon.ui.group :as group]
-            [moon.table :as x-table]))
+            [moon.table :as x-table]
+            [moon.ui.widget-group :as widget-group-x]))
 
 (defn set-opts! [table opts]
   (when-let [rows (:table/rows opts)]
@@ -10,7 +10,7 @@
     (widget-group/pack! table))
   (when-let [defaults (:table/cell-defaults opts)]
     (x-table/set-cell-defaults! table defaults))
-  (group/set-opts! table opts))
+  (widget-group-x/set-opts! table opts))
 
 (defn create [opts]
   (doto (table/create)
