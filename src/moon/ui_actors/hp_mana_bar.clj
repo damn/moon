@@ -2,7 +2,7 @@
   (:require [gdl.viewport :as viewport]
             [moon.actor :as actor]
             [moon.draws :as draws]
-            [moon.readable :as readable]
+            [moon.number :as number]
             [moon.stage :as stage]
             [moon.stats :as stats]
             [moon.textures :as textures]
@@ -34,7 +34,7 @@
                                                          {:image/file content-file
                                                           :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
                                 [x y]]
-                               [:draw/text {:text (str (readable/number (minmaxval 0))
+                               [:draw/text {:text (str (number/readable (minmaxval 0))
                                                        "/"
                                                        (minmaxval 1)
                                                        " "

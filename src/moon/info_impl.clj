@@ -9,7 +9,7 @@
             [moon.info :as info]
             [moon.ops :as ops]
             [moon.order :as order]
-            [moon.readable :as readable]
+            [moon.number :as number]
             [moon.stats :as stats]
             [moon.timer :as timer]))
 
@@ -145,7 +145,7 @@
                                "Spiderweb slows 50% for 5 seconds.")
 
    :effects.target/stun (fn [[_ duration] _ctx]
-                          (str "Stuns for " (readable/number duration) " seconds"))
+                          (str "Stuns for " (number/readable duration) " seconds"))
 
    :effects/spawn (fn [[_ {:keys [property/pretty-name]}] _ctx]
                     (str "Spawns a " pretty-name))
@@ -154,7 +154,7 @@
                          "All visible targets")
 
    :entity/delete-after-duration (fn [[_ counter] {:keys [ctx/elapsed-time]}]
-                                   (str "Remaining: " (readable/number (timer/ratio elapsed-time counter)) "/1"))
+                                   (str "Remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
 
    :entity/faction (fn [[_ faction] _ctx]
                      (str "Faction: " (name faction)))
@@ -174,7 +174,7 @@
                      (str "Creature - " (str/capitalize (name species))))
 
    :entity/temp-modifier (fn [[_ {:keys [counter]}] {:keys [ctx/elapsed-time]}]
-                           (str "Spiderweb - remaining: " (readable/number (timer/ratio elapsed-time counter)) "/1"))
+                           (str "Spiderweb - remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
 
    :projectile/piercing? (fn [_ _ctx]
                            "Piercing")
@@ -183,10 +183,10 @@
                            v)
 
    :skill/cooling-down? (fn [[_ counter] {:keys [ctx/elapsed-time]}]
-                          (str "Cooldown: " (readable/number (timer/ratio elapsed-time counter)) "/1"))
+                          (str "Cooldown: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
 
    :skill/action-time (fn [[_ v] _ctx]
-                        (str "Action-Time: " (readable/number v) " seconds"))
+                        (str "Action-Time: " (number/readable v) " seconds"))
 
    :skill/action-time-modifier-key (fn [[_ v] _ctx]
                                      (case v
@@ -194,7 +194,7 @@
                                        :stats/attack-speed "Attack"))
 
    :skill/cooldown (fn [[_ v] _ctx]
-                     (str "Cooldown: " (readable/number v) " seconds"))
+                     (str "Cooldown: " (number/readable v) " seconds"))
 
    :skill/cost (fn [[_ v] _ctx]
                  (str "Cost: " v " Mana"))

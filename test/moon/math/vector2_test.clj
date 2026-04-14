@@ -1,5 +1,5 @@
 (ns moon.math.vector2-test
-  (:require [moon.math :as math]
+  (:require [moon.number :as math]
             [moon.vector2 :as v]
             [clojure.test :refer :all]))
 

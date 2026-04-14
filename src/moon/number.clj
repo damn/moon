@@ -1,7 +1,4 @@
-; TODO start with what is 'green' and mark it
-; keep saved somewhere info green/red/?
-; test coverage?
-(ns moon.math
+(ns moon.number
   (:require [clojure.math :as math]))
 
 (def float-rounding-error (double 0.000001)) ; FIXME clojure uses doubles?
@@ -18,3 +15,11 @@
      (/
       (math/round (* x z))
       z))))
+
+(defn readable [^double x]
+  {:pre [(number? x)]}
+  (if (or
+       (> x 5)
+       (approx-numbers x (int x) 0.001))
+    (int x)
+    (round-n-decimals x 2)))
