@@ -1,12 +1,4 @@
-(ns moon.textures
-  (:require [gdl.texture :as texture]))
+(ns moon.textures)
 
-(defn texture-region
-  [textures
-   {:keys [image/file image/bounds]}]
-  (assert file)
-  (assert (contains? textures file))
-  (let [texture (get textures file)]
-    (if-let [[x y w h] bounds]
-      (texture/region texture x y w h)
-      (texture/region texture))))
+(defprotocol Textures
+  (texture-region [_ image]))

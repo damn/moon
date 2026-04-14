@@ -1,8 +1,10 @@
 (ns moon.create.textures
   (:require [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
+            [gdl.texture :as gdl-texture]
             [clj.api.com.badlogic.gdx.graphics.texture :as texture]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [moon.textures :as textures]))
 
 (defn- recursively-search
   [folder extensions]
@@ -32,3 +34,13 @@
   (assoc ctx :ctx/textures
          (into {} (for [path (search files folder)]
                     [path (texture/create path)]))))
+
+(extend-type clojure.lang.PersistentHashMap
+  textures/Textures
+  (texture-region [textures {:keys [image/file image/bounds]}]
+    (assert file)
+    (assert (contains? textures file))
+    (let [texture (get textures file)]
+      (if-let [[x y w h] bounds]
+        (gdl-texture/region texture x y w h)
+        (gdl-texture/region texture)))))
