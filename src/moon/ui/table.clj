@@ -1,8 +1,7 @@
 (ns moon.ui.table
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [moon.ui.widget-group :as widget-group-x]))
+            [gdl.scene2d.ui.widget-group :as widget-group]))
 
 ; TODO order is important, reduce?
 (defn- set-cell-opts! [cell opts]
@@ -53,7 +52,7 @@
     (widget-group/pack! table))
   (when-let [defaults (:table/cell-defaults opts)]
     (set-cell-defaults! table defaults))
-  (widget-group-x/set-opts! table opts))
+  (widget-group/set-opts! table opts))
 
 (defn create [opts]
   (doto (table/create)

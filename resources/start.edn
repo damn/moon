@@ -70,7 +70,7 @@
     clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-field
     gdl.scene2d.ui.text-field/TextField]
    [com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
-    clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group
+    moon.ui.widget-group
     gdl.scene2d.ui.widget-group/WidgetGroup]
    [com.badlogic.gdx.scenes.scene2d.Group
     moon.ui.group
