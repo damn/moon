@@ -3,7 +3,7 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [moon.actor :as actor]
-            [moon.ui.table :as table]))
+            [moon.table :as table]))
 
 (defn- add-close-button! [window skin]
   (gdx-table/add!

@@ -1,4 +1,4 @@
-(ns gdl.color
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]))
+(ns gdl.color)
 
-(def float-bits color/float-bits)
+(defprotocol Color
+  (float-bits [_]))

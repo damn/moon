@@ -1,6 +1,8 @@
 (ns moon.create.colors
-  (:require [gdl.colors :as colors]))
+  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [clj.api.com.badlogic.gdx.graphics.colors :as colors]))
 
 (defn step [ctx colors]
-  (colors/put! colors)
+  (doseq [[name rgba] colors]
+    (colors/put! name (color/create rgba)))
   ctx)

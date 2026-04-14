@@ -8,6 +8,9 @@
 [
  [moon.start.extend-types/step
   [
+   [clojure.lang.PersistentVector
+    clj.api.com.badlogic.gdx.graphics.color
+    gdl.color/Color]
    [com.badlogic.gdx.Audio
     clj.api.com.badlogic.gdx.audio
     gdl.audio/Audio]
@@ -48,6 +51,9 @@
    [com.badlogic.gdx.scenes.scene2d.Event
     clj.api.com.badlogic.gdx.scenes.scene2d.event
     gdl.scene2d.event/Event]
+   [com.badlogic.gdx.scenes.scene2d.ui.Table
+    moon.ui.table
+    moon.table/Table]
    [com.badlogic.gdx.utils.Disposable
     clj.api.com.badlogic.gdx.utils.disposable
     gdl.disposable/Disposable]

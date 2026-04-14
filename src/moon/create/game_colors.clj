@@ -8,12 +8,6 @@
 
 (def outline-alpha 0.4)
 
-(def ^:private hpbar-colors
-  {:green     (color/float-bits [0 0.8 0 1])
-   :darkgreen (color/float-bits [0 0.5 0 1])
-   :yellow    (color/float-bits [0.5 0.5 0 1])
-   :red       (color/float-bits [0.5 0 0 1])})
-
 (defn- hpbar-color [ratio]
   (let [ratio (float ratio)
         color (cond
@@ -21,7 +15,10 @@
                (> ratio 0.5)  :darkgreen
                (> ratio 0.25) :yellow
                :else          :red)]
-    (color hpbar-colors)))
+    (color {:green     (color/float-bits [0 0.8 0 1])
+            :darkgreen (color/float-bits [0 0.5 0 1])
+            :yellow    (color/float-bits [0.5 0.5 0 1])
+            :red       (color/float-bits [0.5 0 0 1])})))
 
 (defn step [ctx]
   (assoc ctx :ctx/colors
