@@ -2,13 +2,11 @@
   (:require [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.table :as table]
@@ -40,22 +38,26 @@
   (doto (gdx-window/create label skin)
     (window/add-close-button! skin)
     (table/add-rows! [(for [{:keys [label on-click]} items]
-                        {:actor (doto (text-button/create label skin)
-                                  (actor/add-listener!
-                                   (change-listener/create
-                                     (fn [event actor]
-                                       (on-click actor (stage/ctx (event/stage event)))))))})])
+                        {:actor
+                         (ui/create
+                          {:type :ui/text-button
+                           :text label
+                           :skin skin
+                           :actor/listeners {:listener/change (fn [event actor]
+                                                                (on-click actor (stage/ctx (event/stage event))))}})})])
     (widget-group/pack!)))
 
 (defn- main-table [skin menus update-labels]
   (let [table (doto (gdx-table/create)
                 (table/add-rows!
                  [(for [{:keys [label items]} menus]
-                    {:actor (doto (text-button/create label skin)
-                              (actor/add-listener!
-                               (change-listener/create
-                                 (fn [event actor]
-                                   (stage/add-actor! (event/stage event) (create-window skin label items))))))})]))]
+                    {:actor
+                     (ui/create
+                      {:type :ui/text-button
+                       :text label
+                       :skin skin
+                       :actor/listeners {:listener/change (fn [event actor]
+                                                            (stage/add-actor! (event/stage event) (create-window skin label items)))}})})]))]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
