@@ -63,6 +63,9 @@
    [com.badlogic.gdx.scenes.scene2d.ui.Table
     moon.ui.table
     moon.table/Table]
+   [com.badlogic.gdx.scenes.scene2d.ui.TextField
+    clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-field
+    gdl.scene2d.ui.text-field/TextField]
    [com.badlogic.gdx.utils.Disposable
     clj.api.com.badlogic.gdx.utils.disposable
     gdl.disposable/Disposable]
