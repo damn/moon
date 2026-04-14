@@ -1,4 +1,4 @@
-(ns gdl.scene2d.ui.check-box
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]))
+(ns gdl.scene2d.ui.check-box)
 
-(def checked? check-box/checked?)
+(defprotocol CheckBox
+  (checked? [_]))
