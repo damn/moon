@@ -27,7 +27,7 @@
     clj.api.com.badlogic.gdx.files.file-handle
     gdl.files.file-handle/FileHandle]
    [com.badlogic.gdx.Graphics
-    clj.api.com.badlogic.gdx.graphics
+    clojure.gdx.graphics
     gdl.graphics/Graphics]
    [com.badlogic.gdx.graphics.Texture
     clj.api.com.badlogic.gdx.graphics.texture

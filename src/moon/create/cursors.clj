@@ -7,10 +7,10 @@
            ctx/graphics]}
    path-format
    [path [hotspot-x hotspot-y]]]
-  (graphics/new-cursor* graphics
-                        (files/internal files (format path-format path))
-                        hotspot-x
-                        hotspot-y))
+  (graphics/new-cursor graphics
+                       (files/internal files (format path-format path))
+                       hotspot-x
+                       hotspot-y))
 
 (defn do!
   [ctx {:keys [data path-format]}]
