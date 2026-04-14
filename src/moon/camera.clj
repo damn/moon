@@ -1,11 +1,14 @@
 (ns moon.camera
   (:require [gdl.camera :as camera]))
 
-(def position camera/position)
+(defn position [camera]
+  (camera/position camera))
 
-(def combined camera/combined)
+(defn combined [camera]
+  (camera/combined camera))
 
-(def zoom camera/zoom)
+(defn zoom [camera]
+  (camera/zoom camera))
 
 (defn set-position! [camera xy]
   (camera/set-position! camera xy))
