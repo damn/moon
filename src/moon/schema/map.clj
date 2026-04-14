@@ -36,10 +36,7 @@
     :as ctx}]
   (let [window (-> stage
                    (stage/find-actor "moon.ui.editor.window"))
-        map-widget-table (-> window
-                             (group/find-actor "moon.ui.widget.scroll-pane-table")
-                             (group/find-actor "scroll-pane-table")
-                             (group/find-actor "moon.db.schema.map.ui.widget"))
+        map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
     (stage/add-actor! stage

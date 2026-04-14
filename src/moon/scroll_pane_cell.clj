@@ -1,18 +1,15 @@
 (ns moon.scroll-pane-cell
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [moon.actor :as actor]
-            [moon.table :as table]))
+  (:require [moon.actor :as actor]
+            [moon.ui :as ui]))
 
 (defn create [skin viewport-height rows]
-  (let [table (doto (gdx-table/create)
-                (actor/set-name! "scroll-pane-table")
-                (table/set-cell-defaults! {:pad 5})
-                (table/add-rows! rows)
-                (widget-group/pack!))]
-    {:actor (doto (scroll-pane/create table skin)
-              (actor/set-name! "moon.ui.widget.scroll-pane-table"))
+  (let [table (ui/create
+               {:type :ui/table
+                :table/cell-defaults {:pad 5}
+                :table/rows rows} )]
+    {:actor (ui/create {:type :ui/scroll-pane
+                        :actor table
+                        :skin skin})
      :width  (+ (actor/width table) 50)
      :height (min (- viewport-height 50)
                   (actor/height table))}))
