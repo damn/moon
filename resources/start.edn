@@ -8,6 +8,9 @@
 [
  [moon.start.extend-types/step
   [
+   [com.badlogic.gdx.utils.viewport.Viewport
+    clojure.gdx.viewport
+    gdl.viewport/Viewport]
    [com.badlogic.gdx.Input
     clojure.gdx.input
     gdl.input/Input]
