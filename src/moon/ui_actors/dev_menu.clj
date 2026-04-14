@@ -1,9 +1,8 @@
 (ns moon.ui-actors.dev-menu
   (:require [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
+            [gdl.scene2d.ui.label :as label]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [moon.actor :as actor]
@@ -20,15 +19,21 @@
 
 (defn add-upd-label!
   ([skin table text-fn icon]
-   (let [label (label/create "" skin)
+   (let [label (ui/create {:type :ui/label
+                           :text ""
+                           :skin skin})
          sub-table (ui/create
                     {:type :ui/table
-                     :table/rows [[{:actor (image/create icon)}
+                     :table/rows [[{:actor (ui/create
+                                            {:type :ui/image
+                                             :content icon})}
                                    label]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (cell/expand-x! (cell/right! (gdx-table/add! table sub-table)))))
   ([skin table text-fn]
-   (let [label (label/create "" skin)]
+   (let [label (ui/create {:type :ui/label
+                           :text ""
+                           :skin skin})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (cell/expand-x! (cell/right! (gdx-table/add! table label))))))
 
