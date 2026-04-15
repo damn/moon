@@ -1,5 +1,5 @@
 (ns moon.draw.sector
-  (:require [moon.shape-drawer :as shape-drawer]))
+  (:require [gdl.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]

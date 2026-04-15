@@ -1,4 +1,4 @@
-(ns moon.shape-drawer)
+(ns gdl.shape-drawer)
 
 (defprotocol ShapeDrawer
   (default-line-width [_])

@@ -1,4 +1,4 @@
-(ns gdl.graphics.bitmap-font
+(ns clojure.gdx.bitmap-font
   (:require [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
             [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font.data :as data]
             [clj.api.com.badlogic.gdx.utils.align :as align]

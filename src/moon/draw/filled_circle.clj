@@ -1,5 +1,5 @@
 (ns moon.draw.filled-circle
-  (:require [moon.shape-drawer :as shape-drawer]))
+  (:require [gdl.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/shape-drawer]} position radius color-float-bits]

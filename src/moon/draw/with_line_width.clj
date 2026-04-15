@@ -1,6 +1,6 @@
 (ns moon.draw.with-line-width
   (:require [moon.draws :as draws]
-            [moon.shape-drawer :as shape-drawer]))
+            [gdl.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/shape-drawer]

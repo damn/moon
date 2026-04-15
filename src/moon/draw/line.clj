@@ -1,5 +1,5 @@
 (ns moon.draw.line
-  (:require [moon.shape-drawer :as shape-drawer]))
+  (:require [gdl.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/shape-drawer]} start end color-float-bits]

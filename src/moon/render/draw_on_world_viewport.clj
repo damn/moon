@@ -3,7 +3,7 @@
             [gdl.graphics.batch :as batch]
             [gdl.viewport :as viewport]
             [moon.draws :as draws]
-            [moon.shape-drawer :as shape-drawer]))
+            [gdl.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/batch

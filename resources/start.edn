@@ -18,7 +18,7 @@
     clojure.gdx.input
     gdl.input/Input]
    [com.badlogic.gdx.graphics.g2d.BitmapFont
-    gdl.graphics.bitmap-font
+    clojure.gdx.bitmap-font
     gdl.bitmap-font/BitmapFont]
    [clojure.lang.PersistentVector
     clj.api.com.badlogic.gdx.graphics.color
@@ -53,7 +53,7 @@
    [
     space.earlygrey.shapedrawer.ShapeDrawer
     clj.api.space.earlygrey.shape-drawer
-    moon.shape-drawer/ShapeDrawer
+    gdl.shape-drawer/ShapeDrawer
     ]
    [
     com.badlogic.gdx.scenes.scene2d.Actor
