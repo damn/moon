@@ -3,7 +3,7 @@
             [clj.api.com.badlogic.gdx.maps.map-layers :as layers]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [clojure.gdx.tiled-map.layer :as layer]
             [clojure.gdx.tiled-map.layer.cell :as cell]
             [clj.api.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
@@ -19,29 +19,6 @@
 (defn height [tiled-map]
   (props/get (tiled-map/properties tiled-map) "height"))
 
-(defn- create-layer
-  [{:keys [width
-           height
-           tilewidth
-           tileheight
-           name
-           visible?
-           map-properties
-           tiles]}]
-  {:pre [(string? name)
-         (boolean? visible?)]}
-  (let [layer (doto (layer/create width height tilewidth tileheight)
-                (layer/set-name! name)
-                (layer/set-visible! visible?))]
-    (props/put-all! (layer/properties layer) map-properties)
-    (doseq [[xy tiled-map-tile] tiles
-            :when tiled-map-tile]
-      (layer/set-cell! layer
-                       xy
-                       (doto (cell/create)
-                         (cell/set-tile! tiled-map-tile))))
-    layer))
-
 (defn- add-layer!
   "`properties` is optional. Returns nil."
   [tiled-map
@@ -50,7 +27,7 @@
            properties
            tiles]}]
   (let [props (tiled-map/properties tiled-map)
-        layer (create-layer {:width      (props/get props "width")
+        layer (layer/create {:width      (props/get props "width")
                              :height     (props/get props "height")
                              :tilewidth  (props/get props "tilewidth")
                              :tileheight (props/get props "tileheight")
