@@ -5,12 +5,7 @@
   [create-fns]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          {:ctx/app      (gdx/app)
-           :ctx/audio    (gdx/audio)
-           :ctx/graphics (gdx/graphics)
-           :ctx/files    (gdx/files)
-           :ctx/input    (gdx/input)
-           :ctx/active-entities nil
+          {:ctx/active-entities nil
            :ctx/delta-time nil
            :ctx/mouseover-eid nil
            :ctx/ui-mouse-position nil
