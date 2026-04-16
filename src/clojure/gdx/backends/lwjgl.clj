@@ -5,9 +5,37 @@
 
 (def use-glfw-async! config/use-glfw-async!)
 
-(defn application! [listener {:keys [title window fps]}]
-  (application/create (listener/create listener)
-                      (doto (config/create)
-                        (config/set-title! title)
-                        (config/set-windowed-mode! window)
-                        (config/set-foreground-fps! fps))))
+(defn application!
+  [
+   {:keys [
+           config
+           state
+           create!
+           dispose!
+           render!
+           resize!
+           ]}
+   ]
+  (application/create (listener/create
+                       (let [state @state
+                             [create-fn create-params] create!
+                             [render-fn render-params] render!]
+                         {:create! (fn []
+                                     (reset! state (create-fn create-params)))
+                          :dispose! (fn []
+                                      (dispose! @state))
+                          :render! (fn []
+                                     (swap! state render-fn render-params))
+                          :resize! (fn [width height]
+                                     (resize! @state width height))
+                          :pause! (fn [])
+                          :resume! (fn [])}))
+                      (let [{:keys [
+                                    title
+                                    window
+                                    fps
+                                    ]} config]
+                        (doto (config/create)
+                          (config/set-title! title)
+                          (config/set-windowed-mode! window)
+                          (config/set-foreground-fps! fps)))))
