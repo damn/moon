@@ -2,7 +2,16 @@
   (:require [clj.api.com.badlogic.gdx.application.listener :as listener]
             [clj.api.com.badlogic.gdx.backends.lwjgl3.application :as application]
             [clj.api.com.badlogic.gdx.backends.lwjgl3.application.config :as config]
-            [clj.api.com.badlogic.gdx.gdx :as gdx]))
+            [clj.api.com.badlogic.gdx.gdx :as gdx]
+            [clj.api.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [gdl.context :as context])
+  (:require [qrecord.core :as q]))
+
+(q/defrecord Context []
+  context/SpriteBatch
+  (sprite-batch [_]
+    (sprite-batch/create))
+  )
 
 (defn step
   [{:keys [title
@@ -20,10 +29,11 @@
     (application/create (listener/create
                          {:create! (fn []
                                      (reset! state
-                                             (create-fn {:ctx/audio    (gdx/audio)
-                                                         :ctx/graphics (gdx/graphics)
-                                                         :ctx/files    (gdx/files)
-                                                         :ctx/input    (gdx/input)}
+                                             (create-fn (merge (map->Context {})
+                                                               {:ctx/audio    (gdx/audio)
+                                                                :ctx/graphics (gdx/graphics)
+                                                                :ctx/files    (gdx/files)
+                                                                :ctx/input    (gdx/input)})
                                                         create-params)))
                           :dispose! (fn []
                                       (dispose! @state))

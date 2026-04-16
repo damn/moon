@@ -1,14 +1,10 @@
-(ns moon.listener.create
-  (:require [qrecord.core :as q]))
-
-(q/defrecord Context [])
+(ns moon.listener.create)
 
 (defn do!
   [ctx create-fns]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          (merge (map->Context {})
-                 ctx
+          (merge ctx
                  {
                   :ctx/active-entities nil
                   :ctx/delta-time nil
