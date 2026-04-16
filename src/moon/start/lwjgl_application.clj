@@ -3,6 +3,8 @@
             [clj.api.com.badlogic.gdx.backends.lwjgl3.application :as application]
             [clj.api.com.badlogic.gdx.backends.lwjgl3.application.config :as config]
             [clj.api.com.badlogic.gdx.gdx :as gdx]
+            [clj.api.com.badlogic.gdx.graphics.color :as color]
+            [clj.api.com.badlogic.gdx.graphics.colors :as colors]
             [clj.api.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [gdl.context :as context])
   (:require [qrecord.core :as q]))
@@ -21,7 +23,11 @@
            create!
            dispose!
            render!
-           resize!]}]
+           resize!
+           colors
+           ]}]
+  (doseq [[name rgba] colors]
+    (colors/put! name (color/create rgba)))
   (let [state @state
         [create-fn create-params] create!
         [render-fn render-params] render!]

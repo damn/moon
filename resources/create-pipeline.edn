@@ -79,7 +79,6 @@
  [moon.create.impl-draw/step #edn/resource "draw-fns.edn"]
  [moon.create.game-colors/step]
  [moon.create.input/step]
- [moon.create.colors/step {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [moon.create.cursors/do! #edn/resource "cursors.edn"]
  [moon.create.db/step {:schemas "schema.edn"
                        :properties "properties.edn"}]

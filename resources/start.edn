@@ -202,6 +202,7 @@
    :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
    :dispose! moon.listener.dispose/do!
    :resize!  moon.listener.resize/do!
+   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
    }
   ]
  ]
