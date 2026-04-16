@@ -3,6 +3,7 @@
 [
 
  [moon.create.schema/step [:map {:closed true}
+                           [:ctx/app :some]
                            [:ctx/schema :some]
                            [:ctx/active-entities :any] ; its a 'derived' key , can cache once per frame count (game logic frame not time frame)
 

@@ -1,5 +1,5 @@
 (ns moon.create.batch
-  (:require [gdl.context :as context]))
+  (:require [clojure.sprite-batch :as sprite-batch]))
 
-(defn do! [ctx]
-  (assoc ctx :ctx/batch (context/sprite-batch ctx)))
+(defn do! [{:keys [ctx/app] :as ctx}]
+  (assoc ctx :ctx/batch (sprite-batch/create app)))

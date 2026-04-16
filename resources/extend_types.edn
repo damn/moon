@@ -1,4 +1,10 @@
 [
+ [com.badlogic.gdx.Application
+  clojure.gdx.sprite-batch
+  clojure.sprite-batch/SpriteBatch]
+ [com.badlogic.gdx.Application
+  clojure.gdx.freetype
+  clojure.freetype/Freetype]
  [com.badlogic.gdx.graphics.OrthographicCamera
   clojure.gdx.orthographic-camera
   gdl.camera/Camera]
