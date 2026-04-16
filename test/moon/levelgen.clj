@@ -9,7 +9,7 @@
             [moon.create.textures]
             [moon.db :as db]
             [moon.camera :as camera]
-            [moon.tiled-map-renderer :as tiled-map-renderer]
+            [clojure.gdx.tiled-map.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx

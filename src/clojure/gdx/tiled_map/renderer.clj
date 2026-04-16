@@ -1,4 +1,4 @@
-(ns moon.tiled-map-renderer
+(ns clojure.gdx.tiled-map.renderer
   (:require [clojure.gdx.tiled-map.layer :as layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)
