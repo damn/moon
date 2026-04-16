@@ -116,10 +116,10 @@
    ]
   ]
  [moon.start.lwjgl-application/step
-  {:title "Moon"
-   :window {:width 1440
-            :height 900}
-   :fps 60
+  {:config {:title "Moon"
+            :window {:width 1440
+                     :height 900}
+            :fps 60}
    :state moon.application/state
    :create! [moon.listener.create/do! #edn/resource "create-pipeline.edn"]
    :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
