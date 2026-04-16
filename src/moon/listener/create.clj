@@ -1,5 +1,4 @@
-(ns moon.listener.create
-  (:require [clj.api.com.badlogic.gdx.gdx :as gdx]))
+(ns moon.listener.create)
 
 (defn do!
   [create-fns]
