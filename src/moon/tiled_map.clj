@@ -2,7 +2,7 @@
   (:require [clojure.gdx.tiled-map.props :as props]
             [clojure.gdx.tiled-map.layers :as layers]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
+            [clojure.gdx.tiled-map.tile :as tile]
             [clojure.gdx.tiled-map.layer :as layer]
             [clojure.gdx.tiled-map.layer.cell :as cell]
             [clj.api.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
