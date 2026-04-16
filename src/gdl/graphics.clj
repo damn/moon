@@ -5,4 +5,5 @@
   (frames-per-second [_])
   (delta-time [_])
   (set-cursor! [_ cursor])
-  (clear! [_ r g b a]))
+  (clear! [_ r g b a])
+  (white-pixel-texture [_]))

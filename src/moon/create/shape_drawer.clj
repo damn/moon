@@ -1,6 +1,6 @@
 (ns moon.create.shape-drawer
   (:require [gdl.texture :as texture]
-            [clj.api.space.earlygrey.shape-drawer :as shape-drawer]))
+            [clojure.gdx.shape-drawer :as shape-drawer]))
 
 (defn step
   [{:keys [ctx/batch

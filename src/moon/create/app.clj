@@ -1,6 +1,6 @@
 (ns moon.create.app
-  (:require [clj.api.com.badlogic.gdx.gdx :as gdx]
-            [clj.api.com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]))
+  (:require [clojure.gdx :as gdx]
+            [clojure.gdx.sprite-batch :as sprite-batch]))
 
 (defn step [ctx]
   (let [batch (sprite-batch/create)]
