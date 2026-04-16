@@ -9,6 +9,7 @@
   (listener/create
    (let [state @state]
      {:create! (fn []
+                 ; just pass Gdx/app ??
                  (reset! state (let [[create-fn create-params] create!]
                                  (create-fn create-params))))
       :dispose! (fn []

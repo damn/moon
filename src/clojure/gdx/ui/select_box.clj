@@ -1,4 +1,4 @@
-(ns moon.ui.select-box
+(ns clojure.gdx.ui.select-box
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]))
 
 (defn create [{:keys [items selected skin]}]

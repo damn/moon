@@ -1,4 +1,4 @@
-(ns moon.ui.text-field
+(ns clojure.gdx.ui.text-field
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [moon.actor :as actor]))
 

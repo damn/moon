@@ -1,4 +1,4 @@
-(ns moon.ui.check-box
+(ns clojure.gdx.ui.check-box
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]))
 
 (defn create [{:keys [skin checked?]}]

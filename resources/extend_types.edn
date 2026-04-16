@@ -45,7 +45,7 @@
   clj.api.space.earlygrey.shape-drawer
   gdl.shape-drawer/ShapeDrawer]
  [com.badlogic.gdx.scenes.scene2d.Actor
-  moon.ui.actor
+  clojure.gdx.ui.actor
   moon.actor/Actor]
  [com.badlogic.gdx.scenes.scene2d.Event
   clj.api.com.badlogic.gdx.scenes.scene2d.event
@@ -60,16 +60,16 @@
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.select-box
   gdl.scene2d.ui.select-box/SelectBox]
  [com.badlogic.gdx.scenes.scene2d.ui.Table
-  moon.ui.table
+  clojure.gdx.ui.table
   moon.table/Table]
  [com.badlogic.gdx.scenes.scene2d.ui.TextField
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-field
   gdl.scene2d.ui.text-field/TextField]
  [com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
-  moon.ui.widget-group
+  clojure.gdx.ui.widget-group
   gdl.scene2d.ui.widget-group/WidgetGroup]
  [com.badlogic.gdx.scenes.scene2d.Group
-  moon.ui.group
+  clojure.gdx.ui.group
   gdl.scene2d.group/Group]
  [com.badlogic.gdx.scenes.scene2d.ui.Label
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.label

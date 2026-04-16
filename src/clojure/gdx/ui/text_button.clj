@@ -1,4 +1,4 @@
-(ns moon.ui.text-button
+(ns clojure.gdx.ui.text-button
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [moon.actor :as actor]))
 

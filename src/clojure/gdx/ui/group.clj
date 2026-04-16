@@ -1,4 +1,4 @@
-(ns moon.ui.group
+(ns clojure.gdx.ui.group
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.group :as group]
             [moon.actor :as actor]))
 

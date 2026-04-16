@@ -1,4 +1,4 @@
-(ns moon.ui.stack
+(ns clojure.gdx.ui.stack
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [gdl.scene2d.group :as group]))
 

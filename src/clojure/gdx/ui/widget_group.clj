@@ -1,4 +1,4 @@
-(ns moon.ui.widget-group
+(ns clojure.gdx.ui.widget-group
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [gdl.scene2d.group :as group]))
 
