@@ -1,10 +1,3 @@
-
-; TODO !!!
-; WHAT IS THE CODE REALLY DOING
-; WITNHOUT SMART STUFF !!!
-; !!!
-; Ju'sT LAY IT WHERE IT IS ANDMAKE FEATURE TESTS??
-
 [
  [moon.start.extend-types/step
   [
@@ -44,22 +37,15 @@
    [com.badlogic.gdx.graphics.g2d.TextureRegion
     clj.api.com.badlogic.gdx.graphics.g2d.texture-region
     gdl.texture-region/TextureRegion]
-
-   ; TODO go through clj.api classes and don't depend on them
    [com.badlogic.gdx.graphics.g2d.Batch
     clj.api.com.badlogic.gdx.graphics.g2d.batch
     gdl.graphics.batch/Batch]
-
-   [
-    space.earlygrey.shapedrawer.ShapeDrawer
+   [space.earlygrey.shapedrawer.ShapeDrawer
     clj.api.space.earlygrey.shape-drawer
-    gdl.shape-drawer/ShapeDrawer
-    ]
-   [
-    com.badlogic.gdx.scenes.scene2d.Actor
+    gdl.shape-drawer/ShapeDrawer]
+   [com.badlogic.gdx.scenes.scene2d.Actor
     moon.ui.actor
-    moon.actor/Actor
-    ]
+    moon.actor/Actor]
    [com.badlogic.gdx.scenes.scene2d.Event
     clj.api.com.badlogic.gdx.scenes.scene2d.event
     gdl.scene2d.event/Event]
