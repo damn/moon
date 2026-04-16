@@ -1,5 +1,5 @@
 (ns moon.modules.last-steps
-  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
+  (:require [clojure.gdx.tiled-map.props :as props]
             [clj.api.com.badlogic.gdx.maps.map-layers :as layers]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]

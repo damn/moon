@@ -1,25 +1,21 @@
 (ns moon.modules.convert-to-tiled-map
-  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
+  (:require [clojure.gdx.tiled-map.props :as props]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map]))
 
-(defn- props->clj [map-properties]
-  (zipmap (props/keys   map-properties)
-          (props/values map-properties)))
-
 (defn- grid->tiled-map
   [schema-tiled-map grid]
   (tiled-map/create-tiled-map
-   {:properties (merge (props->clj (gdx-tiled-map/properties schema-tiled-map))
+   {:properties (merge (props/->clj (gdx-tiled-map/properties schema-tiled-map))
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})
     :layers (for [layer (gdx-tiled-map/layers schema-tiled-map)]
               {:name (layer/name layer)
                :visible? (layer/visible? layer)
-               :properties (props->clj (layer/properties layer))
+               :properties (props/->clj (layer/properties layer))
                :tiles (for [position (g2d/posis grid)
                             :let [local-position (get grid position)]
                             :when local-position]

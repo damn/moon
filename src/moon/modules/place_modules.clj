@@ -1,6 +1,5 @@
 (ns moon.modules.place-modules
-  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [moon.tiled-map :as tiled-map]
             [moon.grid2d :as g2d]))
 
 (def ^:private number-modules-x 8)
@@ -65,9 +64,9 @@
    unscaled-floor-positions
    unscaled-transition-positions]
   (let [[modules-width modules-height] modules-scale
-        _ (assert (and (= (props/get (tiled-map/properties modules-tiled-map) "width")
+        _ (assert (and (= (tiled-map/width modules-tiled-map)
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (props/get (tiled-map/properties modules-tiled-map) "height")
+                       (= (tiled-map/height modules-tiled-map)
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* modules-scale

@@ -1,5 +1,5 @@
 (ns moon.tiled-map
-  (:require [clj.api.com.badlogic.gdx.maps.map-properties :as props]
+  (:require [clojure.gdx.tiled-map.props :as props]
             [clj.api.com.badlogic.gdx.maps.map-layers :as layers]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
@@ -36,11 +36,6 @@
                          (cell/set-tile! tiled-map-tile))))
     layer))
 
-(defn- add! [map-properties m]
-  (doseq [[k v] m]
-    (assert (string? k))
-    (props/put! map-properties k v)))
-
 (defn- add-layer!
   "`properties` is optional. Returns nil."
   [tiled-map
@@ -56,7 +51,7 @@
                              :name name
                              :visible? visible?
                              :map-properties (doto (props/create)
-                                               (add! properties))
+                                               (props/add! properties))
                              :tiles tiles})]
     (layers/add! (tiled-map/layers tiled-map) layer))
   nil)
@@ -64,7 +59,7 @@
 (defn create-tiled-map [{:keys [properties
                                 layers]}]
   (let [tiled-map (tiled-map/create)]
-    (add! (tiled-map/properties tiled-map) properties)
+    (props/add! (tiled-map/properties tiled-map) properties)
     (doseq [layer layers]
       (add-layer! tiled-map layer))
     tiled-map))
