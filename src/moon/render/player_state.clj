@@ -1,4 +1,3 @@
-; TODO FIXME
 (ns moon.render.player-state
   (:require [gdl.graphics :as graphics]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
