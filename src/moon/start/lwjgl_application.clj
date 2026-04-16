@@ -1,7 +1,5 @@
 (ns moon.start.lwjgl-application
-  (:require [clj.api.com.badlogic.gdx.gdx :as gdx]
-            [clojure.gdx.backends.lwjgl :as lwjgl]
-            [clojure.gdx.colors :as colors]))
+  (:require [clojure.gdx.backends.lwjgl :as lwjgl]))
 
 (defn step
   [{:keys [config
@@ -11,19 +9,11 @@
            render!
            resize!
            colors]}]
-  (colors/put! colors)
-  (lwjgl/use-glfw-async!)
   (lwjgl/application! (let [state @state
                             [create-fn create-params] create!
                             [render-fn render-params] render!]
                         {:create! (fn []
-                                    (reset! state
-                                            (create-fn {:ctx/app      (gdx/app)
-                                                        :ctx/audio    (gdx/audio)
-                                                        :ctx/graphics (gdx/graphics)
-                                                        :ctx/files    (gdx/files)
-                                                        :ctx/input    (gdx/input)}
-                                                       create-params)))
+                                    (reset! state (create-fn create-params)))
                          :dispose! (fn []
                                      (dispose! @state))
                          :render! (fn []

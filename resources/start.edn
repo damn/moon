@@ -115,6 +115,8 @@
    [moon.state.stunned :stunned]
    ]
   ]
+ [clojure.gdx.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
+ [clojure.gdx.backends.lwjgl/use-glfw-async!]
  [moon.start.lwjgl-application/step
   {:config {:title "Moon"
             :window {:width 1440
@@ -125,7 +127,6 @@
    :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
    :dispose! moon.listener.dispose/do!
    :resize!  moon.listener.resize/do!
-   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
    }
   ]
  ]
