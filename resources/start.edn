@@ -1,26 +1,7 @@
 [
- [moon.start.extend-types/step #edn/resource "extend_types.edn"]
  [moon.start.require/step [
                            moon.info-impl
                            ]]
- [moon.start.add-method/step moon.ui/create
-  [
-   [:ui/actor moon.ui.actor/create]
-   [:ui/check-box moon.ui.check-box/create]
-   [:ui/group moon.ui.group/create]
-   [:ui/horizontal-group moon.ui.horizontal-group/create]
-   [:ui/label moon.ui.label/create]
-   [:ui/image moon.ui.image/create]
-   [:ui/image-button moon.ui.image-button/create]
-   [:ui/select-box moon.ui.select-box/create]
-   [:ui/scroll-pane moon.ui.scroll-pane/create]
-   [:ui/stack moon.ui.stack/create]
-   [:ui/table moon.ui.table/create]
-   [:ui/text-button moon.ui.text-button/create]
-   [:ui/text-field moon.ui.text-field/create]
-   [:ui/widget moon.ui.widget/create]
-   [:ui/window moon.ui.window/create]
-   ]]
  [moon.start.add-method/step moon.schema/create [[:default moon.schema.default/create]]]
  [moon.start.add-method/step moon.schema/value  [[:default moon.schema.default/value]]]
  [moon.start.add-methods/step
@@ -115,6 +96,25 @@
    [moon.state.stunned :stunned]
    ]
   ]
+ [moon.start.extend-types/step #edn/resource "extend_types.edn"]
+ [moon.start.add-method/step moon.ui/create
+  [
+   [:ui/actor moon.ui.actor/create]
+   [:ui/check-box moon.ui.check-box/create]
+   [:ui/group moon.ui.group/create]
+   [:ui/horizontal-group moon.ui.horizontal-group/create]
+   [:ui/label moon.ui.label/create]
+   [:ui/image moon.ui.image/create]
+   [:ui/image-button moon.ui.image-button/create]
+   [:ui/select-box moon.ui.select-box/create]
+   [:ui/scroll-pane moon.ui.scroll-pane/create]
+   [:ui/stack moon.ui.stack/create]
+   [:ui/table moon.ui.table/create]
+   [:ui/text-button moon.ui.text-button/create]
+   [:ui/text-field moon.ui.text-field/create]
+   [:ui/widget moon.ui.widget/create]
+   [:ui/window moon.ui.window/create]
+   ]]
  [clojure.gdx.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [clojure.gdx.backends.lwjgl.config/use-glfw-async!]
  [clojure.gdx.backends.lwjgl/application!
