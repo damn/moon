@@ -1,7 +1,6 @@
 (ns moon.modules.last-steps
   (:require [clojure.gdx.tiled-map.props :as props]
             [clj.api.com.badlogic.gdx.maps.map-layers :as layers]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
@@ -108,7 +107,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (layers/get (gdx-tiled-map/layers tiled-map) "creatures")
+                                                    (property-value (layers/get (tiled-map/layers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

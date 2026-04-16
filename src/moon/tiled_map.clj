@@ -7,6 +7,12 @@
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [clj.api.com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
+(defn props [tiled-map]
+  (tiled-map/properties tiled-map))
+
+(defn layers [tiled-map]
+  (tiled-map/layers tiled-map))
+
 (defn width [tiled-map]
   (props/get (tiled-map/properties tiled-map) "width"))
 

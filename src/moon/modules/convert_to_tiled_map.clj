@@ -1,6 +1,5 @@
 (ns moon.modules.convert-to-tiled-map
   (:require [clojure.gdx.tiled-map.props :as props]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [moon.grid2d :as g2d]
@@ -9,10 +8,10 @@
 (defn- grid->tiled-map
   [schema-tiled-map grid]
   (tiled-map/create-tiled-map
-   {:properties (merge (props/->clj (gdx-tiled-map/properties schema-tiled-map))
+   {:properties (merge (props/->clj (tiled-map/props schema-tiled-map))
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})
-    :layers (for [layer (gdx-tiled-map/layers schema-tiled-map)]
+    :layers (for [layer (tiled-map/layers schema-tiled-map)]
               {:name (layer/name layer)
                :visible? (layer/visible? layer)
                :properties (props/->clj (layer/properties layer))
