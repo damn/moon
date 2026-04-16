@@ -3,7 +3,7 @@
             [clj.api.com.badlogic.gdx.maps.map-layers :as layers]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
             [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [clojure.gdx.tiled-map.layer.cell :as cell]
             [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map]))
 
