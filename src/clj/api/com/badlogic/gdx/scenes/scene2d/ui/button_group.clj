@@ -2,14 +2,10 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup)))
 
-(defn create []
-  (ButtonGroup.))
-
-(defn set-max-check-count! [^ButtonGroup button-group max-check-count]
-  (.setMaxCheckCount button-group max-check-count))
-
-(defn set-min-check-count! [^ButtonGroup button-group min-check-count]
-  (.setMinCheckCount button-group min-check-count))
+(defn create [{:keys [max-check-count min-check-count]}]
+  (doto (ButtonGroup.)
+    (.setMaxCheckCount max-check-count)
+    (.setMinCheckCount min-check-count)))
 
 (defn add! [^ButtonGroup button-group ^Button button]
   (.add button-group button))

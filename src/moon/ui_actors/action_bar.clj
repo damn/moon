@@ -1,6 +1,6 @@
 (ns moon.ui-actors.action-bar
-  (:require [gdl.scene2d.group :as group]
-            [gdl.scene2d.ui.button-group :as button-group]
+  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+            [gdl.scene2d.group :as group]
             [moon.action-bar :as action-bar]
             [moon.actor :as actor]
             [moon.ui :as ui])
