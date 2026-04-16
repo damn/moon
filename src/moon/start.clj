@@ -17,7 +17,5 @@
                           form)))))
 
 (defn -main []
-  (reduce (fn [ctx [f & params]]
-            (apply f ctx params))
-          {}
-          (edn-resource "start.edn")))
+  (doseq [[f & params] (edn-resource "start.edn")]
+    (apply f params)))

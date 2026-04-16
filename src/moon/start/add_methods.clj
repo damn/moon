@@ -17,9 +17,8 @@
         #_(println "MultiFn/.addMethod " multifn-var  k function-var)
         (MultiFn/.addMethod multifn k function-var)))))
 
-(defn step [ctx {:keys [required optional]} components]
+(defn step [{:keys [required optional]} components]
   (doseq [[ns-sym k] components]
     (require ns-sym)
     (add-methods! required ns-sym k)
-    (add-methods! optional ns-sym k :optional? true))
-  ctx)
+    (add-methods! optional ns-sym k :optional? true)))

@@ -1,6 +1,6 @@
 (ns moon.start.extend-types)
 
-(defn step [ctx impls]
+(defn step [impls]
   (doseq [[atype-sym implementation-ns-sym protocol-var] impls]
     (try (let [atype (eval atype-sym)
                _ (assert (class atype))
@@ -14,5 +14,4 @@
                            {:atype-sym atype-sym
                             :implementation-ns-sym implementation-ns-sym
                             :protocol-var protocol-var}
-                           t)))))
-  ctx)
+                           t))))))

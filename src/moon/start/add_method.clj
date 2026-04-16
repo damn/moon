@@ -1,7 +1,6 @@
 (ns moon.start.add-method
   (:import (clojure.lang MultiFn)))
 
-(defn step [ctx multifn-var data]
+(defn step [multifn-var data]
   (doseq [[k function-var] data]
-    (MultiFn/.addMethod @multifn-var k function-var))
-  ctx)
+    (MultiFn/.addMethod @multifn-var k function-var)))

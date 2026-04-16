@@ -5,8 +5,7 @@
             [clj.api.com.badlogic.gdx.gdx :as gdx]))
 
 (defn step
-  [_ctx
-   {:keys [title
+  [{:keys [title
            window
            fps
            state
