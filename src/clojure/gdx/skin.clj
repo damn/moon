@@ -1,5 +1,5 @@
 (ns clojure.gdx.skin
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+  (:require [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.bitmap-font :as bitmap-font]))
 
 (defn create [file-handle]

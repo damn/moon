@@ -1,7 +1,8 @@
 (ns clojure.gdx.scene2d.ui.table
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.scene2d.ui.widget-group :as widget-group]))
+  (:require [clojure.gdx.scene2d.ui.cell :as cell]
+            [clojure.scene2d.ui.widget-group :as widget-group])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 ; TODO order is important, reduce?
 (defn- set-cell-opts! [cell opts]
@@ -24,7 +25,7 @@
       :left?      (cell/left!       cell))))
 
 (defn add! [table cell-declaration]
-  (-> (table/add! table (:actor cell-declaration))
+  (-> (.add ^Table table ^Actor (:actor cell-declaration))
       (set-cell-opts! (dissoc cell-declaration :actor))))
 
 (defn add-rows! [table rows]
@@ -36,14 +37,14 @@
        (add! table props-or-actor)
 
        ; TODO Remove else case
-       :else (table/add! table props-or-actor)
+       :else (.add ^Table table ^Actor props-or-actor)
 
        ))
-    (table/row! table))
+    (Table/.row table))
   table)
 
 (defn set-cell-defaults! [table cell-opts]
-  (set-cell-opts! (table/defaults table) cell-opts)
+  (set-cell-opts! (.defaults ^Table table) cell-opts)
   table)
 
 (defn set-opts! [table opts]
@@ -55,5 +56,5 @@
   (widget-group/set-opts! table opts))
 
 (defn create [opts]
-  (doto (table/create)
+  (doto (Table.)
     (set-opts! opts)))

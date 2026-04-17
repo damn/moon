@@ -1,9 +1,9 @@
 (ns clojure.gdx.scene2d.ui.horizontal-group
-  (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
-            [moon.actor :as actor]))
+  (:require [moon.actor :as actor])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
 (defn create [{:keys [space pad] :as opts}]
-  (doto (horizontal-group/create)
-    (horizontal-group/space! space)
-    (horizontal-group/pad! pad)
+  (doto (HorizontalGroup.)
+    (.space space)
+    (.pad pad)
     (actor/set-opts! opts)))

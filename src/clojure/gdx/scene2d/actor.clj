@@ -1,61 +1,85 @@
 (ns clojure.gdx.scene2d.actor
   (:refer-clojure :exclude [name])
   (:require [clojure.gdx.math.vector2 :as vector2]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [clj.api.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
+            [clojure.gdx.scene2d.touchable :as touchable]
+            [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
+            [clojure.gdx.scene2d.utils.click-listener :as click-listener]
             [clojure.gdx.utils.align :as align])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))
 
 ; TODO see what is only used @ opts, no need for API then
 
-(def name actor/name)
-(def x actor/x)
-(def y actor/y)
-(def width actor/width)
-(def height actor/height)
+(defn name [^Actor actor]
+  (.getName actor))
+
+(defn x [^Actor actor]
+  (.getX actor))
+
+(defn y [^Actor actor]
+  (.getY actor))
+
+(defn width [^Actor actor]
+  (.getWidth actor))
+
+(defn height [^Actor actor]
+  (.getHeight actor))
 
 (defn stage->local-coordinates [actor xy]
-  (vector2/->clj (actor/stage->local-coordinates actor (vector2/->java xy))))
+  (vector2/->clj (Actor/.stageToLocalCoordinates actor (vector2/->java xy))))
 
 (defn add-listener! [actor [listener-k listener-params]]
-  (actor/add-listener! actor
-                       (case listener-k
-                         :listener/change (let [f listener-params]
-                                            (change-listener/create f))
-                         :listener/text-tooltip (let [[tooltip skin] listener-params]
-                                                  (text-tooltip/create tooltip skin))
-                         :listener/click (let [f listener-params]
-                                           (click-listener/create f))
-                         )))
+  (Actor/.addListener actor
+                      (case listener-k
+                        :listener/change (let [f listener-params]
+                                           (change-listener/create f))
+                        :listener/text-tooltip (let [[tooltip skin] listener-params]
+                                                 (text-tooltip/create tooltip skin))
+                        :listener/click (let [f listener-params]
+                                          (click-listener/create f))
+                        )))
 
-(def user-object actor/user-object)
+(defn user-object [^Actor actor]
+  (.getUserObject actor))
 
-(def stage actor/stage)
+(defn stage [^Actor actor]
+  (.getStage actor))
 
 ; used?
-(def set-name! actor/set-name!)
+(defn set-name! [^Actor actor name]
+  (.setName actor name))
 
-(def set-user-object! actor/set-user-object!)
+(defn set-user-object! [^Actor actor object]
+  (.setUserObject actor object))
 
-(def set-position! actor/set-position!)
+(defn set-position!
+  ([^Actor actor [x y]]
+   (.setPosition actor x y))
+  ([^Actor actor x y align]
+   (.setPosition actor x y align)))
 
-(def set-visible! actor/set-visible!)
+(defn set-visible! [^Actor actor visible?]
+  (.setVisible actor visible?))
 
 ; only used @ opts
-(def set-touchable! actor/set-touchable!)
+(defn set-touchable! [^Actor actor touchable]
+  (.setTouchable actor touchable))
 
-(def visible? actor/visible?)
+(defn visible? [^Actor actor]
+  (.isVisible actor))
 
 ; used with stage->local-coordinates
-(def hit actor/hit)
-(def remove! actor/remove!)
-(def parent actor/parent)
+(defn hit [^Actor actor [x y] touchable?]
+  (.hit actor x y touchable?))
+
+(defn remove! [^Actor actor]
+  (.remove actor))
+
+(defn parent [^Actor actor]
+  (.getParent actor))
 
 ; not part of minimal clojure.gdx API ?
 (defn toggle-visible! [actor]
@@ -76,31 +100,39 @@
 (defn set-opts!
   [actor opts]
   (when-let [user-object (:actor/user-object opts)]
-    (actor/set-user-object! actor user-object))
+    (set-user-object! actor user-object))
 
   (when (:actor/position opts)
     (let [[x y align] (:actor/position opts)]
       (if align
-        (actor/set-position! actor x y (align/k->value align))
-        (actor/set-position! actor [x y]))))
+        (set-position! actor x y (align/k->value align))
+        (set-position! actor [x y]))))
 
   (when (contains? opts :actor/visible?)
-    (actor/set-visible! actor (:actor/visible? opts)))
+    (set-visible! actor (:actor/visible? opts)))
 
   (when-let [touchable (:actor/touchable opts)]
-    (actor/set-touchable! actor (case touchable
-                                  :touchable/disabled touchable/disabled)))
+    (set-touchable! actor (case touchable
+                            :touchable/disabled touchable/disabled)))
 
   (when-let [name (:actor/name opts)]
-    (actor/set-name! actor name))
+    (set-name! actor name))
 
   (when-let [listeners (:actor/listeners opts)]
     (doseq [listener listeners]
       (add-listener! actor listener))))
 
 (defn create
-  [opts]
-  (doto (actor/create opts)
+  [{:keys [act! draw!] :as opts}]
+  (doto (proxy [Actor] []
+          (act [delta]
+            (when act!
+              (act! this delta))
+            (let [^Actor this this]
+              (proxy-super act delta)))
+          (draw [batch parent-alpha]
+            (when draw!
+              (draw! this batch parent-alpha))))
     (set-opts! opts)))
 
 (defn- button-class? [actor]
@@ -115,7 +147,7 @@
 (defn window-title-bar?
   [actor]
   (when (instance? Label actor)
-    (when-let [p (actor/parent actor)]
-      (when-let [p (actor/parent p)]
+    (when-let [p (parent actor)]
+      (when-let [p (parent p)]
         (and (instance? Window actor)
-             (= (window/title-label p) actor))))))
+             (= (Window/.getTitleLabel p) actor))))))

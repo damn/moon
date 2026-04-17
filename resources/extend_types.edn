@@ -54,7 +54,7 @@
   clojure.gdx.scene2d.ui.check-box
   clojure.scene2d.ui.check-box/CheckBox]
  [com.badlogic.gdx.scenes.scene2d.ui.Image
-  clj.api.com.badlogic.gdx.scenes.scene2d.ui.image
+  clojure.gdx.scene2d.ui.image
   clojure.scene2d.ui.image/Image]
  [com.badlogic.gdx.scenes.scene2d.ui.SelectBox
   clojure.gdx.scene2d.ui.select-box
@@ -63,7 +63,7 @@
   clojure.gdx.scene2d.ui.table
   moon.table/Table]
  [com.badlogic.gdx.scenes.scene2d.ui.TextField
-  clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-field
+  clojure.gdx.scene2d.ui.text-field
   clojure.scene2d.ui.text-field/TextField]
  [com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
   clojure.gdx.scene2d.ui.widget-group
@@ -72,7 +72,7 @@
   clojure.gdx.scene2d.group
   clojure.scene2d.group/Group]
  [com.badlogic.gdx.scenes.scene2d.ui.Label
-  clj.api.com.badlogic.gdx.scenes.scene2d.ui.label
+  clojure.gdx.scene2d.ui.label
   clojure.scene2d.ui.label/Label]
  [com.badlogic.gdx.utils.Disposable
   clojure.gdx.utils.disposable

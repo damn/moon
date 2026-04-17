@@ -1,4 +1,4 @@
-(ns clj.api.com.badlogic.gdx.scenes.scene2d.ui.skin
+(ns clojure.gdx.scene2d.ui.skin
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 

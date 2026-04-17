@@ -1,4 +1,4 @@
-(ns clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell
+(ns clojure.gdx.scene2d.ui.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defn bottom! [^Cell cell]
