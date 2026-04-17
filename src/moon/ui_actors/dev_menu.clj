@@ -2,9 +2,9 @@
   (:require [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.ui.label :as label]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [moon.stage :as stage]
-            [moon.table :as table]
+            [clojure.scene2d.ui.table :as table]
             [moon.ui :as ui]))
 
 (defn- set-label-text-actor [label text-fn]

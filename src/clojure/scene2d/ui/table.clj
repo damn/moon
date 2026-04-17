@@ -1,4 +1,4 @@
-(ns moon.table)
+(ns clojure.scene2d.ui.table)
 
 (defprotocol Table
   (add! [_ cell-declaration])

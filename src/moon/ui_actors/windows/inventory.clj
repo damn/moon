@@ -6,7 +6,7 @@
             [clojure.gdx.scene2d.utils.drawable :as drawable]
             [clojure.gdx.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.viewport :as viewport]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [moon.inventory-window]

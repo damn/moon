@@ -1,5 +1,5 @@
 (ns moon.schema.default
-  (:require [moon.actor :as actor]
+  (:require [clojure.scene2d.actor :as actor]
             [moon.edn :as edn]
             [moon.string :as string]
             [moon.ui :as ui]))

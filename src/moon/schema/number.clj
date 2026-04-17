@@ -1,7 +1,7 @@
 (ns moon.schema.number
   (:require [clojure.scene2d.ui.text-field :as text-field]
             [clojure.edn :as edn]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [moon.edn]
             [moon.ui :as ui]))
 

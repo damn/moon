@@ -1,5 +1,5 @@
 (ns moon.reaction-txs.toggle-inventory-visible
-  (:require [moon.actor :as actor]
+  (:require [clojure.scene2d.actor :as actor]
             [moon.stage :as stage]))
 
 (defn do!

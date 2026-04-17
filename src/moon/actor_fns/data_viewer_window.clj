@@ -1,5 +1,5 @@
 (ns moon.actor-fns.data-viewer-window
-  (:require [moon.actor :as actor]
+  (:require [clojure.scene2d.actor :as actor]
             [moon.stage :as stage]
             [moon.ui :as ui]))
 

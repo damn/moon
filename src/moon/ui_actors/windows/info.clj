@@ -3,10 +3,10 @@
             [clojure.scene2d.ui.label :as label]
             [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.viewport :as viewport]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [moon.info :as info]
             [moon.stage :as stage]
-            [moon.table :as table]
+            [clojure.scene2d.ui.table :as table]
             [moon.ui :as ui]))
 
 (defn create

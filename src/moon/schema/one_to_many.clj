@@ -2,11 +2,11 @@
   (:require [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.ui.widget-group :as widget-group]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [moon.db :as db]
             [moon.property :as property]
             [moon.stage :as stage]
-            [moon.table :as table]
+            [clojure.scene2d.ui.table :as table]
             [moon.textures :as textures]
             [moon.ui :as ui]))
 

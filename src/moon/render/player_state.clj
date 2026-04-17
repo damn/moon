@@ -1,7 +1,7 @@
 (ns moon.render.player-state
   (:require [clojure.graphics :as graphics]
             [moon.action-bar :as action-bar]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [moon.body :as body]
             [moon.input :as input]
             [moon.skill :as skill]

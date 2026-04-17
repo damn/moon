@@ -46,7 +46,7 @@
   clojure.shape-drawer/ShapeDrawer]
  [com.badlogic.gdx.scenes.scene2d.Actor
   clojure.gdx.scene2d.actor
-  moon.actor/Actor]
+  clojure.scene2d.actor/Actor]
  [com.badlogic.gdx.scenes.scene2d.Event
   clojure.gdx.scene2d.event
   clojure.scene2d.event/Event]
@@ -61,7 +61,7 @@
   clojure.scene2d.ui.select-box/SelectBox]
  [com.badlogic.gdx.scenes.scene2d.ui.Table
   clojure.gdx.scene2d.ui.table
-  moon.table/Table]
+  clojure.scene2d.ui.table/Table]
  [com.badlogic.gdx.scenes.scene2d.ui.TextField
   clojure.gdx.scene2d.ui.text-field
   clojure.scene2d.ui.text-field/TextField]

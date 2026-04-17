@@ -1,5 +1,5 @@
 (ns moon.ui-actors.player-state-draw
-  (:require [moon.actor :as actor]
+  (:require [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.stage :as stage]
             [moon.state :as state]

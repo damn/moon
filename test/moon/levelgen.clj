@@ -2,7 +2,7 @@
 (ns moon.levelgen
   (:require [clojure.gdx.graphics.color :as color]
             [clojure.gdx.math.vector3 :as vector3]
-            [moon.table :as table]
+            [clojure.scene2d.ui.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.create.db]

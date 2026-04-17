@@ -1,7 +1,7 @@
 (ns moon.actor-fns.property-editor-window
   (:require [clojure.scene2d.event :as event]
             [clojure.viewport :as viewport]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [moon.db :as db]
             [moon.input :as input]
             [moon.property :as property]

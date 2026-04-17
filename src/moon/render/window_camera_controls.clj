@@ -5,7 +5,7 @@
 (ns moon.render.window-camera-controls
   (:require [clojure.scene2d.group :as group]
             [clojure.viewport :as viewport]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [clojure.camera :as camera]
             [moon.input :as input]
             [moon.stage :as stage]))

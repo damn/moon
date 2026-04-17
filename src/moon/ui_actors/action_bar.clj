@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.ui.button-group :as button-group]
             [clojure.scene2d.group :as group]
             [moon.action-bar :as action-bar]
-            [moon.actor :as actor]
+            [clojure.scene2d.actor :as actor]
             [moon.ui :as ui])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 

@@ -1,4 +1,4 @@
-(ns moon.actor
+(ns clojure.scene2d.actor
   (:refer-clojure :exclude [name]))
 
 (defprotocol Actor
