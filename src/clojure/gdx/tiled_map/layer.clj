@@ -1,7 +1,7 @@
 (ns clojure.gdx.tiled-map.layer
   (:refer-clojure :exclude [name])
   (:require [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [clojure.gdx.tiled-map.props :as props]
+            [clojure.gdx.maps.props :as props]
             [clojure.gdx.tiled-map.layer.cell :as cell]))
 
 (def visible? layer/visible?)

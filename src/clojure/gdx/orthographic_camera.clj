@@ -1,27 +1,36 @@
 (ns clojure.gdx.orthographic-camera
-  (:require [clj.api.com.badlogic.gdx.graphics.orthographic-camera :as camera]
-            [clj.api.com.badlogic.gdx.math.frustum :as frustum]
-            [clj.api.com.badlogic.gdx.math.vector3 :as vector3]))
+  (:require [clj.api.com.badlogic.gdx.math.vector3 :as vector3])
+  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
-(def combined camera/combined)
+(defn create []
+  (OrthographicCamera.))
 
-(defn set-position! [camera [x y]]
-  (vector3/set-x! (camera/position camera) x)
-  (vector3/set-y! (camera/position camera) y)
-  (camera/update! camera))
+(defn set-to-ortho! [^OrthographicCamera camera y-down? viewport-width viewport-height]
+  (.setToOrtho camera y-down? viewport-width viewport-height))
 
-(defn set-zoom! [camera amount]
-  (camera/set-zoom! camera amount)
-  (camera/update! camera))
+(defn combined [^OrthographicCamera camera]
+  (.combined camera))
 
-(defn zoom [camera]
-  (camera/zoom camera))
+(defn set-position! [^OrthographicCamera camera [x y]]
+  (set! (.x (.position camera)) x)
+  (set! (.y (.position camera)) y)
+  (.update camera))
 
-(defn frustum* [camera]
-  (mapv vector3/->clj (frustum/plane-points (camera/frustum camera))))
+(defn set-zoom! [^OrthographicCamera camera amount]
+  (set! (.zoom camera) amount)
+  (.update camera))
 
-(defn position [camera]
-  (vector3/->clj (camera/position camera)))
+(defn zoom [^OrthographicCamera camera]
+  (.zoom camera))
 
-(def viewport-width camera/viewport-width)
-(def viewport-height camera/viewport-height)
+(defn frustum* [^OrthographicCamera camera]
+  (mapv vector3/->clj (.planePoints (.frustum camera))))
+
+(defn position [^OrthographicCamera camera]
+  (vector3/->clj (.position camera)))
+
+(defn viewport-width [^OrthographicCamera camera]
+  (.viewportHeight camera))
+
+(defn viewport-height [^OrthographicCamera camera]
+  (.viewportHeight camera))
