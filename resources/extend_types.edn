@@ -48,7 +48,7 @@
   clojure.gdx.scene2d.actor
   moon.actor/Actor]
  [com.badlogic.gdx.scenes.scene2d.Event
-  clj.api.com.badlogic.gdx.scenes.scene2d.event
+  clojure.gdx.scene2d.event
   clojure.scene2d.event/Event]
  [com.badlogic.gdx.scenes.scene2d.ui.CheckBox
   clojure.gdx.scene2d.ui.check-box
