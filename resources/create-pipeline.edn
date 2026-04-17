@@ -1,12 +1,4 @@
 [
- [moon.create.default-font/do! {:path "exocet/films.EXL_____.ttf"
-                                :params {:size 16
-                                         :quality-scaling 2
-                                         :enable-markup? true
-                                         :use-integer-positions? false
-                                         ; :texture-filter/linear because scaling to world-units
-                                         :min-filter :linear
-                                         :mag-filter :linear}}]
  [moon.create.shape-drawer/step]
  [moon.create.add-stage-actors/step [[moon.ui-actors.dev-menu/create {:update-labels [moon.dev-menu.update-labels.elapsed-time/item
                                                                                       moon.dev-menu.update-labels.fps/item

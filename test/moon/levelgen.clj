@@ -5,7 +5,6 @@
             [clojure.scene2d.ui.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.create.textures]
             [moon.db :as db]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.gdx.tiled-map.renderer :as tiled-map-renderer]
@@ -106,7 +105,7 @@
         ctx {:ctx/stage stage
              :ctx/files files}
         ctx (-> ctx
-                (moon.create.textures/step {:folder "resources/"
+                #_(moon.create.textures/step {:folder "resources/"
                                             :extensions #{"png" "bmp"}})
                 (assoc :ctx/db (db/create {:schemas "schema.edn"
                                            :properties "properties.edn"})))
