@@ -124,10 +124,8 @@
   {
    :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
    :listener {
-              :create! [moon.listener.create/do! #edn/resource "create-pipeline.edn"]
-              :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
-              :dispose! moon.listener.dispose/do!
-              :resize!  moon.listener.resize/do!
+              :create-params #edn/resource "create-pipeline.edn"
+              :render-params #edn/resource "render-pipeline.edn"
               }
    :config {
             :title "Moon"
