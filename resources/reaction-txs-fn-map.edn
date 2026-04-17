@@ -1,9 +1,0 @@
-{
- :tx/sound                    moon.reaction-txs.sound/do!
- :tx/toggle-inventory-visible moon.reaction-txs.toggle-inventory-visible/do!
- :tx/show-message             moon.reaction-txs.show-message/do!
- :tx/show-modal               moon.reaction-txs.show-modal/do!
- :tx/set-item                 moon.reaction-txs.set-item/do!
- :tx/remove-item              moon.reaction-txs.remove-item/do!
- :tx/add-skill                moon.reaction-txs.add-skill/do!
- }
