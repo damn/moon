@@ -8,6 +8,7 @@
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.orthographic-camera :as orthographic-camera]
             [clojure.gdx.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.color :as color]
@@ -301,17 +302,20 @@
                        graphics (gdx/graphics)
                        files (gdx/files)
                        ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
+                       stage (stage/create ui-viewport batch)
+                       input (gdx/input)
                        ]
+                   (gdx-input/set-processor! input stage)
                    {
                     :ctx/schema schema
                     :ctx/app      (gdx/app)
                     :ctx/audio    (gdx/audio)
                     :ctx/graphics  graphics
                     :ctx/files     files
-                    :ctx/input    (gdx/input)
+                    :ctx/input     input
                     :ctx/batch batch
                     :ctx/ui-viewport ui-viewport
-                    :ctx/stage (stage/create ui-viewport batch)
+                    :ctx/stage stage
 
                     :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
                                    (update-vals data (partial create-cursor files graphics path-format)))
@@ -398,6 +402,7 @@
                                     render-params]} listener]
                         (reify ApplicationListener
                           (create [_]
+                            (tooltip-manager/set-initial-time! 0)
                             (reset! state (create! create-params)))
 
                           (dispose [_]
