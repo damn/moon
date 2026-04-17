@@ -1,7 +1,6 @@
 [
  [moon.create.db/step {:schemas "schema.edn"
                        :properties "properties.edn"}]
- [moon.create.stage/step]
  [moon.create.tooltip-config/step {:initial-time 0}]
  [moon.create.set-input-processor/step]
  [moon.create.skin/step "uiskin.json"]

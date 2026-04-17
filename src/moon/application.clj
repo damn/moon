@@ -7,6 +7,7 @@
             [clojure.gdx.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.orthographic-camera :as orthographic-camera]
+            [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.color :as color]
@@ -309,6 +310,7 @@
                     :ctx/input    (gdx/input)
                     :ctx/batch batch
                     :ctx/ui-viewport ui-viewport
+                    :ctx/stage (stage/create ui-viewport batch)
 
                     :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
                                    (update-vals data (partial create-cursor files graphics path-format)))
