@@ -1,8 +1,3 @@
-
-; PRIVATE IS THE PROBLEM
-; ALL PUBLIC
-; defn- \| ^:private
-
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
