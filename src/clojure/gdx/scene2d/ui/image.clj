@@ -1,4 +1,4 @@
-(ns clojure.gdx.ui.image
+(ns clojure.gdx.scene2d.ui.image
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [moon.actor :as actor]))
 

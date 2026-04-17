@@ -1,4 +1,4 @@
-(ns clojure.gdx.ui.window
+(ns clojure.gdx.scene2d.ui.window
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as gdx-table]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]

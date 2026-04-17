@@ -1,4 +1,4 @@
-(ns clojure.gdx.ui.image-button
+(ns clojure.gdx.scene2d.ui.image-button
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
