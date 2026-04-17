@@ -1,5 +1,4 @@
 [
- [moon.create.skin/step "uiskin.json"]
  [moon.create.textures/step {:folder "resources/"
                              :extensions #{"png" "bmp"}}]
  [moon.create.shape-drawer-texture/step]

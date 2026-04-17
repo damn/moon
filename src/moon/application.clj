@@ -8,9 +8,11 @@
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.orthographic-camera :as orthographic-camera]
             [clojure.gdx.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
+            [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.graphics.color :as color]
             [clojure.graphics.viewport :as viewport]
             [clojure.input :as gdx-input]
@@ -316,6 +318,9 @@
                     :ctx/batch batch
                     :ctx/ui-viewport ui-viewport
                     :ctx/stage stage
+                    :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
+                                (bitmap-font/enable-markup! (skin/font skin "default-font") true)
+                                skin)
 
                     :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
                                    (update-vals data (partial create-cursor files graphics path-format)))
