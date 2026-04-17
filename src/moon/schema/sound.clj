@@ -4,7 +4,7 @@
             [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]
             [moon.txs :as txs]
             [moon.ui :as ui]))

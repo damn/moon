@@ -1,4 +1,4 @@
-(ns moon.stage)
+(ns clojure.scene2d.stage)
 
 (defprotocol Stage
   (ctx [_])

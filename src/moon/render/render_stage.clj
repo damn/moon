@@ -1,5 +1,5 @@
 (ns moon.render.render-stage ; TODO makes 2 things - draw/act - separate further
-  (:require [moon.stage :as stage]))
+  (:require [clojure.scene2d.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/stage] :as ctx}]

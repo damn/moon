@@ -5,7 +5,7 @@
             [clojure.scene2d.actor :as actor]
             [moon.db :as db]
             [moon.property :as property]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]
             [moon.textures :as textures]
             [moon.ui :as ui]))

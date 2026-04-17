@@ -3,7 +3,7 @@
             [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.number :as number]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.stats :as stats]
             [moon.textures :as textures]
             [moon.val-max :as val-max]

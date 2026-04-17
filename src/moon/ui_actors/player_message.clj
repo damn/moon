@@ -2,7 +2,7 @@
   (:require [clojure.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.ui :as ui]))
 
 (defn- draw-message [state vp-width vp-height]

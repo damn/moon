@@ -1,6 +1,6 @@
 (ns moon.reaction-txs.remove-item
   (:require [moon.inventory-window :as inventory-window]
-            [moon.stage :as stage]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/stage] :as ctx} eid cell]

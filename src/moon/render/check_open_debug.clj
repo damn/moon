@@ -1,6 +1,6 @@
 (ns moon.render.check-open-debug
   (:require [moon.input :as input]
-            [moon.stage :as stage]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/controls

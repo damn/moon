@@ -1,6 +1,6 @@
 (ns moon.reaction-txs.show-message
   (:require [clojure.scene2d.actor :as actor]
-            [moon.stage :as stage]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/stage] :as ctx} message]

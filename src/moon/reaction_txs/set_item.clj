@@ -1,7 +1,7 @@
 (ns moon.reaction-txs.set-item
   (:require [moon.info :as info]
             [moon.inventory-window :as inventory-window]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.textures :as textures]))
 
 (defn do!

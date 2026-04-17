@@ -2,7 +2,7 @@
   (:require [clojure.scene2d.event :as event]
             [moon.db :as db]
             [moon.property :as property]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.textures :as textures]
             [moon.ui :as ui]))
 

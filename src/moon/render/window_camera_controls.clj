@@ -8,7 +8,7 @@
             [clojure.scene2d.actor :as actor]
             [clojure.camera :as camera]
             [moon.input :as input]
-            [moon.stage :as stage]))
+            [clojure.scene2d.stage :as stage]))
 
 (def zoom-speed 0.025) ; TODO FIXME pull out
 

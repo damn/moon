@@ -8,7 +8,7 @@
             [moon.order :as order]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]
             [moon.ui :as ui]))
 

@@ -1,7 +1,7 @@
 (ns moon.reaction-txs.show-modal
   (:require [clojure.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.ui :as ui]))
 
 (defn do!

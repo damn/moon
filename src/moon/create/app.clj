@@ -1,6 +1,6 @@
 (ns moon.create.app
   (:require [clojure.gdx :as gdx]
-            [clojure.gdx.sprite-batch :as sprite-batch]))
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]))
 
 (defn step [ctx]
   (let [batch (sprite-batch/create)]

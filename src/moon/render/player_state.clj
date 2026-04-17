@@ -5,7 +5,7 @@
             [moon.body :as body]
             [moon.input :as input]
             [moon.skill :as skill]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.txs :as txs]
             [moon.vector2 :as v]))

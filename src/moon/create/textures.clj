@@ -1,5 +1,5 @@
 (ns moon.create.textures
-  (:require [clojure.gdx.texture :as texture]
+  (:require [clojure.gdx.graphics.texture :as texture]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.texture :as clojure-texture]

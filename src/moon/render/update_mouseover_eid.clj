@@ -3,7 +3,7 @@
             [moon.input :as input]
             [moon.order :as order]
             [moon.raycaster :as raycaster]
-            [moon.stage :as stage]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/input

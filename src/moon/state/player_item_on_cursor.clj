@@ -1,7 +1,7 @@
 (ns moon.state.player-item-on-cursor
   (:require [moon.input :as input]
             [moon.inventory :as inventory]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.textures :as textures]
             [moon.vector2 :as v]))
 

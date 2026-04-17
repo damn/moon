@@ -1,6 +1,6 @@
 (ns moon.if-not-paused.tick-entities
   (:require [moon.entity :as entity]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.throwable :as throwable]
             [moon.txs :as txs]))
 

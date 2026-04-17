@@ -1,7 +1,7 @@
 (ns moon.reaction-txs.add-skill
   (:require [moon.action-bar :as action-bar]
             [moon.info :as info]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.textures :as textures]))
 
 (defn do!

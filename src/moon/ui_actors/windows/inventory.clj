@@ -10,7 +10,7 @@
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [moon.inventory-window]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.textures :as textures]
             [moon.txs :as txs]

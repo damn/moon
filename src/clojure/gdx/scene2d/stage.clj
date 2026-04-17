@@ -1,5 +1,5 @@
 (ns clojure.gdx.scene2d.stage
-  (:require [moon.stage]
+  (:require [clojure.scene2d.stage]
             [clojure.scene2d.group :as group]
             [clojure.viewport :as viewport])
   (:import (clojure.gdx Stage)))
@@ -8,7 +8,7 @@
   (Stage. viewport batch))
 
 (extend-type Stage
-  moon.stage/Stage
+  clojure.scene2d.stage/Stage
   (ctx [stage]
     (.ctx stage))
 

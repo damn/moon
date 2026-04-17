@@ -6,7 +6,7 @@
             [moon.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
-            [moon.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.throwable :as throwable]
             [moon.ui :as ui]))
 

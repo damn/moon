@@ -1,5 +1,5 @@
 (ns moon.dev-menu.menus.ctx-data-viewer
-  (:require [moon.stage :as stage]))
+  (:require [clojure.scene2d.stage :as stage]))
 
 (defn create [_ctx]
   {:label "Ctx Data"

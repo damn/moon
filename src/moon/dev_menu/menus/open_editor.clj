@@ -1,7 +1,7 @@
 (ns moon.dev-menu.menus.open-editor
   (:require [clojure.string :as str]
             [moon.db :as db]
-            [moon.stage :as stage]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn create [{:keys [ctx/db]}]
   {:label "Editor"
