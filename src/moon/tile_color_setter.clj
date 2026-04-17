@@ -1,5 +1,5 @@
 (ns moon.tile-color-setter
-  (:require [moon.camera :as camera]
+  (:require [gdl.camera :as camera]
             [gdl.viewport :as viewport]
             [moon.raycaster :as raycaster]))
 

@@ -6,7 +6,7 @@
   (:require [gdl.scene2d.group :as group]
             [gdl.viewport :as viewport]
             [moon.actor :as actor]
-            [moon.camera :as camera]
+            [gdl.camera :as camera]
             [moon.input :as input]
             [moon.stage :as stage]))
 

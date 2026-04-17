@@ -1,5 +1,5 @@
 (ns moon.dev-menu.update-labels.zoom
-  (:require [moon.camera :as camera]
+  (:require [gdl.camera :as camera]
             [gdl.viewport :as viewport]))
 
 (def item

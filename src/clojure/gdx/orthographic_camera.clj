@@ -17,7 +17,7 @@
 (defn zoom [camera]
   (camera/zoom camera))
 
-(defn frustum [camera]
+(defn frustum* [camera]
   (mapv vector3/->clj (frustum/plane-points (camera/frustum camera))))
 
 (defn position [camera]

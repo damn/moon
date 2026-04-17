@@ -1,6 +1,6 @@
 (ns moon.draw-on-world-viewport.draw-cell-debug
   (:require [gdl.viewport :as viewport]
-            [moon.camera :as camera]))
+            [gdl.camera :as camera]))
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)
