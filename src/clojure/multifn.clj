@@ -1,7 +1,11 @@
-(ns moon.start.add-methods
+(ns clojure.multifn
   (:import (clojure.lang MultiFn)))
 
-(defn- add-methods! [multifn-vars ns-sym k & {:keys [optional?]}]
+ (defn add-methods! [multifn-var data]
+  (doseq [[k function-var] data]
+    (MultiFn/.addMethod @multifn-var k function-var)))
+
+(defn- add-api-methods!* [multifn-vars ns-sym k & {:keys [optional?]}]
   (doseq [multifn-var multifn-vars
           :let [_ (assert (var? multifn-var))
                 function-sym (symbol (str ns-sym "/" (:name (meta multifn-var))))
@@ -17,8 +21,8 @@
         #_(println "MultiFn/.addMethod " multifn-var  k function-var)
         (MultiFn/.addMethod multifn k function-var)))))
 
-(defn step [{:keys [required optional]} components]
+(defn add-api-methods! [{:keys [required optional]} components]
   (doseq [[ns-sym k] components]
     (require ns-sym)
-    (add-methods! required ns-sym k)
-    (add-methods! optional ns-sym k :optional? true)))
+    (add-api-methods!* required ns-sym k)
+    (add-api-methods!* optional ns-sym k :optional? true)))

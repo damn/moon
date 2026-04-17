@@ -1,6 +1,6 @@
-(ns moon.start.extend-types)
+(ns clojure.utils)
 
-(defn step [impls]
+(defn extend-types! [impls]
   (doseq [[atype-sym implementation-ns-sym protocol-var] impls]
     (try (let [atype (eval atype-sym)
                _ (assert (class atype))

@@ -1,10 +1,7 @@
 [
- [moon.start.require/step [
-                           moon.info-impl
-                           ]]
- [moon.start.add-method/step moon.schema/create [[:default moon.schema.default/create]]]
- [moon.start.add-method/step moon.schema/value  [[:default moon.schema.default/value]]]
- [moon.start.add-methods/step
+ [clojure.multifn/add-methods! moon.schema/create [[:default moon.schema.default/create]]]
+ [clojure.multifn/add-methods! moon.schema/value  [[:default moon.schema.default/value]]]
+ [clojure.multifn/add-api-methods!
   {:required [moon.schema/malli-form]
    :optional [moon.schema/create
               moon.schema/value
@@ -24,7 +21,7 @@
    [moon.schema.val-max           :s/val-max]
    [moon.schema.vector            :s/vector]]
   ]
- [moon.start.add-methods/step
+ [clojure.multifn/add-api-methods!
   {:required [moon.effect/applicable?
               moon.effect/handle]
    :optional [moon.effect/useful?
@@ -42,7 +39,7 @@
    [moon.effects.target-all          :effects/target-all]
    [moon.effects.target-entity       :effects/target-entity]]
   ]
- [moon.start.add-methods/step
+ [clojure.multifn/add-api-methods!
   {:required []
    :optional [moon.entity/create
               moon.entity/after-create
@@ -67,7 +64,7 @@
    [moon.entity.image :entity/image]
    [moon.entity.mouseover :entity/mouseover?]]
   ]
- [moon.start.add-methods/step
+ [clojure.multifn/add-api-methods!
   {:required []
    :optional [moon.entity/create ; FIXME  2 create ! this unused !
               moon.entity/after-create ; not used here
@@ -96,8 +93,8 @@
    [moon.state.stunned :stunned]
    ]
   ]
- [moon.start.extend-types/step #edn/resource "extend_types.edn"]
- [moon.start.add-method/step clojure.scene2d.actor/create
+ [clojure.utils/extend-types! #edn/resource "extend_types.edn"]
+ [clojure.multifn/add-methods! clojure.scene2d.actor/create
   [
    [:ui/actor clojure.gdx.scene2d.actor/create]
    [:ui/group clojure.gdx.scene2d.group/create]

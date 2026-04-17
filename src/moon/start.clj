@@ -1,7 +1,9 @@
 (ns moon.start
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            moon.info-impl
+            )
   (:gen-class))
 
 (defn edn-resource [path]
