@@ -1,10 +1,10 @@
 (ns clojure.gdx.backends.lwjgl
-  (:require [clj.api.com.badlogic.gdx.backends.lwjgl3.application :as application]))
+  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)))
 
 (defn application!
   [{:keys [application-listener
            config]}]
-  (application/create (let [[f params] application-listener]
+  (Lwjgl3Application. (let [[f params] application-listener]
                         (f params))
                       (let [[f params] config]
                         (f params))))
