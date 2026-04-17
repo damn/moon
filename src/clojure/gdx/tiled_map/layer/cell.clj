@@ -1,6 +1,11 @@
 (ns clojure.gdx.tiled-map.layer.cell
-  (:require [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
-(def create cell/create)
-(def set-tile! cell/set-tile!)
-(def tile cell/tile)
+(defn create []
+  (TiledMapTileLayer$Cell.))
+
+(defn set-tile! [^TiledMapTileLayer$Cell cell tile]
+  (.setTile cell tile))
+
+(defn tile [^TiledMapTileLayer$Cell cell]
+  (.getTile cell))

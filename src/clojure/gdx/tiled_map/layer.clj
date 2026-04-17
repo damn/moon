@@ -1,15 +1,26 @@
 (ns clojure.gdx.tiled-map.layer
   (:refer-clojure :exclude [name])
-  (:require [clj.api.com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [clojure.gdx.maps.props :as props]
-            [clojure.gdx.tiled-map.layer.cell :as cell]))
+  (:require [clojure.gdx.maps.props :as props]
+            [clojure.gdx.tiled-map.layer.cell :as cell])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
-(def visible? layer/visible?)
-(def cell layer/cell)
-(def name layer/name)
-(def properties layer/properties)
-(def width layer/width)
-(def height layer/height)
+(defn visible? [^TiledMapTileLayer layer]
+  (.isVisible layer))
+
+(defn cell [^TiledMapTileLayer layer [x y]]
+  (.getCell layer x y))
+
+(defn name [^TiledMapTileLayer layer]
+  (.getName layer))
+
+(defn properties [^TiledMapTileLayer layer]
+  (.getProperties layer))
+
+(defn width [^TiledMapTileLayer layer]
+  (.getWidth layer))
+
+(defn height [^TiledMapTileLayer layer]
+  (.getHeight layer))
 
 (defn create
   [{:keys [width
@@ -22,14 +33,13 @@
            tiles]}]
   {:pre [(string? name)
          (boolean? visible?)]}
-  (let [layer (doto (layer/create width height tilewidth tileheight)
-                (layer/set-name! name)
-                (layer/set-visible! visible?))]
-    (props/put-all! (layer/properties layer) map-properties)
+  (let [layer (doto (TiledMapTileLayer. width height tilewidth tileheight)
+                (.setName name)
+                (.setVisible visible?))]
+    (props/put-all! (properties layer) map-properties)
     (doseq [[xy tiled-map-tile] tiles
+            :let [[x y] xy]
             :when tiled-map-tile]
-      (layer/set-cell! layer
-                       xy
-                       (doto (cell/create)
-                         (cell/set-tile! tiled-map-tile))))
+      (.setCell layer x y (doto (cell/create)
+                            (cell/set-tile! tiled-map-tile))))
     layer))
