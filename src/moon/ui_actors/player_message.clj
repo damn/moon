@@ -21,7 +21,7 @@
     :actor/user-object (atom nil)
     :draw! (fn [this _batch _parent-alpha]
              (when-let [stage (actor/stage this)]
-               (draws/handle! (stage/ctx stage)
+               (draws/handle (stage/ctx stage)
                               [(draw-message (actor/user-object this)
                                              (viewport/world-width  (stage/viewport stage))
                                              (viewport/world-height (stage/viewport stage)))])))

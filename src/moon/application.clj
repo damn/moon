@@ -7,6 +7,7 @@
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.graphics.viewport :as viewport]
             [qrecord.core :as q]
+            [moon.draws :as draws]
             [moon.malli :as m]
             [moon.txs :as txs]
             )
@@ -157,6 +158,22 @@
           (recur ctx
                  (rest txs)))))))
 
+(def draw-fns
+  (update-vals '{
+                 :draw/circle           moon.draw.circle/do!
+                 :draw/ellipse          moon.draw.ellipse/do!
+                 :draw/filled-circle    moon.draw.filled-circle/do!
+                 :draw/filled-rectangle moon.draw.filled-rectangle/do!
+                 :draw/grid             moon.draw.grid/do!
+                 :draw/line             moon.draw.line/do!
+                 :draw/rectangle        moon.draw.rectangle/do!
+                 :draw/sector           moon.draw.sector/do!
+                 :draw/text             moon.draw.text/do!
+                 :draw/texture-region   moon.draw.texture-region/do!
+                 :draw/with-line-width  moon.draw.with-line-width/do!
+                 }
+               requiring-resolve))
+
 (q/defrecord Context []
   txs/TransactionHandler
   (handle! [ctx txs]
@@ -167,6 +184,12 @@
       (reduce-actions! reaction-txs-fn-map
                        ctx
                        handled-txs)))
+
+  draws/Draws
+  (handle [ctx draws]
+    (doseq [{k 0 :as component} draws
+            :when component]
+      (apply (get draw-fns k) ctx (rest component))))
   )
 
 (defn- create!

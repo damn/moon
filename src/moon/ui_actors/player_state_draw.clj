@@ -11,4 +11,4 @@
              (let [{:keys [ctx/player-eid] :as ctx} (stage/ctx (actor/stage this))
                    entity @player-eid
                    state-k (:state (:entity/fsm entity))]
-               (draws/handle! ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))
+               (draws/handle ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))

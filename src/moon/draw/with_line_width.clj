@@ -9,5 +9,5 @@
    draws]
   (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
-    (draws/handle! ctx draws)
+    (draws/handle ctx draws)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width)))

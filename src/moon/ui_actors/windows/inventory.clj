@@ -30,14 +30,14 @@
               (let [{:keys [ctx/player-eid
                             ctx/ui-mouse-position]
                      :as ctx} (stage/ctx stage)]
-                (draws/handle! ctx
-                               (draw-cell-rect @player-eid
-                                               (actor/x this)
-                                               (actor/y this)
-                                               (actor/hit this
-                                                          (actor/stage->local-coordinates this ui-mouse-position)
-                                                          true)
-                                               (actor/user-object (actor/parent this)))))))})
+                (draws/handle ctx
+                              (draw-cell-rect @player-eid
+                                              (actor/x this)
+                                              (actor/y this)
+                                              (actor/hit this
+                                                         (actor/stage->local-coordinates this ui-mouse-position)
+                                                         true)
+                                              (actor/user-object (actor/parent this)))))))})
 
 (defn- create-drawable
   [{:keys [drawable/texture-region drawable/min-size drawable/tint]}]

@@ -30,15 +30,15 @@
   [{:keys [ctx/colors] :as ctx} entity render-layer]
   (try (do
         (when show-body-bounds?
-          (draws/handle! ctx (draw-body-rect (:entity/body entity)
+          (draws/handle ctx (draw-body-rect (:entity/body entity)
                                              (if (:body/collides? (:entity/body entity))
                                                (:colors/debug-body-outline-collides colors)
                                                (:colors/debug-body-outline colors)))))
         (doseq [[k v] entity
                 :when (get render-layer k)]
-          (draws/handle! ctx (entity/render [k v] entity ctx))))
+          (draws/handle ctx (entity/render [k v] entity ctx))))
        (catch Throwable t
-         (draws/handle! ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
+         (draws/handle ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
          (throwable/pretty-pst t))))
 
 (defn do!
