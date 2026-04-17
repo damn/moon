@@ -1,5 +1,5 @@
 (ns moon.create.stage
-  (:require [clojure.gdx.stage :as stage]))
+  (:require [clojure.gdx.scene2d.stage :as stage]))
 
 (defn step
   [{:keys [ctx/batch
