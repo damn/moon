@@ -1,5 +1,4 @@
 [
- [moon.create.app/step]
  [moon.create.into-record/step]
  [moon.create.schema/step [:map {:closed true}
                            [:ctx/app :some]

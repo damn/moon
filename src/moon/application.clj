@@ -1,8 +1,10 @@
 (ns moon.application
   (:require [clojure.disposable :as disposable]
+            [clojure.gdx :as gdx]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.backends.lwjgl.config :as config]
             [clojure.gdx.colors :as colors]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.graphics.viewport :as viewport]
             )
   (:import (com.badlogic.gdx ApplicationListener)))
@@ -11,22 +13,31 @@
   [create-fns]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          {:ctx/active-entities nil
-           :ctx/delta-time nil
-           :ctx/mouseover-eid nil
-           :ctx/ui-mouse-position nil
-           :ctx/world-mouse-position nil
-           :ctx/elapsed-time 0
-           :ctx/paused? false
-           :ctx/unit-scale (atom 1)
-           :ctx/factions-iterations {:good 15 :evil 5}
-           :ctx/max-delta 0.04
-           :ctx/minimum-size 0.39
-           :ctx/z-orders [:z-order/on-ground
-                          :z-order/ground
-                          :z-order/flying
-                          :z-order/effect]
-           }
+          (let [batch (sprite-batch/create)]
+            {
+             :ctx/app      (gdx/app)
+             :ctx/audio    (gdx/audio)
+             :ctx/graphics (gdx/graphics)
+             :ctx/files    (gdx/files)
+             :ctx/input    (gdx/input)
+             :ctx/batch batch
+
+             :ctx/active-entities nil
+             :ctx/delta-time nil
+             :ctx/mouseover-eid nil
+             :ctx/ui-mouse-position nil
+             :ctx/world-mouse-position nil
+             :ctx/elapsed-time 0
+             :ctx/paused? false
+             :ctx/unit-scale (atom 1)
+             :ctx/factions-iterations {:good 15 :evil 5}
+             :ctx/max-delta 0.04
+             :ctx/minimum-size 0.39
+             :ctx/z-orders [:z-order/on-ground
+                            :z-order/ground
+                            :z-order/flying
+                            :z-order/effect]
+             })
           create-fns))
 
 (defn-  dispose!
