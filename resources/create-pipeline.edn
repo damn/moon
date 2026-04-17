@@ -1,5 +1,4 @@
 [
- [moon.create.game-colors/step]
  [moon.create.input/step]
  [moon.create.cursors/do! #edn/resource "cursors.edn"]
  [moon.create.db/step {:schemas "schema.edn"
