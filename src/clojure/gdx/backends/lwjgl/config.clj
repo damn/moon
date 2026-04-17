@@ -1,7 +1,8 @@
 (ns clojure.gdx.backends.lwjgl.config
-  (:require [clj.api.com.badlogic.gdx.backends.lwjgl3.application.config :as config]))
+  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
 
-(def use-glfw-async! config/use-glfw-async!)
+(defn use-glfw-async! []
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync))
 
 (defn create
   [{:keys [
@@ -9,7 +10,7 @@
            window
            fps
            ]}]
-  (doto (config/create)
-    (config/set-title! title)
-    (config/set-windowed-mode! window)
-    (config/set-foreground-fps! fps)))
+  (doto (Lwjgl3ApplicationConfiguration.)
+    (.setTitle title)
+    (.setWindowedMode (:width window) (:height window))
+    (.setForegroundFPS fps)))
