@@ -4,9 +4,13 @@
             [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
-            [clj.api.com.badlogic.gdx.utils.align :as align]))
+            [clj.api.com.badlogic.gdx.utils.align :as align])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
+                                               Label
+                                               Window)))
 
 ; TODO see what is only used @ opts, no need for API then
 
@@ -98,3 +102,20 @@
   [opts]
   (doto (actor/create opts)
     (set-opts! opts)))
+
+(defn- button-class? [actor]
+  (some #(= Button %) (supers (class actor))))
+
+(defn button? [actor]
+  (or (button-class? actor)
+      (and (parent actor)
+           (button-class? (parent actor)))))
+
+; FIXME does not work
+(defn window-title-bar?
+  [actor]
+  (when (instance? Label actor)
+    (when-let [p (actor/parent actor)]
+      (when-let [p (actor/parent p)]
+        (and (instance? Window actor)
+             (= (window/title-label p) actor))))))

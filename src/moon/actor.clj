@@ -23,4 +23,6 @@
   (remove! [_])
   (parent [_])
   (toggle-visible! [_])
-  (find-ancestor [_ ui-type-k]))
+  (find-ancestor [_ ui-type-k])
+  (button? [_] "Returns true if the actor or its parent is a button.")
+  (window-title-bar? [_]))
