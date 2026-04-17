@@ -51,7 +51,7 @@
   clj.api.com.badlogic.gdx.scenes.scene2d.event
   clojure.scene2d.event/Event]
  [com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-  clj.api.com.badlogic.gdx.scenes.scene2d.ui.check-box
+  clojure.gdx.scene2d.ui.check-box
   clojure.scene2d.ui.check-box/CheckBox]
  [com.badlogic.gdx.scenes.scene2d.ui.Image
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.image
