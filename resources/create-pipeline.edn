@@ -1,5 +1,4 @@
 [
- [moon.create.cursors/do! #edn/resource "cursors.edn"]
  [moon.create.db/step {:schemas "schema.edn"
                        :properties "properties.edn"}]
  [moon.create.ui-viewport/step {:width 1440

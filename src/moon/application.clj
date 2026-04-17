@@ -1,10 +1,12 @@
 (ns moon.application
   (:require [clojure.disposable :as disposable]
+            [clojure.files :as files]
             [clojure.gdx :as gdx]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.backends.lwjgl.config :as config]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.graphics :as graphics]
             [clojure.graphics.color :as color]
             [clojure.graphics.viewport :as viewport]
             [clojure.input :as gdx-input]
@@ -13,11 +15,22 @@
             [moon.draws :as draws]
             [moon.input :as input]
             [moon.malli :as m]
+            [moon.start :refer [edn-resource]]
             [moon.txs :as txs]
             [moon.vector2 :as v]
             )
   (:import (com.badlogic.gdx ApplicationListener
                              Input)))
+
+(defn- create-cursor
+  [files
+   graphics
+   path-format
+   [path [hotspot-x hotspot-y]]]
+  (graphics/new-cursor graphics
+                       (files/internal files (format path-format path))
+                       hotspot-x
+                       hotspot-y))
 
 (extend-type Input
   input/Input
@@ -280,15 +293,21 @@
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           (merge (map->Context {})
-                 (let [batch (sprite-batch/create)]
+                 (let [batch (sprite-batch/create)
+                       graphics (gdx/graphics)
+                       files (gdx/files)
+                       ]
                    {
                     :ctx/schema schema
                     :ctx/app      (gdx/app)
                     :ctx/audio    (gdx/audio)
-                    :ctx/graphics (gdx/graphics)
-                    :ctx/files    (gdx/files)
+                    :ctx/graphics  graphics
+                    :ctx/files     files
                     :ctx/input    (gdx/input)
                     :ctx/batch batch
+
+                    :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
+                                   (update-vals data (partial create-cursor files graphics path-format)))
 
                     :ctx/controls {
                                    :zoom-in :input.keys/minus
