@@ -5,7 +5,6 @@
             [clojure.scene2d.ui.table :as table]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.create.db]
             [moon.create.textures]
             [moon.db :as db]
             [clojure.graphics.orthographic-camera :as camera]
@@ -109,8 +108,8 @@
         ctx (-> ctx
                 (moon.create.textures/step {:folder "resources/"
                                             :extensions #{"png" "bmp"}})
-                (moon.create.db/step {:schemas "schema.edn"
-                                      :properties "properties.edn"}))
+                (assoc :ctx/db (db/create {:schemas "schema.edn"
+                                           :properties "properties.edn"})))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width

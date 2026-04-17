@@ -15,6 +15,7 @@
             [clojure.input :as gdx-input]
             [clojure.string :as str]
             [qrecord.core :as q]
+            [moon.db :as db]
             [moon.draws :as draws]
             [moon.input :as input]
             [moon.malli :as m]
@@ -335,6 +336,8 @@
                                                   "rightclick on tile or entity - open debug data window"
                                                   "Leftmouse click - use skill/drop item on cursor"])
                     :ctx/colors (load-colors)
+                    :ctx/db (db/create {:schemas "schema.edn"
+                                        :properties "properties.edn"})
                     :ctx/active-entities nil
                     :ctx/delta-time nil
                     :ctx/mouseover-eid nil
