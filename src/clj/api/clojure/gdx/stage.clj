@@ -1,5 +1,5 @@
-(ns clj.api.moon.stage
-  (:import (moon Stage)))
+(ns clj.api.clojure.gdx.stage
+  (:import (clojure.gdx Stage)))
 
 (defn create [viewport batch]
   (Stage. viewport batch))

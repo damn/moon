@@ -1,4 +1,4 @@
-package moon;
+package clojure.math;
 
 import java.util.ArrayList;
 

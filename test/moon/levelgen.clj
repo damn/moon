@@ -27,7 +27,7 @@
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)
-           (moon Stage)))
+           (clojure.gdx Stage)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
