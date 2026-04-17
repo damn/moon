@@ -42,7 +42,7 @@
   clj.api.com.badlogic.gdx.graphics.g2d.batch
   clojure.graphics.batch/Batch]
  [space.earlygrey.shapedrawer.ShapeDrawer
-  clj.api.space.earlygrey.shape-drawer
+  clojure.gdx.shape-drawer
   clojure.shape-drawer/ShapeDrawer]
  [com.badlogic.gdx.scenes.scene2d.Actor
   clojure.gdx.scene2d.actor
