@@ -1,6 +1,4 @@
 [
- [moon.create.textures/step {:folder "resources/"
-                             :extensions #{"png" "bmp"}}]
  [moon.create.shape-drawer-texture/step]
  [moon.create.world-unit-scale/step 48]
  [moon.create.world-viewport/step {:width 1440

@@ -1,10 +1,12 @@
 (ns moon.application
   (:require [clojure.disposable :as disposable]
             [clojure.files :as files]
+            [clojure.files.file-handle :as file-handle]
             [clojure.gdx :as gdx]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.backends.lwjgl.config :as config]
             [clojure.gdx.colors :as colors]
+            [clojure.gdx.graphics.texture :as texture]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.orthographic-camera :as orthographic-camera]
             [clojure.gdx.scene2d.stage :as stage]
@@ -324,6 +326,13 @@
 
                     :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
                                    (update-vals data (partial create-cursor files graphics path-format)))
+
+                    :ctx/textures (let [{:keys [folder extensions]} {:folder "resources/"
+                                                                     :extensions #{"png" "bmp"}}]
+                                    (into {} (for [path (map (fn [path]
+                                                               (str/replace-first path folder ""))
+                                                             (file-handle/recursively-search (files/internal files folder) extensions))]
+                                               [path (texture/create path)])))
 
                     :ctx/controls {
                                    :zoom-in :input.keys/minus
