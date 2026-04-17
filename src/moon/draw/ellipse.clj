@@ -1,5 +1,5 @@
 (ns moon.draw.ellipse
-  (:require [gdl.shape-drawer :as shape-drawer]))
+  (:require [clojure.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/shape-drawer]} position radius-x radius-y color-float-bits]

@@ -1,6 +1,6 @@
 (ns moon.draw.texture-region
-  (:require [gdl.graphics.batch :as batch]
-            [gdl.texture-region :as texture-region]))
+  (:require [clojure.graphics.batch :as batch]
+            [clojure.texture-region :as texture-region]))
 
 (defn do!
   [{:keys [ctx/batch

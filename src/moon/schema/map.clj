@@ -1,7 +1,7 @@
 (ns moon.schema.map
-  (:require [gdl.scene2d.event :as event]
-            [gdl.scene2d.group :as group]
-            [gdl.scene2d.ui.widget-group :as widget-group]
+  (:require [clojure.scene2d.event :as event]
+            [clojure.scene2d.group :as group]
+            [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.set :as set]
             [moon.actor :as actor]
             [moon.malli :as mu]

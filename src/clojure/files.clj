@@ -1,4 +1,4 @@
-(ns gdl.files)
+(ns clojure.files)
 
 (defprotocol Files
   (internal [_ path]))

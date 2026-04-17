@@ -4,77 +4,77 @@
   clojure.freetype/Freetype]
  [com.badlogic.gdx.graphics.OrthographicCamera
   clojure.gdx.orthographic-camera
-  gdl.camera/Camera]
+  clojure.camera/Camera]
  [com.badlogic.gdx.utils.viewport.Viewport
   clojure.gdx.viewport
-  gdl.viewport/Viewport]
+  clojure.viewport/Viewport]
  [com.badlogic.gdx.Input
   clojure.gdx.input
-  gdl.input/Input]
+  clojure.input/Input]
  [com.badlogic.gdx.graphics.g2d.BitmapFont
   clojure.gdx.bitmap-font
-  gdl.bitmap-font/BitmapFont]
+  clojure.bitmap-font/BitmapFont]
  [clojure.lang.PersistentVector
   clj.api.com.badlogic.gdx.graphics.color
-  gdl.color/Color]
+  clojure.color/Color]
  [com.badlogic.gdx.Audio
   clj.api.com.badlogic.gdx.audio
-  gdl.audio/Audio]
+  clojure.audio/Audio]
  [com.badlogic.gdx.audio.Sound
   clj.api.com.badlogic.gdx.audio.sound
-  gdl.audio.sound/Sound]
+  clojure.audio.sound/Sound]
  [com.badlogic.gdx.Files
   clj.api.com.badlogic.gdx.files
-  gdl.files/Files]
+  clojure.files/Files]
  [com.badlogic.gdx.files.FileHandle
   clj.api.com.badlogic.gdx.files.file-handle
-  gdl.files.file-handle/FileHandle]
+  clojure.files.file-handle/FileHandle]
  [com.badlogic.gdx.Graphics
   clojure.gdx.graphics
-  gdl.graphics/Graphics]
+  clojure.graphics/Graphics]
  [com.badlogic.gdx.graphics.Texture
   clj.api.com.badlogic.gdx.graphics.texture
-  gdl.texture/Texture]
+  clojure.texture/Texture]
  [com.badlogic.gdx.graphics.g2d.TextureRegion
   clj.api.com.badlogic.gdx.graphics.g2d.texture-region
-  gdl.texture-region/TextureRegion]
+  clojure.texture-region/TextureRegion]
  [com.badlogic.gdx.graphics.g2d.Batch
   clj.api.com.badlogic.gdx.graphics.g2d.batch
-  gdl.graphics.batch/Batch]
+  clojure.graphics.batch/Batch]
  [space.earlygrey.shapedrawer.ShapeDrawer
   clj.api.space.earlygrey.shape-drawer
-  gdl.shape-drawer/ShapeDrawer]
+  clojure.shape-drawer/ShapeDrawer]
  [com.badlogic.gdx.scenes.scene2d.Actor
   clojure.gdx.ui.actor
   moon.actor/Actor]
  [com.badlogic.gdx.scenes.scene2d.Event
   clj.api.com.badlogic.gdx.scenes.scene2d.event
-  gdl.scene2d.event/Event]
+  clojure.scene2d.event/Event]
  [com.badlogic.gdx.scenes.scene2d.ui.CheckBox
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.check-box
-  gdl.scene2d.ui.check-box/CheckBox]
+  clojure.scene2d.ui.check-box/CheckBox]
  [com.badlogic.gdx.scenes.scene2d.ui.Image
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.image
-  gdl.scene2d.ui.image/Image]
+  clojure.scene2d.ui.image/Image]
  [com.badlogic.gdx.scenes.scene2d.ui.SelectBox
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.select-box
-  gdl.scene2d.ui.select-box/SelectBox]
+  clojure.scene2d.ui.select-box/SelectBox]
  [com.badlogic.gdx.scenes.scene2d.ui.Table
   clojure.gdx.ui.table
   moon.table/Table]
  [com.badlogic.gdx.scenes.scene2d.ui.TextField
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-field
-  gdl.scene2d.ui.text-field/TextField]
+  clojure.scene2d.ui.text-field/TextField]
  [com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
   clojure.gdx.ui.widget-group
-  gdl.scene2d.ui.widget-group/WidgetGroup]
+  clojure.scene2d.ui.widget-group/WidgetGroup]
  [com.badlogic.gdx.scenes.scene2d.Group
   clojure.gdx.ui.group
-  gdl.scene2d.group/Group]
+  clojure.scene2d.group/Group]
  [com.badlogic.gdx.scenes.scene2d.ui.Label
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.label
-  gdl.scene2d.ui.label/Label]
+  clojure.scene2d.ui.label/Label]
  [com.badlogic.gdx.utils.Disposable
   clj.api.com.badlogic.gdx.utils.disposable
-  gdl.disposable/Disposable]
+  clojure.disposable/Disposable]
  ]

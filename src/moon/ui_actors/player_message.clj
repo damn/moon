@@ -1,5 +1,5 @@
 (ns moon.ui-actors.player-message
-  (:require [gdl.viewport :as viewport]
+  (:require [clojure.viewport :as viewport]
             [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.stage :as stage]

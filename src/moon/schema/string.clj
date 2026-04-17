@@ -1,5 +1,5 @@
 (ns moon.schema.string
-  (:require [gdl.scene2d.ui.text-field :as text-field]
+  (:require [clojure.scene2d.ui.text-field :as text-field]
             [moon.ui :as ui]))
 
 (defn malli-form [_ _schemas]

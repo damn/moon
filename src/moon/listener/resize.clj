@@ -1,5 +1,5 @@
 (ns moon.listener.resize
-  (:require [gdl.viewport :as viewport]))
+  (:require [clojure.viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/ui-viewport

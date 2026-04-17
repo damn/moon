@@ -1,5 +1,5 @@
 (ns moon.if-not-paused.update-time
-  (:require [gdl.graphics :as graphics]))
+  (:require [clojure.graphics :as graphics]))
 
 (defn do!
   [{:keys [ctx/graphics

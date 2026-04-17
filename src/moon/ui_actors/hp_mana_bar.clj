@@ -1,5 +1,5 @@
 (ns moon.ui-actors.hp-mana-bar
-  (:require [gdl.viewport :as viewport]
+  (:require [clojure.viewport :as viewport]
             [moon.actor :as actor]
             [moon.draws :as draws]
             [moon.number :as number]

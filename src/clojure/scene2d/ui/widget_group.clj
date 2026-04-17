@@ -1,4 +1,4 @@
-(ns gdl.scene2d.ui.widget-group)
+(ns clojure.scene2d.ui.widget-group)
 
 (defprotocol WidgetGroup
   (pack! [_])

@@ -1,4 +1,4 @@
-(ns gdl.scene2d.event)
+(ns clojure.scene2d.event)
 
 (defprotocol Event
   (stage [_]))

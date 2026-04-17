@@ -1,4 +1,4 @@
-(ns gdl.camera)
+(ns clojure.camera)
 
 (defprotocol Camera
   (combined [_])

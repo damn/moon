@@ -1,7 +1,7 @@
 (ns moon.create.default-font
   (:require [clojure.freetype :as freetype]
-            [gdl.bitmap-font :as font]
-            [gdl.files :as files]))
+            [clojure.bitmap-font :as font]
+            [clojure.files :as files]))
 
 (defn do!
   [{:keys [ctx/app

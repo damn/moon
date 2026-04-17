@@ -1,5 +1,5 @@
 (ns moon.schema.val-max
-  (:require [gdl.scene2d.ui.text-field :as text-field]
+  (:require [clojure.scene2d.ui.text-field :as text-field]
             [clojure.edn :as edn]
             [moon.edn]
             [moon.ui :as ui]

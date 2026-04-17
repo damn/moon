@@ -1,4 +1,4 @@
-(ns gdl.shape-drawer)
+(ns clojure.shape-drawer)
 
 (defprotocol ShapeDrawer
   (default-line-width [_])

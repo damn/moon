@@ -1,5 +1,5 @@
 (ns moon.schema.boolean
-  (:require [gdl.scene2d.ui.check-box :as check-box]
+  (:require [clojure.scene2d.ui.check-box :as check-box]
             [moon.ui :as ui]))
 
 (defn malli-form [_ _schemas]

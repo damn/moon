@@ -1,5 +1,5 @@
 (ns moon.create.shape-drawer
-  (:require [gdl.texture :as texture]
+  (:require [clojure.texture :as texture]
             [clojure.gdx.shape-drawer :as shape-drawer]))
 
 (defn step

@@ -1,6 +1,6 @@
 (ns moon.dev-menu.update-labels.zoom
-  (:require [gdl.camera :as camera]
-            [gdl.viewport :as viewport]))
+  (:require [clojure.camera :as camera]
+            [clojure.viewport :as viewport]))
 
 (def item
   {:label "Zoom"

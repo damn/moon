@@ -1,5 +1,5 @@
 (ns moon.create.set-input-processor
-  (:require [gdl.input :as input]))
+  (:require [clojure.input :as input]))
 
 (defn step
   [{:keys [ctx/input

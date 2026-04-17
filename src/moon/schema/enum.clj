@@ -1,6 +1,6 @@
 (ns moon.schema.enum
   (:require [clojure.edn :as edn]
-            [gdl.scene2d.ui.select-box :as select-box]
+            [clojure.scene2d.ui.select-box :as select-box]
             [moon.edn]
             [moon.ui :as ui]))
 

@@ -1,6 +1,6 @@
 (ns moon.ui-actors.action-bar
   (:require [clojure.gdx.scene2d.ui.button-group :as button-group]
-            [gdl.scene2d.group :as group]
+            [clojure.scene2d.group :as group]
             [moon.action-bar :as action-bar]
             [moon.actor :as actor]
             [moon.ui :as ui])

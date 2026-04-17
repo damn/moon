@@ -1,5 +1,5 @@
 (ns moon.listener.dispose
-  (:require [gdl.disposable :as disposable]))
+  (:require [clojure.disposable :as disposable]))
 
 (defn do!
   [{:keys [ctx/audio

@@ -1,6 +1,6 @@
 (ns moon.render.set-camera-on-player
-  (:require [gdl.viewport :as viewport]
-            [gdl.camera :as camera]))
+  (:require [clojure.viewport :as viewport]
+            [clojure.camera :as camera]))
 
 (defn do!
   [{:keys [ctx/player-eid

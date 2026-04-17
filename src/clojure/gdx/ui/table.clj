@@ -1,7 +1,7 @@
 (ns clojure.gdx.ui.table
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [gdl.scene2d.ui.widget-group :as widget-group]))
+            [clojure.scene2d.ui.widget-group :as widget-group]))
 
 ; TODO order is important, reduce?
 (defn- set-cell-opts! [cell opts]

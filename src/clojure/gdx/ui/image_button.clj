@@ -2,7 +2,7 @@
   (:require [clj.api.com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [gdl.texture-region :as texture-region]
+            [clojure.texture-region :as texture-region]
             [moon.actor :as actor]))
 
 (defn- create-drawable*

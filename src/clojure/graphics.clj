@@ -1,4 +1,4 @@
-(ns gdl.graphics)
+(ns clojure.graphics)
 
 (defprotocol Graphics
   (new-cursor [_ file-handle hotspot-x hotspot-y])

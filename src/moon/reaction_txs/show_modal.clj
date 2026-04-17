@@ -1,5 +1,5 @@
 (ns moon.reaction-txs.show-modal
-  (:require [gdl.viewport :as viewport]
+  (:require [clojure.viewport :as viewport]
             [moon.actor :as actor]
             [moon.stage :as stage]
             [moon.ui :as ui]))

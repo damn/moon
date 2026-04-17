@@ -1,5 +1,5 @@
 (ns moon.render.player-state
-  (:require [gdl.graphics :as graphics]
+  (:require [clojure.graphics :as graphics]
             [moon.action-bar :as action-bar]
             [moon.actor :as actor]
             [moon.body :as body]

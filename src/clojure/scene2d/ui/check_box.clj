@@ -1,4 +1,4 @@
-(ns gdl.scene2d.ui.check-box)
+(ns clojure.scene2d.ui.check-box)
 
 (defprotocol CheckBox
   (checked? [_]))

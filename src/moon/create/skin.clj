@@ -1,6 +1,6 @@
 (ns moon.create.skin
   (:require [clojure.gdx.skin :as skin]
-            [gdl.files :as files]))
+            [clojure.files :as files]))
 
 (defn step
   [{:keys [ctx/files]

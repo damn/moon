@@ -1,5 +1,5 @@
 (ns moon.create.input
-  (:require [gdl.input :as gdx-input]
+  (:require [clojure.input :as gdx-input]
             [clojure.string :as str]
             [moon.input :as input]
             [moon.vector2 :as v])

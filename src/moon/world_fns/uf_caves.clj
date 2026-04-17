@@ -1,5 +1,5 @@
 (ns moon.world-fns.uf-caves
-  (:require [gdl.texture :as texture]
+  (:require [clojure.texture :as texture]
             [moon.tiled-map :as tiled-map]))
 
 (defn create

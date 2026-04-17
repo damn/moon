@@ -1,8 +1,8 @@
 (ns moon.create.textures
   (:require [clojure.gdx.texture :as texture]
-            [gdl.files :as files]
-            [gdl.files.file-handle :as file-handle]
-            [gdl.texture :as gdl-texture]
+            [clojure.files :as files]
+            [clojure.files.file-handle :as file-handle]
+            [clojure.texture :as clojure-texture]
             [clojure.string :as str]
             [moon.textures :as textures]))
 
@@ -42,5 +42,5 @@
     (assert (contains? textures file))
     (let [texture (get textures file)]
       (if-let [[x y w h] bounds]
-        (gdl-texture/region texture x y w h)
-        (gdl-texture/region texture)))))
+        (clojure-texture/region texture x y w h)
+        (clojure-texture/region texture)))))

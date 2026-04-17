@@ -1,5 +1,5 @@
 (ns moon.render.clear-screen
-  (:require [gdl.graphics :as graphics]))
+  (:require [clojure.graphics :as graphics]))
 
 (defn do!
   [ctx]

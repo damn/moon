@@ -1,4 +1,4 @@
-(ns gdl.disposable)
+(ns clojure.disposable)
 
 (defprotocol Disposable
   (dispose! [_]))

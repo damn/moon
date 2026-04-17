@@ -1,4 +1,4 @@
-(ns gdl.texture)
+(ns clojure.texture)
 
 (defprotocol Texture
   (region [_]

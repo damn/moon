@@ -1,4 +1,4 @@
-(ns gdl.graphics.batch)
+(ns clojure.graphics.batch)
 
 (defprotocol Batch
   (draw! [_ texture-region x y origin-x origin-y width height scale-x scale-y rotation]

@@ -1,4 +1,4 @@
-(ns gdl.input)
+(ns clojure.input)
 
 (defprotocol Input
   (key-pressed? [_ key])

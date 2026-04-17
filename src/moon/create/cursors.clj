@@ -1,6 +1,6 @@
 (ns moon.create.cursors
-  (:require [gdl.files :as files]
-            [gdl.graphics :as graphics]))
+  (:require [clojure.files :as files]
+            [clojure.graphics :as graphics]))
 
 (defn- create-cursor
   [{:keys [ctx/files

@@ -1,6 +1,6 @@
 (ns moon.create.audio
-  (:require [gdl.audio :as audio]
-            [gdl.files :as files]))
+  (:require [clojure.audio :as audio]
+            [clojure.files :as files]))
 
 (defn do!
   [ctx {:keys [sound-names path-format]}]

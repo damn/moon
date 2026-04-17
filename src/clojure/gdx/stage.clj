@@ -1,8 +1,8 @@
 (ns clojure.gdx.stage
   (:require [clj.api.clojure.gdx.stage :as stage]
             [moon.stage]
-            [gdl.scene2d.group :as group]
-            [gdl.viewport :as viewport])
+            [clojure.scene2d.group :as group]
+            [clojure.viewport :as viewport])
   (:import (clojure.gdx Stage)))
 
 (def create stage/create)

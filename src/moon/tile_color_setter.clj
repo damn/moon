@@ -1,6 +1,6 @@
 (ns moon.tile-color-setter
-  (:require [gdl.camera :as camera]
-            [gdl.viewport :as viewport]
+  (:require [clojure.camera :as camera]
+            [clojure.viewport :as viewport]
             [moon.raycaster :as raycaster]))
 
 (defn- tile-color-setter

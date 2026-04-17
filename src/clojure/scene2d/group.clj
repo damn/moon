@@ -1,4 +1,4 @@
-(ns gdl.scene2d.group)
+(ns clojure.scene2d.group)
 
 (defprotocol Group
   (add-actor! [_ actor])
