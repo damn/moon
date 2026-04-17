@@ -1,5 +1,4 @@
 [
- [moon.create.input/step]
  [moon.create.cursors/do! #edn/resource "cursors.edn"]
  [moon.create.db/step {:schemas "schema.edn"
                        :properties "properties.edn"}]

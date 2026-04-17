@@ -7,12 +7,41 @@
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.graphics.color :as color]
             [clojure.graphics.viewport :as viewport]
+            [clojure.input :as gdx-input]
+            [clojure.string :as str]
             [qrecord.core :as q]
             [moon.draws :as draws]
+            [moon.input :as input]
             [moon.malli :as m]
             [moon.txs :as txs]
+            [moon.vector2 :as v]
             )
-  (:import (com.badlogic.gdx ApplicationListener)))
+  (:import (com.badlogic.gdx ApplicationListener
+                             Input)))
+
+(extend-type Input
+  input/Input
+  (key-pressed? [input key]
+    (gdx-input/key-pressed? input key))
+
+  (key-just-pressed? [input key]
+    (gdx-input/key-just-pressed? input key))
+
+  (button-just-pressed? [input button]
+    (gdx-input/button-just-pressed? input button))
+
+  (mouse-position [input]
+    (gdx-input/mouse-position input))
+
+  (player-movement-vector [input]
+    (let [r (when (input/key-pressed? input :input.keys/d) [1  0])
+          l (when (input/key-pressed? input :input.keys/a) [-1 0])
+          u (when (input/key-pressed? input :input.keys/w) [0  1])
+          d (when (input/key-pressed? input :input.keys/s) [0 -1])]
+      (when (or r l u d)
+        (let [v (v/add-vs (remove nil? [r l u d]))]
+          (when (pos? (v/length v))
+            v))))))
 
 (def black [0 0 0 1])
 (def white [1 1 1 1])
@@ -261,6 +290,25 @@
                     :ctx/input    (gdx/input)
                     :ctx/batch batch
 
+                    :ctx/controls {
+                                   :zoom-in :input.keys/minus
+                                   :zoom-out :input.keys/equals
+                                   :unpause-once :input.keys/p
+                                   :unpause-continously :input.keys/space
+                                   :close-windows-key :input.keys/escape
+                                   :toggle-inventory  :input.keys/i
+                                   :toggle-entity-info :input.keys/e
+                                   :open-debug-button :input.buttons/right
+                                   }
+                    :ctx/controls-info (str/join "\n"
+                                                 ["[W][A][S][D] - Move"
+                                                  "[ESCAPE] - Close windows"
+                                                  "[I] - Inventory window"
+                                                  "[E] - Entity Info window"
+                                                  "[-]/[=] - Zoom"
+                                                  "[P]/[SPACE] - Unpause"
+                                                  "rightclick on tile or entity - open debug data window"
+                                                  "Leftmouse click - use skill/drop item on cursor"])
                     :ctx/colors (load-colors)
                     :ctx/active-entities nil
                     :ctx/delta-time nil
