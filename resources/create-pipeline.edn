@@ -1,10 +1,4 @@
 [
- [moon.create.shape-drawer-texture/step]
- [moon.create.world-unit-scale/step 48]
- [moon.create.world-viewport/step {:width 1440
-                                   :height 900}]
- [moon.create.audio/do! {:sound-names #edn/resource "sounds.edn"
-                         :path-format "sounds/%s.wav"}]
  [moon.create.default-font/do! {:path "exocet/films.EXL_____.ttf"
                                 :params {:size 16
                                          :quality-scaling 2

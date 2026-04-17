@@ -1,5 +1,6 @@
 (ns moon.application
-  (:require [clojure.disposable :as disposable]
+  (:require [clojure.audio :as audio]
+            [clojure.disposable :as disposable]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.gdx :as gdx]
@@ -308,16 +309,29 @@
                        ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
                        stage (stage/create ui-viewport batch)
                        input (gdx/input)
+                       shape-drawer-texture (graphics/white-pixel-texture graphics)
+                       world-unit-scale (float (/ 48))
                        ]
                    (gdx-input/set-processor! input stage)
                    {
                     :ctx/schema schema
                     :ctx/app      (gdx/app)
-                    :ctx/audio    (gdx/audio)
+                    :ctx/audio    (let [{:keys [sound-names path-format]} {:sound-names (edn-resource "sounds.edn")
+                                                                           :path-format "sounds/%s.wav"}]
+                                    (let [sound-name->file-handle (into {}
+                                                                        (for [sound-name sound-names
+                                                                              :let [path (format path-format sound-name)]]
+                                                                          [sound-name
+                                                                           (files/internal files path)]))]
+                                      (into {}
+                                            (for [[sound-name file-handle] sound-name->file-handle]
+                                              [sound-name
+                                               (audio/new-sound (gdx/audio) file-handle)]))))
                     :ctx/graphics  graphics
                     :ctx/files     files
                     :ctx/input     input
                     :ctx/batch batch
+                    :ctx/shape-drawer-texture shape-drawer-texture
                     :ctx/ui-viewport ui-viewport
                     :ctx/stage stage
                     :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
@@ -333,6 +347,14 @@
                                                                (str/replace-first path folder ""))
                                                              (file-handle/recursively-search (files/internal files folder) extensions))]
                                                [path (texture/create path)])))
+
+                    :ctx/world-unit-scale world-unit-scale
+                    :ctx/world-viewport (let [world-width (* 1440 world-unit-scale)
+                                              world-height (* 900 world-unit-scale)]
+                                          (fit-viewport/create world-width
+                                                               world-height
+                                                               (doto (orthographic-camera/create)
+                                                                 (orthographic-camera/set-to-ortho! false world-width world-height))))
 
                     :ctx/controls {
                                    :zoom-in :input.keys/minus
