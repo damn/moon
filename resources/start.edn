@@ -124,7 +124,6 @@
   {
    :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
    :listener {
-              :state moon.application/state
               :create! [moon.listener.create/do! #edn/resource "create-pipeline.edn"]
               :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
               :dispose! moon.listener.dispose/do!
