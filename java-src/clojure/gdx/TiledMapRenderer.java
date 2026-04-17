@@ -1,4 +1,4 @@
-package moon;
+package clojure.gdx;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
