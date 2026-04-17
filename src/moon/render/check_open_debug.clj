@@ -1,5 +1,6 @@
 (ns moon.render.check-open-debug
   (:require [moon.input :as input]
+            [clojure.scene2d.actor :as actor]
             [clojure.scene2d.stage :as stage]))
 
 (defn do!
@@ -15,8 +16,9 @@
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage
-                        ((get (:ctx/actor-fns ctx) :ui/data-viewer-window)
-                         {:title "Data View"
+                        (actor/create
+                         {:type :ui/data-viewer-window
+                          :title "Data View"
                           :data data
                           :width 500
                           :height 500

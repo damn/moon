@@ -39,8 +39,9 @@
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
     (stage/add-actor! stage
-                      ((get (:ctx/actor-fns ctx) :ui/property-editor-window)
-                       {:ctx ctx
+                      (actor/create
+                       {:type :ui/property-editor-window
+                        :ctx ctx
                         :property property}))))
 
 (defn- k->label-text [k]

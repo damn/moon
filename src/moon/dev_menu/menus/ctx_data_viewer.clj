@@ -1,5 +1,6 @@
 (ns moon.dev-menu.menus.ctx-data-viewer
-  (:require [clojure.scene2d.stage :as stage]))
+  (:require [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.stage :as stage]))
 
 (defn create [_ctx]
   {:label "Ctx Data"
@@ -7,8 +8,9 @@
             :on-click (fn [_actor {:keys [ctx/skin
                                           ctx/stage] :as ctx}]
                         (stage/add-actor! stage
-                                          ((get (:ctx/actor-fns ctx) :ui/data-viewer-window)
-                                           {:title "Data View"
+                                          (actor/create
+                                           {:type :ui/data-viewer-window
+                                            :title "Data View"
                                             :data ctx
                                             :width 1000
                                             :height 1000

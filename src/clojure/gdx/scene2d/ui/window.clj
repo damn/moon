@@ -8,7 +8,8 @@
 (defn- add-close-button! [window skin]
   (table/add!
    (Window/.getTitleTable window)
-   {:actor (doto (text-button/create "X" skin)
+   {:actor (doto (text-button/create {:text "X"
+                                      :skin skin})
              (actor/add-listener!
               [:listener/change (fn [_event _actor]
                                   (actor/remove! window))]))}))

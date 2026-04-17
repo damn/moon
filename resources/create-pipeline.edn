@@ -5,7 +5,6 @@
                            [:ctx/app :some]
                            [:ctx/schema :some]
                            [:ctx/active-entities :any]
-                           [:ctx/actor-fns :some]
                            [:ctx/audio :some]
                            [:ctx/batch :some]
                            [:ctx/colors :some]
@@ -49,14 +48,6 @@
                            [:ctx/world-viewport :some]
                            [:ctx/z-orders :some]
                            ]]
- [moon.create.actor-fns/step
-  {
-   :ui/data-viewer-window       clojure.scene2d.ui.data-viewer-window/create
-   :ui/error-window             clojure.scene2d.ui.error-window/create
-   :ui/property-editor-window   moon.actor-fns.property-editor-window/create
-   :ui/property-overview-window moon.actor-fns.property-overview-window/create
-   }
-  ]
  [moon.create.impl-handle/step {:txs-fn-map #edn/resource "txs-fn-map.edn"
                                 :reaction-txs-fn-map #edn/resource "reaction-txs-fn-map.edn"}]
  [moon.create.impl-draw/step #edn/resource "draw-fns.edn"]

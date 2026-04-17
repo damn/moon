@@ -41,8 +41,9 @@
                                                                :as ctx} (stage/ctx (event/stage event))]
                                                           (stage/add-actor!
                                                            stage
-                                                           ((get (:ctx/actor-fns ctx) :ui/property-overview-window)
-                                                            {:db db
+                                                           (actor/create
+                                                            {:type :ui/property-overview-window
+                                                             :db db
                                                              :textures textures
                                                              :skin skin
                                                              :property-type property-type

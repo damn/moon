@@ -1,4 +1,4 @@
-(ns moon.actor-fns.property-overview-window
+(ns moon.ui.property-overview-window
   (:require [clojure.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
             [moon.db :as db]

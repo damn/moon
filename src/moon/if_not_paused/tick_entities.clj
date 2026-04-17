@@ -1,5 +1,6 @@
 (ns moon.if-not-paused.tick-entities
   (:require [moon.entity :as entity]
+            [clojure.scene2d.actor :as actor]
             [clojure.scene2d.stage :as stage]
             [moon.throwable :as throwable]
             [moon.txs :as txs]))
@@ -20,8 +21,9 @@
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage
-                       ((get (:ctx/actor-fns ctx) :ui/error-window)
-                        {:skin skin
+                       (actor/create
+                        {:type :ui/error-window
+                         :skin skin
                          :throwable t}))))
   ctx)
 

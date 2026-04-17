@@ -114,6 +114,11 @@
    [:ui/text-field clojure.gdx.scene2d.ui.text-field/create]
    [:ui/widget clojure.gdx.scene2d.ui.widget/create]
    [:ui/window clojure.gdx.scene2d.ui.window/create]
+
+   [:ui/data-viewer-window       clojure.scene2d.ui.data-viewer-window/create]
+   [:ui/error-window             clojure.scene2d.ui.error-window/create]
+   [:ui/property-editor-window   moon.ui.property-editor-window/create]
+   [:ui/property-overview-window moon.ui.property-overview-window/create]
    ]]
  [clojure.gdx.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [clojure.gdx.backends.lwjgl.config/use-glfw-async!]

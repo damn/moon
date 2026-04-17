@@ -1,4 +1,4 @@
-(ns moon.actor-fns.property-editor-window
+(ns moon.ui.property-editor-window
   (:require [clojure.scene2d.event :as event]
             [clojure.graphics.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
@@ -36,8 +36,9 @@
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage
-                                                   ((get (:ctx/actor-fns ctx) :ui/error-window)
-                                                    {:skin skin
+                                                   (actor/create
+                                                    {:type :ui/error-window
+                                                     :skin skin
                                                      :throwable t}))))))
         clicked-delete-fn (with-window-close (fn [db]
                                                (db/delete! db property-id)))

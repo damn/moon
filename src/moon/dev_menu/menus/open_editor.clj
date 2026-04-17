@@ -1,6 +1,7 @@
 (ns moon.dev-menu.menus.open-editor
   (:require [clojure.string :as str]
             [moon.db :as db]
+            [clojure.scene2d.actor :as actor]
             [clojure.scene2d.stage :as stage]))
 
 (defn create [{:keys [ctx/db]}]
@@ -13,13 +14,15 @@
                                            ctx/textures]
                                     :as ctx}]
                          (stage/add-actor! stage
-                                           ((get (:ctx/actor-fns ctx) :ui/property-overview-window)
-                                            {:db db
+                                           (actor/create
+                                            {:type :ui/property-overview-window
+                                             :db db
                                              :textures textures
                                              :skin skin
                                              :property-type property-type
                                              :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
                                                               (stage/add-actor! stage
-                                                                                ((get (:ctx/actor-fns ctx) :ui/property-editor-window)
-                                                                                 {:ctx ctx
+                                                                                (actor/create
+                                                                                 {:type :ui/property-editor-window
+                                                                                  :ctx ctx
                                                                                   :property (db/get-raw db id)})))})))})})
