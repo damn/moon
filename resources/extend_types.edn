@@ -57,7 +57,7 @@
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.image
   clojure.scene2d.ui.image/Image]
  [com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-  clj.api.com.badlogic.gdx.scenes.scene2d.ui.select-box
+  clojure.gdx.scene2d.ui.select-box
   clojure.scene2d.ui.select-box/SelectBox]
  [com.badlogic.gdx.scenes.scene2d.ui.Table
   clojure.gdx.scene2d.ui.table
