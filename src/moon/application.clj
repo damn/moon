@@ -11,6 +11,7 @@
             [clojure.gdx.graphics.texture :as texture]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.orthographic-camera :as orthographic-camera]
+            [clojure.gdx.shape-drawer :as shape-drawer]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
@@ -333,6 +334,7 @@
                     :ctx/input     input
                     :ctx/batch batch
                     :ctx/shape-drawer-texture shape-drawer-texture
+                    :ctx/shape-drawer (shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))
                     :ctx/ui-viewport ui-viewport
                     :ctx/stage stage
                     :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]

@@ -1,5 +1,4 @@
 [
- [moon.create.shape-drawer/step]
  [moon.create.add-stage-actors/step [[moon.ui-actors.dev-menu/create {:update-labels [moon.dev-menu.update-labels.elapsed-time/item
                                                                                       moon.dev-menu.update-labels.fps/item
                                                                                       moon.dev-menu.update-labels.mouseover-entity/item
