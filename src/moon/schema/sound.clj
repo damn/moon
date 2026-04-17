@@ -2,7 +2,7 @@
   (:require [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.ui.widget-group :as widget-group]
-            [clojure.viewport :as viewport]
+            [clojure.graphics.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]

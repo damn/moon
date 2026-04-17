@@ -1,5 +1,5 @@
 (ns moon.draw.filled-rectangle
-  (:require [clojure.shape-drawer :as shape-drawer]))
+  (:require [clojure.graphics.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/shape-drawer]} x y w h color-float-bits]

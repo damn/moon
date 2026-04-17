@@ -1,5 +1,5 @@
 (ns moon.draw.line
-  (:require [clojure.shape-drawer :as shape-drawer]))
+  (:require [clojure.graphics.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/shape-drawer]} start end color-float-bits]

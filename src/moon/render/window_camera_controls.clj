@@ -4,9 +4,9 @@
 ; InputMultiplex?
 (ns moon.render.window-camera-controls
   (:require [clojure.scene2d.group :as group]
-            [clojure.viewport :as viewport]
+            [clojure.graphics.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
-            [clojure.camera :as camera]
+            [clojure.graphics.orthographic-camera :as camera]
             [moon.input :as input]
             [clojure.scene2d.stage :as stage]))
 

@@ -1,4 +1,4 @@
-(ns clojure.texture-region)
+(ns clojure.graphics.texture-region)
 
 (defprotocol TextureRegion
   (width [_])

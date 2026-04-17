@@ -1,4 +1,4 @@
-(ns clojure.camera)
+(ns clojure.graphics.orthographic-camera)
 
 (defprotocol Camera
   (combined [_])

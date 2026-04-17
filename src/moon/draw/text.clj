@@ -1,5 +1,5 @@
 (ns moon.draw.text
-  (:require [clojure.bitmap-font :as bitmap-font]))
+  (:require [clojure.graphics.bitmap-font :as bitmap-font]))
 
 (defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
   (let [old-scale (bitmap-font/scale-x font)]

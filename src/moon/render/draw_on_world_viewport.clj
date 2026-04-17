@@ -1,9 +1,9 @@
 (ns moon.render.draw-on-world-viewport
-  (:require [clojure.camera :as camera]
+  (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.batch :as batch]
-            [clojure.viewport :as viewport]
+            [clojure.graphics.viewport :as viewport]
             [moon.draws :as draws]
-            [clojure.shape-drawer :as shape-drawer]))
+            [clojure.graphics.shape-drawer :as shape-drawer]))
 
 (defn do!
   [{:keys [ctx/batch

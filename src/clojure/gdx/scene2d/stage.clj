@@ -1,7 +1,7 @@
 (ns clojure.gdx.scene2d.stage
   (:require [clojure.scene2d.stage]
             [clojure.scene2d.group :as group]
-            [clojure.viewport :as viewport])
+            [clojure.graphics.viewport :as viewport])
   (:import (clojure.gdx Stage)))
 
 (defn create [viewport batch]

@@ -1,6 +1,6 @@
 (ns moon.draw-on-world-viewport.draw-cell-debug
-  (:require [clojure.viewport :as viewport]
-            [clojure.camera :as camera]))
+  (:require [clojure.graphics.viewport :as viewport]
+            [clojure.graphics.orthographic-camera :as camera]))
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)

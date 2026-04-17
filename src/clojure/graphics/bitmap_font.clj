@@ -1,4 +1,4 @@
-(ns clojure.bitmap-font)
+(ns clojure.graphics.bitmap-font)
 
 (defprotocol BitmapFont
   (scale-x [_])

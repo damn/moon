@@ -1,6 +1,6 @@
 (ns moon.render.update-mouse
   (:require [moon.input :as input]
-            [clojure.viewport :as viewport]))
+            [clojure.graphics.viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/input

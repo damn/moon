@@ -1,6 +1,6 @@
 (ns moon.create.default-font
-  (:require [clojure.freetype :as freetype]
-            [clojure.bitmap-font :as font]
+  (:require [clojure.graphics.freetype :as freetype]
+            [clojure.graphics.bitmap-font :as font]
             [clojure.files :as files]))
 
 (defn do!

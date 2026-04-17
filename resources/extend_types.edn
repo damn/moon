@@ -1,22 +1,22 @@
 [
  [com.badlogic.gdx.Application
   clojure.gdx.freetype
-  clojure.freetype/Freetype]
+  clojure.graphics.freetype/Freetype]
  [com.badlogic.gdx.graphics.OrthographicCamera
   clojure.gdx.orthographic-camera
-  clojure.camera/Camera]
+  clojure.graphics.orthographic-camera/Camera]
  [com.badlogic.gdx.utils.viewport.Viewport
   clojure.gdx.viewport
-  clojure.viewport/Viewport]
+  clojure.graphics.viewport/Viewport]
  [com.badlogic.gdx.Input
   clojure.gdx.input
   clojure.input/Input]
  [com.badlogic.gdx.graphics.g2d.BitmapFont
   clojure.gdx.bitmap-font
-  clojure.bitmap-font/BitmapFont]
+  clojure.graphics.bitmap-font/BitmapFont]
  [clojure.lang.PersistentVector
   clojure.gdx.graphics.color
-  clojure.color/Color]
+  clojure.graphics.color/Color]
  [com.badlogic.gdx.Audio
   clojure.gdx.audio
   clojure.audio/Audio]
@@ -34,16 +34,16 @@
   clojure.graphics/Graphics]
  [com.badlogic.gdx.graphics.Texture
   clojure.gdx.graphics.texture
-  clojure.texture/Texture]
+  clojure.graphics.texture/Texture]
  [com.badlogic.gdx.graphics.g2d.TextureRegion
   clojure.gdx.graphics.g2d.texture-region
-  clojure.texture-region/TextureRegion]
+  clojure.graphics.texture-region/TextureRegion]
  [com.badlogic.gdx.graphics.g2d.Batch
   clojure.gdx.graphics.g2d.batch
   clojure.graphics.batch/Batch]
  [space.earlygrey.shapedrawer.ShapeDrawer
   clojure.gdx.shape-drawer
-  clojure.shape-drawer/ShapeDrawer]
+  clojure.graphics.shape-drawer/ShapeDrawer]
  [com.badlogic.gdx.scenes.scene2d.Actor
   clojure.gdx.scene2d.actor
   clojure.scene2d.actor/Actor]

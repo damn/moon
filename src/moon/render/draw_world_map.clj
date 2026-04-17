@@ -1,5 +1,5 @@
 (ns moon.render.draw-world-map
-  (:require [clojure.viewport :as viewport]
+  (:require [clojure.graphics.viewport :as viewport]
             [clojure.gdx.tiled-map.renderer :as tiled-map-renderer]))
 
 (defn do!

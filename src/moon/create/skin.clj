@@ -1,6 +1,6 @@
 (ns moon.create.skin
   (:require [clojure.gdx.scene2d.ui.skin :as skin]
-            [clojure.bitmap-font :as bitmap-font]
+            [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.files :as files]))
 
 (defn step

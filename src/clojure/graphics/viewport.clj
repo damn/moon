@@ -1,4 +1,4 @@
-(ns clojure.viewport)
+(ns clojure.graphics.viewport)
 
 (defprotocol Viewport
   (camera [_])
