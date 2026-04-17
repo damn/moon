@@ -1,4 +1,4 @@
-(ns moon.actor-fns.error-window
+(ns clojure.scene2d.ui.error-window
   (:require [clojure.repl :as repl]
             [clojure.scene2d.actor :as actor]))
 

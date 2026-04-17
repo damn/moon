@@ -51,8 +51,8 @@
                            ]]
  [moon.create.actor-fns/step
   {
-   :ui/data-viewer-window       moon.actor-fns.data-viewer-window/create
-   :ui/error-window             moon.actor-fns.error-window/create
+   :ui/data-viewer-window       clojure.scene2d.ui.data-viewer-window/create
+   :ui/error-window             clojure.scene2d.ui.error-window/create
    :ui/property-editor-window   moon.actor-fns.property-editor-window/create
    :ui/property-overview-window moon.actor-fns.property-overview-window/create
    }
