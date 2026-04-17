@@ -6,6 +6,8 @@
             [clojure.gdx.backends.lwjgl.config :as config]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.orthographic-camera :as orthographic-camera]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.color :as color]
             [clojure.graphics.viewport :as viewport]
@@ -296,6 +298,7 @@
                  (let [batch (sprite-batch/create)
                        graphics (gdx/graphics)
                        files (gdx/files)
+                       ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
                        ]
                    {
                     :ctx/schema schema
@@ -305,6 +308,7 @@
                     :ctx/files     files
                     :ctx/input    (gdx/input)
                     :ctx/batch batch
+                    :ctx/ui-viewport ui-viewport
 
                     :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
                                    (update-vals data (partial create-cursor files graphics path-format)))
