@@ -1,6 +1,6 @@
 (ns clojure.gdx.viewport
-  (:require [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
-            [clj.api.com.badlogic.gdx.utils.viewport :as viewport]))
+  (:require [clojure.gdx.math.vector2 :as vector2]
+            [clojure.gdx.utils.viewport :as viewport]))
 
 (defn camera [viewport]
   (viewport/camera viewport))

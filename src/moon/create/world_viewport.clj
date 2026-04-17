@@ -1,6 +1,6 @@
 (ns moon.create.world-viewport
   (:require [clojure.gdx.orthographic-camera :as orthographic-camera]
-            [clj.api.com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]))
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]))
 
 (defn step
   [{:keys [ctx/world-unit-scale]

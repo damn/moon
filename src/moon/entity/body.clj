@@ -1,5 +1,5 @@
 (ns moon.entity.body
-  (:require [clj.api.com.badlogic.gdx.math.rectangle :as gdx-rectangle]
+  (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.rectangle :as rectangle]
             [moon.vector2 :as v]

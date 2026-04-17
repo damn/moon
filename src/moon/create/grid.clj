@@ -1,7 +1,7 @@
 (ns moon.create.grid
-  (:require [clj.api.com.badlogic.gdx.math.circle :as gdx-circle]
-            [clj.api.com.badlogic.gdx.math.intersector :as intersector]
-            [clj.api.com.badlogic.gdx.math.rectangle :as gdx-rectangle]
+  (:require [clojure.gdx.math.circle :as gdx-circle]
+            [clojure.gdx.math.intersector :as intersector]
+            [clojure.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.circle :as circle]

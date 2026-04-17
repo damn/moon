@@ -15,31 +15,31 @@
   clojure.gdx.bitmap-font
   clojure.bitmap-font/BitmapFont]
  [clojure.lang.PersistentVector
-  clj.api.com.badlogic.gdx.graphics.color
+  clojure.gdx.graphics.color
   clojure.color/Color]
  [com.badlogic.gdx.Audio
-  clj.api.com.badlogic.gdx.audio
+  clojure.gdx.audio
   clojure.audio/Audio]
  [com.badlogic.gdx.audio.Sound
-  clj.api.com.badlogic.gdx.audio.sound
+  clojure.gdx.audio.sound
   clojure.audio.sound/Sound]
  [com.badlogic.gdx.Files
-  clj.api.com.badlogic.gdx.files
+  clojure.gdx.files
   clojure.files/Files]
  [com.badlogic.gdx.files.FileHandle
-  clj.api.com.badlogic.gdx.files.file-handle
+  clojure.gdx.files.file-handle
   clojure.files.file-handle/FileHandle]
  [com.badlogic.gdx.Graphics
   clojure.gdx.graphics
   clojure.graphics/Graphics]
  [com.badlogic.gdx.graphics.Texture
-  clj.api.com.badlogic.gdx.graphics.texture
+  clojure.gdx.graphics.texture
   clojure.texture/Texture]
  [com.badlogic.gdx.graphics.g2d.TextureRegion
-  clj.api.com.badlogic.gdx.graphics.g2d.texture-region
+  clojure.gdx.graphics.g2d.texture-region
   clojure.texture-region/TextureRegion]
  [com.badlogic.gdx.graphics.g2d.Batch
-  clj.api.com.badlogic.gdx.graphics.g2d.batch
+  clojure.gdx.graphics.g2d.batch
   clojure.graphics.batch/Batch]
  [space.earlygrey.shapedrawer.ShapeDrawer
   clojure.gdx.shape-drawer
@@ -75,6 +75,6 @@
   clj.api.com.badlogic.gdx.scenes.scene2d.ui.label
   clojure.scene2d.ui.label/Label]
  [com.badlogic.gdx.utils.Disposable
-  clj.api.com.badlogic.gdx.utils.disposable
+  clojure.gdx.utils.disposable
   clojure.disposable/Disposable]
  ]

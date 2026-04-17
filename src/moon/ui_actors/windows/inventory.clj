@@ -1,5 +1,5 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [clj.api.com.badlogic.gdx.graphics.color :as color]
+  (:require [clojure.gdx.graphics.color :as color]
             [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.ui.image :as image]

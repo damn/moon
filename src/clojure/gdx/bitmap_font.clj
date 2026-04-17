@@ -1,7 +1,7 @@
 (ns clojure.gdx.bitmap-font
-  (:require [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
-            [clj.api.com.badlogic.gdx.graphics.g2d.bitmap-font.data :as data]
-            [clj.api.com.badlogic.gdx.utils.align :as align]
+  (:require [clojure.gdx.graphics.g2d.bitmap-font :as font]
+            [clojure.gdx.graphics.g2d.bitmap-font.data :as data]
+            [clojure.gdx.utils.align :as align]
             [clojure.string :as str]))
 
 (defn scale-x [font]

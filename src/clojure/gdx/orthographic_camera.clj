@@ -1,5 +1,5 @@
 (ns clojure.gdx.orthographic-camera
-  (:require [clj.api.com.badlogic.gdx.math.vector3 :as vector3])
+  (:require [clojure.gdx.math.vector3 :as vector3])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn create []

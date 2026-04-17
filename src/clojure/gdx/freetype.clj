@@ -1,8 +1,8 @@
 (ns clojure.gdx.freetype
-  (:require [clj.api.com.badlogic.gdx.graphics.texture.filter :as texture.filter]
-            [clj.api.com.badlogic.gdx.graphics.g2d.freetype.font-generator :as font-generator]
-            [clj.api.com.badlogic.gdx.graphics.g2d.freetype.font-generator.parameter :as parameter]
-            [clj.api.com.badlogic.gdx.utils.disposable :as disposable]))
+  (:require [clojure.gdx.graphics.texture.filter :as texture.filter]
+            [clojure.gdx.graphics.g2d.freetype.font-generator :as font-generator]
+            [clojure.gdx.graphics.g2d.freetype.font-generator.parameter :as parameter]
+            [clojure.gdx.utils.disposable :as disposable]))
 
 (defn generate-font
   [_application

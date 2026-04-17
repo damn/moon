@@ -1,13 +1,13 @@
 (ns clojure.gdx.scene2d.actor
   (:refer-clojure :exclude [name])
-  (:require [clj.api.com.badlogic.gdx.math.vector2 :as vector2]
+  (:require [clojure.gdx.math.vector2 :as vector2]
             [clj.api.com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clj.api.com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clj.api.com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clj.api.com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
-            [clj.api.com.badlogic.gdx.utils.align :as align])
+            [clojure.gdx.utils.align :as align])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))
