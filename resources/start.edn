@@ -120,21 +120,22 @@
    [:ui/property-editor-window   moon.ui.property-editor-window/create]
    [:ui/property-overview-window moon.ui.property-overview-window/create]
    ]]
- [clojure.gdx.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
- [clojure.gdx.backends.lwjgl.config/use-glfw-async!]
- [clojure.gdx.backends.lwjgl/application!
+ [moon.application/start!
   {
-   :application-listener [clojure.gdx.application-listener/create
-                          {:state moon.application/state
-                           :create! [moon.listener.create/do! #edn/resource "create-pipeline.edn"]
-                           :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
-                           :dispose! moon.listener.dispose/do!
-                           :resize!  moon.listener.resize/do!}]
-   :config [clojure.gdx.backends.lwjgl.config/create
-            {:title "Moon"
-             :window {:width 1440
-                      :height 900}
-             :fps 60}]
+   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
+   :listener {
+              :state moon.application/state
+              :create! [moon.listener.create/do! #edn/resource "create-pipeline.edn"]
+              :render! [moon.listener.render/do! #edn/resource "render-pipeline.edn"]
+              :dispose! moon.listener.dispose/do!
+              :resize!  moon.listener.resize/do!
+              }
+   :config {
+            :title "Moon"
+            :window {:width 1440
+                     :height 900}
+            :fps 60
+            }
    }
   ]
  ]
