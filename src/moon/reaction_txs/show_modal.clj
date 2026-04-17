@@ -1,8 +1,7 @@
 (ns moon.reaction-txs.show-modal
   (:require [clojure.graphics.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
-            [clojure.scene2d.stage :as stage]
-            [moon.ui :as ui]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn do!
   [{:keys [ctx/skin
@@ -11,16 +10,16 @@
    {:keys [title text button-text on-click]}]
   (assert (not (stage/find-actor stage "moon.ui.modal-window")))
   (stage/add-actor! stage
-                    (ui/create
+                    (actor/create
                      {:type :ui/window
                       :title title
                       :skin skin
                       :window/modal? true
-                      :table/rows [[{:actor (ui/create
+                      :table/rows [[{:actor (actor/create
                                              {:type :ui/label
                                               :text text
                                               :skin skin})}]
-                                   [{:actor (ui/create
+                                   [{:actor (actor/create
                                              {:type :ui/text-button
                                               :text button-text
                                               :skin skin

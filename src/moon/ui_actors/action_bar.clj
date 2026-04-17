@@ -1,16 +1,15 @@
 (ns moon.ui-actors.action-bar
   (:require [clojure.gdx.scene2d.ui.button-group :as button-group]
-            [clojure.scene2d.group :as group]
-            [moon.action-bar :as action-bar]
             [clojure.scene2d.actor :as actor]
-            [moon.ui :as ui])
+            [clojure.scene2d.group :as group]
+            [moon.action-bar :as action-bar])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn create [_ctx]
-  (ui/create
+  (actor/create
    {:type :ui/table
     :table/cell-defaults {:pad 2}
-    :table/rows [[{:actor (ui/create
+    :table/rows [[{:actor (actor/create
                            {:type :ui/horizontal-group
                             :space 2
                             :pad 2
@@ -43,7 +42,7 @@
              tooltip-text]}
      skin]
     (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-          button (ui/create
+          button (actor/create
                   {:type :ui/image-button
                    :drawable {:drawable/texture-region texture-region
                               :drawable/scale 2}

@@ -7,8 +7,7 @@
             [moon.property :as property]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]
-            [moon.textures :as textures]
-            [moon.ui :as ui]))
+            [moon.textures :as textures]))
 
 (defn malli-form [[_ property-type] _schemas]
   [:qualified-keyword {:namespace (property/type->id-namespace property-type)}])
@@ -30,7 +29,7 @@
     (table/add-rows!
      table
      [[(when-not property-id
-         {:actor (ui/create
+         {:actor (actor/create
                   {:type :ui/text-button
                    :text "+"
                    :skin skin
@@ -52,13 +51,13 @@
                                                                               (redo-rows ctx id))}))))}})})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
-           {:actor (ui/create
+           {:actor (actor/create
                     {:type :ui/image
                      :content (textures/texture-region textures (property/image property))
                      :actor/user-object property-id
                      :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))]
       [(when property-id
-         {:actor (ui/create
+         {:actor (actor/create
                   {:type :ui/text-button
                    :text "-"
                    :skin skin
@@ -67,7 +66,7 @@
                                                                    nil))}})})]])))
 
 (defn create [[_ property-type] property-id ctx]
-  (let [table (ui/create
+  (let [table (actor/create
                {:type :ui/table
                 :table/cell-defaults {:pad 5}})]
     (add-one-to-one-rows ctx table property-type property-id)

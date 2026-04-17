@@ -9,8 +9,7 @@
             [moon.schema :as schema]
             [moon.schemas :as schemas]
             [clojure.scene2d.stage :as stage]
-            [clojure.scene2d.ui.table :as table]
-            [moon.ui :as ui]))
+            [clojure.scene2d.ui.table :as table]))
 
 (defn malli-form [[_ ks] schemas]
   (schemas/create-map-schema schemas ks))
@@ -55,11 +54,11 @@
            k
            table
            label-text]}]
-  [{:actor (ui/create
+  [{:actor (actor/create
             {:type :ui/table
              :table/cell-defaults {:pad 2}
              :table/rows [[{:actor (when display-remove-component-button?
-                                     (ui/create
+                                     (actor/create
                                       {:type :ui/text-button
                                        :text "-"
                                        :skin skin
@@ -71,7 +70,7 @@
                                                                                          (group/children table))))
                                                            (rebuild! (stage/ctx (event/stage event))))}}))
                             :left? true}
-                           {:actor (ui/create
+                           {:actor (actor/create
                                     {:type :ui/label
                                      :text label-text
                                      :skin skin})}]]})
@@ -95,7 +94,7 @@
 
 (defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (ui/create
+  (let [window (actor/create
                 {:type :ui/window
                  :title "Choose"
                  :skin skin
@@ -107,7 +106,7 @@
     (table/add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (ui/create
+       [{:actor (actor/create
                  {:type :ui/text-button
                   :skin skin
                   :text (name k)
@@ -146,7 +145,7 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (ui/create
+  (let [table (actor/create
                {:type :ui/table
                 :table/cell-defaults {:pad 5}
                 :actor/name "moon.db.schema.map.ui.widget"})
@@ -162,7 +161,7 @@
     (table/add-rows!
      table
      (concat [(when opt?
-                [{:actor (ui/create
+                [{:actor (actor/create
                           {:type :ui/text-button
                            :text "Add component"
                            :skin skin

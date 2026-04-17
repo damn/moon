@@ -7,8 +7,7 @@
             [moon.property :as property]
             [moon.schema :as schema]
             [clojure.scene2d.stage :as stage]
-            [moon.throwable :as throwable]
-            [moon.ui :as ui]))
+            [moon.throwable :as throwable]))
 
 (defn create
   [{:keys [ctx
@@ -44,7 +43,7 @@
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
-        actors [(ui/create
+        actors [(actor/create
                  {:type :ui/actor
                   :act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
@@ -64,19 +63,19 @@
                                           (fn [event actor]
                                             (clicked-delete-fn actor (stage/ctx (event/stage event))))]]}
         scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor (ui/create save-button) :center? true}
-                           {:actor (ui/create delete-button) :center? true}]]
-        rows [[(let [table (ui/create
+                          [{:actor (actor/create save-button) :center? true}
+                           {:actor (actor/create delete-button) :center? true}]]
+        rows [[(let [table (actor/create
                             {:type :ui/table
                              :table/cell-defaults {:pad 5}
                              :table/rows scroll-pane-rows})]
-                 {:actor (ui/create {:type :ui/scroll-pane
-                                     :actor table
-                                     :skin skin})
+                 {:actor (actor/create {:type :ui/scroll-pane
+                                        :actor table
+                                        :skin skin})
                   :width  (+ (actor/width table) 50)
                   :height (min (- scroll-pane-height 50)
                                (actor/height table))})]]]
-    (ui/create
+    (actor/create
      {:type :ui/window
       :title "[SKY]Property[]"
       :skin skin

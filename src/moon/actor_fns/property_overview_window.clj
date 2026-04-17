@@ -1,10 +1,10 @@
 (ns moon.actor-fns.property-overview-window
-  (:require [clojure.scene2d.event :as event]
+  (:require [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.event :as event]
             [moon.db :as db]
             [moon.property :as property]
             [clojure.scene2d.stage :as stage]
-            [moon.textures :as textures]
-            [moon.ui :as ui]))
+            [moon.textures :as textures]))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -37,16 +37,16 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (ui/create
+      {:actor (actor/create
                {:type :ui/stack
-                :group/actors [(ui/create
+                :group/actors [(actor/create
                                 {:type :ui/image-button
                                  :drawable {:drawable/texture-region texture-region
                                             :drawable/scale image-scale}
                                  :actor/listeners {:listener/change (fn [event actor]
                                                                       (on-clicked actor (stage/ctx (event/stage event))))
                                                    :listener/text-tooltip [tooltip skin]}})
-                               (ui/create
+                               (actor/create
                                 {:type :ui/label
                                  :text extra-info-text
                                  :skin skin
@@ -79,7 +79,7 @@
            skin
            property-type
            clicked-id-fn]}]
-  (ui/create
+  (actor/create
    {:type :ui/window
     :title "Edit"
     :skin skin

@@ -1,14 +1,13 @@
 (ns moon.ui-actors.dev-menu
-  (:require [clojure.scene2d.event :as event]
+  (:require [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
-            [clojure.scene2d.ui.label :as label]
-            [clojure.scene2d.actor :as actor]
             [clojure.scene2d.stage :as stage]
-            [clojure.scene2d.ui.table :as table]
-            [moon.ui :as ui]))
+            [clojure.scene2d.ui.label :as label]
+            [clojure.scene2d.ui.table :as table]))
 
 (defn- set-label-text-actor [label text-fn]
-  (ui/create
+  (actor/create
    {:type :ui/actor
     :act! (fn [this _delta]
             (when-let [stage (actor/stage this)]
@@ -16,12 +15,12 @@
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
-   (let [label (ui/create {:type :ui/label
-                           :text ""
-                           :skin skin})
-         sub-table (ui/create
+   (let [label (actor/create {:type :ui/label
+                              :text ""
+                              :skin skin})
+         sub-table (actor/create
                     {:type :ui/table
-                     :table/rows [[{:actor (ui/create
+                     :table/rows [[{:actor (actor/create
                                             {:type :ui/image
                                              :content icon})}
                                    label]]})]
@@ -30,23 +29,23 @@
                         :right? true
                         :expand-x? true})))
   ([skin table text-fn]
-   (let [label (ui/create {:type :ui/label
-                           :text ""
-                           :skin skin})]
+   (let [label (actor/create {:type :ui/label
+                              :text ""
+                              :skin skin})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (table/add! table {:actor label
                         :right? true
                         :expand-x? true}))))
 
 (defn- create-window [skin label items]
-  (ui/create
+  (actor/create
    {:type :ui/window
     :title label
     :skin skin
     :window/close-button? skin
     :table/rows [(for [{:keys [label on-click]} items]
                    {:actor
-                    (ui/create
+                    (actor/create
                      {:type :ui/text-button
                       :text label
                       :skin skin
@@ -54,11 +53,11 @@
                                                            (on-click actor (stage/ctx (event/stage event))))}})})]}))
 
 (defn- main-table [skin menus update-labels]
-  (let [table (ui/create
+  (let [table (actor/create
                {:type :ui/table
                 :table/rows [(for [{:keys [label items]} menus]
                                {:actor
-                                (ui/create
+                                (actor/create
                                  {:type :ui/text-button
                                   :text label
                                   :skin skin
@@ -73,13 +72,13 @@
 
 (defn- create*
   [{:keys [menus update-labels skin]}]
-  (ui/create
+  (actor/create
    {:type :ui/table
     :table/rows [[{:actor (main-table skin menus update-labels)
                    :expand-x? true
                    :fill-x? true
                    :colspan 1}]
-                 [{:actor (ui/create
+                 [{:actor (actor/create
                            {:type :ui/label
                             :text ""
                             :skin skin

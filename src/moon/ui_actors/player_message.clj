@@ -2,8 +2,7 @@
   (:require [clojure.graphics.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
-            [clojure.scene2d.stage :as stage]
-            [moon.ui :as ui]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn- draw-message [state vp-width vp-height]
   (when-let [text (:text @state)]
@@ -16,7 +15,7 @@
 (def message-duration-seconds 0.5)
 
 (defn create [_ctx]
-  (ui/create
+  (actor/create
    {:type :ui/actor
     :actor/name "player-message"
     :actor/user-object (atom nil)

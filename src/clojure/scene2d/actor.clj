@@ -1,6 +1,8 @@
 (ns clojure.scene2d.actor
   (:refer-clojure :exclude [name]))
 
+(defmulti create :type)
+
 (defprotocol Actor
   (set-opts! [_ opts])
   (name [_])

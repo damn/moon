@@ -6,8 +6,7 @@
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]
-            [moon.txs :as txs]
-            [moon.ui :as ui]))
+            [moon.txs :as txs]))
 
 (defn malli-form [_ _schemas]
   :string)
@@ -28,32 +27,32 @@
                ctx/skin
                ctx/stage]}]
     (stage/add-actor! stage
-                      (ui/create
+                      (actor/create
                        {:type :ui/window
                         :title "Choose"
                         :skin skin
                         :window/close-button? skin
                         :window/modal? true
                         :table/rows
-                        [[(let [table (ui/create
+                        [[(let [table (actor/create
                                        {:type :ui/table
                                         :table/cell-defaults {:pad 5}
                                         :table/rows (for [sound-name (map first audio)]
-                                                      [{:actor (ui/create
+                                                      [{:actor (actor/create
                                                                 {:type :ui/text-button
                                                                  :text sound-name
                                                                  :skin skin
                                                                  :actor/listeners {:listener/change
                                                                                    (fn [event actor]
                                                                                      ((rebuild-sound-widget! table sound-name) actor (stage/ctx (event/stage event))))}})}
-                                                       {:actor (ui/create
+                                                       {:actor (actor/create
                                                                 {:type :ui/text-button
                                                                  :text "play!"
                                                                  :skin skin
                                                                  :actor/listeners {:listener/change (fn [event _actor]
                                                                                                       (txs/handle! (stage/ctx (event/stage event))
                                                                                                                    [[:tx/sound sound-name]]))}})}])} )]
-                            {:actor (ui/create {:type :ui/scroll-pane
+                            {:actor (actor/create {:type :ui/scroll-pane
                                                 :actor table
                                                 :skin skin})
                              :width  (+ (actor/width table) 50)
@@ -61,13 +60,13 @@
                                           (actor/height table))})]]}))))
 
 (defn- sound-columns [skin table sound-name]
-  [{:actor (ui/create
+  [{:actor (actor/create
             {:type :ui/text-button
              :text sound-name
              :skin skin
              :actor/listeners {:listener/change (fn [event _actor]
                                                   ((open-select-sounds-handler table) (stage/ctx (event/stage event))))}})}
-   {:actor (ui/create
+   {:actor (actor/create
             {:type :ui/text-button
              :text "play!"
              :skin skin
@@ -76,13 +75,13 @@
                                                                [[:tx/sound sound-name]]))}})}])
 
 (defn create [_  sound-name {:keys [ctx/skin]}]
-  (let [table (ui/create
+  (let [table (actor/create
                {:type :ui/table
                 :table/cell-defaults {:pad 5}})]
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)
                               [{:actor
-                                (ui/create
+                                (actor/create
                                  {:type :ui/text-button
                                   :text "No sound"
                                   :skin skin

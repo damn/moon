@@ -1,14 +1,13 @@
 (ns moon.schema.one-to-many
-  (:require [clojure.scene2d.event :as event]
+  (:require [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.ui.widget-group :as widget-group]
-            [clojure.scene2d.actor :as actor]
             [moon.db :as db]
             [moon.property :as property]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]
-            [moon.textures :as textures]
-            [moon.ui :as ui]))
+            [moon.textures :as textures]))
 
 (defn malli-form [[_ property-type] _schemas]
   [:set [:qualified-keyword {:namespace (property/type->id-namespace property-type)}]])
@@ -29,7 +28,7 @@
                     (widget-group/pack! (actor/find-ancestor table :ui/window)))]
     (table/add-rows!
      table
-     [[{:actor (ui/create
+     [[{:actor (actor/create
                 {:type :ui/text-button
                  :text "+"
                  :skin skin
@@ -51,13 +50,13 @@
                                                                             (redo-rows ctx (conj property-ids id)))}))))}})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
-          {:actor (ui/create
+          {:actor (actor/create
                    {:type :ui/image
                     :content (textures/texture-region textures (property/image property))
                     :actor/user-object property-id
                     :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))
       (for [id property-ids]
-        {:actor (ui/create
+        {:actor (actor/create
                  {:type :ui/text-button
                   :text "-"
                   :skin skin
@@ -66,7 +65,7 @@
                                                                   (disj property-ids id)))}})})])))
 
 (defn create [[_ property-type] property-ids ctx]
-  (let [table (ui/create
+  (let [table (actor/create
                {:type :ui/table
                 :table/cell-defaults {:pad 5}})]
     (add-one-to-many-rows ctx table property-type property-ids)

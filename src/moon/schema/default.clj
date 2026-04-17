@@ -1,12 +1,11 @@
 (ns moon.schema.default
   (:require [clojure.scene2d.actor :as actor]
             [moon.edn :as edn]
-            [moon.string :as string]
-            [moon.ui :as ui]))
+            [moon.string :as string]))
 
 (defn create
   [_ v {:keys [ctx/skin]}]
-  (ui/create
+  (actor/create
    {:type :ui/label
     :text (string/truncate (edn/->str v) 60)
     :skin skin}))

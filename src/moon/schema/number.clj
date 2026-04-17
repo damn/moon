@@ -2,8 +2,7 @@
   (:require [clojure.scene2d.ui.text-field :as text-field]
             [clojure.edn :as edn]
             [clojure.scene2d.actor :as actor]
-            [moon.edn]
-            [moon.ui :as ui]))
+            [moon.edn]))
 
 (defn malli-form [[_ predicate] _schemas]
   (case predicate
@@ -15,7 +14,7 @@
 
 (defn create
   [schema v {:keys [ctx/skin]}]
-  (ui/create
+  (actor/create
    {:type :ui/text-field
     :text (moon.edn/->str v)
     :skin skin

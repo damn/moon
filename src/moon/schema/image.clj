@@ -1,7 +1,7 @@
 (ns moon.schema.image
-  (:require [moon.schemas :as schemas]
-            [moon.textures :as textures]
-            [moon.ui :as ui]))
+  (:require [clojure.scene2d.actor :as actor]
+            [moon.schemas :as schemas]
+            [moon.textures :as textures]))
 
 (defn malli-form [_ schemas]
   (schemas/create-map-schema schemas
@@ -20,7 +20,7 @@
 (defn create
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
-  (ui/create
+  (actor/create
    {:type :ui/image-button
     :drawable {:drawable/texture-region (textures/texture-region textures image)
                :drawable/scale 2}})

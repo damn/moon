@@ -1,7 +1,6 @@
 (ns moon.actor-fns.data-viewer-window
   (:require [clojure.scene2d.actor :as actor]
-            [clojure.scene2d.stage :as stage]
-            [moon.ui :as ui]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn create
   [{:keys [title
@@ -46,20 +45,20 @@
         rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
                 :actor (v->actor v skin)})
-        scroll-pane-table (ui/create {:type :ui/table
-                                      :table/rows (for [{:keys [label actor]} rows]
-                                                    [{:actor (ui/create {:type :ui/label
-                                                                         :text label
-                                                                         :skin skin})}
-                                                     {:actor (ui/create actor)}])})
+        scroll-pane-table (actor/create {:type :ui/table
+                                         :table/rows (for [{:keys [label actor]} rows]
+                                                       [{:actor (actor/create {:type :ui/label
+                                                                               :text label
+                                                                               :skin skin})}
+                                                        {:actor (actor/create actor)}])})
 
         ; TODO use moon.scroll-pane-cell
-        scroll-pane-cell (let [table (ui/create {:type :ui/table
-                                                 :table/cell-defaults {:pad 1}
-                                                 :table/rows [[scroll-pane-table]]})]
-                           {:actor (ui/create {:type :ui/scroll-pane
-                                               :actor table
-                                               :skin skin})
+        scroll-pane-cell (let [table (actor/create {:type :ui/table
+                                                    :table/cell-defaults {:pad 1}
+                                                    :table/rows [[scroll-pane-table]]})]
+                           {:actor (actor/create {:type :ui/scroll-pane
+                                                  :actor table
+                                                  :skin skin})
                             :width width
                             ; (- (viewport/world-width viewport) 100)
                             ; (+ 100 (/ (viewport/world-width viewport) 2))
@@ -67,8 +66,8 @@
                             ; (- (viewport/world-height viewport) 200)
                             ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (ui/create {:type :ui/window
-                :title title
-                :skin skin
-                :table/rows [[scroll-pane-cell]]
-                :window/close-button? skin})))
+    (actor/create {:type :ui/window
+                   :title title
+                   :skin skin
+                   :table/rows [[scroll-pane-cell]]
+                   :window/close-button? skin})))

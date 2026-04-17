@@ -97,7 +97,7 @@
    ]
   ]
  [moon.start.extend-types/step #edn/resource "extend_types.edn"]
- [moon.start.add-method/step moon.ui/create
+ [moon.start.add-method/step clojure.scene2d.actor/create
   [
    [:ui/actor clojure.gdx.scene2d.actor/create]
    [:ui/group clojure.gdx.scene2d.group/create]

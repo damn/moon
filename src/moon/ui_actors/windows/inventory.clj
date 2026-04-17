@@ -13,8 +13,7 @@
             [clojure.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.textures :as textures]
-            [moon.txs :as txs]
-            [moon.ui :as ui]))
+            [moon.txs :as txs]))
 
 (defn- clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
   (let [entity @player-eid
@@ -74,24 +73,24 @@
                  (let [cell [slot (or position [0 0])]
                        background-drawable (slot->drawable slot)]
                    {:actor
-                    (ui/create
+                    (actor/create
                      {:type :ui/stack
                       :actor/name "inventory-cell"
                       :actor/user-object cell
                       :actor/listeners {:listener/click (clicked-cell-listener cell)}
-                      :group/actors [(ui/create
+                      :group/actors [(actor/create
                                       (draw-cell-rect-actor draw-cell-rect))
-                                     (ui/create
+                                     (actor/create
                                       {:type :ui/image
                                        :content (create-drawable background-drawable)
                                        :actor/name "image-widget"
                                        :actor/user-object {:background-drawable background-drawable
                                                            :cell-size cell-size}})]})}))]
-    (ui/create
+    (actor/create
      {:type :ui/window
       :title title
       :skin skin
-      :table/rows [[{:actor (ui/create
+      :table/rows [[{:actor (actor/create
                              {:type :ui/table
                               :actor/name "inventory-cell-table"
                               :table/rows (concat [[nil nil

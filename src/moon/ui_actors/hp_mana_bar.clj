@@ -6,8 +6,7 @@
             [clojure.scene2d.stage :as stage]
             [moon.stats :as stats]
             [moon.textures :as textures]
-            [moon.val-max :as val-max]
-            [moon.ui :as ui]))
+            [moon.val-max :as val-max]))
 
 (let [config {:rahmen-file "images/rahmen.png"
               :rahmenw 150
@@ -53,7 +52,7 @@
   [{:keys [ctx/textures
            ctx/stage]}]
   (let [create-draws (hp-mana-bar-config textures stage)]
-    (ui/create
+    (actor/create
      {:type :ui/actor
       :draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]

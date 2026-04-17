@@ -6,8 +6,7 @@
             [clojure.scene2d.actor :as actor]
             [moon.info :as info]
             [clojure.scene2d.stage :as stage]
-            [clojure.scene2d.ui.table :as table]
-            [moon.ui :as ui]))
+            [clojure.scene2d.ui.table :as table]))
 
 (defn create
   [{:keys [ctx/skin
@@ -24,11 +23,11 @@
                                                            :active-skill])
                                        ctx)
                             ""))
-        label (ui/create
+        label (actor/create
                {:type :ui/label
                 :text "MY LABEL TEXT"
                 :skin skin})
-        window (ui/create
+        window (actor/create
                 {:type :ui/window
                  :title title
                  :skin skin
@@ -36,7 +35,7 @@
                  :actor/name actor-name
                  :actor/visible? visible?
                  :actor/position position})]
-    (group/add-actor! window (ui/create
+    (group/add-actor! window (actor/create
                               {:type :ui/actor
                                :act! (fn [this delta]
                                        (when-let [stage (actor/stage this)]

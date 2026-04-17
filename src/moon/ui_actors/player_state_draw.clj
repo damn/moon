@@ -2,11 +2,10 @@
   (:require [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
             [clojure.scene2d.stage :as stage]
-            [moon.state :as state]
-            [moon.ui :as ui]))
+            [moon.state :as state]))
 
 (defn create [_ctx]
-  (ui/create
+  (actor/create
    {:type :ui/actor
     :draw! (fn [this _batch _parent-alpha]
              (let [{:keys [ctx/player-eid] :as ctx} (stage/ctx (actor/stage this))
