@@ -1,8 +1,8 @@
 (ns moon.create.textures
-  (:require [gdl.files :as files]
+  (:require [clojure.gdx.texture :as texture]
+            [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.texture :as gdl-texture]
-            [clj.api.com.badlogic.gdx.graphics.texture :as texture]
             [clojure.string :as str]
             [moon.textures :as textures]))
 
