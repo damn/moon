@@ -1,6 +1,5 @@
 (ns moon.application
   (:require [clojure.audio :as audio]
-            [clojure.disposable :as disposable]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.graphics.freetype :as freetype]
@@ -19,7 +18,6 @@
             [clojure.graphics :as graphics]
             [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.graphics.color :as color]
-            [clojure.graphics.viewport :as viewport]
             [clojure.input :as gdx-input]
             [clojure.string :as str]
             [qrecord.core :as q]
@@ -418,46 +416,17 @@
                     }))
           create-fns))
 
-(defn-  dispose!
-  [{:keys [ctx/audio
-           ctx/batch
-           ctx/cursors
-           ctx/default-font
-           ctx/shape-drawer-texture
-           ctx/skin
-           ctx/textures
-           ctx/tiled-map]}]
-  (run! disposable/dispose! (vals audio))
-  (disposable/dispose! batch)
-  (run! disposable/dispose! (vals cursors))
-  (disposable/dispose! default-font)
-  (disposable/dispose! shape-drawer-texture)
-  (disposable/dispose! skin)
-  (run! disposable/dispose! (vals textures))
-  (disposable/dispose! tiled-map)
-  nil)
-
-(defn- render! [ctx render-fns]
-  (reduce (fn [ctx [f & params]]
-            (apply f ctx params))
-          ctx
-          render-fns))
-
-(defn- resize!
-  [{:keys [ctx/ui-viewport
-           ctx/world-viewport]}
-   width height]
-  (viewport/update! ui-viewport width height true)
-  (viewport/update! world-viewport width height false)
-  nil)
-
 (def state (atom nil))
 
 (defn start! [{:keys [colors listener config]}]
   (colors/put! colors)
   (config/use-glfw-async!)
   (lwjgl/application! (let [{:keys [create-params
-                                    render-params]} listener]
+                                    dispose!
+                                    render!
+                                    render-params
+                                    resize!]}
+                            listener]
                         (reify ApplicationListener
                           (create [_]
                             (tooltip-manager/set-initial-time! 0)
