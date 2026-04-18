@@ -19,32 +19,12 @@
 (defn height [tiled-map]
   (props/get (tiled-map/properties tiled-map) "height"))
 
-(defn- add-layer!
-  "`properties` is optional. Returns nil."
-  [tiled-map
-   {:keys [name
-           visible?
-           properties
-           tiles]}]
-  (let [props (tiled-map/properties tiled-map)
-        layer (layer/create {:width      (props/get props "width")
-                             :height     (props/get props "height")
-                             :tilewidth  (props/get props "tilewidth")
-                             :tileheight (props/get props "tileheight")
-                             :name name
-                             :visible? visible?
-                             :map-properties (doto (props/create)
-                                               (props/add! properties))
-                             :tiles tiles})]
-    (layers/add! (tiled-map/layers tiled-map) layer))
-  nil)
-
 (defn create-tiled-map [{:keys [properties
                                 layers]}]
   (let [tiled-map (tiled-map/create)]
     (props/add! (tiled-map/properties tiled-map) properties)
     (doseq [layer layers]
-      (add-layer! tiled-map layer))
+      (tiled-map/add-layer! tiled-map layer))
     tiled-map))
 
 (def copy-tile
@@ -123,7 +103,8 @@
      (static-tiled-map-tile texture-region "id" id))))
 
 (defn add-creatures-layer! [tiled-map spawn-positions]
-  (add-layer! tiled-map {:name "creatures"
+  (tiled-map/add-layer! tiled-map
+                        {:name "creatures"
                          :visible? false
                          :tiles (for [[position creature-property] spawn-positions]
                                   [position (creature-tile creature-property)])}))
