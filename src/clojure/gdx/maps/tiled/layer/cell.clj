@@ -1,4 +1,4 @@
-(ns clojure.gdx.tiled-map.layer.cell
+(ns clojure.gdx.maps.tiled.layer.cell
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
 (defn create []

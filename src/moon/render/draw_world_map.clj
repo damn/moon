@@ -1,6 +1,6 @@
 (ns moon.render.draw-world-map
   (:require [clojure.graphics.viewport :as viewport]
-            [clojure.gdx.tiled-map.renderer :as tiled-map-renderer]))
+            [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]))
 
 (defn do!
   [{:keys [ctx/batch

@@ -1,7 +1,7 @@
-(ns clojure.gdx.tiled-map.layer
+(ns clojure.gdx.maps.tiled.layer
   (:refer-clojure :exclude [name])
   (:require [clojure.gdx.maps.props :as props]
-            [clojure.gdx.tiled-map.layer.cell :as cell])
+            [clojure.gdx.maps.tiled.layer.cell :as cell])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
 (defn visible? [^TiledMapTileLayer layer]

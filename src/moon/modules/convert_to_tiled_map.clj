@@ -1,7 +1,7 @@
 (ns moon.modules.convert-to-tiled-map
   (:require [clojure.gdx.maps.props :as props]
-            [clojure.gdx.tiled-map.layer :as layer]
-            [clojure.gdx.tiled-map.layer.cell :as cell]
+            [clojure.gdx.maps.tiled.layer :as layer]
+            [clojure.gdx.maps.tiled.layer.cell :as cell]
             [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map]))
 

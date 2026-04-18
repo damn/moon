@@ -1,5 +1,5 @@
-(ns clojure.gdx.tiled-map.renderer
-  (:require [clojure.gdx.tiled-map.layer :as layer])
+(ns clojure.gdx.maps.tiled.renderer
+  (:require [clojure.gdx.maps.tiled.layer :as layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)
            (clojure.gdx TiledMapRenderer

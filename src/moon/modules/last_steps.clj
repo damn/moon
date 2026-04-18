@@ -1,9 +1,9 @@
 (ns moon.modules.last-steps
   (:require [clojure.gdx.maps.props :as props]
             [clojure.gdx.maps.layers :as layers]
-            [clojure.gdx.tiled-map.tile :as tile]
-            [clojure.gdx.tiled-map.layer :as layer]
-            [clojure.gdx.tiled-map.layer.cell :as cell]
+            [clojure.gdx.maps.tiled.tile :as tile]
+            [clojure.gdx.maps.tiled.layer :as layer]
+            [clojure.gdx.maps.tiled.layer.cell :as cell]
             [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map]))
 

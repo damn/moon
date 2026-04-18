@@ -165,6 +165,14 @@
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           (let [batch (sprite-batch/create)
+                ; => all libgdx & related stuff
+                ; merge together into 'ctx' moon.app ?!
+                ; draw-text
+                ; draw-texture-region
+                ; draw-on-world-viewport
+                ; draw-tiled-map
+
+
                 graphics (gdx/graphics)
                 files (gdx/files)
                 ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
@@ -259,11 +267,15 @@
              :ctx/colors (load-colors)
              :ctx/db (db/create {:schemas "schema.edn"
                                  :properties "properties.edn"})
+
              :ctx/active-entities nil
              :ctx/delta-time nil
+
              :ctx/mouseover-eid nil
+
              :ctx/ui-mouse-position nil
              :ctx/world-mouse-position nil
+
              :ctx/elapsed-time 0
              :ctx/paused? false
              :ctx/unit-scale (atom 1)

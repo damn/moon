@@ -1,11 +1,11 @@
 (ns moon.tiled-map
   (:require [clojure.gdx.maps.props :as props]
             [clojure.gdx.maps.layers :as layers]
-            [clojure.gdx.tiled-map :as tiled-map]
-            [clojure.gdx.tiled-map.tile :as tile]
-            [clojure.gdx.tiled-map.layer :as layer]
-            [clojure.gdx.tiled-map.layer.cell :as cell]
-            [clojure.gdx.tiled-map.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.maps.tiled.tile :as tile]
+            [clojure.gdx.maps.tiled.layer :as layer]
+            [clojure.gdx.maps.tiled.layer.cell :as cell]
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn props [tiled-map]
   (tiled-map/properties tiled-map))

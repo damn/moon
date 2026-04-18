@@ -7,7 +7,7 @@
             [clojure.java.io :as io]
             [moon.db :as db]
             [clojure.graphics.orthographic-camera :as camera]
-            [clojure.gdx.tiled-map.renderer :as tiled-map-renderer]
+            [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
