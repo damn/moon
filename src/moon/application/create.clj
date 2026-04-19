@@ -1,12 +1,6 @@
 (ns moon.application.create
-  (:require [clojure.audio :as audio]
-            [clojure.files :as files]
-            [clojure.gdx :as gdx]
-            [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
-            [clojure.graphics :as graphics]
-            [moon.malli :as m]
-            [moon.start :refer [edn-resource]]
-            ))
+  (:require [clojure.gdx :as gdx]
+            [moon.malli :as m]))
 
 (def ^:private schema
   (m/schema
@@ -60,28 +54,11 @@
 
 (defn do!
   [create-fns]
-  (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          (let [graphics (gdx/graphics)
-                files (gdx/files)
-                input (gdx/input)
-                ]
-            {:ctx/schema schema
-             :ctx/app      (gdx/app)
-             :ctx/audio    (let [{:keys [sound-names path-format]} {:sound-names (edn-resource "sounds.edn")
-                                                                    :path-format "sounds/%s.wav"}]
-                             (let [sound-name->file-handle (into {}
-                                                                 (for [sound-name sound-names
-                                                                       :let [path (format path-format sound-name)]]
-                                                                   [sound-name
-                                                                    (files/internal files path)]))]
-                               (into {}
-                                     (for [[sound-name file-handle] sound-name->file-handle]
-                                       [sound-name
-                                        (audio/new-sound (gdx/audio) file-handle)]))))
-             :ctx/graphics  graphics
-             :ctx/files     files
-             :ctx/input     input
-             })
+          {:ctx/schema schema
+           :ctx/app       (gdx/app)
+           :ctx/files     (gdx/files)
+           :ctx/graphics  (gdx/graphics)
+           :ctx/input     (gdx/input)}
           create-fns))

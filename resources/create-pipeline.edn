@@ -1,7 +1,10 @@
 [
+ [moon.create.sounds/step {:sound-names #edn/resource "sounds.edn"
+                           :path-format "sounds/%s.wav"}]
  [moon.create.batch/step]
  [moon.create.shape-drawer-texture/step]
  [moon.create.shape-drawer/step]
+ [moon.create.tooltip-config/step!]
  [moon.create.ui-viewport/step {:width 1440
                                 :height 900}]
  [moon.create.stage/step]
