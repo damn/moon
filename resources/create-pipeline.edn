@@ -1,4 +1,6 @@
 [
+ [moon.create.gdx/step]
+ [moon.create.schema/step #edn/resource "ctx-schema.edn"]
  [moon.create.sounds/step {:sound-names #edn/resource "sounds.edn"
                            :path-format "sounds/%s.wav"}]
  [moon.create.batch/step]
