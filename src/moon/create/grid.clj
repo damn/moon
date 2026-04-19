@@ -4,7 +4,7 @@
             [clojure.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.cell :as cell]
-            [moon.circle :as circle]
+            [clojure.math.circle :as circle]
             [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]

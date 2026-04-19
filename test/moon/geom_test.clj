@@ -4,7 +4,7 @@
 ;
 ;(comment
 ; (require '[moon.grid :as grid])
-; (require '[moon.circle :as circle])
+; (require '[clojure.math.circle :as circle])
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/grid
