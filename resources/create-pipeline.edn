@@ -1,4 +1,7 @@
 [
+ [moon.create.batch/step]
+ [moon.create.shape-drawer-texture/step]
+ [moon.create.shape-drawer/step]
  [moon.create.ui-viewport/step {:width 1440
                                 :height 900}]
  [moon.create.stage/step]

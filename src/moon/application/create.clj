@@ -2,9 +2,6 @@
   (:require [clojure.audio :as audio]
             [clojure.files :as files]
             [clojure.gdx :as gdx]
-            [clojure.gdx.graphics.texture :as texture]
-            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [clojure.gdx.shape-drawer :as shape-drawer]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.graphics :as graphics]
             [moon.malli :as m]
@@ -66,11 +63,9 @@
   (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          (let [batch (sprite-batch/create)
-                graphics (gdx/graphics)
+          (let [graphics (gdx/graphics)
                 files (gdx/files)
                 input (gdx/input)
-                shape-drawer-texture (graphics/white-pixel-texture graphics)
                 ]
             {:ctx/schema schema
              :ctx/app      (gdx/app)
@@ -88,8 +83,5 @@
              :ctx/graphics  graphics
              :ctx/files     files
              :ctx/input     input
-             :ctx/batch batch
-             :ctx/shape-drawer-texture shape-drawer-texture
-             :ctx/shape-drawer (shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))
              })
           create-fns))
