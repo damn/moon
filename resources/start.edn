@@ -121,6 +121,7 @@
    [:ui/property-overview-window moon.ui.property-overview-window/create]
    ]]
  [clojure.gdx.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
+ [clojure.gdx.backends.lwjgl.config/use-glfw-async!]
  [moon.application/start!
   {
    :listener {

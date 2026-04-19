@@ -7,7 +7,6 @@
 (def state (atom nil))
 
 (defn start! [{:keys [listener config]}]
-  (config/use-glfw-async!)
   (lwjgl/application! (let [{:keys [create!
                                     create-params
                                     dispose!
