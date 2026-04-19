@@ -120,9 +120,9 @@
    [:ui/property-editor-window   moon.ui.property-editor-window/create]
    [:ui/property-overview-window moon.ui.property-overview-window/create]
    ]]
+ [clojure.gdx.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [moon.application/start!
   {
-   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
    :listener {
               :create! moon.application.create/do!
               :create-params #edn/resource "create-pipeline.edn"
