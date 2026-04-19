@@ -1,6 +1,6 @@
 (ns moon.effects.projectile
   (:require [moon.raycaster :as raycaster]
-            [moon.vector2 :as v]))
+            [clojure.math.vector2 :as v]))
 
 (defn- create-double-ray-endpositions
   [[start-x start-y]

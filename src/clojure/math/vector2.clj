@@ -1,4 +1,4 @@
-(ns moon.vector2
+(ns clojure.math.vector2
   (:require [clojure.math :as math]))
 
 (defn scale [[x y] scalar]

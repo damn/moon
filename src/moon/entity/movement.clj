@@ -2,7 +2,7 @@
   (:require [clojure.math :as math]
             [moon.grid :as grid]
             [moon.number :as number]
-            [moon.vector2 :as v]))
+            [clojure.math.vector2 :as v]))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))

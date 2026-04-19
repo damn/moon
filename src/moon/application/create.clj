@@ -20,7 +20,7 @@
             [moon.input :as input]
             [moon.malli :as m]
             [moon.start :refer [edn-resource]]
-            [moon.vector2 :as v])
+            [clojure.math.vector2 :as v])
   (:import (com.badlogic.gdx Input)))
 
 (defn- create-cursor

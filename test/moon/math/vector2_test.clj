@@ -1,6 +1,6 @@
 (ns moon.math.vector2-test
   (:require [moon.number :as math]
-            [moon.vector2 :as v]
+            [clojure.math.vector2 :as v]
             [clojure.test :refer :all]))
 
 (set! *unchecked-math* :warn-on-boxed)

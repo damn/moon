@@ -3,7 +3,7 @@
             [moon.inventory :as inventory]
             [clojure.scene2d.stage :as stage]
             [moon.textures :as textures]
-            [moon.vector2 :as v]))
+            [clojure.math.vector2 :as v]))
 
 (defn create
   [[_k item] _eid _ctx]

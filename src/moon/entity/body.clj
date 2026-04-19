@@ -2,7 +2,7 @@
   (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.rectangle :as rectangle]
-            [moon.vector2 :as v]
+            [clojure.math.vector2 :as v]
             [qrecord.core :as q]))
 
 ; TODO is a body really necessary? just entity/foo ?

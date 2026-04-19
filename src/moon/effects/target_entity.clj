@@ -1,6 +1,6 @@
 (ns moon.effects.target-entity
   (:require [moon.effect :as effect]
-            [moon.vector2 :as v]))
+            [clojure.math.vector2 :as v]))
 
 ; TODO use at projectile & also adjust rotation
 (defn start-point [body target-body]

@@ -8,7 +8,7 @@
             [moon.position :as position]
             [moon.raycaster :as raycaster]
             [moon.skill :as skill]
-            [moon.vector2 :as v]))
+            [clojure.math.vector2 :as v]))
 
 (defn- indexed
   "Returns a lazy sequence of [index, item] pairs, where items come

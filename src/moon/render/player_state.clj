@@ -8,7 +8,7 @@
             [clojure.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.txs :as txs]
-            [moon.vector2 :as v]))
+            [clojure.math.vector2 :as v]))
 
 (defn- mouseover-actor-info [actor]
   (let [inventory-slot (and (actor/parent actor)
