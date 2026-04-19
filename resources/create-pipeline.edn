@@ -1,4 +1,6 @@
 [
+ [moon.create.world-viewport/step {:width 1440
+                                   :height 900}]
  [moon.create.default-font/step {
                                  :path "exocet/films.EXL_____.ttf"
                                  :params {:size 16

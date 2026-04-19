@@ -84,8 +84,7 @@
                 world-unit-scale (float (/ 48))
                 ]
             (input/set-processor! input stage)
-            {
-             :ctx/schema schema
+            {:ctx/schema schema
              :ctx/app      (gdx/app)
              :ctx/audio    (let [{:keys [sound-names path-format]} {:sound-names (edn-resource "sounds.edn")
                                                                     :path-format "sounds/%s.wav"}]
@@ -109,7 +108,6 @@
              :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
                          (bitmap-font/enable-markup! (skin/font skin "default-font") true)
                          skin)
-
              :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
                             (update-vals data (fn
                                                 [[path [hotspot-x hotspot-y]]]
@@ -117,21 +115,12 @@
                                                                      (files/internal files (format path-format path))
                                                                      hotspot-x
                                                                      hotspot-y))))
-
              :ctx/textures (let [{:keys [folder extensions]} {:folder "resources/"
                                                               :extensions #{"png" "bmp"}}]
                              (into {} (for [path (map (fn [path]
                                                         (str/replace-first path folder ""))
                                                       (file-handle/recursively-search (files/internal files folder) extensions))]
                                         [path (texture/create path)])))
-
              :ctx/world-unit-scale world-unit-scale
-             :ctx/world-viewport (let [world-width (* 1440 world-unit-scale)
-                                       world-height (* 900 world-unit-scale)]
-                                   (fit-viewport/create world-width
-                                                        world-height
-                                                        (doto (orthographic-camera/create)
-                                                          (orthographic-camera/set-to-ortho! false world-width world-height))))
-
              })
           create-fns))
