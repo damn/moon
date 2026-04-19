@@ -1,7 +1,6 @@
 (ns moon.application.create
   (:require [clojure.audio :as audio]
             [clojure.files :as files]
-            [clojure.files.file-handle :as file-handle]
             [clojure.gdx :as gdx]
             [clojure.gdx.graphics.texture :as texture]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -14,7 +13,6 @@
             [clojure.graphics :as graphics]
             [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.input :as input]
-            [clojure.string :as str]
             [moon.malli :as m]
             [moon.start :refer [edn-resource]]
             ))
@@ -81,7 +79,6 @@
                 stage (stage/create ui-viewport batch)
                 input (gdx/input)
                 shape-drawer-texture (graphics/white-pixel-texture graphics)
-                world-unit-scale (float (/ 48))
                 ]
             (input/set-processor! input stage)
             {:ctx/schema schema
@@ -108,19 +105,5 @@
              :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
                          (bitmap-font/enable-markup! (skin/font skin "default-font") true)
                          skin)
-             :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
-                            (update-vals data (fn
-                                                [[path [hotspot-x hotspot-y]]]
-                                                (graphics/new-cursor graphics
-                                                                     (files/internal files (format path-format path))
-                                                                     hotspot-x
-                                                                     hotspot-y))))
-             :ctx/textures (let [{:keys [folder extensions]} {:folder "resources/"
-                                                              :extensions #{"png" "bmp"}}]
-                             (into {} (for [path (map (fn [path]
-                                                        (str/replace-first path folder ""))
-                                                      (file-handle/recursively-search (files/internal files folder) extensions))]
-                                        [path (texture/create path)])))
-             :ctx/world-unit-scale world-unit-scale
              })
           create-fns))

@@ -1,4 +1,7 @@
 [
+ [moon.create.cursors/step #edn/resource "cursors.edn"]
+ [moon.create.textures/step]
+ [moon.create.world-unit-scale/step 48]
  [moon.create.world-viewport/step {:width 1440
                                    :height 900}]
  [moon.create.default-font/step {
