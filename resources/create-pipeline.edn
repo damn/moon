@@ -1,4 +1,6 @@
 [
+ [moon.create.controls/step]
+ [moon.create.colors/step]
  [moon.create.plain-assoc/step]
  [moon.create.db/step {:schemas "schema.edn"
                        :properties "properties.edn"}]

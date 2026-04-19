@@ -14,58 +14,11 @@
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.bitmap-font :as bitmap-font]
-            [clojure.graphics.color :as color]
-            [clojure.input :as gdx-input]
+            [clojure.input :as input]
             [clojure.string :as str]
-            [moon.input :as input]
             [moon.malli :as m]
             [moon.start :refer [edn-resource]]
-            [clojure.math.vector2 :as v])
-  (:import (com.badlogic.gdx Input)))
-
-; To controls?
-(extend-type Input
-  input/Input
-  (key-pressed? [input key]
-    (gdx-input/key-pressed? input key))
-
-  (key-just-pressed? [input key]
-    (gdx-input/key-just-pressed? input key))
-
-  (button-just-pressed? [input button]
-    (gdx-input/button-just-pressed? input button))
-
-  (mouse-position [input]
-    (gdx-input/mouse-position input))
-
-  (player-movement-vector [input]
-    (let [r (when (input/key-pressed? input :input.keys/d) [1  0])
-          l (when (input/key-pressed? input :input.keys/a) [-1 0])
-          u (when (input/key-pressed? input :input.keys/w) [0  1])
-          d (when (input/key-pressed? input :input.keys/s) [0 -1])]
-      (when (or r l u d)
-        (let [v (v/add-vs (remove nil? [r l u d]))]
-          (when (pos? (v/length v))
-            v))))))
-
-(def black [0 0 0 1])
-(def white [1 1 1 1])
-(def gray  [0.5 0.5 0.5 1])
-(def red   [1 0 0 1])
-
-(def outline-alpha 0.4)
-
-(defn- hpbar-color [ratio]
-  (let [ratio (float ratio)
-        color (cond
-               (> ratio 0.75) :green
-               (> ratio 0.5)  :darkgreen
-               (> ratio 0.25) :yellow
-               :else          :red)]
-    (color {:green     (color/float-bits [0 0.8 0 1])
-            :darkgreen (color/float-bits [0 0.5 0 1])
-            :yellow    (color/float-bits [0.5 0.5 0 1])
-            :red       (color/float-bits [0.5 0 0 1])})))
+            ))
 
 (def ^:private schema
   (m/schema
@@ -117,40 +70,6 @@
     [:ctx/z-orders :some]
     ]))
 
-(defn- load-colors []
-  {
-   :colors/mouseover-tile-air  (color/float-bits [1 1 0 0.5])
-   :colors/mouseover-tile-none (color/float-bits [1 0 0 0.5])
-   :colors/debug-body-outline-collides (color/float-bits white)
-   :colors/debug-body-outline (color/float-bits gray)
-   :colors/debug-body-outline-render-error (color/float-bits red)
-   :colors/debug-cell-entities (color/float-bits [1 0 0 0.6])
-   :colors/debug-cell-occupied (color/float-bits [0 0 1 0.6])
-   :colors/debug-potential-field (fn [ratio]
-                                   (color/float-bits [ratio (- 1 ratio) ratio 0.6]))
-   :colors/target-all-line (color/float-bits [1 0 0 0.75])
-   :colors/target-all-render (color/float-bits [1 0 0 0.5])
-   :colors/target-entity-line (color/float-bits [1 0 0 0.75])
-   :colors/target-entity-in-range (color/float-bits [1 0 0 0.5])
-   :colors/target-entity-not-in-range (color/float-bits [1 1 0 0.5])
-   :colors/enemy-color (color/float-bits [1 0 0 outline-alpha])
-   :colors/friendly-color (color/float-bits [0 1 0 outline-alpha])
-   :colors/neutral-color  (color/float-bits [1 1 1 outline-alpha])
-   :colors/hp-bar hpbar-color
-   :colors/hp-bar-rect (color/float-bits black)
-   :colors/temp-modifier (color/float-bits [0.5 0.5 0.5 0.4])
-   :colors/active-skill-circle (color/float-bits [1 1 1 0.125])
-   :colors/active-skill-sector (color/float-bits [1 1 1 0.5])
-   :colors/stunned (color/float-bits [1 1 1 0.6])
-   :colors/explored-tile (color/float-bits [0.5 0.5 0.5 1])
-   :colors/visible-tile (color/float-bits [1 1 1 1])
-   :colors/invisible-tile (color/float-bits [0 0 0 1])
-   :colors/droppable-item (color/float-bits [0 0.6 0 0.8 1])
-   :colors/not-allowed-drop-item (color/float-bits [0.6 0 0 0.8 1])
-   :colors/item-rect (color/float-bits [0.5 0.5 0.5 1])
-   }
-  )
-
 (defn do!
   [create-fns]
   (tooltip-manager/set-initial-time! 0)
@@ -165,7 +84,7 @@
                 shape-drawer-texture (graphics/white-pixel-texture graphics)
                 world-unit-scale (float (/ 48))
                 ]
-            (gdx-input/set-processor! input stage)
+            (input/set-processor! input stage)
             {
              :ctx/schema schema
              :ctx/app      (gdx/app)
@@ -234,25 +153,5 @@
                                    (bitmap-font/enable-markup! enable-markup?)
                                    (bitmap-font/use-integer-positions! use-integer-positions?)))
 
-             :ctx/controls {
-                            :zoom-in :input.keys/minus
-                            :zoom-out :input.keys/equals
-                            :unpause-once :input.keys/p
-                            :unpause-continously :input.keys/space
-                            :close-windows-key :input.keys/escape
-                            :toggle-inventory  :input.keys/i
-                            :toggle-entity-info :input.keys/e
-                            :open-debug-button :input.buttons/right
-                            }
-             :ctx/controls-info (str/join "\n"
-                                          ["[W][A][S][D] - Move"
-                                           "[ESCAPE] - Close windows"
-                                           "[I] - Inventory window"
-                                           "[E] - Entity Info window"
-                                           "[-]/[=] - Zoom"
-                                           "[P]/[SPACE] - Unpause"
-                                           "rightclick on tile or entity - open debug data window"
-                                           "Leftmouse click - use skill/drop item on cursor"])
-             :ctx/colors (load-colors)
              })
           create-fns))
