@@ -1,7 +1,6 @@
 (ns moon.application
   (:require [clojure.gdx.backends.lwjgl :as lwjgl]
-            [clojure.gdx.backends.lwjgl.config :as config]
-            [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager])
+            [clojure.gdx.backends.lwjgl.config :as config])
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (def state (atom nil))
@@ -16,7 +15,6 @@
                             listener]
                         (reify ApplicationListener
                           (create [_]
-                            (tooltip-manager/set-initial-time! 0)
                             (reset! state (create! create-params)))
 
                           (dispose [_]

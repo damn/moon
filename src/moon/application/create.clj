@@ -10,6 +10,7 @@
             [clojure.gdx.shape-drawer :as shape-drawer]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.skin :as skin]
+            [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.bitmap-font :as bitmap-font]
@@ -162,6 +163,7 @@
 
 (defn do!
   [create-fns]
+  (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           (let [batch (sprite-batch/create)
