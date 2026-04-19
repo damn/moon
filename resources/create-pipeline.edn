@@ -1,4 +1,9 @@
 [
+ [moon.create.ui-viewport/step {:width 1440
+                                :height 900}]
+ [moon.create.stage/step]
+ [moon.create.set-input-processor/step]
+ [moon.create.skin/step "uiskin.json"]
  [moon.create.cursors/step #edn/resource "cursors.edn"]
  [moon.create.textures/step]
  [moon.create.world-unit-scale/step 48]

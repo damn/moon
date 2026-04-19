@@ -4,15 +4,9 @@
             [clojure.gdx :as gdx]
             [clojure.gdx.graphics.texture :as texture]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [clojure.gdx.orthographic-camera :as orthographic-camera]
             [clojure.gdx.shape-drawer :as shape-drawer]
-            [clojure.gdx.scene2d.stage :as stage]
-            [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
-            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
-            [clojure.graphics.bitmap-font :as bitmap-font]
-            [clojure.input :as input]
             [moon.malli :as m]
             [moon.start :refer [edn-resource]]
             ))
@@ -75,12 +69,9 @@
           (let [batch (sprite-batch/create)
                 graphics (gdx/graphics)
                 files (gdx/files)
-                ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
-                stage (stage/create ui-viewport batch)
                 input (gdx/input)
                 shape-drawer-texture (graphics/white-pixel-texture graphics)
                 ]
-            (input/set-processor! input stage)
             {:ctx/schema schema
              :ctx/app      (gdx/app)
              :ctx/audio    (let [{:keys [sound-names path-format]} {:sound-names (edn-resource "sounds.edn")
@@ -100,10 +91,5 @@
              :ctx/batch batch
              :ctx/shape-drawer-texture shape-drawer-texture
              :ctx/shape-drawer (shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))
-             :ctx/ui-viewport ui-viewport
-             :ctx/stage stage
-             :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
-                         (bitmap-font/enable-markup! (skin/font skin "default-font") true)
-                         skin)
              })
           create-fns))
