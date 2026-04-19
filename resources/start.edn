@@ -122,22 +122,25 @@
    ]]
  [clojure.gdx.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [clojure.gdx.backends.lwjgl.config/use-glfw-async!]
- [moon.application/start!
+ [clojure.gdx.backends.lwjgl/application!
   {
-   :listener {
-              :create! moon.application.create/do!
-              :create-params #edn/resource "create-pipeline.edn"
-              :dispose! moon.application.dispose/do!
-              :render! moon.application.render/do!
-              :render-params #edn/resource "render-pipeline.edn"
-              :resize! moon.application.resize/do!
-              }
-   :config {
-            :title "Moon"
-            :window {:width 1440
-                     :height 900}
-            :fps 60
-            }
+   :listener [clojure.gdx.application-listener/create
+              {
+               :state-var moon.application/state
+               :create! moon.application.create/do!
+               :create-params #edn/resource "create-pipeline.edn"
+               :dispose! moon.application.dispose/do!
+               :render! moon.application.render/do!
+               :render-params #edn/resource "render-pipeline.edn"
+               :resize! moon.application.resize/do!
+               }]
+   :config [clojure.gdx.backends.lwjgl.config/create
+            {
+             :title "Moon"
+             :window {:width 1440
+                      :height 900}
+             :fps 60
+             }]
    }
   ]
  ]

@@ -2,5 +2,8 @@
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)))
 
 (defn application!
-  [listener config]
-  (Lwjgl3Application. listener config))
+  [{:keys [listener config]}]
+  (Lwjgl3Application. (let [[f params] listener]
+                        (f params))
+                      (let [[f params] config]
+                        (f params))))
