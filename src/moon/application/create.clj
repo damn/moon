@@ -2,7 +2,6 @@
   (:require [clojure.audio :as audio]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
-            [clojure.graphics.freetype :as freetype]
             [clojure.gdx :as gdx]
             [clojure.gdx.graphics.texture :as texture]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -133,25 +132,6 @@
                                                         world-height
                                                         (doto (orthographic-camera/create)
                                                           (orthographic-camera/set-to-ortho! false world-width world-height))))
-
-             :ctx/default-font (let [{:keys [path params]} {:path "exocet/films.EXL_____.ttf"
-                                                            :params {:size 16
-                                                                     :quality-scaling 2
-                                                                     :enable-markup? true
-                                                                     :use-integer-positions? false
-                                                                     ; :texture-filter/linear because scaling to world-units
-                                                                     :min-filter :linear
-                                                                     :mag-filter :linear}}
-                                     {:keys [size
-                                             quality-scaling
-                                             enable-markup?
-                                             use-integer-positions?]} params]
-                                 (doto (freetype/generate-font (gdx/app)
-                                                               (files/internal files path)
-                                                               {:size (* size quality-scaling)})
-                                   (bitmap-font/set-scale! (/ quality-scaling))
-                                   (bitmap-font/enable-markup! enable-markup?)
-                                   (bitmap-font/use-integer-positions! use-integer-positions?)))
 
              })
           create-fns))

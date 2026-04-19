@@ -1,4 +1,14 @@
 [
+ [moon.create.default-font/step {
+                                 :path "exocet/films.EXL_____.ttf"
+                                 :params {:size 16
+                                          :quality-scaling 2
+                                          :enable-markup? true
+                                          :use-integer-positions? false
+                                          ; :texture-filter/linear because scaling to world-units
+                                          :min-filter :linear
+                                          :mag-filter :linear}
+                                 }]
  [moon.create.controls/step]
  [moon.create.colors/step]
  [moon.create.plain-assoc/step]
