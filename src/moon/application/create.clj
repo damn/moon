@@ -165,14 +165,6 @@
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           (let [batch (sprite-batch/create)
-                ; => all libgdx & related stuff
-                ; merge together into 'ctx' moon.app ?!
-                ; draw-text
-                ; draw-texture-region
-                ; draw-on-world-viewport
-                ; draw-tiled-map
-
-
                 graphics (gdx/graphics)
                 files (gdx/files)
                 ui-viewport (fit-viewport/create 1440 900 (orthographic-camera/create))
