@@ -24,16 +24,6 @@
             [clojure.math.vector2 :as v])
   (:import (com.badlogic.gdx Input)))
 
-(defn- create-cursor
-  [files
-   graphics
-   path-format
-   [path [hotspot-x hotspot-y]]]
-  (graphics/new-cursor graphics
-                       (files/internal files (format path-format path))
-                       hotspot-x
-                       hotspot-y))
-
 (extend-type Input
   input/Input
   (key-pressed? [input key]
@@ -203,7 +193,12 @@
                          skin)
 
              :ctx/cursors (let [{:keys [data path-format]} (edn-resource "cursors.edn")]
-                            (update-vals data (partial create-cursor files graphics path-format)))
+                            (update-vals data (fn
+                                                [[path [hotspot-x hotspot-y]]]
+                                                (graphics/new-cursor graphics
+                                                                     (files/internal files (format path-format path))
+                                                                     hotspot-x
+                                                                     hotspot-y))))
 
              :ctx/textures (let [{:keys [folder extensions]} {:folder "resources/"
                                                               :extensions #{"png" "bmp"}}]
