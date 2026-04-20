@@ -4,11 +4,11 @@
  [moon.create.sounds/step {:sound-names #edn/resource "sounds.edn"
                            :path-format "sounds/%s.wav"}]
  [moon.create.assoc/step :ctx/batch [moon.impl.batch/create]]
- [moon.create.shape-drawer-texture/step]
- [moon.create.shape-drawer/step]
+ [moon.create.assoc/step :ctx/shape-drawer-texture [moon.impl.shape-drawer-texture/create]]
+ [moon.create.assoc/step :ctx/shape-drawer [moon.impl.shape-drawer/create]]
  [moon.create.tooltip-config/step!]
- [moon.create.ui-viewport/step {:width 1440
-                                :height 900}]
+ [moon.create.assoc/step :ctx/ui-viewport [moon.impl.ui-viewport/create {:width 1440
+                                                                         :height 900}]]
  [moon.create.stage/step]
  [moon.create.set-input-processor/step]
  [moon.create.skin/step "uiskin.json"]
