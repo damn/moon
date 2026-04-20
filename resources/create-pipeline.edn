@@ -9,24 +9,25 @@
  [moon.create.tooltip-config/step!]
  [moon.create.assoc/step :ctx/ui-viewport [moon.impl.ui-viewport/create {:width 1440
                                                                          :height 900}]]
- [moon.create.stage/step]
- [moon.create.set-input-processor/step]
- [moon.create.skin/step "uiskin.json"]
- [moon.create.cursors/step #edn/resource "cursors.edn"]
- [moon.create.textures/step]
+ [moon.create.assoc/step :ctx/stage [moon.impl.stage/create]]
+ [moon.create.set-input-processor/step!]
+ [moon.create.assoc/step :ctx/skin [moon.impl.skin/create "uiskin.json"]]
+ [moon.create.assoc/step :ctx/cursors [moon.impl.cursors/create #edn/resource "cursors.edn"]]
+ [moon.create.assoc/step :ctx/textures [moon.impl.textures/create {:folder "resources/"
+                                                                   :extensions #{"png" "bmp"}}]]
  [moon.create.world-unit-scale/step 48]
  [moon.create.world-viewport/step {:width 1440
                                    :height 900}]
- [moon.create.default-font/step {
-                                 :path "exocet/films.EXL_____.ttf"
-                                 :params {:size 16
-                                          :quality-scaling 2
-                                          :enable-markup? true
-                                          :use-integer-positions? false
-                                          ; :texture-filter/linear because scaling to world-units
-                                          :min-filter :linear
-                                          :mag-filter :linear}
-                                 }]
+ [moon.create.assoc/step :ctx/default-font [moon.impl.default-font/create {
+                                                                           :path "exocet/films.EXL_____.ttf"
+                                                                           :params {:size 16
+                                                                                    :quality-scaling 2
+                                                                                    :enable-markup? true
+                                                                                    :use-integer-positions? false
+                                                                                    ; :texture-filter/linear because scaling to world-units
+                                                                                    :min-filter :linear
+                                                                                    :mag-filter :linear}
+                                                                           }]]
  [moon.create.controls/step]
  [moon.create.colors/step]
  [moon.create.plain-assoc/step]
