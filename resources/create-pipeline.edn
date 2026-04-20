@@ -3,7 +3,7 @@
  [moon.create.schema/step #edn/resource "ctx-schema.edn"]
  [moon.create.sounds/step {:sound-names #edn/resource "sounds.edn"
                            :path-format "sounds/%s.wav"}]
- [moon.create.batch/step]
+ [moon.create.assoc/step :ctx/batch [moon.impl.batch/create]]
  [moon.create.shape-drawer-texture/step]
  [moon.create.shape-drawer/step]
  [moon.create.tooltip-config/step!]
