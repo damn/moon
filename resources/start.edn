@@ -4,7 +4,6 @@
    :optional [moon.schema/create
               moon.schema/value]}
   [
-   [moon.schema.map               :s/map]
    [moon.schema.number            :s/number]
    [moon.schema.one-to-many       :s/one-to-many]
    [moon.schema.one-to-one        :s/one-to-one]
