@@ -4,6 +4,7 @@
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.shape-drawer :as shape-drawer]
             [clojure.graphics :as graphics]
             [clojure.graphics.texture :as texture]
@@ -63,6 +64,7 @@
 
 (defn create!
   [ctx create-fns]
+  (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           ctx
