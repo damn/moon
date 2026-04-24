@@ -24,7 +24,9 @@
   (hit [_ [x y] touchable?])
   (remove! [_])
   (parent [_])
-  (toggle-visible! [_])
   (find-ancestor [_ ui-type-k])
   (button? [_] "Returns true if the actor or its parent is a button.")
   (window-title-bar? [_]))
+
+(defn toggle-visible! [actor]
+  (set-visible! actor (not (visible? actor))))

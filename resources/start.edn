@@ -92,9 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [com.badlogic.gdx.scenes.scene2d.Actor
-                                clojure.gdx.scene2d.actor
-                                clojure.scene2d.actor/Actor]
                                [com.badlogic.gdx.scenes.scene2d.Event
                                 clojure.gdx.scene2d.event
                                 clojure.scene2d.event/Event]
