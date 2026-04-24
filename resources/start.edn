@@ -91,8 +91,6 @@
    [moon.state.stunned :stunned]
    ]
   ]
- [clojure.utils/extend-types! [
-                               ]]
  [clojure.multifn/add-methods! clojure.scene2d.actor/create
   [
    [:ui/actor clojure.gdx.scene2d.actor/create]
