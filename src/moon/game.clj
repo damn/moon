@@ -1,6 +1,10 @@
 (ns moon.game
-  (:require [clojure.disposable :as disposable]
+  (:require [clojure.audio :as audio]
+            [clojure.disposable :as disposable]
+            [clojure.edn :as edn]
+            [clojure.files :as files]
             [clojure.graphics.viewport :as viewport]
+            [clojure.java.io :as io]
             [moon.malli :as m]
             ))
 
@@ -58,7 +62,16 @@
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           ctx
-          create-fns))
+          (concat
+           [
+            [(fn [{:keys [ctx/audio ctx/files] :as ctx}]
+               (assoc ctx :ctx/audio
+                      (into {}
+                            (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
+                              [sound-name
+                               (audio/new-sound audio (files/internal files (format "sounds/%s.wav" sound-name)))]))))]
+            ]
+           create-fns)))
 
 (defn dispose!
   [{:keys [ctx/audio
