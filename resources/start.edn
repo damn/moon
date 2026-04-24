@@ -92,9 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [com.badlogic.gdx.graphics.g2d.Batch
-                                clojure.gdx.graphics.g2d.batch
-                                clojure.graphics.batch/Batch]
                                [space.earlygrey.shapedrawer.ShapeDrawer
                                 clojure.gdx.shape-drawer
                                 clojure.graphics.shape-drawer/ShapeDrawer]
