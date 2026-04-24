@@ -12,6 +12,7 @@
             [clojure.graphics :as graphics]
             [clojure.graphics.texture :as texture]
             [clojure.graphics.viewport :as viewport]
+            [clojure.input :as input]
             [clojure.java.io :as io]
             [moon.malli :as m]
             ))
@@ -93,6 +94,11 @@
                           ctx/ui-viewport]
                    :as ctx}]
                (assoc ctx :ctx/stage (stage/create ui-viewport batch)))]
+            [(fn [{:keys [ctx/input
+                          ctx/stage]
+                   :as ctx}]
+               (input/set-processor! input stage)
+               ctx)]
             ]
            create-fns)))
 
