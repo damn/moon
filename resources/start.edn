@@ -94,10 +94,13 @@
    [:ui/property-editor-window   moon.ui.property-editor-window/create]
    [:ui/property-overview-window moon.ui.property-overview-window/create]
    ]]
- [clojure.gdx.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
- [clojure.gdx.backends.lwjgl.config/use-glfw-async!]
- [clojure.gdx.backends.lwjgl/application!
+ [moon.application/start!
   {
+   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
+   :title "Moon"
+   :window {:width 1440
+            :height 900}
+   :fps 60
    :listener [clojure.gdx.application-listener/create
               {
                :state-var moon.application/state
@@ -261,13 +264,5 @@
                                ]
                :resize! moon.application.resize/do!
                }]
-   :config [clojure.gdx.backends.lwjgl.config/create
-            {
-             :title "Moon"
-             :window {:width 1440
-                      :height 900}
-             :fps 60
-             }]
-   }
-  ]
+   }]
  ]
