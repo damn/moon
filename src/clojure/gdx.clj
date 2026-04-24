@@ -3,15 +3,20 @@
             clojure.audio.sound
             clojure.files
             clojure.files.file-handle
+            [clojure.gdx.graphics.g2d.freetype.font-generator :as font-generator]
+            [clojure.gdx.graphics.g2d.freetype.font-generator.parameter :as parameter]
             [clojure.gdx.graphics.pixmap :as pixmap]
             [clojure.gdx.graphics.pixmap.format :as pixmap.format]
+            [clojure.gdx.graphics.texture.filter :as texture.filter]
             [clojure.gdx.input.buttons :as buttons]
             [clojure.gdx.input.keys :as keys]
             [clojure.gdx.utils.disposable :as disposable]
             clojure.graphics
+            clojure.graphics.freetype
             clojure.input
             )
-  (:import (com.badlogic.gdx Audio
+  (:import (com.badlogic.gdx Application
+                             Audio
                              Files
                              Gdx
                              Graphics
@@ -112,3 +117,15 @@
           texture (pixmap/texture pixmap)]
       (disposable/dispose! pixmap)
       texture)))
+
+(extend-type Application
+  clojure.graphics.freetype/Freetype
+  (generate-font [_application file-handle {:keys [size]}]
+    (let [generator (font-generator/create file-handle)
+          font (font-generator/generate-font generator
+                                             (doto (parameter/create)
+                                               (parameter/set-size! size)
+                                               (parameter/set-min-filter! texture.filter/linear)
+                                               (parameter/set-mag-filter! texture.filter/linear)))]
+      (disposable/dispose! generator)
+      font)))
