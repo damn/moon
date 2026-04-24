@@ -92,9 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [space.earlygrey.shapedrawer.ShapeDrawer
-                                clojure.gdx.shape-drawer
-                                clojure.graphics.shape-drawer/ShapeDrawer]
                                [com.badlogic.gdx.scenes.scene2d.Actor
                                 clojure.gdx.scene2d.actor
                                 clojure.scene2d.actor/Actor]
