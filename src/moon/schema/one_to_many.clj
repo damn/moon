@@ -9,9 +9,6 @@
             [clojure.scene2d.ui.table :as table]
             [moon.textures :as textures]))
 
-(defn create-value [_ property-ids db]
-  (set (map (partial db/build db) property-ids)))
-
 (defn- add-one-to-many-rows
   [{:keys [ctx/db
            ctx/skin

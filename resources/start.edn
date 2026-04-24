@@ -2,8 +2,7 @@
  [clojure.multifn/add-api-methods!
   {:required []
    :optional [moon.schema/create
-              moon.schema/value
-              moon.schemas/create-value]}
+              moon.schema/value]}
   [
    [moon.schema.map               :s/map]
    [moon.schema.number            :s/number]

@@ -66,3 +66,12 @@
 (defn build-all [{:keys [db/schemas] :as this} property-type]
   (map #(schemas/build-values schemas % this)
        (all-raw this property-type)))
+
+(defmethod schemas/create-value :s/map [_ v db]
+  (schemas/build-values (:db/schemas db) v db))
+
+(defmethod schemas/create-value :s/one-to-many [_ property-ids db]
+  (set (map (partial build db) property-ids)))
+
+(defmethod schemas/create-value :s/one-to-one [_ property-id db]
+  (build db property-id))

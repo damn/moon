@@ -10,9 +10,6 @@
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]))
 
-(defn create-value [_ v db]
-  (schemas/build-values (:db/schemas db) v db))
-
 (defn- map-widget-table-value [table schemas]
   (into {}
         (for [widget (filter (comp vector? actor/user-object) (group/children table))
