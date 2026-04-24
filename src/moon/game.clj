@@ -46,7 +46,15 @@
             [moon.map :as map]
             [moon.txs :as txs]
             [qrecord.core :as q]
-            [reduce-fsm :as fsm])
+            [reduce-fsm :as fsm]
+            moon.ui-actors.dev-menu
+            moon.ui-actors.action-bar
+            moon.ui-actors.player-message
+            moon.ui-actors.player-state-draw
+            moon.ui-actors.windows.inventory
+            moon.ui-actors.windows.info
+            moon.ui-actors.hp-mana-bar
+            )
   (:import (com.badlogic.gdx Input)))
 
 (defn- draw-text! [font batch {:keys [scale text x y up? h-align target-width wrap?]}]
@@ -786,16 +794,16 @@
                (merge (map->Context {}) ctx))]
 
             [(fn [ctx]
-               (doseq [actor [((requiring-resolve 'moon.ui-actors.dev-menu/create) ctx)
-                              ((requiring-resolve 'moon.ui-actors.action-bar/create) ctx)
-                              ((requiring-resolve 'moon.ui-actors.hp-mana-bar/create) ctx)
+               (doseq [actor [(moon.ui-actors.dev-menu/create ctx)
+                              (moon.ui-actors.action-bar/create)
+                              (moon.ui-actors.hp-mana-bar/create ctx)
                               (actor/create
                                {:type :ui/group
-                                :group/actors [((requiring-resolve 'moon.ui-actors.windows.info/create) ctx)
-                                               ((requiring-resolve 'moon.ui-actors.windows.inventory/create) ctx)]
+                                :group/actors [(moon.ui-actors.windows.info/create ctx)
+                                               (moon.ui-actors.windows.inventory/create ctx)]
                                 :actor/name "moon.ui.windows"})
-                              ((requiring-resolve 'moon.ui-actors.player-state-draw/create) ctx)
-                              ((requiring-resolve 'moon.ui-actors.player-message/create) ctx)]]
+                              (moon.ui-actors.player-state-draw/create)
+                              (moon.ui-actors.player-message/create)]]
                  (stage/add-actor! (:ctx/stage ctx) actor))
                ctx)]
 

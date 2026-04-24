@@ -5,7 +5,7 @@
             [moon.action-bar :as action-bar])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
-(defn create [_ctx]
+(defn create []
   (actor/create
    {:type :ui/table
     :table/cell-defaults {:pad 2}

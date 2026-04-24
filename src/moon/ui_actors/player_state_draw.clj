@@ -4,7 +4,7 @@
             [clojure.scene2d.stage :as stage]
             [moon.state :as state]))
 
-(defn create [_ctx]
+(defn create []
   (actor/create
    {:type :ui/actor
     :draw! (fn [this _batch _parent-alpha]

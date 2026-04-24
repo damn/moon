@@ -4,7 +4,7 @@
             [clojure.scene2d.stage :as stage]
             [moon.draws :as draws]))
 
-(defn create [_ctx]
+(defn create []
   (let [message-duration-seconds 0.5]
     (actor/create
      {:type :ui/actor
