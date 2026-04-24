@@ -95,9 +95,6 @@
                                [com.badlogic.gdx.Application
                                 clojure.gdx.freetype
                                 clojure.graphics.freetype/Freetype]
-                               [com.badlogic.gdx.utils.viewport.Viewport
-                                clojure.gdx.viewport
-                                clojure.graphics.viewport/Viewport]
                                [com.badlogic.gdx.Input
                                 clojure.gdx.input
                                 clojure.input/Input]
