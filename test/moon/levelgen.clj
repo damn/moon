@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [clojure.gdx :as gdx]
-            [clojure.gdx.graphics.color :as color]
+            [clojure.graphics.color :as color]
             [clojure.gdx.math.vector3 :as vector3]
             [clojure.gdx.scene2d.ui.table :as table]
             [moon.db :as db]

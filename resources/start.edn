@@ -92,12 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [clojure.lang.PersistentVector
-                                clojure.gdx.graphics.color
-                                clojure.graphics.color/Color]
-                               [com.badlogic.gdx.graphics.g2d.TextureRegion
-                                clojure.gdx.graphics.g2d.texture-region
-                                clojure.graphics.texture-region/TextureRegion]
                                [com.badlogic.gdx.graphics.g2d.Batch
                                 clojure.gdx.graphics.g2d.batch
                                 clojure.graphics.batch/Batch]

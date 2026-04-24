@@ -16,22 +16,24 @@
             [clojure.gdx.utils.disposable :as disposable]
             clojure.graphics
             clojure.graphics.bitmap-font
+            clojure.graphics.color
             clojure.graphics.freetype
+            clojure.graphics.texture-region
             clojure.input
-            [clojure.string :as str]
-            )
-  (:import (com.badlogic.gdx Application
+            [clojure.string :as str])
+  (:import (clojure.lang PersistentVector)
+           (com.badlogic.gdx Application
                              Audio
                              Files
                              Gdx
                              Graphics
-                             Input
-                             )
+                             Input)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics GL20)
-           (com.badlogic.gdx.graphics.g2d BitmapFont)
-           ))
+           (com.badlogic.gdx.graphics Color
+                                      GL20)
+           (com.badlogic.gdx.graphics.g2d BitmapFont
+                                          TextureRegion)))
 
 (defn app []
   Gdx/app)
@@ -165,3 +167,19 @@
         (str/split #"\n")
         count
         (* (font/line-height font)))))
+
+(extend-type PersistentVector
+  clojure.graphics.color/Color
+  (float-bits [[r g b a]]
+    (Color/toFloatBits (float r)
+                       (float g)
+                       (float b)
+                       (float a))))
+
+(extend-type TextureRegion
+  clojure.graphics.texture-region/TextureRegion
+  (width [texture-region]
+    (.getRegionWidth texture-region))
+
+  (height [texture-region]
+    (.getRegionHeight texture-region)))
