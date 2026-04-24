@@ -92,9 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-                                clojure.gdx.scene2d.ui.check-box
-                                clojure.scene2d.ui.check-box/CheckBox]
                                [com.badlogic.gdx.scenes.scene2d.ui.Image
                                 clojure.gdx.scene2d.ui.image
                                 clojure.scene2d.ui.image/Image]
