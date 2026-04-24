@@ -5,11 +5,13 @@
             [clojure.files :as files]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.shape-drawer :as shape-drawer]
             [clojure.gdx.orthographic-camera :as orthographic-camera]
             [clojure.gdx.viewport]
             [clojure.graphics :as graphics]
+            [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.graphics.texture :as texture]
             [clojure.graphics.viewport :as viewport]
             [clojure.input :as input]
@@ -99,6 +101,10 @@
                    :as ctx}]
                (input/set-processor! input stage)
                ctx)]
+            [(fn [{:keys [ctx/files] :as ctx}]
+               (assoc ctx :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
+                                      (bitmap-font/enable-markup! (skin/font skin "default-font") true)
+                                      skin)))]
             ]
            create-fns)))
 
