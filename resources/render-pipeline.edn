@@ -1,6 +1,3 @@
-; TODO also render is defined as 'one function (public !) - thats it - check programmatically - validate code structure
-; clojure structured code
-; TODO this is not real but abstract ! just write code itself? at start also ?
 [
  [moon.render.get-stage-ctx/do!]
  [moon.render.validate/do!]
