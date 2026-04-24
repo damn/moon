@@ -102,8 +102,6 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.assoc/step :ctx/textures [moon.impl.textures/create {:folder "resources/"
-                                                                                     :extensions #{"png" "bmp"}}]]
                    [moon.create.world-unit-scale/step 48]
                    [moon.create.world-viewport/step {:width 1440
                                                      :height 900}]

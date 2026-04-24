@@ -15,6 +15,7 @@
             [clojure.graphics.texture :as texture]
             [clojure.graphics.viewport :as viewport]
             [clojure.input :as input]
+            moon.impl.textures
             [clojure.java.io :as io]
             [moon.malli :as m]
             ))
@@ -115,6 +116,9 @@
                                                                              (files/internal files (format path-format path))
                                                                              hotspot-x
                                                                              hotspot-y))))))]
+            [(fn [ctx]
+               (assoc ctx :ctx/textures (moon.impl.textures/create ctx {:folder "resources/"
+                                                                        :extensions #{"png" "bmp"}})))]
             ]
            create-fns)))
 
