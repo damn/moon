@@ -10,9 +10,6 @@
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]))
 
-(defn malli-form [[_ ks] schemas]
-  (schemas/create-map-schema schemas ks))
-
 (defn create-value [_ v db]
   (schemas/build-values (:db/schemas db) v db))
 

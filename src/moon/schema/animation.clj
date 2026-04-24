@@ -1,13 +1,6 @@
 (ns moon.schema.animation
-  (:require [moon.schemas :as schemas]
-            [moon.textures :as textures]
+  (:require [moon.textures :as textures]
             [clojure.scene2d.actor :as actor]))
-
-(defn malli-form [_ schemas]
-  (schemas/create-map-schema schemas
-                             [:animation/frames
-                              :animation/frame-duration
-                              :animation/looping?]))
 
 (defn create
   [_ animation {:keys [ctx/skin

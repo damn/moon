@@ -1,12 +1,6 @@
 (ns moon.schema.image
   (:require [clojure.scene2d.actor :as actor]
-            [moon.schemas :as schemas]
             [moon.textures :as textures]))
-
-(defn malli-form [_ schemas]
-  (schemas/create-map-schema schemas
-                             [:image/file
-                              [:image/bounds {:optional true}]]))
 
 ; too many ! too big ! scroll ... only show files first & preview?
 ; make tree view from folders, etc. .. !! all creatures animations showing...

@@ -9,9 +9,6 @@
             [clojure.scene2d.ui.table :as table]
             [moon.textures :as textures]))
 
-(defn malli-form [[_ property-type] _schemas]
-  [:set [:qualified-keyword {:namespace (property/type->id-namespace property-type)}]])
-
 (defn create-value [_ property-ids db]
   (set (map (partial db/build db) property-ids)))
 

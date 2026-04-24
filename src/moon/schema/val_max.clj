@@ -2,11 +2,7 @@
   (:require [clojure.scene2d.actor :as actor]
             [clojure.scene2d.ui.text-field :as text-field]
             [clojure.edn :as edn]
-            [moon.edn]
-            [moon.val-max :as val-max]))
-
-(defn malli-form [_ _schemas]
-  val-max/schema)
+            [moon.edn]))
 
 (defn create
   [schema v {:keys [ctx/skin]}]

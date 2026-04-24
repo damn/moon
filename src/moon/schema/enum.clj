@@ -4,9 +4,6 @@
             [clojure.scene2d.ui.select-box :as select-box]
             [moon.edn]))
 
-(defn malli-form [[_ & params] _schemas]
-  (apply vector :enum params))
-
 (defn create [schema v {:keys [ctx/skin]}]
   (actor/create
    {:type :ui/select-box

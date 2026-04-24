@@ -2,7 +2,7 @@
  [clojure.multifn/add-methods! moon.schema/create [[:default moon.schema.default/create]]]
  [clojure.multifn/add-methods! moon.schema/value  [[:default moon.schema.default/value]]]
  [clojure.multifn/add-api-methods!
-  {:required [moon.schemas/malli-form]
+  {:required []
    :optional [moon.schema/create
               moon.schema/value
               moon.schemas/create-value]}
@@ -14,12 +14,10 @@
    [moon.schema.number            :s/number]
    [moon.schema.one-to-many       :s/one-to-many]
    [moon.schema.one-to-one        :s/one-to-one]
-   [moon.schema.qualified-keyword :s/qualified-keyword]
-   [moon.schema.some              :s/some]
    [moon.schema.sound             :s/sound]
    [moon.schema.string            :s/string]
    [moon.schema.val-max           :s/val-max]
-   [moon.schema.vector            :s/vector]]
+   ]
   ]
  [clojure.multifn/add-api-methods!
   {:required [moon.effect/applicable?

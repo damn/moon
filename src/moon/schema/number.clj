@@ -4,14 +4,6 @@
             [clojure.scene2d.actor :as actor]
             [moon.edn]))
 
-(defn malli-form [[_ predicate] _schemas]
-  (case predicate
-    :int     int?
-    :nat-int nat-int?
-    :any     number?
-    :pos     pos?
-    :pos-int pos-int?))
-
 (defn create
   [schema v {:keys [ctx/skin]}]
   (actor/create

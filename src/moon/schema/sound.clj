@@ -8,9 +8,6 @@
             [clojure.scene2d.ui.table :as table]
             [moon.txs :as txs]))
 
-(defn malli-form [_ _schemas]
-  :string)
-
 (declare sound-columns)
 
 (defn- rebuild-sound-widget! [table sound-name]

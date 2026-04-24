@@ -2,9 +2,6 @@
   (:require [clojure.scene2d.actor :as actor]
             [clojure.scene2d.ui.text-field :as text-field]))
 
-(defn malli-form [_ _schemas]
-  :string)
-
 (defn create [schema v {:keys [ctx/skin]}]
   (actor/create
    {:type :ui/text-field
