@@ -102,9 +102,6 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.world-unit-scale/step 48]
-                   [moon.create.world-viewport/step {:width 1440
-                                                     :height 900}]
                    [moon.create.assoc/step :ctx/default-font [moon.impl.default-font/create {
                                                                                              :path "exocet/films.EXL_____.ttf"
                                                                                              :params {:size 16

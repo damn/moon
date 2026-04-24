@@ -119,6 +119,16 @@
             [(fn [ctx]
                (assoc ctx :ctx/textures (moon.impl.textures/create ctx {:folder "resources/"
                                                                         :extensions #{"png" "bmp"}})))]
+            [(fn [ctx]
+               (assoc ctx :ctx/world-unit-scale (float (/ 48))))]
+            [(fn [{:keys [ctx/world-unit-scale] :as ctx}]
+               (assoc ctx :ctx/world-viewport
+                      (let [world-width  (* 1440  world-unit-scale)
+                            world-height (* 900 world-unit-scale)]
+                        (clojure.gdx.viewport/create world-width
+                                                     world-height
+                                                     (doto (orthographic-camera/create)
+                                                       (orthographic-camera/set-to-ortho! false world-width world-height))))))]
             ]
            create-fns)))
 
