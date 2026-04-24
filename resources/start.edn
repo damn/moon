@@ -2,10 +2,10 @@
  [clojure.multifn/add-methods! moon.schema/create [[:default moon.schema.default/create]]]
  [clojure.multifn/add-methods! moon.schema/value  [[:default moon.schema.default/value]]]
  [clojure.multifn/add-api-methods!
-  {:required [moon.schema/malli-form]
+  {:required [moon.schemas/malli-form]
    :optional [moon.schema/create
               moon.schema/value
-              moon.schema/create-value]}
+              moon.schemas/create-value]}
   [[moon.schema.animation         :s/animation]
    [moon.schema.boolean           :s/boolean]
    [moon.schema.enum              :s/enum]
