@@ -95,24 +95,12 @@
                                [com.badlogic.gdx.Application
                                 clojure.gdx.freetype
                                 clojure.graphics.freetype/Freetype]
-                               [com.badlogic.gdx.Input
-                                clojure.gdx.input
-                                clojure.input/Input]
                                [com.badlogic.gdx.graphics.g2d.BitmapFont
                                 clojure.gdx.bitmap-font
                                 clojure.graphics.bitmap-font/BitmapFont]
                                [clojure.lang.PersistentVector
                                 clojure.gdx.graphics.color
                                 clojure.graphics.color/Color]
-                               [com.badlogic.gdx.Audio
-                                clojure.gdx.audio
-                                clojure.audio/Audio]
-                               [com.badlogic.gdx.audio.Sound
-                                clojure.gdx.audio.sound
-                                clojure.audio.sound/Sound]
-                               [com.badlogic.gdx.Graphics
-                                clojure.gdx.graphics
-                                clojure.graphics/Graphics]
                                [com.badlogic.gdx.graphics.g2d.TextureRegion
                                 clojure.gdx.graphics.g2d.texture-region
                                 clojure.graphics.texture-region/TextureRegion]
