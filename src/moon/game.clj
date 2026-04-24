@@ -785,6 +785,20 @@
             [(fn [ctx]
                (merge (map->Context {}) ctx))]
 
+            [(fn [ctx]
+               (doseq [actor [((requiring-resolve 'moon.ui-actors.dev-menu/create) ctx)
+                              ((requiring-resolve 'moon.ui-actors.action-bar/create) ctx)
+                              ((requiring-resolve 'moon.ui-actors.hp-mana-bar/create) ctx)
+                              (actor/create
+                               {:type :ui/group
+                                :group/actors [((requiring-resolve 'moon.ui-actors.windows.info/create) ctx)
+                                               ((requiring-resolve 'moon.ui-actors.windows.inventory/create) ctx)]
+                                :actor/name "moon.ui.windows"})
+                              ((requiring-resolve 'moon.ui-actors.player-state-draw/create) ctx)
+                              ((requiring-resolve 'moon.ui-actors.player-message/create) ctx)]]
+                 (stage/add-actor! (:ctx/stage ctx) actor))
+               ctx)]
+
             ]
            create-fns)))
 

@@ -102,13 +102,6 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.add-stage-actors/step [[moon.ui-actors.dev-menu/create]
-                                                       [moon.ui-actors.action-bar/create]
-                                                       [moon.ui-actors.hp-mana-bar/create]
-                                                       [moon.ui-actors.windows/create [[moon.ui-actors.windows.info/create]
-                                                                                       [moon.ui-actors.windows.inventory/create]]]
-                                                       [moon.ui-actors.player-state-draw/create]
-                                                       [moon.ui-actors.player-message/create]]]
                    [moon.create.tiled-map-and-start-position/step
                     #edn/resource
                     ; "world_fns/vampire.edn"
