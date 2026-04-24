@@ -102,7 +102,6 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.gdx/step]
                    [moon.create.schema/step [:map {:closed true}
                                              [:ctx/app :some]
                                              [:ctx/schema :some]

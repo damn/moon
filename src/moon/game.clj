@@ -3,10 +3,10 @@
             [clojure.graphics.viewport :as viewport]))
 
 (defn create!
-  [create-fns]
+  [ctx create-fns]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          {}
+          ctx
           create-fns))
 
 (defn dispose!

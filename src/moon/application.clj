@@ -1,5 +1,6 @@
 (ns moon.application
-  (:require [clojure.gdx.colors :as colors]
+  (:require [clojure.gdx :as gdx]
+            [clojure.gdx.colors :as colors]
             [moon.game :as game])
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
@@ -20,7 +21,12 @@
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
-                          (reset! state (game/create! create-params)))
+                          (reset! state (game/create! {:ctx/app       (gdx/app)
+                                                       :ctx/audio     (gdx/audio)
+                                                       :ctx/files     (gdx/files)
+                                                       :ctx/graphics  (gdx/graphics)
+                                                       :ctx/input     (gdx/input)}
+                                                      create-params)))
 
                         (dispose [_]
                           (game/dispose! @state))
