@@ -3,6 +3,7 @@
             [clojure.disposable :as disposable]
             [clojure.edn :as edn]
             [clojure.files :as files]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.graphics.viewport :as viewport]
             [clojure.java.io :as io]
             [moon.malli :as m]
@@ -70,6 +71,8 @@
                             (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                               [sound-name
                                (audio/new-sound audio (files/internal files (format "sounds/%s.wav" sound-name)))]))))]
+            [(fn [ctx]
+               (assoc ctx :ctx/batch (sprite-batch/create)))]
             ]
            create-fns)))
 
