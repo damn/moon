@@ -92,12 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [com.badlogic.gdx.scenes.scene2d.ui.Image
-                                clojure.gdx.scene2d.ui.image
-                                clojure.scene2d.ui.image/Image]
-                               [com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-                                clojure.gdx.scene2d.ui.select-box
-                                clojure.scene2d.ui.select-box/SelectBox]
                                [com.badlogic.gdx.scenes.scene2d.ui.Table
                                 clojure.gdx.scene2d.ui.table
                                 clojure.scene2d.ui.table/Table]
