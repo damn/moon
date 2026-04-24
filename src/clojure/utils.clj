@@ -1,8 +1,5 @@
 (ns clojure.utils)
 
-(defn require-namespaces! [ns-symbols]
-  (run! require ns-symbols))
-
 (defn extend-types! [impls]
   (doseq [[atype-sym implementation-ns-sym protocol-var] impls]
     (try (let [atype (eval atype-sym)
