@@ -92,9 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [com.badlogic.gdx.graphics.g2d.BitmapFont
-                                clojure.gdx.bitmap-font
-                                clojure.graphics.bitmap-font/BitmapFont]
                                [clojure.lang.PersistentVector
                                 clojure.gdx.graphics.color
                                 clojure.graphics.color/Color]

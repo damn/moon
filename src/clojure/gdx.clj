@@ -3,6 +3,8 @@
             clojure.audio.sound
             clojure.files
             clojure.files.file-handle
+            [clojure.gdx.graphics.g2d.bitmap-font :as font]
+            [clojure.gdx.graphics.g2d.bitmap-font.data :as data]
             [clojure.gdx.graphics.g2d.freetype.font-generator :as font-generator]
             [clojure.gdx.graphics.g2d.freetype.font-generator.parameter :as parameter]
             [clojure.gdx.graphics.pixmap :as pixmap]
@@ -10,10 +12,13 @@
             [clojure.gdx.graphics.texture.filter :as texture.filter]
             [clojure.gdx.input.buttons :as buttons]
             [clojure.gdx.input.keys :as keys]
+            [clojure.gdx.utils.align :as align]
             [clojure.gdx.utils.disposable :as disposable]
             clojure.graphics
+            clojure.graphics.bitmap-font
             clojure.graphics.freetype
             clojure.input
+            [clojure.string :as str]
             )
   (:import (com.badlogic.gdx Application
                              Audio
@@ -25,6 +30,7 @@
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
+           (com.badlogic.gdx.graphics.g2d BitmapFont)
            ))
 
 (defn app []
@@ -129,3 +135,33 @@
                                                (parameter/set-mag-filter! texture.filter/linear)))]
       (disposable/dispose! generator)
       font)))
+
+(extend-type BitmapFont
+  clojure.graphics.bitmap-font/BitmapFont
+  (scale-x [font]
+    (data/scale-x (font/data font)))
+
+  (set-scale! [font scale]
+    (data/set-scale! (font/data font) scale))
+
+  (enable-markup! [font enable?]
+    (data/enable-markup! (font/data font) enable?))
+
+  (use-integer-positions! [font use-integer-positions?]
+    (font/use-integer-positions! font use-integer-positions?))
+
+  (draw! [font batch text x y target-width h-align wrap?]
+    (font/draw! font
+                batch
+                text
+                x
+                y
+                target-width
+                (align/k->value h-align)
+                wrap?))
+
+  (text-height [font text]
+    (-> text
+        (str/split #"\n")
+        count
+        (* (font/line-height font)))))
