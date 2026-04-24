@@ -4,8 +4,11 @@
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.shape-drawer :as shape-drawer]
+            [clojure.gdx.orthographic-camera :as orthographic-camera]
+            [clojure.gdx.viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.texture :as texture]
             [clojure.graphics.viewport :as viewport]
@@ -84,6 +87,12 @@
                           ctx/shape-drawer-texture]
                    :as ctx}]
                (assoc ctx :ctx/shape-drawer (shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))))]
+            [(fn [ctx]
+               (assoc ctx :ctx/ui-viewport (clojure.gdx.viewport/create 1440 900 (orthographic-camera/create))))]
+            [(fn [{:keys [ctx/batch
+                          ctx/ui-viewport]
+                   :as ctx}]
+               (assoc ctx :ctx/stage (stage/create ui-viewport batch)))]
             ]
            create-fns)))
 
