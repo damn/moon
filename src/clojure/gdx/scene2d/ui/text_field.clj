@@ -1,5 +1,6 @@
 (ns clojure.gdx.scene2d.ui.text-field
-  (:require [clojure.scene2d.actor :as actor])
+  (:require [clojure.scene2d.actor :as actor]
+            clojure.scene2d.ui.text-field)
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextField)))
 
@@ -7,5 +8,7 @@
   (doto (TextField. ^String text ^Skin skin)
     (actor/set-opts! opts)))
 
-(defn text [^TextField text-field]
-  (.getText text-field))
+(extend-type TextField
+  clojure.scene2d.ui.text-field/TextField
+  (text [text-field]
+    (.getText text-field)))

@@ -1,7 +1,10 @@
 (ns moon.start
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+
+            clojure.gdx.scene2d.ui.widget-group
+            )
   (:gen-class))
 
 (defn edn-resource [path]
