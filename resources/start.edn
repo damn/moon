@@ -101,7 +101,6 @@
    :window {:width 1440
             :height 900}
    :fps 60
-   :create! moon.application.create/do!
    :create-params [
                    [moon.create.gdx/step]
                    [moon.create.schema/step [:map {:closed true}
@@ -228,8 +227,6 @@
                                                                  :initial-state :npc-sleeping}
                                                     :entity/faction :evil}]
                    ]
-   :dispose! moon.application.dispose/do!
-   :render! moon.application.render/do!
    :render-params [
                    [moon.render.get-stage-ctx/do!]
                    [moon.render.validate/do!]
@@ -259,6 +256,5 @@
                    [moon.render.render-stage/do!]
                    [moon.render.validate/do!]
                    ]
-   :resize! moon.application.resize/do!
    }]
  ]

@@ -1,5 +1,6 @@
 (ns moon.application
-  (:require [clojure.gdx.colors :as colors])
+  (:require [clojure.gdx.colors :as colors]
+            [moon.game :as game])
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)))
@@ -12,27 +13,23 @@
            title
            window
            fps
-           create!
            create-params
-           dispose!
-           render!
            render-params
-           resize!
            ]}]
   (colors/put! colors)
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
-                          (reset! state (create! create-params)))
+                          (reset! state (game/create! create-params)))
 
                         (dispose [_]
-                          (dispose! @state))
+                          (game/dispose! @state))
 
                         (render [_]
-                          (swap! state render! render-params))
+                          (swap! state game/render! render-params))
 
                         (resize [_ width height]
-                          (resize! @state width height))
+                          (game/resize! @state width height))
 
                         (pause [_])
 
