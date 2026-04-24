@@ -105,6 +105,16 @@
                (assoc ctx :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
                                       (bitmap-font/enable-markup! (skin/font skin "default-font") true)
                                       skin)))]
+            [(fn [{:keys [ctx/graphics
+                          ctx/files]
+                   :as ctx}]
+               (assoc ctx :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
+                                         (update-vals data
+                                                      (fn [[path [hotspot-x hotspot-y]]]
+                                                        (graphics/new-cursor graphics
+                                                                             (files/internal files (format path-format path))
+                                                                             hotspot-x
+                                                                             hotspot-y))))))]
             ]
            create-fns)))
 

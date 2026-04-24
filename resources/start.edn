@@ -102,7 +102,6 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.assoc/step :ctx/cursors [moon.impl.cursors/create #edn/resource "cursors.edn"]]
                    [moon.create.assoc/step :ctx/textures [moon.impl.textures/create {:folder "resources/"
                                                                                      :extensions #{"png" "bmp"}}]]
                    [moon.create.world-unit-scale/step 48]
