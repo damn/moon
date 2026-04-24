@@ -1,9 +1,11 @@
 (ns moon.create.sounds
   (:require [clojure.audio :as audio]
-            [clojure.files :as files]
-            [clojure.gdx :as gdx]))
+            [clojure.files :as files]))
 
-(defn step [{:keys [ctx/files] :as ctx} {:keys [sound-names path-format]}]
+(defn step
+  [{:keys [ctx/audio
+           ctx/files] :as ctx}
+   {:keys [sound-names path-format]}]
   (assoc ctx :ctx/audio
          (let [sound-name->file-handle (into {}
                                              (for [sound-name sound-names
@@ -13,4 +15,4 @@
            (into {}
                  (for [[sound-name file-handle] sound-name->file-handle]
                    [sound-name
-                    (audio/new-sound (gdx/audio) file-handle)])))))
+                    (audio/new-sound audio file-handle)])))))
