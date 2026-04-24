@@ -12,6 +12,7 @@
             [clojure.gdx.viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.bitmap-font :as bitmap-font]
+            [clojure.graphics.freetype :as freetype]
             [clojure.graphics.texture :as texture]
             [clojure.graphics.viewport :as viewport]
             [clojure.input :as input]
@@ -129,6 +130,30 @@
                                                      world-height
                                                      (doto (orthographic-camera/create)
                                                        (orthographic-camera/set-to-ortho! false world-width world-height))))))]
+            [(fn [{:keys [ctx/app
+                          ctx/files]
+                   :as ctx}]
+               (assoc ctx :ctx/default-font (let [{:keys [path
+                                                          size
+                                                          quality-scaling
+                                                          enable-markup?
+                                                          use-integer-positions?]} {
+                                                                                    :path "exocet/films.EXL_____.ttf"
+                                                                                    :size 16
+                                                                                    :quality-scaling 2
+                                                                                    :enable-markup? true
+                                                                                    :use-integer-positions? false
+                                                                                    ; :texture-filter/linear because scaling to world-units
+                                                                                    :min-filter :linear
+                                                                                    :mag-filter :linear
+                                                                                    }]
+                                              (doto (freetype/generate-font app
+                                                                            (files/internal files path)
+                                                                            {:size (* size quality-scaling)})
+                                                (bitmap-font/set-scale! (/ quality-scaling))
+                                                (bitmap-font/enable-markup! enable-markup?)
+                                                (bitmap-font/use-integer-positions! use-integer-positions?))))
+               )]
             ]
            create-fns)))
 
