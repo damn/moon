@@ -16,10 +16,14 @@
             [clojure.graphics.texture :as texture]
             [clojure.graphics.viewport :as viewport]
             [clojure.input :as input]
-            moon.impl.textures
             [clojure.java.io :as io]
+            [clojure.math.vector2 :as v]
+            [clojure.string :as str]
             [moon.malli :as m]
-            ))
+            [moon.input]
+            moon.impl.textures
+            )
+  (:import (com.badlogic.gdx Input)))
 
 (def schema
   (m/schema
@@ -154,6 +158,29 @@
                                                 (bitmap-font/enable-markup! enable-markup?)
                                                 (bitmap-font/use-integer-positions! use-integer-positions?))))
                )]
+            [(fn [ctx]
+               (assoc ctx
+                      :ctx/controls {
+                                     :zoom-in :input.keys/minus
+                                     :zoom-out :input.keys/equals
+                                     :unpause-once :input.keys/p
+                                     :unpause-continously :input.keys/space
+                                     :close-windows-key :input.keys/escape
+                                     :toggle-inventory  :input.keys/i
+                                     :toggle-entity-info :input.keys/e
+                                     :open-debug-button :input.buttons/right
+                                     }
+                      :ctx/controls-info (str/join "\n"
+                                                   ["[W][A][S][D] - Move"
+                                                    "[ESCAPE] - Close windows"
+                                                    "[I] - Inventory window"
+                                                    "[E] - Entity Info window"
+                                                    "[-]/[=] - Zoom"
+                                                    "[P]/[SPACE] - Unpause"
+                                                    "rightclick on tile or entity - open debug data window"
+                                                    "Leftmouse click - use skill/drop item on cursor"])
+                      )
+               )]
             ]
            create-fns)))
 
@@ -189,3 +216,27 @@
   (viewport/update! ui-viewport width height true)
   (viewport/update! world-viewport width height false)
   nil)
+
+(extend-type Input
+  moon.input/Input
+  (key-pressed? [input key]
+    (input/key-pressed? input key))
+
+  (key-just-pressed? [input key]
+    (input/key-just-pressed? input key))
+
+  (button-just-pressed? [input button]
+    (input/button-just-pressed? input button))
+
+  (mouse-position [input]
+    (input/mouse-position input))
+
+  (player-movement-vector [input]
+    (let [r (when (input/key-pressed? input :input.keys/d) [1  0])
+          l (when (input/key-pressed? input :input.keys/a) [-1 0])
+          u (when (input/key-pressed? input :input.keys/w) [0  1])
+          d (when (input/key-pressed? input :input.keys/s) [0 -1])]
+      (when (or r l u d)
+        (let [v (v/add-vs (remove nil? [r l u d]))]
+          (when (pos? (v/length v))
+            v))))))
