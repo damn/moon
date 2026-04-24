@@ -27,3 +27,12 @@
 (defn create-map-schema [schemas ks]
   (m/create-map-schema ks (fn [k]
                             (schema/malli-form (get schemas k) schemas))))
+
+(defn map-keys [schemas schema]
+  (m/map-keys (schema/malli-form schema schemas)))
+
+(defn optional? [schemas schema k]
+  (m/optional? k (schema/malli-form schema schemas)))
+
+(defn optional-keyset [schemas schema]
+  (m/optional-keyset (schema/malli-form schema schemas)))

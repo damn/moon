@@ -4,7 +4,6 @@
             [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.set :as set]
             [clojure.scene2d.actor :as actor]
-            [moon.malli :as mu]
             [moon.order :as order]
             [moon.schema :as schema]
             [moon.schemas :as schemas]
@@ -103,7 +102,7 @@
                  :window/modal? true
                  :table/cell-defaults {:pad 5}})
         remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))
-                                   (mu/map-keys (schema/malli-form schema schemas))))]
+                                   (schemas/map-keys schemas schema)))]
     (table/add-rows!
      window
      (for [k remaining-ks]
@@ -121,7 +120,7 @@
                                                                                                               k
                                                                                                               (schemas/default-value schemas k))
                                                                                           k
-                                                                                          (mu/optional? k (schema/malli-form schema schemas))
+                                                                                          (schemas/optional? schemas schema k)
                                                                                           map-widget-table)])
                                         (rebuild! ctx)))}})}]))
     (widget-group/pack! window)
@@ -220,9 +219,9 @@
       :k->widget (into {}
                        (for [[k v] m]
                          [k (build-value-widget ctx (get schemas k) k v)]))
-      :k->optional? #(mu/optional? % (schema/malli-form schema schemas))
+      :k->optional? #(schemas/optional? schemas schema %)
       :ks-sorted (map first (order/sort-by-k-order property-k-sort-order m))
-      :opt? (seq (set/difference (mu/optional-keyset (schema/malli-form schema schemas))
+      :opt? (seq (set/difference (schemas/optional-keyset schemas schema)
                                  (set (keys m))))})))
 
 (defn value
