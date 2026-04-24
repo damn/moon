@@ -1,6 +1,4 @@
 [
- [clojure.multifn/add-methods! moon.schema/create [[:default moon.schema.default/create]]]
- [clojure.multifn/add-methods! moon.schema/value  [[:default moon.schema.default/value]]]
  [clojure.multifn/add-api-methods!
   {:required []
    :optional [moon.schema/create
