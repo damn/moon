@@ -4,6 +4,9 @@
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.shape-drawer :as shape-drawer]
+            [clojure.graphics :as graphics]
+            [clojure.graphics.texture :as texture]
             [clojure.graphics.viewport :as viewport]
             [clojure.java.io :as io]
             [moon.malli :as m]
@@ -73,6 +76,12 @@
                                (audio/new-sound audio (files/internal files (format "sounds/%s.wav" sound-name)))]))))]
             [(fn [ctx]
                (assoc ctx :ctx/batch (sprite-batch/create)))]
+            [(fn [{:keys [ctx/graphics] :as ctx}]
+               (assoc ctx :ctx/shape-drawer-texture (graphics/white-pixel-texture graphics)))]
+            [(fn [{:keys [ctx/batch
+                          ctx/shape-drawer-texture]
+                   :as ctx}]
+               (assoc ctx :ctx/shape-drawer (shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))))]
             ]
            create-fns)))
 

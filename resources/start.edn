@@ -102,8 +102,6 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.assoc/step :ctx/shape-drawer-texture [moon.impl.shape-drawer-texture/create]]
-                   [moon.create.assoc/step :ctx/shape-drawer [moon.impl.shape-drawer/create]]
                    [moon.create.tooltip-config/step!]
                    [moon.create.assoc/step :ctx/ui-viewport [moon.impl.ui-viewport/create {:width 1440
                                                                                            :height 900}]]
