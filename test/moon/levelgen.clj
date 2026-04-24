@@ -1,20 +1,23 @@
 (ns moon.levelgen
   (:require [clojure.gdx.graphics.color :as color]
+            clojure.gdx.files
+            clojure.gdx.files.file-handle
             [clojure.gdx.math.vector3 :as vector3]
-            [clojure.scene2d.ui.table :as table]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]
+            [clojure.gdx.scene2d.ui.table :as table]
             [moon.db :as db]
+            [clojure.gdx.orthographic-camera]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
-            [moon.creature-tiles])
+            [moon.start :refer [edn-resource]]
+            [moon.creature-tiles]
+            moon.impl.textures
+            )
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
                              Input$Keys)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics Color
-                                      OrthographicCamera)
+           (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
@@ -52,11 +55,8 @@
                                ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
     (.dispose tiled-map))
-  (let [level (let [[f params] (-> level-fn
-                                   io/resource
-                                   slurp
-                                   edn/read-string)]
-                ((requiring-resolve f)
+  (let [level (let [[f params] (edn-resource level-fn)]
+                (f
                  (assoc params
                         :level/creature-properties (moon.creature-tiles/prepare
                                                     (db/all-raw db :properties/creatures)
@@ -70,6 +70,7 @@
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
+    (assert tiled-map)
     (.setVisible (.get (.getLayers tiled-map) "creatures") true)
     (show-whole-map! ctx)
     ctx))
@@ -95,7 +96,7 @@
            ctx/graphics
            ctx/input]}]
   (let [skin (Skin. (.internal Gdx/files "uiskin.json")) ; TODO dispose
-        ui-viewport (FitViewport. 1440 900 (OrthographicCamera.))
+        ui-viewport (FitViewport. 1440 900 (clojure.gdx.orthographic-camera/create))
         sprite-batch (SpriteBatch.)
         stage (Stage. ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
@@ -104,16 +105,17 @@
         ctx {:ctx/stage stage
              :ctx/files files}
         ctx (-> ctx
-                #_(moon.create.textures/step {:folder "resources/"
-                                            :extensions #{"png" "bmp"}})
+                (assoc :ctx/textures (moon.impl.textures/create {:ctx/files files}
+                                                                {:folder "resources/"
+                                                                 :extensions #{"png" "bmp"}}))
                 (assoc :ctx/db (db/create {:schemas "schema.edn"
                                            :properties "properties.edn"})))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
                                        world-height
-                                       (doto (OrthographicCamera.)
-                                         (.setToOrtho false world-width world-height))))
+                                       (doto (clojure.gdx.orthographic-camera/create)
+                                         (clojure.gdx.orthographic-camera/set-to-ortho! false world-width world-height))))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport

@@ -1,4 +1,8 @@
 [
+ [moon.start/require-namespaces! [
+                                  clojure.gdx.files
+                                  clojure.gdx.files.file-handle
+                                  ]]
  [clojure.multifn/add-methods! moon.schema/create [[:default moon.schema.default/create]]]
  [clojure.multifn/add-methods! moon.schema/value  [[:default moon.schema.default/value]]]
  [clojure.multifn/add-api-methods!
@@ -95,9 +99,6 @@
                                [com.badlogic.gdx.Application
                                 clojure.gdx.freetype
                                 clojure.graphics.freetype/Freetype]
-                               [com.badlogic.gdx.graphics.OrthographicCamera
-                                clojure.gdx.orthographic-camera
-                                clojure.graphics.orthographic-camera/Camera]
                                [com.badlogic.gdx.utils.viewport.Viewport
                                 clojure.gdx.viewport
                                 clojure.graphics.viewport/Viewport]
@@ -116,18 +117,9 @@
                                [com.badlogic.gdx.audio.Sound
                                 clojure.gdx.audio.sound
                                 clojure.audio.sound/Sound]
-                               [com.badlogic.gdx.Files
-                                clojure.gdx.files
-                                clojure.files/Files]
-                               [com.badlogic.gdx.files.FileHandle
-                                clojure.gdx.files.file-handle
-                                clojure.files.file-handle/FileHandle]
                                [com.badlogic.gdx.Graphics
                                 clojure.gdx.graphics
                                 clojure.graphics/Graphics]
-                               [com.badlogic.gdx.graphics.Texture
-                                clojure.gdx.graphics.texture
-                                clojure.graphics.texture/Texture]
                                [com.badlogic.gdx.graphics.g2d.TextureRegion
                                 clojure.gdx.graphics.g2d.texture-region
                                 clojure.graphics.texture-region/TextureRegion]

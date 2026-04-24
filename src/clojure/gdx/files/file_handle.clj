@@ -1,15 +1,17 @@
 (ns clojure.gdx.files.file-handle
-  (:refer-clojure :exclude [list])
+  (:require clojure.files.file-handle)
   (:import (com.badlogic.gdx.files FileHandle)))
 
-(defn list [^FileHandle file-handle]
-  (.list file-handle))
+(extend-type FileHandle
+  clojure.files.file-handle/FileHandle
+  (list [this]
+    (.list this))
 
-(defn directory? [^FileHandle file-handle]
-  (.isDirectory file-handle))
+  (directory? [this]
+    (.isDirectory this))
 
-(defn extension [^FileHandle file-handle]
-  (.extension file-handle))
+  (extension [this]
+    (.extension this))
 
-(defn path [^FileHandle file-handle]
-  (.path file-handle))
+  (path [this]
+    (.path this)))
