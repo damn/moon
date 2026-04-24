@@ -3,7 +3,8 @@
             clojure.gdx.audio
             clojure.gdx.files
             clojure.gdx.graphics
-            clojure.gdx.input)
+            clojure.gdx.input
+            clojure.gdx.utils.disposable)
   (:import (com.badlogic.gdx Gdx)))
 
 (defn app []

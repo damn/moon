@@ -92,15 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [com.badlogic.gdx.scenes.scene2d.Group
-                                clojure.gdx.scene2d.group
-                                clojure.scene2d.group/Group]
-                               [com.badlogic.gdx.scenes.scene2d.ui.Label
-                                clojure.gdx.scene2d.ui.label
-                                clojure.scene2d.ui.label/Label]
-                               [com.badlogic.gdx.utils.Disposable
-                                clojure.gdx.utils.disposable
-                                clojure.disposable/Disposable]
                                ]]
  [clojure.multifn/add-methods! clojure.scene2d.actor/create
   [

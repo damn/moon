@@ -4,7 +4,6 @@
             [clojure.gdx.graphics.pixmap :as pixmap]
             [clojure.gdx.graphics.pixmap.format :as pixmap.format]
             [clojure.gdx.utils.align :as align]
-            [clojure.gdx.utils.disposable :as disposable]
             clojure.graphics
             clojure.graphics.bitmap-font
             clojure.graphics.color
@@ -35,7 +34,7 @@
   (new-cursor [graphics file-handle hotspot-x hotspot-y]
     (let [pixmap (pixmap/create file-handle)
           cursor (.newCursor graphics pixmap hotspot-x hotspot-y)]
-      (disposable/dispose! pixmap)
+      (.dispose pixmap)
       cursor))
 
   (white-pixel-texture [_graphics]
@@ -43,7 +42,7 @@
                    (pixmap/set-color! 1 1 1 1)
                    (pixmap/draw-pixel! 0 0))
           texture (pixmap/texture pixmap)]
-      (disposable/dispose! pixmap)
+      (.dispose pixmap)
       texture)))
 
 (extend-type BitmapFont

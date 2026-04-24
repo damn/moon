@@ -2,7 +2,6 @@
   (:require [clojure.gdx.graphics.g2d.freetype.font-generator :as font-generator]
             [clojure.gdx.graphics.g2d.freetype.font-generator.parameter :as parameter]
             [clojure.gdx.graphics.texture.filter :as texture.filter]
-            [clojure.gdx.utils.disposable :as disposable]
             clojure.graphics.freetype)
   (:import (com.badlogic.gdx Application)))
 
@@ -15,5 +14,5 @@
                                                (parameter/set-size! size)
                                                (parameter/set-min-filter! texture.filter/linear)
                                                (parameter/set-mag-filter! texture.filter/linear)))]
-      (disposable/dispose! generator)
+      (.dispose generator)
       font)))
