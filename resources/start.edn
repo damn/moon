@@ -4,10 +4,7 @@
    :optional [moon.schema/create
               moon.schema/value
               moon.schemas/create-value]}
-  [[moon.schema.animation         :s/animation]
-   [moon.schema.boolean           :s/boolean]
-   [moon.schema.enum              :s/enum]
-   [moon.schema.image             :s/image]
+  [
    [moon.schema.map               :s/map]
    [moon.schema.number            :s/number]
    [moon.schema.one-to-many       :s/one-to-many]
