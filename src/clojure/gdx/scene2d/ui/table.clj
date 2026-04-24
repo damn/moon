@@ -1,5 +1,6 @@
 (ns clojure.gdx.scene2d.ui.table
   (:require [clojure.gdx.scene2d.ui.cell :as cell]
+            [clojure.scene2d.ui.table :as table]
             [clojure.scene2d.ui.widget-group :as widget-group])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
@@ -24,37 +25,39 @@
       :right?     (cell/right!      cell)
       :left?      (cell/left!       cell))))
 
-(defn add! [table cell-declaration]
-  (-> (.add ^Table table ^Actor (:actor cell-declaration))
-      (set-cell-opts! (dissoc cell-declaration :actor))))
+(extend-type Table
+  table/Table
+  (add! [table cell-declaration]
+    (-> (.add table ^Actor (:actor cell-declaration))
+        (set-cell-opts! (dissoc cell-declaration :actor))))
 
-(defn add-rows! [table rows]
-  (doseq [row rows]
-    (doseq [props-or-actor row]
+  (add-rows! [table rows]
+    (doseq [row rows]
+      (doseq [props-or-actor row]
 
-      (cond
-       (map? props-or-actor)
-       (add! table props-or-actor)
+        (cond
+         (map? props-or-actor)
+         (table/add! table props-or-actor)
 
-       ; TODO Remove else case
-       :else (.add ^Table table ^Actor props-or-actor)
+         ; TODO Remove else case
+         :else (.add table ^Actor props-or-actor)
 
-       ))
-    (Table/.row table))
-  table)
+         ))
+      (.row table))
+    table)
 
-(defn set-cell-defaults! [table cell-opts]
-  (set-cell-opts! (.defaults ^Table table) cell-opts)
-  table)
+  (set-cell-defaults! [table cell-opts]
+    (set-cell-opts! (.defaults table) cell-opts)
+    table)
 
-(defn set-opts! [table opts]
-  (when-let [rows (:table/rows opts)]
-    (add-rows! table rows)
-    (widget-group/pack! table))
-  (when-let [defaults (:table/cell-defaults opts)]
-    (set-cell-defaults! table defaults))
-  (widget-group/set-opts! table opts))
+  (set-opts! [table opts]
+    (when-let [rows (:table/rows opts)]
+      (table/add-rows! table rows)
+      (widget-group/pack! table))
+    (when-let [defaults (:table/cell-defaults opts)]
+      (table/set-cell-defaults! table defaults))
+    (widget-group/set-opts! table opts)))
 
 (defn create [opts]
   (doto (Table.)
-    (set-opts! opts)))
+    (table/set-opts! opts)))

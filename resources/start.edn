@@ -92,9 +92,6 @@
    ]
   ]
  [clojure.utils/extend-types! [
-                               [com.badlogic.gdx.scenes.scene2d.ui.Table
-                                clojure.gdx.scene2d.ui.table
-                                clojure.scene2d.ui.table/Table]
                                [com.badlogic.gdx.scenes.scene2d.ui.TextField
                                 clojure.gdx.scene2d.ui.text-field
                                 clojure.scene2d.ui.text-field/TextField]
