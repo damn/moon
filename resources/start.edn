@@ -102,17 +102,7 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.add-stage-actors/step [[moon.ui-actors.dev-menu/create {:update-labels [moon.dev-menu.update-labels.elapsed-time/item
-                                                                                                        moon.dev-menu.update-labels.fps/item
-                                                                                                        moon.dev-menu.update-labels.mouseover-entity/item
-                                                                                                        moon.dev-menu.update-labels.paused/item
-                                                                                                        moon.dev-menu.update-labels.ui-mouse-position/item
-                                                                                                        moon.dev-menu.update-labels.world-mouse-position/item
-                                                                                                        moon.dev-menu.update-labels.zoom/item]
-                                                                                        :menus [moon.dev-menu.menus.ctx-data-viewer/create
-                                                                                                moon.dev-menu.menus.open-editor/create
-                                                                                                moon.dev-menu.menus.help/create
-                                                                                                moon.dev-menu.menus.select-world/create]}]
+                   [moon.create.add-stage-actors/step [[moon.ui-actors.dev-menu/create]
                                                        [moon.ui-actors.action-bar/create]
                                                        [moon.ui-actors.hp-mana-bar/create]
                                                        [moon.ui-actors.windows/create [[moon.ui-actors.windows.info/create]
