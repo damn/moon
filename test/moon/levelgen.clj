@@ -1,7 +1,6 @@
 (ns moon.levelgen
-  (:require [clojure.gdx.graphics.color :as color]
-            clojure.gdx.files
-            clojure.gdx.files.file-handle
+  (:require [clojure.gdx :as gdx]
+            [clojure.gdx.graphics.color :as color]
             [clojure.gdx.math.vector3 :as vector3]
             [clojure.gdx.scene2d.ui.table :as table]
             [moon.db :as db]
@@ -13,7 +12,6 @@
             moon.impl.textures
             )
   (:import (com.badlogic.gdx ApplicationListener
-                             Gdx
                              Input$Keys)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
@@ -95,7 +93,7 @@
   [{:keys [ctx/files
            ctx/graphics
            ctx/input]}]
-  (let [skin (Skin. (.internal Gdx/files "uiskin.json")) ; TODO dispose
+  (let [skin (Skin. (.internal files "uiskin.json")) ; TODO dispose
         ui-viewport (FitViewport. 1440 900 (clojure.gdx.orthographic-camera/create))
         sprite-batch (SpriteBatch.)
         stage (Stage. ui-viewport sprite-batch)
@@ -196,9 +194,9 @@
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
-                          (reset! state (create! {:ctx/files    Gdx/files
-                                                  :ctx/graphics Gdx/graphics
-                                                  :ctx/input    Gdx/input})))
+                          (reset! state (create! {:ctx/files    (gdx/files)
+                                                  :ctx/graphics (gdx/graphics)
+                                                  :ctx/input    (gdx/input)})))
                         (dispose [_]
                           (dispose! @state))
                         (render [_]

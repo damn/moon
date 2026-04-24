@@ -4,9 +4,6 @@
             [clojure.walk :as walk])
   (:gen-class))
 
-(defn require-namespaces! [namespaces]
-  (run! require namespaces))
-
 (defn edn-resource [path]
   (->> path
        io/resource
