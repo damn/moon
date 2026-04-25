@@ -5,6 +5,7 @@
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.gdx :as gdx]
+            [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
@@ -87,9 +88,7 @@
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener
-                             Input)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration))
+                             Input))
   (:gen-class))
 
 (q/defrecord Entity [entity/body])
@@ -1443,8 +1442,7 @@
 (def state (atom nil))
 
 (defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (reify ApplicationListener
+  (lwjgl/application! (reify ApplicationListener
                         (create [_]
                           (reset! state (create!)))
 
@@ -1460,7 +1458,7 @@
                         (pause [_])
 
                         (resume [_]))
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle "Moon")
-                        (.setWindowedMode 1440 900)
-                        (.setForegroundFPS 60))))
+                      {:title "Moon"
+                       :width 1440
+                       :height 900
+                       :fps 60}))
