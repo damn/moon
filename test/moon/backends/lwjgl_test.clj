@@ -3,6 +3,7 @@
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn -main []
+  (lwjgl/use-glfw-async!)
   (lwjgl/application! (reify ApplicationListener
                         (create [_])
                         (dispose [_])

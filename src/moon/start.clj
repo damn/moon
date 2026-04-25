@@ -1415,6 +1415,7 @@
 (def state (atom nil))
 
 (defn -main []
+  (lwjgl/use-glfw-async!)
   (lwjgl/application! (reify ApplicationListener
                         (create [_]
                           (reset! state (create!)))
