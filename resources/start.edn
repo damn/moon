@@ -111,13 +111,13 @@
                                                        moon.game/highlight-mouseover-tile
                                                        ]]
                    [moon.game/update-player-state]
-                   [moon.render.assoc-paused/do!]
-                   [moon.render.if-not-paused/do! [
-                                                   [moon.if-not-paused.update-time/do!]
-                                                   [moon.if-not-paused.update-potential-fields/do!]
-                                                   [moon.if-not-paused.tick-entities/do!]
-                                                   ]]
-                   [moon.render.remove-destroyed-entities/do!]
+                   [moon.game/assoc-paused]
+                   [moon.game/if-not-paused [
+                                             [moon.if-not-paused.update-time/do!]
+                                             [moon.if-not-paused.update-potential-fields/do!]
+                                             [moon.if-not-paused.tick-entities/do!]
+                                             ]]
+                   [moon.game/remove-destroyed-entities]
                    [moon.render.window-camera-controls/do!]
                    [moon.render.render-stage/do!]
                    [moon.render.validate/do!]

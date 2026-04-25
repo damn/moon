@@ -1386,3 +1386,41 @@
       set-cursor
       player-state-handle-input
       (dissoc :ctx/interaction-state)))
+
+(def pausing? true) ; TODO FIXME
+
+(defn assoc-paused
+  [{:keys [ctx/controls
+           ctx/input
+           ctx/player-eid]
+    :as ctx}]
+  (assoc ctx :ctx/paused?
+         (or #_error
+             (and pausing?
+                  (state/pause-game? (:state (:entity/fsm @player-eid)))
+                  (not (or (input/key-just-pressed? input (:unpause-once controls))
+                           (input/key-pressed? input (:unpause-continously controls))))))))
+
+(defn if-not-paused
+  [{:keys [ctx/paused?]
+    :as ctx}
+   fns]
+  (if paused?
+    ctx
+    (reduce (fn [ctx [f & params]]
+              (apply f ctx params))
+            ctx
+            fns)))
+
+(defn remove-destroyed-entities
+  [ctx]
+  (txs/handle! ctx (mapcat
+                    (fn [eid]
+                      (cons
+                       [:tx/unregister-eid eid]
+                       (mapcat (fn [[k v]]
+                                 (entity/destroy [k v] eid))
+                               @eid)))
+                    (filter (comp :entity/destroyed? deref)
+                            (vals @(:ctx/entity-ids ctx)))))
+  ctx)
