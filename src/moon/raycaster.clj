@@ -1,7 +1,8 @@
-(ns moon.raycaster)
+(ns moon.raycaster
+  (:require [clojure.math.raycaster :as raycaster]))
 
-(defprotocol Raycaster
-  (blocked? [_ [start-x start-y] [target-x target-y]]))
+(defn blocked? [[arr width height] [start-x start-y] [target-x target-y]]
+  (raycaster/blocked? [arr width height] [start-x start-y] [target-x target-y]))
 
 (defn line-of-sight? [raycaster source target]
   (not (blocked? raycaster

@@ -102,8 +102,6 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.explored-tile-corners/step]
-                   [moon.create.raycaster/step]
                    [moon.create.potential-field-cache/step]
                    [moon.create.id-counter/step]
                    [moon.create.entity-ids/step]

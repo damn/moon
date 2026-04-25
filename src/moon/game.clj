@@ -859,6 +859,22 @@
                                                                  (tiled-map/height tiled-map)
                                                                  16)))]
 
+            [(fn [{:keys [ctx/tiled-map] :as ctx}]
+               (assoc ctx :ctx/explored-tile-corners (atom (g2d/create-grid (tiled-map/width tiled-map)
+                                                                            (tiled-map/height tiled-map)
+                                                                            (constantly false)))))]
+
+            [(fn [{:keys [ctx/grid] :as ctx}]
+               (assoc ctx :ctx/raycaster (let [width  (g2d/width  grid)
+                                               height (g2d/height grid)
+                                               cells  (for [cell (map deref (g2d/cells grid))]
+                                                        [(:position cell)
+                                                         (boolean (cell/blocks-vision? cell))])]
+                                           (let [arr (make-array Boolean/TYPE width height)]
+                                             (doseq [[[x y] blocked?] cells]
+                                               (aset arr x y (boolean blocked?)))
+                                             [arr width height]))))]
+
             ]
            create-fns)))
 
