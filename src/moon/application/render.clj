@@ -1,4 +1,4 @@
-(ns moon.game.render
+(ns moon.application.render
   (:require [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.gdx.scene2d.stage]
             [clojure.gdx.scene2d.ui.widget-group]

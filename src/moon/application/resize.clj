@@ -1,4 +1,4 @@
-(ns moon.game.resize
+(ns moon.application.resize
   (:require [clojure.graphics.viewport :as viewport]))
 
 (defn do!

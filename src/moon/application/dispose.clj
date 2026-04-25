@@ -1,4 +1,4 @@
-(ns moon.game.dispose
+(ns moon.application.dispose
   (:require [clojure.disposable :as disposable]))
 
 (defn do!
