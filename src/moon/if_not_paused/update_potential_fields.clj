@@ -88,7 +88,7 @@
     (zipmap (map #(mapv int (:body/position (:entity/body @%))) entities)
             entities)))
 
-(defn- tick! [pf-cache grid faction entities max-iterations]
+(defn tick! [pf-cache grid faction entities max-iterations]
   (let [tiles->entities (tiles->entities entities faction)
         last-state   [faction :tiles->entities]
         marked-cells [faction :marked-cells]]
@@ -101,18 +101,3 @@
                                              faction
                                              tiles->entities
                                              max-iterations)))))
-
-; TODO can simplify tick! dont need 2 know ?
-(defn do!
-  [{:keys [ctx/active-entities
-           ctx/factions-iterations
-           ctx/grid
-           ctx/potential-field-cache]
-    :as ctx}]
-  (doseq [[faction max-iterations] factions-iterations]
-    (tick! potential-field-cache
-           grid
-           faction
-           active-entities
-           max-iterations))
-  ctx)

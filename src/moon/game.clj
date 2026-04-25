@@ -1,6 +1,7 @@
 (ns moon.game
   (:require [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
+            moon.if-not-paused.update-potential-fields
             [clojure.disposable :as disposable]
             [clojure.edn :as edn]
             [clojure.files :as files]
@@ -1517,3 +1518,19 @@
      [:asdf2]
      [:asdf3]])
  )
+
+
+(defn update-potential-fields
+  [{:keys [ctx/active-entities
+           ctx/factions-iterations
+           ctx/grid
+           ctx/potential-field-cache]
+    :as ctx}]
+  (doseq [[faction max-iterations] factions-iterations]
+    (moon.if-not-paused.update-potential-fields/tick!
+     potential-field-cache
+     grid
+     faction
+     active-entities
+     max-iterations))
+  ctx)

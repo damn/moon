@@ -101,26 +101,5 @@
    :window {:width 1440
             :height 900}
    :fps 60
-   :render-params [
-                   [moon.game/draw-tiled-map!]
-                   [moon.game/draw-on-world-viewport! [
-                                                       #_moon.game/draw-tile-grid
-                                                       moon.game/draw-cell-debug
-                                                       moon.game/draw-entities
-                                                       #_moon.geom-test
-                                                       moon.game/highlight-mouseover-tile
-                                                       ]]
-                   [moon.game/update-player-state]
-                   [moon.game/assoc-paused]
-                   [moon.game/if-not-paused [
-                                             [moon.game/update-time]
-                                             [moon.if-not-paused.update-potential-fields/do!]
-                                             [moon.game/tick-entities!]
-                                             ]]
-                   [moon.game/remove-destroyed-entities]
-                   [moon.game/window-camera-controls]
-                   [moon.game/render-stage!]
-                   [moon.game/validate-ctx]
-                   ]
    }]
  ]
