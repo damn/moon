@@ -1,0 +1,12 @@
+[
+ [moon.state.active-skill :active-skill]
+ [moon.state.npc-dead :npc-dead]
+ [moon.state.npc-idle :npc-idle]
+ [moon.state.npc-moving :npc-moving]
+ [moon.state.npc-sleeping :npc-sleeping]
+ [moon.state.player-dead :player-dead]
+ [moon.state.player-idle :player-idle]
+ [moon.state.player-item-on-cursor :player-item-on-cursor]
+ [moon.state.player-moving :player-moving]
+ [moon.state.stunned :stunned]
+ ]

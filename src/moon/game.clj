@@ -47,7 +47,7 @@
             [moon.skill :as skill]
             [moon.malli :as m]
             [moon.raycaster :as raycaster]
-            [moon.start :refer [edn-resource]]
+            [clojure.utils :refer [edn-resource]]
             [moon.state :as state]
             [moon.stats :as stats]
             [moon.throwable :as throwable]

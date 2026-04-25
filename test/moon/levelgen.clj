@@ -8,7 +8,7 @@
             [clojure.gdx.orthographic-camera]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
-            [moon.start :refer [edn-resource]]
+            [clojure.utils :refer [edn-resource]]
             [moon.creature-tiles]
             moon.impl.textures
             )
