@@ -25,6 +25,7 @@
             [clojure.input :as input]
             [clojure.java.io :as io]
             [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.string :as str]
             [clojure.math.vector2 :as v]
@@ -943,6 +944,10 @@
   (disposable/dispose! tiled-map)
   nil)
 
+(defn validate-ctx [ctx]
+  (m/validate-humanize schema ctx)
+  ctx)
+
 (defn render! [ctx render-fns]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
@@ -955,9 +960,7 @@
                (or (stage/ctx stage)
                    ctx))] ; first render stage does not have ctx set.
 
-            [(fn [ctx]
-               (m/validate-humanize schema ctx)
-               ctx)]
+            [validate-ctx]
 
             [(fn
                [{:keys [ctx/input
@@ -1424,3 +1427,41 @@
                     (filter (comp :entity/destroyed? deref)
                             (vals @(:ctx/entity-ids ctx)))))
   ctx)
+
+(def zoom-speed 0.025) ; TODO FIXME pull out
+
+; TODO Stage handlers somehow?
+(defn window-camera-controls
+  [{:keys [ctx/controls
+           ctx/input
+           ctx/stage
+           ctx/world-viewport]
+    :as ctx}]
+  (when (input/key-pressed? input (:zoom-in controls))
+    (camera/inc-zoom! (viewport/camera world-viewport) zoom-speed))
+
+  (when (input/key-pressed? input (:zoom-out controls))
+    (camera/inc-zoom! (viewport/camera world-viewport) (- zoom-speed)))
+
+  (when (input/key-just-pressed? input (:close-windows-key controls))
+    (->> (stage/find-actor stage "moon.ui.windows")
+         group/children
+         (run! #(actor/set-visible! % false))))
+
+  (when (input/key-just-pressed? input (:toggle-inventory controls))
+    (-> stage
+        (stage/find-actor "moon.ui.windows.inventory")
+        actor/toggle-visible!))
+
+  (when (input/key-just-pressed? input (:toggle-entity-info controls))
+    (-> stage
+        (stage/find-actor "moon.ui.windows.entity-info")
+        actor/toggle-visible!))
+  ctx)
+
+(defn render-stage!
+  [{:keys [ctx/stage] :as ctx}]
+  (stage/set-ctx! stage ctx)
+  (stage/act!  stage)
+  (stage/draw! stage)
+  (stage/ctx stage))
