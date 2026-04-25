@@ -1,45 +1,31 @@
 (ns moon.start
-  (:require [clojure.multifn :as multifn]
-            [clojure.gdx.scene2d.ui.widget-group]
-            [clojure.scene2d.actor]
-            [clojure.utils :refer [edn-resource]]
-            [moon.application]
-            [moon.entity]
-            [moon.state])
+  (:require [moon.game :as game])
+  (:import (com.badlogic.gdx ApplicationListener)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration))
   (:gen-class))
 
-(defn -main []
-  (multifn/add-api-methods!
-   {:required []
-    :optional [#'moon.entity/create
-               #'moon.entity/after-create
-               #'moon.entity/destroy
-               #'moon.entity/tick
-               #'moon.entity/render]}
-   (edn-resource "entity.edn"))
-  (multifn/add-api-methods!
-   {:required []
-    :optional [#'moon.entity/create ; FIXME  2 create ! this unused !
-               #'moon.entity/after-create ; not used here
-               #'moon.entity/destroy ; not used etc. ?
-               #'moon.entity/tick
-               #'moon.entity/render
+(def state (atom nil))
 
-               #'moon.state/create
-               #'moon.state/enter
-               #'moon.state/exit
-               #'moon.state/cursor
-               #'moon.state/pause-game?
-               #'moon.state/clicked-inventory-cell
-               #'moon.state/draw-ui-view
-               #'moon.state/handle-input]}
-   (edn-resource "entity_state.edn"))
-  (multifn/add-methods! #'clojure.scene2d.actor/create (edn-resource "actor_create.edn"))
-  (moon.application/start!
-   {
-    :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
-    :title "Moon"
-    :window {:width 1440
-             :height 900}
-    :fps 60
-    }))
+(defn -main []
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (reify ApplicationListener
+                        (create [_]
+                          (reset! state (game/create!)))
+
+                        (dispose [_]
+                          (game/dispose! @state))
+
+                        (render [_]
+                          (swap! state game/render!))
+
+                        (resize [_ width height]
+                          (game/resize! @state width height))
+
+                        (pause [_])
+
+                        (resume [_]))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Moon")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))

@@ -2,9 +2,13 @@
   (:require [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
             moon.if-not-paused.update-potential-fields
+            [clojure.multifn :as multifn]
             [clojure.disposable :as disposable]
             [clojure.edn :as edn]
             [clojure.files :as files]
+            [clojure.gdx :as gdx]
+            [clojure.gdx.scene2d.ui.widget-group]
+            [clojure.gdx.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.scene2d.stage]
             [clojure.gdx.scene2d.ui.skin :as skin]
@@ -671,11 +675,42 @@
     ]))
 
 (defn create!
-  [ctx]
+  []
+  (multifn/add-api-methods!
+   {:required []
+    :optional [#'moon.entity/create
+               #'moon.entity/after-create
+               #'moon.entity/destroy
+               #'moon.entity/tick
+               #'moon.entity/render]}
+   (edn-resource "entity.edn"))
+  (multifn/add-api-methods!
+   {:required []
+    :optional [#'moon.entity/create ; FIXME  2 create ! this unused !
+               #'moon.entity/after-create ; not used here
+               #'moon.entity/destroy ; not used etc. ?
+               #'moon.entity/tick
+               #'moon.entity/render
+
+               #'moon.state/create
+               #'moon.state/enter
+               #'moon.state/exit
+               #'moon.state/cursor
+               #'moon.state/pause-game?
+               #'moon.state/clicked-inventory-cell
+               #'moon.state/draw-ui-view
+               #'moon.state/handle-input]}
+   (edn-resource "entity_state.edn"))
+  (multifn/add-methods! #'clojure.scene2d.actor/create (edn-resource "actor_create.edn"))
+  (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          ctx
+          {:ctx/app       (gdx/app)
+           :ctx/audio     (gdx/audio)
+           :ctx/files     (gdx/files)
+           :ctx/graphics  (gdx/graphics)
+           :ctx/input     (gdx/input)}
           [
            [(fn [{:keys [ctx/audio ctx/files] :as ctx}]
               (assoc ctx :ctx/audio
