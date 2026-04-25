@@ -1014,6 +1014,13 @@
                                        :skin skin}))))
                ctx)]
 
+            [(fn
+               [{:keys [ctx/player-eid
+                        ctx/content-grid]
+                 :as ctx}]
+               (assoc ctx :ctx/active-entities
+                      (content-grid/active-entities content-grid @player-eid)))]
+
             ]
            render-fns)))
 
