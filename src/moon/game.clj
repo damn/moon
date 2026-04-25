@@ -18,6 +18,7 @@
             [clojure.graphics.freetype :as freetype]
             [clojure.graphics.texture :as texture]
             [clojure.graphics.texture-region :as texture-region]
+            [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.viewport :as viewport]
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.input :as input]
@@ -1020,6 +1021,18 @@
                  :as ctx}]
                (assoc ctx :ctx/active-entities
                       (content-grid/active-entities content-grid @player-eid)))]
+
+            [(fn
+               [{:keys [ctx/player-eid
+                        ctx/world-viewport]
+                 :as ctx}]
+               (camera/set-position! (viewport/camera world-viewport)
+                                     (:body/position (:entity/body @player-eid)))
+               ctx)]
+
+            [(fn [ctx]
+               (graphics/clear! (:ctx/graphics ctx) 0 0 0 0)
+               ctx)]
 
             ]
            render-fns)))

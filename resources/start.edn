@@ -102,8 +102,6 @@
             :height 900}
    :fps 60
    :render-params [
-                   [moon.render.set-camera-on-player/do!]
-                   [moon.render.clear-screen/do!]
                    [moon.render.draw-world-map/do! moon.tile-color-setter/create]
                    [moon.render.draw-on-world-viewport/do! [
                                                             #_moon.draw-on-world-viewport.draw-tile-grid/draws
