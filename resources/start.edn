@@ -102,8 +102,6 @@
             :height 900}
    :fps 60
    :create-params [
-                   [moon.create.render-z-order/step]
-                   [moon.create.max-speed/step]
                    [moon.create.grid/step]
                    [moon.create.content-grid/step 16]
                    [moon.create.explored-tile-corners/step]

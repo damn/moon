@@ -43,6 +43,7 @@
             [moon.stats :as stats]
             [moon.timer :as timer]
             [moon.input]
+            [moon.order :as order]
             moon.impl.textures
             [moon.textures :as textures]
             [moon.map :as map]
@@ -787,6 +788,16 @@
                                      :z-order/flying
                                      :z-order/effect]
                       ))]
+
+            [(fn [{:keys [ctx/z-orders]
+                   :as ctx}]
+               (assoc ctx :ctx/render-z-order (order/define-order z-orders)))]
+
+            [(fn
+               [{:keys [ctx/minimum-size
+                        ctx/max-delta]
+                 :as ctx}]
+               (assoc ctx :ctx/max-speed (/ minimum-size max-delta)))]
 
             [(fn [ctx]
                (assoc ctx :ctx/db (db/create {:schemas "schema.edn"
