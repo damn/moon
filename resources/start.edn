@@ -113,9 +113,9 @@
                    [moon.game/update-player-state]
                    [moon.game/assoc-paused]
                    [moon.game/if-not-paused [
-                                             [moon.if-not-paused.update-time/do!]
+                                             [moon.game/update-time]
                                              [moon.if-not-paused.update-potential-fields/do!]
-                                             [moon.if-not-paused.tick-entities/do!]
+                                             [moon.game/tick-entities!]
                                              ]]
                    [moon.game/remove-destroyed-entities]
                    [moon.game/window-camera-controls]
