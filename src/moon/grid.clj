@@ -6,7 +6,6 @@
             [moon.cell :as cell]
             [clojure.math.circle :as circle]
             [moon.faction :as faction]
-            [moon.grid :as grid]
             [moon.grid2d :as g2d]
             [moon.position :as position]
             [moon.rectangle :as rectangle]))
@@ -31,9 +30,9 @@
        (g2d/get-cells g2d)))
 
 (defn circle->entities [g2d {:keys [position radius] :as circle}]
-  (->> (grid/circle->cells g2d circle)
+  (->> (circle->cells g2d circle)
        (map deref)
-       grid/cells->entities
+       cells->entities
        (filter #(intersector/overlaps?
                  (gdx-circle/create position radius)
                  (body/rectangle (:entity/body @%))))))
@@ -84,7 +83,7 @@
   (let [cells* (into [] (map deref) (g2d/get-cells g2d (body/touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
          (->> cells*
-              grid/cells->entities
+              cells->entities
               (not-any? (fn [other-entity]
                           (let [other-entity @other-entity]
                             (and (not= (:entity/id other-entity) entity-id)

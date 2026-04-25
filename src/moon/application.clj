@@ -14,7 +14,6 @@
            title
            window
            fps
-           create-params
            render-params
            ]}]
   (colors/put! colors)
@@ -25,8 +24,7 @@
                                                        :ctx/audio     (gdx/audio)
                                                        :ctx/files     (gdx/files)
                                                        :ctx/graphics  (gdx/graphics)
-                                                       :ctx/input     (gdx/input)}
-                                                      create-params)))
+                                                       :ctx/input     (gdx/input)})))
 
                         (dispose [_]
                           (game/dispose! @state))
