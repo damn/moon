@@ -852,6 +852,13 @@
                                                                             "air"  :air
                                                                             "all"  :all)))))))]
 
+            [(fn
+               [{:keys [ctx/tiled-map]
+                 :as ctx}]
+               (assoc ctx :ctx/content-grid (content-grid/create (tiled-map/width tiled-map)
+                                                                 (tiled-map/height tiled-map)
+                                                                 16)))]
+
             ]
            create-fns)))
 
