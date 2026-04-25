@@ -104,11 +104,11 @@
    :render-params [
                    [moon.game/draw-tiled-map!]
                    [moon.game/draw-on-world-viewport! [
-                                                       #_moon.draw-on-world-viewport.draw-tile-grid/draws
-                                                       moon.draw-on-world-viewport.draw-cell-debug/draws
-                                                       moon.draw-on-world-viewport.draw-entities/do!
-                                                       #_moon.application.render.draw-on-world-viewport.geom-test/do!
-                                                       moon.draw-on-world-viewport.highlight-mouseover-tile/draws
+                                                       #_moon.game/draw-tile-grid
+                                                       moon.game/draw-cell-debug
+                                                       moon.game/draw-entities
+                                                       #_moon.geom-test
+                                                       moon.game/highlight-mouseover-tile
                                                        ]]
                    [moon.render.player-state/do!]
                    [moon.render.assoc-paused/do!]
