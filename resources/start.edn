@@ -4,18 +4,13 @@
               moon.effect/handle]
    :optional [moon.effect/useful?
               moon.effect/render]}
-  [[moon.effects.target.audiovisual  :effects.target/audiovisual]
-   [moon.effects.target.convert      :effects.target/convert]
-   [moon.effects.target.damage       :effects.target/damage]
-   [moon.effects.target.kill         :effects.target/kill]
-   [moon.effects.target.melee-damage :effects.target/melee-damage]
-   [moon.effects.target.spiderweb    :effects.target/spiderweb]
-   [moon.effects.target.stun         :effects.target/stun]
+  [
    [moon.effects.audiovisual         :effects/audiovisual]
    [moon.effects.projectile          :effects/projectile]
    [moon.effects.spawn               :effects/spawn]
    [moon.effects.target-all          :effects/target-all]
-   [moon.effects.target-entity       :effects/target-entity]]
+   [moon.effects.target-entity       :effects/target-entity]
+   ]
   ]
  [clojure.multifn/add-api-methods!
   {:required []
