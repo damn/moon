@@ -10,12 +10,11 @@
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.utils :refer [edn-resource]]
             [moon.creature-tiles]
+            [moon.backends.lwjgl :as lwjgl]
             moon.impl.textures
             )
   (:import (com.badlogic.gdx ApplicationListener
                              Input$Keys)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
@@ -192,8 +191,7 @@
 (def state (atom nil))
 
 (defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (reify ApplicationListener
+  (lwjgl/application! (reify ApplicationListener
                         (create [_]
                           (reset! state (create! {:ctx/files    (gdx/files)
                                                   :ctx/graphics (gdx/graphics)
@@ -206,7 +204,7 @@
                           (resize! @state width height))
                         (pause [_])
                         (resume [_]))
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle "Levelgen Test")
-                        (.setWindowedMode 1440 900)
-                        (.setForegroundFPS 60))))
+                      {:title "Levelgen Test"
+                       :width 1440
+                       :height 900
+                       :fps 60}))
