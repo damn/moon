@@ -5,7 +5,6 @@
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.gdx :as gdx]
-            [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
@@ -42,6 +41,7 @@
             [clojure.utils :refer [edn-resource]]
             [moon.action-bar :as action-bar]
             [moon.action-bar :as action-bar]
+            [moon.backends.lwjgl :as lwjgl]
             [moon.body :as body]
             [moon.body :as body]
             [moon.cell :as cell]
@@ -61,7 +61,6 @@
             [moon.if-not-paused.update-potential-fields]
             [moon.impl.textures]
             [moon.info :as info]
-            [moon.input]
             [moon.inventory :as inventory]
             [moon.inventory-window :as inventory-window]
             [moon.map :as map]
@@ -87,8 +86,7 @@
             [moon.ui-actors.windows.inventory]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx ApplicationListener
-                             Input))
+  (:import (com.badlogic.gdx ApplicationListener))
   (:gen-class))
 
 (q/defrecord Entity [entity/body])
@@ -524,31 +522,6 @@
    :colors/item-rect (color/float-bits [0.5 0.5 0.5 1])
    }
   )
-
-(extend-type Input
-  moon.input/Input
-  (key-pressed? [input key]
-    (input/key-pressed? input key))
-
-  (key-just-pressed? [input key]
-    (input/key-just-pressed? input key))
-
-  (button-just-pressed? [input button]
-    (input/button-just-pressed? input button))
-
-  (mouse-position [input]
-    (input/mouse-position input))
-
-  (player-movement-vector [input]
-    (let [r (when (input/key-pressed? input :input.keys/d) [1  0])
-          l (when (input/key-pressed? input :input.keys/a) [-1 0])
-          u (when (input/key-pressed? input :input.keys/w) [0  1])
-          d (when (input/key-pressed? input :input.keys/s) [0 -1])]
-      (when (or r l u d)
-        (let [v (v/add-vs (remove nil? [r l u d]))]
-          (when (pos? (v/length v))
-            v))))))
-
 
 ; no window movable type cursor appears here like in player idle
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
