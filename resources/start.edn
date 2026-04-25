@@ -110,7 +110,7 @@
                                                        #_moon.geom-test
                                                        moon.game/highlight-mouseover-tile
                                                        ]]
-                   [moon.render.player-state/do!]
+                   [moon.game/update-player-state]
                    [moon.render.assoc-paused/do!]
                    [moon.render.if-not-paused/do! [
                                                    [moon.if-not-paused.update-time/do!]
