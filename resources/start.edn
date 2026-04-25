@@ -1,18 +1,5 @@
 [
  [clojure.multifn/add-api-methods!
-  {:required [moon.effect/applicable?
-              moon.effect/handle]
-   :optional [moon.effect/useful?
-              moon.effect/render]}
-  [
-   [moon.effects.audiovisual         :effects/audiovisual]
-   [moon.effects.projectile          :effects/projectile]
-   [moon.effects.spawn               :effects/spawn]
-   [moon.effects.target-all          :effects/target-all]
-   [moon.effects.target-entity       :effects/target-entity]
-   ]
-  ]
- [clojure.multifn/add-api-methods!
   {:required []
    :optional [moon.entity/create
               moon.entity/after-create
