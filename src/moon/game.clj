@@ -948,6 +948,10 @@
                  :as ctx}]
                (or (stage/ctx stage)
                    ctx))] ; first render stage does not have ctx set.
+
+            [(fn [ctx]
+               (m/validate-humanize schema ctx)
+               ctx)]
             ]
            render-fns)))
 

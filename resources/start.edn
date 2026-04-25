@@ -102,7 +102,6 @@
             :height 900}
    :fps 60
    :render-params [
-                   [moon.render.validate/do!]
                    [moon.render.update-mouse/do!]
                    [moon.render.update-mouseover-eid/do!]
                    [moon.render.check-open-debug/do!]
