@@ -949,102 +949,6 @@
   (m/validate-humanize schema ctx)
   ctx)
 
-(defn render! [ctx render-fns]
-  (reduce (fn [ctx [f & params]]
-            (apply f ctx params))
-          ctx
-          (concat
-           [
-            [(fn
-               [{:keys [ctx/stage]
-                 :as ctx}]
-               (or (stage/ctx stage)
-                   ctx))] ; first render stage does not have ctx set.
-
-            [validate-ctx]
-
-            [(fn
-               [{:keys [ctx/input
-                        ctx/ui-viewport
-                        ctx/world-viewport]
-                 :as ctx}]
-               (let [mp (input/mouse-position input)]
-                 (-> ctx
-                     (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
-                     (assoc :ctx/ui-mouse-position (viewport/unproject ui-viewport mp)))))]
-
-            [(fn
-               [{:keys [ctx/input
-                        ctx/mouseover-eid
-                        ctx/stage
-                        ctx/player-eid
-                        ctx/grid
-                        ctx/raycaster
-                        ctx/render-z-order
-                        ctx/world-mouse-position]
-                 :as ctx}]
-               (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))
-                     position world-mouse-position
-                     new-eid (if mouseover-actor
-                               nil
-                               (let [player @player-eid
-                                     hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
-                                                  (grid/point->entities grid position))]
-                                 (->> render-z-order
-                                      (order/sort-by-order hits #(:body/z-order (:entity/body @%)))
-                                      reverse
-                                      (filter #(raycaster/line-of-sight? raycaster player @%))
-                                      first)))]
-                 (when mouseover-eid
-                   (swap! mouseover-eid dissoc :entity/mouseover?))
-                 (when new-eid
-                   (swap! new-eid assoc :entity/mouseover? true))
-                 (assoc ctx :ctx/mouseover-eid new-eid)))]
-
-            [(fn
-               [{:keys [ctx/controls
-                        ctx/input
-                        ctx/mouseover-eid
-                        ctx/skin
-                        ctx/stage
-                        ctx/grid
-                        ctx/world-mouse-position]
-                 :as ctx}]
-               (when (input/button-just-pressed? input (:open-debug-button controls))
-                 (let [data (or (and mouseover-eid @mouseover-eid)
-                                @(grid (mapv int world-mouse-position)))]
-                   (stage/add-actor! stage
-                                     (actor/create
-                                      {:type :ui/data-viewer-window
-                                       :title "Data View"
-                                       :data data
-                                       :width 500
-                                       :height 500
-                                       :skin skin}))))
-               ctx)]
-
-            [(fn
-               [{:keys [ctx/player-eid
-                        ctx/content-grid]
-                 :as ctx}]
-               (assoc ctx :ctx/active-entities
-                      (content-grid/active-entities content-grid @player-eid)))]
-
-            [(fn
-               [{:keys [ctx/player-eid
-                        ctx/world-viewport]
-                 :as ctx}]
-               (camera/set-position! (viewport/camera world-viewport)
-                                     (:body/position (:entity/body @player-eid)))
-               ctx)]
-
-            [(fn [ctx]
-               (graphics/clear! (:ctx/graphics ctx) 0 0 0 0)
-               ctx)]
-
-            ]
-           render-fns)))
-
 (defn resize!
   [{:keys [ctx/ui-viewport
            ctx/world-viewport]}
@@ -1534,3 +1438,119 @@
      active-entities
      max-iterations))
   ctx)
+
+(defn render! [ctx]
+  (reduce (fn [ctx [f & params]]
+            (apply f ctx params))
+          ctx
+          (concat
+           [
+            [(fn
+               [{:keys [ctx/stage]
+                 :as ctx}]
+               (or (stage/ctx stage)
+                   ctx))] ; first render stage does not have ctx set.
+
+            [validate-ctx]
+
+            [(fn
+               [{:keys [ctx/input
+                        ctx/ui-viewport
+                        ctx/world-viewport]
+                 :as ctx}]
+               (let [mp (input/mouse-position input)]
+                 (-> ctx
+                     (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
+                     (assoc :ctx/ui-mouse-position (viewport/unproject ui-viewport mp)))))]
+
+            [(fn
+               [{:keys [ctx/input
+                        ctx/mouseover-eid
+                        ctx/stage
+                        ctx/player-eid
+                        ctx/grid
+                        ctx/raycaster
+                        ctx/render-z-order
+                        ctx/world-mouse-position]
+                 :as ctx}]
+               (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))
+                     position world-mouse-position
+                     new-eid (if mouseover-actor
+                               nil
+                               (let [player @player-eid
+                                     hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
+                                                  (grid/point->entities grid position))]
+                                 (->> render-z-order
+                                      (order/sort-by-order hits #(:body/z-order (:entity/body @%)))
+                                      reverse
+                                      (filter #(raycaster/line-of-sight? raycaster player @%))
+                                      first)))]
+                 (when mouseover-eid
+                   (swap! mouseover-eid dissoc :entity/mouseover?))
+                 (when new-eid
+                   (swap! new-eid assoc :entity/mouseover? true))
+                 (assoc ctx :ctx/mouseover-eid new-eid)))]
+
+            [(fn
+               [{:keys [ctx/controls
+                        ctx/input
+                        ctx/mouseover-eid
+                        ctx/skin
+                        ctx/stage
+                        ctx/grid
+                        ctx/world-mouse-position]
+                 :as ctx}]
+               (when (input/button-just-pressed? input (:open-debug-button controls))
+                 (let [data (or (and mouseover-eid @mouseover-eid)
+                                @(grid (mapv int world-mouse-position)))]
+                   (stage/add-actor! stage
+                                     (actor/create
+                                      {:type :ui/data-viewer-window
+                                       :title "Data View"
+                                       :data data
+                                       :width 500
+                                       :height 500
+                                       :skin skin}))))
+               ctx)]
+
+            [(fn
+               [{:keys [ctx/player-eid
+                        ctx/content-grid]
+                 :as ctx}]
+               (assoc ctx :ctx/active-entities
+                      (content-grid/active-entities content-grid @player-eid)))]
+
+            [(fn
+               [{:keys [ctx/player-eid
+                        ctx/world-viewport]
+                 :as ctx}]
+               (camera/set-position! (viewport/camera world-viewport)
+                                     (:body/position (:entity/body @player-eid)))
+               ctx)]
+
+            [(fn [ctx]
+               (graphics/clear! (:ctx/graphics ctx) 0 0 0 0)
+               ctx)]
+
+            ]
+           [
+            [draw-tiled-map!]
+            [draw-on-world-viewport! [
+                                      #_draw-tile-grid
+                                      draw-cell-debug
+                                      draw-entities
+                                      #_moon.geom-test
+                                      highlight-mouseover-tile
+                                      ]]
+            [update-player-state]
+            [assoc-paused]
+            [if-not-paused [
+                            [update-time]
+                            [update-potential-fields]
+                            [tick-entities!]
+                            ]]
+            [remove-destroyed-entities]
+            [window-camera-controls]
+            [render-stage!]
+            [validate-ctx]
+            ])))
