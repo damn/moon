@@ -102,7 +102,7 @@
             :height 900}
    :fps 60
    :render-params [
-                   [moon.render.draw-world-map/do!]
+                   [moon.game/draw-tiled-map!]
                    [moon.render.draw-on-world-viewport/do! [
                                                             #_moon.draw-on-world-viewport.draw-tile-grid/draws
                                                             moon.draw-on-world-viewport.draw-cell-debug/draws
