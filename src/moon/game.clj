@@ -3,7 +3,6 @@
             [clojure.audio.sound :as sound]
             moon.if-not-paused.update-potential-fields
             [clojure.multifn :as multifn]
-            [clojure.disposable :as disposable]
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.gdx :as gdx]
@@ -961,36 +960,9 @@
            ]
           ))
 
-(defn dispose!
-  [{:keys [ctx/audio
-           ctx/batch
-           ctx/cursors
-           ctx/default-font
-           ctx/shape-drawer-texture
-           ctx/skin
-           ctx/textures
-           ctx/tiled-map]}]
-  (run! disposable/dispose! (vals audio))
-  (disposable/dispose! batch)
-  (run! disposable/dispose! (vals cursors))
-  (disposable/dispose! default-font)
-  (disposable/dispose! shape-drawer-texture)
-  (disposable/dispose! skin)
-  (run! disposable/dispose! (vals textures))
-  (disposable/dispose! tiled-map)
-  nil)
-
 (defn validate-ctx [ctx]
   (m/validate-humanize schema ctx)
   ctx)
-
-(defn resize!
-  [{:keys [ctx/ui-viewport
-           ctx/world-viewport]}
-   width height]
-  (viewport/update! ui-viewport width height true)
-  (viewport/update! world-viewport width height false)
-  nil)
 
 (extend-type Input
   moon.input/Input

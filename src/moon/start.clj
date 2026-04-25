@@ -1,5 +1,8 @@
 (ns moon.start
-  (:require [moon.game :as game])
+  (:require [moon.game :as game]
+            [moon.game.dispose :as dispose]
+            [moon.game.resize :as resize]
+            )
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration))
@@ -14,13 +17,13 @@
                           (reset! state (game/create!)))
 
                         (dispose [_]
-                          (game/dispose! @state))
+                          (dispose/do! @state))
 
                         (render [_]
                           (swap! state game/render!))
 
                         (resize [_ width height]
-                          (game/resize! @state width height))
+                          (resize/do! @state width height))
 
                         (pause [_])
 
