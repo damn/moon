@@ -941,7 +941,15 @@
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           ctx
-          render-fns))
+          (concat
+           [
+            [(fn
+               [{:keys [ctx/stage]
+                 :as ctx}]
+               (or (stage/ctx stage)
+                   ctx))] ; first render stage does not have ctx set.
+            ]
+           render-fns)))
 
 (defn resize!
   [{:keys [ctx/ui-viewport
