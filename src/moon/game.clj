@@ -27,6 +27,7 @@
             [clojure.string :as str]
             [clojure.math.vector2 :as v]
             [moon.action-bar :as action-bar]
+            [moon.creature-tiles]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.draws :as draws]
@@ -37,6 +38,7 @@
             [moon.inventory :as inventory]
             [moon.inventory-window :as inventory-window]
             [moon.malli :as m]
+            [moon.start :refer [edn-resource]]
             [moon.state :as state]
             [moon.stats :as stats]
             [moon.timer :as timer]
@@ -806,6 +808,25 @@
                               (moon.ui-actors.player-message/create)]]
                  (stage/add-actor! (:ctx/stage ctx) actor))
                ctx)]
+
+            [(fn
+               [{:keys [ctx/db
+                        ctx/textures]
+                 :as ctx}]
+               (let [[f params] (edn-resource "world_fns/modules.edn"
+                                              ; "world_fns/vampire.edn"
+                                              ; "world_fns/uf_caves.edn"
+                                              )
+                     {:keys [tiled-map
+                             start-position]} (f
+                                               (assoc params
+                                                      :level/creature-properties (moon.creature-tiles/prepare
+                                                                                  (db/all-raw db :properties/creatures)
+                                                                                  #(textures/texture-region textures %))
+                                                      :textures textures))]
+                 (assoc ctx
+                        :ctx/tiled-map tiled-map
+                        :ctx/start-position start-position)))]
 
             ]
            create-fns)))
