@@ -27,6 +27,7 @@
             [clojure.string :as str]
             [clojure.math.vector2 :as v]
             [moon.action-bar :as action-bar]
+            [moon.cell :as cell]
             [moon.creature-tiles]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
@@ -34,6 +35,7 @@
             [moon.effect :as effect]
             [moon.entity :as entity]
             [moon.grid :as grid]
+            [moon.grid2d :as g2d]
             [moon.info :as info]
             [moon.inventory :as inventory]
             [moon.inventory-window :as inventory-window]
@@ -41,6 +43,7 @@
             [moon.start :refer [edn-resource]]
             [moon.state :as state]
             [moon.stats :as stats]
+            [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
             [moon.input]
             [moon.order :as order]
@@ -838,6 +841,16 @@
                  (assoc ctx
                         :ctx/tiled-map tiled-map
                         :ctx/start-position start-position)))]
+
+            [(fn [{:keys [ctx/tiled-map] :as ctx}]
+               (assoc ctx :ctx/grid (g2d/create-grid (tiled-map/width tiled-map)
+                                                     (tiled-map/height tiled-map)
+                                                     (fn [position]
+                                                       (atom (cell/create position
+                                                                          (case (tiled-map/movement-property tiled-map position)
+                                                                            "none" :none
+                                                                            "air"  :air
+                                                                            "all"  :all)))))))]
 
             ]
            create-fns)))
