@@ -1,6 +1,5 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [clojure.gdx.graphics.color :as color]
-            [clojure.scene2d.event :as event]
+  (:require [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.utils.drawable :as drawable]
@@ -13,7 +12,8 @@
             [clojure.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.textures :as textures]
-            [moon.txs :as txs]))
+            [moon.txs :as txs])
+  (:import (com.badlogic.gdx.graphics Color)))
 
 (defn- clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
   (let [entity @player-eid
@@ -43,7 +43,8 @@
   [{:keys [drawable/texture-region drawable/min-size drawable/tint]}]
   (doto (texture-region-drawable/create texture-region)
     (drawable/set-min-size! (min-size 0) (min-size 1))
-    (texture-region-drawable/tint (color/create tint))))
+    (texture-region-drawable/tint (let [[r g b a] tint]
+                                    (Color. r g b a)))))
 
 (defn- create-inventory-window*
   [{:keys [colors

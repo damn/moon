@@ -1,7 +1,7 @@
 (ns clojure.gdx.colors
-  (:require [clojure.gdx.graphics.color :as color])
-  (:import (com.badlogic.gdx.graphics Colors)))
+  (:import (com.badlogic.gdx.graphics Color
+                                      Colors)))
 
 (defn put! [colors]
-  (doseq [[name rgba] colors]
-    (Colors/put name (color/create rgba))))
+  (doseq [[name [r g b a]] colors]
+    (Colors/put name (Color. r g b a))))
