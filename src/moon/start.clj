@@ -30,7 +30,6 @@
             [clojure.scene2d.stage :as stage]
             [clojure.string :as str]
             [clojure.utils :refer [edn-resource]]
-            [moon.action-bar :as action-bar]
             [moon.backends.lwjgl :as lwjgl]
             [moon.body :as body]
             [moon.cell :as cell]
@@ -59,7 +58,7 @@
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
             [moon.txs :as txs] ; FIXME ctx
-            [moon.ui-actors.action-bar] ; FIXME ctx
+            [moon.ui-actors.action-bar :as action-bar] ; FIXME ctx
             [moon.ui-actors.dev-menu] ; FIXME ctx
             [moon.ui-actors.hp-mana-bar] ; FIXME ctx
             [moon.ui-actors.player-message] ; FIXME ctx
