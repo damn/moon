@@ -1,4 +1,5 @@
 ; 'ctx' - 'application' - 'main wiring' !
+; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
   (:require [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
@@ -42,13 +43,13 @@
             [moon.creature-tiles]
             [moon.ctx :as ctx]
             [moon.db :as db]
-            [moon.draws :as draws]
-            [moon.effect :as effect]
-            [moon.entity :as entity]
+            [moon.draws :as draws] ; FIXME ctx
+            [moon.effect :as effect] ; FIXME ctx
+            [moon.entity :as entity] ; FIXME ctx
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
             [moon.if-not-paused.update-potential-fields]
-            [moon.impl.textures]
+            [moon.impl.textures] ; FIXME ctx
             [moon.info :as info]
             [moon.inventory :as inventory]
             [moon.inventory-window :as inventory-window]
@@ -56,20 +57,20 @@
             [moon.order :as order]
             [moon.raycaster :as raycaster]
             [moon.skill :as skill]
-            [moon.state :as state]
+            [moon.state :as state] ; FIXME ctx
             [moon.stats :as stats]
             [moon.textures :as textures]
             [moon.throwable :as throwable]
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
-            [moon.txs :as txs]
-            [moon.ui-actors.action-bar]
-            [moon.ui-actors.dev-menu]
-            [moon.ui-actors.hp-mana-bar]
-            [moon.ui-actors.player-message]
-            [moon.ui-actors.player-state-draw]
-            [moon.ui-actors.windows.info]
-            [moon.ui-actors.windows.inventory]
+            [moon.txs :as txs] ; FIXME ctx
+            [moon.ui-actors.action-bar] ; FIXME ctx
+            [moon.ui-actors.dev-menu] ; FIXME ctx
+            [moon.ui-actors.hp-mana-bar] ; FIXME ctx
+            [moon.ui-actors.player-message] ; FIXME ctx
+            [moon.ui-actors.player-state-draw] ; FIXME ctx
+            [moon.ui-actors.windows.info] ; FIXME ctx
+            [moon.ui-actors.windows.inventory] ; FIXME ctx
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener))
