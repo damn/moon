@@ -1,6 +1,5 @@
 (ns clojure.gdx
   (:require clojure.gdx.application
-            clojure.gdx.files
             clojure.gdx.graphics
             clojure.gdx.input)
   (:import (com.badlogic.gdx Gdx)))

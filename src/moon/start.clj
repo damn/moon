@@ -2,7 +2,6 @@
 ; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
   (:require [clojure.edn :as edn]
-            [clojure.files :as files]
             [clojure.gdx :as gdx]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -71,7 +70,8 @@
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener
-                             Audio)
+                             Audio
+                             Files)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.utils Disposable))
   (:gen-class))
@@ -569,7 +569,7 @@
                      (into {}
                            (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                              [sound-name
-                              (Audio/.newSound audio (files/internal files (format "sounds/%s.wav" sound-name)))]))))]
+                              (Audio/.newSound audio (Files/.internal files (format "sounds/%s.wav" sound-name)))]))))]
 
            [(fn [ctx]
               (assoc ctx :ctx/batch (sprite-batch/create)))]
@@ -597,7 +597,7 @@
               ctx)]
 
            [(fn [{:keys [ctx/files] :as ctx}]
-              (assoc ctx :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
+              (assoc ctx :ctx/skin (let [skin (skin/create (Files/.internal files "uiskin.json"))]
                                      (bitmap-font/enable-markup! (skin/font skin "default-font") true)
                                      skin)))]
 
@@ -608,7 +608,7 @@
                                         (update-vals data
                                                      (fn [[path [hotspot-x hotspot-y]]]
                                                        (graphics/new-cursor graphics
-                                                                            (files/internal files (format path-format path))
+                                                                            (Files/.internal files (format path-format path))
                                                                             hotspot-x
                                                                             hotspot-y))))))]
 
@@ -648,7 +648,7 @@
                                                                                    :mag-filter :linear
                                                                                    }]
                                              (doto (freetype/generate-font app
-                                                                           (files/internal files path)
+                                                                           (Files/.internal files path)
                                                                            {:size (* size quality-scaling)})
                                                (bitmap-font/set-scale! (/ quality-scaling))
                                                (bitmap-font/enable-markup! enable-markup?)
