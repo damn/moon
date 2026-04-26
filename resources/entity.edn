@@ -5,5 +5,4 @@
  [moon.entity.movement :entity/movement]
  [moon.entity.string-effect :entity/string-effect]
  [moon.entity.temp-modifier :entity/temp-modifier]
- [moon.entity.mouseover :entity/mouseover?]
  ]

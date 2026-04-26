@@ -35,6 +35,7 @@
             [moon.effect :as effect] ; FIXME ctx
             [moon.entity :as entity] ; FIXME ctx
             [moon.entity.animation :as animation]
+            [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
             [moon.if-not-paused.update-potential-fields]
@@ -70,6 +71,8 @@
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.utils Disposable))
   (:gen-class))
+
+(def mouseover-ellipse-width 5)
 
 (comment
 
@@ -269,6 +272,25 @@
         4
         [[:draw/line position end color]]]]
       [[:draw/line position end color]])))
+
+(defmethod entity/render :entity/mouseover?
+  [_
+   {:keys [entity/body
+           entity/faction]}
+   {:keys [ctx/colors
+           ctx/player-eid]}]
+  (let [player @player-eid]
+    [[:draw/with-line-width mouseover-ellipse-width
+      [[:draw/ellipse
+        (:body/position body)
+        (/ (:body/width  body) 2)
+        (/ (:body/height body) 2)
+        (cond (= faction (faction/enemy (:entity/faction player)))
+              (:colors/enemy-color colors)
+              (= faction (:entity/faction player))
+              (:colors/friendly-color colors)
+              :else
+              (:colors/neutral-color colors))]]]]))
 
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
