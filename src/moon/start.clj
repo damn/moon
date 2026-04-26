@@ -4,7 +4,6 @@
   (:require [clojure.edn :as edn]
             [clojure.gdx :as gdx]
             [clojure.gdx.colors :as colors]
-            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.gdx.orthographic-camera :as orthographic-camera]
             [clojure.gdx.scene2d.stage]
@@ -73,6 +72,7 @@
                              Audio
                              Files)
            (com.badlogic.gdx.audio Sound)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.utils Disposable))
   (:gen-class))
 
@@ -572,7 +572,7 @@
                               (Audio/.newSound audio (Files/.internal files (format "sounds/%s.wav" sound-name)))]))))]
 
            [(fn [ctx]
-              (assoc ctx :ctx/batch (sprite-batch/create)))]
+              (assoc ctx :ctx/batch (SpriteBatch.)))]
 
            [(fn [{:keys [ctx/graphics] :as ctx}]
               (assoc ctx :ctx/shape-drawer-texture (graphics/white-pixel-texture graphics)))]
