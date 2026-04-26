@@ -1,5 +1,9 @@
-(ns clojure.graphics.texture)
+(ns clojure.graphics.texture
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
-(defprotocol Texture
-  (region [_]
-          [_ x y width height]))
+(defn region
+  ([^Texture texture x y width height]
+   (TextureRegion. texture (int x) (int y) (int width) (int height)))
+  ([^Texture texture]
+   (TextureRegion. texture)))

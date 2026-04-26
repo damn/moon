@@ -1,8 +1,8 @@
 (ns moon.impl.textures
-  (:require [clojure.gdx.graphics.texture :as texture]
-            [clojure.string :as str])
+  (:require [clojure.string :as str])
   (:import (com.badlogic.gdx Files)
-           (com.badlogic.gdx.files FileHandle)))
+           (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Texture)))
 
 (defn- recursively-search
   [^FileHandle folder extensions]
@@ -24,4 +24,4 @@
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
                            (recursively-search (Files/.internal files folder) extensions))]
-             [path (texture/create path)])))
+             [path (Texture. path)])))
