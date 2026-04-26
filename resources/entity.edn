@@ -1,6 +1,5 @@
 [
  [moon.entity.inventory :entity/inventory]
- [moon.entity.fsm :entity/fsm]
  [moon.entity.projectile-collision :entity/projectile-collision]
  [moon.entity.skills :entity/skills]
  [moon.entity.stats :entity/stats]
