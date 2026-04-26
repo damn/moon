@@ -4,7 +4,6 @@
             clojure.gdx.scene2d.ui.table
             [clojure.scene2d.ui.table :as table]
             [moon.db :as db]
-            [clojure.gdx.orthographic-camera]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.utils :refer [edn-resource]]
@@ -94,7 +93,7 @@
            ctx/graphics
            ctx/input]}]
   (let [skin (Skin. (.internal files "uiskin.json")) ; TODO dispose
-        ui-viewport (FitViewport. 1440 900 (clojure.gdx.orthographic-camera/create))
+        ui-viewport (FitViewport. 1440 900 (camera/create))
         sprite-batch (SpriteBatch.)
         stage (Stage. ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
@@ -112,8 +111,8 @@
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
                                        world-height
-                                       (doto (clojure.gdx.orthographic-camera/create)
-                                         (clojure.gdx.orthographic-camera/set-to-ortho! false world-width world-height))))
+                                       (doto (camera/create)
+                                         (camera/set-to-ortho! false world-width world-height))))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport

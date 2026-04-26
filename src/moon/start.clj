@@ -4,7 +4,6 @@
   (:require [clojure.edn :as edn]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
-            [clojure.gdx.orthographic-camera :as orthographic-camera]
             [clojure.gdx.scene2d.stage]
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
@@ -579,7 +578,7 @@
               (assoc ctx :ctx/shape-drawer (clojure.gdx.shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))))]
 
            [(fn [ctx]
-              (assoc ctx :ctx/ui-viewport (clojure.gdx.viewport/create 1440 900 (orthographic-camera/create))))]
+              (assoc ctx :ctx/ui-viewport (clojure.gdx.viewport/create 1440 900 (camera/create))))]
 
            [(fn [{:keys [ctx/batch
                          ctx/ui-viewport]
@@ -623,8 +622,8 @@
                            world-height (* 900 world-unit-scale)]
                        (clojure.gdx.viewport/create world-width
                                                     world-height
-                                                    (doto (orthographic-camera/create)
-                                                      (orthographic-camera/set-to-ortho! false world-width world-height))))))]
+                                                    (doto (camera/create)
+                                                      (camera/set-to-ortho! false world-width world-height))))))]
 
            [(fn [{:keys [ctx/files]
                   :as ctx}]
