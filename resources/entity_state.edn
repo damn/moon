@@ -6,5 +6,4 @@
  [moon.state.player-dead :player-dead]
  [moon.state.player-idle :player-idle]
  [moon.state.player-item-on-cursor :player-item-on-cursor]
- [moon.state.player-moving :player-moving]
  ]

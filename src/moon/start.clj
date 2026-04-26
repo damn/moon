@@ -38,6 +38,7 @@
             [moon.if-not-paused.update-potential-fields]
             [moon.impl.textures] ; FIXME ctx
             [moon.info :as info]
+            [moon.input]
             [moon.inventory :as inventory]
             [moon.map :as map]
             [moon.order :as order]
@@ -68,6 +69,10 @@
            (com.badlogic.gdx.utils Disposable))
   (:gen-class))
 
+(defn- creature-speed [{:keys [entity/stats]}]
+  (or (stats/get-stat-value stats :stats/movement-speed)
+      0))
+
 (defmethod state/enter :npc-dead
   [_ eid]
   [[:tx/mark-destroyed eid]])
@@ -95,6 +100,35 @@
 (defmethod state/pause-game? :stunned
   [_]
   false)
+
+(defmethod state/create :player-moving
+  [[_k movement-vector] eid _ctx]
+  {:movement-vector movement-vector})
+
+(defmethod state/enter :player-moving
+  [[_k {:keys [movement-vector]}] eid]
+  [[:tx/assoc eid :entity/movement {:direction movement-vector
+                                    :speed (or (stats/get-stat-value (:entity/stats @eid) :stats/movement-speed)
+                                               0)}]])
+
+(defmethod state/exit :player-moving
+  [_ eid _ctx]
+  [[:tx/dissoc eid :entity/movement]])
+
+(defmethod state/cursor :player-moving
+  [_ _eid _ctx]
+  :cursors/walking)
+
+(defmethod state/pause-game? :player-moving
+  [_]
+  false)
+
+(defmethod state/handle-input :player-moving
+  [_ eid {:keys [ctx/input]}]
+  (if-let [movement-vector (moon.input/player-movement-vector input)]
+    [[:tx/assoc eid :entity/movement {:direction movement-vector
+                                      :speed (creature-speed @eid)}]]
+    [[:tx/event eid :no-movement-input]]))
 
 (q/defrecord Entity [entity/body])
 
