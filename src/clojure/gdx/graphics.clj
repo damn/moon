@@ -1,6 +1,5 @@
 (ns clojure.gdx.graphics
   (:require [clojure.gdx.graphics.pixmap :as pixmap]
-            [clojure.gdx.graphics.pixmap.format :as pixmap.format]
             [clojure.gdx.utils.align :as align]
             clojure.graphics
             clojure.graphics.bitmap-font
@@ -10,7 +9,8 @@
   (:import (clojure.lang PersistentVector)
            (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics Color
-                                      GL20)
+                                      GL20
+                                      Pixmap$Format)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           TextureRegion)))
 
@@ -36,7 +36,7 @@
       cursor))
 
   (white-pixel-texture [_graphics]
-    (let [pixmap (doto (pixmap/create 1 1 pixmap.format/rgba8888)
+    (let [pixmap (doto (pixmap/create 1 1 Pixmap$Format/RGBA8888)
                    (pixmap/set-color! 1 1 1 1)
                    (pixmap/draw-pixel! 0 0))
           texture (pixmap/texture pixmap)]
