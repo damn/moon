@@ -844,6 +844,21 @@
   [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]
    [:tx/add-text-effect eid "[WHITE]!" 1]])
 
+(defmethod entity/tick :entity/temp-modifier
+  [[_k {:keys [modifiers counter]}]
+   eid
+   {:keys [ctx/elapsed-time]}]
+  (when (timer/stopped? elapsed-time counter)
+    [[:tx/dissoc eid :entity/temp-modifier]
+     [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
+
+(defmethod entity/render :entity/temp-modifier
+  [_ entity {:keys [ctx/colors]}]
+  [[:draw/filled-circle
+    (:body/position (:entity/body entity))
+    0.5
+    (:colors/temp-modifier colors)]])
+
 (def reaction-time-multiplier 0.016)
 
 (defmethod state/create :npc-moving
@@ -1320,14 +1335,6 @@
 
 (defn- create!
   []
-  (multifn/add-api-methods!
-   {:required []
-    :optional [#'moon.entity/create
-               #'moon.entity/after-create
-               #'moon.entity/destroy
-               #'moon.entity/tick
-               #'moon.entity/render]}
-   (edn-resource "entity.edn"))
   (multifn/add-api-methods!
    {:required []
     :optional [#'moon.entity/create ; FIXME  2 create ! this unused !
