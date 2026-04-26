@@ -1,5 +1,6 @@
 (ns clojure.gdx.scene2d.ui.table
-  (:require [clojure.gdx.scene2d.ui.cell :as cell]
+  (:require [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.ui.cell :as cell]
             [clojure.gdx.scene2d.ui.widget-group :as widget-group])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
@@ -55,6 +56,6 @@
     (set-cell-defaults! table defaults))
   (widget-group/set-opts! table opts))
 
-(defn create [opts]
+(defmethod actor/create :ui/table [opts]
   (doto (Table.)
     (set-opts! opts)))

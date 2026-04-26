@@ -19,6 +19,6 @@
     (run! #(add-actor! group %) actors))
   (actor/set-opts! group opts))
 
-(defn create [opts]
+(defmethod actor/create :ui/group [opts]
   (doto (Group.)
     (set-opts! opts)))

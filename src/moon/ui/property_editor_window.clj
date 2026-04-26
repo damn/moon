@@ -9,7 +9,7 @@
             [clojure.gdx.scene2d.stage :as stage]
             [moon.throwable :as throwable]))
 
-(defn create
+(defmethod actor/create :ui/property-editor-window
   [{:keys [ctx
            property]}]
   (let [{:keys [ctx/db

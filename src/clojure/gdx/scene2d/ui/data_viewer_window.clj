@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]))
 
-(defn create
+(defmethod actor/create :ui/data-viewer-window
   [{:keys [title
            data
            width
@@ -33,8 +33,9 @@
                       :actor/listeners [[:listener/change
                                          (fn [_event actor]
                                            (stage/add-actor! (actor/stage actor)
-                                                             (create
-                                                              {:title "title"
+                                                             (actor/create
+                                                              {:type :ui/data-viewer-window
+                                                               :title "title"
                                                                :data v
                                                                :width 500
                                                                :height 500

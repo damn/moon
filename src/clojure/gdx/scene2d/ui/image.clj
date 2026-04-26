@@ -16,7 +16,7 @@
 (defmethod create* TextureRegion [^TextureRegion texture-region]
   (Image. texture-region))
 
-(defn create
+(defmethod actor/create :ui/image
   [{:keys [content] :as opts}]
   (doto (create* content)
     (actor/set-opts! opts)))

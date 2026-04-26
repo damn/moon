@@ -3,7 +3,8 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextField)))
 
-(defn create [{:keys [text skin] :as opts}]
+(defmethod actor/create :ui/text-field
+  [{:keys [text skin] :as opts}]
   (doto (TextField. ^String text ^Skin skin)
     (actor/set-opts! opts)))
 

@@ -18,10 +18,20 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.math.vector2 :as v]
-            [clojure.multifn :as multifn]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
+            clojure.gdx.scene2d.ui.data-viewer-window
+            clojure.gdx.scene2d.ui.error-window
+            clojure.gdx.scene2d.ui.horizontal-group
+            clojure.gdx.scene2d.ui.image-button
+            clojure.gdx.scene2d.ui.scroll-pane
+            clojure.gdx.scene2d.ui.stack
+            clojure.gdx.scene2d.ui.text-button
+            clojure.gdx.scene2d.ui.widget
+            clojure.gdx.scene2d.ui.window
+            moon.ui.property-editor-window
+            moon.ui.property-overview-window
             [clojure.string :as str]
             [clojure.utils :refer [edn-resource]]
             [moon.backends.lwjgl :as lwjgl]
@@ -1370,7 +1380,6 @@
 
 (defn- create!
   []
-  (multifn/add-methods! #'clojure.gdx.scene2d.actor/create (edn-resource "actor_create.edn"))
   (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]

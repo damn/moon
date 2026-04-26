@@ -4,7 +4,7 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)))
 
-(defn set-opts! [window opts]
+(defn- set-opts! [window opts]
   (when (:window/modal? opts)
     (Window/.setModal window true))
 
@@ -19,7 +19,7 @@
 
   (table/set-opts! window opts))
 
-(defn create
+(defmethod actor/create :ui/window
   [{:keys [title skin] :as opts}]
   (doto (Window. ^String title ^Skin skin)
     (set-opts! opts)))

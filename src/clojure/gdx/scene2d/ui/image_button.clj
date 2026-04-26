@@ -12,7 +12,7 @@
     (drawable/set-min-size! (* scale (texture-region/width texture-region))
                             (* scale (texture-region/height texture-region)))))
 
-(defn create
+(defmethod actor/create :ui/image-button
   [{:keys [drawable] :as opts}]
   (doto (ImageButton. ^Drawable (create-drawable* drawable))
     (actor/set-opts! opts)))

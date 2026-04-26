@@ -8,7 +8,7 @@
        ~@body
        (str s#))))
 
-(defn create
+(defmethod actor/create :ui/error-window
   [{:keys [skin throwable]}]
   (let [label-text (binding [*print-level* 3]
                      (with-err-str

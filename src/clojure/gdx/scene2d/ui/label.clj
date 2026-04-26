@@ -3,7 +3,7 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
 
-(defn create
+(defmethod actor/create :ui/label
   [{:keys [text skin] :as opts}]
   (doto (Label. ^String text ^Skin skin)
     (actor/set-opts! opts)))

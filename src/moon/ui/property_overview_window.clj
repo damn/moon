@@ -73,7 +73,7 @@
          (partition-all columns)
          (overview-table-rows* skin image-scale))))
 
-(defn create
+(defmethod actor/create :ui/property-overview-window
   [{:keys [db
            textures
            skin
