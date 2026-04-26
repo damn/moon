@@ -1,4 +1,5 @@
-(ns clojure.scene2d.event)
+(ns clojure.scene2d.event
+  (:import (com.badlogic.gdx.scenes.scene2d Event)))
 
-(defprotocol Event
-  (stage [_]))
+(defn stage [event]
+  (.getStage event))

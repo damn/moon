@@ -6,18 +6,11 @@
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.utils.click-listener :as click-listener]
             [clojure.gdx.utils.align :as align]
-            [clojure.scene2d.actor :as actor]
-            clojure.scene2d.event)
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event)
+            [clojure.scene2d.actor :as actor])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))
-
-(extend-type Event
-  clojure.scene2d.event/Event
-  (stage [event]
-    (.getStage event)))
 
 (defn- ui-type->class [k]
   (case k
