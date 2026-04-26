@@ -1,6 +1,5 @@
 (ns clojure.gdx.graphics
-  (:require [clojure.gdx.graphics.g2d.bitmap-font :as font]
-            [clojure.gdx.graphics.pixmap :as pixmap]
+  (:require [clojure.gdx.graphics.pixmap :as pixmap]
             [clojure.gdx.graphics.pixmap.format :as pixmap.format]
             [clojure.gdx.utils.align :as align]
             clojure.graphics
@@ -47,33 +46,32 @@
 (extend-type BitmapFont
   clojure.graphics.bitmap-font/BitmapFont
   (scale-x [font]
-    (.scaleX (font/data font)))
+    (.scaleX (.getData font)))
 
   (set-scale! [font scale]
-    (.setScale (font/data font) scale))
+    (.setScale (.getData font) scale))
 
   (enable-markup! [font enable?]
-    (set! (.markupEnabled (font/data font)) enable?))
+    (set! (.markupEnabled (.getData font)) enable?))
 
   (use-integer-positions! [font use-integer-positions?]
-    (font/use-integer-positions! font use-integer-positions?))
+    (.setUseIntegerPositions font use-integer-positions?))
 
   (draw! [font batch text x y target-width h-align wrap?]
-    (font/draw! font
-                batch
-                text
-                x
-                y
-                target-width
-                (align/k->value h-align)
-                wrap?))
+    (.draw font
+           batch
+           text
+           (float x)
+           (float y)
+           (float target-width)
+           (align/k->value h-align)
+           wrap?))
 
   (text-height [font text]
     (-> text
         (str/split #"\n")
         count
-        (* (font/line-height font)))))
-
+        (* (.getLineHeight font)))))
 
 (extend-type PersistentVector
   clojure.graphics.color/Color
