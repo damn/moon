@@ -1,8 +1,7 @@
 ; 'ctx' - 'application' - 'main wiring' !
 ; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
-  (:require [clojure.audio :as audio]
-            [clojure.disposable :as disposable]
+  (:require [clojure.disposable :as disposable]
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.gdx :as gdx]
@@ -72,7 +71,8 @@
             [moon.ui-actors.windows.inventory] ; FIXME ctx
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx ApplicationListener)
+  (:import (com.badlogic.gdx ApplicationListener
+                             Audio)
            (com.badlogic.gdx.audio Sound))
   (:gen-class))
 
@@ -569,7 +569,7 @@
                      (into {}
                            (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                              [sound-name
-                              (audio/new-sound audio (files/internal files (format "sounds/%s.wav" sound-name)))]))))]
+                              (Audio/.newSound audio (files/internal files (format "sounds/%s.wav" sound-name)))]))))]
 
            [(fn [ctx]
               (assoc ctx :ctx/batch (sprite-batch/create)))]
