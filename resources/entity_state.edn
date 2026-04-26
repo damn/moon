@@ -5,5 +5,4 @@
  [moon.state.npc-sleeping :npc-sleeping]
  [moon.state.player-dead :player-dead]
  [moon.state.player-idle :player-idle]
- [moon.state.player-item-on-cursor :player-item-on-cursor]
  ]
