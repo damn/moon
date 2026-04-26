@@ -1424,13 +1424,13 @@
                           (reset! state (create!)))
 
                         (dispose [_]
-                          (dispose! @state))
+                          (dispose! @state)) ; ok full ctx here
 
                         (render [_]
                           (swap! state render!))
 
                         (resize [_ width height]
-                          (resize! @state width height))
+                          (resize! @state width height)) ; ok full ctx here
 
                         (pause [_])
 
