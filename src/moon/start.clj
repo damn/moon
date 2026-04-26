@@ -118,6 +118,18 @@
                                   (filter #(= (:entity/faction @%) faction)))]
             [:tx/event friendly-eid :alert]))))
 
+(defmethod entity/render :entity/clickable
+  [[_k {:keys [text]}]
+   {:keys [entity/body
+           entity/mouseover?]}
+   _ctx]
+  (when (and mouseover? text)
+    (let [[x y] (:body/position body)]
+      [[:draw/text {:text text
+                    :x x
+                    :y (+ y (/ (:body/height body) 2))
+                    :up? true}]])))
+
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
      (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
