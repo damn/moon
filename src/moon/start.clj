@@ -159,6 +159,15 @@
                     :y (+ y (/ (:body/height body) 2))
                     :up? true}]])))
 
+(defmethod entity/create :entity/delete-after-duration
+  [[_ duration] {:keys [ctx/elapsed-time]}]
+  (timer/create elapsed-time duration))
+
+(defmethod entity/tick :entity/delete-after-duration
+  [[_k counter] eid {:keys [ctx/elapsed-time]}]
+  (when (timer/stopped? elapsed-time counter)
+    [[:tx/mark-destroyed eid]]))
+
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
      (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))

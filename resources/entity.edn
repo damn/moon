@@ -1,5 +1,4 @@
 [
- [moon.entity.delete-after-duration :entity/delete-after-duration]
  [moon.entity.destroy-audiovisual :entity/destroy-audiovisual]
  [moon.entity.inventory :entity/inventory]
  [moon.entity.fsm :entity/fsm]
