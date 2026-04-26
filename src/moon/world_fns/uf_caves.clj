@@ -1,6 +1,9 @@
 (ns moon.world-fns.uf-caves
   (:require [clojure.graphics.texture :as texture]
-            [moon.tiled-map :as tiled-map]))
+            [moon.tiled-map :as tiled-map]
+            moon.uf-caves.initial-grid
+            moon.uf-caves.fix-nads
+            moon.uf-caves.last-steps))
 
 (defn create
   [{:keys [level/creature-properties
@@ -10,8 +13,7 @@
            spawn-rate
            scaling
            cave-size
-           cave-style
-           steps]}]
+           cave-style]}]
   (reduce (fn [m f]
             (f m))
           {:size cave-size
@@ -32,4 +34,6 @@
            :level/spawn-rate spawn-rate
            :level/scaling scaling
            :level/creature-properties creature-properties}
-          steps))
+          [moon.uf-caves.initial-grid/step
+           moon.uf-caves.fix-nads/step
+           moon.uf-caves.last-steps/step]))
