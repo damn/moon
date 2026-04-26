@@ -1,8 +1,9 @@
 (ns moon.draws
-  (:require [clojure.graphics.batch :as batch]
-            [clojure.graphics.bitmap-font :as bitmap-font]
+  (:require [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.graphics.shape-drawer :as shape-drawer]
-            [clojure.graphics.texture-region :as texture-region]))
+            [clojure.graphics.texture-region :as texture-region])
+  (:import (com.badlogic.gdx.graphics.g2d Batch
+                                          TextureRegion)))
 
 (declare handle)
 
@@ -80,7 +81,7 @@
                                          :target-width 0
                                          :wrap? false}))
    :draw/texture-region   (fn
-                            [{:keys [ctx/batch
+                            [{:keys [^Batch ctx/batch
                                      ctx/unit-scale
                                      ctx/world-unit-scale]}
                              texture-region
@@ -93,18 +94,18 @@
                                             (mapv (comp float (partial * world-unit-scale))
                                                   dimensions)))]
                               (if center?
-                                (batch/draw! batch
-                                             texture-region
-                                             (- (float x) (/ (float w) 2))
-                                             (- (float y) (/ (float h) 2))
-                                             (/ (float w) 2)
-                                             (/ (float h) 2)
-                                             w
-                                             h
-                                             1
-                                             1
-                                             (or rotation 0))
-                                (batch/draw! batch texture-region x y w h))))
+                                (.draw batch
+                                       texture-region
+                                       (- (float x) (/ (float w) 2))
+                                       (- (float y) (/ (float h) 2))
+                                       (/ (float w) 2)
+                                       (/ (float h) 2)
+                                       w
+                                       h
+                                       1
+                                       1
+                                       (or rotation 0))
+                                (.draw batch texture-region (float x) (float y) (float w) (float h)))))
    :draw/with-line-width  (fn
                             [{:keys [ctx/shape-drawer]
                               :as ctx}

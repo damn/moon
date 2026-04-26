@@ -13,7 +13,6 @@
             [clojure.gdx.shape-drawer]
             [clojure.gdx.viewport]
             [clojure.graphics :as graphics]
-            [clojure.graphics.batch :as batch]
             [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.graphics.color :as color]
             [clojure.graphics.freetype :as freetype]
@@ -918,7 +917,7 @@
   ctx)
 
 (defn draw-on-world-viewport!
-  [{:keys [ctx/batch
+  [{:keys [^SpriteBatch ctx/batch
            ctx/shape-drawer
            ctx/unit-scale
            ctx/world-unit-scale
@@ -928,10 +927,10 @@
   ; fix scene2d.ui.tooltip flickering
   ; _everything_ flickers with TextToolTip!
   ; it changes batch color somehow and does not change it back ! FIXME
-  (batch/set-color! batch 1 1 1 1)
+  (.setColor batch 1 1 1 1)
   ;
-  (batch/set-projection-matrix! batch (camera/combined (viewport/camera world-viewport)))
-  (batch/begin! batch)
+  (.setProjectionMatrix batch (camera/combined (viewport/camera world-viewport)))
+  (.begin batch)
   (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
@@ -939,7 +938,7 @@
       (draws/handle ctx (f ctx)))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (batch/end! batch)
+  (.end batch)
   ctx)
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
