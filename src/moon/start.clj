@@ -259,6 +259,17 @@
         (for [item items] ; TODO just call on inventory itself? -> and callback player-refresh ?
           [:tx/pickup-item eid item])))
 
+(defmethod entity/render :entity/line-render
+  [[_k {:keys [thick? end color]}]
+   {:keys [entity/body]}
+   _ctx]
+  (let [position (:body/position body)]
+    (if thick?
+      [[:draw/with-line-width
+        4
+        [[:draw/line position end color]]]]
+      [[:draw/line position end color]])))
+
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
      (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
