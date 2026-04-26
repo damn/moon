@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require clojure.gdx.graphics
-            clojure.gdx.input)
+  (:require clojure.gdx.graphics)
   (:import (com.badlogic.gdx Gdx)))
 
 (defn audio []
