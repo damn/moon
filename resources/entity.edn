@@ -1,5 +1,4 @@
 [
- [moon.entity.stats :entity/stats]
  [moon.entity.string-effect :entity/string-effect]
  [moon.entity.temp-modifier :entity/temp-modifier]
  ]

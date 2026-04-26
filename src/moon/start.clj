@@ -62,6 +62,7 @@
             [moon.ui-actors.player-state-draw] ; FIXME ctx
             [moon.ui-actors.windows.info] ; FIXME ctx
             [moon.ui-actors.windows.inventory :as inventory-window] ; FIXME ctx
+            [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener
@@ -385,6 +386,31 @@
         :when (and cooling-down?
                    (timer/stopped? elapsed-time cooling-down?))]
     [:tx/assoc-in eid [:entity/skills (:property/id skill) :skill/cooling-down?] false]))
+
+(defmethod entity/create :entity/stats
+  [[_ v] _ctx]
+  (-> v
+      (update :stats/mana (fn [v] [v v]))
+      (update :stats/hp   (fn [v] [v v]))))
+
+(defmethod entity/render :entity/stats
+  [_ entity {:keys [ctx/colors
+                    ctx/world-unit-scale]}]
+  (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
+    (when (or (< ratio 1) (:entity/mouseover? entity))
+      (let [{:keys [body/position body/width body/height]} (:entity/body entity)
+            [x y] position
+            x (- x (/ width  2))
+            y (+ y (/ height 2))
+            height (* 5 world-unit-scale)
+            border (* 1 world-unit-scale)]
+        [[:draw/filled-rectangle x y width height (:colors/hp-bar-rect colors)]
+         [:draw/filled-rectangle
+          (+ x border)
+          (+ y border)
+          (- (* width ratio) (* 2 border))
+          (- height          (* 2 border))
+          ((:colors/hp-bar colors) ratio)]]))))
 
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
