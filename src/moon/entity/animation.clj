@@ -1,5 +1,4 @@
-(ns moon.entity.animation
-  (:require [moon.entity :as entity]))
+(ns moon.entity.animation)
 
 (defprotocol Animation
   (tick [_ delta])
@@ -22,31 +21,3 @@
   (current-frame [this]
     (frames (min (int (/ (float cnt) (float frame-duration)))
                  (dec (count frames))))))
-
-(defn create
-  [[_k {:keys [animation/frames
-               animation/frame-duration
-               animation/looping?
-               delete-after-stopped?]}]
-   _ctx]
-  (assert (not (and looping? delete-after-stopped?)))
-  (map->RAnimation
-   {:frames (vec frames)
-    :frame-duration frame-duration
-    :looping? looping?
-    :cnt 0
-    :maxcnt (* (count frames) (float frame-duration))
-    :delete-after-stopped? delete-after-stopped?}))
-
-(defn tick
-  [[_k animation] eid {:keys [ctx/delta-time]}]
-  [[:tx/assoc eid :entity/animation (tick animation delta-time)]
-   (when (and (:delete-after-stopped? animation)
-              (stopped? animation))
-     [:tx/mark-destroyed eid])])
-
-(defn render
-  [[_k animation] entity ctx]
-  (entity/render [:entity/image (current-frame animation)]
-                 entity
-                 ctx))
