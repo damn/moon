@@ -1,6 +1,6 @@
 (ns moon.ui-actors.player-message
   (:require [clojure.graphics.viewport :as viewport]
-            [clojure.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [moon.draws :as draws]))
 

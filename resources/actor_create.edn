@@ -1,5 +1,4 @@
 [
- [:ui/actor clojure.gdx.scene2d.actor/create]
  [:ui/group clojure.gdx.scene2d.group/create]
  [:ui/check-box clojure.gdx.scene2d.ui.check-box/create]
  [:ui/horizontal-group clojure.gdx.scene2d.ui.horizontal-group/create]

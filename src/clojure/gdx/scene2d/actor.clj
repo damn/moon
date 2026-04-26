@@ -5,8 +5,7 @@
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.utils.click-listener :as click-listener]
-            [clojure.gdx.utils.align :as align]
-            [clojure.scene2d.actor :as actor])
+            [clojure.gdx.utils.align :as align])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
@@ -19,118 +18,121 @@
 (defn- button-class? [actor]
   (some #(= Button %) (supers (class actor))))
 
-(extend-type Actor
-  clojure.scene2d.actor/Actor
-  (set-opts! [actor opts]
-    (when-let [user-object (:actor/user-object opts)]
-      (actor/set-user-object! actor user-object))
+(defn name [^Actor actor]
+  (.getName actor))
 
-    (when (:actor/position opts)
-      (let [[x y align] (:actor/position opts)]
-        (if align
-          (actor/set-position! actor x y (align/k->value align))
-          (actor/set-position! actor [x y]))))
+(defn x [^Actor actor]
+  (.getX actor))
 
-    (when (contains? opts :actor/visible?)
-      (actor/set-visible! actor (:actor/visible? opts)))
+(defn y [^Actor actor]
+  (.getY actor))
 
-    (when-let [touchable (:actor/touchable opts)]
-      (actor/set-touchable! actor (case touchable
-                                    :touchable/disabled touchable/disabled)))
+(defn width [^Actor actor]
+  (.getWidth actor))
 
-    (when-let [name (:actor/name opts)]
-      (actor/set-name! actor name))
+(defn height [^Actor actor]
+  (.getHeight actor))
 
-    (when-let [listeners (:actor/listeners opts)]
-      (doseq [listener listeners]
-        (actor/add-listener! actor listener))))
+(defn stage->local-coordinates [^Actor actor xy]
+  (vector2/->clj (Actor/.stageToLocalCoordinates actor (vector2/->java xy))))
 
-  (name [actor]
-    (.getName actor))
+(defn add-listener! [^Actor actor [listener-k listener-params]]
+  (.addListener actor
+                (case listener-k
+                  :listener/change (let [f listener-params]
+                                     (change-listener/create f))
+                  :listener/text-tooltip (let [[tooltip skin] listener-params]
+                                           (text-tooltip/create tooltip skin))
+                  :listener/click (let [f listener-params]
+                                    (click-listener/create f)))))
 
-  (x [actor]
-    (.getX actor))
+(defn user-object [^Actor actor]
+  (.getUserObject actor))
 
-  (y [actor]
-    (.getY actor))
+(defn stage [^Actor actor]
+  (.getStage actor))
 
-  (width [actor]
-    (.getWidth actor))
+(defn set-name! [^Actor actor name]
+  (.setName actor name))
 
-  (height [actor]
-    (.getHeight actor))
+(defn set-user-object! [^Actor actor object]
+  (.setUserObject actor object))
 
-  (stage->local-coordinates [actor xy]
-    (vector2/->clj (Actor/.stageToLocalCoordinates actor (vector2/->java xy))))
+(defn set-position!
+  ([^Actor actor [x y]]
+   (.setPosition actor x y))
+  ([^Actor actor x y align]
+   (.setPosition actor x y align)))
 
-  (add-listener! [actor [listener-k listener-params]]
-    (.addListener actor
-                  (case listener-k
-                    :listener/change (let [f listener-params]
-                                       (change-listener/create f))
-                    :listener/text-tooltip (let [[tooltip skin] listener-params]
-                                             (text-tooltip/create tooltip skin))
-                    :listener/click (let [f listener-params]
-                                      (click-listener/create f)))))
+(defn set-visible! [^Actor actor visible?]
+  (.setVisible actor visible?))
 
-  (user-object [actor]
-    (.getUserObject actor))
+(defn set-touchable! [^Actor actor touchable]
+  (.setTouchable actor touchable))
 
-  (stage [actor]
-    (.getStage actor))
+(defn visible? [^Actor actor]
+  (.isVisible actor))
 
-  (set-name! [actor name]
-    (.setName actor name))
+(defn hit [^Actor actor [x y] touchable?]
+  (.hit actor x y touchable?))
 
-  (set-user-object! [actor object]
-    (.setUserObject actor object))
+(defn remove! [^Actor actor]
+  (.remove actor))
 
-  (set-position!
-    ([actor [x y]]
-     (.setPosition actor x y))
-    ([actor x y align]
-     (.setPosition actor x y align)))
+(defn parent [^Actor actor]
+  (.getParent actor))
 
-  (set-visible! [actor visible?]
-    (.setVisible actor visible?))
+(defn find-ancestor
+  [actor ui-type-k]
+  (if-let [parent (parent actor)]
+    (if (instance? (ui-type->class ui-type-k) parent)
+      parent
+      (find-ancestor parent ui-type-k))
+    (throw (Error. (str "Actor has no parent window " actor)))))
 
-  (set-touchable! [actor touchable]
-    (.setTouchable actor touchable))
+(defn button? [actor]
+  (or (button-class? actor)
+      (and (parent actor)
+           (button-class? (parent actor)))))
 
-  (visible? [actor]
-    (.isVisible actor))
+; FIXME does not work
+(defn window-title-bar? [actor]
+  (when (instance? Label actor)
+    (when-let [p (parent actor)]
+      (when-let [p (parent p)]
+        (and (instance? Window actor)
+             (= (Window/.getTitleLabel p) actor))))))
 
-  (hit [actor [x y] touchable?]
-    (.hit actor x y touchable?))
+(defn toggle-visible! [actor]
+  (set-visible! actor (not (visible? actor))))
 
-  (remove! [actor]
-    (.remove actor))
+(defn set-opts! [actor opts]
+  (when-let [user-object (:actor/user-object opts)]
+    (set-user-object! actor user-object))
 
-  (parent [actor]
-    (.getParent actor))
+  (when (:actor/position opts)
+    (let [[x y align] (:actor/position opts)]
+      (if align
+        (set-position! actor x y (align/k->value align))
+        (set-position! actor [x y]))))
 
-  (find-ancestor
-    [actor ui-type-k]
-    (if-let [parent (actor/parent actor)]
-      (if (instance? (ui-type->class ui-type-k) parent)
-        parent
-        (actor/find-ancestor parent ui-type-k))
-      (throw (Error. (str "Actor has no parent window " actor)))))
+  (when (contains? opts :actor/visible?)
+    (set-visible! actor (:actor/visible? opts)))
 
-  (button? [actor]
-    (or (button-class? actor)
-        (and (actor/parent actor)
-             (button-class? (actor/parent actor)))))
+  (when-let [touchable (:actor/touchable opts)]
+    (set-touchable! actor (case touchable
+                            :touchable/disabled touchable/disabled)))
 
-  ; FIXME does not work
-  (window-title-bar? [actor]
-    (when (instance? Label actor)
-      (when-let [p (actor/parent actor)]
-        (when-let [p (actor/parent p)]
-          (and (instance? Window actor)
-               (= (Window/.getTitleLabel p) actor)))))))
+  (when-let [name (:actor/name opts)]
+    (set-name! actor name))
 
-(defn create
+  (when-let [listeners (:actor/listeners opts)]
+    (doseq [listener listeners]
+      (add-listener! actor listener))))
+
+(defmulti create :type)
+
+(defmethod create :ui/actor
   [{:keys [act! draw!] :as opts}]
   (doto (proxy [Actor] []
           (act [delta]
@@ -141,4 +143,4 @@
           (draw [batch parent-alpha]
             (when draw!
               (draw! this batch parent-alpha))))
-    (actor/set-opts! opts)))
+    (set-opts! opts)))

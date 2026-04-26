@@ -3,7 +3,7 @@
             [clojure.gdx.scene2d.ui.label :as label]
             [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.graphics.viewport :as viewport]
-            [clojure.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor :as actor]
             [moon.info :as info]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.table :as table]))

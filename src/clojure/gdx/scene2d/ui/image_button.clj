@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.utils.drawable :as drawable]
             [clojure.gdx.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.graphics.texture-region :as texture-region]
-            [clojure.scene2d.actor :as actor])
+            [clojure.gdx.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 

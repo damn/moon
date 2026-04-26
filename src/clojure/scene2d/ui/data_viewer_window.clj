@@ -1,5 +1,5 @@
 (ns clojure.scene2d.ui.data-viewer-window
-  (:require [clojure.scene2d.actor :as actor]
+  (:require [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]))
 
 (defn create

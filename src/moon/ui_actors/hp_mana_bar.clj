@@ -1,6 +1,6 @@
 (ns moon.ui-actors.hp-mana-bar
   (:require [clojure.graphics.viewport :as viewport]
-            [clojure.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.number :as number]
             [clojure.gdx.scene2d.stage :as stage]

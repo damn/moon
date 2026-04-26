@@ -1,7 +1,7 @@
 (ns moon.schema
   (:require clojure.edn
             [clojure.graphics.viewport :as viewport]
-            [clojure.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]

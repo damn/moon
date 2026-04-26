@@ -18,7 +18,7 @@
             [clojure.java.io :as io]
             [clojure.math.vector2 :as v]
             [clojure.multifn :as multifn]
-            [clojure.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.string :as str]
@@ -545,7 +545,7 @@
                #'moon.state/draw-ui-view
                #'moon.state/handle-input]}
    (edn-resource "entity_state.edn"))
-  (multifn/add-methods! #'clojure.scene2d.actor/create (edn-resource "actor_create.edn"))
+  (multifn/add-methods! #'clojure.gdx.scene2d.actor/create (edn-resource "actor_create.edn"))
   (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]

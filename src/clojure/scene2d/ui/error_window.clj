@@ -1,6 +1,6 @@
 (ns clojure.scene2d.ui.error-window
   (:require [clojure.repl :as repl]
-            [clojure.scene2d.actor :as actor]))
+            [clojure.gdx.scene2d.actor :as actor]))
 
 (defmacro ^:private with-err-str [& body]
   `(let [s# (new java.io.StringWriter)]

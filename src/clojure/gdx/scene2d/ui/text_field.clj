@@ -1,5 +1,5 @@
 (ns clojure.gdx.scene2d.ui.text-field
-  (:require [clojure.scene2d.actor :as actor])
+  (:require [clojure.gdx.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextField)))
 

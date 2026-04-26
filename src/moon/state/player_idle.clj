@@ -1,6 +1,6 @@
 (ns moon.state.player-idle
   (:require [clojure.gdx.scene2d.group :as group]
-            [clojure.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor :as actor]
             [moon.input :as input]
             [moon.inventory :as inventory]
             [clojure.gdx.scene2d.stage :as stage]))
