@@ -1,8 +1,7 @@
 ; 'ctx' - 'application' - 'main wiring' !
 ; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
-  (:require [clojure.disposable :as disposable]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.gdx :as gdx]
             [clojure.gdx.colors :as colors]
@@ -73,7 +72,8 @@
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener
                              Audio)
-           (com.badlogic.gdx.audio Sound))
+           (com.badlogic.gdx.audio Sound)
+           (com.badlogic.gdx.utils Disposable))
   (:gen-class))
 
 (q/defrecord Entity [entity/body])
@@ -838,14 +838,14 @@
            ctx/skin
            ctx/textures
            ctx/tiled-map]}]
-  (run! disposable/dispose! (vals audio))
-  (disposable/dispose! batch)
-  (run! disposable/dispose! (vals cursors))
-  (disposable/dispose! default-font)
-  (disposable/dispose! shape-drawer-texture)
-  (disposable/dispose! skin)
-  (run! disposable/dispose! (vals textures))
-  (disposable/dispose! tiled-map)
+  (run! Disposable/.dispose (vals audio))
+  (Disposable/.dispose batch)
+  (run! Disposable/.dispose (vals cursors))
+  (Disposable/.dispose default-font)
+  (Disposable/.dispose shape-drawer-texture)
+  (Disposable/.dispose skin)
+  (run! Disposable/.dispose (vals textures))
+  (Disposable/.dispose tiled-map)
   nil)
 
 (defn- tile-color-setter*
