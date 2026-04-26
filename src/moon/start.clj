@@ -68,6 +68,10 @@
            (com.badlogic.gdx.utils Disposable))
   (:gen-class))
 
+(defmethod state/enter :npc-dead
+  [_ eid]
+  [[:tx/mark-destroyed eid]])
+
 (q/defrecord Entity [entity/body])
 
 (defn- send-event! [ctx eid event params]
