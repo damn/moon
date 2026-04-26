@@ -364,6 +364,22 @@
                               stage
                               player-eid))))
 
+(defmethod state/enter :player-dead
+  [_ _eid]
+  [[:tx/sound "bfxr_playerdeath"]
+   [:tx/show-modal {:title "YOU DIED - again!"
+                    :text "Good luck next time!"
+                    :button-text "OK"
+                    :on-click (fn [])}]])
+
+(defmethod state/cursor :player-dead
+  [_ _eid _ctx]
+  :cursors/black-x)
+
+(defmethod state/pause-game? :player-dead
+  [_]
+  true)
+
 (q/defrecord Entity [entity/body])
 
 (defn- send-event! [ctx eid event params]

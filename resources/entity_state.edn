@@ -3,5 +3,4 @@
  [moon.state.npc-idle :npc-idle]
  [moon.state.npc-moving :npc-moving]
  [moon.state.npc-sleeping :npc-sleeping]
- [moon.state.player-dead :player-dead]
  ]
