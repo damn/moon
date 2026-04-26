@@ -1,4 +1,3 @@
 [
- [moon.state.active-skill :active-skill]
  [moon.state.npc-idle :npc-idle]
  ]
