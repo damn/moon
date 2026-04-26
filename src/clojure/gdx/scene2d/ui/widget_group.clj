@@ -1,4 +1,4 @@
-(ns clojure.scene2d.ui.widget-group
+(ns clojure.gdx.scene2d.ui.widget-group
   (:require [clojure.gdx.scene2d.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d.ui WidgetGroup)))
 
