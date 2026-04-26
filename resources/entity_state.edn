@@ -7,5 +7,4 @@
  [moon.state.player-idle :player-idle]
  [moon.state.player-item-on-cursor :player-item-on-cursor]
  [moon.state.player-moving :player-moving]
- [moon.state.stunned :stunned]
  ]

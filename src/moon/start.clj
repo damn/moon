@@ -72,6 +72,30 @@
   [_ eid]
   [[:tx/mark-destroyed eid]])
 
+(defmethod state/create :stunned
+  [[_k duration] _eid {:keys [ctx/elapsed-time]}]
+  {:counter (timer/create elapsed-time duration)})
+
+(defmethod entity/tick :stunned
+  [[_k {:keys [counter]}] eid {:keys [ctx/elapsed-time]}]
+  (when (timer/stopped? elapsed-time counter)
+    [[:tx/event eid :effect-wears-off]]))
+
+(defmethod entity/render :stunned
+  [_ {:keys [entity/body]} {:keys [ctx/colors]}]
+  [[:draw/circle
+    (:body/position body)
+    0.5
+    (:colors/stunned colors)]])
+
+(defmethod state/cursor :stunned
+  [_ _eid _ctx]
+  :cursors/denied)
+
+(defmethod state/pause-game? :stunned
+  [_]
+  false)
+
 (q/defrecord Entity [entity/body])
 
 (defn- send-event! [ctx eid event params]
