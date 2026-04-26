@@ -3,7 +3,7 @@
             [clojure.graphics.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
-            [clojure.scene2d.group :as group]
+            [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scene2d.ui.select-box :as select-box]

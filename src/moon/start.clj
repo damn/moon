@@ -19,7 +19,7 @@
             [clojure.math.vector2 :as v]
             [clojure.multifn :as multifn]
             [clojure.scene2d.actor :as actor]
-            [clojure.scene2d.group :as group]
+            [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.string :as str]
             [clojure.utils :refer [edn-resource]]

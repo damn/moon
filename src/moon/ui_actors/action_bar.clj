@@ -1,7 +1,7 @@
 (ns moon.ui-actors.action-bar
   (:require [clojure.gdx.scene2d.ui.button-group :as button-group]
             [clojure.scene2d.actor :as actor]
-            [clojure.scene2d.group :as group]))
+            [clojure.gdx.scene2d.group :as group]))
 
 (defn create []
   (actor/create
