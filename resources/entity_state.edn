@@ -2,5 +2,4 @@
  [moon.state.active-skill :active-skill]
  [moon.state.npc-idle :npc-idle]
  [moon.state.npc-moving :npc-moving]
- [moon.state.npc-sleeping :npc-sleeping]
  ]
