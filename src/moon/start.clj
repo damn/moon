@@ -1,3 +1,4 @@
+; 'ctx' - 'application' - 'main wiring' !
 (ns moon.start
   (:require [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
@@ -568,29 +569,37 @@
                            (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                              [sound-name
                               (audio/new-sound audio (files/internal files (format "sounds/%s.wav" sound-name)))]))))]
+
            [(fn [ctx]
               (assoc ctx :ctx/batch (sprite-batch/create)))]
+
            [(fn [{:keys [ctx/graphics] :as ctx}]
               (assoc ctx :ctx/shape-drawer-texture (graphics/white-pixel-texture graphics)))]
+
            [(fn [{:keys [ctx/batch
                          ctx/shape-drawer-texture]
                   :as ctx}]
               (assoc ctx :ctx/shape-drawer (clojure.gdx.shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))))]
+
            [(fn [ctx]
               (assoc ctx :ctx/ui-viewport (clojure.gdx.viewport/create 1440 900 (orthographic-camera/create))))]
+
            [(fn [{:keys [ctx/batch
                          ctx/ui-viewport]
                   :as ctx}]
               (assoc ctx :ctx/stage (clojure.gdx.scene2d.stage/create ui-viewport batch)))]
+
            [(fn [{:keys [ctx/input
                          ctx/stage]
                   :as ctx}]
               (input/set-processor! input stage)
               ctx)]
+
            [(fn [{:keys [ctx/files] :as ctx}]
               (assoc ctx :ctx/skin (let [skin (skin/create (files/internal files "uiskin.json"))]
                                      (bitmap-font/enable-markup! (skin/font skin "default-font") true)
                                      skin)))]
+
            [(fn [{:keys [ctx/graphics
                          ctx/files]
                   :as ctx}]
@@ -601,11 +610,16 @@
                                                                             (files/internal files (format path-format path))
                                                                             hotspot-x
                                                                             hotspot-y))))))]
+
            [(fn [ctx]
+              ; TODO don't pass context anywhere else but here !
               (assoc ctx :ctx/textures (moon.impl.textures/create ctx {:folder "resources/"
                                                                        :extensions #{"png" "bmp"}})))]
+
+
            [(fn [ctx]
               (assoc ctx :ctx/world-unit-scale (float (/ 48))))]
+
            [(fn [{:keys [ctx/world-unit-scale] :as ctx}]
               (assoc ctx :ctx/world-viewport
                      (let [world-width  (* 1440  world-unit-scale)
@@ -614,6 +628,7 @@
                                                     world-height
                                                     (doto (orthographic-camera/create)
                                                       (orthographic-camera/set-to-ortho! false world-width world-height))))))]
+
            [(fn [{:keys [ctx/app
                          ctx/files]
                   :as ctx}]
@@ -638,6 +653,7 @@
                                                (bitmap-font/enable-markup! enable-markup?)
                                                (bitmap-font/use-integer-positions! use-integer-positions?))))
               )]
+
            [(fn [ctx]
               (assoc ctx
                      :ctx/controls {
@@ -701,6 +717,7 @@
            [(fn [ctx]
               (merge (map->Context {}) ctx))]
 
+           ; FIXME
            [(fn [ctx]
               (doseq [actor [(moon.ui-actors.dev-menu/create ctx)
                              (moon.ui-actors.action-bar/create)
