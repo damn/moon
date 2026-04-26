@@ -44,7 +44,6 @@
             [moon.impl.textures] ; FIXME ctx
             [moon.info :as info]
             [moon.inventory :as inventory]
-            [moon.inventory-window :as inventory-window]
             [moon.map :as map]
             [moon.order :as order]
             [moon.raycaster :as raycaster]
@@ -62,7 +61,7 @@
             [moon.ui-actors.player-message] ; FIXME ctx
             [moon.ui-actors.player-state-draw] ; FIXME ctx
             [moon.ui-actors.windows.info] ; FIXME ctx
-            [moon.ui-actors.windows.inventory] ; FIXME ctx
+            [moon.ui-actors.windows.inventory :as inventory-window] ; FIXME ctx
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener

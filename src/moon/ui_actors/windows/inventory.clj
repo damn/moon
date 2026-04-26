@@ -8,7 +8,6 @@
             [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
-            [moon.inventory-window]
             [clojure.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.textures :as textures]
@@ -165,24 +164,22 @@
       (group/find-actor "inventory-cell-table")
       (find-cell cell)))
 
-(extend-type com.badlogic.gdx.scenes.scene2d.ui.Window
-  moon.inventory-window/InventoryWindow
-  (set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
-    (let [cell-widget (window->cell inventory-window cell)
-          image-widget (group/find-actor cell-widget "image-widget")
-          cell-size (:cell-size (actor/user-object image-widget))
-          drawable (doto (texture-region-drawable/create texture-region)
-                     (drawable/set-min-size! cell-size cell-size))]
-      (image/set-drawable! image-widget drawable)
-      (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
-      nil))
+(defn set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
+  (let [cell-widget (window->cell inventory-window cell)
+        image-widget (group/find-actor cell-widget "image-widget")
+        cell-size (:cell-size (actor/user-object image-widget))
+        drawable (doto (texture-region-drawable/create texture-region)
+                   (drawable/set-min-size! cell-size cell-size))]
+    (image/set-drawable! image-widget drawable)
+    (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
+    nil))
 
-  (remove-item! [inventory-window cell]
-    (let [cell-widget (window->cell inventory-window cell)
-          image-widget (group/find-actor cell-widget "image-widget")]
-      (image/set-drawable! image-widget (create-drawable (:background-drawable (actor/user-object image-widget))))
-      ; !! TODO FIXME FIXME FIXME !!!
-      ;(.removeListener actor (.getListeners actor))
-      ; ... first find the listener
-      #_(tooltip/remove! cell-widget)
-      nil)))
+(defn remove-item! [inventory-window cell]
+  (let [cell-widget (window->cell inventory-window cell)
+        image-widget (group/find-actor cell-widget "image-widget")]
+    (image/set-drawable! image-widget (create-drawable (:background-drawable (actor/user-object image-widget))))
+    ; !! TODO FIXME FIXME FIXME !!!
+    ;(.removeListener actor (.getListeners actor))
+    ; ... first find the listener
+    #_(tooltip/remove! cell-widget)
+    nil))
