@@ -250,6 +250,15 @@
      :rotation (or (:body/rotation-angle body)
                    0)}]])
 
+(defmethod entity/after-create :entity/inventory ; TODO do @ creature
+  [[_k items] eid _ctx]
+  (cons [:tx/assoc eid :entity/inventory (->> inventory/empty-inventory
+                                              (map (fn [[slot [width height]]]
+                                                     [slot (g2d/create-grid width height (constantly nil))]))
+                                              (into {}))]
+        (for [item items] ; TODO just call on inventory itself? -> and callback player-refresh ?
+          [:tx/pickup-item eid item])))
+
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
      (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
