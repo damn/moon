@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.inventory
   (:require [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
-            [clojure.scene2d.ui.image :as image]
+            [clojure.gdx.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.utils.drawable :as drawable]
             [clojure.gdx.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.graphics.viewport :as viewport]

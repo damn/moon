@@ -1,6 +1,5 @@
 (ns clojure.gdx.scene2d.ui.image
-  (:require [clojure.scene2d.actor :as actor]
-            clojure.scene2d.ui.image)
+  (:require [clojure.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Image)
@@ -22,7 +21,5 @@
   (doto (create* content)
     (actor/set-opts! opts)))
 
-(extend-type Image
-  clojure.scene2d.ui.image/Image
-  (set-drawable! [image drawable]
-    (.setDrawable image drawable)))
+(defn set-drawable! [^Image image drawable]
+  (.setDrawable image drawable))

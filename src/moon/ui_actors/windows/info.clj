@@ -1,6 +1,6 @@
 (ns moon.ui-actors.windows.info
   (:require [clojure.scene2d.group :as group]
-            [clojure.scene2d.ui.label :as label]
+            [clojure.gdx.scene2d.ui.label :as label]
             [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.graphics.viewport :as viewport]
             [clojure.scene2d.actor :as actor]

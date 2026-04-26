@@ -1,5 +1,4 @@
 (ns clojure.gdx.scene2d.ui.check-box
-  (:require clojure.scene2d.ui.check-box)
   (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox
                                                Skin)))
 
@@ -7,7 +6,5 @@
   (doto (CheckBox. "" ^Skin skin)
     (.setChecked checked?)))
 
-(extend-type CheckBox
-  clojure.scene2d.ui.check-box/CheckBox
-  (checked? [check-box]
-    (.isChecked check-box)))
+(defn checked? [^CheckBox check-box]
+  (.isChecked check-box))
