@@ -2,7 +2,6 @@
 ; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
   (:require [clojure.edn :as edn]
-            [clojure.gdx :as gdx]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.gdx.orthographic-camera :as orthographic-camera]
@@ -68,7 +67,8 @@
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener
                              Audio
-                             Files)
+                             Files
+                             Gdx)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.utils Disposable))
@@ -556,10 +556,10 @@
   (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          {:ctx/audio     (gdx/audio)
-           :ctx/files     (gdx/files)
-           :ctx/graphics  (gdx/graphics)
-           :ctx/input     (gdx/input)}
+          {:ctx/audio     Gdx/audio
+           :ctx/files     Gdx/files
+           :ctx/graphics  Gdx/graphics
+           :ctx/input     Gdx/input}
           [
            [(fn [{:keys [ctx/audio ctx/files] :as ctx}]
               (assoc ctx :ctx/audio

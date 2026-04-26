@@ -1,6 +1,5 @@
 (ns moon.levelgen
-  (:require [clojure.gdx :as gdx]
-            [clojure.graphics.color :as color]
+  (:require [clojure.graphics.color :as color]
             [clojure.gdx.math.vector3 :as vector3]
             clojure.gdx.scene2d.ui.table
             [clojure.scene2d.ui.table :as table]
@@ -14,6 +13,7 @@
             moon.impl.textures
             )
   (:import (com.badlogic.gdx ApplicationListener
+                             Gdx
                              Input$Keys)
            (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
@@ -194,9 +194,9 @@
   (lwjgl/use-glfw-async!)
   (lwjgl/application! (reify ApplicationListener
                         (create [_]
-                          (reset! state (create! {:ctx/files    (gdx/files)
-                                                  :ctx/graphics (gdx/graphics)
-                                                  :ctx/input    (gdx/input)})))
+                          (reset! state (create! {:ctx/files    Gdx/files
+                                                  :ctx/graphics Gdx/graphics
+                                                  :ctx/input    Gdx/input})))
                         (dispose [_]
                           (dispose! @state))
                         (render [_]
