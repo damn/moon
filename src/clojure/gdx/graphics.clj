@@ -1,10 +1,7 @@
 (ns clojure.gdx.graphics
-  (:require [clojure.gdx.utils.align :as align]
-            clojure.graphics
-            clojure.graphics.bitmap-font
+  (:require clojure.graphics
             clojure.graphics.color
-            clojure.graphics.texture-region
-            [clojure.string :as str])
+            clojure.graphics.texture-region)
   (:import (clojure.lang PersistentVector)
            (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.files FileHandle)
@@ -13,8 +10,7 @@
                                       Pixmap
                                       Pixmap$Format
                                       Texture)
-           (com.badlogic.gdx.graphics.g2d BitmapFont
-                                          TextureRegion)))
+           (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 (extend-type Graphics
   clojure.graphics/Graphics
@@ -44,36 +40,6 @@
           texture (Texture. pixmap)]
       (.dispose pixmap)
       texture)))
-
-(extend-type BitmapFont
-  clojure.graphics.bitmap-font/BitmapFont
-  (scale-x [font]
-    (.scaleX (.getData font)))
-
-  (set-scale! [font scale]
-    (.setScale (.getData font) scale))
-
-  (enable-markup! [font enable?]
-    (set! (.markupEnabled (.getData font)) enable?))
-
-  (use-integer-positions! [font use-integer-positions?]
-    (.setUseIntegerPositions font use-integer-positions?))
-
-  (draw! [font batch text x y target-width h-align wrap?]
-    (.draw font
-           batch
-           text
-           (float x)
-           (float y)
-           (float target-width)
-           (align/k->value h-align)
-           wrap?))
-
-  (text-height [font text]
-    (-> text
-        (str/split #"\n")
-        count
-        (* (.getLineHeight font)))))
 
 (extend-type PersistentVector
   clojure.graphics.color/Color
