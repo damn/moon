@@ -8,7 +8,6 @@
  [moon.entity.projectile-collision :entity/projectile-collision]
  [moon.entity.skills :entity/skills]
  [moon.entity.stats :entity/stats]
- [moon.entity.alert-friendlies-after-duration :entity/alert-friendlies-after-duration]
  [moon.entity.movement :entity/movement]
  [moon.entity.string-effect :entity/string-effect]
  [moon.entity.temp-modifier :entity/temp-modifier]
