@@ -1,12 +1,9 @@
 (ns clojure.gdx.graphics
   (:require clojure.graphics
-            clojure.graphics.color
             clojure.graphics.texture-region)
-  (:import (clojure.lang PersistentVector)
-           (com.badlogic.gdx Graphics)
+  (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Color
-                                      GL20
+           (com.badlogic.gdx.graphics GL20
                                       Pixmap
                                       Pixmap$Format
                                       Texture)
@@ -40,14 +37,6 @@
           texture (Texture. pixmap)]
       (.dispose pixmap)
       texture)))
-
-(extend-type PersistentVector
-  clojure.graphics.color/Color
-  (float-bits [[r g b a]]
-    (Color/toFloatBits (float r)
-                       (float g)
-                       (float b)
-                       (float a))))
 
 (extend-type TextureRegion
   clojure.graphics.texture-region/TextureRegion
