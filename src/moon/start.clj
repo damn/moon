@@ -2,7 +2,6 @@
 ; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
   (:require [clojure.audio :as audio]
-            [clojure.audio.sound :as sound]
             [clojure.disposable :as disposable]
             [clojure.edn :as edn]
             [clojure.files :as files]
@@ -73,7 +72,8 @@
             [moon.ui-actors.windows.inventory] ; FIXME ctx
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx ApplicationListener))
+  (:import (com.badlogic.gdx ApplicationListener)
+           (com.badlogic.gdx.audio Sound))
   (:gen-class))
 
 (q/defrecord Entity [entity/body])
@@ -311,7 +311,7 @@
                                   [{:keys [ctx/audio] :as ctx} sound-name]
                                   (let [sounds audio]
                                     (assert (contains? sounds sound-name) (str sound-name))
-                                    (sound/play! (get sounds sound-name)))
+                                    (Sound/.play (get sounds sound-name)))
                                   ctx)
    :tx/toggle-inventory-visible (fn
                                   [{:keys [ctx/stage] :as ctx}]
