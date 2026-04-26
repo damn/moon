@@ -168,6 +168,12 @@
   (when (timer/stopped? elapsed-time counter)
     [[:tx/mark-destroyed eid]]))
 
+(defmethod entity/destroy :entity/destroy-audiovisual
+  [[_ audiovisuals-id] eid]
+  [[:tx/audiovisual
+    (:body/position (:entity/body @eid))
+    audiovisuals-id]])
+
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
      (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
