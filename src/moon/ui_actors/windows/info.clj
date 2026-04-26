@@ -5,7 +5,7 @@
             [clojure.graphics.viewport :as viewport]
             [clojure.scene2d.actor :as actor]
             [moon.info :as info]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.table :as table]))
 
 (defn create

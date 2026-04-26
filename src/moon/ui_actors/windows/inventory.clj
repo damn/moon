@@ -8,7 +8,7 @@
             [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.textures :as textures]
             [moon.txs :as txs])

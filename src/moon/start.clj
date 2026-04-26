@@ -4,7 +4,6 @@
   (:require [clojure.edn :as edn]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
-            [clojure.gdx.scene2d.stage]
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.graphics :as graphics]
@@ -21,7 +20,7 @@
             [clojure.multifn :as multifn]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.group :as group]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.stage :as stage]
             [clojure.string :as str]
             [clojure.utils :refer [edn-resource]]
             [moon.backends.lwjgl :as lwjgl]
@@ -580,7 +579,7 @@
            [(fn [{:keys [ctx/batch
                          ctx/ui-viewport]
                   :as ctx}]
-              (assoc ctx :ctx/stage (clojure.gdx.scene2d.stage/create ui-viewport batch)))]
+              (assoc ctx :ctx/stage (stage/create ui-viewport batch)))]
 
            [(fn [{:keys [ctx/input
                          ctx/stage]

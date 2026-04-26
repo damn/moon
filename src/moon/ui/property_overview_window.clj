@@ -3,7 +3,7 @@
             [clojure.scene2d.event :as event]
             [moon.db :as db]
             [moon.property :as property]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.stage :as stage]
             [moon.textures :as textures]))
 
 (def ^:private property-type->overview-table-props

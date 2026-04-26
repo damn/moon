@@ -3,7 +3,7 @@
             [clojure.scene2d.actor :as actor]
             [moon.input :as input]
             [moon.inventory :as inventory]
-            [clojure.scene2d.stage :as stage]))
+            [clojure.gdx.scene2d.stage :as stage]))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
   (case k
