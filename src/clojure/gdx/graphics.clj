@@ -1,6 +1,5 @@
 (ns clojure.gdx.graphics
   (:require [clojure.gdx.graphics.g2d.bitmap-font :as font]
-            [clojure.gdx.graphics.g2d.bitmap-font.data :as data]
             [clojure.gdx.graphics.pixmap :as pixmap]
             [clojure.gdx.graphics.pixmap.format :as pixmap.format]
             [clojure.gdx.utils.align :as align]
@@ -48,13 +47,13 @@
 (extend-type BitmapFont
   clojure.graphics.bitmap-font/BitmapFont
   (scale-x [font]
-    (data/scale-x (font/data font)))
+    (.scaleX (font/data font)))
 
   (set-scale! [font scale]
-    (data/set-scale! (font/data font) scale))
+    (.setScale (font/data font) scale))
 
   (enable-markup! [font enable?]
-    (data/enable-markup! (font/data font) enable?))
+    (set! (.markupEnabled (font/data font)) enable?))
 
   (use-integer-positions! [font use-integer-positions?]
     (font/use-integer-positions! font use-integer-positions?))
