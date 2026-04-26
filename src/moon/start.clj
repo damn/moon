@@ -8,7 +8,6 @@
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.scene2d.ui.widget-group]
-            [clojure.gdx.shape-drawer]
             [clojure.gdx.viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.bitmap-font :as bitmap-font]
@@ -575,7 +574,7 @@
            [(fn [{:keys [ctx/batch
                          ctx/shape-drawer-texture]
                   :as ctx}]
-              (assoc ctx :ctx/shape-drawer (clojure.gdx.shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))))]
+              (assoc ctx :ctx/shape-drawer (shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))))]
 
            [(fn [ctx]
               (assoc ctx :ctx/ui-viewport (clojure.gdx.viewport/create 1440 900 (camera/create))))]
