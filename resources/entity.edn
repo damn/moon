@@ -7,6 +7,5 @@
  [moon.entity.string-effect :entity/string-effect]
  [moon.entity.temp-modifier :entity/temp-modifier]
  [moon.entity.line-render :entity/line-render]
- [moon.entity.image :entity/image]
  [moon.entity.mouseover :entity/mouseover?]
  ]
