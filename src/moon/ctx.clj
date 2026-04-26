@@ -4,7 +4,6 @@
 (def schema
   (m/schema
    [:map {:closed true}
-    [:ctx/app :some]
     [:ctx/active-entities :any]
     [:ctx/audio :some]
     [:ctx/batch :some]

@@ -557,8 +557,7 @@
   (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          {:ctx/app       (gdx/app)
-           :ctx/audio     (gdx/audio)
+          {:ctx/audio     (gdx/audio)
            :ctx/files     (gdx/files)
            :ctx/graphics  (gdx/graphics)
            :ctx/input     (gdx/input)}
@@ -629,8 +628,7 @@
                                                     (doto (orthographic-camera/create)
                                                       (orthographic-camera/set-to-ortho! false world-width world-height))))))]
 
-           [(fn [{:keys [ctx/app
-                         ctx/files]
+           [(fn [{:keys [ctx/files]
                   :as ctx}]
               (assoc ctx :ctx/default-font (let [{:keys [path
                                                          size
@@ -646,8 +644,7 @@
                                                                                    :min-filter :linear
                                                                                    :mag-filter :linear
                                                                                    }]
-                                             (doto (freetype/generate-font app
-                                                                           (Files/.internal files path)
+                                             (doto (freetype/generate-font (Files/.internal files path)
                                                                            {:size (* size quality-scaling)})
                                                (bitmap-font/set-scale! (/ quality-scaling))
                                                (bitmap-font/enable-markup! enable-markup?)

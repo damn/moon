@@ -1,4 +1,15 @@
-(ns clojure.graphics.freetype)
+(ns clojure.graphics.freetype
+  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
 
-(defprotocol Freetype
-  (generate-font [application file-handle params]))
+(defn generate-font [file-handle {:keys [size]}]
+  (let [generator (FreeTypeFontGenerator. file-handle)
+        font (.generateFont generator
+                            (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                              (set! (.size params) size)
+                              (set! (.minFilter params) Texture$TextureFilter/Linear)
+                              (set! (.magFilter params) Texture$TextureFilter/Linear)
+                              params))]
+    (.dispose generator)
+    font))
