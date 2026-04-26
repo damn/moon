@@ -8,7 +8,7 @@
             [clojure.scene2d.ui.check-box :as check-box]
             [clojure.scene2d.ui.select-box :as select-box]
             [clojure.scene2d.ui.table :as table]
-            [clojure.scene2d.ui.text-field :as text-field]
+            [clojure.gdx.scene2d.ui.text-field :as text-field]
             [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.set :as set]
             [moon.db :as db]
