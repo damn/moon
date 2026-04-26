@@ -4,7 +4,7 @@
             [clojure.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.label :as label]
-            [clojure.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.ui.table :as table]
 
             [clojure.string :as str]
             [moon.db :as db]
