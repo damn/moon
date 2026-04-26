@@ -883,6 +883,41 @@
   [_ eid _ctx]
   [[:tx/dissoc eid :entity/movement]])
 
+(defn- npc-effect-ctx
+  [{:keys [ctx/grid
+           ctx/raycaster]}
+   eid]
+  (let [entity @eid
+        target (grid/nearest-enemy grid entity)
+        target (when (and target
+                          (raycaster/line-of-sight? raycaster entity @target))
+                 target)]
+    {:effect/source eid
+     :effect/target target
+     :effect/target-direction (when target
+                                (body/direction (:entity/body entity)
+                                                (:entity/body @target)))}))
+
+(defn- npc-choose-skill [ctx entity effect-ctx]
+  (->> entity
+       :entity/skills
+       vals
+       (sort-by :skill/cost)
+       reverse
+       (filter #(and (= :usable (skill/usable-state % entity effect-ctx))
+                     (->> (:skill/effects %)
+                          (filter (fn [e] (effect/applicable? e effect-ctx)))
+                          (some (fn [e] (effect/useful? e effect-ctx ctx))))))
+       first))
+
+(defmethod entity/tick :npc-idle
+  [_ eid ctx]
+  (let [effect-ctx (npc-effect-ctx ctx eid)]
+    (if-let [skill (npc-choose-skill ctx @eid effect-ctx)]
+      [[:tx/event eid :start-action [skill effect-ctx]]]
+      [[:tx/event eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
+                                              [0 0])]])))
+
 (q/defrecord Entity [entity/body])
 
 (defn- send-event! [ctx eid event params]
@@ -1335,23 +1370,6 @@
 
 (defn- create!
   []
-  (multifn/add-api-methods!
-   {:required []
-    :optional [#'moon.entity/create ; FIXME  2 create ! this unused !
-               #'moon.entity/after-create ; not used here
-               #'moon.entity/destroy ; not used etc. ?
-               #'moon.entity/tick
-               #'moon.entity/render
-
-               #'moon.state/create
-               #'moon.state/enter
-               #'moon.state/exit
-               #'moon.state/cursor
-               #'moon.state/pause-game?
-               #'moon.state/clicked-inventory-cell
-               #'moon.state/draw-ui-view
-               #'moon.state/handle-input]}
-   (edn-resource "entity_state.edn"))
   (multifn/add-methods! #'clojure.gdx.scene2d.actor/create (edn-resource "actor_create.edn"))
   (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (tooltip-manager/set-initial-time! 0)
