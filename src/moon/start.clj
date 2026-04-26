@@ -7,7 +7,6 @@
             [clojure.gdx.scene2d.stage]
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
-            [clojure.gdx.scene2d.ui.widget-group]
             [clojure.graphics :as graphics]
             [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.graphics.color :as color]
