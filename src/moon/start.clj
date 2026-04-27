@@ -47,7 +47,6 @@
             [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
-            [moon.impl.textures] ; FIXME ctx
             [moon.info :as info]
             [moon.input]
             [moon.inventory :as inventory]
@@ -1580,9 +1579,9 @@
                                                                             hotspot-y))))))]
 
            [(fn [ctx]
-              ; TODO don't pass context anywhere else but here !
-              (assoc ctx :ctx/textures (moon.impl.textures/create ctx {:folder "resources/"
-                                                                       :extensions #{"png" "bmp"}})))]
+              (assoc ctx :ctx/textures (textures/create (:ctx/files ctx)
+                                                        {:folder "resources/"
+                                                         :extensions #{"png" "bmp"}})))]
 
 
            [(fn [ctx]

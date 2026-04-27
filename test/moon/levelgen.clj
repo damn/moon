@@ -7,9 +7,8 @@
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.utils :refer [edn-resource]]
             [moon.creature-tiles]
-            [clojure.gdx.backends.lwjgl :as lwjgl]
-            moon.impl.textures
-            )
+            [moon.textures :as textures]
+            [clojure.gdx.backends.lwjgl :as lwjgl])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
                              Input$Keys)
@@ -101,9 +100,9 @@
         ctx {:ctx/stage stage
              :ctx/files files}
         ctx (-> ctx
-                (assoc :ctx/textures (moon.impl.textures/create {:ctx/files files}
-                                                                {:folder "resources/"
-                                                                 :extensions #{"png" "bmp"}}))
+                (assoc :ctx/textures (textures/create files
+                                                      {:folder "resources/"
+                                                       :extensions #{"png" "bmp"}}))
                 (assoc :ctx/db (db/create {:schemas "schema.edn"
                                            :properties "properties.edn"})))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
