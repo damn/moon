@@ -33,7 +33,6 @@
             moon.ui.property-editor-window
             moon.ui.property-overview-window
             [clojure.string :as str]
-            [clojure.utils :refer [edn-resource]]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.content-grid :as content-grid]
@@ -1713,12 +1712,14 @@
               [{:keys [ctx/db
                        ctx/textures]
                 :as ctx}]
-              (let [[f params] (edn-resource "world_fns/modules.edn"
-                                             ; "world_fns/vampire.edn"
-                                             ; "world_fns/uf_caves.edn"
-                                             )
+              (let [[f params] (->> "world_fns/modules.edn"
+                                    ; "world_fns/vampire.edn"
+                                    ; "world_fns/uf_caves.edn"
+                                    io/resource
+                                    slurp
+                                    edn/read-string)
                     {:keys [tiled-map
-                            start-position]} (f
+                            start-position]} ((requiring-resolve f)
                                               (assoc params
                                                      :level/creature-properties (moon.creature-tiles/prepare
                                                                                  (db/all-raw db :properties/creatures)

@@ -1,11 +1,12 @@
 (ns moon.levelgen
-  (:require [clojure.graphics.color :as color]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [clojure.graphics.color :as color]
             [clojure.gdx.math.vector3 :as vector3]
             [clojure.gdx.scene2d.ui.table :as table]
             [moon.db :as db]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
-            [clojure.utils :refer [edn-resource]]
             [moon.creature-tiles]
             [moon.textures :as textures]
             [clojure.gdx.backends.lwjgl :as lwjgl])
@@ -50,8 +51,8 @@
                                ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
     (.dispose tiled-map))
-  (let [level (let [[f params] (edn-resource level-fn)]
-                (f
+  (let [level (let [[f params] (->> level-fn io/resource slurp edn/read-string)]
+                ((requiring-resolve f)
                  (assoc params
                         :level/creature-properties (moon.creature-tiles/prepare
                                                     (db/all-raw db :properties/creatures)
