@@ -2,6 +2,7 @@
   (:require [moon.application.dispose :as dispose]
             [moon.application.resize :as resize]
             moon.create.audio
+            moon.create.into-record
             moon.create.render-z-order
             moon.create.max-speed
             moon.create.db
@@ -987,8 +988,6 @@
                                               [0 0])]])))
 
 
-(q/defrecord Context [])
-
 ; no window movable type cursor appears here like in player idle
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
 ; => input events handling
@@ -1143,9 +1142,7 @@
            [moon.create.render-z-order/step]
            [moon.create.max-speed/step]
            [moon.create.db/step]
-
-           [(fn [ctx]
-              (merge (map->Context {}) ctx))]
+           [moon.create.into-record/step]
 
            ; FIXME
            [(fn [{:keys [ctx/stage]
