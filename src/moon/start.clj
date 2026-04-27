@@ -2,6 +2,7 @@
 ; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
   (:require [clojure.edn :as edn]
+            [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.gdx.scene2d.ui.skin :as skin]
@@ -34,7 +35,6 @@
             moon.ui.property-overview-window
             [clojure.string :as str]
             [clojure.utils :refer [edn-resource]]
-            [moon.backends.lwjgl :as lwjgl]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.content-grid :as content-grid]

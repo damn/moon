@@ -1,4 +1,4 @@
-(ns moon.backends.lwjgl
+(ns clojure.gdx.backends.lwjgl
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.utils SharedLibraryLoader

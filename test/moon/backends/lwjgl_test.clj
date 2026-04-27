@@ -1,5 +1,5 @@
 (ns moon.backends.lwjgl-test
-  (:require [moon.backends.lwjgl :as lwjgl])
+  (:require [clojure.gdx.backends.lwjgl :as lwjgl])
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn -main []

@@ -7,7 +7,7 @@
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.utils :refer [edn-resource]]
             [moon.creature-tiles]
-            [moon.backends.lwjgl :as lwjgl]
+            [clojure.gdx.backends.lwjgl :as lwjgl]
             moon.impl.textures
             )
   (:import (com.badlogic.gdx ApplicationListener
