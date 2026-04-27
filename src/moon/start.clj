@@ -2,10 +2,11 @@
   (:require [moon.application.dispose :as dispose]
             [moon.application.resize :as resize]
             moon.create.audio
+            moon.create.batch
+            moon.create.colors
             [clojure.animation :as animation]
             [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
-            [clojure.gdx.colors :as colors]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
@@ -1519,7 +1520,6 @@
 
 (defn- create!
   []
-  (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
@@ -1528,10 +1528,9 @@
            :ctx/graphics  Gdx/graphics
            :ctx/input     Gdx/input}
           [
+           [moon.create.colors/step]
            [moon.create.audio/step]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/batch (SpriteBatch.)))]
+           [moon.create.batch/step]
 
            [(fn [{:keys [ctx/graphics] :as ctx}]
               (assoc ctx :ctx/shape-drawer-texture (graphics/white-pixel-texture graphics)))]
