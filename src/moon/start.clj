@@ -1,5 +1,3 @@
-; 'ctx' - 'application' - 'main wiring' !
-; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
   (:require [clojure.animation :as animation]
             [clojure.edn :as edn]
@@ -41,9 +39,9 @@
             [moon.content-grid :as content-grid]
             [moon.creature-tiles]
             [moon.db :as db]
-            [moon.draws :as draws] ; FIXME ctx
-            [moon.effect :as effect] ; FIXME ctx
-            [moon.entity :as entity] ; FIXME ctx
+            [moon.draws :as draws]
+            [moon.effect :as effect]
+            [moon.entity :as entity]
             [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
@@ -55,21 +53,21 @@
             [moon.order :as order]
             [moon.raycaster :as raycaster]
             [moon.skill :as skill]
-            [moon.state :as state] ; FIXME ctx
+            [moon.state :as state]
             [moon.stats :as stats]
             [moon.textures :as textures]
             [moon.throwable :as throwable]
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
             [moon.malli :as m]
-            [moon.txs :as txs] ; FIXME ctx
-            [moon.ui-actors.action-bar :as action-bar] ; FIXME ctx
-            [moon.ui-actors.dev-menu] ; FIXME ctx
-            [moon.ui-actors.hp-mana-bar] ; FIXME ctx
-            [moon.ui-actors.player-message] ; FIXME ctx
-            [moon.ui-actors.player-state-draw] ; FIXME ctx
-            [moon.ui-actors.windows.info] ; FIXME ctx
-            [moon.ui-actors.windows.inventory :as inventory-window] ; FIXME ctx
+            [moon.txs :as txs]
+            [moon.ui-actors.action-bar :as action-bar]
+            [moon.ui-actors.dev-menu]
+            [moon.ui-actors.hp-mana-bar]
+            [moon.ui-actors.player-message]
+            [moon.ui-actors.player-state-draw]
+            [moon.ui-actors.windows.info]
+            [moon.ui-actors.windows.inventory :as inventory-window]
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
@@ -2401,13 +2399,13 @@
                           (reset! state (create!)))
 
                         (dispose [_]
-                          (dispose! @state)) ; ok full ctx here
+                          (dispose! @state))
 
                         (render [_]
                           (swap! state render!))
 
                         (resize [_ width height]
-                          (resize! @state width height)) ; ok full ctx here
+                          (resize! @state width height))
 
                         (pause [_])
 
