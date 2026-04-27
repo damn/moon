@@ -2,7 +2,11 @@
   (:require [moon.application.create :as create]
             [moon.application.dispose :as dispose]
             [moon.application.resize :as resize]
+            moon.render.get-stage-ctx
             moon.render.draw-tiled-map
+            moon.render.validate
+            moon.render.update-mouse
+            moon.render.update-mouseover-eid
             [clojure.animation :as animation]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.graphics :as graphics]
@@ -48,7 +52,6 @@
             [moon.throwable :as throwable]
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
-            [moon.malli :as m]
             [moon.txs :as txs]
             [moon.ui-actors.action-bar :as action-bar]
             [moon.val-max :as val-max]
@@ -57,57 +60,6 @@
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.graphics.g2d SpriteBatch))
   (:gen-class))
-
-(def schema
-  (m/schema
-   [:map {:closed true}
-    [:ctx/active-entities :any]
-    [:ctx/audio :some]
-    [:ctx/batch :some]
-    [:ctx/colors :some]
-    [:ctx/content-grid :some]
-    [:ctx/controls :some]
-    [:ctx/controls-info :some]
-    [:ctx/cursors :some]
-    [:ctx/db :some]
-    [:ctx/default-font :some]
-    [:ctx/delta-time :any]
-    [:ctx/elapsed-time :some]
-    [:ctx/entity-ids :some]
-    [:ctx/explored-tile-corners :some]
-    [:ctx/factions-iterations :some]
-    [:ctx/files :some]
-    [:ctx/graphics :some]
-    [:ctx/grid :some]
-    [:ctx/id-counter :some]
-    [:ctx/input :some]
-    [:ctx/max-delta :some]
-    [:ctx/max-speed :some]
-    [:ctx/minimum-size :some]
-    [:ctx/mouseover-eid :any]
-    [:ctx/paused? :some]
-    [:ctx/player-eid :some]
-    [:ctx/potential-field-cache :some]
-    [:ctx/raycaster :some]
-    [:ctx/render-z-order :some]
-    [:ctx/shape-drawer :some]
-    [:ctx/shape-drawer-texture :some]
-    [:ctx/skin :some]
-    [:ctx/stage :some]
-    [:ctx/start-position :some]
-    [:ctx/textures :some]
-    [:ctx/tiled-map :some]
-    [:ctx/ui-mouse-position :any]
-    [:ctx/ui-viewport :some]
-    [:ctx/unit-scale :some]
-    [:ctx/world-mouse-position :any]
-    [:ctx/world-unit-scale :some]
-    [:ctx/world-viewport :some]
-    [:ctx/z-orders :some]
-    ]))
-
-(defn validate [ctx]
-  (m/validate-humanize schema ctx))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))
@@ -1341,53 +1293,10 @@
           ctx
           (concat
            [
-            [(fn
-               [{:keys [ctx/stage]
-                 :as ctx}]
-               (or (stage/ctx stage)
-                   ctx))] ; first render stage does not have ctx set.
-
-            [(fn [ctx]
-               (validate ctx)
-               ctx)]
-
-            [(fn
-               [{:keys [ctx/input
-                        ctx/ui-viewport
-                        ctx/world-viewport]
-                 :as ctx}]
-               (let [mp (input/mouse-position input)]
-                 (-> ctx
-                     (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
-                     (assoc :ctx/ui-mouse-position (viewport/unproject ui-viewport mp)))))]
-
-            [(fn
-               [{:keys [ctx/input
-                        ctx/mouseover-eid
-                        ctx/stage
-                        ctx/player-eid
-                        ctx/grid
-                        ctx/raycaster
-                        ctx/render-z-order
-                        ctx/world-mouse-position]
-                 :as ctx}]
-               (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))
-                     position world-mouse-position
-                     new-eid (if mouseover-actor
-                               nil
-                               (let [player @player-eid
-                                     hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
-                                                  (grid/point->entities grid position))]
-                                 (->> render-z-order
-                                      (order/sort-by-order hits #(:body/z-order (:entity/body @%)))
-                                      reverse
-                                      (filter #(raycaster/line-of-sight? raycaster player @%))
-                                      first)))]
-                 (when mouseover-eid
-                   (swap! mouseover-eid dissoc :entity/mouseover?))
-                 (when new-eid
-                   (swap! new-eid assoc :entity/mouseover? true))
-                 (assoc ctx :ctx/mouseover-eid new-eid)))]
+            [moon.render.get-stage-ctx/step]
+            [moon.render.validate/step]
+            [moon.render.update-mouse/step]
+            [moon.render.update-mouseover-eid/step]
 
             [(fn
                [{:keys [ctx/controls
@@ -1450,9 +1359,7 @@
             [remove-destroyed-entities]
             [window-camera-controls]
             [render-stage!]
-            [(fn [ctx]
-               (validate ctx)
-               ctx)]
+            [moon.render.validate/step]
             ])))
 
 (def state (atom nil))
