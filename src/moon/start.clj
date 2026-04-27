@@ -11,6 +11,7 @@
             moon.create.set-input-processor
             moon.create.skin
             moon.create.cursors
+            moon.create.textures
             [clojure.animation :as animation]
             [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
@@ -1544,12 +1545,7 @@
            [moon.create.set-input-processor/step]
            [moon.create.skin/step]
            [moon.create.cursors/step]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/textures (textures/create (:ctx/files ctx)
-                                                        {:folder "resources/"
-                                                         :extensions #{"png" "bmp"}})))]
-
+           [moon.create.textures/step]
 
            [(fn [ctx]
               (assoc ctx :ctx/world-unit-scale (float (/ 48))))]
