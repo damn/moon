@@ -47,7 +47,6 @@
             [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
-            [moon.if-not-paused.update-potential-fields]
             [moon.impl.textures] ; FIXME ctx
             [moon.info :as info]
             [moon.input]
@@ -2259,12 +2258,11 @@
            ctx/potential-field-cache]
     :as ctx}]
   (doseq [[faction max-iterations] factions-iterations]
-    (moon.if-not-paused.update-potential-fields/tick!
-     potential-field-cache
-     grid
-     faction
-     active-entities
-     max-iterations))
+    (grid/tick! potential-field-cache
+                grid
+                faction
+                active-entities
+                max-iterations))
   ctx)
 
 (defn- render! [ctx]
