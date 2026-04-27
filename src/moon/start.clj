@@ -2,6 +2,9 @@
   (:require [moon.application.dispose :as dispose]
             [moon.application.resize :as resize]
             moon.create.audio
+            moon.create.render-z-order
+            moon.create.max-speed
+            moon.create.db
             moon.create.ctx-colors
             moon.create.controls
             moon.create.batch
@@ -1518,20 +1521,9 @@
            [moon.create.default-font/step]
            [moon.create.controls/step]
            [moon.create.ctx-colors/step]
-
-           [(fn [{:keys [ctx/z-orders]
-                  :as ctx}]
-              (assoc ctx :ctx/render-z-order (order/define-order z-orders)))]
-
-           [(fn
-              [{:keys [ctx/minimum-size
-                       ctx/max-delta]
-                :as ctx}]
-              (assoc ctx :ctx/max-speed (/ minimum-size max-delta)))]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/db (db/create {:schemas "schema.edn"
-                                             :properties "properties.edn"})))]
+           [moon.create.render-z-order/step]
+           [moon.create.max-speed/step]
+           [moon.create.db/step]
 
            [(fn [ctx]
               (merge (map->Context {}) ctx))]
