@@ -1,6 +1,7 @@
 (ns moon.start
   (:require [moon.application.dispose :as dispose]
             [moon.application.resize :as resize]
+            moon.create.audio
             [clojure.animation :as animation]
             [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
@@ -73,7 +74,6 @@
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener
-                             Audio
                              Files
                              Gdx)
            (com.badlogic.gdx.audio Sound)
@@ -1528,12 +1528,7 @@
            :ctx/graphics  Gdx/graphics
            :ctx/input     Gdx/input}
           [
-           [(fn [{:keys [ctx/audio ctx/files] :as ctx}]
-              (assoc ctx :ctx/audio
-                     (into {}
-                           (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
-                             [sound-name
-                              (Audio/.newSound audio (Files/.internal files (format "sounds/%s.wav" sound-name)))]))))]
+           [moon.create.audio/step]
 
            [(fn [ctx]
               (assoc ctx :ctx/batch (SpriteBatch.)))]
