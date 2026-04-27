@@ -39,7 +39,6 @@
             [moon.cell :as cell]
             [moon.content-grid :as content-grid]
             [moon.creature-tiles]
-            [moon.ctx :as ctx]
             [moon.db :as db]
             [moon.draws :as draws] ; FIXME ctx
             [moon.effect :as effect] ; FIXME ctx
@@ -64,6 +63,7 @@
             [moon.throwable :as throwable]
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
+            [moon.malli :as m]
             [moon.txs :as txs] ; FIXME ctx
             [moon.ui-actors.action-bar :as action-bar] ; FIXME ctx
             [moon.ui-actors.dev-menu] ; FIXME ctx
@@ -83,6 +83,57 @@
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.utils Disposable))
   (:gen-class))
+
+(def schema
+  (m/schema
+   [:map {:closed true}
+    [:ctx/active-entities :any]
+    [:ctx/audio :some]
+    [:ctx/batch :some]
+    [:ctx/colors :some]
+    [:ctx/content-grid :some]
+    [:ctx/controls :some]
+    [:ctx/controls-info :some]
+    [:ctx/cursors :some]
+    [:ctx/db :some]
+    [:ctx/default-font :some]
+    [:ctx/delta-time :any]
+    [:ctx/elapsed-time :some]
+    [:ctx/entity-ids :some]
+    [:ctx/explored-tile-corners :some]
+    [:ctx/factions-iterations :some]
+    [:ctx/files :some]
+    [:ctx/graphics :some]
+    [:ctx/grid :some]
+    [:ctx/id-counter :some]
+    [:ctx/input :some]
+    [:ctx/max-delta :some]
+    [:ctx/max-speed :some]
+    [:ctx/minimum-size :some]
+    [:ctx/mouseover-eid :any]
+    [:ctx/paused? :some]
+    [:ctx/player-eid :some]
+    [:ctx/potential-field-cache :some]
+    [:ctx/raycaster :some]
+    [:ctx/render-z-order :some]
+    [:ctx/shape-drawer :some]
+    [:ctx/shape-drawer-texture :some]
+    [:ctx/skin :some]
+    [:ctx/stage :some]
+    [:ctx/start-position :some]
+    [:ctx/textures :some]
+    [:ctx/tiled-map :some]
+    [:ctx/ui-mouse-position :any]
+    [:ctx/ui-viewport :some]
+    [:ctx/unit-scale :some]
+    [:ctx/world-mouse-position :any]
+    [:ctx/world-unit-scale :some]
+    [:ctx/world-viewport :some]
+    [:ctx/z-orders :some]
+    ]))
+
+(defn validate [ctx]
+  (m/validate-humanize schema ctx))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))
@@ -2123,7 +2174,7 @@
                    ctx))] ; first render stage does not have ctx set.
 
             [(fn [ctx]
-               (ctx/validate ctx)
+               (validate ctx)
                ctx)]
 
             [(fn
@@ -2226,7 +2277,7 @@
             [window-camera-controls]
             [render-stage!]
             [(fn [ctx]
-               (ctx/validate ctx)
+               (validate ctx)
                ctx)]
             ])))
 
