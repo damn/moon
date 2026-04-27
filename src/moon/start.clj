@@ -1,5 +1,6 @@
 (ns moon.start
   (:require [moon.application.dispose :as dispose]
+            [moon.application.resize :as resize]
             [clojure.animation :as animation]
             [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
@@ -2364,14 +2365,6 @@
                ctx)]
             ])))
 
-(defn- resize!
-  [{:keys [ctx/ui-viewport
-           ctx/world-viewport]}
-   width height]
-  (viewport/update! ui-viewport width height true)
-  (viewport/update! world-viewport width height false)
-  nil)
-
 (def state (atom nil))
 
 (defn -main []
@@ -2387,7 +2380,7 @@
                           (swap! state render!))
 
                         (resize [_ width height]
-                          (resize! @state width height))
+                          (resize/do! @state width height))
 
                         (pause [_])
 
