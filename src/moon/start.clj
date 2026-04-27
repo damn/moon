@@ -4,11 +4,17 @@
             moon.create.audio
             moon.create.batch
             moon.create.colors
+            moon.create.shape-drawer
+            moon.create.shape-drawer-texture
+            moon.create.ui-viewport
+            moon.create.stage
+            moon.create.set-input-processor
+            moon.create.skin
+            moon.create.cursors
             [clojure.animation :as animation]
             [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
-            [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.graphics :as graphics]
             [clojure.graphics.bitmap-font :as bitmap-font]
@@ -1531,44 +1537,13 @@
            [moon.create.colors/step]
            [moon.create.audio/step]
            [moon.create.batch/step]
-
-           [(fn [{:keys [ctx/graphics] :as ctx}]
-              (assoc ctx :ctx/shape-drawer-texture (graphics/white-pixel-texture graphics)))]
-
-           [(fn [{:keys [ctx/batch
-                         ctx/shape-drawer-texture]
-                  :as ctx}]
-              (assoc ctx :ctx/shape-drawer (shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))))]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/ui-viewport (viewport/create 1440 900 (camera/create))))]
-
-           [(fn [{:keys [ctx/batch
-                         ctx/ui-viewport]
-                  :as ctx}]
-              (assoc ctx :ctx/stage (stage/create ui-viewport batch)))]
-
-           [(fn [{:keys [ctx/input
-                         ctx/stage]
-                  :as ctx}]
-              (input/set-processor! input stage)
-              ctx)]
-
-           [(fn [{:keys [ctx/files] :as ctx}]
-              (assoc ctx :ctx/skin (let [skin (skin/create (Files/.internal files "uiskin.json"))]
-                                     (bitmap-font/enable-markup! (skin/font skin "default-font") true)
-                                     skin)))]
-
-           [(fn [{:keys [ctx/graphics
-                         ctx/files]
-                  :as ctx}]
-              (assoc ctx :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
-                                        (update-vals data
-                                                     (fn [[path [hotspot-x hotspot-y]]]
-                                                       (graphics/new-cursor graphics
-                                                                            (Files/.internal files (format path-format path))
-                                                                            hotspot-x
-                                                                            hotspot-y))))))]
+           [moon.create.shape-drawer-texture/step]
+           [moon.create.shape-drawer/step]
+           [moon.create.ui-viewport/step]
+           [moon.create.stage/step]
+           [moon.create.set-input-processor/step]
+           [moon.create.skin/step]
+           [moon.create.cursors/step]
 
            [(fn [ctx]
               (assoc ctx :ctx/textures (textures/create (:ctx/files ctx)
@@ -2361,6 +2336,8 @@
 
 (def state (atom nil))
 
+; Functions and data transformations
+; no types
 (defn -main []
   (lwjgl/use-glfw-async!)
   (lwjgl/application! (reify ApplicationListener
