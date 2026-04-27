@@ -1,7 +1,8 @@
 ; 'ctx' - 'application' - 'main wiring' !
 ; => maybe make sub-contexts later how it is used together ?!
 (ns moon.start
-  (:require [clojure.edn :as edn]
+  (:require [clojure.animation :as animation]
+            [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.colors :as colors]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
@@ -43,7 +44,6 @@
             [moon.draws :as draws] ; FIXME ctx
             [moon.effect :as effect] ; FIXME ctx
             [moon.entity :as entity] ; FIXME ctx
-            [moon.entity.animation :as animation]
             [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]

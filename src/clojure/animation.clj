@@ -1,4 +1,4 @@
-(ns moon.entity.animation)
+(ns clojure.animation)
 
 (defprotocol Animation
   (tick [_ delta])
