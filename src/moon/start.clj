@@ -3,11 +3,16 @@
             [moon.application.dispose :as dispose]
             [moon.application.resize :as resize]
             moon.render.get-stage-ctx
+            moon.render.update-player-state
             moon.render.draw-tiled-map
             moon.render.validate
             moon.render.update-mouse
             moon.render.update-mouseover-eid
             moon.render.draw-on-world-viewport
+            moon.render.check-debug-viewer
+            moon.render.active-entities
+            moon.render.set-camera
+            moon.render.clear-screen
             [clojure.animation :as animation]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.graphics :as graphics]
@@ -1026,100 +1031,6 @@
           :air  (:colors/mouseover-tile-air colors)
           :none (:colors/mouseover-tile-none colors))]])))
 
-(defn- mouseover-actor-info [actor]
-  (let [inventory-slot (and (actor/parent actor)
-                            (= "inventory-cell" (actor/name (actor/parent actor)))
-                            (actor/user-object (actor/parent actor)))]
-    (cond
-     inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
-     (actor/window-title-bar? actor) [:mouseover-actor/window-title-bar]
-     (actor/button?           actor) [:mouseover-actor/button]
-     :else                     [:mouseover-actor/unspecified])))
-
-(defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
-  (let [target-position (or (and mouseover-eid
-                                 (:body/position (:entity/body @mouseover-eid)))
-                            world-mouse-position)]
-    {:effect/source player-eid
-     :effect/target mouseover-eid
-     :effect/target-position target-position
-     :effect/target-direction (v/direction (:body/position (:entity/body @player-eid))
-                                           target-position)}))
-
-(defn- interaction-state
-  [stage
-   world-mouse-position
-   mouseover-eid
-   player-eid
-   mouseover-actor]
-  (cond
-   mouseover-actor
-   [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
-
-   (and mouseover-eid
-        (:entity/clickable @mouseover-eid))
-   [:interaction-state/clickable-mouseover-eid
-    {:clicked-eid mouseover-eid
-     :in-click-range? (< (body/distance (:entity/body @player-eid)
-                                        (:entity/body @mouseover-eid))
-                         (:entity/click-distance-tiles @player-eid))}]
-
-   :else
-   (if-let [skill-id (-> stage
-                         (stage/find-actor "moon.ui.action-bar")
-                         action-bar/selected-skill)]
-     (let [entity @player-eid
-           skill (skill-id (:entity/skills entity))
-           effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
-           state (skill/usable-state skill entity effect-ctx)]
-       (if (= state :usable)
-         [:interaction-state.skill/usable [skill effect-ctx]]
-         [:interaction-state.skill/not-usable state]))
-     [:interaction-state/no-skill-selected])))
-
-(defn- assoc-interaction-state
-  [{:keys [ctx/input
-           ctx/mouseover-eid
-           ctx/stage
-           ctx/player-eid
-           ctx/world-mouse-position]
-    :as ctx}]
-  (assoc ctx :ctx/interaction-state (interaction-state stage
-                                                       world-mouse-position
-                                                       mouseover-eid
-                                                       player-eid
-                                                       (stage/mouseover-actor stage (input/mouse-position input)))))
-
-(defn- set-cursor
-  [{:keys [ctx/cursors
-           ctx/graphics
-           ctx/player-eid]
-    :as ctx}]
-  (let [eid player-eid
-        entity @eid
-        state-k (:state (:entity/fsm entity))
-        cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
-    (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! graphics (get cursors cursor-key)))
-  ctx)
-
-(defn- player-state-handle-input
-  [{:keys [ctx/player-eid]
-    :as ctx}]
-  (let [eid player-eid
-        entity @eid
-        state-k (:state (:entity/fsm entity))
-        txs (state/handle-input [state-k (state-k entity)] eid ctx)]
-    (txs/handle! ctx txs))
-  ctx)
-
-(defn update-player-state [ctx]
-  (-> ctx
-      assoc-interaction-state
-      set-cursor
-      player-state-handle-input
-      (dissoc :ctx/interaction-state)))
-
 (def pausing? true) ; TODO FIXME
 
 (defn assoc-paused
@@ -1266,76 +1177,35 @@
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           ctx
-          (concat
-           [
-            [moon.render.get-stage-ctx/step]
-            [moon.render.validate/step]
-            [moon.render.update-mouse/step]
-            [moon.render.update-mouseover-eid/step]
-
-            [(fn
-               [{:keys [ctx/controls
-                        ctx/input
-                        ctx/mouseover-eid
-                        ctx/skin
-                        ctx/stage
-                        ctx/grid
-                        ctx/world-mouse-position]
-                 :as ctx}]
-               (when (input/button-just-pressed? input (:open-debug-button controls))
-                 (let [data (or (and mouseover-eid @mouseover-eid)
-                                @(grid (mapv int world-mouse-position)))]
-                   (stage/add-actor! stage
-                                     (actor/create
-                                      {:type :ui/data-viewer-window
-                                       :title "Data View"
-                                       :data data
-                                       :width 500
-                                       :height 500
-                                       :skin skin}))))
-               ctx)]
-
-            [(fn
-               [{:keys [ctx/player-eid
-                        ctx/content-grid]
-                 :as ctx}]
-               (assoc ctx :ctx/active-entities
-                      (content-grid/active-entities content-grid @player-eid)))]
-
-            [(fn
-               [{:keys [ctx/player-eid
-                        ctx/world-viewport]
-                 :as ctx}]
-               (camera/set-position! (viewport/camera world-viewport)
-                                     (:body/position (:entity/body @player-eid)))
-               ctx)]
-
-            [(fn [ctx]
-               (graphics/clear! (:ctx/graphics ctx) 0 0 0 0)
-               ctx)]
-
-            ]
-           [
-            [moon.render.draw-tiled-map/step]
-            [moon.render.draw-on-world-viewport/step [
-                                                      #_draw-tile-grid
-                                                      draw-cell-debug
-                                                      draw-entities
-                                                      #_moon.geom-test
-                                                      highlight-mouseover-tile
-                                                      ]]
-            [update-player-state]
-            [assoc-paused]
-            [if-not-paused [
-                            [update-time]
-                            [update-potential-fields]
-                            [tick-entities!]
-                            ]]
-            [remove-destroyed-entities]
-            [window-camera-controls]
-            [render-stage!]
-            [moon.render.validate/step]
-            ])))
+          [
+           [moon.render.get-stage-ctx/step]
+           [moon.render.validate/step]
+           [moon.render.update-mouse/step]
+           [moon.render.update-mouseover-eid/step]
+           [moon.render.check-debug-viewer/step]
+           [moon.render.active-entities/step]
+           [moon.render.set-camera/step]
+           [moon.render.clear-screen/step]
+           [moon.render.draw-tiled-map/step]
+           [moon.render.draw-on-world-viewport/step [
+                                                     #_draw-tile-grid
+                                                     draw-cell-debug
+                                                     draw-entities
+                                                     #_moon.geom-test
+                                                     highlight-mouseover-tile
+                                                     ]]
+           [moon.render.update-player-state/step]
+           [assoc-paused]
+           [if-not-paused [
+                           [update-time]
+                           [update-potential-fields]
+                           [tick-entities!]
+                           ]]
+           [remove-destroyed-entities]
+           [window-camera-controls]
+           [render-stage!]
+           [moon.render.validate/step]
+           ]))
 
 (def state (atom nil))
 
