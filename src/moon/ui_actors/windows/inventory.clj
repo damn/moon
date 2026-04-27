@@ -9,18 +9,8 @@
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [clojure.gdx.scene2d.stage :as stage]
-            [moon.state :as state]
-            [moon.textures :as textures]
-            [moon.txs :as txs])
+            [moon.textures :as textures])
   (:import (com.badlogic.gdx.graphics Color)))
-
-(defn- clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
-  (let [entity @player-eid
-        state-k (:state (:entity/fsm entity))]
-    (txs/handle! ctx
-                 (state/clicked-inventory-cell [state-k (state-k entity)]
-                                               player-eid
-                                               cell))))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
   {:type :ui/widget
@@ -120,7 +110,8 @@
   [{:keys [ctx/colors
            ctx/skin
            ctx/stage
-           ctx/textures]}]
+           ctx/textures]}
+   clicked-inventory-cell]
   (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
                                              :shield   1
                                              :rings    2
