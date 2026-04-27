@@ -2,25 +2,28 @@
   (:require [moon.application.dispose :as dispose]
             [moon.application.resize :as resize]
             moon.create.audio
+            moon.create.ctx-colors
+            moon.create.controls
             moon.create.batch
             moon.create.colors
             moon.create.shape-drawer
             moon.create.shape-drawer-texture
+            moon.create.default-font
             moon.create.ui-viewport
             moon.create.stage
+            moon.create.tooltip-config
             moon.create.set-input-processor
             moon.create.skin
             moon.create.cursors
             moon.create.textures
+            moon.create.world-unit-scale
+            moon.create.world-viewport
             moon.render.draw-tiled-map
             [clojure.animation :as animation]
             [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
-            [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.graphics :as graphics]
-            [clojure.graphics.bitmap-font :as bitmap-font]
-            [clojure.graphics.color :as color]
-            [clojure.graphics.freetype :as freetype]
+
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.graphics.texture :as texture]
@@ -82,7 +85,6 @@
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx ApplicationListener
-                             Files
                              Gdx)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics.g2d SpriteBatch))
@@ -1015,6 +1017,7 @@
                                      [:tx/spawn-effect
                                       position
                                       {:entity/animation (assoc animation :delete-after-stopped? true)}]]))
+   ; TODO :tx/swap ?
    :tx/assoc                    (fn [_ctx eid k value]
                                   (swap! eid assoc k value)
                                   nil)
@@ -1364,59 +1367,6 @@
                        handled-txs)))
   )
 
-(def black [0 0 0 1])
-(def white [1 1 1 1])
-(def gray  [0.5 0.5 0.5 1])
-(def red   [1 0 0 1])
-
-(def outline-alpha 0.4)
-
-(defn- hpbar-color [ratio]
-  (let [ratio (float ratio)
-        color (cond
-               (> ratio 0.75) :green
-               (> ratio 0.5)  :darkgreen
-               (> ratio 0.25) :yellow
-               :else          :red)]
-    (color {:green     (color/float-bits [0 0.8 0 1])
-            :darkgreen (color/float-bits [0 0.5 0 1])
-            :yellow    (color/float-bits [0.5 0.5 0 1])
-            :red       (color/float-bits [0.5 0 0 1])})))
-
-(defn- load-colors []
-  {
-   :colors/mouseover-tile-air  (color/float-bits [1 1 0 0.5])
-   :colors/mouseover-tile-none (color/float-bits [1 0 0 0.5])
-   :colors/debug-body-outline-collides (color/float-bits white)
-   :colors/debug-body-outline (color/float-bits gray)
-   :colors/debug-body-outline-render-error (color/float-bits red)
-   :colors/debug-cell-entities (color/float-bits [1 0 0 0.6])
-   :colors/debug-cell-occupied (color/float-bits [0 0 1 0.6])
-   :colors/debug-potential-field (fn [ratio]
-                                   (color/float-bits [ratio (- 1 ratio) ratio 0.6]))
-   :colors/target-all-line (color/float-bits [1 0 0 0.75])
-   :colors/target-all-render (color/float-bits [1 0 0 0.5])
-   :colors/target-entity-line (color/float-bits [1 0 0 0.75])
-   :colors/target-entity-in-range (color/float-bits [1 0 0 0.5])
-   :colors/target-entity-not-in-range (color/float-bits [1 1 0 0.5])
-   :colors/enemy-color (color/float-bits [1 0 0 outline-alpha])
-   :colors/friendly-color (color/float-bits [0 1 0 outline-alpha])
-   :colors/neutral-color  (color/float-bits [1 1 1 outline-alpha])
-   :colors/hp-bar hpbar-color
-   :colors/hp-bar-rect (color/float-bits black)
-   :colors/temp-modifier (color/float-bits [0.5 0.5 0.5 0.4])
-   :colors/active-skill-circle (color/float-bits [1 1 1 0.125])
-   :colors/active-skill-sector (color/float-bits [1 1 1 0.5])
-   :colors/stunned (color/float-bits [1 1 1 0.6])
-   :colors/explored-tile (color/float-bits [0.5 0.5 0.5 1])
-   :colors/visible-tile (color/float-bits [1 1 1 1])
-   :colors/invisible-tile (color/float-bits [0 0 0 1])
-   :colors/droppable-item (color/float-bits [0 0.6 0 0.8 1])
-   :colors/not-allowed-drop-item (color/float-bits [0.6 0 0 0.8 1])
-   :colors/item-rect (color/float-bits [0.5 0.5 0.5 1])
-   }
-  )
-
 ; no window movable type cursor appears here like in player idle
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
 ; => input events handling
@@ -1527,14 +1477,31 @@
 
 (defn- create!
   []
-  (tooltip-manager/set-initial-time! 0)
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          {:ctx/audio     Gdx/audio
+          {
+           :ctx/audio     Gdx/audio
            :ctx/files     Gdx/files
            :ctx/graphics  Gdx/graphics
-           :ctx/input     Gdx/input}
+           :ctx/input     Gdx/input
+           :ctx/active-entities nil
+           :ctx/delta-time nil
+           :ctx/mouseover-eid nil
+           :ctx/ui-mouse-position nil
+           :ctx/world-mouse-position nil
+           :ctx/elapsed-time 0
+           :ctx/paused? false
+           :ctx/unit-scale (atom 1)
+           :ctx/factions-iterations {:good 15 :evil 5}
+           :ctx/max-delta 0.04
+           :ctx/minimum-size 0.39
+           :ctx/z-orders [:z-order/on-ground
+                          :z-order/ground
+                          :z-order/flying
+                          :z-order/effect]
+           }
           [
+           [moon.create.tooltip-config/step]
            [moon.create.colors/step]
            [moon.create.audio/step]
            [moon.create.batch/step]
@@ -1546,87 +1513,11 @@
            [moon.create.skin/step]
            [moon.create.cursors/step]
            [moon.create.textures/step]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/world-unit-scale (float (/ 48))))]
-
-           [(fn [{:keys [ctx/world-unit-scale] :as ctx}]
-              (assoc ctx :ctx/world-viewport
-                     (let [world-width  (* 1440  world-unit-scale)
-                           world-height (* 900 world-unit-scale)]
-                       (viewport/create world-width
-                                        world-height
-                                        (doto (camera/create)
-                                          (camera/set-to-ortho! false world-width world-height))))))]
-
-           [(fn [{:keys [ctx/files]
-                  :as ctx}]
-              (assoc ctx :ctx/default-font (let [{:keys [path
-                                                         size
-                                                         quality-scaling
-                                                         enable-markup?
-                                                         use-integer-positions?]} {
-                                                                                   :path "exocet/films.EXL_____.ttf"
-                                                                                   :size 16
-                                                                                   :quality-scaling 2
-                                                                                   :enable-markup? true
-                                                                                   :use-integer-positions? false
-                                                                                   ; :texture-filter/linear because scaling to world-units
-                                                                                   :min-filter :linear
-                                                                                   :mag-filter :linear
-                                                                                   }]
-                                             (doto (freetype/generate-font (Files/.internal files path)
-                                                                           {:size (* size quality-scaling)})
-                                               (bitmap-font/set-scale! (/ quality-scaling))
-                                               (bitmap-font/enable-markup! enable-markup?)
-                                               (bitmap-font/use-integer-positions! use-integer-positions?))))
-              )]
-
-           [(fn [ctx]
-              (assoc ctx
-                     :ctx/controls {
-                                    :zoom-in :input.keys/minus
-                                    :zoom-out :input.keys/equals
-                                    :unpause-once :input.keys/p
-                                    :unpause-continously :input.keys/space
-                                    :close-windows-key :input.keys/escape
-                                    :toggle-inventory  :input.keys/i
-                                    :toggle-entity-info :input.keys/e
-                                    :open-debug-button :input.buttons/right
-                                    }
-                     :ctx/controls-info (str/join "\n"
-                                                  ["[W][A][S][D] - Move"
-                                                   "[ESCAPE] - Close windows"
-                                                   "[I] - Inventory window"
-                                                   "[E] - Entity Info window"
-                                                   "[-]/[=] - Zoom"
-                                                   "[P]/[SPACE] - Unpause"
-                                                   "rightclick on tile or entity - open debug data window"
-                                                   "Leftmouse click - use skill/drop item on cursor"])
-                     )
-              )]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/colors (load-colors)))]
-
-           [(fn [ctx]
-              (assoc ctx
-                     :ctx/active-entities nil
-                     :ctx/delta-time nil
-                     :ctx/mouseover-eid nil
-                     :ctx/ui-mouse-position nil
-                     :ctx/world-mouse-position nil
-                     :ctx/elapsed-time 0
-                     :ctx/paused? false
-                     :ctx/unit-scale (atom 1)
-                     :ctx/factions-iterations {:good 15 :evil 5}
-                     :ctx/max-delta 0.04
-                     :ctx/minimum-size 0.39
-                     :ctx/z-orders [:z-order/on-ground
-                                    :z-order/ground
-                                    :z-order/flying
-                                    :z-order/effect]
-                     ))]
+           [moon.create.world-unit-scale/step]
+           [moon.create.world-viewport/step]
+           [moon.create.default-font/step]
+           [moon.create.controls/step]
+           [moon.create.ctx-colors/step]
 
            [(fn [{:keys [ctx/z-orders]
                   :as ctx}]
