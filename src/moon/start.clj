@@ -7,6 +7,7 @@
             moon.render.validate
             moon.render.update-mouse
             moon.render.update-mouseover-eid
+            moon.render.draw-on-world-viewport
             [clojure.animation :as animation]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.graphics :as graphics]
@@ -57,8 +58,7 @@
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx ApplicationListener)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch))
+  (:import (com.badlogic.gdx ApplicationListener))
   (:gen-class))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
@@ -922,31 +922,6 @@
 
  )
 
-(defn draw-on-world-viewport!
-  [{:keys [^SpriteBatch ctx/batch
-           ctx/shape-drawer
-           ctx/unit-scale
-           ctx/world-unit-scale
-           ctx/world-viewport]
-    :as ctx}
-   draw-fns]
-  ; fix scene2d.ui.tooltip flickering
-  ; _everything_ flickers with TextToolTip!
-  ; it changes batch color somehow and does not change it back ! FIXME
-  (.setColor batch 1 1 1 1)
-  ;
-  (.setProjectionMatrix batch (camera/combined (viewport/camera world-viewport)))
-  (.begin batch)
-  (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
-    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
-    (reset! unit-scale world-unit-scale)
-    (doseq [f draw-fns]
-      (draws/handle ctx (f ctx)))
-    (reset! unit-scale 1)
-    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (.end batch)
-  ctx)
-
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)
 (def ^:dbg-flag show-cell-occupied? false)
@@ -1342,13 +1317,13 @@
             ]
            [
             [moon.render.draw-tiled-map/step]
-            [draw-on-world-viewport! [
-                                      #_draw-tile-grid
-                                      draw-cell-debug
-                                      draw-entities
-                                      #_moon.geom-test
-                                      highlight-mouseover-tile
-                                      ]]
+            [moon.render.draw-on-world-viewport/step [
+                                                      #_draw-tile-grid
+                                                      draw-cell-debug
+                                                      draw-entities
+                                                      #_moon.geom-test
+                                                      highlight-mouseover-tile
+                                                      ]]
             [update-player-state]
             [assoc-paused]
             [if-not-paused [
