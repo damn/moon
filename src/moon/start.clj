@@ -1685,13 +1685,27 @@
               (merge (map->Context {}) ctx))]
 
            ; FIXME
-           [(fn [ctx]
+           [(fn [{:keys [ctx/stage]
+                  :as ctx}]
               (doseq [actor [(moon.ui-actors.dev-menu/create (dev-menu-config ctx))
                              (moon.ui-actors.action-bar/create)
                              (moon.ui-actors.hp-mana-bar/create ctx)
                              (actor/create
                               {:type :ui/group
-                               :group/actors [(moon.ui-actors.windows.info/create ctx)
+                               :group/actors [(moon.ui-actors.windows.info/create
+                                               {:title "Entity Info"
+                                                :actor-name "moon.ui.windows.entity-info"
+                                                :visible? false
+                                                :position [(viewport/world-width (stage/viewport stage)) 0]
+                                                :set-label-text! (fn [{:keys [ctx/mouseover-eid]
+                                                                       :as ctx}]
+                                                                   (if-let [eid mouseover-eid]
+                                                                     (info/text (apply dissoc @eid [:entity/skills
+                                                                                                    :entity/faction
+                                                                                                    :active-skill])
+                                                                                ctx)
+                                                                     ""))
+                                                :skin (:ctx/skin ctx)})
                                               (moon.ui-actors.windows.inventory/create ctx)]
                                :actor/name "moon.ui.windows"})
                              (moon.ui-actors.player-state-draw/create)
