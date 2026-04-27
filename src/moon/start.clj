@@ -2,7 +2,14 @@
   (:require [moon.application.dispose :as dispose]
             [moon.application.resize :as resize]
             moon.create.audio
+            moon.create.spawn-enemies
+            moon.create.raycaster
+            moon.create.spawn-player
+            moon.create.grid
+            moon.create.content-grid
+            moon.create.explored-tile-corners
             moon.create.add-stage-actors
+            moon.create.tiled-map
             moon.create.into-record
             moon.create.render-z-order
             moon.create.max-speed
@@ -25,14 +32,12 @@
             moon.create.world-viewport
             moon.render.draw-tiled-map
             [clojure.animation :as animation]
-            [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.graphics :as graphics]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.graphics.viewport :as viewport]
             [clojure.input :as input]
-            [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.math.vector2 :as v]
             [clojure.gdx.scene2d.actor :as actor]
@@ -52,7 +57,6 @@
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.content-grid :as content-grid]
-            [moon.creature-tiles]
             [moon.db :as db]
             [moon.draws :as draws]
             [moon.effect :as effect]
@@ -1019,6 +1023,9 @@
                           :z-order/ground
                           :z-order/flying
                           :z-order/effect]
+           :ctx/potential-field-cache (atom nil)
+           :ctx/id-counter (atom 0)
+           :ctx/entity-ids (atom {})
            }
           [
            [moon.create.tooltip-config/step]
@@ -1043,104 +1050,14 @@
            [moon.create.db/step]
            [moon.create.into-record/step]
            [moon.create.add-stage-actors/step]
-
-           [(fn
-              [{:keys [ctx/db
-                       ctx/textures]
-                :as ctx}]
-              (let [[f params] (->> "world_fns/modules.edn"
-                                    ; "world_fns/vampire.edn"
-                                    ; "world_fns/uf_caves.edn"
-                                    io/resource
-                                    slurp
-                                    edn/read-string)
-                    {:keys [tiled-map
-                            start-position]} ((requiring-resolve f)
-                                              (assoc params
-                                                     :level/creature-properties (moon.creature-tiles/prepare
-                                                                                 (db/all-raw db :properties/creatures)
-                                                                                 #(textures/texture-region textures %))
-                                                     :textures textures))]
-                (assoc ctx
-                       :ctx/tiled-map tiled-map
-                       :ctx/start-position start-position)))]
-
-           [(fn [{:keys [ctx/tiled-map] :as ctx}]
-              (assoc ctx :ctx/grid (g2d/create-grid (tiled-map/width tiled-map)
-                                                    (tiled-map/height tiled-map)
-                                                    (fn [position]
-                                                      (atom (cell/create position
-                                                                         (case (tiled-map/movement-property tiled-map position)
-                                                                           "none" :none
-                                                                           "air"  :air
-                                                                           "all"  :all)))))))]
-
-           [(fn
-              [{:keys [ctx/tiled-map]
-                :as ctx}]
-              (assoc ctx :ctx/content-grid (content-grid/create (tiled-map/width tiled-map)
-                                                                (tiled-map/height tiled-map)
-                                                                16)))]
-
-           [(fn [{:keys [ctx/tiled-map] :as ctx}]
-              (assoc ctx :ctx/explored-tile-corners (atom (g2d/create-grid (tiled-map/width tiled-map)
-                                                                           (tiled-map/height tiled-map)
-                                                                           (constantly false)))))]
-
-           [(fn [{:keys [ctx/grid] :as ctx}]
-              (assoc ctx :ctx/raycaster (let [width  (g2d/width  grid)
-                                              height (g2d/height grid)
-                                              cells  (for [cell (map deref (g2d/cells grid))]
-                                                       [(:position cell)
-                                                        (boolean (cell/blocks-vision? cell))])]
-                                          (let [arr (make-array Boolean/TYPE width height)]
-                                            (doseq [[[x y] blocked?] cells]
-                                              (aset arr x y (boolean blocked?)))
-                                            [arr width height]))))]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/potential-field-cache (atom nil)))]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/id-counter (atom 0)))]
-
-           [(fn [ctx]
-              (assoc ctx :ctx/entity-ids (atom {})))]
-
-           [(fn
-              [{:keys [ctx/db
-                       ctx/entity-ids
-                       ctx/start-position]
-                :as ctx}]
-              (txs/handle! ctx
-                           [[:tx/spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                                 :creature-property (db/build db :creatures/vampire)
-                                                 :components {:entity/fsm {:fsm :fsms/player
-                                                                           :initial-state :player-idle}
-                                                              :entity/faction :good
-                                                              :entity/player? true
-                                                              :entity/free-skill-points 3
-                                                              :entity/clickable {:type :clickable/player}
-                                                              :entity/click-distance-tiles 1.5}}]])
-              (let [eid (get @entity-ids 1)]
-                (assert (:entity/player? @eid))
-                (assoc ctx :ctx/player-eid eid)))]
-
-           [(fn
-              [{:keys [ctx/db
-                       ctx/tiled-map]
-                :as ctx}]
-              (txs/handle!
-               ctx
-               (for [[position creature-id] (tiled-map/spawn-positions tiled-map)]
-                 [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
-                                      :creature-property (db/build db (keyword creature-id))
-                                      :components {:entity/fsm {:fsm :fsms/npc
-                                                                :initial-state :npc-sleeping}
-                                                   :entity/faction :evil}}]))
-              ctx)]
-           ]
-          ))
+           [moon.create.tiled-map/step]
+           [moon.create.grid/step]
+           [moon.create.content-grid/step]
+           [moon.create.explored-tile-corners/step]
+           [moon.create.raycaster/step]
+           [moon.create.spawn-player/step]
+           [moon.create.spawn-enemies/step]
+           ]))
 
 
 (defn draw-on-world-viewport!
