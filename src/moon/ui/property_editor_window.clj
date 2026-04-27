@@ -1,12 +1,12 @@
 (ns moon.ui.property-editor-window
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.stage :as stage]
             [clojure.graphics.viewport :as viewport]
-            [clojure.gdx.scene2d.actor :as actor]
             [moon.db :as db]
             [moon.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
-            [clojure.gdx.scene2d.stage :as stage]
             [moon.throwable :as throwable]))
 
 (defmethod actor/create :ui/property-editor-window
