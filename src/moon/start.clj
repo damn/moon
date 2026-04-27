@@ -1,5 +1,6 @@
 (ns moon.start
-  (:require [clojure.animation :as animation]
+  (:require [moon.application.dispose :as dispose]
+            [clojure.animation :as animation]
             [clojure.edn :as edn]
             [clojure.gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.colors :as colors]
@@ -75,8 +76,7 @@
                              Files
                              Gdx)
            (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch)
-           (com.badlogic.gdx.utils Disposable))
+           (com.badlogic.gdx.graphics.g2d SpriteBatch))
   (:gen-class))
 
 (def schema
@@ -1806,25 +1806,6 @@
            ]
           ))
 
-(defn- dispose!
-  [{:keys [ctx/audio
-           ctx/batch
-           ctx/cursors
-           ctx/default-font
-           ctx/shape-drawer-texture
-           ctx/skin
-           ctx/textures
-           ctx/tiled-map]}]
-  (run! Disposable/.dispose (vals audio))
-  (Disposable/.dispose batch)
-  (run! Disposable/.dispose (vals cursors))
-  (Disposable/.dispose default-font)
-  (Disposable/.dispose shape-drawer-texture)
-  (Disposable/.dispose skin)
-  (run! Disposable/.dispose (vals textures))
-  (Disposable/.dispose tiled-map)
-  nil)
-
 (defn- tile-color-setter*
   [{:keys [ray-blocked?
            explored-tile-corners
@@ -2400,7 +2381,7 @@
                           (reset! state (create!)))
 
                         (dispose [_]
-                          (dispose! @state))
+                          (dispose/do! @state))
 
                         (render [_]
                           (swap! state render!))
