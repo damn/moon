@@ -2,7 +2,6 @@
 sh count_locs.sh
 ```
 
-Also show here results max LoCs (small modules )
 
 ```
 lein hiera :layout :horizontal :cluster-depth 1 ( moon -> clojure )
@@ -11,7 +10,7 @@ lein hiera :layout :horizontal :cluster-depth 1 ( moon -> clojure )
 TODO: image here link: target/hiera/clusters.png
 
 ```
-lein hiera :layout :horizontal
+lein hiera :layout :horizontal :ignore "#{clojure}"
 ```
 
 TODO image link here: target/hiera/namespaces.png

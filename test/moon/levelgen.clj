@@ -8,11 +8,12 @@
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [moon.creature-tiles]
-            [moon.textures :as textures]
-            [clojure.gdx.backends.lwjgl :as lwjgl])
+            [moon.textures :as textures])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
                              Input$Keys)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
@@ -189,8 +190,8 @@
 (def state (atom nil))
 
 (defn -main []
-  (lwjgl/use-glfw-async!)
-  (lwjgl/application! (reify ApplicationListener
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
                           (reset! state (create! {:ctx/files    Gdx/files
                                                   :ctx/graphics Gdx/graphics
@@ -203,7 +204,7 @@
                           (resize! @state width height))
                         (pause [_])
                         (resume [_]))
-                      {:title "Levelgen Test"
-                       :width 1440
-                       :height 900
-                       :fps 60}))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Levelgen Test")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))
