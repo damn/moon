@@ -22,7 +22,6 @@
             moon.create.default-font
             moon.create.ui-viewport
             moon.create.stage
-            moon.create.tooltip-config
             moon.create.set-input-processor
             moon.create.skin
             moon.create.cursors
@@ -37,7 +36,6 @@
           ctx
           [
            [moon.create.unorganised/step]
-           [moon.create.tooltip-config/step]
            [moon.create.colors/step]
            [moon.create.audio/step]
            [moon.create.batch/step]

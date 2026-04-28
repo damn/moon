@@ -6,7 +6,8 @@
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration))
+                                             Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.scenes.scene2d.ui TooltipManager))
   (:gen-class))
 
 (def state (atom nil))
@@ -15,6 +16,7 @@
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
+                          (set! (.initialTime (TooltipManager/getInstance)) 0)
                           (reset! state (create/do! {:ctx/audio     Gdx/audio
                                                      :ctx/files     Gdx/files
                                                      :ctx/graphics  Gdx/graphics
