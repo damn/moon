@@ -16,7 +16,6 @@
             moon.create.ctx-colors
             moon.create.controls
             moon.create.batch
-            moon.create.colors
             moon.create.shape-drawer
             moon.create.shape-drawer-texture
             moon.create.default-font
@@ -36,7 +35,6 @@
           ctx
           [
            [moon.create.unorganised/step]
-           [moon.create.colors/step]
            [moon.create.audio/step]
            [moon.create.batch/step]
            [moon.create.shape-drawer-texture/step]

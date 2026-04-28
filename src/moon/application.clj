@@ -7,12 +7,19 @@
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.graphics Color
+                                      Colors)
            (com.badlogic.gdx.scenes.scene2d.ui TooltipManager))
   (:gen-class))
 
 (def state (atom nil))
 
 (defn -main []
+  (doseq [[name [r g b a]]
+          {
+           "PRETTY_NAME" [0.84 0.8 0.52 1]
+           }]
+    (Colors/put name (Color. r g b a)))
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
