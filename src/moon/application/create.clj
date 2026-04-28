@@ -28,46 +28,13 @@
             moon.create.cursors
             moon.create.textures
             moon.create.world-unit-scale
-            moon.create.world-viewport)
-  (:import (com.badlogic.gdx Gdx)))
+            moon.create.world-viewport))
 
 (defn do!
-  []
+  [ctx]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          {
-           :ctx/audio     Gdx/audio
-           :ctx/files     Gdx/files
-           :ctx/graphics  Gdx/graphics
-           :ctx/input     Gdx/input
-
-           ; frame
-           :ctx/active-entities nil
-           :ctx/delta-time nil
-           :ctx/ui-mouse-position nil
-           :ctx/world-mouse-position nil
-           ;
-           :ctx/mouseover-eid nil
-           ; graphics
-           :ctx/unit-scale (atom 1)
-           ;
-           ;
-           ; world
-           :ctx/elapsed-time 0
-           :ctx/paused? false
-           :ctx/factions-iterations {:good 15 :evil 5}
-           ; TODO if it doens't change put in defs?
-           :ctx/max-delta 0.04
-           :ctx/minimum-size 0.39
-           :ctx/z-orders [:z-order/on-ground
-                          :z-order/ground
-                          :z-order/flying
-                          :z-order/effect]
-           ;
-           :ctx/potential-field-cache (atom nil)
-           :ctx/id-counter (atom 0)
-           :ctx/entity-ids (atom {})
-           }
+          ctx
           [
            [moon.create.unorganised/step]
            [moon.create.tooltip-config/step]
