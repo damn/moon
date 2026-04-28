@@ -29,17 +29,17 @@
             moon.create.textures
             moon.create.world-unit-scale
             moon.create.world-viewport)
-  (:import (com.badlogic.gdx Gdx)))
+  (:import (com.badlogic.gdx Application)))
 
 (defn do!
-  []
+  [^Application application]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           {
-           :ctx/audio     Gdx/audio
-           :ctx/files     Gdx/files
-           :ctx/graphics  Gdx/graphics
-           :ctx/input     Gdx/input
+           :ctx/audio     (.getAudio application)
+           :ctx/files     (.getFiles application)
+           :ctx/graphics  (.getGraphics application)
+           :ctx/input     (.getInput application)
            :ctx/active-entities nil
            :ctx/delta-time nil
            :ctx/mouseover-eid nil

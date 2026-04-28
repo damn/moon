@@ -6,14 +6,20 @@
 
 (def state (atom nil))
 
-(defn create! []
-  (reset! state (create/do!)))
+(def listener
+  {:create! (fn [application]
+              (reset! state (create/do! application)))
+   :dispose! (fn []
+               (dispose/do! @state))
+   :render! (fn []
+              (swap! state render/do!))
+   :resize! (fn [width height]
+              (resize/do! @state width height))
+   :pause! (fn [])
+   :resume! (fn [])})
 
-(defn dispose! []
-  (dispose/do! @state))
 
-(defn render! []
-  (swap! state render/do!))
 
-(defn resize! [width height]
-  (resize/do! @state width height))
+
+
+
