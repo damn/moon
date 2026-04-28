@@ -1,6 +1,5 @@
 (ns moon.application.create
   (:require moon.create.unorganised
-            moon.create.audio
             moon.create.spawn-enemies
             moon.create.raycaster
             moon.create.spawn-player
@@ -15,9 +14,6 @@
             moon.create.db
             moon.create.ctx-colors
             moon.create.controls
-            moon.create.batch
-            moon.create.shape-drawer
-            moon.create.shape-drawer-texture
             moon.create.default-font
             moon.create.ui-viewport
             moon.create.stage
@@ -35,10 +31,6 @@
           ctx
           [
            [moon.create.unorganised/step]
-           [moon.create.audio/step]
-           [moon.create.batch/step]
-           [moon.create.shape-drawer-texture/step]
-           [moon.create.shape-drawer/step]
            [moon.create.ui-viewport/step]
            [moon.create.stage/step]
            [moon.create.set-input-processor/step]
