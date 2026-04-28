@@ -1,15 +1,5 @@
-
-; Context abstractions = less context
-; see whats used together
-; put the functions somewhere ...
-; => graphics?
-; :ctx/unit-scale or batch
-; => libraries
-
-
 (ns moon.application.create
-  (:require [clojure.gdx.application :as application]
-            moon.create.unorganised
+  (:require moon.create.unorganised
             moon.create.audio
             moon.create.spawn-enemies
             moon.create.raycaster
@@ -38,17 +28,18 @@
             moon.create.cursors
             moon.create.textures
             moon.create.world-unit-scale
-            moon.create.world-viewport))
+            moon.create.world-viewport)
+  (:import (com.badlogic.gdx Gdx)))
 
 (defn do!
-  [application]
+  []
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           {
-           :ctx/audio     (application/audio application)
-           :ctx/files     (application/files application)
-           :ctx/graphics  (application/graphics application)
-           :ctx/input     (application/input application)
+           :ctx/audio     Gdx/audio
+           :ctx/files     Gdx/files
+           :ctx/graphics  Gdx/graphics
+           :ctx/input     Gdx/input
 
            ; frame
            :ctx/active-entities nil

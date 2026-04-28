@@ -2,23 +2,25 @@
   (:require [moon.application.create :as create]
             [moon.application.dispose :as dispose]
             [moon.application.render :as render]
-            [moon.application.resize :as resize]))
+            [moon.application.resize :as resize])
+  (:import (com.badlogic.gdx ApplicationListener)))
 
 (def state (atom nil))
 
 (def listener
-  {:create! (fn [application]
-              (reset! state (create/do! application)))
+  (reify ApplicationListener
+    (create [_]
+      (reset! state (create/do!)))
 
-   :dispose! (fn []
-               (dispose/do! @state))
+    (dispose [_]
+      (dispose/do! @state))
 
-   :render! (fn []
-              (swap! state render/do!))
+    (render [_]
+      (swap! state render/do!))
 
-   :resize! (fn [width height]
-              (resize/do! @state width height))
+    (resize [_ width height]
+      (resize/do! @state width height))
 
-   :pause! (fn [])
+    (pause [_])
 
-   :resume! (fn [])})
+    (resume [_])))

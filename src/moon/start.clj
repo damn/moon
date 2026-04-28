@@ -1,12 +1,13 @@
 (ns moon.start
-  (:require [clojure.gdx.backends.lwjgl3 :as lwjgl]
-            [moon.application :as application])
+  (:require [moon.application :as application])
+  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration))
   (:gen-class))
 
 (defn -main []
-  (lwjgl/use-glfw-async!)
-  (lwjgl/application! application/listener
-                      {:title "Cyber Dungeon Quest"
-                       :windowed-mode {:width 1440
-                                       :height 900}
-                       :foreground-fps 60}))
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. application/listener
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Cyber Dungeon Quest")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))
