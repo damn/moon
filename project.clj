@@ -30,7 +30,7 @@
   :source-paths ["src"]
   :java-source-paths ["java-src"]
   :resource-paths ["resources/"]
-  :aliases {"dev"      ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.start/-main))"]
+  :aliases {"dev"      ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.application/-main))"]
             "levelgen" ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.levelgen/-main))"]
             "nsgraph"  ["run" "-m" "moon.dev-loop" "((requiring-resolve 'ns-graph.core/-main))"]
             "app-test" ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.backends.lwjgl-test/-main))"]
