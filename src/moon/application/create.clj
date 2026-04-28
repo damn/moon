@@ -1,5 +1,6 @@
 (ns moon.application.create
-  (:require moon.create.audio
+  (:require moon.create.unorganised
+            moon.create.audio
             moon.create.spawn-enemies
             moon.create.raycaster
             moon.create.spawn-player
@@ -59,6 +60,7 @@
            :ctx/entity-ids (atom {})
            }
           [
+           [moon.create.unorganised/step]
            [moon.create.tooltip-config/step]
            [moon.create.colors/step]
            [moon.create.audio/step]
