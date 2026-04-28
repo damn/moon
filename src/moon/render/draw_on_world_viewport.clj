@@ -1,15 +1,12 @@
 (ns moon.render.draw-on-world-viewport
   (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.viewport :as viewport]
-            [clojure.graphics.shape-drawer :as shape-drawer]
             [moon.draws :as draws]
-
             [moon.entity :as entity]
+            [moon.graphics :as graphics]
             [moon.throwable :as throwable]
             [moon.raycaster :as raycaster]
-            [moon.order :as order]
-            )
-  (:import (com.badlogic.gdx.graphics.g2d Batch)))
+            [moon.order :as order]))
 
 (defn draw-tile-grid
   [{:keys [ctx/world-viewport]}]
@@ -115,31 +112,15 @@
           :none (:colors/mouseover-tile-none colors))]])))
 
 (defn step
-  [{:keys [^Batch ctx/batch
-           ctx/shape-drawer
-           ctx/unit-scale
-           ctx/world-unit-scale
-           ctx/world-viewport]
-    :as ctx}]
-  ; fix scene2d.ui.tooltip flickering
-  ; _everything_ flickers with TextToolTip!
-  ; it changes batch color somehow and does not change it back ! FIXME
-  (.setColor batch 1 1 1 1)
-  ;
-  (.setProjectionMatrix batch (camera/combined (viewport/camera world-viewport)))
-  (.begin batch)
-  (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
-    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
-    (reset! unit-scale world-unit-scale)
-    (doseq [f [
-               #_draw-tile-grid
-               draw-cell-debug
-               draw-entities
-               #_moon.geom-test
-               highlight-mouseover-tile
-               ]]
-      (draws/handle ctx (f ctx)))
-    (reset! unit-scale 1)
-    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (.end batch)
+  [ctx]
+  (graphics/draw-on-world-viewport! ctx
+                                    (fn []
+                                      (doseq [f [
+                                                 #_draw-tile-grid
+                                                 draw-cell-debug
+                                                 draw-entities
+                                                 #_moon.geom-test
+                                                 highlight-mouseover-tile
+                                                 ]]
+                                        (draws/handle ctx (f ctx)))))
   ctx)
