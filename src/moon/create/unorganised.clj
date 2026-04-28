@@ -1,14 +1,9 @@
 (ns moon.create.unorganised
   (:require [clojure.animation :as animation]
-            [clojure.graphics :as graphics]
-            [clojure.graphics.orthographic-camera :as camera]
-            [clojure.graphics.shape-drawer :as shape-drawer]
-            [clojure.graphics.viewport :as viewport]
             [clojure.input :as input]
             [clojure.math :as math]
             [clojure.math.vector2 :as v]
             [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
             clojure.gdx.scene2d.ui.data-viewer-window
             clojure.gdx.scene2d.ui.error-window
@@ -22,53 +17,23 @@
             moon.ui.property-editor-window
             moon.ui.property-overview-window
             [moon.body :as body]
-            [moon.cell :as cell]
-            [moon.content-grid :as content-grid]
-            [moon.db :as db]
-            [moon.draws :as draws]
             [moon.effect :as effect]
             [moon.entity :as entity]
             [moon.faction :as faction]
-            [moon.grid :as grid]
             [moon.grid2d :as g2d]
             [moon.input]
             [moon.inventory :as inventory]
-            [moon.number :as number]
-            [moon.order :as order]
-            [moon.raycaster :as raycaster]
             [moon.skill :as skill]
             [moon.state :as state]
             [moon.stats :as stats]
             [moon.textures :as textures]
-            [moon.throwable :as throwable]
-            [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
-            [moon.txs :as txs]
-            [moon.ui-actors.action-bar :as action-bar]
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm]))
 
 (defn step [ctx]
   ctx)
-
-(defn- move-position [position {:keys [direction speed delta-time]}]
-  (mapv #(+ %1 (* %2 speed delta-time)) position direction))
-
-(defn- move-body [body movement]
-  (update body :body/position move-position movement))
-
-(defn- try-move [grid body entity-id movement]
-  (let [new-body (move-body body movement)]
-    (when (grid/valid-position? grid new-body entity-id)
-      new-body)))
-
-(defn- try-move-solid-body [grid body entity-id {[vx vy] :direction :as movement}]
-  (let [xdir (math/signum (float vx))
-        ydir (math/signum (float vy))]
-    (or (try-move grid body entity-id movement)
-        (try-move grid body entity-id (assoc movement :direction [xdir 0]))
-        (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
 
 (def mouseover-ellipse-width 5)
 
@@ -144,13 +109,6 @@
     :maxcnt (* (count frames) (float frame-duration))
     :delete-after-stopped? delete-after-stopped?}))
 
-(defmethod entity/tick :entity/animation
-  [[_k animation] eid {:keys [ctx/delta-time]}]
-  [[:tx/assoc eid :entity/animation (animation/tick animation delta-time)]
-   (when (and (:delete-after-stopped? animation)
-              (animation/stopped? animation))
-     [:tx/mark-destroyed eid])])
-
 (defmethod entity/render :entity/animation
   [[_k animation] entity ctx]
   (entity/render [:entity/image (animation/current-frame animation)]
@@ -192,19 +150,6 @@
     :z-order z-order
     :rotation-angle (or rotation-angle 0)}))
 
-(defmethod entity/tick :entity/alert-friendlies-after-duration
-  [[_k {:keys [counter faction]}]
-   eid
-   {:keys [ctx/elapsed-time
-           ctx/grid]}]
-  (when (timer/stopped? elapsed-time counter)
-    (cons [:tx/mark-destroyed eid]
-          (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
-                                   :radius 4}
-                                  (grid/circle->entities grid)
-                                  (filter #(= (:entity/faction @%) faction)))]
-            [:tx/event friendly-eid :alert]))))
-
 (defmethod entity/render :entity/clickable
   [[_k {:keys [text]}]
    {:keys [entity/body
@@ -220,11 +165,6 @@
 (defmethod entity/create :entity/delete-after-duration
   [[_ duration] {:keys [ctx/elapsed-time]}]
   (timer/create elapsed-time duration))
-
-(defmethod entity/tick :entity/delete-after-duration
-  [[_k counter] eid {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
-    [[:tx/mark-destroyed eid]]))
 
 (defmethod entity/destroy :entity/destroy-audiovisual
   [[_ audiovisuals-id] eid]
@@ -290,80 +230,15 @@
               :else
               (:colors/neutral-color colors))]]]]))
 
-(defmethod entity/tick :entity/movement
-  [[_k
-    {:keys [direction
-            speed
-            rotate-in-movement-direction?]
-     :as movement}]
-   eid
-   {:keys [ctx/delta-time
-           ctx/grid
-           ctx/max-speed]}]
-  (assert (<= 0 speed max-speed)
-          (pr-str speed))
-  (assert (vector? direction))
-  (assert (or (zero? (v/length direction))
-              (number/nearly-equal? 1 (v/length direction)))
-          (str "cannot understand direction: " (pr-str direction)))
-  (when-not (or (zero? (v/length direction))
-                (nil? speed)
-                (zero? speed))
-    (let [movement (assoc movement :delta-time delta-time)
-          body (:entity/body @eid)]
-      (when-let [body (if (:body/collides? body)
-                        (try-move-solid-body grid body (:entity/id @eid) movement)
-                        (move-body body movement))]
-        [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
-         (when rotate-in-movement-direction?
-           [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v/angle-from-vector direction)])
-         [:tx/move-entity eid]]))))
-
 (defmethod entity/create :entity/projectile-collision
   [[_ v] _ctx]
   (assoc v :already-hit-bodies #{}))
-
-(defmethod entity/tick :entity/projectile-collision
-  [[_k {:keys [entity-effects already-hit-bodies piercing?]}]
-   eid
-   {:keys [ctx/grid]}]
-  (let [entity @eid
-        cells* (map deref (g2d/get-cells grid (body/touched-tiles (:entity/body entity))))
-        hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
-                                        (not= (:entity/faction entity)
-                                              (:entity/faction @%))
-                                        (:body/collides? (:entity/body @%))
-                                        (body/overlaps? (:entity/body entity)
-                                                        (:entity/body @%)))
-                                  (grid/cells->entities cells*)))
-        destroy? (or (and hit-entity (not piercing?))
-                     (some #(cell/blocked? % (:body/z-order (:entity/body entity))) cells*))]
-    [(when destroy?
-       [:tx/mark-destroyed eid])
-     (when hit-entity
-       [:tx/assoc-in
-        eid
-        [:entity/projectile-collision
-         :already-hit-bodies]
-        (conj already-hit-bodies hit-entity)])
-     (when hit-entity
-       [:tx/effect
-        {:effect/source eid
-         :effect/target hit-entity}
-        entity-effects])]))
 
 (defmethod entity/after-create :entity/skills ; TODO same like inventory ?
   [[_k skills] eid _ctx]
   (cons [:tx/assoc eid :entity/skills nil]
         (for [skill skills]
           [:tx/add-skill eid skill])))
-
-(defmethod entity/tick :entity/skills
-  [[_k skills] eid {:keys [ctx/elapsed-time]}]
-  (for [{:keys [skill/cooling-down?] :as skill} (vals skills)
-        :when (and cooling-down?
-                   (timer/stopped? elapsed-time cooling-down?))]
-    [:tx/assoc-in eid [:entity/skills (:property/id skill) :skill/cooling-down?] false]))
 
 (defmethod entity/create :entity/stats
   [[_ v] _ctx]
@@ -390,13 +265,6 @@
           (- height          (* 2 border))
           ((:colors/hp-bar colors) ratio)]]))))
 
-(defmethod entity/tick :entity/string-effect
-  [[_k {:keys [counter]}]
-   eid
-   {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
-    [[:tx/dissoc eid :entity/string-effect]]))
-
 (defmethod entity/render :entity/string-effect
   [[_k {:keys [text]}] entity {:keys [ctx/world-unit-scale]}]
   (let [[x y] (:body/position (:entity/body entity))]
@@ -421,29 +289,6 @@
                  :skill/action-time
                  (apply-action-speed-modifier @eid skill)
                  (timer/create elapsed-time))})
-
-(defn- update-effect-ctx
-  [raycaster {:keys [effect/source effect/target] :as effect-ctx}]
-  (if (and target
-           (not (:entity/destroyed? @target))
-           (raycaster/line-of-sight? raycaster @source @target))
-    effect-ctx
-    (dissoc effect-ctx :effect/target)))
-
-(defmethod entity/tick :active-skill
-  [[_k {:keys [skill effect-ctx counter]}]
-   eid
-   {:keys [ctx/elapsed-time
-           ctx/raycaster]}]
-  (let [effect-ctx (update-effect-ctx raycaster effect-ctx)]
-    (cond
-     (not (seq (filter #(effect/applicable? % effect-ctx)
-                       (:skill/effects skill))))
-     [[:tx/event eid :action-done]]
-
-     (timer/stopped? elapsed-time counter)
-     [[:tx/effect effect-ctx (:skill/effects skill)]
-      [:tx/event eid :action-done]])))
 
 (def ^:private skill-image-radius-world-units
   (let [tile-size 48
@@ -502,11 +347,6 @@
 (defmethod state/create :stunned
   [[_k duration] _eid {:keys [ctx/elapsed-time]}]
   {:counter (timer/create elapsed-time duration)})
-
-(defmethod entity/tick :stunned
-  [[_k {:keys [counter]}] eid {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
-    [[:tx/event eid :effect-wears-off]]))
 
 (defmethod entity/render :stunned
   [_ {:keys [entity/body]} {:keys [ctx/colors]}]
@@ -802,13 +642,6 @@
   [_]
   true)
 
-(defmethod entity/tick :npc-sleeping
-  [_ eid {:keys [ctx/grid]}]
-  (let [entity @eid]
-    (when-let [distance (grid/nearest-enemy-distance grid entity)]
-      (when (<= distance (stats/get-stat-value (:entity/stats entity) :stats/aggro-range))
-        [[:tx/event eid :alert]]))))
-
 (defmethod entity/render :npc-sleeping
   [_ {:keys [entity/body]} _ctx]
   (let [[x y] (:body/position body)]
@@ -821,14 +654,6 @@
   [_ eid _ctx]
   [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]
    [:tx/add-text-effect eid "[WHITE]!" 1]])
-
-(defmethod entity/tick :entity/temp-modifier
-  [[_k {:keys [modifiers counter]}]
-   eid
-   {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
-    [[:tx/dissoc eid :entity/temp-modifier]
-     [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
 
 (defmethod entity/render :entity/temp-modifier
   [_ entity {:keys [ctx/colors]}]
@@ -846,11 +671,6 @@
                         (* (stats/get-stat-value (:entity/stats @eid) :stats/reaction-time)
                            reaction-time-multiplier))})
 
-(defmethod entity/tick :npc-moving
-  [[_k {:keys [timer]}] eid {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time timer)
-    [[:tx/event eid :timer-finished]]))
-
 (defmethod state/enter :npc-moving
   [[_k {:keys [movement-vector]}] eid]
   [[:tx/assoc eid :entity/movement {:direction movement-vector
@@ -860,42 +680,6 @@
 (defmethod state/exit :npc-moving
   [_ eid _ctx]
   [[:tx/dissoc eid :entity/movement]])
-
-(defn- npc-effect-ctx
-  [{:keys [ctx/grid
-           ctx/raycaster]}
-   eid]
-  (let [entity @eid
-        target (grid/nearest-enemy grid entity)
-        target (when (and target
-                          (raycaster/line-of-sight? raycaster entity @target))
-                 target)]
-    {:effect/source eid
-     :effect/target target
-     :effect/target-direction (when target
-                                (body/direction (:entity/body entity)
-                                                (:entity/body @target)))}))
-
-(defn- npc-choose-skill [ctx entity effect-ctx]
-  (->> entity
-       :entity/skills
-       vals
-       (sort-by :skill/cost)
-       reverse
-       (filter #(and (= :usable (skill/usable-state % entity effect-ctx))
-                     (->> (:skill/effects %)
-                          (filter (fn [e] (effect/applicable? e effect-ctx)))
-                          (some (fn [e] (effect/useful? e effect-ctx ctx))))))
-       first))
-
-(defmethod entity/tick :npc-idle
-  [_ eid ctx]
-  (let [effect-ctx (npc-effect-ctx ctx eid)]
-    (if-let [skill (npc-choose-skill ctx @eid effect-ctx)]
-      [[:tx/event eid :start-action [skill effect-ctx]]]
-      [[:tx/event eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
-                                              [0 0])]])))
-
 
 ; no window movable type cursor appears here like in player idle
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
