@@ -20,7 +20,6 @@
             [moon.effect :as effect]
             [moon.entity :as entity]
             [moon.faction :as faction]
-            [moon.grid2d :as g2d]
             [moon.input]
             [moon.inventory :as inventory]
             [moon.skill :as skill]
@@ -28,127 +27,18 @@
             [moon.stats :as stats]
             [moon.textures :as textures]
             [moon.timer :as timer]
-            [moon.val-max :as val-max]
-            [qrecord.core :as q]
-            [reduce-fsm :as fsm]))
+            [moon.val-max :as val-max]))
 
 (defn step [ctx]
   ctx)
 
 (def mouseover-ellipse-width 5)
 
-(comment
-
- ; 1. quote the data structur ebecause of arrows
- ; 2.
- (eval `(fsm/fsm-inc ~data))
- )
-
-(def ^:private npc-fsm
-  (fsm/fsm-inc
-   [[:npc-sleeping
-     :kill -> :npc-dead
-     :stun -> :stunned
-     :alert -> :npc-idle]
-    [:npc-idle
-     :kill -> :npc-dead
-     :stun -> :stunned
-     :start-action -> :active-skill
-     :movement-direction -> :npc-moving]
-    [:npc-moving
-     :kill -> :npc-dead
-     :stun -> :stunned
-     :timer-finished -> :npc-idle]
-    [:active-skill
-     :kill -> :npc-dead
-     :stun -> :stunned
-     :action-done -> :npc-idle]
-    [:stunned
-     :kill -> :npc-dead
-     :effect-wears-off -> :npc-idle]
-    [:npc-dead]]))
-
-(def ^:private player-fsm
-  (fsm/fsm-inc
-   [[:player-idle
-     :kill -> :player-dead
-     :stun -> :stunned
-     :start-action -> :active-skill
-     :pickup-item -> :player-item-on-cursor
-     :movement-input -> :player-moving]
-    [:player-moving
-     :kill -> :player-dead
-     :stun -> :stunned
-     :no-movement-input -> :player-idle]
-    [:active-skill
-     :kill -> :player-dead
-     :stun -> :stunned
-     :action-done -> :player-idle]
-    [:stunned
-     :kill -> :player-dead
-     :effect-wears-off -> :player-idle]
-    [:player-item-on-cursor
-     :kill -> :player-dead
-     :stun -> :stunned
-     :drop-item -> :player-idle
-     :dropped-item -> :player-idle]
-    [:player-dead]]))
-
-(defmethod entity/create :entity/animation
-  [[_k {:keys [animation/frames
-               animation/frame-duration
-               animation/looping?
-               delete-after-stopped?]}]
-   _ctx]
-  (assert (not (and looping? delete-after-stopped?)))
-  (animation/map->RAnimation
-   {:frames (vec frames)
-    :frame-duration frame-duration
-    :looping? looping?
-    :cnt 0
-    :maxcnt (* (count frames) (float frame-duration))
-    :delete-after-stopped? delete-after-stopped?}))
-
 (defmethod entity/render :entity/animation
   [[_k animation] entity ctx]
   (entity/render [:entity/image (animation/current-frame animation)]
                  entity
                  ctx))
-
-(q/defrecord Body [body/position
-                   body/width
-                   body/height
-                   body/collides?
-                   body/z-order
-                   body/rotation-angle])
-
-(defmethod entity/create :entity/body
-  [[_k
-    {[x y] :position
-     :keys [position
-            width
-            height
-            collides?
-            z-order
-            rotation-angle]}]
-   {:keys [ctx/minimum-size
-           ctx/z-orders]}]
-  (assert position)
-  (assert width)
-  (assert height)
-  (assert (>= width  (if collides? minimum-size 0)))
-  (assert (>= height (if collides? minimum-size 0)))
-  (assert (or (boolean? collides?) (nil? collides?)))
-  (assert ((set z-orders) z-order))
-  (assert (or (nil? rotation-angle)
-              (<= 0 rotation-angle 360)))
-  (map->Body
-   {:position (mapv float position)
-    :width  (float width)
-    :height (float height)
-    :collides? collides?
-    :z-order z-order
-    :rotation-angle (or rotation-angle 0)}))
 
 (defmethod entity/render :entity/clickable
   [[_k {:keys [text]}]
@@ -162,25 +52,11 @@
                     :y (+ y (/ (:body/height body) 2))
                     :up? true}]])))
 
-(defmethod entity/create :entity/delete-after-duration
-  [[_ duration] {:keys [ctx/elapsed-time]}]
-  (timer/create elapsed-time duration))
-
 (defmethod entity/destroy :entity/destroy-audiovisual
   [[_ audiovisuals-id] eid]
   [[:tx/audiovisual
     (:body/position (:entity/body @eid))
     audiovisuals-id]])
-
-(defmethod entity/after-create :entity/fsm ; TODO do @ creature?
-  [[_k {:keys [fsm initial-state]}] eid ctx]
-  ; fsm throws when initial-state is not part of states, so no need to assert initial-state
-  ; initial state is nil, so associng it. make bug report at reduce-fsm?
-  [[:tx/assoc eid :entity/fsm (assoc ((case fsm
-                                        :fsms/player player-fsm
-                                        :fsms/npc npc-fsm) initial-state nil)
-                                     :state initial-state)]
-   [:tx/assoc eid initial-state (state/create [initial-state nil] eid ctx)]])
 
 (defmethod entity/render :entity/image
   [[_k image] {:keys [entity/body]} {:keys [ctx/textures]}]
@@ -190,15 +66,6 @@
     {:center? true
      :rotation (or (:body/rotation-angle body)
                    0)}]])
-
-(defmethod entity/after-create :entity/inventory ; TODO do @ creature
-  [[_k items] eid _ctx]
-  (cons [:tx/assoc eid :entity/inventory (->> inventory/empty-inventory
-                                              (map (fn [[slot [width height]]]
-                                                     [slot (g2d/create-grid width height (constantly nil))]))
-                                              (into {}))]
-        (for [item items] ; TODO just call on inventory itself? -> and callback player-refresh ?
-          [:tx/pickup-item eid item])))
 
 (defmethod entity/render :entity/line-render
   [[_k {:keys [thick? end color]}]
@@ -229,22 +96,6 @@
               (:colors/friendly-color colors)
               :else
               (:colors/neutral-color colors))]]]]))
-
-(defmethod entity/create :entity/projectile-collision
-  [[_ v] _ctx]
-  (assoc v :already-hit-bodies #{}))
-
-(defmethod entity/after-create :entity/skills ; TODO same like inventory ?
-  [[_k skills] eid _ctx]
-  (cons [:tx/assoc eid :entity/skills nil]
-        (for [skill skills]
-          [:tx/add-skill eid skill])))
-
-(defmethod entity/create :entity/stats
-  [[_ v] _ctx]
-  (-> v
-      (update :stats/mana (fn [v] [v v]))
-      (update :stats/hp   (fn [v] [v v]))))
 
 (defmethod entity/render :entity/stats
   [_ entity {:keys [ctx/colors
