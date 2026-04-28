@@ -9,17 +9,16 @@
 (def listener
   {:create! (fn [application]
               (reset! state (create/do! application)))
+
    :dispose! (fn []
                (dispose/do! @state))
+
    :render! (fn []
               (swap! state render/do!))
+
    :resize! (fn [width height]
               (resize/do! @state width height))
+
    :pause! (fn [])
+
    :resume! (fn [])})
-
-
-
-
-
-

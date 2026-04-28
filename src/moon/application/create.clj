@@ -1,5 +1,15 @@
+
+; Context abstractions = less context
+; see whats used together
+; put the functions somewhere ...
+; => graphics?
+; :ctx/unit-scale or batch
+; => libraries
+
+
 (ns moon.application.create
-  (:require moon.create.unorganised
+  (:require [clojure.gdx.application :as application]
+            moon.create.unorganised
             moon.create.audio
             moon.create.spawn-enemies
             moon.create.raycaster
@@ -28,33 +38,41 @@
             moon.create.cursors
             moon.create.textures
             moon.create.world-unit-scale
-            moon.create.world-viewport)
-  (:import (com.badlogic.gdx Application)))
+            moon.create.world-viewport))
 
 (defn do!
-  [^Application application]
+  [application]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
           {
-           :ctx/audio     (.getAudio application)
-           :ctx/files     (.getFiles application)
-           :ctx/graphics  (.getGraphics application)
-           :ctx/input     (.getInput application)
+           :ctx/audio     (application/audio application)
+           :ctx/files     (application/files application)
+           :ctx/graphics  (application/graphics application)
+           :ctx/input     (application/input application)
+
+           ; frame
            :ctx/active-entities nil
            :ctx/delta-time nil
-           :ctx/mouseover-eid nil
            :ctx/ui-mouse-position nil
            :ctx/world-mouse-position nil
+           ;
+           :ctx/mouseover-eid nil
+           ; graphics
+           :ctx/unit-scale (atom 1)
+           ;
+           ;
+           ; world
            :ctx/elapsed-time 0
            :ctx/paused? false
-           :ctx/unit-scale (atom 1)
            :ctx/factions-iterations {:good 15 :evil 5}
+           ; TODO if it doens't change put in defs?
            :ctx/max-delta 0.04
            :ctx/minimum-size 0.39
            :ctx/z-orders [:z-order/on-ground
                           :z-order/ground
                           :z-order/flying
                           :z-order/effect]
+           ;
            :ctx/potential-field-cache (atom nil)
            :ctx/id-counter (atom 0)
            :ctx/entity-ids (atom {})
