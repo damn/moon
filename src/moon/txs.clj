@@ -1,12 +1,12 @@
 (ns moon.txs
-  (:require [clojure.gdx.scene2d.actor :as actor]
+  (:require moon.tx.spawn-entity
+            [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.graphics.viewport :as viewport]
             [clojure.math.vector2 :as v]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.effect :as effect]
-            [moon.entity :as entity]
             [moon.grid :as grid]
             [moon.info :as info]
             [moon.inventory :as inventory]
@@ -17,11 +17,8 @@
             [moon.map :as map]
             [moon.ui-actors.action-bar :as action-bar]
             [moon.ui-actors.windows.inventory :as inventory-window]
-            [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx.audio Sound)))
-
-(q/defrecord Entity [entity/body])
 
 (defn- send-event! [ctx eid event params]
   (let [fsm (:entity/fsm @eid)
@@ -235,16 +232,7 @@
                                                                :z-order :z-order/ground #_(if flying? :z-order/flying :z-order/ground)}))
                                         (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
                                         (map/safe-merge components))]])
-   :tx/spawn-entity             (fn [ctx entity]
-                                  (let [entity (reduce (fn [m [k v]]
-                                                         (assoc m k (entity/create [k v] ctx)))
-                                                       {}
-                                                       entity)
-                                        entity (merge (map->Entity {}) entity)
-                                        eid (atom entity)]
-                                    (cons
-                                     [:tx/register-eid eid]
-                                     (mapcat #(entity/after-create % eid ctx) @eid))))
+   :tx/spawn-entity             moon.tx.spawn-entity/do!
    :tx/sound                    (fn [& params] nil)
    :tx/toggle-inventory-visible (fn [& params] nil)
    :tx/show-message             (fn [& params] nil)
