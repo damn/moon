@@ -1,13 +1,6 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 ; Actually Gdx stuff can be _easily_ improved
-                 ; * pass Gdx state
-                 ; * use clojure
-                 ; => create libs
-                 ; and its the _foundation_ of everything & release as libs & tests...
-                 ; so first port tests?
-                 ; start with freetype ?! smallest
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
@@ -30,7 +23,7 @@
   :source-paths ["src"]
   :java-source-paths ["java-src"]
   :resource-paths ["resources/"]
-  :aliases {"dev"      ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.application/-main))"]
+  :aliases {"dev"      ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.start/-main))"]
             "levelgen" ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.levelgen/-main))"]
             "nsgraph"  ["run" "-m" "moon.dev-loop" "((requiring-resolve 'ns-graph.core/-main))"]
             "app-test" ["run" "-m" "moon.dev-loop" "((requiring-resolve 'moon.backends.lwjgl-test/-main))"]

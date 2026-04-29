@@ -2,7 +2,6 @@
 sh count_locs.sh
 ```
 
-
 ```
 lein hiera :layout :horizontal :cluster-depth 1 ( moon -> clojure )
 ```
@@ -22,16 +21,3 @@ lein run
 ```
 lein dev
 ```
-
-Change level:
-@ create-pipeline.edn change comment out which level to start
-
-Other jdk/how to start/iterm/vimrc/?
-
-leiningen install ofcourse
-
-intellij
-
-asset license
-
-code license
