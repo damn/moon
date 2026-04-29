@@ -1,4 +1,4 @@
-(ns moon.create.default-font
+(ns moon.application.create.default-font
   (:require [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.graphics.freetype :as freetype])
   (:import (com.badlogic.gdx Files)))

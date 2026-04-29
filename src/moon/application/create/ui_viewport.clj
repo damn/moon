@@ -1,4 +1,4 @@
-(ns moon.create.ui-viewport
+(ns moon.application.create.ui-viewport
   (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.viewport :as viewport]))
 

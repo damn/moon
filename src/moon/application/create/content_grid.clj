@@ -1,4 +1,4 @@
-(ns moon.create.content-grid
+(ns moon.application.create.content-grid
   (:require [moon.content-grid :as content-grid]
             [moon.tiled-map :as tiled-map]))
 

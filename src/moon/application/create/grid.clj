@@ -1,4 +1,4 @@
-(ns moon.create.grid
+(ns moon.application.create.grid
   (:require [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map]
             [moon.cell :as cell]))

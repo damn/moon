@@ -1,4 +1,4 @@
-(ns moon.create.db
+(ns moon.application.create.db
   (:require [moon.db :as db]))
 
 (defn step [ctx]

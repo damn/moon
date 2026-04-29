@@ -1,4 +1,4 @@
-(ns moon.create.textures
+(ns moon.application.create.textures
   (:require [moon.textures :as textures]))
 
 (defn step [ctx]

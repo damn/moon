@@ -1,4 +1,4 @@
-(ns moon.create.cursors
+(ns moon.application.create.cursors
   (:require [clojure.edn :as edn]
             [clojure.graphics :as graphics]
             [clojure.java.io :as io])

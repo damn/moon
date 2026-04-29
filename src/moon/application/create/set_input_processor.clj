@@ -1,4 +1,4 @@
-(ns moon.create.set-input-processor
+(ns moon.application.create.set-input-processor
   (:require [clojure.input :as input]))
 
 (defn step

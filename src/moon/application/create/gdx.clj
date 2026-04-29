@@ -1,4 +1,4 @@
-(ns moon.create.gdx
+(ns moon.application.create.gdx
   (:require [clojure.edn :as edn]
             [clojure.graphics :as graphics]
             [clojure.graphics.shape-drawer :as shape-drawer]

@@ -1,4 +1,4 @@
-(ns moon.create.add-stage-actors
+(ns moon.application.create.add-stage-actors
   (:require [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.graphics :as graphics]

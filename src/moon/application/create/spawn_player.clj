@@ -1,4 +1,4 @@
-(ns moon.create.spawn-player
+(ns moon.application.create.spawn-player
   (:require [moon.db :as db]
             [moon.txs :as txs]))
 

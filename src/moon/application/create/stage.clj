@@ -1,4 +1,4 @@
-(ns moon.create.stage
+(ns moon.application.create.stage
   (:require [clojure.gdx.scene2d.stage :as stage]))
 
 (defn step

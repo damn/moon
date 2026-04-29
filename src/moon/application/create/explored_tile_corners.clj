@@ -1,4 +1,4 @@
-(ns moon.create.explored-tile-corners
+(ns moon.application.create.explored-tile-corners
   (:require [moon.tiled-map :as tiled-map]
             [moon.grid2d :as g2d]))
 

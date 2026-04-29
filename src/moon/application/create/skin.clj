@@ -1,4 +1,4 @@
-(ns moon.create.skin
+(ns moon.application.create.skin
   (:require [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.graphics.bitmap-font :as bitmap-font])
   (:import (com.badlogic.gdx Files)))

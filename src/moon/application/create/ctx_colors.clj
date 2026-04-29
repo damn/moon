@@ -1,4 +1,4 @@
-(ns moon.create.ctx-colors
+(ns moon.application.create.ctx-colors
   (:require [clojure.graphics.color :as color]))
 
 (def black [0 0 0 1])

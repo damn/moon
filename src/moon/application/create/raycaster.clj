@@ -1,4 +1,4 @@
-(ns moon.create.raycaster
+(ns moon.application.create.raycaster
   (:require [moon.grid2d :as g2d]
             [moon.cell :as cell]))
 
