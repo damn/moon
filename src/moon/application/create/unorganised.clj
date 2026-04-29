@@ -79,12 +79,6 @@
                     :y (+ y (/ (:body/height body) 2))
                     :up? true}]])))
 
-(defmethod entity/destroy :entity/destroy-audiovisual
-  [[_ audiovisuals-id] eid]
-  [[:tx/audiovisual
-    (:body/position (:entity/body @eid))
-    audiovisuals-id]])
-
 (defmethod entity/render :entity/image
   [[_k image] {:keys [entity/body]} {:keys [ctx/textures]}]
   [[:draw/texture-region

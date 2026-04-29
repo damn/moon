@@ -2,6 +2,12 @@
   (:require [moon.entity :as entity]
             [moon.txs :as txs]))
 
+(defmethod entity/destroy :entity/destroy-audiovisual
+  [[_ audiovisuals-id] eid]
+  [[:tx/audiovisual
+    (:body/position (:entity/body @eid))
+    audiovisuals-id]])
+
 (defn step
   [ctx]
   (txs/handle! ctx (mapcat
