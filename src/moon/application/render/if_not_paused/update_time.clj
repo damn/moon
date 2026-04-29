@@ -1,4 +1,4 @@
-(ns moon.if-not-paused.update-time
+(ns moon.application.render.if-not-paused.update-time
   (:require [clojure.graphics :as graphics]))
 
 (defn step

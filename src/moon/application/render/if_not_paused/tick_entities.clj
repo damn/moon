@@ -1,4 +1,4 @@
-(ns moon.if-not-paused.tick-entities
+(ns moon.application.render.if-not-paused.tick-entities
   (:require [clojure.animation :as animation]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
