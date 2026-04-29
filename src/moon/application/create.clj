@@ -15,15 +15,7 @@
             moon.application.create.db
             moon.application.create.ctx-colors
             moon.application.create.controls
-            moon.application.create.default-font
-            moon.application.create.ui-viewport
-            moon.application.create.stage
-            moon.application.create.set-input-processor
-            moon.application.create.skin
-            moon.application.create.cursors
-            moon.application.create.textures
-            moon.application.create.world-unit-scale
-            moon.application.create.world-viewport))
+            moon.application.create.textures))
 
 (defn do!
   [application]
@@ -32,15 +24,7 @@
           application
           [
            [moon.application.create.gdx/step]
-           [moon.application.create.ui-viewport/step]
-           [moon.application.create.stage/step]
-           [moon.application.create.set-input-processor/step]
-           [moon.application.create.skin/step]
-           [moon.application.create.cursors/step]
            [moon.application.create.textures/step]
-           [moon.application.create.world-unit-scale/step]
-           [moon.application.create.world-viewport/step]
-           [moon.application.create.default-font/step]
            [moon.application.create.unorganised/step]
            [moon.application.create.controls/step]
            [moon.application.create.ctx-colors/step]
