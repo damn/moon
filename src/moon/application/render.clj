@@ -1,9 +1,11 @@
 (ns moon.application.render
   (:require moon.application.render.if-not-paused
+            moon.application.render.handle-input
             moon.application.render.remove-destroyed-entities
+            moon.application.render.set-cursor
             moon.application.render.assoc-paused
+            moon.application.render.assoc-interaction-state
             moon.application.render.get-stage-ctx
-            moon.application.render.update-player-state
             moon.application.render.draw-tiled-map
             moon.application.render.validate
             moon.application.render.update-mouse
@@ -28,7 +30,10 @@
       moon.application.render.clear-screen/step
       moon.application.render.draw-tiled-map/step
       moon.application.render.draw-on-world-viewport/step
-      moon.application.render.update-player-state/step
+      moon.application.render.assoc-interaction-state/step
+      moon.application.render.set-cursor/step
+      moon.application.render.handle-input/step
+      (dissoc :ctx/interaction-state)
       moon.application.render.assoc-paused/step
       moon.application.render.if-not-paused/step
       moon.application.render.remove-destroyed-entities/step

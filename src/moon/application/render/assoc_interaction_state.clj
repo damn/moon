@@ -1,13 +1,10 @@
-(ns moon.application.render.update-player-state
+(ns moon.application.render.assoc-interaction-state
   (:require [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
-            [clojure.graphics :as graphics]
             [clojure.input :as input]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
-            [moon.state :as state]
             [moon.skill :as skill]
-            [moon.txs :as txs]
             [moon.ui-actors.action-bar :as action-bar]))
 
 (defn- mouseover-actor-info [actor]
@@ -29,6 +26,7 @@
      :effect/target-position target-position
      :effect/target-direction (v/direction (:body/position (:entity/body @player-eid))
                                            target-position)}))
+
 
 (defn- interaction-state
   [stage
@@ -61,7 +59,7 @@
          [:interaction-state.skill/not-usable state]))
      [:interaction-state/no-skill-selected])))
 
-(defn- assoc-interaction-state
+(defn step
   [{:keys [ctx/input
            ctx/mouseover-eid
            ctx/stage
@@ -73,33 +71,3 @@
                                                        mouseover-eid
                                                        player-eid
                                                        (stage/mouseover-actor stage (input/mouse-position input)))))
-
-(defn- set-cursor
-  [{:keys [ctx/cursors
-           ctx/graphics
-           ctx/player-eid]
-    :as ctx}]
-  (let [eid player-eid
-        entity @eid
-        state-k (:state (:entity/fsm entity))
-        cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
-    (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! graphics (get cursors cursor-key)))
-  ctx)
-
-(defn- player-state-handle-input
-  [{:keys [ctx/player-eid]
-    :as ctx}]
-  (let [eid player-eid
-        entity @eid
-        state-k (:state (:entity/fsm entity))
-        txs (state/handle-input [state-k (state-k entity)] eid ctx)]
-    (txs/handle! ctx txs))
-  ctx)
-
-(defn step [ctx]
-  (-> ctx
-      assoc-interaction-state
-      set-cursor
-      player-state-handle-input
-      (dissoc :ctx/interaction-state)))
