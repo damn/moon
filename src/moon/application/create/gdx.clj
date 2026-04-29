@@ -1,12 +1,14 @@
 (ns moon.application.create.gdx
   (:require [clojure.edn :as edn]
-            [clojure.graphics :as graphics]
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.graphics.texture :as texture]
             [clojure.java.io :as io])
   (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.graphics Color
-                                      Colors)
+                                      Colors
+                                      Pixmap
+                                      Pixmap$Format
+                                      Texture)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
 
@@ -19,7 +21,12 @@
 
   (let [batch (SpriteBatch.)
 
-        shape-drawer-texture (graphics/white-pixel-texture (.getGraphics app))
+        white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                                            (.setColor 1 1 1 1)
+                                            (.drawPixel 0 0))
+                                   texture (Texture. pixmap)]
+                               (.dispose pixmap)
+                               texture)
         ]
     {:ctx/audio (into {}
                       (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
@@ -34,6 +41,6 @@
 
      :ctx/input     (.getInput app)
 
-     :ctx/shape-drawer (shape-drawer/create batch (texture/region shape-drawer-texture 1 0 1 1))
+     :ctx/shape-drawer (shape-drawer/create batch (texture/region white-pixel-texture 1 0 1 1))
 
-     :ctx/shape-drawer-texture shape-drawer-texture}))
+     :ctx/shape-drawer-texture white-pixel-texture}))

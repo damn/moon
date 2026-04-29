@@ -2,9 +2,7 @@
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20
-                                      Pixmap
-                                      Pixmap$Format
-                                      Texture)))
+                                      Pixmap)))
 
 
 (defn frames-per-second [^Graphics graphics]
@@ -25,11 +23,3 @@
         cursor (.newCursor graphics pixmap hotspot-x hotspot-y)]
     (.dispose pixmap)
     cursor))
-
-(defn white-pixel-texture [^Graphics _graphics]
-  (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
-                 (.setColor 1 1 1 1)
-                 (.drawPixel 0 0))
-        texture (Texture. pixmap)]
-    (.dispose pixmap)
-    texture))
