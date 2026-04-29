@@ -1,4 +1,4 @@
-(ns moon.render.window-camera-controls
+(ns moon.application.render.window-camera-controls
   (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.viewport :as viewport]
             [clojure.gdx.scene2d.actor :as actor]

@@ -1,6 +1,6 @@
-(ns moon.render.update-mouseover-eid-test
+(ns moon.application.render.update-mouseover-eid-test
   (:require [clojure.test :refer :all]
-            #_[moon.render.update-mouseover-eid :as update-mouseover-eid]))
+            #_[moon.application.render.update-mouseover-eid :as update-mouseover-eid]))
 
 ; Impossible to test w/o protocols ...
 ; ctx protocols?

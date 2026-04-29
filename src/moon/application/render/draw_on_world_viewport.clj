@@ -1,4 +1,4 @@
-(ns moon.render.draw-on-world-viewport
+(ns moon.application.render.draw-on-world-viewport
   (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.viewport :as viewport]
             [moon.draws :as draws]

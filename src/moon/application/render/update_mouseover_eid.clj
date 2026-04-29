@@ -1,4 +1,4 @@
-(ns moon.render.update-mouseover-eid
+(ns moon.application.render.update-mouseover-eid
   (:require [clojure.gdx.scene2d.stage :as stage]
             [clojure.input :as input]
             [moon.grid :as grid]

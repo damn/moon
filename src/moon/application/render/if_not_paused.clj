@@ -1,4 +1,4 @@
-(ns moon.render.if-not-paused
+(ns moon.application.render.if-not-paused
   (:require moon.if-not-paused.tick-entities
             moon.if-not-paused.update-time
             moon.if-not-paused.update-potential-fields))

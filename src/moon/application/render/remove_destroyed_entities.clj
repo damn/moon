@@ -1,4 +1,4 @@
-(ns moon.render.remove-destroyed-entities
+(ns moon.application.render.remove-destroyed-entities
   (:require [moon.entity :as entity]
             [moon.txs :as txs]))
 

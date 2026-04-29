@@ -1,4 +1,4 @@
-(ns moon.render.clear-screen
+(ns moon.application.render.clear-screen
   (:require [clojure.graphics :as graphics]))
 
 (defn step [ctx]

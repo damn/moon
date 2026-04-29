@@ -1,4 +1,4 @@
-(ns moon.render.update-mouse
+(ns moon.application.render.update-mouse
   (:require [clojure.graphics.viewport :as viewport]
             [clojure.input :as input]))
 

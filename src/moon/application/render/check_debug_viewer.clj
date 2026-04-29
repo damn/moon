@@ -1,4 +1,4 @@
-(ns moon.render.check-debug-viewer
+(ns moon.application.render.check-debug-viewer
   (:require [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.input :as input]))

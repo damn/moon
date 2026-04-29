@@ -1,4 +1,4 @@
-(ns moon.render.assoc-paused
+(ns moon.application.render.assoc-paused
   (:require [clojure.input :as input]
             [moon.state :as state]))
 

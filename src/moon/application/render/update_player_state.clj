@@ -1,4 +1,4 @@
-(ns moon.render.update-player-state
+(ns moon.application.render.update-player-state
   (:require [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.graphics :as graphics]
