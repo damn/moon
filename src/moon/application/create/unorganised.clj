@@ -51,21 +51,9 @@
           :ctx/entity-ids (atom {})
          ))
 
-(defmethod state/cursor :active-skill
-  [_ _eid _ctx]
-  :cursors/sandclock)
-
 (defn- creature-speed [{:keys [entity/stats]}]
   (or (stats/get-stat-value stats :stats/movement-speed)
       0))
-
-(defmethod state/cursor :stunned
-  [_ _eid _ctx]
-  :cursors/denied)
-
-(defmethod state/cursor :player-moving
-  [_ _eid _ctx]
-  :cursors/walking)
 
 (defmethod state/handle-input :player-moving
   [_ eid {:keys [ctx/input]}]
@@ -73,11 +61,6 @@
     [[:tx/assoc eid :entity/movement {:direction movement-vector
                                       :speed (creature-speed @eid)}]]
     [[:tx/event eid :no-movement-input]]))
-
-
-(defmethod state/cursor :player-item-on-cursor
-  [_ _eid _ctx]
-  :cursors/hand-grab)
 
 (defmethod state/clicked-inventory-cell :player-item-on-cursor
   [_ eid cell]
@@ -185,49 +168,6 @@
     [[:tx/sound "bfxr_denied"]
      [:tx/show-message "No selected skill"]]))
 
-(defmethod state/cursor :player-idle
-  [_ eid {:keys [ctx/interaction-state]}]
-  (let [[k params] interaction-state]
-    (case k
-      :interaction-state/mouseover-actor
-      (let [[actor-type params] params
-            inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
-                                           (let [inventory-slot params]
-                                             (get-in (:entity/inventory @eid) inventory-slot)))]
-        (cond
-         inventory-cell-with-item?
-         :cursors/hand-before-grab
-
-         (= actor-type :mouseover-actor/window-title-bar)
-         :cursors/move-window
-
-         (= actor-type :mouseover-actor/button)
-         :cursors/over-button
-
-         (= actor-type :mouseover-actor/unspecified)
-         :cursors/default
-
-         :else
-         :cursors/default))
-
-      :interaction-state/clickable-mouseover-eid
-      (let [{:keys [clicked-eid
-                    in-click-range?]} params]
-        (case (:type (:entity/clickable @clicked-eid))
-          :clickable/item (if in-click-range?
-                            :cursors/hand-before-grab
-                            :cursors/hand-before-grab-gray)
-          :clickable/player :cursors/bag))
-
-      :interaction-state.skill/usable
-      :cursors/use-skill
-
-      :interaction-state.skill/not-usable
-      :cursors/skill-not-usable
-
-      :interaction-state/no-skill-selected
-      :cursors/no-skill-selected)))
-
 (defmethod state/clicked-inventory-cell :player-idle
   [_ eid cell]
   (when-let [item (get-in (:entity/inventory @eid) cell)]
@@ -245,10 +185,6 @@
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))
-
-(defmethod state/cursor :player-dead
-  [_ _eid _ctx]
-  :cursors/black-x)
 
 ; no window movable type cursor appears here like in player idle
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
