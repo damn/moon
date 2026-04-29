@@ -1,6 +1,5 @@
 (ns moon.application.create.unorganised
-  (:require moon.player-item-on-cursor
-            [clojure.input :as input]
+  (:require [clojure.input :as input]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             clojure.gdx.scene2d.ui.data-viewer-window
@@ -52,12 +51,6 @@
           :ctx/entity-ids (atom {})
          ))
 
-(defmethod state/enter :active-skill
-  [[_k {:keys [skill]}] eid]
-  [[:tx/sound (:skill/start-action-sound skill)]
-   [:tx/set-cooldown eid skill]
-   [:tx/update eid :entity/stats stats/pay-mana-cost (:skill/cost skill)]])
-
 (defmethod state/cursor :active-skill
   [_ _eid _ctx]
   :cursors/sandclock)
@@ -66,23 +59,9 @@
   (or (stats/get-stat-value stats :stats/movement-speed)
       0))
 
-(defmethod state/enter :npc-dead
-  [_ eid]
-  [[:tx/mark-destroyed eid]])
-
 (defmethod state/cursor :stunned
   [_ _eid _ctx]
   :cursors/denied)
-
-(defmethod state/enter :player-moving
-  [[_k {:keys [movement-vector]}] eid]
-  [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                    :speed (or (stats/get-stat-value (:entity/stats @eid) :stats/movement-speed)
-                                               0)}]])
-
-(defmethod state/exit :player-moving
-  [_ eid _ctx]
-  [[:tx/dissoc eid :entity/movement]])
 
 (defmethod state/cursor :player-moving
   [_ _eid _ctx]
@@ -95,23 +74,6 @@
                                       :speed (creature-speed @eid)}]]
     [[:tx/event eid :no-movement-input]]))
 
-(defmethod state/enter :player-item-on-cursor
-  [[_k {:keys [item]}] eid]
-  [[:tx/assoc eid :entity/item-on-cursor item]])
-
-(defmethod state/exit :player-item-on-cursor
-  [_ eid {:keys [ctx/world-mouse-position]}]
-  ; at clicked-cell when we put it into a inventory-cell
-  ; we do not want to drop it on the ground too additonally,
-  ; so we dissoc it there manually. Otherwise it creates another item
-  ; on the ground
-  (let [entity @eid]
-    (when (:entity/item-on-cursor entity)
-      [[:tx/sound "bfxr_itemputground"]
-       [:tx/dissoc eid :entity/item-on-cursor]
-       [:tx/spawn-item
-        (moon.player-item-on-cursor/item-place-position world-mouse-position entity)
-        (:entity/item-on-cursor entity)]])))
 
 (defmethod state/cursor :player-item-on-cursor
   [_ _eid _ctx]
@@ -284,32 +246,9 @@
                               stage
                               player-eid))))
 
-(defmethod state/enter :player-dead
-  [_ _eid]
-  [[:tx/sound "bfxr_playerdeath"]
-   [:tx/show-modal {:title "YOU DIED - again!"
-                    :text "Good luck next time!"
-                    :button-text "OK"
-                    :on-click (fn [])}]])
-
 (defmethod state/cursor :player-dead
   [_ _eid _ctx]
   :cursors/black-x)
-
-(defmethod state/exit :npc-sleeping
-  [_ eid _ctx]
-  [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]
-   [:tx/add-text-effect eid "[WHITE]!" 1]])
-
-(defmethod state/enter :npc-moving
-  [[_k {:keys [movement-vector]}] eid]
-  [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                    :speed (or (stats/get-stat-value (:entity/stats @eid) :stats/movement-speed)
-                                               0)}]])
-
-(defmethod state/exit :npc-moving
-  [_ eid _ctx]
-  [[:tx/dissoc eid :entity/movement]])
 
 ; no window movable type cursor appears here like in player idle
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?

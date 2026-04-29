@@ -1,5 +1,7 @@
 (ns moon.txs
   (:require moon.tx.spawn-entity
+            moon.tx.state-exit
+            moon.tx.state-enter
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.graphics.viewport :as viewport]
@@ -38,8 +40,7 @@
 
 (def txs-fn-map
   {
-   :tx/state-exit               (fn [ctx eid [state-k state-v]]
-                                  (state/exit [state-k state-v] eid ctx))
+   :tx/state-exit               moon.tx.state-exit/do!
    :tx/audiovisual              (fn
                                   [{:keys [ctx/db]} position audiovisual]
                                   (let [{:keys [tx/sound
@@ -151,8 +152,7 @@
                                   (when (:body/collides? (:entity/body @eid))
                                     (grid/remove-from-occupied-cells! grid eid))
                                   nil)
-   :tx/state-enter              (fn [_ctx eid [state-k state-v]]
-                                  (state/enter [state-k state-v] eid))
+   :tx/state-enter              moon.tx.state-enter/do!
    :tx/effect                   (fn [ctx effect-ctx effects]
                                   (mapcat #(effect/handle % effect-ctx ctx)
                                           (filter #(effect/applicable? % effect-ctx) effects)))
