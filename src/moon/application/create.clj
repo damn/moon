@@ -1,5 +1,6 @@
 (ns moon.application.create
-  (:require moon.create.unorganised
+  (:require moon.create.gdx
+            moon.create.unorganised
             moon.create.spawn-enemies
             moon.create.raycaster
             moon.create.spawn-player
@@ -25,12 +26,12 @@
             moon.create.world-viewport))
 
 (defn do!
-  [ctx]
+  []
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          ctx
+          {}
           [
-           [moon.create.unorganised/step]
+           [moon.create.gdx/step]
            [moon.create.ui-viewport/step]
            [moon.create.stage/step]
            [moon.create.set-input-processor/step]
@@ -40,6 +41,7 @@
            [moon.create.world-unit-scale/step]
            [moon.create.world-viewport/step]
            [moon.create.default-font/step]
+           [moon.create.unorganised/step]
            [moon.create.controls/step]
            [moon.create.ctx-colors/step]
            [moon.create.render-z-order/step]
