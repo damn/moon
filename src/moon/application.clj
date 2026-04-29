@@ -4,32 +4,24 @@
             [moon.application.render :as render]
             [moon.application.resize :as resize])
   (:import (com.badlogic.gdx ApplicationListener
-                             Gdx)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration))
-  (:gen-class))
+                             Gdx)))
 
 (def state (atom nil))
 
-(defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (reify ApplicationListener
-                        (create [_]
-                          (reset! state (create/do! Gdx/app)))
+(def listener
+  (reify ApplicationListener
+    (create [_]
+      (reset! state (create/do! Gdx/app)))
 
-                        (dispose [_]
-                          (dispose/do! @state))
+    (dispose [_]
+      (dispose/do! @state))
 
-                        (render [_]
-                          (swap! state render/do!))
+    (render [_]
+      (swap! state render/do!))
 
-                        (resize [_ width height]
-                          (resize/do! @state width height))
+    (resize [_ width height]
+      (resize/do! @state width height))
 
-                        (pause [_])
+    (pause [_])
 
-                        (resume [_]))
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle "Cyber Dungeon Quest")
-                        (.setWindowedMode 1440 900)
-                        (.setForegroundFPS 60))))
+    (resume [_])))
