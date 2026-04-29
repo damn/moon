@@ -3,7 +3,8 @@
             [moon.application.dispose :as dispose]
             [moon.application.render :as render]
             [moon.application.resize :as resize])
-  (:import (com.badlogic.gdx ApplicationListener)
+  (:import (com.badlogic.gdx ApplicationListener
+                             Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration))
   (:gen-class))
@@ -14,7 +15,7 @@
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
-                          (reset! state (create/do!)))
+                          (reset! state (create/do! Gdx/app)))
 
                         (dispose [_]
                           (dispose/do! @state))

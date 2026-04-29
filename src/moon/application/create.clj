@@ -26,10 +26,10 @@
             moon.create.world-viewport))
 
 (defn do!
-  []
+  [application]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          {}
+          application
           [
            [moon.create.gdx/step]
            [moon.create.ui-viewport/step]
