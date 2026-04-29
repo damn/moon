@@ -13,7 +13,6 @@
             moon.ui.property-editor-window
             moon.ui.property-overview-window
             [moon.body :as body]
-            [moon.inventory :as inventory]
             [moon.skill :as skill]
             [moon.state :as state]
             [moon.textures :as textures]))
@@ -48,41 +47,6 @@
           :ctx/entity-ids (atom {})
          ))
 
-(defmethod state/clicked-inventory-cell :player-item-on-cursor
-  [_ eid cell]
-  (let [entity @eid
-        inventory (:entity/inventory entity)
-        item-in-cell (get-in inventory cell)
-        item-on-cursor (:entity/item-on-cursor entity)]
-    (cond
-     ; PUT ITEM IN EMPTY CELL
-     (and (not item-in-cell)
-          (inventory/valid-slot? cell item-on-cursor))
-     [[:tx/sound "bfxr_itemput"]
-      [:tx/dissoc eid :entity/item-on-cursor]
-      [:tx/set-item eid cell item-on-cursor]
-      [:tx/event eid :dropped-item]]
-
-     ; STACK ITEMS
-     (and item-in-cell
-          (inventory/stackable? item-in-cell item-on-cursor))
-     [[:tx/sound "bfxr_itemput"]
-      [:tx/dissoc eid :entity/item-on-cursor]
-      [:tx/stack-item eid cell item-on-cursor]
-      [:tx/event eid :dropped-item]]
-
-     ; SWAP ITEMS
-     (and item-in-cell
-          (inventory/valid-slot? cell item-on-cursor))
-     [[:tx/sound "bfxr_itemput"]
-      ; need to dissoc and drop otherwise state enter does not trigger picking it up again
-      ; TODO? coud handle pickup-item from item-on-cursor state also
-      [:tx/dissoc eid :entity/item-on-cursor]
-      [:tx/remove-item eid cell]
-      [:tx/set-item eid cell item-on-cursor]
-      [:tx/event eid :dropped-item]
-      [:tx/event eid :pickup-item item-in-cell]])))
-
 (defmethod state/draw-ui-view :player-item-on-cursor
   [_ eid {:keys [ctx/input
                  ctx/stage
@@ -96,13 +60,6 @@
       (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
       ui-mouse-position
       {:center? true}]]))
-
-(defmethod state/clicked-inventory-cell :player-idle
-  [_ eid cell]
-  (when-let [item (get-in (:entity/inventory @eid) cell)]
-    [[:tx/sound "bfxr_takeit"]
-     [:tx/event eid :pickup-item item]
-     [:tx/remove-item eid cell]]))
 
 ; no window movable type cursor appears here like in player idle
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
