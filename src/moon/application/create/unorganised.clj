@@ -1,8 +1,6 @@
 (ns moon.application.create.unorganised
-  (:require [clojure.animation :as animation]
+  (:require moon.player-item-on-cursor
             [clojure.input :as input]
-            [clojure.math :as math]
-            [clojure.math.vector2 :as v]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             clojure.gdx.scene2d.ui.data-viewer-window
@@ -17,17 +15,13 @@
             moon.ui.property-editor-window
             moon.ui.property-overview-window
             [moon.body :as body]
-            [moon.effect :as effect]
-            [moon.entity :as entity]
-            [moon.faction :as faction]
             [moon.input]
             [moon.inventory :as inventory]
             [moon.skill :as skill]
             [moon.state :as state]
             [moon.stats :as stats]
             [moon.textures :as textures]
-            [moon.timer :as timer]
-            [moon.val-max :as val-max]))
+            [moon.timer :as timer]))
 
 (defn step [ctx]
   (assoc ctx
@@ -59,95 +53,6 @@
           :ctx/entity-ids (atom {})
          ))
 
-(def mouseover-ellipse-width 5)
-
-(defmethod entity/render :entity/animation
-  [[_k animation] entity ctx]
-  (entity/render [:entity/image (animation/current-frame animation)]
-                 entity
-                 ctx))
-
-(defmethod entity/render :entity/clickable
-  [[_k {:keys [text]}]
-   {:keys [entity/body
-           entity/mouseover?]}
-   _ctx]
-  (when (and mouseover? text)
-    (let [[x y] (:body/position body)]
-      [[:draw/text {:text text
-                    :x x
-                    :y (+ y (/ (:body/height body) 2))
-                    :up? true}]])))
-
-(defmethod entity/render :entity/image
-  [[_k image] {:keys [entity/body]} {:keys [ctx/textures]}]
-  [[:draw/texture-region
-    (textures/texture-region textures image)
-    (:body/position body)
-    {:center? true
-     :rotation (or (:body/rotation-angle body)
-                   0)}]])
-
-(defmethod entity/render :entity/line-render
-  [[_k {:keys [thick? end color]}]
-   {:keys [entity/body]}
-   _ctx]
-  (let [position (:body/position body)]
-    (if thick?
-      [[:draw/with-line-width
-        4
-        [[:draw/line position end color]]]]
-      [[:draw/line position end color]])))
-
-(defmethod entity/render :entity/mouseover?
-  [_
-   {:keys [entity/body
-           entity/faction]}
-   {:keys [ctx/colors
-           ctx/player-eid]}]
-  (let [player @player-eid]
-    [[:draw/with-line-width mouseover-ellipse-width
-      [[:draw/ellipse
-        (:body/position body)
-        (/ (:body/width  body) 2)
-        (/ (:body/height body) 2)
-        (cond (= faction (faction/enemy (:entity/faction player)))
-              (:colors/enemy-color colors)
-              (= faction (:entity/faction player))
-              (:colors/friendly-color colors)
-              :else
-              (:colors/neutral-color colors))]]]]))
-
-(defmethod entity/render :entity/stats
-  [_ entity {:keys [ctx/colors
-                    ctx/world-unit-scale]}]
-  (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
-    (when (or (< ratio 1) (:entity/mouseover? entity))
-      (let [{:keys [body/position body/width body/height]} (:entity/body entity)
-            [x y] position
-            x (- x (/ width  2))
-            y (+ y (/ height 2))
-            height (* 5 world-unit-scale)
-            border (* 1 world-unit-scale)]
-        [[:draw/filled-rectangle x y width height (:colors/hp-bar-rect colors)]
-         [:draw/filled-rectangle
-          (+ x border)
-          (+ y border)
-          (- (* width ratio) (* 2 border))
-          (- height          (* 2 border))
-          ((:colors/hp-bar colors) ratio)]]))))
-
-(defmethod entity/render :entity/string-effect
-  [[_k {:keys [text]}] entity {:keys [ctx/world-unit-scale]}]
-  (let [[x y] (:body/position (:entity/body entity))]
-    [[:draw/text {:text text
-                  :x x
-                  :y (+ y
-                        (/ (:body/height (:entity/body entity)) 2)
-                        (* 5 world-unit-scale))
-                  :scale 2
-                  :up? true}]]))
-
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
      (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
@@ -161,38 +66,6 @@
                  :skill/action-time
                  (apply-action-speed-modifier @eid skill)
                  (timer/create elapsed-time))})
-
-(def ^:private skill-image-radius-world-units
-  (let [tile-size 48
-        image-width 32]
-    (/ (/ image-width tile-size) 2)))
-
-(defmethod entity/render :active-skill
-  [[_k {:keys [skill effect-ctx counter]}]
-   entity
-   {:keys [ctx/colors
-           ctx/elapsed-time
-           ctx/textures]
-    :as ctx}]
-  (let [{:keys [entity/image skill/effects]} skill]
-    (concat (let [action-counter-ratio (timer/ratio elapsed-time counter)
-                  texture-region (textures/texture-region textures image)
-                  radius skill-image-radius-world-units
-                  [x y] (:body/position (:entity/body entity))
-                  y (+ (float y)
-                       (float (/ (:body/height (:entity/body entity)) 2))
-                       (float 0.15))
-                  center [x (+ y radius)]]
-              [[:draw/filled-circle center radius (:colors/active-skill-circle colors)]
-               [:draw/sector
-                center
-                radius
-                (math/to-radians 90) ; start-angle
-                (math/to-radians (* (float action-counter-ratio) 360)) ; degree
-                (:colors/active-skill-sector colors)]
-               [:draw/texture-region texture-region [(- (float x) radius) y]]])
-            (mapcat #(effect/render % effect-ctx ctx)  ; update-effect-ctx here too ?
-                    effects))))
 
 (defmethod state/enter :active-skill
   [[_k {:keys [skill]}] eid]
@@ -219,13 +92,6 @@
 (defmethod state/create :stunned
   [[_k duration] _eid {:keys [ctx/elapsed-time]}]
   {:counter (timer/create elapsed-time duration)})
-
-(defmethod entity/render :stunned
-  [_ {:keys [entity/body]} {:keys [ctx/colors]}]
-  [[:draw/circle
-    (:body/position body)
-    0.5
-    (:colors/stunned colors)]])
 
 (defmethod state/cursor :stunned
   [_ _eid _ctx]
@@ -264,42 +130,9 @@
                                       :speed (creature-speed @eid)}]]
     [[:tx/event eid :no-movement-input]]))
 
-(defn world-item? [mouseover-actor]
-  (not mouseover-actor))
-
-; It is possible to put items out of sight, losing them.
-; Because line of sight checks center of entity only, not corners
-; this is okay, you have thrown the item over a hill, thats possible.
-(defn- item-placement-point* [player target maxrange]
-  (v/add player
-         (v/scale (v/direction player target)
-                  (min maxrange
-                       (v/distance player target)))))
-
-(defn item-place-position [world-mouse-position entity]
-  (item-placement-point* (:body/position (:entity/body entity))
-                         world-mouse-position
-                         ; so you cannot put it out of your own reach
-                         (- (:entity/click-distance-tiles entity) 0.1)))
-
 (defmethod state/create :player-item-on-cursor
   [[_k item] _eid _ctx]
   {:item item})
-
-(defmethod entity/render :player-item-on-cursor
-  [[_k {:keys [item]}]
-   entity
-   {:keys [ctx/input
-           ctx/stage
-           ctx/textures
-           ctx/world-mouse-position]}]
-  ; TODO do not draw here, only at UI view
-  ; then graphics can draw world without stage/input
-  (when (world-item? (stage/mouseover-actor stage (input/mouse-position input)))
-    [[:draw/texture-region
-      (textures/texture-region textures (:entity/image item))
-      (item-place-position world-mouse-position entity)
-      {:center? true}]]))
 
 (defmethod state/enter :player-item-on-cursor
   [[_k {:keys [item]}] eid]
@@ -316,7 +149,7 @@
       [[:tx/sound "bfxr_itemputground"]
        [:tx/dissoc eid :entity/item-on-cursor]
        [:tx/spawn-item
-        (item-place-position world-mouse-position entity)
+        (moon.player-item-on-cursor/item-place-position world-mouse-position entity)
         (:entity/item-on-cursor entity)]])))
 
 (defmethod state/cursor :player-item-on-cursor
@@ -370,7 +203,7 @@
   ; TODO see player-item-on-cursor at render layers
   ; always draw it here at right position, then render layers does not need input/stage
   ; can pass world to graphics, not handle here at application
-  (when (not (world-item? (stage/mouseover-actor stage (input/mouse-position input))))
+  (when (stage/mouseover-actor stage (input/mouse-position input))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
       ui-mouse-position
@@ -381,7 +214,7 @@
                  ctx/stage]}]
   (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))]
     (when (and (input/button-just-pressed? input :input.buttons/left)
-               (world-item? mouseover-actor))
+               (not mouseover-actor))
       [[:tx/event eid :drop-item]])))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
@@ -514,25 +347,10 @@
   [_]
   true)
 
-(defmethod entity/render :npc-sleeping
-  [_ {:keys [entity/body]} _ctx]
-  (let [[x y] (:body/position body)]
-    [[:draw/text {:text "zzz"
-                  :x x
-                  :y (+ y (/ (:body/height body) 2))
-                  :up? true}]]))
-
 (defmethod state/exit :npc-sleeping
   [_ eid _ctx]
   [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]
    [:tx/add-text-effect eid "[WHITE]!" 1]])
-
-(defmethod entity/render :entity/temp-modifier
-  [_ entity {:keys [ctx/colors]}]
-  [[:draw/filled-circle
-    (:body/position (:entity/body entity))
-    0.5
-    (:colors/temp-modifier colors)]])
 
 (def reaction-time-multiplier 0.016)
 
