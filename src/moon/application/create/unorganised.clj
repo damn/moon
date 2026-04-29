@@ -20,8 +20,7 @@
             [moon.skill :as skill]
             [moon.state :as state]
             [moon.stats :as stats]
-            [moon.textures :as textures]
-            [moon.timer :as timer]))
+            [moon.textures :as textures]))
 
 (defn step [ctx]
   (assoc ctx
@@ -53,20 +52,6 @@
           :ctx/entity-ids (atom {})
          ))
 
-(defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
-  (/ action-time
-     (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
-         1)))
-
-(defmethod state/create :active-skill
-  [[_k [skill effect-ctx]] eid {:keys [ctx/elapsed-time]}]
-  {:skill skill
-   :effect-ctx effect-ctx
-   :counter (->> skill
-                 :skill/action-time
-                 (apply-action-speed-modifier @eid skill)
-                 (timer/create elapsed-time))})
-
 (defmethod state/enter :active-skill
   [[_k {:keys [skill]}] eid]
   [[:tx/sound (:skill/start-action-sound skill)]
@@ -85,17 +70,9 @@
   [_ eid]
   [[:tx/mark-destroyed eid]])
 
-(defmethod state/create :stunned
-  [[_k duration] _eid {:keys [ctx/elapsed-time]}]
-  {:counter (timer/create elapsed-time duration)})
-
 (defmethod state/cursor :stunned
   [_ _eid _ctx]
   :cursors/denied)
-
-(defmethod state/create :player-moving
-  [[_k movement-vector] eid _ctx]
-  {:movement-vector movement-vector})
 
 (defmethod state/enter :player-moving
   [[_k {:keys [movement-vector]}] eid]
@@ -117,10 +94,6 @@
     [[:tx/assoc eid :entity/movement {:direction movement-vector
                                       :speed (creature-speed @eid)}]]
     [[:tx/event eid :no-movement-input]]))
-
-(defmethod state/create :player-item-on-cursor
-  [[_k item] _eid _ctx]
-  {:item item})
 
 (defmethod state/enter :player-item-on-cursor
   [[_k {:keys [item]}] eid]
@@ -327,15 +300,6 @@
   [_ eid _ctx]
   [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]
    [:tx/add-text-effect eid "[WHITE]!" 1]])
-
-(def reaction-time-multiplier 0.016)
-
-(defmethod state/create :npc-moving
-  [[_k movement-vector] eid {:keys [ctx/elapsed-time]}]
-  {:movement-vector movement-vector
-   :timer (timer/create elapsed-time
-                        (* (stats/get-stat-value (:entity/stats @eid) :stats/reaction-time)
-                           reaction-time-multiplier))})
 
 (defmethod state/enter :npc-moving
   [[_k {:keys [movement-vector]}] eid]
