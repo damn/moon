@@ -10,7 +10,8 @@
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.viewport :as viewport]
             [clojure.input :as input]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [moon.textures :as textures])
   (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.graphics Color
                                       Colors
@@ -64,6 +65,9 @@
                                             world-height
                                             (doto (camera/create)
                                               (camera/set-to-ortho! false world-width world-height))))
+     :ctx/textures (textures/create (.getFiles app)
+                                    {:folder "resources/"
+                                     :extensions #{"png" "bmp"}})
      :ctx/default-font (let [{:keys [path
                                      size
                                      quality-scaling

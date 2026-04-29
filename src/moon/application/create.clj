@@ -14,8 +14,7 @@
             moon.application.create.max-speed
             moon.application.create.db
             moon.application.create.ctx-colors
-            moon.application.create.controls
-            moon.application.create.textures))
+            moon.application.create.controls))
 
 (defn do!
   [application]
@@ -24,7 +23,6 @@
           application
           [
            [moon.application.create.gdx/step]
-           [moon.application.create.textures/step]
            [moon.application.create.unorganised/step]
            [moon.application.create.controls/step]
            [moon.application.create.ctx-colors/step]
