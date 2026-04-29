@@ -2,6 +2,30 @@
   (:require [clojure.input :as input]
             [moon.state :as state]))
 
+(defmethod state/pause-game? :active-skill
+  [_]
+  false)
+
+(defmethod state/pause-game? :stunned
+  [_]
+  false)
+
+(defmethod state/pause-game? :player-moving
+  [_]
+  false)
+
+(defmethod state/pause-game? :player-item-on-cursor
+  [_]
+  true)
+
+(defmethod state/pause-game? :player-idle
+  [_]
+  true)
+
+(defmethod state/pause-game? :player-dead
+  [_]
+  true)
+
 (def pausing? true)
 
 (defn step

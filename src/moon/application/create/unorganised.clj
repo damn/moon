@@ -77,10 +77,6 @@
   [_ _eid _ctx]
   :cursors/sandclock)
 
-(defmethod state/pause-game? :active-skill
-  [_]
-  false)
-
 (defn- creature-speed [{:keys [entity/stats]}]
   (or (stats/get-stat-value stats :stats/movement-speed)
       0))
@@ -96,10 +92,6 @@
 (defmethod state/cursor :stunned
   [_ _eid _ctx]
   :cursors/denied)
-
-(defmethod state/pause-game? :stunned
-  [_]
-  false)
 
 (defmethod state/create :player-moving
   [[_k movement-vector] eid _ctx]
@@ -118,10 +110,6 @@
 (defmethod state/cursor :player-moving
   [_ _eid _ctx]
   :cursors/walking)
-
-(defmethod state/pause-game? :player-moving
-  [_]
-  false)
 
 (defmethod state/handle-input :player-moving
   [_ eid {:keys [ctx/input]}]
@@ -155,10 +143,6 @@
 (defmethod state/cursor :player-item-on-cursor
   [_ _eid _ctx]
   :cursors/hand-grab)
-
-(defmethod state/pause-game? :player-item-on-cursor
-  [_]
-  true)
 
 (defmethod state/clicked-inventory-cell :player-item-on-cursor
   [_ eid cell]
@@ -309,10 +293,6 @@
       :interaction-state/no-skill-selected
       :cursors/no-skill-selected)))
 
-(defmethod state/pause-game? :player-idle
-  [_]
-  true)
-
 (defmethod state/clicked-inventory-cell :player-idle
   [_ eid cell]
   (when-let [item (get-in (:entity/inventory @eid) cell)]
@@ -342,10 +322,6 @@
 (defmethod state/cursor :player-dead
   [_ _eid _ctx]
   :cursors/black-x)
-
-(defmethod state/pause-game? :player-dead
-  [_]
-  true)
 
 (defmethod state/exit :npc-sleeping
   [_ eid _ctx]
