@@ -3,7 +3,6 @@
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.graphics :as graphics]
-            [clojure.graphics.freetype :as freetype]
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.graphics.texture :as texture]
             [clojure.graphics.orthographic-camera :as camera]
@@ -16,8 +15,11 @@
                                       Colors
                                       Pixmap
                                       Pixmap$Format
-                                      Texture)
+                                      Texture
+                                      Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d SpriteBatch)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
 
 (defn step [^Application app]
@@ -81,8 +83,13 @@
                                                                :min-filter :linear
                                                                :mag-filter :linear
                                                                }
-                             font (freetype/generate-font (.internal (.getFiles app) path)
-                                                          {:size (* size quality-scaling)})]
+                             generator (FreeTypeFontGenerator. (.internal (.getFiles app) path))
+                             font (.generateFont generator
+                                                 (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                                                   (set! (.size params) (* size quality-scaling))
+                                                   (set! (.minFilter params) Texture$TextureFilter/Linear)
+                                                   (set! (.magFilter params) Texture$TextureFilter/Linear)
+                                                   params))]
                          (.setScale (.getData font) (/ quality-scaling))
                          (set! (.markupEnabled (.getData font)) enable-markup?)
                          (.setUseIntegerPositions font use-integer-positions?)
