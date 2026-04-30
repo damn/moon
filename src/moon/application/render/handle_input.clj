@@ -6,7 +6,8 @@
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.stats :as stats]
-            [moon.txs :as txs]))
+            [moon.txs :as txs])
+  (:import (com.badlogic.gdx Input$Buttons)))
 
 (defn- creature-speed [{:keys [entity/stats]}]
   (or (stats/get-stat-value stats :stats/movement-speed)
@@ -23,7 +24,7 @@
   [_ eid {:keys [ctx/input
                  ctx/stage]}]
   (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))]
-    (when (and (input/button-just-pressed? input :input.buttons/left)
+    (when (and (input/button-just-pressed? input Input$Buttons/LEFT)
                (not mouseover-actor))
       [[:tx/event eid :drop-item]])))
 
@@ -82,7 +83,7 @@
                         ctx/stage] :as ctx}]
   (if-let [movement-vector (moon.input/player-movement-vector input)]
     [[:tx/event player-eid :movement-input movement-vector]]
-    (when (input/button-just-pressed? input :input.buttons/left)
+    (when (input/button-just-pressed? input Input$Buttons/LEFT)
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))

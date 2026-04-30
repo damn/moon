@@ -1,17 +1,19 @@
 (ns moon.application.create.controls
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str])
+  (:import (com.badlogic.gdx Input$Buttons
+                             Input$Keys)))
 
 (defn step [ctx]
   (assoc ctx
          :ctx/controls {
-                        :zoom-in :input.keys/minus
-                        :zoom-out :input.keys/equals
-                        :unpause-once :input.keys/p
-                        :unpause-continously :input.keys/space
-                        :close-windows-key :input.keys/escape
-                        :toggle-inventory  :input.keys/i
-                        :toggle-entity-info :input.keys/e
-                        :open-debug-button :input.buttons/right
+                        :zoom-in Input$Keys/MINUS
+                        :zoom-out Input$Keys/EQUALS
+                        :unpause-once Input$Keys/P
+                        :unpause-continously Input$Keys/SPACE
+                        :close-windows-key Input$Keys/ESCAPE
+                        :toggle-inventory  Input$Keys/I
+                        :toggle-entity-info Input$Keys/E
+                        :open-debug-button Input$Buttons/RIGHT
                         }
          :ctx/controls-info (str/join "\n"
                                       ["[W][A][S][D] - Move"

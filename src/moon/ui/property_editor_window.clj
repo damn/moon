@@ -7,7 +7,8 @@
             [moon.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
-            [moon.throwable :as throwable]))
+            [moon.throwable :as throwable])
+  (:import (com.badlogic.gdx Input$Keys)))
 
 (defmethod actor/create :ui/property-editor-window
   [{:keys [ctx
@@ -49,7 +50,7 @@
                   :act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
                             (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
-                              (when (input/key-just-pressed? input :input.keys/enter)
+                              (when (input/key-just-pressed? input Input$Keys/ENTER)
                                 (clicked-save-fn this ctx)))))})]
         save-button {:type :ui/text-button
                      :text "Save [LIGHT_GRAY](ENTER)[]"

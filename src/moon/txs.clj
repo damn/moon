@@ -387,3 +387,21 @@
     (reduce-actions! reaction-txs-fn-map
                      ctx
                      handled-txs)))
+
+
+
+; no window movable type cursor appears here like in player idle
+; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
+; => input events handling
+; hmmm interesting ... can disable @ item in cursor  / moving / etc.
+
+(comment
+ (.postRunnable com.badlogic.gdx.Gdx/app
+                (fn []
+                  (:tx/show-modal @moon.application/state
+                                  {:title "TestTitle"
+                                   :text "TextTEXT"
+                                   :button-text "testbuttonTEXT"
+                                   :on-click (fn [])})))
+
+ )
