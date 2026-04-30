@@ -1,9 +1,9 @@
 (ns moon.ui.property-overview-window
   (:require [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.stage :as stage]
             [moon.db :as db]
             [moon.property :as property]
-            [clojure.gdx.scene2d.stage :as stage]
             [moon.textures :as textures]))
 
 (def ^:private property-type->overview-table-props

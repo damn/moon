@@ -1,6 +1,7 @@
 (ns moon.application.create
   (:require moon.application.create.gdx
             moon.application.create.unorganised
+            moon.application.create.ui-impls
             moon.application.create.spawn-enemies
             moon.application.create.raycaster
             moon.application.create.spawn-player
@@ -30,6 +31,7 @@
            [moon.application.create.max-speed/step]
            [moon.application.create.db/step]
            [moon.application.create.into-record/step]
+           [moon.application.create.ui-impls/step]
            [moon.application.create.add-stage-actors/step]
            [moon.application.create.tiled-map/step]
            [moon.application.create.grid/step]
