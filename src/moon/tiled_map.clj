@@ -4,7 +4,6 @@
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tile :as tile]
             [clojure.gdx.maps.tiled.layer :as layer]
-            [clojure.gdx.maps.tiled.layer.cell :as cell]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn props [tiled-map]
@@ -46,7 +45,7 @@
   (let [position [x y]]
     (when-let [cell (layer/cell layer position)]
       (let [value (-> cell
-                      cell/tile
+                      .getTile
                       tile/properties
                       (props/get "movement"))]
         (assert value
@@ -86,7 +85,7 @@
                 cell (layer/cell layer position)]
           :when cell
           :let [value (-> cell
-                          cell/tile
+                          .getTile
                           tile/properties
                           (props/get property-key))]
           :when value]

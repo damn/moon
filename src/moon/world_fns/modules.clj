@@ -2,7 +2,6 @@
   (:require [clojure.gdx.maps.props :as props]
             [clojure.gdx.maps.layers :as layers]
             [clojure.gdx.maps.tiled.layer :as layer]
-            [clojure.gdx.maps.tiled.layer.cell :as cell]
             [clojure.gdx.maps.tiled.tile :as tile]
             [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [moon.caves :as caves]
@@ -160,7 +159,7 @@
                             :when local-position]
                         (when (vector? local-position)
                           (when-let [cell (layer/cell layer local-position)]
-                            [position (tiled-map/copy-tile (cell/tile cell))])))})}))
+                            [position (tiled-map/copy-tile (.getTile cell))])))})}))
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid
@@ -222,7 +221,7 @@
 
 (defn- property-value [layer xy property-key]
   (if-let [cell (layer/cell layer xy)]
-    (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
+    (if-let [value (props/get (tile/properties (.getTile cell)) property-key)]
       value
       :undefined)
     :no-cell))

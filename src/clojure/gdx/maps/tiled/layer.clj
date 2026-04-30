@@ -1,8 +1,8 @@
 (ns clojure.gdx.maps.tiled.layer
   (:refer-clojure :exclude [name])
-  (:require [clojure.gdx.maps.props :as props]
-            [clojure.gdx.maps.tiled.layer.cell :as cell])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
+  (:require [clojure.gdx.maps.props :as props])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
+                                        TiledMapTileLayer$Cell)))
 
 (defn visible? [^TiledMapTileLayer layer]
   (.isVisible layer))
@@ -40,6 +40,6 @@
     (doseq [[xy tiled-map-tile] tiles
             :let [[x y] xy]
             :when tiled-map-tile]
-      (.setCell layer x y (doto (cell/create)
-                            (cell/set-tile! tiled-map-tile))))
+      (.setCell layer x y (doto (TiledMapTileLayer$Cell.)
+                            (.setTile tiled-map-tile))))
     layer))
