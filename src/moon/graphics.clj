@@ -1,32 +1,39 @@
 (ns moon.graphics
-  (:require [clojure.graphics.bitmap-font :as bitmap-font]
-            [clojure.graphics.orthographic-camera :as camera]
+  (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.viewport :as viewport]
             [clojure.graphics.texture-region :as texture-region]
-            [clojure.graphics.shape-drawer :as shape-drawer])
-  (:import (com.badlogic.gdx.graphics.g2d Batch)))
+            [clojure.graphics.shape-drawer :as shape-drawer]
+            [clojure.string :as str])
+  (:import (com.badlogic.gdx.graphics.g2d Batch
+                                          BitmapFont)
+           (com.badlogic.gdx.utils Align)))
 
 (defn draw-text!
   [{:keys [ctx/batch
            ctx/unit-scale
            ctx/default-font]}
    {:keys [font scale x y text h-align up?]}]
-  (let [font (or font default-font)
-        old-scale (bitmap-font/scale-x font)
+  (let [^BitmapFont font (or font default-font)
+        old-scale (.scaleX (.getData font))
         target-width 0
         wrap? false
         scale (* (float @unit-scale)
                  (float (or scale 1)))]
-    (bitmap-font/set-scale! font (* old-scale scale))
-    (bitmap-font/draw! font
-                       batch
-                       text
-                       x
-                       (+ y (if up? (bitmap-font/text-height font text) 0))
-                       target-width
-                       (or h-align :align/center)
-                       wrap?)
-    (bitmap-font/set-scale! font old-scale)))
+    (.setScale (.getData font) (* old-scale scale))
+    (.draw font
+           batch
+           text
+           (float x)
+           (float (+ y (if up?
+                         (-> text
+                             (str/split #"\n")
+                             count
+                             (* (.getLineHeight font)))
+                         0)))
+           (float target-width)
+           Align/center
+           wrap?)
+    (.setScale (.getData font) old-scale)))
 
 (defn draw-texture-region!
   [{:keys [^Batch ctx/batch

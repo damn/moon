@@ -3,7 +3,6 @@
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.graphics :as graphics]
-            [clojure.graphics.bitmap-font :as bitmap-font]
             [clojure.graphics.freetype :as freetype]
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.graphics.texture :as texture]
@@ -49,7 +48,7 @@
                   (input/set-processor! (.getInput app) stage)
                   stage)
      :ctx/skin (let [skin (skin/create (.internal (.getFiles app) "uiskin.json"))]
-                 (bitmap-font/enable-markup! (skin/font skin "default-font") true)
+                 (set! (.markupEnabled (.getData (skin/font skin "default-font"))) true)
                  skin)
      :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                     (update-vals data
@@ -81,9 +80,10 @@
                                                                ; :texture-filter/linear because scaling to world-units
                                                                :min-filter :linear
                                                                :mag-filter :linear
-                                                               }]
-                         (doto (freetype/generate-font (.internal (.getFiles app) path)
-                                                       {:size (* size quality-scaling)})
-                           (bitmap-font/set-scale! (/ quality-scaling))
-                           (bitmap-font/enable-markup! enable-markup?)
-                           (bitmap-font/use-integer-positions! use-integer-positions?)))}))
+                                                               }
+                             font (freetype/generate-font (.internal (.getFiles app) path)
+                                                          {:size (* size quality-scaling)})]
+                         (.setScale (.getData font) (/ quality-scaling))
+                         (set! (.markupEnabled (.getData font)) enable-markup?)
+                         (.setUseIntegerPositions font use-integer-positions?)
+                         font)}))
