@@ -1,7 +1,6 @@
 (ns moon.world-fns.modules
   (:require [clojure.gdx.maps.props :as props]
             [clojure.gdx.maps.layers :as layers]
-            [clojure.gdx.maps.tiled.tile :as tile]
             [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [moon.caves :as caves]
             [moon.grid2d :as g2d]
@@ -221,7 +220,7 @@
 
 (defn- property-value [^TiledMapTileLayer layer [x y] property-key]
   (if-let [cell (.getCell layer x y)]
-    (if-let [value (props/get (tile/properties (.getTile cell)) property-key)]
+    (if-let [value (props/get (.getProperties (.getTile cell)) property-key)]
       value
       :undefined)
     :no-cell))

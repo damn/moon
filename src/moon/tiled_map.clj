@@ -1,8 +1,7 @@
 (ns moon.tiled-map
   (:require [clojure.gdx.maps.props :as props]
             [clojure.gdx.maps.layers :as layers]
-            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
-            [clojure.gdx.maps.tiled.tile :as tile])
+            [clojure.gdx.maps.tiled.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
@@ -38,7 +37,7 @@
   {:pre [texture-region
          (string? property-name)]}
   (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-    (props/put! (tile/properties tile) property-name property-value)
+    (props/put! (.getProperties tile) property-name property-value)
     tile))
 
 (defn- tile-movement-property
@@ -47,7 +46,7 @@
     (when-let [cell (.getCell layer x y)]
       (let [value (-> cell
                       .getTile
-                      tile/properties
+                      .getProperties
                       (props/get "movement"))]
         (assert value
                 (str "Value for :movement at position "
@@ -87,7 +86,7 @@
           :when cell
           :let [value (-> cell
                           .getTile
-                          tile/properties
+                          .getProperties
                           (props/get property-key))]
           :when value]
       [position value])))
