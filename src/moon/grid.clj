@@ -1,13 +1,13 @@
 (ns moon.grid
   (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
             [clojure.math.circle :as circle]
+            [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid2d :as g2d]
-            [moon.position :as position]
-            [clojure.rectangle :as rectangle])
+            [moon.position :as position])
   (:import (com.badlogic.gdx.math Circle
                                   Intersector
                                   Rectangle)))
