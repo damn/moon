@@ -3,8 +3,9 @@
             [clojure.gdx.maps.layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tile :as tile]
-            [clojure.gdx.maps.tiled.layer :as layer]
-            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+            [clojure.gdx.maps.tiled.layer :as layer])
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn props [tiled-map]
   (tiled-map/properties tiled-map))
@@ -30,13 +31,13 @@
   (memoize
    (fn copy [tile]
      (assert tile)
-     (static-tiled-map-tile/copy tile))))
+     (StaticTiledMapTile. tile))))
 
 (defn static-tiled-map-tile
   [texture-region property-name property-value]
   {:pre [texture-region
          (string? property-name)]}
-  (let [tile (static-tiled-map-tile/create texture-region)]
+  (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
     (props/put! (tile/properties tile) property-name property-value)
     tile))
 
