@@ -1,14 +1,14 @@
 (ns moon.world-fns.modules
   (:require [clojure.gdx.maps.props :as props]
             [clojure.gdx.maps.layers :as layers]
-            [clojure.gdx.maps.tiled.layer :as layer]
             [clojure.gdx.maps.tiled.tile :as tile]
             [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [moon.caves :as caves]
             [moon.grid2d :as g2d]
             [moon.nads :as nads]
             [moon.tiled-map :as tiled-map])
-  (:import (java.util Random)))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
+           (java.util Random)))
 
 (def ^:private number-modules-x 8)
 (def ^:private number-modules-y 4)
@@ -151,14 +151,14 @@
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})
     :layers (for [layer (tiled-map/layers schema-tiled-map)]
-              {:name (layer/name layer)
-               :visible? (layer/visible? layer)
-               :properties (props/->clj (layer/properties layer))
+              {:name (.getName layer)
+               :visible? (.isVisible layer)
+               :properties (props/->clj (.getProperties layer))
                :tiles (for [position (g2d/posis grid)
                             :let [local-position (get grid position)]
                             :when local-position]
                         (when (vector? local-position)
-                          (when-let [cell (layer/cell layer local-position)]
+                          (when-let [cell (.getCell layer (local-position 0) (local-position 1))]
                             [position (tiled-map/copy-tile (.getTile cell))])))})}))
 
 (defn- convert-to-tiled-map
@@ -219,8 +219,8 @@
           {:steps steps
            :area-level-grid grid})))))
 
-(defn- property-value [layer xy property-key]
-  (if-let [cell (layer/cell layer xy)]
+(defn- property-value [^TiledMapTileLayer layer [x y] property-key]
+  (if-let [cell (.getCell layer x y)]
     (if-let [value (props/get (tile/properties (.getTile cell)) property-key)]
       value
       :undefined)

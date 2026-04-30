@@ -2,9 +2,9 @@
   (:require [clojure.gdx.maps.props :as props]
             [clojure.gdx.maps.layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
-            [clojure.gdx.maps.tiled.tile :as tile]
-            [clojure.gdx.maps.tiled.layer :as layer])
+            [clojure.gdx.maps.tiled.tile :as tile])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn props [tiled-map]
@@ -42,9 +42,9 @@
     tile))
 
 (defn- tile-movement-property
-  [tiled-map layer [x y]]
+  [tiled-map ^TiledMapTileLayer layer [x y]]
   (let [position [x y]]
-    (when-let [cell (layer/cell layer position)]
+    (when-let [cell (.getCell layer x y)]
       (let [value (-> cell
                       .getTile
                       tile/properties
@@ -54,7 +54,7 @@
                      position  " / mapeditor inverted position: " [(position 0)
                                                                    (- (dec (props/get (tiled-map/properties tiled-map) "height"))
                                                                       (position 1))]
-                     " and layer " (layer/name layer) " is undefined."))
+                     " and layer " (.getName layer) " is undefined."))
         value))))
 
 (defn- movement-property-layers
@@ -62,11 +62,11 @@
   (->> tiled-map
        tiled-map/layers
        reverse
-       (filter #(props/get (layer/properties %) "movement-properties"))))
+       (filter #(props/get (TiledMapTileLayer/.getProperties %) "movement-properties"))))
 
 (defn movement-properties [tiled-map position]
   (for [layer (movement-property-layers tiled-map)]
-    [(layer/name layer)
+    [(TiledMapTileLayer/.getName layer)
      (tile-movement-property tiled-map layer position)]))
 
 (defn movement-property [tiled-map position]
@@ -80,10 +80,10 @@
   (let [layer-name "creatures"
         property-key "id"
         layer (layers/get (tiled-map/layers tiled-map) layer-name)]
-    (for [x (range (layer/width layer))
-          y (range (layer/height layer))
+    (for [x (range (.getWidth layer))
+          y (range (.getHeight layer))
           :let [position [x y]
-                cell (layer/cell layer position)]
+                cell (.getCell layer x y)]
           :when cell
           :let [value (-> cell
                           .getTile

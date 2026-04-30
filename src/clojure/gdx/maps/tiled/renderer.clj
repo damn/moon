@@ -1,5 +1,4 @@
 (ns clojure.gdx.maps.tiled.renderer
-  (:require [clojure.gdx.maps.tiled.layer :as layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)
            (clojure.gdx TiledMapRenderer
@@ -13,7 +12,7 @@
                    (.setView camera))
         layers (.getLayers tiled-map)]
     (->> layers
-         (filter layer/visible?)
+         (filter TiledMapTileLayer/.isVisible)
          (map #(.getIndex layers ^TiledMapTileLayer %))
          int-array
          (.render renderer))))
