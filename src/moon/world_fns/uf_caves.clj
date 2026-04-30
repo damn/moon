@@ -4,7 +4,7 @@
             [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map]
             [moon.nads :as nads]
-            [moon.rand :as rand]))
+            [clojure.rand :as rand]))
 
 (defn- assoc-transition-cells [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid

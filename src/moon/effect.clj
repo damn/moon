@@ -1,7 +1,7 @@
 (ns moon.effect
   (:require [clojure.math.vector2 :as v]
             [moon.faction :as faction]
-            [moon.rand :refer [rand-int-between]]
+            [clojure.rand :refer [rand-int-between]]
             [moon.raycaster :as raycaster]
             [moon.stats :as stats]
             [moon.timer :as timer]))

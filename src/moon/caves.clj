@@ -1,6 +1,6 @@
 (ns moon.caves
   (:require [moon.grid2d :as g2d]
-            [moon.rand :as rand]))
+            [clojure.rand :as rand]))
 
 ;Cave Algorithmus.
 ;http://properundead.com/2009/03/cave-generator.html

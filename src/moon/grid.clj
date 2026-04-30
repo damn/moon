@@ -7,7 +7,7 @@
             [moon.faction :as faction]
             [moon.grid2d :as g2d]
             [moon.position :as position]
-            [moon.rectangle :as rectangle])
+            [clojure.rectangle :as rectangle])
   (:import (com.badlogic.gdx.math Circle
                                   Intersector
                                   Rectangle)))

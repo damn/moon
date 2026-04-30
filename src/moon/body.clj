@@ -1,7 +1,7 @@
 (ns moon.body
   (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
             [clojure.math.vector2 :as v]
-            [moon.rectangle :as rectangle]))
+            [clojure.rectangle :as rectangle]))
 
 (defn rectangle
   [{:keys [body/position
