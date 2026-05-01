@@ -2,11 +2,11 @@
   (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.viewport :as viewport]
             [clojure.graphics.texture-region :as texture-region]
-            [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.string :as str])
   (:import (com.badlogic.gdx.graphics.g2d Batch
                                           BitmapFont)
-           (com.badlogic.gdx.utils Align)))
+           (com.badlogic.gdx.utils Align)
+           (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn draw-text!
   [{:keys [ctx/batch
@@ -64,7 +64,7 @@
 
 (defn draw-on-world-viewport!
   [{:keys [^Batch ctx/batch
-           ctx/shape-drawer
+           ^ShapeDrawer ctx/shape-drawer
            ctx/unit-scale
            ctx/world-unit-scale
            ctx/world-viewport]}
@@ -76,10 +76,10 @@
   ;
   (.setProjectionMatrix batch (camera/combined (viewport/camera world-viewport)))
   (.begin batch)
-  (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
-    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
+  (let [old-line-width (.getDefaultLineWidth shape-drawer)]
+    (.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
     (f)
     (reset! unit-scale 1)
-    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
+    (.setDefaultLineWidth shape-drawer old-line-width))
   (.end batch))
