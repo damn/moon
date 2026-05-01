@@ -5,7 +5,6 @@
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
-            [clojure.gdx.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scene2d.ui.select-box :as select-box]
             [clojure.gdx.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-field :as text-field]
@@ -18,8 +17,9 @@
             [moon.string :as string]
             [moon.textures :as textures]
             [moon.txs :as txs]
-            [moon.order :as order]
-            ))
+            [moon.order :as order])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox
+                                               Skin)))
 
 (defmulti create (fn [[schema-k :as _schema] v ctx]
                    schema-k))
@@ -52,14 +52,12 @@
 
 (defmethod create :s/boolean
   [_ checked? {:keys [ctx/skin]}]
-  (actor/create
-   {:type :ui/check-box
-    :skin skin
-    :checked? checked?}))
+  (doto (CheckBox. "" ^Skin skin)
+    (.setChecked checked?)))
 
 (defmethod value :s/boolean
   [_ widget _schemas]
-  (check-box/checked? widget))
+  (CheckBox/.isChecked widget))
 
 (defmethod create :s/enum [schema v {:keys [ctx/skin]}]
   (actor/create
