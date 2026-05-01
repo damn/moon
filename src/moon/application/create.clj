@@ -47,11 +47,11 @@
            [create-default-font/step]
            [create-textures/step]
            [create-world-unit-scale/step]
-           [create-world-viewport/step]
+           [create-world-viewport/step] ; FIXME DEPS
            [create-cursors/step]
-           [create-ui-viewport/step]
-           [create-stage/step]
-           [create-skin/step]
+           [create-ui-viewport/step] ; FIXME DEPS
+           [create-stage/step] ; FIXME DEPS
+           [create-skin/step] ; FIXME DEPS
            [moon.application.create.unorganised/step]
            [moon.application.create.controls/step]
            [moon.application.create.ctx-colors/step]
