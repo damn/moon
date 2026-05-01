@@ -51,7 +51,7 @@
            [create-cursors/step]
            [create-ui-viewport/step] ; FIXME DEPS
            [create-stage/step] ; FIXME DEPS
-           [create-skin/step] ; FIXME DEPS
+           [create-skin/step]
            [moon.application.create.unorganised/step]
            [moon.application.create.controls/step]
            [moon.application.create.ctx-colors/step]
