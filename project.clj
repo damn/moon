@@ -2,10 +2,9 @@
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
-                 [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.0" :classifier "natives-desktop"]
-                 [com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]
+                 [clojure.gdx.backends.lwjgl "-SNAPSHOT"]
                  [space.earlygrey/shapedrawer "2.6.0"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [metosin/malli "0.13.0"]
