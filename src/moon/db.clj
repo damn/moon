@@ -1,22 +1,8 @@
 (ns moon.db
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.pprint :as pprint]
+  (:require [clojure.pprint :as pprint]
             [moon.property :as property]
             [moon.map :as map]
             [moon.schemas :as schemas]))
-
-(defn create [{:keys [schemas properties]}]
-  (let [schemas (-> schemas io/resource slurp edn/read-string)
-        properties-file (io/resource properties)
-        properties (-> properties-file slurp edn/read-string)]
-    (assert (or (empty? properties)
-                (apply distinct? (map :property/id properties))))
-    (doseq [property properties]
-      (schemas/validate schemas (property/type property) property))
-    {:db/data (zipmap (map :property/id properties) properties)
-     :db/file properties-file
-     :db/schemas schemas}))
 
 (defn- save!
   [{:keys [db/data db/file]}]
