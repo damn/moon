@@ -50,16 +50,16 @@
            [create-cursors/step]
            [create-stage/step]
            [create-skin/step]
-           [moon.application.create.unorganised/step]
-           [moon.application.create.controls/step]
-           [moon.application.create.ctx-colors/step]
-           [moon.application.create.render-z-order/step]
-           [moon.application.create.max-speed/step]
-           [moon.application.create.db/step]
-           [moon.application.create.into-record/step]
-           [moon.application.create.ui-impls/step]
-           [moon.application.create.add-stage-actors/step]
-           [moon.application.create.tiled-map/step]
+           [moon.application.create.unorganised/step] ; no deps
+           [moon.application.create.controls/step] ; no deps
+           [moon.application.create.ctx-colors/step] ; clojure.gdx.graphics.color
+           [moon.application.create.render-z-order/step] ; moon.order
+           [moon.application.create.max-speed/step] ; no deps
+           [moon.application.create.db/step] ; moon.schemas, moon.property
+           [moon.application.create.into-record/step] ;  no deps TODO make before spawn-player/enemies
+           [moon.application.create.ui-impls/step] ; FIXME
+           [moon.application.create.add-stage-actors/step] ; clojure.gdx.scene2d.stage
+           [moon.application.create.tiled-map/step] ; FIXME
            [moon.application.create.grid/step]
            [moon.application.create.content-grid/step]
            [moon.application.create.explored-tile-corners/step]

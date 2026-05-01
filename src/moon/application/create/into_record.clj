@@ -1,7 +1,416 @@
 (ns moon.application.create.into-record
-  (:require [qrecord.core :as q]))
+  (:require moon.tx.spawn-entity
+            moon.tx.state-exit
+            moon.tx.state-enter
+            [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.stage :as stage]
+            [clojure.graphics.viewport :as viewport]
+            [clojure.math.vector2 :as v]
+            [moon.content-grid :as content-grid]
+            [moon.db :as db]
+            [moon.effect :as effect]
+            [moon.grid :as grid]
+            [moon.info :as info]
+            [moon.inventory :as inventory]
+            [moon.state :as state]
+            [moon.stats :as stats]
+            [moon.textures :as textures]
+            [moon.timer :as timer]
+            [moon.map :as map]
+            [moon.ui-actors.action-bar :as action-bar]
+            [moon.ui-actors.windows.inventory :as inventory-window]
+            [reduce-fsm :as fsm]
+            [moon.txs :as txs]
+            [qrecord.core :as q])
+  (:import (com.badlogic.gdx.audio Sound)))
 
-(q/defrecord Context [])
+(defn- send-event! [ctx eid event params]
+  (let [fsm (:entity/fsm @eid)
+        _ (assert fsm)
+        old-state-k (:state fsm)
+        new-fsm (fsm/fsm-event fsm event)
+        new-state-k (:state new-fsm)]
+    (when-not (= old-state-k new-state-k)
+      (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
+                            [k (k @eid)])
+            new-state-obj [new-state-k (state/create [new-state-k params] eid ctx)]]
+        [[:tx/assoc       eid :entity/fsm new-fsm]
+         [:tx/assoc       eid new-state-k (new-state-obj 1)]
+         [:tx/dissoc      eid old-state-k]
+         [:tx/state-exit  eid old-state-obj]
+         [:tx/state-enter eid new-state-obj]]))))
+
+(def txs-fn-map
+  {
+   :tx/state-exit               moon.tx.state-exit/do!
+   :tx/audiovisual              (fn
+                                  [{:keys [ctx/db]} position audiovisual]
+                                  (let [{:keys [tx/sound
+                                                entity/animation]} (if (keyword? audiovisual)
+                                                                     (db/build db audiovisual)
+                                                                     audiovisual)]
+                                    [[:tx/sound sound]
+                                     [:tx/spawn-effect
+                                      position
+                                      {:entity/animation (assoc animation :delete-after-stopped? true)}]]))
+   ; TODO :tx/swap ?
+   :tx/assoc                    (fn [_ctx eid k value]
+                                  (swap! eid assoc k value)
+                                  nil)
+   :tx/assoc-in                 (fn [_ctx eid ks value]
+                                  (swap! eid assoc-in ks value)
+                                  nil)
+   :tx/dissoc                   (fn [_ctx eid k]
+                                  (swap! eid dissoc k)
+                                  nil)
+   :tx/update                   (fn [_ctx eid & params]
+                                  (apply swap! eid update params)
+                                  nil)
+   :tx/mark-destroyed           (fn [_ctx eid]
+                                  (swap! eid assoc :entity/destroyed? true)
+                                  nil)
+   :tx/set-cooldown             (fn [{:keys [ctx/elapsed-time]} eid skill]
+                                  (swap! eid assoc-in [:entity/skills
+                                                       (:property/id skill)
+                                                       :skill/cooling-down?]
+                                         (timer/create elapsed-time (:skill/cooldown skill)))
+                                  nil)
+   :tx/add-text-effect          (fn [{:keys [ctx/elapsed-time]} eid text duration]
+                                  [[:tx/assoc
+                                    eid
+                                    :entity/string-effect
+                                    (if-let [existing (:entity/string-effect @eid)]
+                                      (-> existing
+                                          (update :text str "\n" text)
+                                          (update :counter timer/increment duration))
+                                      {:text text
+                                       :counter (timer/create elapsed-time duration)})]])
+   :tx/add-skill                (fn [_ctx eid {:keys [property/id] :as skill}]
+                                  {:pre [(not (contains? (:entity/skills @eid) id))]}
+                                  (swap! eid update :entity/skills assoc id skill)
+                                  nil)
+   :tx/set-item                 (fn [_ctx eid cell item]
+                                  (let [entity @eid
+                                        inventory (:entity/inventory entity)]
+                                    (assert (and (nil? (get-in inventory cell))
+                                                 (inventory/valid-slot? cell item)))
+                                    (swap! eid assoc-in (cons :entity/inventory cell) item)
+                                    (when (inventory/applies-modifiers? cell)
+                                      (swap! eid update :entity/stats stats/add (:stats/modifiers item)))
+                                    nil))
+   :tx/remove-item              (fn [_ctx eid cell]
+                                  (let [entity @eid
+                                        item (get-in (:entity/inventory entity) cell)]
+                                    (assert item)
+                                    (swap! eid assoc-in (cons :entity/inventory cell) nil)
+                                    (when (inventory/applies-modifiers? cell)
+                                      (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
+                                    nil))
+   :tx/pickup-item              (fn [_ctx eid item]
+                                  (inventory/assert-valid-item? item)
+                                  (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
+                                    (assert cell)
+                                    (assert (or (inventory/stackable? item cell-item)
+                                                (nil? cell-item)))
+                                    (if (inventory/stackable? item cell-item)
+                                      (do
+                                       #_(tx/stack-item ctx eid cell item))
+                                      [[:tx/set-item eid cell item]])))
+   :tx/event                    (fn
+                                  ([ctx eid event]
+                                   (send-event! ctx eid event nil))
+                                  ([ctx eid event params]
+                                   (send-event! ctx eid event params)))
+   :tx/register-eid             (fn [ctx eid]
+                                  (assert (and (not (contains? @eid :entity/id))))
+                                  (let [id (swap! (:ctx/id-counter ctx) inc)]
+                                    (assert (number? id))
+                                    (swap! eid assoc :entity/id id)
+                                    (swap! (:ctx/entity-ids ctx) assoc id eid))
+
+                                  (assert (:entity/body @eid)) ; -< inside content grid
+                                  (content-grid/add-entity! (:ctx/content-grid ctx) eid)
+
+                                  (assert (:entity/body @eid)) ; <- inside the grid add fn ?
+                                  (when (:body/collides? (:entity/body @eid))
+                                    (assert (grid/valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
+                                  (grid/set-touched-cells! (:ctx/grid ctx) eid)
+                                  (when (:body/collides? (:entity/body @eid)) ; entity/collides? separate fooziboosh, no 'when' just a callback?
+                                    (grid/set-occupied-cells! (:ctx/grid ctx) eid))
+
+                                  nil
+                                  ; TODO what should a tx return? nil? ctx?
+                                  )
+   :tx/unregister-eid           (fn [{:keys [ctx/content-grid
+                                             ctx/entity-ids
+                                             ctx/grid]
+                                      :as ctx}
+                                     eid]
+                                  (let [id (:entity/id @eid)]
+                                    (assert (contains? @entity-ids id))
+                                    (swap! entity-ids dissoc id))
+                                  (content-grid/remove-entity! content-grid eid)
+                                  (grid/remove-from-touched-cells! grid eid)
+                                  (when (:body/collides? (:entity/body @eid))
+                                    (grid/remove-from-occupied-cells! grid eid))
+                                  nil)
+   :tx/state-enter              moon.tx.state-enter/do!
+   :tx/effect                   (fn [ctx effect-ctx effects]
+                                  (mapcat #(effect/handle % effect-ctx ctx)
+                                          (filter #(effect/applicable? % effect-ctx) effects)))
+   :tx/spawn-alert              (fn
+                                  [{:keys [ctx/elapsed-time]} position faction duration]
+                                  [[:tx/spawn-effect
+                                    position
+                                    {:entity/alert-friendlies-after-duration
+                                     {:counter (timer/create elapsed-time duration)
+                                      :faction faction}}]])
+   :tx/spawn-line               (fn [_ctx {:keys [start end duration color thick?]}]
+                                  [[:tx/spawn-effect
+                                    start
+                                    {:entity/line-render {:thick? thick? :end end :color color}
+                                     :entity/delete-after-duration duration}]])
+   :tx/move-entity              (fn [{:keys [ctx/content-grid
+                                             ctx/grid]}
+                                     eid]
+                                  (content-grid/position-changed! content-grid eid)
+                                  (grid/remove-from-touched-cells! grid eid)
+                                  (grid/set-touched-cells! grid eid)
+                                  (when (:body/collides? (:entity/body @eid))
+                                    (grid/remove-from-occupied-cells! grid eid)
+                                    (grid/set-occupied-cells! grid eid))
+                                  nil)
+   :tx/spawn-projectile         (fn [_ctx
+                                     {:keys [position direction faction]}
+                                     {:keys [entity/image
+                                             projectile/max-range
+                                             projectile/speed
+                                             entity-effects
+                                             projectile/size
+                                             projectile/piercing?] :as projectile}]
+                                  [[:tx/spawn-entity
+                                    {:entity/body {:position position
+                                                   :width size
+                                                   :height size
+                                                   :z-order :z-order/flying
+                                                   :rotation-angle (v/angle-from-vector direction)}
+                                     :entity/movement {:direction direction
+                                                       :speed speed}
+                                     :entity/image image
+                                     :entity/faction faction
+                                     :entity/delete-after-duration (/ max-range speed)
+                                     :entity/destroy-audiovisual :audiovisuals/hit-wall
+                                     :entity/projectile-collision {:entity-effects entity-effects
+                                                                   :piercing? piercing?}}]])
+   :tx/spawn-effect             (fn [_ctx position components]
+                                  [[:tx/spawn-entity
+                                    (assoc components
+                                           :entity/body {:width 0.5
+                                                         :height 0.5
+                                                         :z-order :z-order/effect
+                                                         :position position})]])
+   :tx/spawn-item               (fn [_ctx position item]
+                                  [[:tx/spawn-entity
+                                    {:entity/body {:position position
+                                                   :width 0.75
+                                                   :height 0.75
+                                                   :z-order :z-order/on-ground}
+                                     :entity/image (:entity/image item)
+                                     :entity/item item
+                                     :entity/clickable {:type :clickable/item
+                                                        :text (:property/pretty-name item)}}]])
+   :tx/spawn-creature           (fn [_ctx
+                                     {:keys [position
+                                             creature-property
+                                             components]}]
+                                  (assert creature-property)
+                                  [[:tx/spawn-entity
+                                    (-> creature-property
+                                        (assoc :entity/body (let [{:keys [body/width body/height #_body/flying?]} (:entity/body creature-property)]
+                                                              {:position position
+                                                               :width  width
+                                                               :height height
+                                                               :collides? true
+                                                               :z-order :z-order/ground #_(if flying? :z-order/flying :z-order/ground)}))
+                                        (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
+                                        (map/safe-merge components))]])
+   :tx/spawn-entity             moon.tx.spawn-entity/do!
+   :tx/sound                    (fn [& params] nil)
+   :tx/toggle-inventory-visible (fn [& params] nil)
+   :tx/show-message             (fn [& params] nil)
+   :tx/show-modal               (fn [& params] nil)
+   })
+
+(def reaction-txs-fn-map
+  {
+   :tx/sound                    (fn
+                                  [{:keys [ctx/audio] :as ctx} sound-name]
+                                  (let [sounds audio]
+                                    (assert (contains? sounds sound-name) (str sound-name))
+                                    (Sound/.play (get sounds sound-name)))
+                                  ctx)
+   :tx/toggle-inventory-visible (fn
+                                  [{:keys [ctx/stage] :as ctx}]
+                                  (-> stage
+                                      (stage/find-actor "moon.ui.windows.inventory")
+                                      actor/toggle-visible!)
+                                  ctx)
+   :tx/show-message             (fn
+                                  [{:keys [ctx/stage] :as ctx} message]
+                                  (-> stage
+                                      (stage/find-actor "player-message")
+                                      (actor/set-user-object! (atom {:text message
+                                                                     :counter 0})))
+                                  ctx)
+   :tx/show-modal               (fn
+                                  [{:keys [ctx/skin
+                                           ctx/stage]
+                                    :as ctx}
+                                   {:keys [title text button-text on-click]}]
+                                  (assert (not (stage/find-actor stage "moon.ui.modal-window")))
+                                  (stage/add-actor! stage
+                                                    (actor/create
+                                                     {:type :ui/window
+                                                      :title title
+                                                      :skin skin
+                                                      :window/modal? true
+                                                      :table/rows [[{:actor (actor/create
+                                                                             {:type :ui/label
+                                                                              :text text
+                                                                              :skin skin})}]
+                                                                   [{:actor (actor/create
+                                                                             {:type :ui/text-button
+                                                                              :text button-text
+                                                                              :skin skin
+                                                                              :actor/listeners {:listener/change (fn [_event _actor]
+                                                                                                                   (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
+                                                                                                                   (on-click))}})}]]
+                                                      :actor/name "moon.ui.modal-window"
+                                                      :actor/position [(/ (viewport/world-width  (stage/viewport stage)) 2)
+                                                                       (* (viewport/world-height (stage/viewport stage)) (/ 3 4))
+                                                                       :align/center]}))
+                                  ctx)
+   :tx/set-item                 (fn
+                                  [{:keys [ctx/skin
+                                           ctx/stage
+                                           ctx/textures]
+                                    :as ctx}
+                                   eid cell item]
+                                  (when (:entity/player? @eid)
+                                    (-> stage
+                                        ;(group/find-actor "moon.ui.windows")
+                                        (stage/find-actor "moon.ui.windows.inventory")
+                                        (inventory-window/set-item! cell {:texture-region (textures/texture-region textures (:entity/image item))
+                                                                          :tooltip-text (info/text item ctx)}
+                                                                    skin)))
+                                  ctx)
+   :tx/remove-item              (fn
+                                  [{:keys [ctx/stage] :as ctx} eid cell]
+                                  (when (:entity/player? @eid)
+                                    (-> stage
+                                        ;(group/find-actor "moon.ui.windows")
+                                        (stage/find-actor "moon.ui.windows.inventory")
+                                        (inventory-window/remove-item! cell)))
+                                  ctx)
+   :tx/add-skill                (fn
+                                  [{:keys [ctx/skin
+                                           ctx/stage
+                                           ctx/textures]
+                                    :as ctx}
+                                   eid skill]
+                                  (when (:entity/player? @eid)
+                                    (-> stage
+                                        (stage/find-actor "moon.ui.action-bar")
+                                        (action-bar/add-skill! {:skill-id (:property/id skill)
+                                                                :texture-region (textures/texture-region textures (:entity/image skill))
+                                                                :tooltip-text (info/text skill ctx)}
+                                                               skin)))
+                                  ctx)
+
+   #_(remove-skill! [stage skill-id]
+                    (-> stage
+                        (stage/find-actor "moon.ui.action-bar")
+                        (action-bar/remove-skill! skill-id)))
+   })
+
+(defn- actions!
+  [txs-fn-map ctx txs]
+  (loop [ctx ctx
+         txs txs
+         handled-txs []]
+    (if (empty? txs)
+      handled-txs
+      (let [[k & params :as tx] (first txs)]
+        (if tx
+          (let [_ (assert (vector? tx))
+                f (get txs-fn-map k)
+                _ (assert f (str "Cannot find function for tx: " k))
+                new-txs (try
+                         (apply f ctx params)
+                         (catch Throwable t
+                           (throw (ex-info "Error handling tx"
+                                           {:tx tx}
+                                           t))))]
+            (recur ctx
+                   (concat (or new-txs []) (rest txs))
+                   (conj handled-txs tx)))
+          (recur ctx
+                 (rest txs)
+                 handled-txs))))))
+
+(defn- reduce-actions!
+  [txs-fn-map ctx txs]
+  (loop [ctx ctx
+         txs txs]
+    (if (empty? txs)
+      ctx
+      (let [[k & params :as tx] (first txs)]
+        (if tx
+          (let [_ (assert (vector? tx))
+                f (get txs-fn-map k)
+                new-ctx (try
+                         (if (nil? f)
+                           ctx
+                           (apply f ctx params))
+                         (catch Throwable t
+                           (throw (ex-info "Error handling tx"
+                                           {:tx tx}
+                                           t))))]
+            (recur new-ctx
+                   (rest txs)))
+          (recur ctx
+                 (rest txs)))))))
+
+
+
+
+
+; no window movable type cursor appears here like in player idle
+; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
+; => input events handling
+; hmmm interesting ... can disable @ item in cursor  / moving / etc.
+
+(comment
+ (.postRunnable com.badlogic.gdx.Gdx/app
+                (fn []
+                  (:tx/show-modal @moon.application/state
+                                  {:title "TestTitle"
+                                   :text "TextTEXT"
+                                   :button-text "testbuttonTEXT"
+                                   :on-click (fn [])})))
+
+ )
+
+(q/defrecord Context []
+  txs/Txs
+  (handle! [ctx txs]
+    (let [handled-txs (try (actions! txs-fn-map ctx txs)
+                           (catch Throwable t
+                             (throw (ex-info "Error handling txs"
+                                             {:txs txs} t))))]
+      (reduce-actions! reaction-txs-fn-map
+                       ctx
+                       handled-txs))))
 
 (defn step [ctx]
   (merge (map->Context {}) ctx))
