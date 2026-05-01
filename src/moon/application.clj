@@ -56,8 +56,6 @@
            (com.badlogic.gdx.utils Disposable))
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.utils Disposable))
   (:gen-class))
 
