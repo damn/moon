@@ -4,7 +4,6 @@
                                              Lwjgl3ApplicationConfiguration))
   (:gen-class))
 
-; TODO rewrite so far as to pass state (Gdx) as it doesn't fit here.
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. application/listener
