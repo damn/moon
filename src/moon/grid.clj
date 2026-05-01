@@ -1,6 +1,5 @@
 (ns moon.grid
-  (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
-            [clojure.math.circle :as circle]
+  (:require [clojure.math.circle :as circle]
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
@@ -49,9 +48,9 @@
       (swap! cell assoc :adjacent-cells result)
       result)))
 
-(defn point->entities [g2d position]
-  (when-let [cell (g2d (mapv int position))]
-    (filter #(gdx-rectangle/contains? (body/rectangle (:entity/body @%)) position)
+(defn point->entities [g2d [x y]]
+  (when-let [cell (g2d (mapv int [x y]))]
+    (filter #(.contains (body/rectangle (:entity/body @%)) x y)
             (:entities @cell))))
 
 (defn set-touched-cells! [grid eid]
@@ -90,8 +89,8 @@
                           (let [other-entity @other-entity]
                             (and (not= (:entity/id other-entity) entity-id)
                                  (:body/collides? (:entity/body other-entity))
-                                 (gdx-rectangle/overlaps? (body/rectangle (:entity/body other-entity))
-                                                          (body/rectangle body))))))))))
+                                 (.overlaps (body/rectangle (:entity/body other-entity))
+                                            (body/rectangle body))))))))))
 
 (defn nearest-enemy-distance [grid entity]
   (cell/nearest-entity-distance @(grid (mapv int (:body/position (:entity/body entity))))
