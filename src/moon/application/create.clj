@@ -48,7 +48,7 @@
            [create-world-unit-scale/step]
            [create-world-viewport/step]
            [create-cursors/step]
-           [create-stage/step] ; FIXME DEPS
+           [create-stage/step]
            [create-skin/step]
            [moon.application.create.unorganised/step]
            [moon.application.create.controls/step]

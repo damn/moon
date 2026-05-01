@@ -3,9 +3,6 @@
             [clojure.graphics.viewport :as viewport])
   (:import (clojure.gdx Stage)))
 
-(defn create [viewport batch]
-  (Stage. viewport batch))
-
 (defn ctx [^Stage stage]
   (.ctx stage))
 
