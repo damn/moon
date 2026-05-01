@@ -1,5 +1,5 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [badlogic.scene2d.event :as event]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.utils.drawable :as drawable]
