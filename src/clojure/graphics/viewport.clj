@@ -2,9 +2,6 @@
   (:require [clojure.gdx.math.vector2 :as vector2])
   (:import (com.badlogic.gdx.utils.viewport FitViewport)))
 
-(defn create [world-width world-height camera]
-  (FitViewport. world-width world-height camera))
-
 (defn camera [^FitViewport viewport]
   (.getCamera viewport))
 

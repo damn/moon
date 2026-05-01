@@ -46,7 +46,7 @@
            [create-default-font/step]
            [create-textures/step]
            [create-world-unit-scale/step]
-           [create-world-viewport/step] ; FIXME DEPS
+           [create-world-viewport/step]
            [create-cursors/step]
            [create-stage/step] ; FIXME DEPS
            [create-skin/step]
