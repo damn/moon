@@ -1,5 +1,18 @@
 (ns moon.application.create
-  (:require moon.application.create.gdx
+  (:require [moon.application.create.gdx-colors :as gdx-colors]
+            [moon.application.create.tooltip-config :as tooltip-config]
+            [moon.application.create.batch :as create-batch]
+            [moon.application.create.shape-drawer-texture :as create-shape-drawer-texture]
+            [moon.application.create.shape-drawer :as create-shape-drawer]
+            [moon.application.create.audio :as create-audio]
+            [moon.application.create.default-font :as create-default-font]
+            [moon.application.create.textures :as create-textures]
+            [moon.application.create.world-unit-scale :as create-world-unit-scale]
+            [moon.application.create.world-viewport :as create-world-viewport]
+            [moon.application.create.cursors :as create-cursors]
+            [moon.application.create.ui-viewport :as create-ui-viewport]
+            [moon.application.create.stage :as create-stage]
+            [moon.application.create.skin :as create-skin]
             moon.application.create.unorganised
             moon.application.create.ui-impls
             moon.application.create.spawn-enemies
@@ -18,12 +31,27 @@
             moon.application.create.controls))
 
 (defn do!
-  [application]
+  [app]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
-          application
+          {:ctx/app app
+           :ctx/graphics  (.getGraphics app)
+           :ctx/input     (.getInput app)}
           [
-           [moon.application.create.gdx/step]
+           [gdx-colors/step]
+           [tooltip-config/step]
+           [create-batch/step]
+           [create-shape-drawer-texture/step]
+           [create-shape-drawer/step]
+           [create-audio/step]
+           [create-default-font/step]
+           [create-textures/step]
+           [create-world-unit-scale/step]
+           [create-world-viewport/step]
+           [create-cursors/step]
+           [create-ui-viewport/step]
+           [create-stage/step]
+           [create-skin/step]
            [moon.application.create.unorganised/step]
            [moon.application.create.controls/step]
            [moon.application.create.ctx-colors/step]

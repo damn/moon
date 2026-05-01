@@ -4,6 +4,7 @@
 (def schema
   (m/schema
    [:map {:closed true}
+    [:ctx/app :some]
     [:ctx/active-entities :any]
     [:ctx/audio :some]
     [:ctx/batch :some]
@@ -19,7 +20,6 @@
     [:ctx/entity-ids :some]
     [:ctx/explored-tile-corners :some]
     [:ctx/factions-iterations :some]
-    [:ctx/files :some]
     [:ctx/graphics :some]
     [:ctx/grid :some]
     [:ctx/id-counter :some]
