@@ -1,10 +1,11 @@
 (ns moon.textures
-  (:require [clojure.graphics.texture :as texture]))
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 (defn texture-region [textures {:keys [image/file image/bounds]}]
   (assert file)
   (assert (contains? textures file))
-  (let [texture (get textures file)]
+  (let [^Texture texture (get textures file)]
     (if-let [[x y w h] bounds]
-      (texture/region texture x y w h)
-      (texture/region texture))))
+      (TextureRegion. texture (int x) (int y) (int w) (int h))
+      (TextureRegion. texture))))
