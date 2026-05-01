@@ -1,29 +1,29 @@
 (ns clojure.gdx.scene2d.ui.table
   (:require [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.ui.cell :as cell]
             [clojure.gdx.scene2d.ui.widget-group :as widget-group])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Table)))
+           (com.badlogic.gdx.scenes.scene2d.ui Cell
+                                               Table)))
 
 ; TODO order is important, reduce?
-(defn- set-cell-opts! [cell opts]
+(defn- set-cell-opts! [^Cell cell opts]
   (doseq [[option arg] opts]
     (case option
-      :fill-x?    (cell/fill-x!     cell)
-      :fill-y?    (cell/fill-y!     cell)
-      :expand?    (cell/expand!     cell)
-      :expand-x?  (cell/expand-x!   cell)
-      :expand-y?  (cell/expand-y!   cell)
-      :bottom?    (cell/bottom!     cell)
-      :colspan    (cell/colspan!    cell arg)
-      :pad        (cell/pad!        cell arg)
-      :pad-top    (cell/pad-top!    cell arg)
-      :pad-bottom (cell/pad-bottom! cell arg)
-      :width      (cell/width!      cell arg)
-      :height     (cell/height!     cell arg)
-      :center?    (cell/center!     cell)
-      :right?     (cell/right!      cell)
-      :left?      (cell/left!       cell))))
+      :fill-x?    (.fillX     cell)
+      :fill-y?    (.fillY     cell)
+      :expand?    (.expand    cell)
+      :expand-x?  (.expandX   cell)
+      :expand-y?  (.expandY   cell)
+      :bottom?    (.bottom    cell)
+      :colspan    (.colspan   cell (int arg))
+      :pad        (.pad       cell (float arg))
+      :pad-top    (.padTop    cell (float arg))
+      :pad-bottom (.padBottom cell (float arg))
+      :width      (.width     cell (float arg))
+      :height     (.height    cell (float arg))
+      :center?    (.center    cell)
+      :right?     (.right     cell)
+      :left?      (.left      cell))))
 
 (defn add! [^Table table cell-declaration]
   (-> (.add table ^Actor (:actor cell-declaration))
