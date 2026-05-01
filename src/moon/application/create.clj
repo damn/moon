@@ -10,7 +10,6 @@
             [moon.application.create.world-unit-scale :as create-world-unit-scale]
             [moon.application.create.world-viewport :as create-world-viewport]
             [moon.application.create.cursors :as create-cursors]
-            [moon.application.create.ui-viewport :as create-ui-viewport]
             [moon.application.create.stage :as create-stage]
             [moon.application.create.skin :as create-skin]
             moon.application.create.unorganised
@@ -49,7 +48,6 @@
            [create-world-unit-scale/step]
            [create-world-viewport/step] ; FIXME DEPS
            [create-cursors/step]
-           [create-ui-viewport/step] ; FIXME DEPS
            [create-stage/step] ; FIXME DEPS
            [create-skin/step]
            [moon.application.create.unorganised/step]

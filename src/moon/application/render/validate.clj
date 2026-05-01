@@ -41,7 +41,6 @@
     [:ctx/textures :some]
     [:ctx/tiled-map :some]
     [:ctx/ui-mouse-position :any]
-    [:ctx/ui-viewport :some]
     [:ctx/unit-scale :some]
     [:ctx/world-mouse-position :any]
     [:ctx/world-unit-scale :some]
