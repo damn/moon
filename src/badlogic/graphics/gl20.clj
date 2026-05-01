@@ -1,0 +1,10 @@
+(ns badlogic.graphics.gl20
+  (:import (com.badlogic.gdx.graphics GL20)))
+
+(defn clear-color! [^GL20 gl20 r g b a]
+  (.glClearColor gl20 r g b a))
+
+(def color-buffer-bit GL20/GL_COLOR_BUFFER_BIT)
+
+(defn clear! [^GL20 gl20 option]
+  (.glClear gl20 option))
