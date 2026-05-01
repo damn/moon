@@ -2,12 +2,6 @@
   (:require [clojure.gdx.math.vector3 :as vector3])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
-(defn create []
-  (OrthographicCamera.))
-
-(defn set-to-ortho! [^OrthographicCamera camera y-down? viewport-width viewport-height]
-  (.setToOrtho camera y-down? viewport-width viewport-height))
-
 (defn combined [^OrthographicCamera camera]
   (.combined camera))
 
