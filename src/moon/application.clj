@@ -44,6 +44,10 @@
             moon.application.render.update-mouse
             moon.application.render.update-mouseover-eid
             moon.application.render.draw-on-world-viewport
+            moon.application.render.draw-on-world-viewport.draw-tile-grid
+            moon.application.render.draw-on-world-viewport.draw-cell-debug
+            moon.application.render.draw-on-world-viewport.draw-entities
+            moon.application.render.draw-on-world-viewport.highlight-mouseover-tile
             moon.application.render.check-debug-viewer
             moon.application.render.active-entities
             moon.application.render.set-camera
@@ -124,27 +128,35 @@
     (render [_]
       (swap! state
              (fn [ctx]
-               (-> ctx
-                   moon.application.render.get-stage-ctx/step
-                   moon.application.render.validate/step
-                   moon.application.render.update-mouse/step
-                   moon.application.render.update-mouseover-eid/step
-                   moon.application.render.check-debug-viewer/step
-                   moon.application.render.active-entities/step
-                   moon.application.render.set-camera/step
-                   moon.application.render.clear-screen/step
-                   moon.application.render.draw-tiled-map/step
-                   moon.application.render.draw-on-world-viewport/step
-                   moon.application.render.assoc-interaction-state/step
-                   moon.application.render.set-cursor/step
-                   moon.application.render.handle-input/step
-                   (dissoc :ctx/interaction-state)
-                   moon.application.render.assoc-paused/step
-                   moon.application.render.if-not-paused/step
-                   moon.application.render.remove-destroyed-entities/step
-                   moon.application.render.window-camera-controls/step
-                   moon.application.render.stage/step
-                   moon.application.render.validate/step))))
+               (reduce (fn [ctx [f & params]]
+                         (apply f ctx params))
+                       ctx
+                       [[moon.application.render.get-stage-ctx/step]
+                        [moon.application.render.validate/step]
+                        [moon.application.render.update-mouse/step]
+                        [moon.application.render.update-mouseover-eid/step]
+                        [moon.application.render.check-debug-viewer/step]
+                        [moon.application.render.active-entities/step]
+                        [moon.application.render.set-camera/step]
+                        [moon.application.render.clear-screen/step]
+                        [moon.application.render.draw-tiled-map/step]
+                        [moon.application.render.draw-on-world-viewport/step [
+                                                                              #_moon.application.render.draw-on-world-viewport.draw-tile-grid/draws
+                                                                              moon.application.render.draw-on-world-viewport.draw-cell-debug/draws
+                                                                              moon.application.render.draw-on-world-viewport.draw-entities/do!
+                                                                              #_moon.geom-test
+                                                                              moon.application.render.draw-on-world-viewport.highlight-mouseover-tile/draws
+                                                                              ]]
+                        [moon.application.render.assoc-interaction-state/step]
+                        [moon.application.render.set-cursor/step]
+                        [moon.application.render.handle-input/step]
+                        [#(dissoc % :ctx/interaction-state)]
+                        [moon.application.render.assoc-paused/step]
+                        [moon.application.render.if-not-paused/step]
+                        [moon.application.render.remove-destroyed-entities/step]
+                        [moon.application.render.window-camera-controls/step]
+                        [moon.application.render.stage/step]
+                        [moon.application.render.validate/step]]))))
 
     (resize [_ width height]
       ; TODO steps ?
