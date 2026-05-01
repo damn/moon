@@ -1,8 +1,12 @@
 (ns clojure.gdx.backends.lwjgl.application.config
-  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
+  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.utils SharedLibraryLoader
+                                   Os)
+           (org.lwjgl.system Configuration)))
 
 (defn use-glfw-async! []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync))
+  (when (= SharedLibraryLoader/os Os/MacOsX)
+    (.set Configuration/GLFW_LIBRARY_NAME "glfw_async")))
 
 (defn create
   [{:keys [title
