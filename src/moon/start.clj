@@ -3,6 +3,17 @@
             [clojure.gdx.backends.lwjgl.application.config :as config]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
+            clojure.gdx.scene2d.ui.horizontal-group
+            clojure.gdx.scene2d.ui.image-button
+            clojure.gdx.scene2d.ui.scroll-pane
+            clojure.gdx.scene2d.ui.stack
+            clojure.gdx.scene2d.ui.text-button
+            clojure.gdx.scene2d.ui.widget
+            clojure.gdx.scene2d.ui.window
+            moon.ui.data-viewer-window
+            moon.ui.error-window
+            moon.ui.property-editor-window
+            moon.ui.property-overview-window
 
             [moon.application.create.gdx-colors :as gdx-colors]
             [moon.application.create.tooltip-config :as tooltip-config]
@@ -18,7 +29,6 @@
             [moon.application.create.stage :as create-stage]
             [moon.application.create.skin :as create-skin]
             moon.application.create.unorganised
-            moon.application.create.ui-impls
             moon.application.create.spawn-enemies
             moon.application.create.raycaster
             moon.application.create.spawn-player
@@ -95,7 +105,6 @@
                                          [moon.application.create.max-speed/step] ; no deps
                                          [moon.application.create.db/step] ; moon.schemas, moon.property
                                          [moon.application.create.into-record/step] ;  no deps TODO make before spawn-player/enemies
-                                         [moon.application.create.ui-impls/step] ; FIXME
                                          [moon.application.create.add-stage-actors/step] ; clojure.gdx.scene2d.stage
                                          [moon.application.create.tiled-map/step] ; FIXME
                                          [moon.application.create.grid/step]
