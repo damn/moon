@@ -20,7 +20,7 @@
       ui-mouse-position
       {:center? true}]]))
 
-(defn create []
+(defn create [_ctx]
   (actor/create
    {:type :ui/actor
     :draw! (fn [this _batch _parent-alpha]

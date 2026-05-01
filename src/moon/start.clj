@@ -36,6 +36,12 @@
             moon.application.create.content-grid
             moon.application.create.explored-tile-corners
             moon.application.create.add-stage-actors
+            moon.application.create.add-stage-actors.dev-menu
+            moon.application.create.add-stage-actors.action-bar
+            moon.application.create.add-stage-actors.hp-mana-bar
+            moon.application.create.add-stage-actors.windows
+            moon.application.create.add-stage-actors.player-state-draw
+            moon.application.create.add-stage-actors.player-message
             moon.application.create.tiled-map
             moon.application.create.into-record
             moon.application.create.render-z-order
@@ -45,6 +51,9 @@
             moon.application.create.controls
 
             moon.application.render.if-not-paused
+            moon.application.render.if-not-paused.tick-entities
+            moon.application.render.if-not-paused.update-time
+            moon.application.render.if-not-paused.update-potential-fields
             moon.application.render.handle-input
             moon.application.render.remove-destroyed-entities
             moon.application.render.set-cursor
@@ -105,7 +114,13 @@
                                          [moon.application.create.max-speed/step] ; no deps
                                          [moon.application.create.db/step] ; moon.schemas, moon.property
                                          [moon.application.create.into-record/step] ;  no deps TODO make before spawn-player/enemies
-                                         [moon.application.create.add-stage-actors/step] ; clojure.gdx.scene2d.stage
+                                         [moon.application.create.add-stage-actors/step [moon.application.create.add-stage-actors.dev-menu/create
+                                                                                         moon.application.create.add-stage-actors.action-bar/create
+                                                                                         moon.application.create.add-stage-actors.hp-mana-bar/create
+                                                                                         moon.application.create.add-stage-actors.windows/create
+                                                                                         moon.application.create.add-stage-actors.player-state-draw/create
+                                                                                         moon.application.create.add-stage-actors.player-message/create]
+                                          ] ; clojure.gdx.scene2d.stage
                                          [moon.application.create.tiled-map/step] ; FIXME
                                          [moon.application.create.grid/step]
                                          [moon.application.create.content-grid/step]
@@ -161,7 +176,9 @@
                                           [moon.application.render.handle-input/step]
                                           [#(dissoc % :ctx/interaction-state)]
                                           [moon.application.render.assoc-paused/step]
-                                          [moon.application.render.if-not-paused/step]
+                                          [moon.application.render.if-not-paused/step [moon.application.render.if-not-paused.update-time/step
+                                                                                       moon.application.render.if-not-paused.update-potential-fields/step
+                                                                                       moon.application.render.if-not-paused.tick-entities/step]]
                                           [moon.application.render.remove-destroyed-entities/step]
                                           [moon.application.render.window-camera-controls/step]
                                           [moon.application.render.stage/step]

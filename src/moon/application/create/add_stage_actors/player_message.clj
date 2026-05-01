@@ -1,4 +1,5 @@
 (ns moon.application.create.add-stage-actors.player-message
   (:require moon.ui-actors.player-message))
 
-(def create moon.ui-actors.player-message/create)
+(defn create [_ctx]
+  (moon.ui-actors.player-message/create))

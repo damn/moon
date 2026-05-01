@@ -1,14 +1,12 @@
-(ns moon.application.render.if-not-paused
-  (:require moon.application.render.if-not-paused.tick-entities
-            moon.application.render.if-not-paused.update-time
-            moon.application.render.if-not-paused.update-potential-fields))
+(ns moon.application.render.if-not-paused)
 
 (defn step
   [{:keys [ctx/paused?]
-    :as ctx}]
+    :as ctx}
+   fns]
   (if paused?
     ctx
-    (-> ctx
-        moon.application.render.if-not-paused.update-time/step
-        moon.application.render.if-not-paused.update-potential-fields/step
-        moon.application.render.if-not-paused.tick-entities/step)))
+    (reduce (fn [ctx f]
+              (f ctx))
+            ctx
+            fns)))
