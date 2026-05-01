@@ -3,7 +3,7 @@
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.graphics :as graphics]
             [clojure.graphics.orthographic-camera :as camera]
-            [clojure.graphics.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
             [clojure.string :as str]
             [moon.db :as db]
             [moon.number :as number]

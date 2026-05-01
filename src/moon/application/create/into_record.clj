@@ -4,7 +4,7 @@
             moon.tx.state-enter
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
-            [clojure.graphics.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
             [clojure.math.vector2 :as v]
             [moon.content-grid :as content-grid]
             [moon.db :as db]

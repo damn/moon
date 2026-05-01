@@ -1,6 +1,6 @@
 (ns moon.application
   (:require [clojure.gdx.scene2d.stage :as stage]
-            [clojure.graphics.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
 
             [moon.application.create.gdx-colors :as gdx-colors]
             [moon.application.create.tooltip-config :as tooltip-config]

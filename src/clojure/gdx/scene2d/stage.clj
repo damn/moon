@@ -1,6 +1,6 @@
 (ns clojure.gdx.scene2d.stage
   (:require [clojure.gdx.scene2d.group :as group]
-            [clojure.graphics.viewport :as viewport])
+            [clojure.gdx.utils.viewport :as viewport])
   (:import (clojure.gdx Stage)))
 
 (defn ctx [^Stage stage]

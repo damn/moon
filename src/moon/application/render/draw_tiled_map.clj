@@ -1,7 +1,7 @@
 (ns moon.application.render.draw-tiled-map
   (:require [moon.tiled-map.renderer :as tiled-map-renderer]
             [clojure.graphics.orthographic-camera :as camera]
-            [clojure.graphics.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
             [moon.raycaster :as raycaster]))
 
 (defn- tile-color-setter*

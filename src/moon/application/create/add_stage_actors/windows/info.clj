@@ -1,6 +1,6 @@
 (ns moon.application.create.add-stage-actors.windows.info
   (:require [clojure.gdx.scene2d.stage :as stage]
-            [clojure.graphics.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
             [moon.info :as info]
             [moon.ui-actors.windows.info]))
 

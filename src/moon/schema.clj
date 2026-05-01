@@ -1,6 +1,6 @@
 (ns moon.schema
   (:require clojure.edn
-            [clojure.graphics.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.group :as group]

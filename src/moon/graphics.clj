@@ -1,6 +1,6 @@
 (ns moon.graphics
   (:require [clojure.graphics.orthographic-camera :as camera]
-            [clojure.graphics.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
             [clojure.graphics.texture-region :as texture-region]
             [clojure.string :as str])
   (:import (com.badlogic.gdx.graphics.g2d Batch

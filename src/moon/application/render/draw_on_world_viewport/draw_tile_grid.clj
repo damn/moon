@@ -1,6 +1,6 @@
 (ns moon.application.render.draw-on-world-viewport.draw-tile-grid
   (:require [clojure.graphics.orthographic-camera :as camera]
-            [clojure.graphics.viewport :as viewport]))
+            [clojure.gdx.utils.viewport :as viewport]))
 
 (defn draws
   [{:keys [ctx/world-viewport]}]

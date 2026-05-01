@@ -4,7 +4,7 @@
             [clojure.gdx.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.utils.drawable :as drawable]
             [clojure.gdx.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [clojure.graphics.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
             [clojure.gdx.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
