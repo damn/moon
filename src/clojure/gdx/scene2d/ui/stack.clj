@@ -1,9 +1,9 @@
 (ns clojure.gdx.scene2d.ui.stack
-  (:require [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.group :as group])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Stack)))
+  (:require [badlogic.scene2d.ui.stack :as stack]
+            [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.group :as group]))
 
 (defmethod actor/create :ui/stack
   [opts]
-  (doto (Stack.)
+  (doto (stack/create)
     (group/set-opts! opts)))

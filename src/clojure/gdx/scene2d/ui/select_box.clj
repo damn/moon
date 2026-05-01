@@ -1,13 +1,9 @@
 (ns clojure.gdx.scene2d.ui.select-box
-  (:require [clojure.gdx.scene2d.actor :as actor])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox
-                                               Skin)))
+  (:require [badlogic.scene2d.ui.select-box :as select-box]
+            [clojure.gdx.scene2d.actor :as actor]))
 
 (defmethod actor/create :ui/select-box
-  [{:keys [items selected skin]}]
-  (doto (SelectBox. ^Skin skin)
-    (.setItems ^"[Ljava.lang.Object;" (into-array items))
-    (.setSelected selected)))
+  [opts]
+  (select-box/create opts))
 
-(defn selected [^SelectBox select-box]
-  (.getSelected select-box))
+(def selected select-box/selected)

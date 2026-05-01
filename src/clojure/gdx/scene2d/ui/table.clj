@@ -1,35 +1,14 @@
 (ns clojure.gdx.scene2d.ui.table
-  (:require [clojure.gdx.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.ui.widget-group :as widget-group])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Cell
-                                               Table)))
+  (:require [badlogic.scene2d.ui.cell :as cell]
+            [badlogic.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.ui.widget-group :as widget-group]))
 
-; TODO order is important, reduce?
-(defn- set-cell-opts! [^Cell cell opts]
-  (doseq [[option arg] opts]
-    (case option
-      :fill-x?    (.fillX     cell)
-      :fill-y?    (.fillY     cell)
-      :expand?    (.expand    cell)
-      :expand-x?  (.expandX   cell)
-      :expand-y?  (.expandY   cell)
-      :bottom?    (.bottom    cell)
-      :colspan    (.colspan   cell (int arg))
-      :pad        (.pad       cell (float arg))
-      :pad-top    (.padTop    cell (float arg))
-      :pad-bottom (.padBottom cell (float arg))
-      :width      (.width     cell (float arg))
-      :height     (.height    cell (float arg))
-      :center?    (.center    cell)
-      :right?     (.right     cell)
-      :left?      (.left      cell))))
+(defn add! [table cell-declaration]
+  (-> (table/add! table (:actor cell-declaration))
+      (cell/set-opts! (dissoc cell-declaration :actor))))
 
-(defn add! [^Table table cell-declaration]
-  (-> (.add table ^Actor (:actor cell-declaration))
-      (set-cell-opts! (dissoc cell-declaration :actor))))
-
-(defn add-rows! [^Table table rows]
+(defn add-rows! [table rows]
   (doseq [row rows]
     (doseq [props-or-actor row]
 
@@ -38,17 +17,17 @@
        (add! table props-or-actor)
 
        ; TODO Remove else case
-       :else (.add table ^Actor props-or-actor)
+       :else (table/add! table props-or-actor)
 
        ))
-    (.row table))
+    (table/row! table))
   table)
 
-(defn set-cell-defaults! [^Table table cell-opts]
-  (set-cell-opts! (.defaults table) cell-opts)
+(defn set-cell-defaults! [table cell-opts]
+  (cell/set-opts! (table/defaults table) cell-opts)
   table)
 
-(defn set-opts! [^Table table opts]
+(defn set-opts! [table opts]
   (when-let [rows (:table/rows opts)]
     (add-rows! table rows)
     (widget-group/pack! table))
@@ -57,5 +36,5 @@
   (widget-group/set-opts! table opts))
 
 (defmethod actor/create :ui/table [opts]
-  (doto (Table.)
+  (doto (table/create)
     (set-opts! opts)))
