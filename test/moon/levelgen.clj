@@ -1,5 +1,6 @@
 (ns moon.levelgen
-  (:require [moon.application.create.textures :as create-textures]
+  (:require [moon.application.create.db :as create-db]
+            [moon.application.create.textures :as create-textures]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.gdx.graphics.color :as color]
@@ -105,8 +106,7 @@
         ctx (-> ctx
                 (assoc :ctx/app Gdx/app)
                 create-textures/step
-                (assoc :ctx/db (db/create {:schemas "schema.edn"
-                                           :properties "properties.edn"})))
+                create-db/step)
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
