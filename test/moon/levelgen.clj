@@ -1,5 +1,6 @@
 (ns moon.levelgen
-  (:require [clojure.edn :as edn]
+  (:require [moon.application.create.textures :as create-textures]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.math.vector3 :as vector3]
@@ -7,8 +8,7 @@
             [moon.db :as db]
             [clojure.graphics.orthographic-camera :as camera]
             [moon.tiled-map.renderer :as tiled-map-renderer]
-            [moon.creature-tiles]
-            [moon.textures :as textures])
+            [moon.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
                              Input$Keys)
@@ -102,9 +102,8 @@
         ctx {:ctx/stage stage
              :ctx/files files}
         ctx (-> ctx
-                (assoc :ctx/textures (textures/create files
-                                                      {:folder "resources/"
-                                                       :extensions #{"png" "bmp"}}))
+                (assoc :ctx/app Gdx/app)
+                create-textures/step
                 (assoc :ctx/db (db/create {:schemas "schema.edn"
                                            :properties "properties.edn"})))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
