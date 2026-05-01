@@ -13,6 +13,3 @@
 (defn mouse-position [this]
   [(.getX this)
    (.getY this)])
-
-(defn set-processor! [this input-processor]
-  (.setInputProcessor this input-processor))

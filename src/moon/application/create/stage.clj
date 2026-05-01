@@ -1,6 +1,5 @@
 (ns moon.application.create.stage
-  (:require [clojure.gdx.scene2d.stage :as stage]
-            [clojure.input :as input])
+  (:require [clojure.gdx.scene2d.stage :as stage])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
@@ -10,5 +9,5 @@
     :as ctx}]
   (assoc ctx :ctx/stage (let [stage (stage/create (FitViewport. 1440 900 (OrthographicCamera.))
                                                   batch)]
-                          (input/set-processor! (.getInput app) stage)
+                          (.setInputProcessor (.getInput app) stage)
                           stage)))
