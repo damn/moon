@@ -4,8 +4,8 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [clojure.gdx.scene2d.utils.click-listener :as click-listener]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [clojure.gdx.utils.align :as align])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
