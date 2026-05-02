@@ -1,13 +1,13 @@
 (ns clojure.gdx.scene2d.actor
   (:refer-clojure :exclude [name])
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
+            [com.badlogic.gdx.scene2d.actor :as actor]
             [com.badlogic.gdx.scene2d.touchable :as touchable]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.utils.click-listener :as click-listener]
             [clojure.gdx.utils.align :as align])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Button
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                Label
                                                Window)))
 
@@ -18,69 +18,36 @@
 (defn- button-class? [actor]
   (some #(= Button %) (supers (class actor))))
 
-(defn name [^Actor actor]
-  (.getName actor))
+(def name actor/name)
+(def x actor/x)
+(def y actor/y)
+(def width actor/width)
+(def height actor/height)
+(def user-object actor/user-object)
+(def stage actor/stage)
+(def set-name! actor/set-name!)
+(def set-user-object! actor/set-user-object!)
+(def set-position! actor/set-position!)
+(def set-visible! actor/set-visible!)
+(def set-touchable! actor/set-touchable!)
+(def visible? actor/visible?)
+(def hit actor/hit)
+(def remove! actor/remove!)
+(def parent actor/parent)
 
-(defn x [^Actor actor]
-  (.getX actor))
+(defn stage->local-coordinates [actor xy]
+  (vector2/->clj (actor/stage->local-coordinates actor (vector2/->java xy))))
 
-(defn y [^Actor actor]
-  (.getY actor))
+(defn add-listener! [actor [listener-k listener-params]]
+  (actor/add-listener! actor
+                       (case listener-k
+                         :listener/change (let [f listener-params]
+                                            (change-listener/create f))
+                         :listener/text-tooltip (let [[tooltip skin] listener-params]
+                                                  (text-tooltip/create tooltip skin))
+                         :listener/click (let [f listener-params]
+                                           (click-listener/create f)))))
 
-(defn width [^Actor actor]
-  (.getWidth actor))
-
-(defn height [^Actor actor]
-  (.getHeight actor))
-
-(defn stage->local-coordinates [^Actor actor xy]
-  (vector2/->clj (Actor/.stageToLocalCoordinates actor (vector2/->java xy))))
-
-(defn add-listener! [^Actor actor [listener-k listener-params]]
-  (.addListener actor
-                (case listener-k
-                  :listener/change (let [f listener-params]
-                                     (change-listener/create f))
-                  :listener/text-tooltip (let [[tooltip skin] listener-params]
-                                           (text-tooltip/create tooltip skin))
-                  :listener/click (let [f listener-params]
-                                    (click-listener/create f)))))
-
-(defn user-object [^Actor actor]
-  (.getUserObject actor))
-
-(defn stage [^Actor actor]
-  (.getStage actor))
-
-(defn set-name! [^Actor actor name]
-  (.setName actor name))
-
-(defn set-user-object! [^Actor actor object]
-  (.setUserObject actor object))
-
-(defn set-position!
-  ([^Actor actor [x y]]
-   (.setPosition actor x y))
-  ([^Actor actor x y align]
-   (.setPosition actor x y align)))
-
-(defn set-visible! [^Actor actor visible?]
-  (.setVisible actor visible?))
-
-(defn set-touchable! [^Actor actor touchable]
-  (.setTouchable actor touchable))
-
-(defn visible? [^Actor actor]
-  (.isVisible actor))
-
-(defn hit [^Actor actor [x y] touchable?]
-  (.hit actor x y touchable?))
-
-(defn remove! [^Actor actor]
-  (.remove actor))
-
-(defn parent [^Actor actor]
-  (.getParent actor))
 
 (defn find-ancestor
   [actor ui-type-k]
@@ -133,14 +100,6 @@
 (defmulti create :type)
 
 (defmethod create :ui/actor
-  [{:keys [act! draw!] :as opts}]
-  (doto (proxy [Actor] []
-          (act [delta]
-            (when act!
-              (act! this delta))
-            (let [^Actor this this]
-              (proxy-super act delta)))
-          (draw [batch parent-alpha]
-            (when draw!
-              (draw! this batch parent-alpha))))
+  [opts]
+  (doto (actor/create opts)
     (set-opts! opts)))
