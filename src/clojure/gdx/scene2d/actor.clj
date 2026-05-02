@@ -1,8 +1,8 @@
 (ns clojure.gdx.scene2d.actor
   (:refer-clojure :exclude [name])
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
-            [com.badlogic.gdx.scene2d.actor :as actor]
-            [com.badlogic.gdx.scene2d.touchable :as touchable]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.utils.click-listener :as click-listener]

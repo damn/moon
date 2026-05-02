@@ -1,6 +1,6 @@
 (ns moon.ui-actors.windows.inventory
   (:require [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.utils.drawable :as drawable]

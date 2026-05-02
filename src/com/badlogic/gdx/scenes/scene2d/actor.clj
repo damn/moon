@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.scene2d.actor
+(ns com.badlogic.gdx.scenes.scene2d.actor
   (:refer-clojure :exclude [name])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 

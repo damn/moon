@@ -1,5 +1,5 @@
 (ns clojure.gdx.scene2d.ui.stack
-  (:require [com.badlogic.gdx.scene2d.ui.stack :as stack]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.group :as group]))
 

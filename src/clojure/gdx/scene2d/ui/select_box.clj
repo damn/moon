@@ -1,5 +1,5 @@
 (ns clojure.gdx.scene2d.ui.select-box
-  (:require [com.badlogic.gdx.scene2d.ui.select-box :as select-box]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
             [clojure.gdx.scene2d.actor :as actor]))
 
 (defmethod actor/create :ui/select-box

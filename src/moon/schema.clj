@@ -2,7 +2,7 @@
   (:require clojure.edn
             [clojure.gdx.utils.viewport :as viewport]
             [clojure.gdx.scene2d.actor :as actor]
-            [com.badlogic.gdx.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.select-box :as select-box]
