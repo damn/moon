@@ -1,11 +1,9 @@
 (ns moon.application.create.add-stage-actors.windows
-  (:require moon.application.create.add-stage-actors.windows.info
-            moon.application.create.add-stage-actors.windows.inventory
-            [clojure.gdx.scene2d.actor :as actor]))
+  (:require [clojure.gdx.scene2d.actor :as actor]))
 
-(defn create [ctx]
+(defn create [ctx actor-fns]
   (actor/create
    {:type :ui/group
-    :group/actors [(moon.application.create.add-stage-actors.windows.info/create ctx)
-                   (moon.application.create.add-stage-actors.windows.inventory/create ctx)]
+    :group/actors (for [f actor-fns]
+                    (f ctx))
     :actor/name "moon.ui.windows"}))

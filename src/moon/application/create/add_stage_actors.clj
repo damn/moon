@@ -5,6 +5,6 @@
   [{:keys [ctx/stage]
     :as ctx}
    actor-fns]
-  (doseq [actor-fn actor-fns]
-    (stage/add-actor! stage (actor-fn ctx)))
+  (doseq [[actor-fn & params] actor-fns]
+    (stage/add-actor! stage (apply actor-fn ctx params)))
   ctx)

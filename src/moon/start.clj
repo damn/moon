@@ -40,6 +40,8 @@
             moon.application.create.add-stage-actors.action-bar
             moon.application.create.add-stage-actors.hp-mana-bar
             moon.application.create.add-stage-actors.windows
+            moon.application.create.add-stage-actors.windows.info
+            moon.application.create.add-stage-actors.windows.inventory
             moon.application.create.add-stage-actors.player-state-draw
             moon.application.create.add-stage-actors.player-message
             moon.application.create.tiled-map
@@ -114,12 +116,13 @@
                                          [moon.application.create.max-speed/step] ; no deps
                                          [moon.application.create.db/step] ; moon.schemas, moon.property
                                          [moon.application.create.into-record/step] ;  no deps TODO make before spawn-player/enemies
-                                         [moon.application.create.add-stage-actors/step [moon.application.create.add-stage-actors.dev-menu/create
-                                                                                         moon.application.create.add-stage-actors.action-bar/create
-                                                                                         moon.application.create.add-stage-actors.hp-mana-bar/create
-                                                                                         moon.application.create.add-stage-actors.windows/create
-                                                                                         moon.application.create.add-stage-actors.player-state-draw/create
-                                                                                         moon.application.create.add-stage-actors.player-message/create]
+                                         [moon.application.create.add-stage-actors/step [[moon.application.create.add-stage-actors.dev-menu/create]
+                                                                                         [moon.application.create.add-stage-actors.action-bar/create]
+                                                                                         [moon.application.create.add-stage-actors.hp-mana-bar/create]
+                                                                                         [moon.application.create.add-stage-actors.windows/create [moon.application.create.add-stage-actors.windows.info/create
+                                                                                                                                                   moon.application.create.add-stage-actors.windows.inventory/create]]
+                                                                                         [moon.application.create.add-stage-actors.player-state-draw/create]
+                                                                                         [moon.application.create.add-stage-actors.player-message/create]]
                                           ] ; clojure.gdx.scene2d.stage
                                          [moon.application.create.tiled-map/step] ; FIXME
                                          [moon.application.create.grid/step]
