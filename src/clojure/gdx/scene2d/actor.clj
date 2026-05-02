@@ -3,20 +3,18 @@
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
-            [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
-            [clojure.gdx.utils.align :as align])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
-                                               Label
-                                               Window)))
+            [com.badlogic.gdx.utils.align :as align]))
 
 (defn- ui-type->class [k]
   (case k
     :ui/window com.badlogic.gdx.scenes.scene2d.ui.Window))
 
 (defn- button-class? [actor]
-  (some #(= Button %) (supers (class actor))))
+  (some #(= com.badlogic.gdx.scenes.scene2d.ui.Button %) (supers (class actor))))
 
 (def name actor/name)
 (def x actor/x)
@@ -64,11 +62,11 @@
 
 ; FIXME does not work
 (defn window-title-bar? [actor]
-  (when (instance? Label actor)
+  (when (instance? com.badlogic.gdx.scenes.scene2d.ui.Label actor)
     (when-let [p (parent actor)]
       (when-let [p (parent p)]
-        (and (instance? Window actor)
-             (= (Window/.getTitleLabel p) actor))))))
+        (and (instance? com.badlogic.gdx.scenes.scene2d.ui.Window actor)
+             (= (window/title-label p) actor))))))
 
 (defn toggle-visible! [actor]
   (set-visible! actor (not (visible? actor))))

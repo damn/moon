@@ -1,4 +1,4 @@
-(ns clojure.gdx.utils.align
+(ns com.badlogic.gdx.utils.align
   (:import (com.badlogic.gdx.utils Align)))
 
 (def k->value
