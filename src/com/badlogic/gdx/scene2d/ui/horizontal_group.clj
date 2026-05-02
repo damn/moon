@@ -1,4 +1,4 @@
-(ns badlogic.scene2d.ui.horizontal-group
+(ns com.badlogic.gdx.scene2d.ui.horizontal-group
   (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
 (defn create [{:keys [space pad]}]

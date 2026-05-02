@@ -1,4 +1,4 @@
-(ns badlogic.graphics
+(ns com.badlogic.gdx.graphics
   (:import (com.badlogic.gdx Graphics)))
 
 (defn frames-per-second [^Graphics graphics]

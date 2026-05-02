@@ -1,4 +1,4 @@
-(ns badlogic.scene2d.ui.cell
+(ns com.badlogic.gdx.scene2d.ui.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 ; TODO order is important, reduce?

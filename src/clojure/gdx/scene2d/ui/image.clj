@@ -1,5 +1,5 @@
 (ns clojure.gdx.scene2d.ui.image
-  (:require [badlogic.scene2d.ui.image :as image]
+  (:require [com.badlogic.gdx.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.actor :as actor]))
 
 (defmethod actor/create :ui/image

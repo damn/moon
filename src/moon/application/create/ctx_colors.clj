@@ -1,5 +1,5 @@
 (ns moon.application.create.ctx-colors
-  (:require [badlogic.graphics.color :as color]))
+  (:require [com.badlogic.gdx.graphics.color :as color]))
 
 (def black [0 0 0 1])
 (def white [1 1 1 1])

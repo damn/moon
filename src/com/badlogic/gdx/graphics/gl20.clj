@@ -1,4 +1,4 @@
-(ns badlogic.graphics.gl20
+(ns com.badlogic.gdx.graphics.gl20
   (:import (com.badlogic.gdx.graphics GL20)))
 
 (defn clear-color! [^GL20 gl20 r g b a]

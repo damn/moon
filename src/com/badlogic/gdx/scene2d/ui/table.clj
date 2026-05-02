@@ -1,4 +1,4 @@
-(ns badlogic.scene2d.ui.table
+(ns com.badlogic.gdx.scene2d.ui.table
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
 

@@ -1,4 +1,4 @@
-(ns badlogic.scene2d.event
+(ns com.badlogic.gdx.scene2d.event
   (:import (com.badlogic.gdx.scenes.scene2d Event)))
 
 (defn stage [^Event event]
