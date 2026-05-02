@@ -1,6 +1,6 @@
 (ns moon.start
-  (:require [clojure.gdx.backends.lwjgl.application :as lwjgl-app]
-            [clojure.gdx.backends.lwjgl.application.config :as config]
+  (:require [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl-app]
+            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
             clojure.gdx.scene2d.ui.horizontal-group
