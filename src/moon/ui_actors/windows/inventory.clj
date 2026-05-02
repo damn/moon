@@ -1,5 +1,6 @@
 (ns moon.ui-actors.windows.inventory
-  (:require [com.badlogic.gdx.scene2d.event :as event]
+  (:require [com.badlogic.gdx.graphics.color :as color]
+            [com.badlogic.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.utils.drawable :as drawable]
@@ -9,8 +10,7 @@
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [clojure.gdx.scene2d.stage :as stage]
-            [moon.textures :as textures])
-  (:import (com.badlogic.gdx.graphics Color)))
+            [moon.textures :as textures]))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]
   {:type :ui/widget
@@ -32,8 +32,7 @@
   [{:keys [drawable/texture-region drawable/min-size drawable/tint]}]
   (doto (texture-region-drawable/create texture-region)
     (drawable/set-min-size! (min-size 0) (min-size 1))
-    (texture-region-drawable/tint (let [[r g b a] tint]
-                                    (Color. r g b a)))))
+    (texture-region-drawable/tint (color/create tint))))
 
 (defn- create-inventory-window*
   [{:keys [colors
