@@ -1,33 +1,26 @@
 (ns clojure.graphics.orthographic-camera
-  (:require [com.badlogic.gdx.math.vector3 :as vector3])
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [com.badlogic.gdx.math.vector3 :as vector3]))
 
-(defn combined [^OrthographicCamera camera]
-  (.combined camera))
+(def combined orthographic-camera/combined)
 
-(defn set-position! [^OrthographicCamera camera [x y]]
-  (set! (.x (.position camera)) x)
-  (set! (.y (.position camera)) y)
-  (.update camera))
+(defn set-position! [camera [x y]]
+  (set! (.x (orthographic-camera/position camera)) x)
+  (set! (.y (orthographic-camera/position camera)) y)
+  (orthographic-camera/update! camera))
 
-(defn set-zoom! [^OrthographicCamera camera amount]
+(defn set-zoom! [camera amount]
   (set! (.zoom camera) amount)
-  (.update camera))
+  (orthographic-camera/update! camera))
 
-(defn zoom [^OrthographicCamera camera]
-  (.zoom camera))
+(defn zoom [camera]
+  (orthographic-camera/zoom camera))
 
-(defn frustum* [^OrthographicCamera camera]
-  (mapv vector3/->clj (.planePoints (.frustum camera))))
+(defn frustum* [camera]
+  (mapv vector3/->clj (.planePoints (orthographic-camera/frustum camera))))
 
-(defn position [^OrthographicCamera camera]
-  (vector3/->clj (.position camera)))
-
-(defn viewport-width [^OrthographicCamera camera]
-  (.viewportHeight camera))
-
-(defn viewport-height [^OrthographicCamera camera]
-  (.viewportHeight camera))
+(defn position [camera]
+  (vector3/->clj (orthographic-camera/position camera)))
 
 (defn inc-zoom! [cam by]
   (set-zoom! cam (max 0.1 (+ (zoom cam) by))))
@@ -50,8 +43,8 @@
 (defn calculate-zoom
   "calculates the zoom value for camera to see all the 4 points."
   [camera & {:keys [left top right bottom]}]
-  (let [viewport-width  (viewport-width  camera)
-        viewport-height (viewport-height camera)
+  (let [viewport-width  (orthographic-camera/viewport-width  camera)
+        viewport-height (orthographic-camera/viewport-height camera)
         [px py] (position camera)
         px (float px)
         py (float py)
