@@ -1,8 +1,8 @@
 (ns clojure.gdx.scene2d.ui.image-button
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [clojure.graphics.texture-region :as texture-region]
             [clojure.gdx.scene2d.actor :as actor]))
 
 (defn- create-drawable*

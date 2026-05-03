@@ -1,9 +1,8 @@
 (ns clojure.gdx.scene2d.ui.text-button
-  (:require [clojure.gdx.scene2d.actor :as actor])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               TextButton)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scene2d.actor :as actor]))
 
 (defmethod actor/create :ui/text-button
-  [{:keys [text skin] :as opts}]
-  (doto (TextButton. ^String text ^Skin skin)
+  [opts]
+  (doto (text-button/create opts)
     (actor/set-opts! opts)))

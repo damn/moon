@@ -1,9 +1,7 @@
 (ns clojure.gdx.scene2d.ui.scroll-pane
-  (:require [clojure.gdx.scene2d.actor :as actor])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
-                                               Skin)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.gdx.scene2d.actor :as actor]))
 
 (defmethod actor/create :ui/scroll-pane
-  [{:keys [^Actor actor ^Skin skin]}]
-  (ScrollPane. actor skin))
+  [opts]
+  (scroll-pane/create opts))

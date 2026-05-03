@@ -1,17 +1,13 @@
 (ns clojure.graphics
-  (:import (com.badlogic.gdx Graphics)
-           (com.badlogic.gdx.graphics GL20)))
+  (:require [com.badlogic.gdx.graphics :as graphics]
+            [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
+(def frames-per-second graphics/frames-per-second)
 
-(defn frames-per-second [^Graphics graphics]
-  (.getFramesPerSecond graphics))
+(def delta-time graphics/delta-time)
 
-(defn delta-time [^Graphics graphics]
-  (.getDeltaTime graphics))
+(def set-cursor! graphics/set-cursor!)
 
-(defn set-cursor! [^Graphics graphics cursor]
-  (.setCursor graphics cursor))
-
-(defn clear! [^Graphics graphics r g b a]
-  (.glClearColor (.getGL20 graphics) r g b a)
-  (.glClear      (.getGL20 graphics) GL20/GL_COLOR_BUFFER_BIT))
+(defn clear! [graphics r g b a]
+  (gl20/clear-color! (graphics/gl20 graphics) r g b a)
+  (gl20/clear!       (graphics/gl20 graphics) gl20/color-buffer-bit))

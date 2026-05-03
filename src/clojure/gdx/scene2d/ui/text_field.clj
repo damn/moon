@@ -1,12 +1,10 @@
 (ns clojure.gdx.scene2d.ui.text-field
-  (:require [clojure.gdx.scene2d.actor :as actor])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               TextField)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
+            [clojure.gdx.scene2d.actor :as actor]))
 
 (defmethod actor/create :ui/text-field
-  [{:keys [text skin] :as opts}]
-  (doto (TextField. ^String text ^Skin skin)
+  [opts]
+  (doto (text-field/create opts)
     (actor/set-opts! opts)))
 
-(defn text [^TextField text-field]
-  (.getText text-field))
+(def text text-field/text)
