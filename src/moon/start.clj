@@ -3,19 +3,7 @@
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
-            clojure.gdx.scene2d.ui.horizontal-group
-            clojure.gdx.scene2d.ui.image-button
-            clojure.gdx.scene2d.ui.scroll-pane
-            clojure.gdx.scene2d.ui.stack
-            clojure.gdx.scene2d.ui.text-button
-            clojure.gdx.scene2d.ui.widget
-            clojure.gdx.scene2d.ui.window
-            moon.ui.data-viewer-window
-            moon.ui.error-window
-            moon.ui.property-editor-window
-            moon.ui.property-overview-window
-            [clojure.config :refer [edn-resource]]
-            )
+            [clojure.config :refer [edn-resource]])
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.utils Disposable))
   (:gen-class))
