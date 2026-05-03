@@ -2,7 +2,7 @@
   (:require moon.player-item-on-cursor
             [clojure.animation :as animation]
             [clojure.gdx.scene2d.stage :as stage]
-            [clojure.input :as input]
+            [com.badlogic.gdx.input :as input]
             [clojure.math :as math]
             [moon.draws :as draws]
             [moon.effect :as effect]

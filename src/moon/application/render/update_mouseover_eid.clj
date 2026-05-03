@@ -1,6 +1,6 @@
 (ns moon.application.render.update-mouseover-eid
   (:require [clojure.gdx.scene2d.stage :as stage]
-            [clojure.input :as input]
+            [com.badlogic.gdx.input :as input]
             [moon.grid :as grid]
             [moon.order :as order]
             [moon.raycaster :as raycaster]))

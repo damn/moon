@@ -1,7 +1,7 @@
 (ns moon.application.render.update-mouse
   (:require [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
-            [clojure.input :as input]))
+            [com.badlogic.gdx.input :as input]))
 
 (defn step
   [{:keys [ctx/input

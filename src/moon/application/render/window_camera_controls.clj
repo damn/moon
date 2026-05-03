@@ -4,7 +4,7 @@
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
-            [clojure.input :as input]))
+            [com.badlogic.gdx.input :as input]))
 
 (def zoom-speed 0.025)
 
