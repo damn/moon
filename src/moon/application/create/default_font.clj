@@ -1,5 +1,6 @@
 (ns moon.application.create.default-font
-  (:require [com.badlogic.gdx.application :as app])
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.files :as files])
   (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
@@ -21,7 +22,7 @@
                                                                        :min-filter :linear
                                                                        :mag-filter :linear
                                                                        }
-                                     generator (FreeTypeFontGenerator. (.internal (app/files app) path))
+                                     generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
                                      font (.generateFont generator
                                                          (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                                                            (set! (.size params) (* size quality-scaling))

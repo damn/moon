@@ -12,3 +12,5 @@
 
 (defn gl20 [^Graphics graphics]
   (.getGL20 graphics))
+
+(def new-cursor Graphics/.newCursor)

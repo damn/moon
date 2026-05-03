@@ -1,10 +1,16 @@
 (ns moon.application.create.skin
-  (:require [com.badlogic.gdx.application :as app])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin)))
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.files :as files]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
+            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
 (defn step
   [{:keys [ctx/app]
     :as ctx}]
-  (assoc ctx :ctx/skin (let [skin (Skin. (.internal (app/files app) "uiskin.json"))]
-                         (set! (.markupEnabled (.getData (.getFont skin "default-font"))) true)
+  (assoc ctx :ctx/skin (let [skin (skin/create (files/internal (app/files app) "uiskin.json"))]
+                         (-> skin
+                             (skin/font "default-font")
+                             font/data
+                             font.data/enable-markup!)
                          skin)))
