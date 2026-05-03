@@ -29,6 +29,7 @@
                                                            (set! (.minFilter params) Texture$TextureFilter/Linear)
                                                            (set! (.magFilter params) Texture$TextureFilter/Linear)
                                                            params))]
+                                 ; TODO dispose generator
                                  (.setScale (.getData font) (/ quality-scaling))
                                  (set! (.markupEnabled (.getData font)) enable-markup?)
                                  (.setUseIntegerPositions font use-integer-positions?)
