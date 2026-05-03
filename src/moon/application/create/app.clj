@@ -1,7 +1,7 @@
 (ns moon.application.create.app
-  (:import (com.badlogic.gdx Gdx)))
+  (:require [com.badlogic.gdx.gdx :as gdx]))
 
 (defn step [_ctx]
-  {:ctx/app       Gdx/app
-   :ctx/graphics  Gdx/graphics
-   :ctx/input     Gdx/input})
+  {:ctx/app       (gdx/app)
+   :ctx/graphics  (gdx/graphics)
+   :ctx/input     (gdx/input)})
