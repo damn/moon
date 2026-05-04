@@ -2,14 +2,13 @@
   (:require [com.badlogic.gdx.application-listener :as application-listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl-app]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
+            [com.badlogic.gdx.utils.disposable :as disposable]
 
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
 
             [clojure.config :refer [edn-resource]]
-
             )
-  (:import (com.badlogic.gdx.utils Disposable))
   (:gen-class))
 
 (def state (atom nil))
@@ -27,7 +26,6 @@
 
                       :dispose!
                       (fn []
-                        ; TODO steps
                         (let [{:keys [ctx/audio
                                       ctx/batch
                                       ctx/cursors
@@ -36,14 +34,14 @@
                                       ctx/skin
                                       ctx/textures
                                       ctx/tiled-map]} @state]
-                          (run! Disposable/.dispose (vals audio))
-                          (Disposable/.dispose batch)
-                          (run! Disposable/.dispose (vals cursors))
-                          (Disposable/.dispose default-font)
-                          (Disposable/.dispose shape-drawer-texture)
-                          (Disposable/.dispose skin)
-                          (run! Disposable/.dispose (vals textures))
-                          (Disposable/.dispose tiled-map)))
+                          (run! disposable/dispose! (vals audio))
+                          (disposable/dispose! batch)
+                          (run! disposable/dispose! (vals cursors))
+                          (disposable/dispose! default-font)
+                          (disposable/dispose! shape-drawer-texture)
+                          (disposable/dispose! skin)
+                          (run! disposable/dispose! (vals textures))
+                          (disposable/dispose! tiled-map)))
 
                       :render!
                       (fn []
@@ -56,7 +54,6 @@
 
                       :resize!
                       (fn [width height]
-                        ; TODO steps ?
                         (let [{:keys [ctx/stage
                                       ctx/world-viewport]} @state]
                           (viewport/update! (stage/viewport stage) width height true)
