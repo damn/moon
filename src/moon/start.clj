@@ -2,52 +2,48 @@
   (:require [com.badlogic.gdx.application-listener :as application-listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl-app]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
-
-            moon.application.dispose
-            moon.application.resize
-
-            [clojure.config :refer [edn-resource]]
-            )
+            [clojure.config :refer [edn-resource]])
   (:gen-class))
 
 (def state (atom nil))
 
 (defn -main []
   (config/use-glfw-async!)
-  (lwjgl-app/create (application-listener/create
-                     {:create!
-                      (fn []
-                        (reset! state
-                                (reduce (fn [ctx [f & params]]
-                                          (apply f ctx params))
-                                        {}
-                                        (edn-resource "create.edn"))))
+  (let [{:keys [create-pipeline
+                dispose!
+                render-pipeline
+                resize!
+                config]} (edn-resource "game.edn")]
+    (lwjgl-app/create (application-listener/create
+                       {:create!
+                        (fn []
+                          (reset! state
+                                  (reduce (fn [ctx [f & params]]
+                                            (apply f ctx params))
+                                          {}
+                                          create-pipeline)))
 
-                      :dispose!
-                      (fn []
-                        (moon.application.dispose/do! @state))
+                        :dispose!
+                        (fn []
+                          (dispose! @state))
 
-                      :render!
-                      (fn []
-                        (swap! state
-                               (fn [ctx]
-                                 (reduce (fn [ctx [f & params]]
-                                           (apply f ctx params))
-                                         ctx
-                                         (edn-resource "render.edn")))))
+                        :render!
+                        (fn []
+                          (swap! state
+                                 (fn [ctx]
+                                   (reduce (fn [ctx [f & params]]
+                                             (apply f ctx params))
+                                           ctx
+                                           render-pipeline))))
 
-                      :resize!
-                      (fn [width height]
-                        (moon.application.resize/do! @state width height))
+                        :resize!
+                        (fn [width height]
+                          (resize! @state width height))
 
-                      :pause!
-                      (fn [])
+                        :pause!
+                        (fn [])
 
-                      :resume!
-                      (fn [])
-                      })
-                    (config/create
-                     {:title "Moon"
-                      :windowed-mode {:width 1440
-                                      :height 900}
-                      :foreground-fps 60})))
+                        :resume!
+                        (fn [])
+                        })
+                      (config/create config))))
