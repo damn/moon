@@ -1,26 +1,32 @@
 (ns moon.start
-  (:require [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl-app]
+  (:require [com.badlogic.gdx.application-listener :as application-listener]
+            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl-app]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
+
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
-            [clojure.config :refer [edn-resource]])
-  (:import (com.badlogic.gdx ApplicationListener)
-           (com.badlogic.gdx.utils Disposable))
+
+            [clojure.config :refer [edn-resource]]
+
+            )
+  (:import (com.badlogic.gdx.utils Disposable))
   (:gen-class))
 
 (def state (atom nil))
 
 (defn -main []
   (config/use-glfw-async!)
-  (lwjgl-app/create (reify ApplicationListener
-                      (create [_]
+  (lwjgl-app/create (application-listener/create
+                     {:create!
+                      (fn []
                         (reset! state
                                 (reduce (fn [ctx [f & params]]
                                           (apply f ctx params))
                                         {}
                                         (edn-resource "create.edn"))))
 
-                      (dispose [_]
+                      :dispose!
+                      (fn []
                         ; TODO steps
                         (let [{:keys [ctx/audio
                                       ctx/batch
@@ -39,7 +45,8 @@
                           (run! Disposable/.dispose (vals textures))
                           (Disposable/.dispose tiled-map)))
 
-                      (render [_]
+                      :render!
+                      (fn []
                         (swap! state
                                (fn [ctx]
                                  (reduce (fn [ctx [f & params]]
@@ -47,16 +54,17 @@
                                          ctx
                                          (edn-resource "render.edn")))))
 
-                      (resize [_ width height]
+                      :resize!
+                      (fn [width height]
                         ; TODO steps ?
                         (let [{:keys [ctx/stage
                                       ctx/world-viewport]} @state]
                           (viewport/update! (stage/viewport stage) width height true)
                           (viewport/update! world-viewport width height false)))
 
-                      (pause [_])
-
-                      (resume [_]))
+                      :pause!  (fn [])
+                      :resume! (fn [])
+                      })
                     (config/create
                      {:title "Moon"
                       :windowed-mode {:width 1440
