@@ -3,3 +3,6 @@
 
 (defn enable-markup! [^BitmapFont$BitmapFontData data]
   (set! (.markupEnabled data) true))
+
+(defn set-scale! [^BitmapFont$BitmapFontData data scale]
+  (.setScale data scale))

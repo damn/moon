@@ -3,3 +3,6 @@
 
 (defn data [^BitmapFont font]
   (.getData font))
+
+(defn set-use-integer-positions! [^BitmapFont font use-integer-positions?]
+  (.setUseIntegerPositions font use-integer-positions?))

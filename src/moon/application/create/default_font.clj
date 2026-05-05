@@ -1,9 +1,11 @@
 (ns moon.application.create.default-font
   (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.files :as files])
-  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
+            [com.badlogic.gdx.files :as files]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
+            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator :as generator]
+            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameters :as parameters]
+            [com.badlogic.gdx.graphics.texture.texture-filter :as texture-filter]))
 
 (defn step
   [{:keys [ctx/app]
@@ -22,15 +24,15 @@
                                                                        :min-filter :linear
                                                                        :mag-filter :linear
                                                                        }
-                                     generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
-                                     font (.generateFont generator
-                                                         (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                                                           (set! (.size params) (* size quality-scaling))
-                                                           (set! (.minFilter params) Texture$TextureFilter/Linear)
-                                                           (set! (.magFilter params) Texture$TextureFilter/Linear)
-                                                           params))]
-                                 (.dispose generator)
-                                 (.setScale (.getData font) (/ quality-scaling))
-                                 (set! (.markupEnabled (.getData font)) enable-markup?)
-                                 (.setUseIntegerPositions font use-integer-positions?)
+                                     generator (generator/create (files/internal (app/files app) path))
+                                     font (generator/generate-font
+                                           generator
+                                           (parameters/create
+                                            {:size (* size quality-scaling)
+                                             :min-filter texture-filter/linear
+                                             :mag-filter texture-filter/linear}))]
+                                 (generator/dispose! generator)
+                                 (font.data/set-scale! (font/data font) (/ quality-scaling))
+                                 (font.data/enable-markup! (font/data font) enable-markup?)
+                                 (font/set-use-integer-positions! font use-integer-positions?)
                                  font)))
