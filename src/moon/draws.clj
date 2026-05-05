@@ -1,27 +1,27 @@
 (ns moon.draws
-  (:require [moon.graphics :as graphics])
-  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [moon.graphics :as graphics]
+            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 
 (declare handle)
 
 (def draw-fns
   {
    :draw/circle           (fn
-                            [{:keys [^ShapeDrawer ctx/shape-drawer]} [x y] radius color-float-bits]
-                            (.setColor shape-drawer (float color-float-bits))
-                            (.circle shape-drawer x y radius))
+                            [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
+                            (shape-drawer/set-color! shape-drawer color-float-bits)
+                            (shape-drawer/circle! shape-drawer x y radius))
    :draw/ellipse          (fn
-                            [{:keys [^ShapeDrawer ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
-                            (.setColor shape-drawer (float color-float-bits))
-                            (.ellipse shape-drawer x y radius-x radius-y))
+                            [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
+                            (shape-drawer/set-color! shape-drawer color-float-bits)
+                            (shape-drawer/ellipse! shape-drawer x y radius-x radius-y))
    :draw/filled-circle    (fn
-                            [{:keys [^ShapeDrawer ctx/shape-drawer]} [x y] radius color-float-bits]
-                            (.setColor shape-drawer (float color-float-bits))
-                            (.filledCircle shape-drawer (float x) (float y) (float radius)))
+                            [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
+                            (shape-drawer/set-color! shape-drawer color-float-bits)
+                            (shape-drawer/filled-circle! shape-drawer x y radius))
    :draw/filled-rectangle (fn
-                            [{:keys [^ShapeDrawer ctx/shape-drawer]} x y w h color-float-bits]
-                            (.setColor shape-drawer (float color-float-bits))
-                            (.filledRectangle shape-drawer (float x) (float y) (float w) (float h)))
+                            [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
+                            (shape-drawer/set-color! shape-drawer color-float-bits)
+                            (shape-drawer/filled-rectangle! shape-drawer x y w h))
    :draw/grid             (fn
                             [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
                             (let [w (* (float gridw) (float cellw))
@@ -37,28 +37,28 @@
                                 (handle ctx
                                         [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))
    :draw/line             (fn
-                            [{:keys [^ShapeDrawer ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
-                            (.setColor shape-drawer (float color-float-bits))
-                            (.line shape-drawer (float sx) (float sy) (float ex) (float ey)))
+                            [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
+                            (shape-drawer/set-color! shape-drawer color-float-bits)
+                            (shape-drawer/line! shape-drawer sx sy ex ey))
    :draw/rectangle        (fn
-                            [{:keys [^ShapeDrawer ctx/shape-drawer]} x y w h color-float-bits]
-                            (.setColor shape-drawer (float color-float-bits))
-                            (.rectangle shape-drawer x y w h))
+                            [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
+                            (shape-drawer/set-color! shape-drawer color-float-bits)
+                            (shape-drawer/rectangle! shape-drawer x y w h))
    :draw/sector           (fn
-                            [{:keys [^ShapeDrawer ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
-                            (.setColor shape-drawer (float color-float-bits))
-                            (.sector shape-drawer center-x center-y radius start-radians radians))
+                            [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
+                            (shape-drawer/set-color! shape-drawer color-float-bits)
+                            (shape-drawer/sector! shape-drawer center-x center-y radius start-radians radians))
    :draw/text             graphics/draw-text!
    :draw/texture-region   graphics/draw-texture-region!
    :draw/with-line-width  (fn
-                            [{:keys [^ShapeDrawer ctx/shape-drawer]
+                            [{:keys [ctx/shape-drawer]
                               :as ctx}
                              width
                              draws]
-                            (let [old-line-width (.getDefaultLineWidth shape-drawer)]
-                              (.setDefaultLineWidth shape-drawer (* width old-line-width))
+                            (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
+                              (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
                               (handle ctx draws)
-                              (.setDefaultLineWidth shape-drawer old-line-width)))
+                              (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
    })
 
 (defn handle [ctx draws]
