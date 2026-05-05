@@ -6,6 +6,7 @@
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
             [clojure.math.vector2 :as v]
+            [com.badlogic.gdx.audio.sound :as sound]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.effect :as effect]
@@ -21,8 +22,7 @@
             [moon.ui-actors.windows.inventory :as inventory-window]
             [reduce-fsm :as fsm]
             [moon.txs :as txs]
-            [qrecord.core :as q])
-  (:import (com.badlogic.gdx.audio Sound)))
+            [qrecord.core :as q]))
 
 (defn- send-event! [ctx eid event params]
   (let [fsm (:entity/fsm @eid)
@@ -247,7 +247,7 @@
                                   [{:keys [ctx/audio] :as ctx} sound-name]
                                   (let [sounds audio]
                                     (assert (contains? sounds sound-name) (str sound-name))
-                                    (Sound/.play (get sounds sound-name)))
+                                    (sound/play! (get sounds sound-name)))
                                   ctx)
    :tx/toggle-inventory-visible (fn
                                   [{:keys [ctx/stage] :as ctx}]

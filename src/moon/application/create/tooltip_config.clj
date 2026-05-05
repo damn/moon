@@ -1,6 +1,6 @@
 (ns moon.application.create.tooltip-config
-  (:import (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]))
 
 (defn step [ctx]
-  (set! (.initialTime (TooltipManager/getInstance)) 0)
+  (tooltip-manager/set-initial-time! 0)
   ctx)

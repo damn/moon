@@ -12,5 +12,5 @@
                          (-> skin
                              (skin/font "default-font")
                              font/data
-                             font.data/enable-markup!)
+                             (font.data/enable-markup! true))
                          skin)))
