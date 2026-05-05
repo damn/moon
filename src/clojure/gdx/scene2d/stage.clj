@@ -1,32 +1,23 @@
 (ns clojure.gdx.scene2d.stage
-  (:require [clojure.gdx.scene2d.group :as group]
-            [clojure.gdx.utils.viewport :as viewport])
-  (:import (clojure.gdx Stage)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ctx-stage :as stage]
+            [clojure.gdx.scene2d.group :as group]
+            [clojure.gdx.utils.viewport :as viewport]))
 
-(defn ctx [^Stage stage]
-  (.ctx stage))
+(def create stage/create)
+(def ctx stage/ctx)
+(def set-ctx! stage/set-ctx!)
+(def add-actor! stage/add-actor!)
+(def viewport stage/viewport)
+(def act! stage/act!)
+(def draw! stage/draw!)
 
-(defn set-ctx! [^Stage stage ctx]
-  (set! (.ctx stage) ctx))
-
-(defn add-actor! [^Stage stage actor]
-  (.addActor stage actor))
-
-(defn find-actor [^Stage stage name]
+(defn find-actor [stage name]
   (-> stage
-      .getRoot
+      stage/root
       (group/find-actor name)))
 
-(defn mouseover-actor [^Stage stage position]
-  (let [[x y] (viewport/unproject (.getViewport stage) position)
-        touchable? true]
-    (.hit stage x y touchable?) ))
+(defn mouseover-actor [stage position]
+  (stage/hit stage
+             (viewport/unproject (stage/viewport stage) position)
+             true))
 
-(defn viewport [^Stage stage]
-  (.getViewport stage))
-
-(defn act! [^Stage stage]
-  (.act stage))
-
-(defn draw! [^Stage stage]
-  (.draw stage))

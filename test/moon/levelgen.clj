@@ -26,7 +26,7 @@
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)
-           (clojure.gdx Stage)))
+           (com.badlogic.gdx.scenes.scene2d CtxStage)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -97,7 +97,7 @@
   (let [skin (Skin. (.internal files "uiskin.json")) ; TODO dispose
         ui-viewport (FitViewport. 1440 900 (OrthographicCamera.))
         sprite-batch (SpriteBatch.)
-        stage (Stage. ui-viewport sprite-batch)
+        stage (CtxStage. ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
