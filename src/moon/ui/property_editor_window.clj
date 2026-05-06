@@ -1,5 +1,6 @@
 (ns moon.ui.property-editor-window
-  (:require [clojure.gdx.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.input.keys :as input.keys]
+            [clojure.gdx.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
@@ -7,8 +8,7 @@
             [moon.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
-            [moon.throwable :as throwable])
-  (:import (com.badlogic.gdx Input$Keys)))
+            [moon.throwable :as throwable]))
 
 (defmethod actor/create :ui/property-editor-window
   [{:keys [ctx
@@ -50,7 +50,7 @@
                   :act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
                             (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
-                              (when (input/key-just-pressed? input Input$Keys/ENTER)
+                              (when (input/key-just-pressed? input input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
         save-button {:type :ui/text-button
                      :text "Save [LIGHT_GRAY](ENTER)[]"
