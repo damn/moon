@@ -6,3 +6,6 @@
 
 (defn set-scale! [^BitmapFont$BitmapFontData data scale]
   (.setScale data scale))
+
+(defn scale-x [^BitmapFont$BitmapFontData data]
+  (.scaleX data))

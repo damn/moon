@@ -66,7 +66,7 @@
   (.getParent actor))
 
 (defn stage->local-coordinates [^Actor actor vector2]
-  (Actor/.stageToLocalCoordinates actor vector2))
+  (.stageToLocalCoordinates actor vector2))
 
 (defn add-listener! [^Actor actor listener]
   (.addListener actor listener))
