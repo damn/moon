@@ -1,6 +1,6 @@
 (ns moon.application.render.clear-screen
-  (:require [clojure.graphics :as graphics]))
+  (:require [moon.graphics :as graphics]))
 
 (defn step [ctx]
-  (graphics/clear! (:ctx/graphics ctx) 0 0 0 0)
+  (graphics/clear! (:ctx/app ctx) 0 0 0 0)
   ctx)
