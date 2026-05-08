@@ -1,5 +1,6 @@
 (ns moon.application.create.into-record
-  (:require moon.tx.spawn-entity
+  (:require moon.tx.audiovisual
+            moon.tx.spawn-entity
             moon.tx.state-exit
             moon.tx.state-enter
             [moon.ui.actor :as actor]
@@ -8,7 +9,6 @@
             [clojure.math.vector2 :as v]
             [com.badlogic.gdx.audio.sound :as sound]
             [moon.content-grid :as content-grid]
-            [moon.db :as db]
             [moon.effect :as effect]
             [moon.grid :as grid]
             [moon.info :as info]
@@ -43,16 +43,7 @@
 (def txs-fn-map
   {
    :tx/state-exit               moon.tx.state-exit/do!
-   :tx/audiovisual              (fn
-                                  [{:keys [ctx/db]} position audiovisual]
-                                  (let [{:keys [tx/sound
-                                                entity/animation]} (if (keyword? audiovisual)
-                                                                     (db/build db audiovisual)
-                                                                     audiovisual)]
-                                    [[:tx/sound sound]
-                                     [:tx/spawn-effect
-                                      position
-                                      {:entity/animation (assoc animation :delete-after-stopped? true)}]]))
+   :tx/audiovisual              moon.tx.audiovisual/do!
    ; TODO :tx/swap ?
    :tx/assoc                    (fn [_ctx eid k value]
                                   (swap! eid assoc k value)
