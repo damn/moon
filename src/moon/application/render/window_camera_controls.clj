@@ -3,7 +3,7 @@
             [clojure.gdx.utils.viewport :as viewport]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [com.badlogic.gdx.input :as input]))
 
 (def zoom-speed 0.025)

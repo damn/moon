@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.input.keys :as input.keys]
             [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
             [moon.db :as db]
             [moon.input :as input]

@@ -1,6 +1,6 @@
 (ns moon.application.create.add-stage-actors.dev-menu
   (:require [moon.ui.actor :as actor]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.gdx.utils.viewport :as viewport]
             [clojure.string :as str]

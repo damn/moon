@@ -2,7 +2,7 @@
   (:require [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.ui.group :as group]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [moon.ui.label :as label]
             [moon.ui.table :as table]))
 

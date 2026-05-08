@@ -3,7 +3,7 @@
             moon.tx.state-exit
             moon.tx.state-enter
             [moon.ui.actor :as actor]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
             [clojure.math.vector2 :as v]
             [com.badlogic.gdx.audio.sound :as sound]

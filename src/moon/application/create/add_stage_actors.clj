@@ -1,5 +1,5 @@
 (ns moon.application.create.add-stage-actors
-  (:require [clojure.gdx.scene2d.stage :as stage]))
+  (:require [moon.stage :as stage]))
 
 (defn step
   [{:keys [ctx/stage]

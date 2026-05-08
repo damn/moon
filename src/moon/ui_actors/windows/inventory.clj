@@ -9,7 +9,7 @@
             [moon.ui.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [moon.textures :as textures]))
 
 (defn- draw-cell-rect-actor [draw-cell-rect]

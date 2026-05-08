@@ -1,5 +1,5 @@
 (ns moon.application.render.stage
-  (:require [clojure.gdx.scene2d.stage :as stage]))
+  (:require [moon.stage :as stage]))
 
 (defn step
   [{:keys [ctx/stage] :as ctx}]

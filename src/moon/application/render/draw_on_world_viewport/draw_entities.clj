@@ -1,7 +1,7 @@
 (ns moon.application.render.draw-on-world-viewport.draw-entities
   (:require moon.player-item-on-cursor
             [clojure.animation :as animation]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [com.badlogic.gdx.input :as input]
             [clojure.math :as math]
             [moon.draws :as draws]

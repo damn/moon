@@ -1,6 +1,6 @@
 (ns moon.application.create.add-stage-actors.player-state-draw
   (:require [moon.ui.actor :as actor]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [com.badlogic.gdx.input :as input]
             [moon.draws :as draws]
             [moon.state :as state]

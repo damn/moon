@@ -1,5 +1,5 @@
 (ns moon.application.resize
-  (:require [clojure.gdx.scene2d.stage :as stage]
+  (:require [moon.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]))
 
 (defn do!

@@ -1,7 +1,7 @@
 (ns moon.ui-actors.windows.info
   (:require [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [moon.ui.label :as label]
             [moon.ui.table :as table]
             [clojure.gdx.scene2d.ui.widget-group :as widget-group]))

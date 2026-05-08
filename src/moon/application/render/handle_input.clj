@@ -1,6 +1,6 @@
 (ns moon.application.render.handle-input
   (:require [moon.ui.actor :as actor]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [moon.input]

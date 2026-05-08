@@ -1,7 +1,7 @@
 (ns moon.application.create.add-stage-actors.player-message
   (:require [clojure.gdx.utils.viewport :as viewport]
             [moon.ui.actor :as actor]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [moon.draws :as draws]))
 
 (defn create [_ctx]

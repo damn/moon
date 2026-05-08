@@ -4,7 +4,7 @@
             [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.ui.group :as group]
-            [clojure.gdx.scene2d.stage :as stage]
+            [moon.stage :as stage]
             [moon.ui.select-box :as select-box]
             [moon.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-field :as text-field]
