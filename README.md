@@ -246,7 +246,7 @@ sh count_locs.sh
 
 <summary>
 lein hiera :layout :horizontal
-<summary>
+</summary>
 
 <img width="5207" height="11784" alt="namespaces" src="https://github.com/user-attachments/assets/d6ea32d5-2290-4dd1-a82b-98a36d4408ea" />
 
