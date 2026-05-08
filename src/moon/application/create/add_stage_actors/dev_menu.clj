@@ -6,15 +6,15 @@
             [clojure.string :as str]
             [moon.db :as db]
             [moon.graphics :as graphics]
-            [moon.number :as number]
-            [moon.ui-actors.dev-menu]))
+            [moon.number :as number]))
 
 (defn- dev-menu-config
   [{:keys [ctx/controls-info
            ctx/db
            ctx/skin
            ctx/textures]}]
-  {:menus [
+  {:type :ui/menu
+   :menus [
            {:label "Ctx Data"
             :items [{:label "Show data"
                      :on-click (fn [_actor {:keys [ctx/skin
@@ -102,4 +102,4 @@
    :skin skin})
 
 (defn create [ctx]
-  (moon.ui-actors.dev-menu/create (dev-menu-config ctx)))
+  (actor/create (dev-menu-config ctx)))

@@ -70,7 +70,7 @@
           (add-upd-label! skin table update-fn))))
     table))
 
-(defn create
+(defmethod actor/create :ui/menu
   [{:keys [menus update-labels skin]}]
   (actor/create
    {:type :ui/table
