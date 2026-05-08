@@ -1,34 +1,50 @@
 (ns moon.start
-  (:require [com.badlogic.gdx.application-listener :as listener]
-            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as application]
-            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
-            [clojure.config :refer [edn-resource]])
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [clojure.walk :as walk])
+  (:import (com.badlogic.gdx ApplicationListener)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration))
   (:gen-class))
+
+(defn edn-resource [path]
+  (->> path
+       io/resource
+       slurp
+       (edn/read-string {:readers {'edn/resource edn-resource}})
+       (walk/postwalk (fn [form]
+                        (if (and (symbol? form) (namespace form))
+                          (let [avar (requiring-resolve form)]
+                            (assert avar form)
+                            avar)
+                          form)))))
 
 (def state (atom nil))
 
 (defn -main []
-  (let [{:keys [create-pipeline
+  (let [{:keys [
+                create-pipeline
                 dispose!
                 render-pipeline
                 resize!
-                config]} (edn-resource "game.edn")]
-    (config/use-glfw-async!)
-    (application/create (listener/create
-                         {:create!
-                          (fn []
+                title
+                windowed-mode
+                foreground-fps
+                ]}
+        (edn-resource "game.edn")]
+    (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+    (Lwjgl3Application. (reify ApplicationListener
+                          (create [_]
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
                                             {}
                                             create-pipeline)))
 
-                          :dispose!
-                          (fn []
+                          (dispose [_]
                             (dispose! @state))
 
-                          :render!
-                          (fn []
+                          (render [_]
                             (swap! state
                                    (fn [ctx]
                                      (reduce (fn [ctx [f & params]]
@@ -36,14 +52,13 @@
                                              ctx
                                              render-pipeline))))
 
-                          :resize!
-                          (fn [width height]
+                          (resize [_ width height]
                             (resize! @state width height))
 
-                          :pause!
-                          (fn [])
+                          (pause [_])
 
-                          :resume!
-                          (fn [])
-                          })
-                        (config/create config))))
+                          (resume [_]))
+                        (doto (Lwjgl3ApplicationConfiguration.)
+                          (.setTitle title)
+                          (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
+                          (.setForegroundFPS foreground-fps)))))

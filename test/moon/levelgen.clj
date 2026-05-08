@@ -4,8 +4,6 @@
             [moon.application.create.textures :as create-textures]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl-app]
-            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
             clojure.gdx.scene2d.ui.table
@@ -17,6 +15,8 @@
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx
                              Input$Keys)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Color
                                       OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
@@ -192,8 +192,8 @@
 (def state (atom nil))
 
 (defn -main []
-  (config/use-glfw-async!)
-  (lwjgl-app/create (reify ApplicationListener
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
                           (reset! state (create! {:ctx/files    Gdx/files
                                                   :ctx/graphics Gdx/graphics
@@ -206,8 +206,7 @@
                           (resize! @state width height))
                         (pause [_])
                         (resume [_]))
-                    (config/create
-                     {:title "Levelgen Test"
-                      :windowed-mode {:width 1440
-                                      :height 900}
-                      :foreground-fps 60})))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Levelgen Test")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))
