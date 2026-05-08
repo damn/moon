@@ -1,14 +1,15 @@
 (ns moon.application.create.add-stage-actors.windows.info
-  (:require [clojure.gdx.scene2d.stage :as stage]
+  (:require [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
-            [moon.info :as info]
-            [moon.ui-actors.windows.info]))
+            [moon.info :as info]))
 
 (defn create
   [{:keys [ctx/skin
            ctx/stage]}]
-  (moon.ui-actors.windows.info/create
-   {:title "Entity Info"
+  (actor/create
+   {:type :ui/info-window
+    :title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
     :visible? false
     :position [(viewport/world-width (stage/viewport stage)) 0]

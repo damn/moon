@@ -33,6 +33,8 @@
                                                  moon.ui.property-editor-window
                                                  moon.ui.property-overview-window
                                                  moon.ui-actors.dev-menu
+                                                 moon.ui-actors.action-bar
+                                                 moon.ui-actors.windows.info
                                                  ]]
  [moon.application.create.add-stage-actors/step [[moon.application.create.add-stage-actors.dev-menu/create]
                                                  [moon.application.create.add-stage-actors.action-bar/create]

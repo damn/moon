@@ -3,7 +3,7 @@
             [clojure.gdx.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))
 
-(defn create []
+(defmethod actor/create :ui/action-bar [_]
   (actor/create
    {:type :ui/table
     :table/cell-defaults {:pad 2}

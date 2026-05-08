@@ -1,5 +1,6 @@
 (ns moon.application.create.add-stage-actors.action-bar
-  (:require [moon.ui-actors.action-bar]))
+  (:require [clojure.gdx.scene2d.actor :as actor]))
 
 (defn create [_ctx]
-  (moon.ui-actors.action-bar/create))
+  (actor/create
+   {:type :ui/action-bar}))
