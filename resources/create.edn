@@ -20,6 +20,7 @@
  [moon.application.create.max-speed/step]
  [moon.application.create.db/step]
  [moon.application.create.into-record/step]
+ [moon.application.create.impl-draws/step]
  [moon.application.create.require-ui-impls/step [
                                                  clojure.gdx.scene2d.actor
                                                  clojure.gdx.scene2d.group
