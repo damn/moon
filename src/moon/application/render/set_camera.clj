@@ -1,11 +1,8 @@
 (ns moon.application.render.set-camera
-  (:require [clojure.graphics.orthographic-camera :as camera]
-            [clojure.gdx.utils.viewport :as viewport]))
+  (:require [moon.camera :as camera]))
 
 (defn step
-  [{:keys [ctx/player-eid
-           ctx/world-viewport]
+  [{:keys [ctx/player-eid]
     :as ctx}]
-  (camera/set-position! (viewport/camera world-viewport)
-                        (:body/position (:entity/body @player-eid)))
+  (camera/set-position! ctx (:body/position (:entity/body @player-eid)))
   ctx)

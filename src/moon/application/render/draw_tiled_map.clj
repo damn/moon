@@ -1,6 +1,6 @@
 (ns moon.application.render.draw-tiled-map
   (:require [moon.tiled-map.renderer :as tiled-map-renderer]
-            [clojure.graphics.orthographic-camera :as camera]
+            [moon.camera :as camera]
             [clojure.gdx.utils.viewport :as viewport]
             [moon.raycaster :as raycaster]))
 
@@ -53,12 +53,12 @@
 (defn- tile-color-setter
   [{:keys [ctx/colors
            ctx/explored-tile-corners
-           ctx/raycaster
-           ctx/world-viewport]}]
+           ctx/raycaster]
+    :as ctx}]
   (tile-color-setter*
    {:ray-blocked? (partial raycaster/blocked? raycaster)
     :explored-tile-corners explored-tile-corners
-    :light-position (camera/position (viewport/camera world-viewport))
+    :light-position (camera/position ctx)
     :see-all-tiles? false
     :explored-tile-color  (:colors/explored-tile colors)
     :visible-tile-color   (:colors/visible-tile colors)

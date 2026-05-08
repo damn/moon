@@ -1,9 +1,8 @@
 (ns moon.application.render.window-camera-controls
-  (:require [clojure.graphics.orthographic-camera :as camera]
-            [clojure.gdx.utils.viewport :as viewport]
+  (:require [moon.camera :as camera]
+            [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [moon.stage :as stage]
             [com.badlogic.gdx.input :as input]))
 
 (def zoom-speed 0.025)
@@ -11,14 +10,13 @@
 (defn step
   [{:keys [ctx/controls
            ctx/input
-           ctx/stage
-           ctx/world-viewport]
+           ctx/stage]
     :as ctx}]
   (when (input/key-pressed? input (:zoom-in controls))
-    (camera/inc-zoom! (viewport/camera world-viewport) zoom-speed))
+    (camera/inc-zoom! ctx zoom-speed))
 
   (when (input/key-pressed? input (:zoom-out controls))
-    (camera/inc-zoom! (viewport/camera world-viewport) (- zoom-speed)))
+    (camera/inc-zoom! ctx (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (stage/find-actor stage "moon.ui.windows")
