@@ -6,6 +6,7 @@
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             moon.audio
+            moon.files
             moon.graphics))
 
 (defn step [ctx]
@@ -14,6 +15,10 @@
     (new-sound [{:keys [ctx/app]} path]
       (audio/new-sound (app/audio app)
                        (files/internal (app/files app) path)))
+
+    moon.files/Files
+    (internal [{:keys [ctx/app]} path]
+      (files/internal (app/files app) path))
 
     moon.graphics/Graphics
     (frames-per-second [{:keys [ctx/app]}]

@@ -1,7 +1,7 @@
 (ns moon.application.create.audio
-  (:require [moon.audio :as audio]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]))
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [moon.audio :as audio]))
 
 (defn step
   [ctx]
