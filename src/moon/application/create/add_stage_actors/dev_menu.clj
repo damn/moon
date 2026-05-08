@@ -1,8 +1,7 @@
 (ns moon.application.create.add-stage-actors.dev-menu
-  (:require [moon.ui.actor :as actor]
+  (:require [moon.camera :as camera]
+            [moon.ui.actor :as actor]
             [moon.stage :as stage]
-            [clojure.graphics.orthographic-camera :as camera]
-            [clojure.gdx.utils.viewport :as viewport]
             [clojure.string :as str]
             [moon.db :as db]
             [moon.graphics :as graphics]
@@ -91,8 +90,7 @@
                                :update-fn (fn [{:keys [ctx/world-mouse-position]}]
                                             (mapv int world-mouse-position))}
                               {:label "Zoom"
-                               :update-fn (fn [{:keys [ctx/world-viewport]}]
-                                            (camera/zoom (viewport/camera world-viewport)))
+                               :update-fn camera/zoom
                                :icon "images/zoom.png"}
                               ]]
                     (if (:icon item)
