@@ -1,4 +1,6 @@
 (ns moon.camera)
 
 (defprotocol Camera
-  (zoom [_]))
+  (zoom [_])
+  (visible-tiles [_])
+  )

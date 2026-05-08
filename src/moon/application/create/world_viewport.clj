@@ -13,6 +13,8 @@
     moon.camera/Camera
     (zoom [{:keys [ctx/world-viewport]}]
       (camera/zoom (viewport/camera world-viewport)))
+    (visible-tiles [{:keys [ctx/world-viewport]}]
+      (camera/visible-tiles (viewport/camera world-viewport)))
     )
   (assoc ctx :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
                                        world-height (* 900  world-unit-scale)]
