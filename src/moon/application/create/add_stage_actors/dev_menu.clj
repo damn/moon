@@ -75,8 +75,7 @@
                                             (str (number/readable elapsed-time) " seconds"))
                                :icon "images/clock.png"}
                               {:label "FPS"
-                               :update-fn (fn [{:keys [ctx/app]}]
-                                            (graphics/frames-per-second app))
+                               :update-fn graphics/frames-per-second
                                :icon "images/fps.png"}
                               {:label "Mouseover-entity id"
                                :update-fn (fn [{:keys [ctx/mouseover-eid]}]

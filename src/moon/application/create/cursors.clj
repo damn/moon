@@ -3,8 +3,8 @@
             [clojure.java.io :as io]
             [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics :as graphics]
-            [com.badlogic.gdx.graphics.pixmap :as pixmap]))
+            [com.badlogic.gdx.graphics.pixmap :as pixmap]
+            [moon.graphics :as graphics]))
 
 (defn step
   [{:keys [ctx/app]
@@ -13,6 +13,6 @@
                             (update-vals data
                                          (fn [[path [hotspot-x hotspot-y]]]
                                            (let [pixmap (pixmap/create (files/internal (app/files app) (format path-format path)))
-                                                 cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
+                                                 cursor (graphics/new-cursor ctx pixmap hotspot-x hotspot-y)]
                                              (pixmap/dispose! pixmap)
                                              cursor))))))
