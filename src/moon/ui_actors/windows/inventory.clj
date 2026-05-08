@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.ui.group :as group]
-            [clojure.gdx.scene2d.ui.image :as image]
+            [moon.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.gdx.utils.viewport :as viewport]
