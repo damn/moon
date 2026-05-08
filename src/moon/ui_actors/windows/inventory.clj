@@ -6,7 +6,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.gdx.utils.viewport :as viewport]
-            [clojure.gdx.scene2d.actor :as actor]
+            [moon.ui.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [clojure.gdx.scene2d.stage :as stage]

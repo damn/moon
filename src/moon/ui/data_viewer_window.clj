@@ -1,5 +1,5 @@
 (ns moon.ui.data-viewer-window
-  (:require [clojure.gdx.scene2d.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]))
 
 (defmethod actor/create :ui/data-viewer-window

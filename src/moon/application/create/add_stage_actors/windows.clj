@@ -1,5 +1,5 @@
 (ns moon.application.create.add-stage-actors.windows
-  (:require [clojure.gdx.scene2d.actor :as actor]))
+  (:require [moon.ui.actor :as actor]))
 
 (defn create [ctx actor-fns]
   (actor/create

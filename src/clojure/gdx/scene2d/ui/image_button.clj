@@ -3,7 +3,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [clojure.gdx.scene2d.actor :as actor]))
+            [moon.ui.actor :as actor]))
 
 (defn- create-drawable*
   [{:keys [drawable/texture-region drawable/scale]}]

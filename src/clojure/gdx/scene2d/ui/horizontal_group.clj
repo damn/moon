@@ -1,6 +1,6 @@
 (ns clojure.gdx.scene2d.ui.horizontal-group
   (:require [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
-            [clojure.gdx.scene2d.actor :as actor]))
+            [moon.ui.actor :as actor]))
 
 (defmethod actor/create :ui/horizontal-group
   [opts]

@@ -1,6 +1,6 @@
 (ns moon.application.render.if-not-paused.tick-entities
   (:require [clojure.animation :as animation]
-            [clojure.gdx.scene2d.actor :as actor]
+            [moon.ui.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.math :as math]
             [clojure.math.vector2 :as v]

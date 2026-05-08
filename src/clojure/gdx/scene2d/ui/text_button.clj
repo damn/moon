@@ -1,6 +1,6 @@
 (ns clojure.gdx.scene2d.ui.text-button
   (:require [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.scene2d.actor :as actor]))
+            [moon.ui.actor :as actor]))
 
 (defmethod actor/create :ui/text-button
   [opts]

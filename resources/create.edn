@@ -21,6 +21,7 @@
  [moon.application.create.db/step]
  [moon.application.create.into-record/step]
  [moon.application.create.require-ui-impls/step [
+                                                 clojure.gdx.scene2d.actor
                                                  clojure.gdx.scene2d.ui.horizontal-group
                                                  clojure.gdx.scene2d.ui.image-button
                                                  clojure.gdx.scene2d.ui.scroll-pane

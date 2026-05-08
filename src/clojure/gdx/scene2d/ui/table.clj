@@ -1,7 +1,7 @@
 (ns clojure.gdx.scene2d.ui.table
   (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scene2d.actor :as actor]
+            [moon.ui.actor :as actor]
             [clojure.gdx.scene2d.ui.widget-group :as widget-group]))
 
 (defn add! [table cell-declaration]

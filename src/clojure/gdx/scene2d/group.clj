@@ -1,6 +1,6 @@
 (ns clojure.gdx.scene2d.group
   (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [clojure.gdx.scene2d.actor :as actor]))
+            [moon.ui.actor :as actor]))
 
 (def add-actor! group/add-actor!)
 (def children group/children)

@@ -1,5 +1,5 @@
 (ns moon.ui.property-overview-window
-  (:require [clojure.gdx.scene2d.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scene2d.stage :as stage]
             [moon.db :as db]

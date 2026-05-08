@@ -1,5 +1,5 @@
 (ns moon.application.create.add-stage-actors.hp-mana-bar
-  (:require [clojure.gdx.scene2d.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
             [moon.draws :as draws]

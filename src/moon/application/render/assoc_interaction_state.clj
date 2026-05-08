@@ -1,5 +1,5 @@
 (ns moon.application.render.assoc-interaction-state
-  (:require [clojure.gdx.scene2d.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [com.badlogic.gdx.input :as input]
             [clojure.math.vector2 :as v]

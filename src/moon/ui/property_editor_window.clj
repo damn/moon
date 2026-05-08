@@ -1,6 +1,6 @@
 (ns moon.ui.property-editor-window
   (:require [com.badlogic.gdx.input.keys :as input.keys]
-            [clojure.gdx.scene2d.actor :as actor]
+            [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]

@@ -2,7 +2,7 @@
   (:require moon.tx.spawn-entity
             moon.tx.state-exit
             moon.tx.state-enter
-            [clojure.gdx.scene2d.actor :as actor]
+            [moon.ui.actor :as actor]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.utils.viewport :as viewport]
             [clojure.math.vector2 :as v]
