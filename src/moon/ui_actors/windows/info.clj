@@ -2,8 +2,8 @@
   (:require [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
-            [clojure.gdx.scene2d.ui.label :as label]
-            [clojure.gdx.scene2d.ui.table :as table]
+            [moon.ui.label :as label]
+            [moon.ui.table :as table]
             [clojure.gdx.scene2d.ui.widget-group :as widget-group]))
 
 (defmethod actor/create :ui/info-window

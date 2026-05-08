@@ -1,7 +1,7 @@
 (ns clojure.gdx.scene2d.ui.window
   (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [moon.ui.actor :as actor]
-            [clojure.gdx.scene2d.ui.table :as table]))
+            [moon.ui.table :as table]))
 
 (defn- set-opts! [window opts]
   (when (:window/modal? opts)

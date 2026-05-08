@@ -7,7 +7,8 @@
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
-            [clojure.gdx.scene2d.ui.table :as table]
+            clojure.gdx.scene2d.ui.table
+            [moon.ui.table :as table]
             [moon.db :as db]
             [clojure.graphics.orthographic-camera :as camera]
             [moon.tiled-map.renderer :as tiled-map-renderer]

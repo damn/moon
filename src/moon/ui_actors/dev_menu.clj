@@ -3,8 +3,8 @@
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.ui.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
-            [clojure.gdx.scene2d.ui.label :as label]
-            [clojure.gdx.scene2d.ui.table :as table]))
+            [moon.ui.label :as label]
+            [moon.ui.table :as table]))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create
