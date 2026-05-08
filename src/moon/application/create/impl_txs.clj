@@ -19,7 +19,7 @@
             [moon.timer :as timer]
             [moon.map :as map]
             [moon.ui-actors.action-bar :as action-bar]
-            [moon.ui-actors.windows.inventory :as inventory-window]
+            [moon.ui.inventory-window :as inventory-window]
             [reduce-fsm :as fsm]
             [moon.txs :as txs]))
 
