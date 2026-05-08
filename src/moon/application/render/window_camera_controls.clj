@@ -2,7 +2,7 @@
   (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.gdx.utils.viewport :as viewport]
             [moon.ui.actor :as actor]
-            [clojure.gdx.scene2d.group :as group]
+            [moon.ui.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
             [com.badlogic.gdx.input :as input]))
 

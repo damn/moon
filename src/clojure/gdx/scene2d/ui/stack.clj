@@ -1,7 +1,7 @@
 (ns clojure.gdx.scene2d.ui.stack
   (:require [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [moon.ui.actor :as actor]
-            [clojure.gdx.scene2d.group :as group]))
+            [moon.ui.group :as group]))
 
 (defmethod actor/create :ui/stack
   [opts]

@@ -3,7 +3,7 @@
             [clojure.gdx.utils.viewport :as viewport]
             [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.scene2d.group :as group]
+            [moon.ui.group :as group]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.ui.select-box :as select-box]
             [clojure.gdx.scene2d.ui.table :as table]

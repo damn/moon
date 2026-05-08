@@ -1,6 +1,6 @@
 (ns clojure.gdx.scene2d.ui.widget-group
   (:require [com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [clojure.gdx.scene2d.group :as group]))
+            [moon.ui.group :as group]))
 
 (def pack! widget-group/pack!)
 

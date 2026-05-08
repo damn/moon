@@ -1,6 +1,6 @@
 (ns clojure.gdx.scene2d.stage
   (:require [com.badlogic.gdx.scenes.scene2d.ctx-stage :as stage]
-            [clojure.gdx.scene2d.group :as group]
+            [moon.ui.group :as group]
             [clojure.gdx.utils.viewport :as viewport]))
 
 (def create stage/create)
