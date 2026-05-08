@@ -4,7 +4,7 @@
             [moon.stage :as stage]
             [moon.ui.label :as label]
             [moon.ui.table :as table]
-            [clojure.gdx.scene2d.ui.widget-group :as widget-group]))
+            [moon.ui.widget-group :as widget-group]))
 
 (defmethod actor/create :ui/info-window
   [{:keys [title

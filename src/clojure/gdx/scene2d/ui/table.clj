@@ -3,7 +3,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [moon.ui.actor :as actor]
             moon.ui.table
-            [clojure.gdx.scene2d.ui.widget-group :as widget-group]))
+            [moon.ui.widget-group :as widget-group]))
 
 (extend com.badlogic.gdx.scenes.scene2d.ui.Table
   moon.ui.table/Table
