@@ -1,0 +1,7 @@
+(ns moon.application.create.record
+  (:require [qrecord.core :as q]))
+
+(q/defrecord Context [])
+
+(defn step [_ctx]
+  (map->Context {}))

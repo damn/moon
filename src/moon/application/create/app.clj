@@ -5,9 +5,10 @@
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             moon.graphics))
 
-(defn step [_ctx]
-  {:ctx/app       (gdx/app)
-   :ctx/input     (gdx/input)})
+(defn step [ctx]
+  (assoc ctx
+         :ctx/app       (gdx/app)
+         :ctx/input     (gdx/input)))
 
 (extend-type com.badlogic.gdx.Application
   moon.graphics/Graphics

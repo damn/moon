@@ -1,4 +1,4 @@
-(ns moon.application.create.into-record
+(ns moon.application.create.impl-txs
   (:require moon.tx.audiovisual
             moon.tx.spawn-entity
             moon.tx.state-exit
@@ -21,8 +21,7 @@
             [moon.ui-actors.action-bar :as action-bar]
             [moon.ui-actors.windows.inventory :as inventory-window]
             [reduce-fsm :as fsm]
-            [moon.txs :as txs]
-            [qrecord.core :as q]))
+            [moon.txs :as txs]))
 
 (defn- send-event! [ctx eid event params]
   (let [fsm (:entity/fsm @eid)
@@ -392,16 +391,15 @@
 
  )
 
-(q/defrecord Context []
-  txs/Txs
-  (handle! [ctx txs]
-    (let [handled-txs (try (actions! txs-fn-map ctx txs)
-                           (catch Throwable t
-                             (throw (ex-info "Error handling txs"
-                                             {:txs txs} t))))]
-      (reduce-actions! reaction-txs-fn-map
-                       ctx
-                       handled-txs))))
-
 (defn step [ctx]
-  (merge (map->Context {}) ctx))
+  (extend-type (class ctx)
+    txs/Txs
+    (handle! [ctx txs]
+      (let [handled-txs (try (actions! txs-fn-map ctx txs)
+                             (catch Throwable t
+                               (throw (ex-info "Error handling txs"
+                                               {:txs txs} t))))]
+        (reduce-actions! reaction-txs-fn-map
+                         ctx
+                         handled-txs))))
+  ctx)
