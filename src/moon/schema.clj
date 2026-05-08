@@ -7,7 +7,7 @@
             [moon.stage :as stage]
             [moon.ui.select-box :as select-box]
             [moon.ui.table :as table]
-            [clojure.gdx.scene2d.ui.text-field :as text-field]
+            [moon.ui.text-field :as text-field]
             [clojure.gdx.scene2d.ui.widget-group :as widget-group]
             [clojure.set :as set]
             [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
