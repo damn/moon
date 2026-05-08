@@ -1,14 +1,11 @@
 (ns moon.application.create.audio
-  (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.audio :as audio]
-            [com.badlogic.gdx.files :as files]
+  (:require [moon.audio :as audio]
             [clojure.edn :as edn]
             [clojure.java.io :as io]))
 
 (defn step
-  [{:keys [ctx/app]
-    :as ctx}]
+  [ctx]
   (assoc ctx :ctx/audio (into {}
                               (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                                 [sound-name
-                                 (audio/new-sound (app/audio app) (files/internal (app/files app) (format "sounds/%s.wav" sound-name)))]))))
+                                 (audio/new-sound ctx (format "sounds/%s.wav" sound-name))]))))

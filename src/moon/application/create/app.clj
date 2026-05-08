@@ -1,12 +1,20 @@
 (ns moon.application.create.app
   (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.audio :as audio]
+            [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.gdx :as gdx]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
+            moon.audio
             moon.graphics))
 
 (defn step [ctx]
   (extend-type (class ctx)
+    moon.audio/Audio
+    (new-sound [{:keys [ctx/app]} path]
+      (audio/new-sound (app/audio app)
+                       (files/internal (app/files app) path)))
+
     moon.graphics/Graphics
     (frames-per-second [{:keys [ctx/app]}]
       (graphics/frames-per-second (app/graphics app)))
