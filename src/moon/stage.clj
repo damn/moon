@@ -4,7 +4,6 @@
   (ctx [_])
   (set-ctx! [_ ctx])
   (add-actor! [_ actor])
-  (viewport [_])
   (act! [_])
   (draw! [_])
   (find-actor [_ name])

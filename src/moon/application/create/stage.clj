@@ -23,7 +23,6 @@
    :ctx stage/ctx
    :set-ctx! stage/set-ctx!
    :add-actor! stage/add-actor!
-   :viewport stage/viewport
    :act! stage/act!
    :draw! stage/draw!
    :find-actor (fn [stage name]
