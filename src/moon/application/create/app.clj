@@ -2,11 +2,11 @@
   (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.audio :as audio]
             [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.gdx :as gdx]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             moon.audio
-            moon.graphics))
+            moon.graphics)
+  (:import (com.badlogic.gdx Gdx)))
 
 (defn step [ctx]
   (extend-type (class ctx)
@@ -33,5 +33,5 @@
       (gl20/clear!       (graphics/gl20 (app/graphics app)) gl20/color-buffer-bit))
     )
   (assoc ctx
-         :ctx/app       (gdx/app)
-         :ctx/input     (gdx/input)))
+         :ctx/app       Gdx/app
+         :ctx/input     Gdx/input))
