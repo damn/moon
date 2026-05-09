@@ -1,4 +1,4 @@
-(ns moon.start
+(ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.walk :as walk])
