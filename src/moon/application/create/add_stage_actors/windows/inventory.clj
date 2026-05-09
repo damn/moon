@@ -1,6 +1,5 @@
 (ns moon.application.create.add-stage-actors.windows.inventory
-  (:require [clojure.gdx.utils.viewport :as viewport]
-            [com.badlogic.gdx.graphics.color :as color]
+  (:require [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
@@ -183,8 +182,8 @@
      {:colors colors
       :skin skin
       :title "Inventory"
-      :position [(viewport/world-width  (stage/viewport stage))
-                 (viewport/world-height (stage/viewport stage))]
+      :position [(stage/viewport-width stage)
+                 (stage/viewport-height stage)]
       :clicked-cell-listener (fn [cell]
                                (fn [event _x _y]
                                  (clicked-inventory-cell cell (stage/ctx (event/stage event)))))

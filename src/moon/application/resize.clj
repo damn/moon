@@ -7,5 +7,5 @@
            ctx/world-viewport]}
    width
    height]
-  (viewport/update! (stage/viewport stage) width height true)
+  (stage/update-viewport! stage width height)
   (viewport/update! world-viewport width height false))

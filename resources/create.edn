@@ -34,6 +34,7 @@
                                                  clojure.gdx.scene2d.ui.stack
                                                  clojure.gdx.scene2d.ui.table
                                                  clojure.gdx.scene2d.ui.text-button
+                                                 clojure.gdx.scene2d.ui.text-field
                                                  clojure.gdx.scene2d.ui.widget
                                                  clojure.gdx.scene2d.ui.widget-group
                                                  clojure.gdx.scene2d.ui.window

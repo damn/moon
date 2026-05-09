@@ -11,4 +11,4 @@
   (let [mp (input/mouse-position input)]
     (-> ctx
         (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
-        (assoc :ctx/ui-mouse-position (viewport/unproject (stage/viewport stage) mp)))))
+        (assoc :ctx/ui-mouse-position (stage/unproject stage mp)))))

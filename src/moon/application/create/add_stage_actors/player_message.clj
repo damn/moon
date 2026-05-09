@@ -1,6 +1,5 @@
 (ns moon.application.create.add-stage-actors.player-message
-  (:require [clojure.gdx.utils.viewport :as viewport]
-            [moon.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [moon.draws :as draws]))
 
@@ -14,8 +13,8 @@
                (when-let [stage (actor/stage this)]
                  (draws/handle (stage/ctx stage)
                                [(let [state (actor/user-object this)
-                                      vp-width (viewport/world-width (stage/viewport stage))
-                                      vp-height (viewport/world-height (stage/viewport stage))]
+                                      vp-width (stage/viewport-width stage)
+                                      vp-height (stage/viewport-height stage)]
                                   (when-let [text (:text @state)]
                                     [:draw/text {:x (/ vp-width 2)
                                                  :y (+ (/ vp-height 2) 200)

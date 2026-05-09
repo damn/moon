@@ -5,7 +5,6 @@
             moon.tx.state-enter
             [moon.ui.actor :as actor]
             [moon.stage :as stage]
-            [clojure.gdx.utils.viewport :as viewport]
             [clojure.math.vector2 :as v]
             [com.badlogic.gdx.audio.sound :as sound]
             [moon.content-grid :as content-grid]
@@ -44,6 +43,8 @@
    :tx/state-exit               moon.tx.state-exit/do!
    :tx/audiovisual              moon.tx.audiovisual/do!
    ; TODO :tx/swap ?
+   ;:tx/swap   (fn [_ctx eid & params]
+   ;             (apply swap! eid params)
    :tx/assoc                    (fn [_ctx eid k value]
                                   (swap! eid assoc k value)
                                   nil)
@@ -276,8 +277,8 @@
                                                                                                                    (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
                                                                                                                    (on-click))}})}]]
                                                       :actor/name "moon.ui.modal-window"
-                                                      :actor/position [(/ (viewport/world-width  (stage/viewport stage)) 2)
-                                                                       (* (viewport/world-height (stage/viewport stage)) (/ 3 4))
+                                                      :actor/position [(/ (stage/viewport-width stage) 2)
+                                                                       (* (stage/viewport-height stage) (/ 3 4))
                                                                        :align/center]}))
                                   ctx)
    :tx/set-item                 (fn

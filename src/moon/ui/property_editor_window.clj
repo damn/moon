@@ -3,7 +3,6 @@
             [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.stage :as stage]
-            [clojure.gdx.utils.viewport :as viewport]
             [moon.db :as db]
             [moon.input :as input]
             [moon.property :as property]
@@ -22,7 +21,7 @@
         ; or find a way to find the widget from the context @ save button
         ; should be possible
         widget (schema/create schema property ctx) ; FIXME here no set user object k v ?
-        scroll-pane-height (viewport/world-height (stage/viewport stage))
+        scroll-pane-height (stage/viewport-height stage)
         get-widget-value #(schema/value schema widget schemas)
         property-id (:property/id property)
         with-window-close (fn [f]

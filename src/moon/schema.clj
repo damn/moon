@@ -1,6 +1,5 @@
 (ns moon.schema
   (:require clojure.edn
-            [clojure.gdx.utils.viewport :as viewport]
             [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.ui.group :as group]
@@ -483,7 +482,7 @@
                                                 :actor table
                                                 :skin skin})
                              :width  (+ (actor/width table) 50)
-                             :height (min (- (viewport/world-height (stage/viewport stage)) 50)
+                             :height (min (- (stage/viewport-height stage) 50)
                                           (actor/height table))})]]}))))
 
 (defn- sound-columns [skin table sound-name]

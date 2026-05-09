@@ -34,4 +34,12 @@
                       (stage/hit stage
                                  (viewport/unproject (stage/viewport stage) position)
                                  true))
+   :viewport-width (fn [stage]
+                     (viewport/world-width (stage/viewport stage)))
+   :viewport-height (fn [stage]
+                      (viewport/world-height (stage/viewport stage)))
+   :update-viewport! (fn [stage width height]
+                       (viewport/update! (stage/viewport stage) width height true))
+   :unproject (fn [stage [x y]]
+                (viewport/unproject (stage/viewport stage) [x y]))
    })
