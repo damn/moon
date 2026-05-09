@@ -1,13 +1,14 @@
 (ns moon.application.create.default-font
-  (:require [moon.files :as files]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
+  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
             [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator :as generator]
             [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameters :as parameters]
-            [com.badlogic.gdx.graphics.texture.texture-filter :as texture-filter]))
+            [com.badlogic.gdx.graphics.texture.texture-filter :as texture-filter])
+  (:import (com.badlogic.gdx Application)))
 
 (defn step
-  [ctx]
+  [{:keys [ctx/app]
+    :as ctx}]
   (assoc ctx :ctx/default-font (let [{:keys [path
                                              size
                                              quality-scaling
@@ -22,7 +23,7 @@
                                                                        :min-filter :linear
                                                                        :mag-filter :linear
                                                                        }
-                                     generator (generator/create (files/internal ctx path))
+                                     generator (generator/create (.internal (.getFiles app) path))
                                      font (generator/generate-font
                                            generator
                                            (parameters/create
