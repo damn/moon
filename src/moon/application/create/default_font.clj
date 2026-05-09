@@ -1,37 +1,26 @@
 (ns moon.application.create.default-font
-  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
-            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator :as generator]
-            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameters :as parameters]
-            [com.badlogic.gdx.graphics.texture.texture-filter :as texture-filter])
-  (:import (com.badlogic.gdx Application)))
+  (:import (com.badlogic.gdx Application)
+           (com.badlogic.gdx.graphics Texture$TextureFilter)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
+
+(def path "exocet/films.EXL_____.ttf")
+(def size 16)
+(def quality-scaling 2)
 
 (defn step
   [{:keys [ctx/app]
     :as ctx}]
-  (assoc ctx :ctx/default-font (let [{:keys [path
-                                             size
-                                             quality-scaling
-                                             enable-markup?
-                                             use-integer-positions?]} {
-                                                                       :path "exocet/films.EXL_____.ttf"
-                                                                       :size 16
-                                                                       :quality-scaling 2
-                                                                       :enable-markup? true
-                                                                       :use-integer-positions? false
-                                                                       ; :texture-filter/linear because scaling to world-units
-                                                                       :min-filter :linear
-                                                                       :mag-filter :linear
-                                                                       }
-                                     generator (generator/create (.internal (.getFiles app) path))
-                                     font (generator/generate-font
-                                           generator
-                                           (parameters/create
-                                            {:size (* size quality-scaling)
-                                             :min-filter texture-filter/linear
-                                             :mag-filter texture-filter/linear}))]
-                                 (generator/dispose! generator)
-                                 (font.data/set-scale! (font/data font) (/ quality-scaling))
-                                 (font.data/enable-markup! (font/data font) enable-markup?)
-                                 (font/set-use-integer-positions! font use-integer-positions?)
+  (assoc ctx :ctx/default-font (let [generator (FreeTypeFontGenerator. (.internal (.getFiles app) path))
+                                     font (.generateFont generator
+                                                         (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                                                           (set! (.size params) (* size quality-scaling))
+                                                           ; :texture-filter/linear because scaling to world-units
+                                                           (set! (.minFilter params) Texture$TextureFilter/Linear)
+                                                           (set! (.magFilter params) Texture$TextureFilter/Linear)
+                                                           params))]
+                                 (.dispose generator)
+                                 (.setScale (.getData font) (/ quality-scaling))
+                                 (set! (.markupEnabled (.getData font)) true)
+                                 (.setUseIntegerPositions font false)
                                  font)))

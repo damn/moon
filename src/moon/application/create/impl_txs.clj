@@ -6,7 +6,6 @@
             [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [clojure.math.vector2 :as v]
-            [com.badlogic.gdx.audio.sound :as sound]
             [moon.content-grid :as content-grid]
             [moon.effect :as effect]
             [moon.grid :as grid]
@@ -238,7 +237,7 @@
                                   [{:keys [ctx/audio] :as ctx} sound-name]
                                   (let [sounds audio]
                                     (assert (contains? sounds sound-name) (str sound-name))
-                                    (sound/play! (get sounds sound-name)))
+                                    (com.badlogic.gdx.audio.Sound/.play (get sounds sound-name)))
                                   ctx)
    :tx/toggle-inventory-visible (fn
                                   [{:keys [ctx/stage] :as ctx}]
