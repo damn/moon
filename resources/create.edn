@@ -54,7 +54,7 @@
                                                  [moon.application.create.add-stage-actors.player-state-draw/create]
                                                  [moon.application.create.add-stage-actors.player-message/create]]]
  [moon.application.create.tiled-map/step]
- [moon.application.create.grid/step]
+ [moon.application.create.assoc/step :ctx/grid moon.impl.grid/create]
  [moon.application.create.content-grid/step]
  [moon.application.create.explored-tile-corners/step]
  [moon.application.create.raycaster/step]
