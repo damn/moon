@@ -1,6 +1,8 @@
 (ns moon.impl.raycaster
-  (:require [moon.grid2d :as g2d]
-            [moon.cell :as cell]))
+  (:require [clojure.math.raycaster :as raycaster]
+            [moon.grid2d :as g2d]
+            [moon.cell :as cell]
+            [moon.raycaster]))
 
 (defn create [{:keys [ctx/grid]}]
   (let [width  (g2d/width  grid)
@@ -11,4 +13,15 @@
     (let [arr (make-array Boolean/TYPE width height)]
       (doseq [[[x y] blocked?] cells]
         (aset arr x y (boolean blocked?)))
-      [arr width height])))
+
+      (let [this [arr width height]]
+        (reify moon.raycaster/Raycaster
+          (blocked? [_ [start-x start-y] [target-x target-y]]
+            (raycaster/blocked? this
+                                [start-x start-y]
+                                [target-x target-y]))
+
+          (line-of-sight? [_ source target]
+            (not (raycaster/blocked? this
+                                     (:body/position (:entity/body source))
+                                     (:body/position (:entity/body target))))))))))
