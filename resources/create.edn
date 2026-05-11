@@ -13,6 +13,7 @@
  [moon.application.create.world-viewport/step]
  [moon.application.create.cursors/step]
  [moon.application.create.stage/step]
+ [moon.application.create.set-input-processor/step]
  [moon.application.create.skin/step]
  [moon.application.create.unorganised/step]
  [moon.application.create.controls/step]
