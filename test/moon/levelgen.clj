@@ -1,7 +1,7 @@
 (ns moon.levelgen
   (:require [moon.application.create.app :as create-app]
-            [moon.application.create.db :as create-db]
-            [moon.application.create.textures :as create-textures]
+            [moon.impl.db :as db-impl]
+            [moon.impl.textures :as textures]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [com.badlogic.gdx.graphics.color :as color]
@@ -106,9 +106,9 @@
         ctx {:ctx/stage stage
              :ctx/files files}
         ctx (-> ctx
-                create-app/step
-                create-textures/step
-                create-db/step)
+                create-app/step)
+        ctx (assoc ctx :ctx/db (db-impl/create ctx))
+        ctx (assoc ctx :ctx/textures (textures/create ctx))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
