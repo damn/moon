@@ -1,16 +1,23 @@
 (ns clojure.gdx.utils.viewport
-  (:require [com.badlogic.gdx.math.vector2 :as vector2]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as viewport]))
+  (:require [com.badlogic.gdx.math.vector2 :as vector2])
+  (:import (com.badlogic.gdx.utils.viewport FitViewport)))
 
-(def camera viewport/camera)
+(defn create [width height camera]
+  (FitViewport. width height camera))
 
-(def world-width viewport/world-width)
+(defn camera [^FitViewport viewport]
+  (.getCamera viewport))
 
-(def world-height viewport/world-height)
+(defn world-width [^FitViewport viewport]
+  (.getWorldWidth viewport))
 
-(def update! viewport/update!)
+(defn world-height [^FitViewport viewport]
+  (.getWorldHeight viewport))
 
-(defn unproject [viewport position]
+(defn update! [^FitViewport viewport screen-width screen-height center-camera?]
+  (.update viewport screen-width screen-height center-camera?))
+
+(defn unproject [^FitViewport viewport position]
   (-> viewport
-      (viewport/unproject (vector2/->java position))
+      (.unproject (vector2/->java position))
       vector2/->clj))
