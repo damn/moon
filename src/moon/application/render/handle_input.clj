@@ -1,9 +1,8 @@
 (ns moon.application.render.handle-input
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
-            [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.buttons :as input.buttons]
-            [moon.input]
+            [moon.input :as input]
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.stats :as stats]
@@ -15,7 +14,7 @@
 
 (defmethod state/handle-input :player-moving
   [_ eid {:keys [ctx/input]}]
-  (if-let [movement-vector (moon.input/player-movement-vector input)]
+  (if-let [movement-vector (input/player-movement-vector input)]
     [[:tx/assoc eid :entity/movement {:direction movement-vector
                                       :speed (creature-speed @eid)}]]
     [[:tx/event eid :no-movement-input]]))
@@ -81,7 +80,7 @@
   [_ player-eid {:keys [ctx/input
                         ctx/interaction-state
                         ctx/stage] :as ctx}]
-  (if-let [movement-vector (moon.input/player-movement-vector input)]
+  (if-let [movement-vector (input/player-movement-vector input)]
     [[:tx/event player-eid :movement-input movement-vector]]
     (when (input/button-just-pressed? input input.buttons/left)
       (interaction-state->txs interaction-state

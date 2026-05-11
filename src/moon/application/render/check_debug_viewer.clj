@@ -1,7 +1,7 @@
 (ns moon.application.render.check-debug-viewer
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
-            [com.badlogic.gdx.input :as input]))
+            [moon.input :as input]))
 
 (defn step
   [{:keys [ctx/controls

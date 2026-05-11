@@ -3,7 +3,7 @@
             [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [com.badlogic.gdx.input :as input]))
+            [moon.input :as input]))
 
 (def zoom-speed 0.025)
 

@@ -1,5 +1,5 @@
 (ns moon.application.render.assoc-paused
-  (:require [com.badlogic.gdx.input :as input]
+  (:require [moon.input :as input]
             [moon.state :as state]))
 
 (defmethod state/pause-game? :active-skill

@@ -1,5 +1,5 @@
 (ns moon.application.create.set-input-processor
-  (:require [com.badlogic.gdx.input :as input]))
+  (:require [moon.input :as input]))
 
 (defn step
   [{:keys [ctx/app
