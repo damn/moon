@@ -24,6 +24,8 @@
  [moon.application.create.impl-txs/step]
  [moon.application.create.impl-draws/step]
  [moon.application.create.require-ui-impls/step [
+                                                 moon.info-impl
+
                                                  clojure.gdx.scene2d.actor
                                                  clojure.gdx.scene2d.group
                                                  clojure.gdx.scene2d.ui.horizontal-group
