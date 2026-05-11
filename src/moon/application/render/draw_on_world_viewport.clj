@@ -1,5 +1,5 @@
 (ns moon.application.render.draw-on-world-viewport
-  (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
+  (:require [moon.batch :as batch]
             [moon.camera :as camera]
             [moon.draws :as draws]
             [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))

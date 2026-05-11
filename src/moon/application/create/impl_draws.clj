@@ -1,11 +1,11 @@
 (ns moon.application.create.impl-draws
   (:require [clojure.string :as str]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.utils.align :as align]
+            [moon.batch :as batch]
             [moon.draws :as draws]
             [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer])
-  (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
+  (:import (com.badlogic.gdx.graphics.g2d BitmapFont
+                                          TextureRegion)))
 
 (def draw-fns
   {
@@ -81,11 +81,11 @@
                             [{:keys [ctx/batch
                                      ctx/unit-scale
                                      ctx/world-unit-scale]}
-                             texture-region
+                             ^TextureRegion texture-region
                              [x y]
                              & {:keys [center? rotation]}]
-                            (let [[w h] (let [dimensions [(texture-region/width  texture-region)
-                                                          (texture-region/height texture-region)]]
+                            (let [[w h] (let [dimensions [(.getRegionWidth  texture-region)
+                                                          (.getRegionHeight texture-region)]]
                                           (if (= @unit-scale 1)
                                             dimensions
                                             (mapv (comp float (partial * world-unit-scale))
