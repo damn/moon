@@ -1,4 +1,4 @@
-(ns clojure.gdx.scene2d.actor
+(ns moon.ui.impl.actor
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]

@@ -1,4 +1,4 @@
-(ns clojure.gdx.scene2d.ui.label
+(ns moon.ui.impl.label
   (:require [moon.ui.actor :as actor]
             moon.ui.label)
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label

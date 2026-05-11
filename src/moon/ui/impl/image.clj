@@ -1,4 +1,4 @@
-(ns clojure.gdx.scene2d.ui.image
+(ns moon.ui.impl.image
   (:require [moon.ui.actor :as actor]
             [moon.ui.image :as image])
   (:import (com.badlogic.gdx.graphics Texture)

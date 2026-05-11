@@ -1,4 +1,4 @@
-(ns clojure.gdx.scene2d.ui.stack
+(ns moon.ui.impl.stack
   (:require [moon.ui.actor :as actor]
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Stack)))

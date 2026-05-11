@@ -1,4 +1,4 @@
-(ns clojure.gdx.scene2d.ui.horizontal-group
+(ns moon.ui.impl.horizontal-group
   (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 

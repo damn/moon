@@ -1,4 +1,4 @@
-(ns clojure.gdx.scene2d.ui.scroll-pane
+(ns moon.ui.impl.scroll-pane
   (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
