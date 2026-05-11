@@ -3,7 +3,7 @@
             [com.badlogic.gdx.utils.align :as align]
             [moon.batch :as batch]
             [moon.draws :as draws]
-            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer])
+            [moon.shape-drawer :as shape-drawer])
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont
                                           TextureRegion)))
 
