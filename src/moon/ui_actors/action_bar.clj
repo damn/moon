@@ -8,7 +8,7 @@
    {:type :ui/table
     :table/cell-defaults {:pad 2}
     :table/rows [[{:actor (actor/create
-                           {:type :ui/horizontal-group
+                           {:type :ui/horizontal-group ; TODO maybe 'horizontal-button-group'
                             :space 2
                             :pad 2
                             :actor/name "moon.ui.action-bar.horizontal-group"

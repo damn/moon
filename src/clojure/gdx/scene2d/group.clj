@@ -3,7 +3,7 @@
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
-(extend-type Goup
+(extend-type Group
   group/Group
   (add-actor! [group actor]
     (.addActor group actor))
