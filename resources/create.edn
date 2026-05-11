@@ -25,6 +25,7 @@
  [moon.application.create.impl-txs/step]
  [moon.application.create.impl-draws/step]
  [moon.application.create.require-ui-impls/step [
+                                                 moon.state-impl
                                                  moon.effect-impl
                                                  moon.info-impl
 
