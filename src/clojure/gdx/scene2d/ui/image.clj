@@ -1,14 +1,28 @@
 (ns clojure.gdx.scene2d.ui.image
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-            [moon.ui.actor :as actor]
-            moon.ui.image))
+  (:require [moon.ui.actor :as actor]
+            [moon.ui.image :as image])
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d.ui Image)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+
+(defmulti ^:private create* class)
+
+(defmethod create* Drawable [^Drawable drawable]
+  (Image. drawable))
+
+(defmethod create* Texture [^Texture texture]
+  (Image. texture))
+
+(defmethod create* TextureRegion [^TextureRegion texture-region]
+  (Image. texture-region))
 
 (defmethod actor/create :ui/image
   [{:keys [content] :as opts}]
-  (doto (image/create content)
+  (doto (create* content)
     (actor/set-opts! opts)))
 
 (extend-type com.badlogic.gdx.scenes.scene2d.ui.Image
-  moon.ui.image/Image
-  (set-drawable! [this drawable]
-    (image/set-drawable! this drawable)))
+  image/Image
+  (set-drawable! [image drawable]
+    (.setDrawable image drawable)))
