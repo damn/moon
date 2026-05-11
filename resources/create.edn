@@ -1,6 +1,7 @@
 [
  [moon.application.create.record/step]
- [moon.application.create.app/step]
+ [moon.application.create.assoc/step :ctx/app moon.impl.app/create]
+ [moon.application.create.assoc/step :ctx/input moon.impl.input/create]
  [moon.application.create.gdx-colors/step]
  [moon.application.create.tooltip-config/step]
  [moon.application.create.assoc/step :ctx/batch moon.impl.batch/create]

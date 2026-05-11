@@ -2,9 +2,10 @@
   (:require [moon.graphics :as graphics]))
 
 (defn step
-  [{:keys [ctx/max-delta]
+  [{:keys [ctx/app
+           ctx/max-delta]
     :as ctx}]
-  (let [delta-ms (min (graphics/delta-time ctx) max-delta)]
+  (let [delta-ms (min (graphics/delta-time app) max-delta)]
     (-> ctx
         (assoc :ctx/delta-time delta-ms)
         (update :ctx/elapsed-time + delta-ms))))

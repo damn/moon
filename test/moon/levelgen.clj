@@ -1,6 +1,5 @@
 (ns moon.levelgen
-  (:require [moon.application.create.app :as create-app]
-            [moon.impl.db :as db-impl]
+  (:require [moon.impl.db :as db-impl]
             [moon.impl.textures :as textures]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -105,8 +104,7 @@
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage
              :ctx/files files}
-        ctx (-> ctx
-                create-app/step)
+        ctx (assoc ctx :ctx/app Gdx/app)
         ctx (assoc ctx :ctx/db (db-impl/create ctx))
         ctx (assoc ctx :ctx/textures (textures/create ctx))
         world-viewport (let [world-width  (* 1440 world-unit-scale)

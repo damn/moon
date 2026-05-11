@@ -1,8 +1,8 @@
 (ns moon.impl.cursors
   (:require [clojure.edn :as edn]
-            [clojure.java.io :as io])
-  (:import (com.badlogic.gdx Application
-                             Graphics)
+            [clojure.java.io :as io]
+            [moon.graphics :as graphics])
+  (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.graphics Pixmap)))
 
 (defn create
@@ -11,6 +11,6 @@
     (update-vals data
                  (fn [[path [hotspot-x hotspot-y]]]
                    (let [pixmap (Pixmap. (.internal (.getFiles app) (format path-format path)))
-                         cursor (.newCursor (.getGraphics app) pixmap hotspot-x hotspot-y)]
+                         cursor (graphics/new-cursor app pixmap hotspot-x hotspot-y)]
                      (.dispose pixmap)
                      cursor)))))

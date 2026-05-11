@@ -4,8 +4,8 @@
             [moon.audio :as audio]))
 
 (defn create
-  [ctx]
+  [{:keys [ctx/app]}]
   (into {}
         (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
           [sound-name
-           (audio/new-sound ctx (format "sounds/%s.wav" sound-name))])))
+           (audio/new-sound app (format "sounds/%s.wav" sound-name))])))
