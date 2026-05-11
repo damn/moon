@@ -1,13 +1,14 @@
 (ns clojure.gdx.scene2d.actor
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
-            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [moon.ui.actor :as actor])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Touchable)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin
+                                               TextTooltip)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener
+                                                  ClickListener)))
 
 (defn- ui-type->class [k]
   (case k
@@ -56,7 +57,7 @@
 
   (set-touchable! [actor touchable]
     (.setTouchable actor (case touchable
-                           :touchable/disabled touchable/disabled)))
+                           :touchable/disabled Touchable/disabled)))
 
   (visible? [actor]
     (.isVisible actor))
@@ -74,11 +75,15 @@
     (.addListener actor
                   (case listener-k
                     :listener/change (let [f listener-params]
-                                       (change-listener/create f))
+                                       (proxy [ChangeListener] []
+                                         (changed [event actor]
+                                           (f event actor))))
                     :listener/text-tooltip (let [[tooltip skin] listener-params]
-                                             (text-tooltip/create tooltip skin))
+                                             (TextTooltip. ^String tooltip ^Skin skin))
                     :listener/click (let [f listener-params]
-                                      (click-listener/create f)))))
+                                      (proxy [ClickListener] []
+                                        (clicked [event x y]
+                                          (f event x y)))))))
 
   (stage->local-coordinates [actor xy]
     (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy))))
