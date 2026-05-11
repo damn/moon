@@ -1,7 +1,7 @@
 (ns moon.body
   (:require [clojure.math.rectangle :as rectangle]
-            [clojure.math.vector2 :as v]
-            [com.badlogic.gdx.math.rectangle :as gdx-rectangle]))
+            [clojure.math.vector2 :as v])
+  (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn rectangle
   [{:keys [body/position
@@ -9,7 +9,7 @@
            body/height]}]
   (let [[x y] [(- (position 0) (/ width  2))
                (- (position 1) (/ height 2))]]
-    (gdx-rectangle/create x y width height)))
+    (Rectangle. x y width height)))
 
 (defn touched-tiles
   [{:keys [body/position
@@ -22,8 +22,8 @@
     :height height}))
 
 (defn overlaps? [body other-body]
-  (gdx-rectangle/overlaps? (rectangle body)
-                           (rectangle other-body)))
+  (.overlaps ^Rectangle (rectangle body)
+             ^Rectangle (rectangle other-body)))
 
 (defn distance [body other-body]
   (v/distance (:body/position body)
