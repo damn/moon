@@ -3,10 +3,13 @@
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
+            [moon.effect :as effect]
             [moon.entity :as entity]
             [moon.grid2d :as g2d]
             [moon.inventory :as inventory]
+            [moon.skill]
             [moon.state :as state]
+            [moon.stats :as stats]
             [moon.timer :as timer]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
@@ -187,6 +190,23 @@
   (cons [:tx/assoc eid :entity/skills nil]
         (for [skill skills]
           [:tx/add-skill eid skill])))
+
+(.bindRoot #'moon.skill/usable-state
+           (fn [{:keys [skill/cooling-down? skill/effects] :as skill}
+                entity
+                effect-ctx]
+             (cond
+              cooling-down?
+              :cooldown
+
+              (stats/not-enough-mana? (:entity/stats entity) skill)
+              :not-enough-mana
+
+              (not (seq (filter #(effect/applicable? % effect-ctx) effects)))
+              :invalid-params
+
+              :else
+              :usable)))
 
 (q/defrecord Entity [entity/body])
 

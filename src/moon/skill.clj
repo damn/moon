@@ -1,20 +1,16 @@
-(ns moon.skill
-  (:require [moon.effect :as effect]
-            [moon.stats :as stats]))
+(ns moon.skill)
 
 (defn usable-state
-  [{:keys [skill/cooling-down? skill/effects] :as skill}
-   entity
-   effect-ctx]
-  (cond
-   cooling-down?
+  [skill entity effect-ctx]
+
+  (comment
+
+   ; Returns one of :
    :cooldown
-
-   (stats/not-enough-mana? (:entity/stats entity) skill)
    :not-enough-mana
-
-   (not (seq (filter #(effect/applicable? % effect-ctx) effects)))
    :invalid-params
+   :usable
 
-   :else
-   :usable))
+   )
+
+   )

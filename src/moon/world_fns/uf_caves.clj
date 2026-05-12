@@ -1,6 +1,5 @@
 (ns moon.world-fns.uf-caves
-  (:require [moon.caves :as caves]
-            [moon.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.tiled-map :as tiled-map]
             [moon.nads :as nads]
             [clojure.rand :as rand])
@@ -101,11 +100,12 @@
      :start-position start-position}))
 
 (defn- initial-grid
-  [{:keys [size
+  [{:keys [initial-grid-create-fn
+           size
            cave-style
            random]
     :as level}]
-  (let [{:keys [start grid]} (caves/create random size size cave-style)]
+  (let [{:keys [start grid]} (initial-grid-create-fn random size size cave-style)]
     (assert (= #{:wall :ground} (set (g2d/cells grid))))
     (assoc level
            :level/start start
@@ -120,7 +120,8 @@
     (assoc level :level/grid grid)))
 
 (defn create
-  [{:keys [level/creature-properties
+  [{:keys [initial-grid-create-fn
+           level/creature-properties
            textures
            tile-size
            texture-path
@@ -130,7 +131,8 @@
            cave-style]}]
   (reduce (fn [m f]
             (f m))
-          {:size cave-size
+          {:initial-grid-create-fn (requiring-resolve initial-grid-create-fn)
+           :size cave-size
            :cave-style cave-style
            :random (java.util.Random.)
            :level/tile-size tile-size
