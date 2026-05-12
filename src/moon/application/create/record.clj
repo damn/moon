@@ -3,5 +3,5 @@
 
 (q/defrecord Context [])
 
-(defn step [_ctx]
-  (map->Context {}))
+(defn step [ctx]
+  (merge (map->Context {}) ctx))
