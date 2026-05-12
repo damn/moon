@@ -1,10 +1,10 @@
 (ns moon.impl.world-viewport
   (:require [clojure.gdx.utils.viewport :as viewport]
             [clojure.graphics.orthographic-camera :as camera]
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.math.vector2 :as vector2]
             moon.camera)
-  (:import (com.badlogic.gdx.utils.viewport FitViewport)))
+  (:import (com.badlogic.gdx.graphics OrthographicCamera)
+           (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn create
   [{:keys [ctx/world-unit-scale]}]
@@ -12,8 +12,8 @@
         world-height (* 900  world-unit-scale)]
     (FitViewport. world-width
                   world-height
-                  (doto (orthographic-camera/create)
-                    (orthographic-camera/set-to-ortho! false world-width world-height)))))
+                  (doto (OrthographicCamera.)
+                    (.setToOrtho false world-width world-height)))))
 
 (extend-type FitViewport
   moon.camera/Camera
