@@ -2,7 +2,7 @@
   (:require [moon.info :as info]
             [moon.stage :as stage]
             [moon.textures :as textures]
-            [moon.ui-actors.action-bar :as action-bar]))
+            [moon.ui.action-bar :as action-bar]))
 
 (defn do!
   [{:keys [ctx/skin

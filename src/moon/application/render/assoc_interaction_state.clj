@@ -5,7 +5,7 @@
             [clojure.math.vector2 :as v]
             [moon.body :as body]
             [moon.skill :as skill]
-            [moon.ui-actors.action-bar :as action-bar]))
+            [moon.ui.action-bar :as action-bar]))
 
 (defn- mouseover-actor-info [actor]
   (let [inventory-slot (and (actor/parent actor)

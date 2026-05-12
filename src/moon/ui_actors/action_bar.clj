@@ -1,6 +1,7 @@
 (ns moon.ui-actors.action-bar
   (:require [moon.ui.actor :as actor]
             [moon.ui.group :as group]
+            [moon.ui.action-bar :as action-bar]
             [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))
 
 (defmethod actor/create :ui/action-bar [_]
@@ -27,30 +28,32 @@
     {:horizontal-group group
      :button-group (actor/user-object group)}))
 
-(defn selected-skill [action-bar]
-  (when-let [skill-button (button-group/checked (:button-group (get-data action-bar)))]
-    (actor/user-object skill-button)))
+(extend-type com.badlogic.gdx.scenes.scene2d.ui.Table
+  action-bar/ActionBar
+  (selected-skill [action-bar]
+    (when-let [skill-button (button-group/checked (:button-group (get-data action-bar)))]
+      (actor/user-object skill-button)))
 
-(defn add-skill!
-  [action-bar
-   {:keys [skill-id
-           texture-region
-           tooltip-text]}
-   skin]
-  (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-        button (actor/create
-                {:type :ui/image-button
-                 :drawable {:drawable/texture-region texture-region
-                            :drawable/scale 2}
-                 :actor/listeners {:listener/text-tooltip [tooltip-text skin]}
-                 :actor/user-object skill-id})]
-    (group/add-actor! horizontal-group button)
-    (button-group/add! button-group button)
-    nil))
+  (add-skill!
+    [action-bar
+     {:keys [skill-id
+             texture-region
+             tooltip-text]}
+     skin]
+    (let [{:keys [horizontal-group button-group]} (get-data action-bar)
+          button (actor/create
+                  {:type :ui/image-button
+                   :drawable {:drawable/texture-region texture-region
+                              :drawable/scale 2}
+                   :actor/listeners {:listener/text-tooltip [tooltip-text skin]}
+                   :actor/user-object skill-id})]
+      (group/add-actor! horizontal-group button)
+      (button-group/add! button-group button)
+      nil))
 
-(defn remove-skill! [action-bar skill-id]
-  (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-        button (get horizontal-group skill-id)]
-    (actor/remove! button)
-    (button-group/remove! button-group button)
-    nil))
+  (remove-skill! [action-bar skill-id]
+    (let [{:keys [horizontal-group button-group]} (get-data action-bar)
+          button (get horizontal-group skill-id)]
+      (actor/remove! button)
+      (button-group/remove! button-group button)
+      nil)))
