@@ -1,8 +1,6 @@
 (ns moon.application.create.add-stage-actors.windows.inventory
   (:require [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.utils.drawable :as drawable]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.actor :as actor]
@@ -12,7 +10,9 @@
             [moon.stage :as stage]
             [moon.txs :as txs]
             [moon.textures :as textures]
-            moon.ui.inventory-window))
+            moon.ui.inventory-window)
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
 (defmethod state/clicked-inventory-cell :player-item-on-cursor
   [_ eid cell]
@@ -74,9 +74,9 @@
 
 (defn- create-drawable
   [{:keys [drawable/texture-region drawable/min-size drawable/tint]}]
-  (doto (texture-region-drawable/create texture-region)
-    (drawable/set-min-size! (min-size 0) (min-size 1))
-    (texture-region-drawable/tint (color/create tint))))
+  (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+    (.setMinSize (min-size 0) (min-size 1))
+    (.tint (color/create tint))))
 
 (defn- create-inventory-window*
   [{:keys [colors
@@ -210,8 +210,8 @@
              (let [cell-widget (window->cell inventory-window cell)
                    image-widget (group/find-actor cell-widget "image-widget")
                    cell-size (:cell-size (actor/user-object image-widget))
-                   drawable (doto (texture-region-drawable/create texture-region)
-                              (drawable/set-min-size! cell-size cell-size))]
+                   drawable (doto (TextureRegionDrawable. texture-region)
+                              (.setMinSize cell-size cell-size))]
                (image/set-drawable! image-widget drawable)
                (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
                nil)))
