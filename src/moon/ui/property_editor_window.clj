@@ -36,10 +36,9 @@
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage
-                                                   (actor/create
-                                                    {:type :ui/error-window
-                                                     :skin skin
-                                                     :throwable t}))))))
+                                                   {:type :ui/error-window
+                                                    :skin skin
+                                                    :throwable t})))))
         clicked-delete-fn (with-window-close (fn [db]
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]

@@ -1,6 +1,5 @@
 (ns moon.application.create.add-stage-actors.dev-menu
   (:require [moon.camera :as camera]
-            [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [clojure.string :as str]
             [moon.db :as db]
@@ -19,13 +18,12 @@
                      :on-click (fn [_actor {:keys [ctx/skin
                                                    ctx/stage] :as ctx}]
                                  (stage/add-actor! stage
-                                                   (actor/create
-                                                    {:type :ui/data-viewer-window
-                                                     :title "Data View"
-                                                     :data ctx
-                                                     :width 1000
-                                                     :height 1000
-                                                     :skin skin})))}]}
+                                                   {:type :ui/data-viewer-window
+                                                    :title "Data View"
+                                                    :data ctx
+                                                    :width 1000
+                                                    :height 1000
+                                                    :skin skin}))}]}
            {:label "Editor"
             :items (for [property-type (sort (db/property-types db))]
                      {:label (str/capitalize (name property-type))
@@ -35,18 +33,16 @@
                                                     ctx/textures]
                                              :as ctx}]
                                   (stage/add-actor! stage
-                                                    (actor/create
-                                                     {:type :ui/property-overview-window
-                                                      :db db
-                                                      :textures textures
-                                                      :skin skin
-                                                      :property-type property-type
-                                                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                       (stage/add-actor! stage
-                                                                                         (actor/create
-                                                                                          {:type :ui/property-editor-window
-                                                                                           :ctx ctx
-                                                                                           :property (db/get-raw db id)})))})))})}
+                                                    {:type :ui/property-overview-window
+                                                     :db db
+                                                     :textures textures
+                                                     :skin skin
+                                                     :property-type property-type
+                                                     :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                                                      (stage/add-actor! stage
+                                                                                        {:type :ui/property-editor-window
+                                                                                         :ctx ctx
+                                                                                         :property (db/get-raw db id)}))}))})}
            {:label "Help"
             :items [{:label controls-info}]}
            {:label "Select World"

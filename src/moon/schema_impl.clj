@@ -105,10 +105,9 @@
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
     (stage/add-actor! stage
-                      (actor/create
-                       {:type :ui/property-editor-window
-                        :ctx ctx
-                        :property property}))))
+                      {:type :ui/property-editor-window
+                       :ctx ctx
+                       :property property})))
 
 (defn- k->label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
@@ -239,12 +238,11 @@
                                                              ctx/skin]} (stage/ctx (event/stage event))]
                                                  (stage/add-actor!
                                                   stage
-                                                  (actor/create
-                                                   {:type :ui/add-component-window
-                                                    :skin skin
-                                                    :schemas (:db/schemas db)
-                                                    :schema schema
-                                                    :map-widget-table table}))))}})
+                                                  {:type :ui/add-component-window
+                                                   :skin skin
+                                                   :schemas (:db/schemas db)
+                                                   :schema schema
+                                                   :map-widget-table table})))}})
                   :colspan colspan}])]
              [(when opt?
                 [{:actor  nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
@@ -333,15 +331,14 @@
                                                              :as ctx} (stage/ctx (event/stage event))]
                                                         (stage/add-actor!
                                                          stage
-                                                         (actor/create
-                                                          {:type :ui/property-overview-window
-                                                           :db db
-                                                           :textures textures
-                                                           :skin skin
-                                                           :property-type property-type
-                                                           :clicked-id-fn (fn [actor id ctx]
-                                                                            (actor/remove! (actor/find-ancestor actor :ui/window))
-                                                                            (redo-rows ctx (conj property-ids id)))}))))}})}]
+                                                         {:type :ui/property-overview-window
+                                                          :db db
+                                                          :textures textures
+                                                          :skin skin
+                                                          :property-type property-type
+                                                          :clicked-id-fn (fn [actor id ctx]
+                                                                           (actor/remove! (actor/find-ancestor actor :ui/window))
+                                                                           (redo-rows ctx (conj property-ids id)))})))}})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
           {:actor (actor/create
@@ -396,15 +393,14 @@
                                                                :as ctx} (stage/ctx (event/stage event))]
                                                           (stage/add-actor!
                                                            stage
-                                                           (actor/create
-                                                            {:type :ui/property-overview-window
-                                                             :db db
-                                                             :textures textures
-                                                             :skin skin
-                                                             :property-type property-type
-                                                             :clicked-id-fn (fn [actor id ctx]
-                                                                              (actor/remove! (actor/find-ancestor actor :ui/window))
-                                                                              (redo-rows ctx id))}))))}})})]
+                                                           {:type :ui/property-overview-window
+                                                            :db db
+                                                            :textures textures
+                                                            :skin skin
+                                                            :property-type property-type
+                                                            :clicked-id-fn (fn [actor id ctx]
+                                                                             (actor/remove! (actor/find-ancestor actor :ui/window))
+                                                                             (redo-rows ctx id))})))}})})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
            {:actor (actor/create
@@ -449,37 +445,36 @@
                ctx/skin
                ctx/stage]}]
     (stage/add-actor! stage
-                      (actor/create
-                       {:type :ui/window
-                        :title "Choose"
-                        :skin skin
-                        :window/close-button? skin
-                        :window/modal? true
-                        :table/rows
-                        [[(let [table (actor/create
-                                       {:type :ui/table
-                                        :table/cell-defaults {:pad 5}
-                                        :table/rows (for [sound-name (map first audio)]
-                                                      [{:actor (actor/create
-                                                                {:type :ui/text-button
-                                                                 :text sound-name
-                                                                 :skin skin
-                                                                 :actor/listeners {:listener/change
-                                                                                   (fn [event actor]
-                                                                                     ((rebuild-sound-widget! table sound-name) actor (stage/ctx (event/stage event))))}})}
-                                                       {:actor (actor/create
-                                                                {:type :ui/text-button
-                                                                 :text "play!"
-                                                                 :skin skin
-                                                                 :actor/listeners {:listener/change (fn [event _actor]
-                                                                                                      (txs/handle! (stage/ctx (event/stage event))
-                                                                                                                   [[:tx/sound sound-name]]))}})}])} )]
-                            {:actor (actor/create {:type :ui/scroll-pane
-                                                :actor table
-                                                :skin skin})
-                             :width  (+ (actor/width table) 50)
-                             :height (min (- (stage/viewport-height stage) 50)
-                                          (actor/height table))})]]}))))
+                      {:type :ui/window
+                       :title "Choose"
+                       :skin skin
+                       :window/close-button? skin
+                       :window/modal? true
+                       :table/rows
+                       [[(let [table (actor/create
+                                      {:type :ui/table
+                                       :table/cell-defaults {:pad 5}
+                                       :table/rows (for [sound-name (map first audio)]
+                                                     [{:actor (actor/create
+                                                               {:type :ui/text-button
+                                                                :text sound-name
+                                                                :skin skin
+                                                                :actor/listeners {:listener/change
+                                                                                  (fn [event actor]
+                                                                                    ((rebuild-sound-widget! table sound-name) actor (stage/ctx (event/stage event))))}})}
+                                                      {:actor (actor/create
+                                                               {:type :ui/text-button
+                                                                :text "play!"
+                                                                :skin skin
+                                                                :actor/listeners {:listener/change (fn [event _actor]
+                                                                                                     (txs/handle! (stage/ctx (event/stage event))
+                                                                                                                  [[:tx/sound sound-name]]))}})}])} )]
+                           {:actor (actor/create {:type :ui/scroll-pane
+                                                  :actor table
+                                                  :skin skin})
+                            :width  (+ (actor/width table) 50)
+                            :height (min (- (stage/viewport-height stage) 50)
+                                         (actor/height table))})]]})))
 
 (defn- sound-columns [skin table sound-name]
   [{:actor (actor/create

@@ -1,6 +1,7 @@
 (ns moon.impl.stage
   (:require [clojure.gdx.utils.viewport :as viewport]
             [moon.stage :as stage]
+            [moon.ui.actor :as actor]
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d CtxStage)))
 
@@ -17,7 +18,7 @@
     (set! (.ctx stage) ctx))
 
   (add-actor! [stage actor]
-    (.addActor stage actor))
+    (.addActor stage (actor/create actor)))
 
   (act! [stage]
     (.act stage))

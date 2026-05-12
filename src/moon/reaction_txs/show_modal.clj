@@ -9,26 +9,25 @@
    {:keys [title text button-text on-click]}]
   (assert (not (stage/find-actor stage "moon.ui.modal-window")))
   (stage/add-actor! stage
-                    (actor/create
-                     {:type :ui/window
-                      :title title
-                      :skin skin
-                      :window/modal? true
-                      :table/rows [[{:actor (actor/create
-                                             {:type :ui/label
-                                              :text text
-                                              :skin skin})}]
-                                   [{:actor (actor/create
-                                             {:type :ui/text-button
-                                              :text button-text
-                                              :skin skin
-                                              :actor/listeners {:listener/change (fn [_event _actor]
-                                                                                   (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
-                                                                                   (on-click))}})}]]
-                      :actor/name "moon.ui.modal-window"
-                      :actor/position [(/ (stage/viewport-width stage) 2)
-                                       (* (stage/viewport-height stage) (/ 3 4))
-                                       :align/center]}))
+                    {:type :ui/window
+                     :title title
+                     :skin skin
+                     :window/modal? true
+                     :table/rows [[{:actor (actor/create
+                                            {:type :ui/label
+                                             :text text
+                                             :skin skin})}]
+                                  [{:actor (actor/create
+                                            {:type :ui/text-button
+                                             :text button-text
+                                             :skin skin
+                                             :actor/listeners {:listener/change (fn [_event _actor]
+                                                                                  (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
+                                                                                  (on-click))}})}]]
+                     :actor/name "moon.ui.modal-window"
+                     :actor/position [(/ (stage/viewport-width stage) 2)
+                                      (* (stage/viewport-height stage) (/ 3 4))
+                                      :align/center]})
   ctx)
 
 ; no window movable type cursor appears here like in player idle

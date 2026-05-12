@@ -33,13 +33,12 @@
                       :actor/listeners [[:listener/change
                                          (fn [_event actor]
                                            (stage/add-actor! (actor/stage actor)
-                                                             (actor/create
-                                                              {:type :ui/data-viewer-window
-                                                               :title "title"
-                                                               :data v
-                                                               :width 500
-                                                               :height 500
-                                                               :skin skin})))]]}
+                                                             {:type :ui/data-viewer-window
+                                                              :title "title"
+                                                              :data v
+                                                              :width 500
+                                                              :height 500
+                                                              :skin skin}))]]}
                      {:type :ui/label
                       :text (v->text v)
                       :skin skin}))

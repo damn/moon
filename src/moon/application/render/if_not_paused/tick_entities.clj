@@ -1,6 +1,5 @@
 (ns moon.application.render.if-not-paused.tick-entities
   (:require [clojure.animation :as animation]
-            [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [clojure.math :as math]
             [clojure.math.vector2 :as v]
@@ -247,10 +246,9 @@
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage
-                       (actor/create
-                        {:type :ui/error-window
-                         :skin skin
-                         :throwable t}))))
+                       {:type :ui/error-window
+                        :skin skin
+                        :throwable t})))
   ctx)
 
 (comment
