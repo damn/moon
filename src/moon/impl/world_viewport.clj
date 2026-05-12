@@ -1,7 +1,9 @@
 (ns moon.impl.world-viewport
   (:require [clojure.gdx.utils.viewport :as viewport]
+            [clojure.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [com.badlogic.gdx.math.vector2 :as vector2])
+            [com.badlogic.gdx.math.vector2 :as vector2]
+            moon.camera)
   (:import (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn create
@@ -14,6 +16,29 @@
                     (orthographic-camera/set-to-ortho! false world-width world-height)))))
 
 (extend-type FitViewport
+  moon.camera/Camera
+  (zoom [this]
+    (camera/zoom (viewport/camera this)))
+
+  (visible-tiles [this]
+    (camera/visible-tiles (viewport/camera this)))
+
+  (frustum [this]
+    (camera/frustum (viewport/camera this)))
+
+  (inc-zoom! [this amount]
+    (camera/inc-zoom! (viewport/camera this) amount))
+
+  (set-position! [this position]
+    (camera/set-position! (viewport/camera this)
+                          position))
+
+  (position [this]
+    (camera/position (viewport/camera this)))
+
+  (combined [this]
+    (camera/combined (viewport/camera this)))
+
   viewport/Viewport
   (camera [viewport]
     (.getCamera viewport))

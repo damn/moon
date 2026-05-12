@@ -87,7 +87,8 @@
                                :update-fn (fn [{:keys [ctx/world-mouse-position]}]
                                             (mapv int world-mouse-position))}
                               {:label "Zoom"
-                               :update-fn camera/zoom
+                               :update-fn (fn [{:keys [ctx/world-viewport]}]
+                                            (camera/zoom world-viewport))
                                :icon "images/zoom.png"}
                               ]]
                     (if (:icon item)

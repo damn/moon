@@ -8,7 +8,8 @@
   [{:keys [ctx/batch
            ctx/shape-drawer
            ctx/unit-scale
-           ctx/world-unit-scale]
+           ctx/world-unit-scale
+           ctx/world-viewport]
     :as ctx}
    draw-fns]
   ; fix scene2d.ui.tooltip flickering
@@ -16,7 +17,7 @@
   ; it changes batch color somehow and does not change it back ! FIXME
   (batch/set-color! batch 1 1 1 1)
   ;
-  (batch/set-projection-matrix! batch (camera/combined ctx))
+  (batch/set-projection-matrix! batch (camera/combined world-viewport))
   (batch/begin! batch)
   (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))

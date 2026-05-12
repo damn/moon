@@ -8,10 +8,10 @@
 (defn draws
   [{:keys [ctx/colors
            ctx/grid
-           ctx/factions-iterations]
-    :as ctx}]
+           ctx/factions-iterations
+           ctx/world-viewport]}]
   (apply concat
-         (for [[x y] (camera/visible-tiles ctx)
+         (for [[x y] (camera/visible-tiles world-viewport)
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]

@@ -10,13 +10,14 @@
 (defn step
   [{:keys [ctx/controls
            ctx/input
-           ctx/stage]
+           ctx/stage
+           ctx/world-viewport]
     :as ctx}]
   (when (input/key-pressed? input (:zoom-in controls))
-    (camera/inc-zoom! ctx zoom-speed))
+    (camera/inc-zoom! world-viewport zoom-speed))
 
   (when (input/key-pressed? input (:zoom-out controls))
-    (camera/inc-zoom! ctx (- zoom-speed)))
+    (camera/inc-zoom! world-viewport (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (stage/find-actor stage "moon.ui.windows")

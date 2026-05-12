@@ -53,12 +53,12 @@
 (defn- tile-color-setter
   [{:keys [ctx/colors
            ctx/explored-tile-corners
-           ctx/raycaster]
-    :as ctx}]
+           ctx/raycaster
+           ctx/world-viewport]}]
   (tile-color-setter*
    {:ray-blocked? (partial raycaster/blocked? raycaster)
     :explored-tile-corners explored-tile-corners
-    :light-position (camera/position ctx)
+    :light-position (camera/position world-viewport)
     :see-all-tiles? false
     :explored-tile-color  (:colors/explored-tile colors)
     :visible-tile-color   (:colors/visible-tile colors)

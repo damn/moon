@@ -10,7 +10,6 @@
  [moon.application.create.assoc/step :ctx/textures moon.impl.textures/create]
  [moon.application.create.assoc/step :ctx/world-unit-scale moon.impl.world-unit-scale/create]
  [moon.application.create.assoc/step :ctx/world-viewport moon.impl.world-viewport/create]
- [moon.application.create.world-viewport/step]
  [moon.application.create.assoc/step :ctx/cursors moon.impl.cursors/create]
  [moon.application.create.assoc/step :ctx/stage moon.impl.stage/create]
  [moon.application.create.set-input-processor/step]

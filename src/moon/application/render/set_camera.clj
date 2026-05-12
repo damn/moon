@@ -2,7 +2,9 @@
   (:require [moon.camera :as camera]))
 
 (defn step
-  [{:keys [ctx/player-eid]
+  [{:keys [ctx/player-eid
+           ctx/world-viewport]
     :as ctx}]
-  (camera/set-position! ctx (:body/position (:entity/body @player-eid)))
+  (camera/set-position! world-viewport
+                        (:body/position (:entity/body @player-eid)))
   ctx)
