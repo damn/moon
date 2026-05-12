@@ -1,9 +1,24 @@
 (ns moon.application.create.controls
-  (:require [clojure.string :as str]
+  (:require [clojure.math.vector2 :as v]
+            [clojure.string :as str]
             [com.badlogic.gdx.input.buttons :as input.buttons]
-            [com.badlogic.gdx.input.keys :as input.keys]))
+            [com.badlogic.gdx.input.keys :as input.keys]
+            [moon.input :as input]
+            [moon.controls :as controls]))
 
 (defn step [ctx]
+  (extend-type (class ctx)
+    controls/Controls
+    (player-movement-vector [{:keys [ctx/input]}]
+      (let [r (when (input/key-pressed? input input.keys/d) [1  0])
+            l (when (input/key-pressed? input input.keys/a) [-1 0])
+            u (when (input/key-pressed? input input.keys/w) [0  1])
+            d (when (input/key-pressed? input input.keys/s) [0 -1])]
+        (when (or r l u d)
+          (let [v (v/add-vs (remove nil? [r l u d]))]
+            (when (pos? (v/length v))
+              v)))))
+    )
   (assoc ctx
          :ctx/controls {
                         :zoom-in input.keys/minus

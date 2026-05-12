@@ -2,8 +2,6 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.walk :as walk]
-            [com.badlogic.gdx.input.keys :as input.keys]
-            [clojure.math.vector2 :as v]
             moon.audio
             moon.graphics
             [moon.input :as input])
@@ -111,14 +109,4 @@
 
   (mouse-position [this]
     [(.getX this)
-     (.getY this)])
-
-  (player-movement-vector [this]
-    (let [r (when (input/key-pressed? this input.keys/d) [1  0])
-          l (when (input/key-pressed? this input.keys/a) [-1 0])
-          u (when (input/key-pressed? this input.keys/w) [0  1])
-          d (when (input/key-pressed? this input.keys/s) [0 -1])]
-      (when (or r l u d)
-        (let [v (v/add-vs (remove nil? [r l u d]))]
-          (when (pos? (v/length v))
-            v))))))
+     (.getY this)]))
