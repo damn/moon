@@ -38,19 +38,18 @@
                         :expand-x? true}))))
 
 (defn- create-window [skin label items]
-  (actor/create
-   {:type :ui/window
-    :title label
-    :skin skin
-    :window/close-button? skin
-    :table/rows [(for [{:keys [label on-click]} items]
-                   {:actor
-                    (actor/create
-                     {:type :ui/text-button
-                      :text label
-                      :skin skin
-                      :actor/listeners {:listener/change (fn [event actor]
-                                                           (on-click actor (stage/ctx (event/stage event))))}})})]}))
+  {:type :ui/window
+   :title label
+   :skin skin
+   :window/close-button? skin
+   :table/rows [(for [{:keys [label on-click]} items]
+                  {:actor
+                   (actor/create
+                    {:type :ui/text-button
+                     :text label
+                     :skin skin
+                     :actor/listeners {:listener/change (fn [event actor]
+                                                          (on-click actor (stage/ctx (event/stage event))))}})})]})
 
 (defn- main-table [skin menus update-labels]
   (let [table (actor/create
@@ -62,7 +61,8 @@
                                   :text label
                                   :skin skin
                                   :actor/listeners {:listener/change (fn [event actor]
-                                                                       (stage/add-actor! (event/stage event) (create-window skin label items)))}})})]})]
+                                                                       (stage/add-actor! (event/stage event)
+                                                                                         (actor/create (create-window skin label items))))}})})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
