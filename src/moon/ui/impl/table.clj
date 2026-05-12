@@ -9,7 +9,7 @@
 (extend-type Table
   table/Table
   (add! [table cell-declaration]
-    (-> (.add table ^Actor (:actor cell-declaration))
+    (-> (.add table ^Actor (:actor cell-declaration)) ; TODO also nil possible !! ?
         (cell/set-opts! (dissoc cell-declaration :actor))))
 
   (add-rows! [table rows]
