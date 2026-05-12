@@ -159,7 +159,7 @@
     :table table
     :label-text (k->label-text k)}))
 
-(defn- add-component-window
+(defmethod actor/create :ui/add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (actor/create
                 {:type :ui/window
@@ -239,8 +239,9 @@
                                                              ctx/skin]} (stage/ctx (event/stage event))]
                                                  (stage/add-actor!
                                                   stage
-                                                  (add-component-window
-                                                   {:skin skin
+                                                  (actor/create
+                                                   {:type :ui/add-component-window
+                                                    :skin skin
                                                     :schemas (:db/schemas db)
                                                     :schema schema
                                                     :map-widget-table table}))))}})
