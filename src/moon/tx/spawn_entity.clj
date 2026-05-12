@@ -1,12 +1,16 @@
 (ns moon.tx.spawn-entity
   (:require [clojure.animation :as animation]
+            [clojure.math.rectangle :as rectangle]
+            [clojure.math.vector2 :as v]
+            [moon.body :as body]
             [moon.entity :as entity]
             [moon.grid2d :as g2d]
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.timer :as timer]
             [qrecord.core :as q]
-            [reduce-fsm :as fsm]))
+            [reduce-fsm :as fsm])
+  (:import (com.badlogic.gdx.math Rectangle)))
 
 (comment
 
@@ -85,7 +89,37 @@
                    body/height
                    body/collides?
                    body/z-order
-                   body/rotation-angle])
+                   body/rotation-angle]
+  body/Body
+  (rectangle
+    [{:keys [body/position
+             body/width
+             body/height]}]
+    (let [[x y] [(- (position 0) (/ width  2))
+                 (- (position 1) (/ height 2))]]
+      (Rectangle. x y width height)))
+
+  (touched-tiles
+    [{:keys [body/position
+             body/width
+             body/height]}]
+    (rectangle/touched-tiles
+     {:x (- (position 0) (/ width  2))
+      :y (- (position 1) (/ height 2))
+      :width  width
+      :height height}))
+
+  (overlaps? [body other-body]
+    (.overlaps ^Rectangle (body/rectangle body)
+               ^Rectangle (body/rectangle other-body)))
+
+  (distance [body other-body]
+    (v/distance (:body/position body)
+                (:body/position other-body)))
+
+  (direction [body other-body]
+    (v/direction (:body/position body)
+                 (:body/position other-body))))
 
 (defmethod entity/create :entity/body
   [[_k
