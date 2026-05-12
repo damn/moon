@@ -8,8 +8,8 @@
            ctx/potential-field-cache]
     :as ctx}]
   (doseq [[faction max-iterations] factions-iterations]
-    (grid/tick! potential-field-cache
-                grid
+    (grid/tick! grid
+                potential-field-cache
                 faction
                 active-entities
                 max-iterations))
