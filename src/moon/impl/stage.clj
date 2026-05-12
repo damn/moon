@@ -1,14 +1,12 @@
 (ns moon.impl.stage
   (:require [clojure.gdx.utils.viewport :as viewport]
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [moon.stage :as stage]
             [moon.ui.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d CtxStage)))
 
 (defn create
   [{:keys [ctx/batch]}]
-  (CtxStage. (viewport/create 1440 900 (orthographic-camera/create))
-             batch))
+  (CtxStage. (viewport/create 1440 900) batch))
 
 (extend-type CtxStage
   stage/Stage

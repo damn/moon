@@ -2,8 +2,11 @@
   (:require [com.badlogic.gdx.math.vector2 :as vector2])
   (:import (com.badlogic.gdx.utils.viewport FitViewport)))
 
-(defn create [width height camera]
-  (FitViewport. width height camera))
+(defn create
+  ([width height]
+   (FitViewport. width height))
+  ([width height camera]
+   (FitViewport. width height camera)))
 
 (defn camera [^FitViewport viewport]
   (.getCamera viewport))
