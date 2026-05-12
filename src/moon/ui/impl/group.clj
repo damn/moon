@@ -19,7 +19,7 @@
 
   (set-opts! [group opts]
     (when-let [actors (:group/actors opts)]
-      (run! #(group/add-actor! group %) actors))
+      (run! #(group/add-actor! group (actor/create %)) actors))
     (actor/set-opts! group opts)))
 
 (defmethod actor/create :ui/group [opts]

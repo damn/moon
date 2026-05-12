@@ -43,13 +43,12 @@
                                                (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
-        actors [(actor/create
-                 {:type :ui/actor
-                  :act! (fn [this delta]
-                          (when-let [stage (actor/stage this)]
-                            (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
-                              (when (input/key-just-pressed? input input.keys/enter)
-                                (clicked-save-fn this ctx)))))})]
+        actors [{:type :ui/actor
+                 :act! (fn [this delta]
+                         (when-let [stage (actor/stage this)]
+                           (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
+                             (when (input/key-just-pressed? input input.keys/enter)
+                               (clicked-save-fn this ctx)))))}]
         save-button {:type :ui/text-button
                      :text "Save [LIGHT_GRAY](ENTER)[]"
                      :skin skin
