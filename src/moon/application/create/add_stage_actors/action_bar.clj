@@ -1,6 +1,4 @@
-(ns moon.application.create.add-stage-actors.action-bar
-  (:require [moon.ui.actor :as actor]))
+(ns moon.application.create.add-stage-actors.action-bar)
 
 (defn create [_ctx]
-  (actor/create
-   {:type :ui/action-bar}))
+  {:type :ui/action-bar})

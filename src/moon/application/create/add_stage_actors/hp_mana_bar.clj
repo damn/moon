@@ -46,9 +46,8 @@
                          (concat
                           (render-hpmana-bar x y-hp   hpcontent-file   (stats/get-hitpoints stats) "HP")
                           (render-hpmana-bar x y-mana manacontent-file (stats/get-mana      stats) "MP"))))]
-    (actor/create
-     {:type :ui/actor
-      :draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (actor/stage this)]
-                 (draws/handle (stage/ctx stage)
-                               (create-draws (stage/ctx stage)))))})))
+    {:type :ui/actor
+     :draw! (fn [this _batch _parent-alpha]
+              (when-let [stage (actor/stage this)]
+                (draws/handle (stage/ctx stage)
+                              (create-draws (stage/ctx stage)))))}))

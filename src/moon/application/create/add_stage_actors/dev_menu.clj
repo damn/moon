@@ -7,7 +7,7 @@
             [moon.graphics :as graphics]
             [moon.number :as number]))
 
-(defn- dev-menu-config
+(defn create
   [{:keys [ctx/controls-info
            ctx/db
            ctx/skin
@@ -98,6 +98,3 @@
                       (update item :icon #(get textures %))
                       item))
    :skin skin})
-
-(defn create [ctx]
-  (actor/create (dev-menu-config ctx)))
