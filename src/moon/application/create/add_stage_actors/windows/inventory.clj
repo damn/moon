@@ -56,22 +56,6 @@
      [:tx/event eid :pickup-item item]
      [:tx/remove-item eid cell]]))
 
-(defn- draw-cell-rect-actor [draw-cell-rect]
-  {:type :ui/widget
-   :draw! (fn [this _batch _parent-alpha]
-            (when-let [stage (actor/stage this)]
-              (let [{:keys [ctx/player-eid
-                            ctx/ui-mouse-position]
-                     :as ctx} (stage/ctx stage)]
-                (draws/handle ctx
-                              (draw-cell-rect @player-eid
-                                              (actor/x this)
-                                              (actor/y this)
-                                              (actor/hit this
-                                                         (actor/stage->local-coordinates this ui-mouse-position)
-                                                         true)
-                                              (actor/user-object (actor/parent this)))))))})
-
 (defn- create-drawable
   [{:keys [drawable/texture-region drawable/min-size drawable/tint]}]
   (doto (TextureRegionDrawable. ^TextureRegion texture-region)
@@ -111,7 +95,20 @@
                       :actor/name "inventory-cell"
                       :actor/user-object cell
                       :actor/listeners {:listener/click (clicked-cell-listener cell)}
-                      :group/actors [(draw-cell-rect-actor draw-cell-rect)
+                      :group/actors [{:type :ui/widget
+                                      :draw! (fn [this _batch _parent-alpha]
+                                               (when-let [stage (actor/stage this)]
+                                                 (let [{:keys [ctx/player-eid
+                                                               ctx/ui-mouse-position]
+                                                        :as ctx} (stage/ctx stage)]
+                                                   (draws/handle ctx
+                                                                 (draw-cell-rect @player-eid
+                                                                                 (actor/x this)
+                                                                                 (actor/y this)
+                                                                                 (actor/hit this
+                                                                                            (actor/stage->local-coordinates this ui-mouse-position)
+                                                                                            true)
+                                                                                 (actor/user-object (actor/parent this)))))))}
                                      {:type :ui/image
                                       :content (create-drawable background-drawable)
                                       :actor/name "image-widget"
