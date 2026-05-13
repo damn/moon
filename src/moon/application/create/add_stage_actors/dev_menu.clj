@@ -3,7 +3,7 @@
             [moon.stage :as stage]
             [clojure.string :as str]
             [moon.db :as db]
-            [moon.graphics :as graphics]
+            [moon.app :as app]
             [moon.number :as number]))
 
 (defn create
@@ -71,7 +71,7 @@
                                :icon "images/clock.png"}
                               {:label "FPS"
                                :update-fn (fn [{:keys [ctx/app]}]
-                                            (graphics/frames-per-second app))
+                                            (app/frames-per-second app))
                                :icon "images/fps.png"}
                               {:label "Mouseover-entity id"
                                :update-fn (fn [{:keys [ctx/mouseover-eid]}]

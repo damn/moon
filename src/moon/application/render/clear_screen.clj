@@ -1,6 +1,6 @@
 (ns moon.application.render.clear-screen
-  (:require [moon.graphics :as graphics]))
+  (:require [moon.app :as app]))
 
 (defn step [{:keys [ctx/app] :as ctx}]
-  (graphics/clear! app 0 0 0 0)
+  (app/clear! app 0 0 0 0)
   ctx)

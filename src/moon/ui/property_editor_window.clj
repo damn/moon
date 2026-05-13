@@ -4,7 +4,7 @@
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.stage :as stage]
             [moon.db :as db]
-            [moon.input :as input]
+            [moon.app :as app]
             [moon.property :as property]
             [moon.schema :as schema]
             [moon.throwable :as throwable]))
@@ -47,7 +47,7 @@
                  :act! (fn [this delta]
                          (when-let [stage (actor/stage this)]
                            (let [{:keys [ctx/app] :as ctx} (stage/ctx stage)]
-                             (when (input/key-just-pressed? app input.keys/enter)
+                             (when (app/key-just-pressed? app input.keys/enter)
                                (clicked-save-fn this ctx)))))}]
         save-button {:type :ui/text-button
                      :text "Save [LIGHT_GRAY](ENTER)[]"

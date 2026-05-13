@@ -1,5 +1,5 @@
 (ns moon.application.render.assoc-paused
-  (:require [moon.input :as input]
+  (:require [moon.app :as app]
             [moon.state :as state]))
 
 (defmethod state/pause-game? :active-skill
@@ -37,5 +37,5 @@
          (or #_error
              (and pausing?
                   (state/pause-game? (:state (:entity/fsm @player-eid)))
-                  (not (or (input/key-just-pressed? app (:unpause-once controls))
-                           (input/key-pressed? app (:unpause-continously controls))))))))
+                  (not (or (app/key-just-pressed? app (:unpause-once controls))
+                           (app/key-pressed? app (:unpause-continously controls))))))))

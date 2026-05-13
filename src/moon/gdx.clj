@@ -1,7 +1,5 @@
 (ns moon.gdx
-  (:require moon.audio
-            moon.graphics
-            [moon.input :as input])
+  (:require [moon.app :as app])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
@@ -39,12 +37,11 @@
                         (.setForegroundFPS foreground-fps))))
 
 (extend-type Lwjgl3Application
-  moon.audio/Audio
+  app/App
   (new-sound [app path]
     (.newSound (.getAudio app)
                (.internal (.getFiles app) path)))
 
-  moon.graphics/Graphics
   (frames-per-second [app]
     (.getFramesPerSecond (.getGraphics app)))
 
@@ -61,8 +58,7 @@
     (.glClearColor (.getGL20 (.getGraphics app)) r g b a)
     (.glClear      (.getGL20 (.getGraphics app)) GL20/GL_COLOR_BUFFER_BIT))
 
-  moon.input/Input
-  (set-processor! [this input-processor]
+  (set-input-processor! [this input-processor]
     (.setInputProcessor (.getInput this) input-processor))
 
   (key-pressed? [this key]

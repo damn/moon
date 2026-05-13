@@ -1,6 +1,6 @@
 (ns moon.application.render.check-debug-viewer
   (:require [moon.stage :as stage]
-            [moon.input :as input]))
+            [moon.app :as app]))
 
 (defn step
   [{:keys [ctx/controls
@@ -11,7 +11,7 @@
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
-  (when (input/button-just-pressed? app (:open-debug-button controls))
+  (when (app/button-just-pressed? app (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage

@@ -1,7 +1,7 @@
 (ns moon.application.render.assoc-interaction-state
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
-            [moon.input :as input]
+            [moon.app :as app]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
             [moon.skill :as skill]
@@ -70,4 +70,4 @@
                                                        world-mouse-position
                                                        mouseover-eid
                                                        player-eid
-                                                       (stage/mouseover-actor stage (input/mouse-position app)))))
+                                                       (stage/mouseover-actor stage (app/mouse-position app)))))
