@@ -6,7 +6,8 @@
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Colors
-                                      GL20)))
+                                      GL20)
+           (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
 
 (defn application!
   [{:keys [create!
@@ -23,6 +24,7 @@
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
+                          (set! (.initialTime (TooltipManager/getInstance)) 0)
                           (create! Gdx/app))
 
                         (dispose [_]
