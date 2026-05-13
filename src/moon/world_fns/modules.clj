@@ -1,6 +1,5 @@
 (ns moon.world-fns.modules
-  (:require [moon.caves :as caves]
-            [moon.grid2d :as g2d]
+  (:require [moon.grid2d :as g2d]
             [moon.nads :as nads]
             [moon.tiled-map :as tiled-map])
   (:import (com.badlogic.gdx.maps MapProperties)
@@ -111,17 +110,13 @@
   (println " - ")
   world-fn-ctx)
 
-(defn- cave-grid [& {:keys [size]}]
-  (let [{:keys [start grid]} (caves/create (Random.) size size :wide)
+(defn- initial-grid
+  [{:keys [initial-grid-fn
+           world/map-size]
+    :as world-fn-ctx}]
+  (let [{:keys [start grid]} ((requiring-resolve initial-grid-fn) (Random.) map-size map-size :wide)
         grid (nads/fix-nads grid)]
     (assert (= #{:wall :ground} (set (g2d/cells grid))))
-    {:start start
-     :grid grid}))
-
-(defn- initial-grid
-  [{:keys [world/map-size]
-    :as world-fn-ctx}]
-  (let [{:keys [start grid]} (cave-grid :size map-size)]
     (assoc world-fn-ctx
            :start start
            :grid grid)))

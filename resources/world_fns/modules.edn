@@ -1,4 +1,5 @@
 [moon.world-fns.modules/create
- {:world/map-size 5,
+ {:initial-grid-fn moon.caves/create
+  :world/map-size 5,
   :world/max-area-level 3,
   :world/spawn-rate 0.05}]
