@@ -116,7 +116,6 @@
     :as world-fn-ctx}]
   (let [{:keys [start grid]} ((requiring-resolve initial-grid-fn) (Random.) map-size map-size :wide)
         grid (nads/fix-nads grid)]
-    (assert (= #{:wall :ground} (set (g2d/cells grid))))
     (assoc world-fn-ctx
            :start start
            :grid grid)))

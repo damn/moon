@@ -79,4 +79,6 @@
   (g2d/assoc-ks grid (mapcat #(get-tiles-needing-fix-for-nad grid %) nads) label))
 
 (defn fix-nads [grid]
+  {:pre [(= #{:wall :ground} (set (g2d/cells grid)))]
+   :post [(= #{:wall :ground} (set (g2d/cells %)))]}
   (mark-nads grid (get-nads grid) :ground))

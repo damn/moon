@@ -114,9 +114,7 @@
 (defn- fix-nads
   [{:keys [level/grid]
     :as level}]
-  (assert (= #{:wall :ground} (set (g2d/cells grid))))
   (let [grid (nads/fix-nads grid)]
-    (assert (= #{:wall :ground} (set (g2d/cells grid))))
     (assoc level :level/grid grid)))
 
 (defn create
