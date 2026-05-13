@@ -22,7 +22,6 @@
     [:ctx/factions-iterations :some]
     [:ctx/grid :some]
     [:ctx/id-counter :some]
-    [:ctx/input :some]
     [:ctx/max-delta :some]
     [:ctx/max-speed :some]
     [:ctx/minimum-size :some]

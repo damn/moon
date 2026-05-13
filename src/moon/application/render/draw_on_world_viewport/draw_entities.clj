@@ -34,13 +34,13 @@
 (defmethod entity/render :player-item-on-cursor
   [[_k {:keys [item]}]
    entity
-   {:keys [ctx/input
+   {:keys [ctx/app
            ctx/stage
            ctx/textures
            ctx/world-mouse-position]}]
   ; TODO do not draw here, only at UI view
   ; then graphics can draw world without stage/input
-  (when-not (stage/mouseover-actor stage (input/mouse-position input))
+  (when-not (stage/mouseover-actor stage (input/mouse-position app))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image item))
       (moon.player-item-on-cursor/item-place-position world-mouse-position entity)

@@ -46,8 +46,8 @@
         actors [{:type :ui/actor
                  :act! (fn [this delta]
                          (when-let [stage (actor/stage this)]
-                           (let [{:keys [ctx/input] :as ctx} (stage/ctx stage)]
-                             (when (input/key-just-pressed? input input.keys/enter)
+                           (let [{:keys [ctx/app] :as ctx} (stage/ctx stage)]
+                             (when (input/key-just-pressed? app input.keys/enter)
                                (clicked-save-fn this ctx)))))}]
         save-button {:type :ui/text-button
                      :text "Save [LIGHT_GRAY](ENTER)[]"

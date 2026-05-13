@@ -9,27 +9,27 @@
 
 (defn step
   [{:keys [ctx/controls
-           ctx/input
+           ctx/app
            ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (when (input/key-pressed? input (:zoom-in controls))
+  (when (input/key-pressed? app (:zoom-in controls))
     (camera/inc-zoom! world-viewport zoom-speed))
 
-  (when (input/key-pressed? input (:zoom-out controls))
+  (when (input/key-pressed? app (:zoom-out controls))
     (camera/inc-zoom! world-viewport (- zoom-speed)))
 
-  (when (input/key-just-pressed? input (:close-windows-key controls))
+  (when (input/key-just-pressed? app (:close-windows-key controls))
     (->> (stage/find-actor stage "moon.ui.windows")
          group/children
          (run! #(actor/set-visible! % false))))
 
-  (when (input/key-just-pressed? input (:toggle-inventory controls))
+  (when (input/key-just-pressed? app (:toggle-inventory controls))
     (-> stage
         (stage/find-actor "moon.ui.windows.inventory")
         actor/toggle-visible!))
 
-  (when (input/key-just-pressed? input (:toggle-entity-info controls))
+  (when (input/key-just-pressed? app (:toggle-entity-info controls))
     (-> stage
         (stage/find-actor "moon.ui.windows.entity-info")
         actor/toggle-visible!))

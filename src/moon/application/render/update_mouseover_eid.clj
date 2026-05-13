@@ -6,7 +6,7 @@
             [moon.raycaster :as raycaster]))
 
 (defn step
-  [{:keys [ctx/input
+  [{:keys [ctx/app
            ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
@@ -15,7 +15,7 @@
            ctx/render-z-order
            ctx/world-mouse-position]
     :as ctx}]
-  (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position input))
+  (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position app))
         position world-mouse-position
         new-eid (if mouseover-actor
                   nil

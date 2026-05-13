@@ -4,11 +4,11 @@
             [moon.input :as input]))
 
 (defn step
-  [{:keys [ctx/input
+  [{:keys [ctx/app
            ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (let [mp (input/mouse-position input)]
+  (let [mp (input/mouse-position app)]
     (-> ctx
         (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
         (assoc :ctx/ui-mouse-position (stage/unproject stage mp)))))

@@ -44,8 +44,7 @@
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
-                                            {:ctx/app   Gdx/app
-                                             :ctx/input Gdx/input}
+                                            {:ctx/app Gdx/app}
                                             create-pipeline)))
 
                           (dispose [_]
@@ -91,22 +90,21 @@
 
   (clear! [app r g b a]
     (.glClearColor (.getGL20 (.getGraphics app)) r g b a)
-    (.glClear      (.getGL20 (.getGraphics app)) GL20/GL_COLOR_BUFFER_BIT)))
+    (.glClear      (.getGL20 (.getGraphics app)) GL20/GL_COLOR_BUFFER_BIT))
 
-(extend-type Input
   moon.input/Input
   (set-processor! [this input-processor]
-    (.setInputProcessor this input-processor))
+    (.setInputProcessor (.getInput this) input-processor))
 
   (key-pressed? [this key]
-    (.isKeyPressed this key))
+    (.isKeyPressed (.getInput this) key))
 
   (key-just-pressed? [this key]
-    (.isKeyJustPressed this key))
+    (.isKeyJustPressed (.getInput this) key))
 
   (button-just-pressed? [this button]
-    (.isButtonJustPressed this button))
+    (.isButtonJustPressed (.getInput this) button))
 
   (mouse-position [this]
-    [(.getX this)
-     (.getY this)]))
+    [(.getX (.getInput this))
+     (.getY (.getInput this))]))

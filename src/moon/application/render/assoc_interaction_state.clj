@@ -60,7 +60,7 @@
      [:interaction-state/no-skill-selected])))
 
 (defn step
-  [{:keys [ctx/input
+  [{:keys [ctx/app
            ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
@@ -70,4 +70,4 @@
                                                        world-mouse-position
                                                        mouseover-eid
                                                        player-eid
-                                                       (stage/mouseover-actor stage (input/mouse-position input)))))
+                                                       (stage/mouseover-actor stage (input/mouse-position app)))))

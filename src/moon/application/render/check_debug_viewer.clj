@@ -4,14 +4,14 @@
 
 (defn step
   [{:keys [ctx/controls
-           ctx/input
+           ctx/app
            ctx/mouseover-eid
            ctx/skin
            ctx/stage
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
-  (when (input/button-just-pressed? input (:open-debug-button controls))
+  (when (input/button-just-pressed? app (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage

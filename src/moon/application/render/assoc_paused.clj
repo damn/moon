@@ -30,12 +30,12 @@
 
 (defn step
   [{:keys [ctx/controls
-           ctx/input
+           ctx/app
            ctx/player-eid]
     :as ctx}]
   (assoc ctx :ctx/paused?
          (or #_error
              (and pausing?
                   (state/pause-game? (:state (:entity/fsm @player-eid)))
-                  (not (or (input/key-just-pressed? input (:unpause-once controls))
-                           (input/key-pressed? input (:unpause-continously controls))))))))
+                  (not (or (input/key-just-pressed? app (:unpause-once controls))
+                           (input/key-pressed? app (:unpause-continously controls))))))))

@@ -7,14 +7,14 @@
             [moon.textures :as textures]))
 
 (defmethod state/draw-ui-view :player-item-on-cursor
-  [_ eid {:keys [ctx/input
+  [_ eid {:keys [ctx/app
                  ctx/stage
                  ctx/textures
                  ctx/ui-mouse-position]}]
   ; TODO see player-item-on-cursor at render layers
   ; always draw it here at right position, then render layers does not need input/stage
   ; can pass world to graphics, not handle here at application
-  (when (stage/mouseover-actor stage (input/mouse-position input))
+  (when (stage/mouseover-actor stage (input/mouse-position app))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
       ui-mouse-position
