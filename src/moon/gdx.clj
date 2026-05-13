@@ -3,7 +3,6 @@
             moon.graphics
             [moon.input :as input])
   (:import (com.badlogic.gdx ApplicationListener
-                             Input
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
