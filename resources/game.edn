@@ -7,4 +7,5 @@
  :windowed-mode {:width 1440
                  :height 900}
  :foreground-fps 60
+ :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
  }

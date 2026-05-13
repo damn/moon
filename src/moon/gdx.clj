@@ -1,10 +1,12 @@
 (ns moon.gdx
-  (:require [moon.app :as app])
+  (:require [com.badlogic.gdx.graphics.color :as color]
+            [moon.app :as app])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics GL20)))
+           (com.badlogic.gdx.graphics Colors
+                                      GL20)))
 
 (defn application!
   [{:keys [create!
@@ -13,7 +15,11 @@
            resize!
            title
            windowed-mode
-           foreground-fps]}]
+           foreground-fps
+           colors
+           ]}]
+  (doseq [[name rgba] colors]
+    (Colors/put name (color/create rgba)))
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
