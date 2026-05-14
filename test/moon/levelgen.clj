@@ -8,7 +8,7 @@
             moon.ui.impl.table
             [moon.ui.table :as table]
             [moon.db :as db]
-            [clojure.graphics.orthographic-camera :as camera-impl]
+            [moon.gdx.orthographic-camera :as camera-impl]
             [moon.orthographic-camera :as camera]
             [moon.tiled-map.renderer :as tiled-map-renderer]
             [moon.creature-tiles])

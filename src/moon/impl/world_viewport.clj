@@ -1,6 +1,6 @@
 (ns moon.impl.world-viewport
   (:require [moon.world-viewport :as viewport]
-            [clojure.graphics.orthographic-camera :as camera-impl]
+            [moon.gdx.orthographic-camera :as camera-impl]
             [com.badlogic.gdx.math.vector2 :as vector2]
             moon.camera
             [moon.orthographic-camera :as camera])

@@ -1,4 +1,4 @@
-(ns clojure.graphics.orthographic-camera
+(ns moon.gdx.orthographic-camera
   (:require [com.badlogic.gdx.math.vector3 :as vector3]
             [moon.orthographic-camera :as orthographic-camera])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
