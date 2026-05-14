@@ -41,7 +41,7 @@
     moon.gdx.orthographic-camera
     moon.camera/OrthographicCamera]
    [com.badlogic.gdx.scenes.scene2d.Actor
-    moon.ui.impl.actor
+    com.badlogic.gdx.scenes.scene2d.actor
     moon.ui.actor/Actor]
    [com.badlogic.gdx.scenes.scene2d.Group
     moon.ui.impl.group
@@ -51,7 +51,7 @@
   ]
  [clojure.multifn/add-methods! moon.ui.actor/create
   [
-   [:ui/actor moon.ui.impl.actor/create]
+   [:ui/actor com.badlogic.gdx.scenes.scene2d.actor/create]
    [:ui/group moon.ui.impl.group/create]
    ]
   ]
