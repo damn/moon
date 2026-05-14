@@ -16,8 +16,7 @@
                              Input$Keys)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics Color
-                                      OrthographicCamera)
+           (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
@@ -96,7 +95,7 @@
            ctx/graphics
            ctx/input]}]
   (let [skin (Skin. (.internal files "uiskin.json")) ; TODO dispose
-        ui-viewport (FitViewport. 1440 900 (OrthographicCamera.))
+        ui-viewport (FitViewport. 1440 900)
         sprite-batch (SpriteBatch.)
         stage (CtxStage. ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
@@ -111,8 +110,9 @@
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
                                        world-height
-                                       (doto (OrthographicCamera.)
-                                         (.setToOrtho false world-width world-height))))
+                                       (camera/create {:y-down? false
+                                                       :world-width world-width
+                                                       :world-height world-height})))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport
