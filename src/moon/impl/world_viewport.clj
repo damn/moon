@@ -4,46 +4,49 @@
             [com.badlogic.gdx.math.vector2 :as vector2]
             moon.camera
             [moon.orthographic-camera :as camera])
-  (:import (com.badlogic.gdx.utils.viewport FitViewport)))
+  (:import (clojure.lang ILookup)
+           (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn create
   [{:keys [ctx/world-unit-scale]}]
   (let [world-width  (* 1440 world-unit-scale)
         world-height (* 900  world-unit-scale)]
-    (FitViewport. world-width
-                  world-height
-                  (camera-impl/create {:y-down? false
-                                       :world-width world-width
-                                       :world-height world-height}))))
+    (proxy [FitViewport ILookup] [world-width
+                                  world-height
+                                  (camera-impl/create {:y-down? false
+                                                       :world-width world-width
+                                                       :world-height world-height})]
+      (valAt [k]
+        (case k
+          :viewport/camera (.getCamera this)
+          ))
+      )))
 
 (extend-type FitViewport
   moon.camera/Camera
   (zoom [this]
-    (camera/zoom (viewport/camera this)))
+    (camera/zoom (:viewport/camera this)))
 
   (visible-tiles [this]
-    (camera/visible-tiles (viewport/camera this)))
+    (camera/visible-tiles (:viewport/camera this)))
 
   (frustum [this]
-    (camera/frustum (viewport/camera this)))
+    (camera/frustum (:viewport/camera this)))
 
   (inc-zoom! [this amount]
-    (camera/inc-zoom! (viewport/camera this) amount))
+    (camera/inc-zoom! (:viewport/camera this) amount))
 
   (set-position! [this position]
-    (camera/set-position! (viewport/camera this)
+    (camera/set-position! (:viewport/camera this)
                           position))
 
   (position [this]
-    (camera/position (viewport/camera this)))
+    (camera/position (:viewport/camera this)))
 
   (combined [this]
-    (camera/combined (viewport/camera this)))
+    (camera/combined (:viewport/camera this)))
 
   viewport/Viewport
-  (camera [viewport]
-    (.getCamera viewport))
-
   (world-width [viewport]
     (.getWorldWidth viewport))
 

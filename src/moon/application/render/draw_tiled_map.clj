@@ -1,7 +1,6 @@
 (ns moon.application.render.draw-tiled-map
   (:require [moon.tiled-map.renderer :as tiled-map-renderer]
             [moon.camera :as camera]
-            [moon.world-viewport :as viewport]
             [moon.raycaster :as raycaster]))
 
 (defn- tile-color-setter*
@@ -72,7 +71,7 @@
     :as ctx}]
   (tiled-map-renderer/draw! batch
                             world-unit-scale
-                            (viewport/camera world-viewport)
+                            (:viewport/camera world-viewport)
                             tiled-map
                             (tile-color-setter ctx))
   ctx)

@@ -53,7 +53,7 @@
                 start-position
                 show-movement-properties
                 show-grid-lines]} @(current-data)
-        visible-tiles (camera-utils/visible-tiles (viewport/camera world-viewport))
+        visible-tiles (camera-utils/visible-tiles (:viewport/camera world-viewport))
         [x y] (mapv int (g/world-mouse-position ctx))]
     (graphics/rectangle x y 1 1 :white)
     (when start-position
@@ -84,7 +84,7 @@
            :tiled-map tiled-map
            ;:area-level-grid area-level-grid
            :start-position start-position)
-    (show-whole-map! (viewport/camera world-viewport) tiled-map)
+    (show-whole-map! (:viewport/camera world-viewport) tiled-map)
     (layer/set-visible! (.get (tiled-map/layers this) "creatures") true)))
 
 #_(defn ->generate-map-window [c level-id]
