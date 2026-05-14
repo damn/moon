@@ -8,7 +8,6 @@
    ;
 
    ; MORE DEFMETHOD & EXTEND-TYPE (use fn-map ?)
-   moon.ui.impl.group
    moon.ui.impl.horizontal-group
    moon.ui.impl.image
    moon.ui.impl.image-button
@@ -44,12 +43,16 @@
    [com.badlogic.gdx.scenes.scene2d.Actor
     moon.ui.impl.actor
     moon.ui.actor/Actor]
+   [com.badlogic.gdx.scenes.scene2d.Group
+    moon.ui.impl.group
+    moon.ui.group/Group]
 
    ]
   ]
  [clojure.multifn/add-methods! moon.ui.actor/create
   [
    [:ui/actor moon.ui.impl.actor/create]
+   [:ui/group moon.ui.impl.group/create]
    ]
   ]
  [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
