@@ -3,5 +3,5 @@
  :create-pipeline #edn/resource "create.edn"
  :render-pipeline #edn/resource "render.edn"
  :dispose #edn/resource "dispose.edn"
- :resize! moon.application.resize/do!
+ :resize #edn/resource "resize.edn"
  }

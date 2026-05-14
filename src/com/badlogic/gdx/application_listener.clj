@@ -6,7 +6,7 @@
            create-pipeline
            dispose
            render-pipeline
-           resize!]}]
+           resize]}]
   (let [state @state-var]
     (reify ApplicationListener
       (create [_]
@@ -29,7 +29,8 @@
                          render-pipeline))))
 
       (resize [_ width height]
-        (resize! @state width height))
+        (doseq [f resize]
+          (f @state width height)))
 
       (pause [_])
       (resume [_]))))
