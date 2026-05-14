@@ -4,8 +4,56 @@
             [clojure.pprint :as pprint]
             [moon.db :as db]
             [moon.property :as property]
+            [moon.malli :as m]
             [moon.map :as map]
-            [moon.schemas :as schemas]))
+            [moon.schemas :as schemas]
+            [moon.val-max :as val-max]))
+
+(defmulti create-value (fn [[k] _v _db]
+                         k))
+
+(defmethod create-value :default [_ v _db]
+  v)
+
+(defmulti malli-form (fn [[k] _schemas]
+                       k))
+
+(defrecord Schemas []
+  schemas/Schemas
+  (create-map-schema [schemas ks]
+    (m/create-map-schema ks (fn [k]
+                              (malli-form (get schemas k) schemas))))
+
+  (validate [schemas k value]
+    (-> (get schemas k)
+        (malli-form schemas)
+        m/schema
+        (m/validate-humanize value)))
+
+  (build-values [schemas property db]
+    (reduce (fn [m k]
+              (assoc m k
+                     (try (create-value (get schemas k) (k m) db)
+                          (catch Throwable t
+                            (throw (ex-info " " {:k k
+                                                 :v (k m)} t))))))
+            property
+            (keys property)))
+
+  (default-value [schemas k]
+    (let [schema (get schemas k)]
+      (cond
+       (#{:s/map} (schema 0)) {}
+       :else nil)))
+
+  (optional-keyset [schemas schema]
+    (m/optional-keyset (malli-form schema schemas)))
+
+  (optional? [schemas schema k]
+    (m/optional? k (malli-form schema schemas)))
+
+  (map-keys [schemas schema]
+    (m/map-keys (malli-form schema schemas))))
 
 (defn- save!
   [{:keys [db/data db/file]}]
@@ -59,7 +107,7 @@
          (db/all-raw this property-type))))
 
 (defn create [_ctx]
-  (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
+  (let [schemas (map->Schemas (-> "schema.edn" io/resource slurp edn/read-string))
         properties-file (io/resource "properties.edn")
         properties (-> properties-file slurp edn/read-string)]
     (assert (or (empty? properties)
@@ -71,11 +119,63 @@
       :db/file properties-file
       :db/schemas schemas})))
 
-(defmethod schemas/create-value :s/map [_ v db]
+(defmethod create-value :s/map [_ v db]
   (schemas/build-values (:db/schemas db) v db))
 
-(defmethod schemas/create-value :s/one-to-many [_ property-ids db]
+(defmethod create-value :s/one-to-many [_ property-ids db]
   (set (map (partial db/build db) property-ids)))
 
-(defmethod schemas/create-value :s/one-to-one [_ property-id db]
+(defmethod create-value :s/one-to-one [_ property-id db]
   (db/build db property-id))
+
+(defmethod malli-form :s/animation [_ schemas]
+  (schemas/create-map-schema schemas
+                             [:animation/frames
+                              :animation/frame-duration
+                              :animation/looping?]))
+
+(defmethod malli-form :s/boolean [_ _schemas]
+  :boolean)
+
+(defmethod malli-form :s/enum [[_ & params] _schemas]
+  (apply vector :enum params))
+
+(defmethod malli-form :s/image [_ schemas]
+  (schemas/create-map-schema schemas
+                             [:image/file
+                              [:image/bounds {:optional true}]]))
+
+(defmethod malli-form :s/map [[_ ks] schemas]
+  (schemas/create-map-schema schemas ks))
+
+(defmethod malli-form :s/number [[_ predicate] _schemas]
+  (case predicate
+    :int     int?
+    :nat-int nat-int?
+    :any     number?
+    :pos     pos?
+    :pos-int pos-int?))
+
+(defmethod malli-form :s/one-to-many [[_ property-type] _schemas]
+  [:set [:qualified-keyword {:namespace (property/type->id-namespace property-type)}]])
+
+(defmethod malli-form :s/one-to-one [[_ property-type] _schemas]
+  [:qualified-keyword {:namespace (property/type->id-namespace property-type)}])
+
+(defmethod malli-form :s/qualified-keyword [[_ & params] _schemas]
+  (apply vector :qualified-keyword params))
+
+(defmethod malli-form :s/some [_ _schemas]
+  :some)
+
+(defmethod malli-form :s/sound [_ _schemas]
+  :string)
+
+(defmethod malli-form :s/string [_ _schemas]
+  :string)
+
+(defmethod malli-form :s/val-max [_ _schemas]
+  val-max/schema)
+
+(defmethod malli-form :s/vector [[_ & params] _schemas]
+  (apply vector :vector params))
