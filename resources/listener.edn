@@ -2,6 +2,6 @@
  :state-var moon.application/state
  :create-pipeline #edn/resource "create.edn"
  :render-pipeline #edn/resource "render.edn"
- :dispose! moon.application.dispose/do!
+ :dispose #edn/resource "dispose.edn"
  :resize! moon.application.resize/do!
  }

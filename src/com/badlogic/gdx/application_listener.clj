@@ -4,7 +4,7 @@
 (defn create
   [{:keys [state-var
            create-pipeline
-           dispose!
+           dispose
            render-pipeline
            resize!]}]
   (let [state @state-var]
@@ -17,7 +17,8 @@
                         create-pipeline)))
 
       (dispose [_]
-        (dispose! @state))
+        (doseq [f dispose]
+          (f @state)))
 
       (render [_]
         (swap! state

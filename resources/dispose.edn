@@ -1,0 +1,10 @@
+[
+ moon.dispose.audio/do!
+ moon.dispose.batch/do!
+ moon.dispose.cursors/do!
+ moon.dispose.default-font/do!
+ moon.dispose.shape-drawer-texture/do!
+ moon.dispose.skin/do!
+ moon.dispose.textures/do!
+ moon.dispose.tiled-map/do!
+ ]
