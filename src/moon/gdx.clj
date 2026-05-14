@@ -31,7 +31,7 @@
 
   (update! [viewport screen-width screen-height center-camera?]
     ; ScalingViewport
-    #_(.update viewport screen-width screen-height center-camera?)
+    (.update viewport screen-width screen-height center-camera?)
 
     ;	Vector2 scaled = scaling.apply(getWorldWidth(), getWorldHeight(), screenWidth, screenHeight);
     ;	int viewportWidth = Math.round(scaled.x);
