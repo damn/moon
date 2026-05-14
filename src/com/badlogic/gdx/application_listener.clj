@@ -3,9 +3,9 @@
 
 (defn create
   [{:keys [state-var
-           create-pipeline
+           create
            dispose
-           render-pipeline
+           render
            resize]}]
   (let [state @state-var]
     (reify ApplicationListener
@@ -14,7 +14,7 @@
                 (reduce (fn [ctx [f & params]]
                           (apply f ctx params))
                         {}
-                        create-pipeline)))
+                        create)))
 
       (dispose [_]
         (doseq [f dispose]
@@ -26,7 +26,7 @@
                  (reduce (fn [ctx [f & params]]
                            (apply f ctx params))
                          ctx
-                         render-pipeline))))
+                         render))))
 
       (resize [_ width height]
         (doseq [f resize]
