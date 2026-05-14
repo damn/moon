@@ -12,6 +12,3 @@
     (when (contains? opts :widget-group/fill-parent?)
       (.setFillParent widget-group (:widget-group/fill-parent? opts)))
     (group/set-opts! widget-group opts)))
-
-
-
