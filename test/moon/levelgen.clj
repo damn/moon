@@ -8,7 +8,8 @@
             moon.ui.impl.table
             [moon.ui.table :as table]
             [moon.db :as db]
-            [clojure.graphics.orthographic-camera :as camera]
+            [clojure.graphics.orthographic-camera :as camera-impl]
+            [moon.orthographic-camera :as camera]
             [moon.tiled-map.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
@@ -110,9 +111,9 @@
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
                                        world-height
-                                       (camera/create {:y-down? false
-                                                       :world-width world-width
-                                                       :world-height world-height})))
+                                       (camera-impl/create {:y-down? false
+                                                            :world-width world-width
+                                                            :world-height world-height})))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport

@@ -1,8 +1,9 @@
 (ns moon.impl.world-viewport
   (:require [moon.world-viewport :as viewport]
-            [clojure.graphics.orthographic-camera :as camera]
+            [clojure.graphics.orthographic-camera :as camera-impl]
             [com.badlogic.gdx.math.vector2 :as vector2]
-            moon.camera)
+            moon.camera
+            [moon.orthographic-camera :as camera])
   (:import (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn create
@@ -11,9 +12,9 @@
         world-height (* 900  world-unit-scale)]
     (FitViewport. world-width
                   world-height
-                  (camera/create {:y-down? false
-                                  :world-width world-width
-                                  :world-height world-height}))))
+                  (camera-impl/create {:y-down? false
+                                       :world-width world-width
+                                       :world-height world-height}))))
 
 (extend-type FitViewport
   moon.camera/Camera
