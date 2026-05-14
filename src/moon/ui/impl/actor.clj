@@ -1,8 +1,7 @@
 (ns moon.ui.impl.actor
   (:refer-clojure :exclude [name])
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
-            [com.badlogic.gdx.utils.align :as align]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window])
+            [com.badlogic.gdx.utils.align :as align])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
@@ -13,9 +12,6 @@
 (defn- ui-type->class [k]
   (case k
     :ui/window com.badlogic.gdx.scenes.scene2d.ui.Window))
-
-(defn- button-class? [actor]
-  (some #(= com.badlogic.gdx.scenes.scene2d.ui.Button %) (supers (class actor))))
 
 (defn name [^Actor actor]
   (.getName actor))
@@ -92,19 +88,6 @@
       p
       (find-ancestor p ui-type-k))
     (throw (Error. (str "Actor has no parent window " actor)))))
-
-(defn button? [^Actor actor]
-  (or (button-class? actor)
-      (and (parent actor)
-           (button-class? (parent actor)))))
-
-; FIXME does not work
-(defn window-title-bar? [^Actor actor]
-  (when (instance? com.badlogic.gdx.scenes.scene2d.ui.Label actor)
-    (when-let [p (parent actor)]
-      (when-let [p (parent p)]
-        (and (instance? com.badlogic.gdx.scenes.scene2d.ui.Window actor)
-             (= (window/title-label p) actor))))))
 
 (defn toggle-visible! [^Actor actor]
   (set-visible! actor (not (visible? actor))))

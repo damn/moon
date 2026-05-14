@@ -1,5 +1,6 @@
 (ns moon.render.assoc-interaction-state
-  (:require [moon.ui.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui :as ui]
+            [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [moon.app :as app]
             [clojure.math.vector2 :as v]
@@ -13,8 +14,8 @@
                             (actor/user-object (actor/parent actor)))]
     (cond
      inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
-     (actor/window-title-bar? actor) [:mouseover-actor/window-title-bar]
-     (actor/button?           actor) [:mouseover-actor/button]
+     (ui/window-title-bar? actor) [:mouseover-actor/window-title-bar]
+     (ui/button? actor) [:mouseover-actor/button]
      :else                     [:mouseover-actor/unspecified])))
 
 (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
