@@ -1,13 +1,13 @@
-(ns moon.impl.world-viewport
-  (:require [moon.gdx :as gdx]
-            [moon.gdx.orthographic-camera :as camera]))
+(ns moon.impl.world-viewport)
 
 (defn create
-  [{:keys [ctx/world-unit-scale]}]
+  [{:keys [ctx/world-unit-scale]}
+   {:keys [viewport
+           camera]}]
   (let [world-width  (* 1440 world-unit-scale)
         world-height (* 900  world-unit-scale)]
-    (gdx/fit-viewport world-width
-                      world-height
-                      (camera/create {:y-down? false
-                                      :world-width world-width
-                                      :world-height world-height}))))
+    (viewport world-width
+              world-height
+              (camera {:y-down? false
+                       :world-width world-width
+                       :world-height world-height}))))
