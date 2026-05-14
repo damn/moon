@@ -1,5 +1,12 @@
 <details>
 
+
+*** ___COMMENTS & FIXMES & TODOS &  DEAD CODE !!!! & TESTS MISSING !!! *****
+
+What to do => DO THE TODOS!
+
+;\|#_\|comment
+
 * test levelgen/game all lvls.
 * no WARN ON REFLECTION
 * ^:private/defn-

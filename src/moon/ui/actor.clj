@@ -1,6 +1,7 @@
 (ns moon.ui.actor
   (:refer-clojure :exclude [name]))
 
+; ** TODO this contains '2' things !!!
 (defmulti create :type)
 
 (defprotocol Actor

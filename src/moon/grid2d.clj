@@ -1,3 +1,11 @@
+
+; This is the biggest problem
+; our game needs performance and all kind of caches and swaps and atoms and (content-grid)
+; and lightning etc.
+; -> make it turn/tile-based/multiplayer ala chess
+; the game is too complicated...
+
+
 (ns moon.grid2d)
 ; 2dimvector is 7x faster than a hashmap of [x y] to values
 ; like in rich hickey ant demo vectors of vectors:
