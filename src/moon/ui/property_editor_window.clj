@@ -2,6 +2,7 @@
   (:require [com.badlogic.gdx.input.keys :as input.keys]
             [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.stage :as stage]
             [moon.db :as db]
             [moon.app :as app]
@@ -32,7 +33,7 @@
                                (let [new-ctx (update ctx :ctx/db f)
                                      stage (actor/stage actor)]
                                  (stage/set-ctx! stage new-ctx))
-                               (actor/remove! (actor/find-ancestor actor :ui/window))
+                               (actor/remove! (actor/find-ancestor actor ui/window?))
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage

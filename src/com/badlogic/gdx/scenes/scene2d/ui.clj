@@ -20,3 +20,6 @@
       (when-let [p (actor/parent p)]
         (and (instance? Window actor)
              (= (window/title-label p) actor))))))
+
+(defn window? [actor]
+  (instance? Window actor))

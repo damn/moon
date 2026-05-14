@@ -24,7 +24,7 @@
   (parent [_])
   (stage->local-coordinates [actor xy])
   (add-listener! [actor [listener-k listener-params]])
-  (find-ancestor [_ ui-type-k])
+  (find-ancestor [_ pred])
   (button? [_])
   (window-title-bar? [_])
   (toggle-visible! [_])

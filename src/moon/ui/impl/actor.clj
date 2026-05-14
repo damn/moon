@@ -1,17 +1,13 @@
 (ns moon.ui.impl.actor
   (:refer-clojure :exclude [name])
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
+            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.utils.align :as align])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Touchable)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener
                                                   ClickListener)))
-
-(defn- ui-type->class [k]
-  (case k
-    :ui/window com.badlogic.gdx.scenes.scene2d.ui.Window))
 
 (defn name [^Actor actor]
   (.getName actor))
@@ -50,8 +46,7 @@
   (.setVisible actor visible?))
 
 (defn set-touchable! [^Actor actor touchable]
-  (.setTouchable actor (case touchable
-                         :touchable/disabled Touchable/disabled)))
+  (.setTouchable actor (touchable/k->value :touchable/disabled)))
 
 (defn visible? [^Actor actor]
   (.isVisible actor))
@@ -82,11 +77,11 @@
 (defn stage->local-coordinates [^Actor actor xy]
   (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy))))
 
-(defn find-ancestor [^Actor actor ui-type-k]
+(defn find-ancestor [actor pred]
   (if-let [p (parent actor)]
-    (if (instance? (ui-type->class ui-type-k) p)
+    (if (pred p)
       p
-      (find-ancestor p ui-type-k))
+      (find-ancestor p pred))
     (throw (Error. (str "Actor has no parent window " actor)))))
 
 (defn toggle-visible! [^Actor actor]

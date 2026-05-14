@@ -2,6 +2,7 @@
   (:require clojure.edn
             [moon.ui.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.ui.group :as group]
             [moon.stage :as stage]
             [moon.ui.select-box :as select-box]
@@ -316,7 +317,7 @@
   (let [redo-rows (fn [ctx property-ids]
                     (group/clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (widget-group/pack! (actor/find-ancestor table :ui/window)))]
+                    (widget-group/pack! (actor/find-ancestor table ui/window?)))]
     (table/add-rows!
      table
      [[{:actor (actor/create
@@ -337,7 +338,7 @@
                                                           :skin skin
                                                           :property-type property-type
                                                           :clicked-id-fn (fn [actor id ctx]
-                                                                           (actor/remove! (actor/find-ancestor actor :ui/window))
+                                                                           (actor/remove! (actor/find-ancestor actor ui/window?))
                                                                            (redo-rows ctx (conj property-ids id)))})))}})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
@@ -377,7 +378,7 @@
   (let [redo-rows (fn [ctx id]
                     (group/clear-children! table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (widget-group/pack! (actor/find-ancestor table :ui/window)))]
+                    (widget-group/pack! (actor/find-ancestor table ui/window?)))]
     (table/add-rows!
      table
      [[(when-not property-id
@@ -399,7 +400,7 @@
                                                             :skin skin
                                                             :property-type property-type
                                                             :clicked-id-fn (fn [actor id ctx]
-                                                                             (actor/remove! (actor/find-ancestor actor :ui/window))
+                                                                             (actor/remove! (actor/find-ancestor actor ui/window?))
                                                                              (redo-rows ctx id))})))}})})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
@@ -435,8 +436,8 @@
   (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
     (table/add-rows! table [(sound-columns skin table sound-name)])
-    (actor/remove! (actor/find-ancestor actor :ui/window))
-    (widget-group/pack! (actor/find-ancestor table :ui/window))
+    (actor/remove! (actor/find-ancestor actor ui/window?))
+    (widget-group/pack! (actor/find-ancestor table ui/window?))
     (let [[k _] (actor/user-object table)]
       (actor/set-user-object! table [k sound-name]))))
 
