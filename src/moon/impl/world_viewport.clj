@@ -3,12 +3,10 @@
             [moon.gdx.orthographic-camera :as camera]))
 
 (defn create
-  [{:keys [ctx/world-unit-scale]
-    :as ctx}]
+  [{:keys [ctx/world-unit-scale]}]
   (let [world-width  (* 1440 world-unit-scale)
         world-height (* 900  world-unit-scale)]
-    (gdx/fit-viewport ctx
-                      world-width
+    (gdx/fit-viewport world-width
                       world-height
                       (camera/create {:y-down? false
                                       :world-width world-width
