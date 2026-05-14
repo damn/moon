@@ -1,7 +1,6 @@
 (ns moon.application.create.gdx
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [moon.gdx :as gdx]
-            [moon.gdx.orthographic-camera :as orthographic-camera]
             [moon.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.utils.viewport FitViewport)))
@@ -15,9 +14,6 @@
           (case k
             :viewport/camera (.getCamera this)
             ))))
-
-    (orthographic-camera [_ opts]
-      (orthographic-camera/create opts))
     )
   ctx)
 
