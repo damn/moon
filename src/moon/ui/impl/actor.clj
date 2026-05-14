@@ -37,16 +37,16 @@
   (.setUserObject actor object))
 
 (defn set-position!
-  (^Actor [actor [x y]]
-          (.setPosition actor x y))
-  ([actor x y align]
+  ([^Actor actor [x y]]
+   (.setPosition actor x y))
+  ([^Actor actor x y align]
    (.setPosition actor x y (align/k->value align))))
 
 (defn set-visible! [^Actor actor visible?]
   (.setVisible actor visible?))
 
 (defn set-touchable! [^Actor actor touchable]
-  (.setTouchable actor (touchable/k->value :touchable/disabled)))
+  (.setTouchable actor (touchable/k->value touchable)))
 
 (defn visible? [^Actor actor]
   (.isVisible actor))
@@ -84,10 +84,10 @@
       (find-ancestor p pred))
     (throw (Error. (str "Actor has no parent window " actor)))))
 
-(defn toggle-visible! [^Actor actor]
+(defn toggle-visible! [actor]
   (set-visible! actor (not (visible? actor))))
 
-(defn set-opts! [^Actor actor opts]
+(defn set-opts! [actor opts]
   (when-let [user-object (:actor/user-object opts)]
     (set-user-object! actor user-object))
 
