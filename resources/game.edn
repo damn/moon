@@ -1,6 +1,100 @@
 {
- :create-pipeline #edn/resource "create.edn"
- :render-pipeline #edn/resource "render.edn"
+ :create-pipeline [
+                   [moon.application.create.record/step]
+                   [moon.application.create.assoc/step :ctx/batch moon.impl.batch/create]
+                   [moon.application.create.assoc/step :ctx/shape-drawer-texture moon.impl.white-pixel-texture/create]
+                   [moon.application.create.assoc/step :ctx/shape-drawer moon.impl.shape-drawer/create]
+                   [moon.application.create.assoc/step :ctx/audio moon.impl.audio/create]
+                   [moon.application.create.assoc/step :ctx/default-font moon.impl.default-font/create]
+                   [moon.application.create.assoc/step :ctx/textures moon.impl.textures/create]
+                   [moon.application.create.assoc/step :ctx/world-unit-scale moon.impl.world-unit-scale/create]
+                   [moon.application.create.assoc/step :ctx/world-viewport moon.impl.world-viewport/create]
+                   [moon.application.create.assoc/step :ctx/cursors moon.impl.cursors/create]
+                   [moon.application.create.assoc/step :ctx/stage moon.impl.stage/create]
+                   [moon.application.create.set-input-processor/step]
+                   [moon.application.create.assoc/step :ctx/skin moon.impl.skin/create]
+                   [moon.application.create.unorganised/step]
+                   [moon.application.create.controls/step]
+                   [moon.application.create.ctx-colors/step]
+                   [moon.application.create.render-z-order/step]
+                   [moon.application.create.max-speed/step]
+                   [moon.application.create.assoc/step :ctx/db moon.impl.db/create]
+                   [moon.application.create.impl-txs/step]
+                   [moon.application.create.impl-draws/step]
+                   [moon.application.create.require-ui-impls/step [ ; TODO 'requires' folder ?
+                                                                   moon.schema-impl
+                                                                   moon.state-impl
+                                                                   moon.effect-impl
+                                                                   moon.info-impl
+
+                                                                   moon.ui.impl.actor
+                                                                   moon.ui.impl.group
+                                                                   moon.ui.impl.horizontal-group
+                                                                   moon.ui.impl.image
+                                                                   moon.ui.impl.image-button
+                                                                   moon.ui.impl.label
+                                                                   moon.ui.impl.scroll-pane
+                                                                   moon.ui.impl.select-box
+                                                                   moon.ui.impl.stack
+                                                                   moon.ui.impl.table
+                                                                   moon.ui.impl.text-button
+                                                                   moon.ui.impl.text-field
+                                                                   moon.ui.impl.widget
+                                                                   moon.ui.impl.widget-group
+                                                                   moon.ui.impl.window
+                                                                   moon.ui.data-viewer-window
+                                                                   moon.ui.error-window
+                                                                   moon.ui.property-editor-window
+                                                                   moon.ui.property-overview-window
+                                                                   moon.ui-actors.dev-menu
+                                                                   moon.ui-actors.action-bar
+                                                                   moon.ui-actors.windows.info
+                                                                   ]]
+                   [moon.application.create.add-stage-actors/step [[moon.application.create.add-stage-actors.dev-menu/create]
+                                                                   [moon.application.create.add-stage-actors.action-bar/create]
+                                                                   [moon.application.create.add-stage-actors.hp-mana-bar/create]
+                                                                   [moon.application.create.add-stage-actors.windows/create [moon.application.create.add-stage-actors.windows.info/create
+                                                                                                                             moon.application.create.add-stage-actors.windows.inventory/create]]
+                                                                   [moon.application.create.add-stage-actors.player-state-draw/create]
+                                                                   [moon.application.create.add-stage-actors.player-message/create]]]
+                   [moon.application.create.tiled-map/step]
+                   [moon.application.create.assoc/step :ctx/grid moon.impl.grid/create]
+                   [moon.application.create.assoc/step :ctx/content-grid moon.impl.content-grid/create]
+                   [moon.application.create.assoc/step :ctx/explored-tile-corners moon.impl.explored-tile-corners/create]
+                   [moon.application.create.assoc/step :ctx/raycaster moon.impl.raycaster/create]
+                   [moon.application.create.spawn-player/step]
+                   [moon.application.create.spawn-enemies/step]
+                   ]
+ :render-pipeline [
+                   [moon.application.render.get-stage-ctx/step]
+                   [moon.application.render.validate/step]
+                   [moon.application.render.update-mouse/step]
+                   [moon.application.render.update-mouseover-eid/step]
+                   [moon.application.render.check-debug-viewer/step]
+                   [moon.application.render.active-entities/step]
+                   [moon.application.render.set-camera/step]
+                   [moon.application.render.clear-screen/step]
+                   [moon.application.render.draw-tiled-map/step]
+                   [moon.application.render.draw-on-world-viewport/step [
+                                                                         #_moon.application.render.draw-on-world-viewport.draw-tile-grid/draws
+                                                                         moon.application.render.draw-on-world-viewport.draw-cell-debug/draws
+                                                                         moon.application.render.draw-on-world-viewport.draw-entities/do!
+                                                                         #_moon.geom-test
+                                                                         moon.application.render.draw-on-world-viewport.highlight-mouseover-tile/draws
+                                                                         ]]
+                   [moon.application.render.assoc-interaction-state/step]
+                   [moon.application.render.set-cursor/step]
+                   [moon.application.render.handle-input/step]
+                   [moon.application.render.dissoc-interaction-state/step]
+                   [moon.application.render.assoc-paused/step]
+                   [moon.application.render.if-not-paused/step [moon.application.render.if-not-paused.update-time/step
+                                                                moon.application.render.if-not-paused.update-potential-fields/step
+                                                                moon.application.render.if-not-paused.tick-entities/step]]
+                   [moon.application.render.remove-destroyed-entities/step]
+                   [moon.application.render.window-camera-controls/step]
+                   [moon.application.render.stage/step]
+                   [moon.application.render.validate/step]
+                   ]
  :dispose! moon.application.dispose/do!
  :resize! moon.application.resize/do!
  :title "Moon"
