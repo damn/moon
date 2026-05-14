@@ -1,11 +1,5 @@
 [[clojure.core-ext/require-namespaces!
   [
-   ; extend-type ATYPE
-   ; PROTOCOL
-   ; IMPL-NAMESPACE
-   com.badlogic.gdx.application
-   ;
-
    ; MULTIMETHODS
    moon.schema-impl
    moon.state-impl
@@ -37,6 +31,14 @@
    moon.ui-actors.action-bar
    moon.ui-actors.windows.info
    ]]
+ [clojure.core-ext/extend-types!
+  [
+   [com.badlogic.gdx.Application
+    com.badlogic.gdx.application
+    moon.app/App]
+
+   ]
+  ]
  [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [com.badlogic.gdx.backends.lwjgl3.config/use-glfw-async!]
  [com.badlogic.gdx.backends.lwjgl3.application/create
