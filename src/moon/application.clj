@@ -1,13 +1,10 @@
 (ns moon.application
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.walk :as walk]
-            [com.badlogic.gdx.graphics.color :as color])
+            [clojure.walk :as walk])
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics Colors)
-           (com.badlogic.gdx.scenes.scene2d.ui TooltipManager))
+                                             Lwjgl3ApplicationConfiguration))
   (:gen-class))
 
 (defn edn-resource [path]
@@ -32,14 +29,10 @@
                 title
                 windowed-mode
                 foreground-fps
-                colors
                 ]} (edn-resource "game.edn")]
-    (doseq [[name rgba] colors]
-      (Colors/put name (color/create rgba)))
     (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
-                            (set! (.initialTime (TooltipManager/getInstance)) 0)
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
