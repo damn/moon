@@ -1,6 +1,5 @@
 (ns moon.application.create.add-stage-actors.windows.inventory
-  (:require [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.actor :as actor]
@@ -10,9 +9,7 @@
             [moon.stage :as stage]
             [moon.txs :as txs]
             [moon.textures :as textures]
-            moon.ui.inventory-window)
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
+            moon.ui.inventory-window))
 
 (defmethod state/clicked-inventory-cell :player-item-on-cursor
   [_ eid cell]
@@ -55,12 +52,6 @@
     [[:tx/sound "bfxr_takeit"]
      [:tx/event eid :pickup-item item]
      [:tx/remove-item eid cell]]))
-
-(defn- create-drawable
-  [{:keys [drawable/texture-region drawable/min-size drawable/tint]}]
-  (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-    (.setMinSize (min-size 0) (min-size 1))
-    (.tint (color/create tint))))
 
 (defn- create-inventory-window*
   [{:keys [colors
@@ -110,7 +101,7 @@
                                                                                             true)
                                                                                  (actor/user-object (actor/parent this)))))))}
                                      {:type :ui/image
-                                      :content (create-drawable background-drawable)
+                                      :content background-drawable
                                       :actor/name "image-widget"
                                       :actor/user-object {:background-drawable background-drawable
                                                           :cell-size cell-size}}]})}))]
@@ -206,10 +197,9 @@
            (fn [inventory-window cell {:keys [texture-region tooltip-text]} skin]
              (let [cell-widget (window->cell inventory-window cell)
                    image-widget (group/find-actor cell-widget "image-widget")
-                   cell-size (:cell-size (actor/user-object image-widget))
-                   drawable (doto (TextureRegionDrawable. texture-region)
-                              (.setMinSize cell-size cell-size))]
-               (image/set-drawable! image-widget drawable)
+                   cell-size (:cell-size (actor/user-object image-widget))]
+               (image/set-drawable! image-widget {:drawable/texture-region texture-region
+                                                  :drawable/min-size [cell-size cell-size]})
                (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
                nil)))
 
@@ -217,7 +207,7 @@
            (fn [inventory-window cell]
              (let [cell-widget (window->cell inventory-window cell)
                    image-widget (group/find-actor cell-widget "image-widget")]
-               (image/set-drawable! image-widget (create-drawable (:background-drawable (actor/user-object image-widget))))
+               (image/set-drawable! image-widget (:background-drawable (actor/user-object image-widget)))
                ; !! TODO FIXME FIXME FIXME !!!
                ;(.removeListener actor (.getListeners actor))
                ; ... first find the listener
