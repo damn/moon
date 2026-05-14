@@ -1,2 +1,9 @@
-{:config #edn/resource "config.edn"
- :listener #edn/resource "listener.edn"}
+[
+ [com.badlogic.gdx.backends.lwjgl3.config/use-glfw-async!]
+ [com.badlogic.gdx.backends.lwjgl3.application/create
+  {
+   :listener [moon.listener/create #edn/resource "listener.edn"]
+   :config [com.badlogic.gdx.backends.lwjgl3.config/create #edn/resource "config.edn"]
+   }
+  ]
+ ]
