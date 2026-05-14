@@ -4,14 +4,12 @@
 ; It is possible to put items out of sight, losing them.
 ; Because line of sight checks center of entity only, not corners
 ; this is okay, you have thrown the item over a hill, thats possible.
-(defn- item-placement-point* [player target maxrange]
-  (v/add player
-         (v/scale (v/direction player target)
-                  (min maxrange
-                       (v/distance player target)))))
-
-(defn item-place-position [world-mouse-position entity]
-  (item-placement-point* (:body/position (:entity/body entity))
-                         world-mouse-position
-                         ; so you cannot put it out of your own reach
-                         (- (:entity/click-distance-tiles entity) 0.1)))
+(defn item-place-position
+  [world-mouse-position player-entity]
+  (let [player-position (:body/position (:entity/body player-entity))
+        ; so you cannot put it out of your own reach
+        maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
+    (v/add player-position
+           (v/scale (v/direction player-position world-mouse-position)
+                    (min maxrange
+                         (v/distance player-position world-mouse-position))))))
