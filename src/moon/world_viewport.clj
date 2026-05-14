@@ -1,4 +1,4 @@
-(ns clojure.gdx.utils.viewport)
+(ns moon.world-viewport)
 
 (defprotocol Viewport
   (camera [_])

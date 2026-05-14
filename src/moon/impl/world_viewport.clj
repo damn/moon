@@ -1,5 +1,5 @@
 (ns moon.impl.world-viewport
-  (:require [clojure.gdx.utils.viewport :as viewport]
+  (:require [moon.world-viewport :as viewport]
             [clojure.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.math.vector2 :as vector2]
             moon.camera)

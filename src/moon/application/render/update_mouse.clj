@@ -1,6 +1,6 @@
 (ns moon.application.render.update-mouse
   (:require [moon.stage :as stage]
-            [clojure.gdx.utils.viewport :as viewport]
+            [moon.world-viewport :as viewport]
             [moon.app :as app]))
 
 (defn step

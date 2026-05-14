@@ -1,6 +1,6 @@
 (ns moon.application.resize
   (:require [moon.stage :as stage]
-            [clojure.gdx.utils.viewport :as viewport]))
+            [moon.world-viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/stage
