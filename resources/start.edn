@@ -1,4 +1,43 @@
-[
+[[clojure.core-ext/require-namespaces!
+  [
+   ; extend-type ATYPE
+   ; PROTOCOL
+   ; IMPL-NAMESPACE
+   com.badlogic.gdx.application
+   ;
+
+   ; MULTIMETHODS
+   moon.schema-impl
+   moon.state-impl
+   moon.effect-impl
+   moon.info-impl
+   ;
+
+   ; MORE DEFMETHOD & EXTEND-TYPE (use fn-map ?)
+   moon.ui.impl.actor
+   moon.ui.impl.group
+   moon.ui.impl.horizontal-group
+   moon.ui.impl.image
+   moon.ui.impl.image-button
+   moon.ui.impl.label
+   moon.ui.impl.scroll-pane
+   moon.ui.impl.select-box
+   moon.ui.impl.stack
+   moon.ui.impl.table
+   moon.ui.impl.text-button
+   moon.ui.impl.text-field
+   moon.ui.impl.widget
+   moon.ui.impl.widget-group
+   moon.ui.impl.window
+   moon.ui.data-viewer-window
+   moon.ui.error-window
+   moon.ui.property-editor-window
+   moon.ui.property-overview-window
+   moon.ui-actors.dev-menu
+   moon.ui-actors.action-bar
+   moon.ui-actors.windows.info
+   ]]
+ [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [com.badlogic.gdx.backends.lwjgl3.config/use-glfw-async!]
  [com.badlogic.gdx.backends.lwjgl3.application/create
   {

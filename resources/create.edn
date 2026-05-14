@@ -1,37 +1,5 @@
 [
- [moon.create.require-ui-impls/step [
-                                     com.badlogic.gdx.application
-
-                                     moon.schema-impl
-                                     moon.state-impl
-                                     moon.effect-impl
-                                     moon.info-impl
-
-                                     moon.ui.impl.actor
-                                     moon.ui.impl.group
-                                     moon.ui.impl.horizontal-group
-                                     moon.ui.impl.image
-                                     moon.ui.impl.image-button
-                                     moon.ui.impl.label
-                                     moon.ui.impl.scroll-pane
-                                     moon.ui.impl.select-box
-                                     moon.ui.impl.stack
-                                     moon.ui.impl.table
-                                     moon.ui.impl.text-button
-                                     moon.ui.impl.text-field
-                                     moon.ui.impl.widget
-                                     moon.ui.impl.widget-group
-                                     moon.ui.impl.window
-                                     moon.ui.data-viewer-window
-                                     moon.ui.error-window
-                                     moon.ui.property-editor-window
-                                     moon.ui.property-overview-window
-                                     moon.ui-actors.dev-menu
-                                     moon.ui-actors.action-bar
-                                     moon.ui-actors.windows.info
-                                     ]]
  [moon.create.do/step [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/set-initial-time! 0]]
- [moon.create.do/step [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]]
  [moon.create.record/step]
  [moon.create.impl-txs/step]
  [moon.create.impl-draws/step]
