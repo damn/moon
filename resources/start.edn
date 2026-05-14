@@ -36,6 +36,12 @@
    [com.badlogic.gdx.Application
     com.badlogic.gdx.application
     moon.app/App]
+   [space.earlygrey.shapedrawer.ShapeDrawer
+    space.earlygrey.shape-drawer
+    moon.shape-drawer/ShapeDrawer]
+   [com.badlogic.gdx.graphics.OrthographicCamera
+    moon.gdx.orthographic-camera
+    moon.camera/OrthographicCamera]
 
    ]
   ]
