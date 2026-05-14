@@ -1,8 +1,7 @@
 (ns moon.application
   (:require [clojure.config :refer [edn-resource]]
-            [com.badlogic.gdx.backends.lwjgl3.config :as config])
-  (:import (com.badlogic.gdx ApplicationListener)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application))
+            [com.badlogic.gdx.backends.lwjgl3.application :as application])
+  (:import (com.badlogic.gdx ApplicationListener))
   (:gen-class))
 
 (def state (atom nil))
@@ -14,8 +13,7 @@
                 resize!
                 config
                 ]} (edn-resource "game.edn")]
-    (config/use-glfw-async!)
-    (Lwjgl3Application. (reify ApplicationListener
+    (application/create (reify ApplicationListener
                           (create [_]
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
@@ -40,4 +38,4 @@
                           (pause [_])
 
                           (resume [_]))
-                        (config/create config))))
+                        config)))
