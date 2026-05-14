@@ -7,7 +7,7 @@
 
 (defn -main []
   (let [{:keys [listener
-                config]} (edn-resource "game.edn")]
+                config]} (edn-resource "start.edn")]
     (config/use-glfw-async!)
     (application/create (listener/create listener)
                         (config/create config))))

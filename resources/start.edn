@@ -1,0 +1,2 @@
+{:config #edn/resource "config.edn"
+ :listener #edn/resource "listener.edn"}
