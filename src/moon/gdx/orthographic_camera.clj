@@ -1,6 +1,6 @@
 (ns moon.gdx.orthographic-camera
   (:require [com.badlogic.gdx.math.vector3 :as vector3]
-            [moon.orthographic-camera :as orthographic-camera])
+            [moon.camera :as camera])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn create [{:keys [y-down? world-width world-height]}]
@@ -8,7 +8,7 @@
     (.setToOrtho y-down? world-width world-height)))
 
 (extend-type OrthographicCamera
-  orthographic-camera/OrthographicCamera
+  camera/OrthographicCamera
   (combined [camera]
     (.combined camera))
 

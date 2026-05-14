@@ -5,7 +5,7 @@
 
 (defn draws
   [{:keys [ctx/world-viewport]}]
-  (let [[left-x _right-x bottom-y _top-y] (camera/frustum world-viewport)]
+  (let [[left-x _right-x bottom-y _top-y] (camera/frustum (:viewport/camera world-viewport))]
     [[:draw/grid
       (int left-x)
       (int bottom-y)

@@ -14,10 +14,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (app/key-pressed? app (:zoom-in controls))
-    (camera/inc-zoom! world-viewport zoom-speed))
+    (camera/inc-zoom! (:viewport/camera world-viewport) zoom-speed))
 
   (when (app/key-pressed? app (:zoom-out controls))
-    (camera/inc-zoom! world-viewport (- zoom-speed)))
+    (camera/inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
 
   (when (app/key-just-pressed? app (:close-windows-key controls))
     (->> (stage/find-actor stage "moon.ui.windows")

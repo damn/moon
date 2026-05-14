@@ -11,7 +11,7 @@
            ctx/factions-iterations
            ctx/world-viewport]}]
   (apply concat
-         (for [[x y] (camera/visible-tiles world-viewport)
+         (for [[x y] (camera/visible-tiles (:viewport/camera world-viewport))
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]

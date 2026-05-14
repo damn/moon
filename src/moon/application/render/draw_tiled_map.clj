@@ -57,7 +57,7 @@
   (tile-color-setter*
    {:ray-blocked? (partial raycaster/blocked? raycaster)
     :explored-tile-corners explored-tile-corners
-    :light-position (camera/position world-viewport)
+    :light-position (camera/position (:viewport/camera world-viewport))
     :see-all-tiles? false
     :explored-tile-color  (:colors/explored-tile colors)
     :visible-tile-color   (:colors/visible-tile colors)

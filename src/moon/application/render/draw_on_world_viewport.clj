@@ -17,7 +17,7 @@
   ; it changes batch color somehow and does not change it back ! FIXME
   (batch/set-color! batch 1 1 1 1)
   ;
-  (batch/set-projection-matrix! batch (camera/combined world-viewport))
+  (batch/set-projection-matrix! batch (camera/combined (:viewport/camera world-viewport)))
   (batch/begin! batch)
   (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
