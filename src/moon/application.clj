@@ -1,23 +1,9 @@
 (ns moon.application
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.walk :as walk])
+  (:require [clojure.config :refer [edn-resource]])
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration))
   (:gen-class))
-
-(defn edn-resource [path]
-  (->> path
-       io/resource
-       slurp
-       (edn/read-string {:readers {'edn/resource edn-resource}})
-       (walk/postwalk (fn [form]
-                        (if (and (symbol? form) (namespace form))
-                          (let [avar (requiring-resolve form)]
-                            (assert avar form)
-                            avar)
-                          form)))))
 
 (def state (atom nil))
 
