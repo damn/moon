@@ -1,4 +1,4 @@
-(ns moon.application.create.add-stage-actors.hp-mana-bar
+(ns moon.create.add-stage-actors.hp-mana-bar
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [moon.draws :as draws]

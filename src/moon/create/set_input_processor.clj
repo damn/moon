@@ -1,4 +1,4 @@
-(ns moon.application.create.set-input-processor
+(ns moon.create.set-input-processor
   (:require [moon.app :as app]))
 
 (defn step

@@ -1,4 +1,4 @@
-(ns moon.application.create.require-ui-impls)
+(ns moon.create.require-ui-impls)
 
 (defn step [ctx namespaces]
   (run! require namespaces)

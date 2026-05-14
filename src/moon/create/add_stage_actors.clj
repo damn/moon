@@ -1,4 +1,4 @@
-(ns moon.application.create.add-stage-actors
+(ns moon.create.add-stage-actors
   (:require [moon.stage :as stage]))
 
 (defn step

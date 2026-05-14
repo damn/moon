@@ -1,4 +1,4 @@
-(ns moon.application.create.add-stage-actors.windows)
+(ns moon.create.add-stage-actors.windows)
 
 (defn create [ctx actor-fns]
   {:type :ui/group

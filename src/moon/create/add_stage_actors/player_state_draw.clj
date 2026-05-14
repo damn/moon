@@ -1,4 +1,4 @@
-(ns moon.application.create.add-stage-actors.player-state-draw
+(ns moon.create.add-stage-actors.player-state-draw
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [moon.app :as app]

@@ -1,4 +1,4 @@
-(ns moon.application.create.add-stage-actors.windows.inventory
+(ns moon.create.add-stage-actors.windows.inventory
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
             [moon.ui.group :as group]
             [moon.ui.image :as image]

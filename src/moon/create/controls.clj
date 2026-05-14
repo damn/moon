@@ -1,4 +1,4 @@
-(ns moon.application.create.controls
+(ns moon.create.controls
   (:require [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [com.badlogic.gdx.input.buttons :as input.buttons]

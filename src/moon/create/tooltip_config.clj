@@ -1,4 +1,4 @@
-(ns moon.application.create.tooltip-config
+(ns moon.create.tooltip-config
   (:import (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
 
 (defn step [ctx]

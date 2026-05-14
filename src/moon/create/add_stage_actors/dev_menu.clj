@@ -1,4 +1,4 @@
-(ns moon.application.create.add-stage-actors.dev-menu
+(ns moon.create.add-stage-actors.dev-menu
   (:require [moon.camera :as camera]
             [moon.stage :as stage]
             [clojure.string :as str]
@@ -54,9 +54,9 @@
                                   #_(let [rebuild-actors! nil
                                           #_(fn rebuild-actors! [stage ctx]
                                               (.clear stage)
-                                              ((requiring-resolve 'moon.application.create.add-actors/step) ctx))
+                                              ((requiring-resolve 'moon.create.add-actors/step) ctx))
                                           create-world nil
-                                          #_(requiring-resolve 'moon.application.create.world/step)
+                                          #_(requiring-resolve 'moon.create.world/step)
                                           ui stage
                                           stage (Actor/.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                       (rebuild-actors! ui ctx)

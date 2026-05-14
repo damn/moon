@@ -1,4 +1,4 @@
-(ns moon.application.create.add-stage-actors.player-message
+(ns moon.create.add-stage-actors.player-message
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [moon.draws :as draws]))

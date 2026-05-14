@@ -1,4 +1,4 @@
-(ns moon.application.create.tiled-map
+(ns moon.create.tiled-map
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [moon.creature-tiles]

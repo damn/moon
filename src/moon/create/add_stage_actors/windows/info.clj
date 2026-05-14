@@ -1,4 +1,4 @@
-(ns moon.application.create.add-stage-actors.windows.info
+(ns moon.create.add-stage-actors.windows.info
   (:require [moon.stage :as stage]
             [moon.info :as info]))
 

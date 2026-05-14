@@ -1,4 +1,4 @@
-(ns moon.application.create.gdx-colors
+(ns moon.create.gdx-colors
   (:require [com.badlogic.gdx.graphics.color :as color])
   (:import (com.badlogic.gdx.graphics Colors))) ; TODO colors
 

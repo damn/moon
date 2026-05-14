@@ -1,4 +1,4 @@
-(ns moon.application.create.record
+(ns moon.create.record
   (:require [qrecord.core :as q]))
 
 (q/defrecord Context [])

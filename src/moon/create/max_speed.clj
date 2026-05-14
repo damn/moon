@@ -1,4 +1,4 @@
-(ns moon.application.create.max-speed)
+(ns moon.create.max-speed)
 
 (defn step
   [{:keys [ctx/minimum-size

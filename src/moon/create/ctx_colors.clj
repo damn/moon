@@ -1,4 +1,4 @@
-(ns moon.application.create.ctx-colors
+(ns moon.create.ctx-colors
   (:require [com.badlogic.gdx.graphics.color :as color]))
 
 (def black [0 0 0 1])

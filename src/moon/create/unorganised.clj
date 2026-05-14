@@ -1,4 +1,4 @@
-(ns moon.application.create.unorganised)
+(ns moon.create.unorganised)
 
 (defn step [ctx]
   (assoc ctx

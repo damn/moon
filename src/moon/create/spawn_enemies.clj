@@ -1,4 +1,4 @@
-(ns moon.application.create.spawn-enemies
+(ns moon.create.spawn-enemies
   (:require [moon.db :as db]
             [moon.txs :as txs]
             [moon.tiled-map :as tiled-map]))
