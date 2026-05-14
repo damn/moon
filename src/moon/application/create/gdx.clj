@@ -1,15 +1,21 @@
-(ns moon.gdx.viewport
+(ns moon.application.create.gdx
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
+            [moon.gdx :as gdx]
             [moon.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
-(defn create [width height camera]
-  (proxy [FitViewport ILookup] [width height camera]
-    (valAt [k]
-      (case k
-        :viewport/camera (.getCamera this)
-        ))))
+(defn step [ctx]
+  (extend-type (class ctx)
+    gdx/Gdx
+    (fit-viewport [_ width height camera]
+      (proxy [FitViewport ILookup] [width height camera]
+        (valAt [k]
+          (case k
+            :viewport/camera (.getCamera this)
+            ))))
+    )
+  ctx)
 
 (extend-type FitViewport
   viewport/Viewport
