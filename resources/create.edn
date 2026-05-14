@@ -1,6 +1,6 @@
 [
- [moon.create.tooltip-config/step]
- [moon.create.gdx-colors/step {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
+ [moon.create.do/step [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/set-initial-time! 0]]
+ [moon.create.do/step [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]]
  [moon.create.record/step]
  [moon.create.assoc/step :ctx/app moon.impl.app/create]
  [moon.create.assoc/step :ctx/batch moon.impl.batch/create]
