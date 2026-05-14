@@ -1,4 +1,5 @@
 {
+ :state-var moon.application/state
  :create-pipeline [
                    [moon.application.create.tooltip-config/step]
                    [moon.application.create.gdx-colors/step {"PRETTY_NAME" [0.84 0.8 0.52 1]}]

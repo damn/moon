@@ -1,0 +1,39 @@
+(ns moon.start
+  (:require [clojure.config :refer [edn-resource]]
+            [com.badlogic.gdx.application-listener :as listener]
+            [com.badlogic.gdx.backends.lwjgl3.application :as application]
+            [com.badlogic.gdx.backends.lwjgl3.config :as config])
+  (:gen-class))
+
+(defn -main []
+  (let [{:keys [
+                state-var
+                create-pipeline
+                dispose!
+                render-pipeline
+                resize!
+                config]} (edn-resource "game.edn")]
+    (config/use-glfw-async!)
+    (application/create (listener/create
+                         (let [state @state-var]
+                           {:create! (fn []
+                                       (reset! state
+                                               (reduce (fn [ctx [f & params]]
+                                                         (apply f ctx params))
+                                                       {}
+                                                       create-pipeline)))
+
+                            :dispose! (fn []
+                                        (dispose! @state))
+
+                            :render! (fn []
+                                       (swap! state
+                                              (fn [ctx]
+                                                (reduce (fn [ctx [f & params]]
+                                                          (apply f ctx params))
+                                                        ctx
+                                                        render-pipeline))))
+
+                            :resize! (fn [width height]
+                                       (resize! @state width height))}))
+                        (config/create config))))
