@@ -1,6 +1,6 @@
 (ns moon.application.render.draw-on-world-viewport.draw-tile-grid
   (:require [com.badlogic.gdx.graphics.color :as color]
-            [moon.world-viewport :as viewport]
+            [moon.viewport :as viewport]
             [moon.camera :as camera]))
 
 (defn draws

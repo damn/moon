@@ -1,6 +1,6 @@
 (ns moon.application.resize
   (:require [moon.stage :as stage]
-            [moon.world-viewport :as viewport]))
+            [moon.viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/stage

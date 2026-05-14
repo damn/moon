@@ -1,4 +1,4 @@
-(ns moon.world-viewport)
+(ns moon.viewport)
 
 (defprotocol Viewport
   (world-width [_])

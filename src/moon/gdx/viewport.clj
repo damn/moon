@@ -1,6 +1,6 @@
 (ns moon.gdx.viewport
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
-            [moon.world-viewport :as viewport])
+            [moon.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
