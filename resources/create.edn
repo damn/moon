@@ -1,31 +1,7 @@
 [
- [moon.create.do/step [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/set-initial-time! 0]]
- [moon.create.do/step [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]]
- [moon.create.record/step]
- [moon.create.assoc/step :ctx/app moon.impl.app/create]
- [moon.create.assoc/step :ctx/batch moon.impl.batch/create]
- [moon.create.assoc/step :ctx/shape-drawer-texture moon.impl.white-pixel-texture/create]
- [moon.create.assoc/step :ctx/shape-drawer moon.impl.shape-drawer/create]
- [moon.create.assoc/step :ctx/audio moon.impl.audio/create]
- [moon.create.assoc/step :ctx/default-font moon.impl.default-font/create]
- [moon.create.assoc/step :ctx/textures moon.impl.textures/create]
- [moon.create.assoc/step :ctx/world-unit-scale moon.impl.world-unit-scale/create]
- [moon.create.assoc/step :ctx/world-viewport moon.impl.world-viewport/create
-  {:viewport moon.gdx/fit-viewport
-   :camera   moon.gdx.orthographic-camera/create}]
- [moon.create.assoc/step :ctx/cursors moon.impl.cursors/create]
- [moon.create.assoc/step :ctx/stage moon.impl.stage/create]
- [moon.create.set-input-processor/step]
- [moon.create.assoc/step :ctx/skin moon.impl.skin/create]
- [moon.create.unorganised/step]
- [moon.create.controls/step]
- [moon.create.ctx-colors/step]
- [moon.create.render-z-order/step]
- [moon.create.max-speed/step]
- [moon.create.assoc/step :ctx/db moon.impl.db/create]
- [moon.create.impl-txs/step]
- [moon.create.impl-draws/step]
  [moon.create.require-ui-impls/step [
+                                     com.badlogic.gdx.application
+
                                      moon.schema-impl
                                      moon.state-impl
                                      moon.effect-impl
@@ -54,6 +30,31 @@
                                      moon.ui-actors.action-bar
                                      moon.ui-actors.windows.info
                                      ]]
+ [moon.create.do/step [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/set-initial-time! 0]]
+ [moon.create.do/step [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]]
+ [moon.create.record/step]
+ [moon.create.impl-txs/step]
+ [moon.create.impl-draws/step]
+ [moon.create.assoc/step :ctx/batch moon.impl.batch/create]
+ [moon.create.assoc/step :ctx/shape-drawer-texture moon.impl.white-pixel-texture/create]
+ [moon.create.assoc/step :ctx/shape-drawer moon.impl.shape-drawer/create]
+ [moon.create.assoc/step :ctx/audio moon.impl.audio/create]
+ [moon.create.assoc/step :ctx/default-font moon.impl.default-font/create]
+ [moon.create.assoc/step :ctx/textures moon.impl.textures/create]
+ [moon.create.assoc/step :ctx/world-unit-scale moon.impl.world-unit-scale/create]
+ [moon.create.assoc/step :ctx/world-viewport moon.impl.world-viewport/create
+  {:viewport moon.gdx/fit-viewport
+   :camera   moon.gdx.orthographic-camera/create}]
+ [moon.create.assoc/step :ctx/cursors moon.impl.cursors/create]
+ [moon.create.assoc/step :ctx/stage moon.impl.stage/create]
+ [moon.create.set-input-processor/step]
+ [moon.create.assoc/step :ctx/skin moon.impl.skin/create]
+ [moon.create.unorganised/step]
+ [moon.create.controls/step]
+ [moon.create.ctx-colors/step]
+ [moon.create.render-z-order/step]
+ [moon.create.max-speed/step]
+ [moon.create.assoc/step :ctx/db moon.impl.db/create]
  [moon.create.add-stage-actors/step [[moon.create.add-stage-actors.dev-menu/create]
                                      [moon.create.add-stage-actors.action-bar/create]
                                      [moon.create.add-stage-actors.hp-mana-bar/create]

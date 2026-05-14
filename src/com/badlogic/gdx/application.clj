@@ -1,11 +1,7 @@
-(ns moon.impl.app
+(ns com.badlogic.gdx.application
   (:require [moon.app :as app])
-  (:import (com.badlogic.gdx Application
-                             Gdx)
+  (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.graphics GL20)))
-
-(defn create [_ctx]
-  Gdx/app)
 
 (extend-type Application
   app/App

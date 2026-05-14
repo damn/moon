@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx.application-listener
-  (:import (com.badlogic.gdx ApplicationListener)))
+  (:import (com.badlogic.gdx ApplicationListener
+                             Gdx)))
 
 (defn create
   [{:keys [state-var
@@ -13,7 +14,7 @@
         (reset! state
                 (reduce (fn [ctx [f & params]]
                           (apply f ctx params))
-                        {}
+                        {:ctx/app Gdx/app}
                         create)))
 
       (dispose [_]
