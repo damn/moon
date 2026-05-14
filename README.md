@@ -1,5 +1,14 @@
 <details>
 
+* test levelgen/game all lvls.
+* no WARN ON REFLECTION
+* ^:private/defn-
+* transitives
+* imports
+* coun tlocs
+* hiera
+* hiera cluster 1
+
 <summary>
 sh count_locs.sh
 </summary>
