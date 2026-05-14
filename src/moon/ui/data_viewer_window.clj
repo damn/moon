@@ -60,11 +60,11 @@
                                                   :actor table
                                                   :skin skin})
                             :width width
-                            ; (- (viewport/world-width viewport) 100)
-                            ; (+ 100 (/ (viewport/world-width viewport) 2))
+                            ; (- (:viewport/world-width viewport) 100)
+                            ; (+ 100 (/ (:viewport/world-width viewport) 2))
                             :height 800
-                            ; (- (viewport/world-height viewport) 200)
-                            ; (- (viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
+                            ; (- (:viewport/world-height viewport) 200)
+                            ; (- (:viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
     (actor/create {:type :ui/window
                    :title title
