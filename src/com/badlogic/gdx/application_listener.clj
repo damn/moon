@@ -1,4 +1,4 @@
-(ns moon.listener
+(ns com.badlogic.gdx.application-listener
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn create
