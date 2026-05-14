@@ -45,6 +45,11 @@
 
    ]
   ]
+ [clojure.multifn/add-methods! moon.ui.actor/create
+  [
+   [:ui/actor moon.ui.impl.actor/create]
+   ]
+  ]
  [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [com.badlogic.gdx.backends.lwjgl3.config/use-glfw-async!]
  [com.badlogic.gdx.backends.lwjgl3.application/create
