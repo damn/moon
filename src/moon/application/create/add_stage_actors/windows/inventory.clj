@@ -53,14 +53,35 @@
      [:tx/event eid :pickup-item item]
      [:tx/remove-item eid cell]]))
 
-(defn- create-inventory-window*
-  [{:keys [colors
-           position
-           title
-           clicked-cell-listener
-           slot->texture-region
-           skin]}]
-  (let [cell-size 48
+(defn create
+  [{:keys [ctx/colors
+           ctx/skin
+           ctx/stage
+           ctx/textures]}]
+  (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
+                                             :shield   1
+                                             :rings    2
+                                             :necklace 3
+                                             :helm     4
+                                             :cloak    5
+                                             :chest    6
+                                             :leg      7
+                                             :glove    8
+                                             :boot     9
+                                             :bag      10}
+        slot->texture-region (fn [slot]
+                               (let [width  48
+                                     height 48
+                                     sprite-x 21
+                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
+                                     bounds [(* sprite-x width)
+                                             (* sprite-y height)
+                                             width
+                                             height]]
+                                 (textures/texture-region textures
+                                                          {:image/file "images/items.png"
+                                                           :image/bounds bounds})))
+        cell-size 48
         slot->drawable (fn [slot]
                          {
                           :drawable/texture-region (slot->texture-region slot)
@@ -85,7 +106,14 @@
                      {:type :ui/stack
                       :actor/name "inventory-cell"
                       :actor/user-object cell
-                      :actor/listeners {:listener/click (clicked-cell-listener cell)}
+                      :actor/listeners {:listener/click (fn [event _x _y]
+                                                          (let [{:keys [ctx/player-eid] :as ctx} (stage/ctx (event/stage event))
+                                                                entity @player-eid
+                                                                state-k (:state (:entity/fsm entity))]
+                                                            (txs/handle! ctx
+                                                                         (state/clicked-inventory-cell [state-k (state-k entity)]
+                                                                                                       player-eid
+                                                                                                       cell))))}
                       :group/actors [{:type :ui/widget
                                       :draw! (fn [this _batch _parent-alpha]
                                                (when-let [stage (actor/stage this)]
@@ -106,7 +134,7 @@
                                       :actor/user-object {:background-drawable background-drawable
                                                           :cell-size cell-size}}]})}))]
     {:type :ui/window
-     :title title
+     :title "Inventory"
      :skin skin
      :table/rows [[{:actor (actor/create
                             {:type :ui/table
@@ -132,57 +160,8 @@
                     :pad 4}]]
      :actor/name "moon.ui.windows.inventory"
      :actor/visible? false
-     :actor/position position}))
-
-(defn- create*
-  [{:keys [ctx/colors
-           ctx/skin
-           ctx/stage
-           ctx/textures]}
-   clicked-inventory-cell]
-  (let [slot->y-sprite-idx #:inventory.slot {:weapon   0
-                                             :shield   1
-                                             :rings    2
-                                             :necklace 3
-                                             :helm     4
-                                             :cloak    5
-                                             :chest    6
-                                             :leg      7
-                                             :glove    8
-                                             :boot     9
-                                             :bag      10}
-        slot->texture-region (fn [slot]
-                               (let [width  48
-                                     height 48
-                                     sprite-x 21
-                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
-                                     bounds [(* sprite-x width)
-                                             (* sprite-y height)
-                                             width
-                                             height]]
-                                 (textures/texture-region textures
-                                                          {:image/file "images/items.png"
-                                                           :image/bounds bounds})))]
-    (create-inventory-window*
-     {:colors colors
-      :skin skin
-      :title "Inventory"
-      :position [(stage/viewport-width stage)
-                 (stage/viewport-height stage)]
-      :clicked-cell-listener (fn [cell]
-                               (fn [event _x _y]
-                                 (clicked-inventory-cell cell (stage/ctx (event/stage event)))))
-      :slot->texture-region slot->texture-region})))
-
-(defn create [ctx]
-  (create* ctx
-           (fn clicked-inventory-cell [cell {:keys [ctx/player-eid] :as ctx}]
-             (let [entity @player-eid
-                   state-k (:state (:entity/fsm entity))]
-               (txs/handle! ctx
-                            (state/clicked-inventory-cell [state-k (state-k entity)]
-                                                          player-eid
-                                                          cell))))))
+     :actor/position [(stage/viewport-width stage)
+                      (stage/viewport-height stage)]}))
 
 (defn- find-cell [group cell]
   (first (filter #(= (actor/user-object %) cell)
