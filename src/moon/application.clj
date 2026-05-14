@@ -1,8 +1,8 @@
 (ns moon.application
-  (:require [clojure.config :refer [edn-resource]])
+  (:require [clojure.config :refer [edn-resource]]
+            [com.badlogic.gdx.backends.lwjgl3.config :as config])
   (:import (com.badlogic.gdx ApplicationListener)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration))
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application))
   (:gen-class))
 
 (def state (atom nil))
@@ -12,11 +12,9 @@
                 dispose!
                 render-pipeline
                 resize!
-                title
-                windowed-mode
-                foreground-fps
+                config
                 ]} (edn-resource "game.edn")]
-    (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+    (config/use-glfw-async!)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
                             (reset! state
@@ -42,7 +40,4 @@
                           (pause [_])
 
                           (resume [_]))
-                        (doto (Lwjgl3ApplicationConfiguration.)
-                          (.setTitle title)
-                          (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
-                          (.setForegroundFPS foreground-fps)))))
+                        (config/create config))))
