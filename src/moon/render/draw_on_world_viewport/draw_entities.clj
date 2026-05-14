@@ -1,4 +1,4 @@
-(ns moon.application.render.draw-on-world-viewport.draw-entities
+(ns moon.render.draw-on-world-viewport.draw-entities
   (:require moon.player-item-on-cursor
             [clojure.animation :as animation]
             [moon.stage :as stage]

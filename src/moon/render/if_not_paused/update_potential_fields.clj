@@ -1,4 +1,4 @@
-(ns moon.application.render.if-not-paused.update-potential-fields
+(ns moon.render.if-not-paused.update-potential-fields
   (:require [moon.grid :as grid]))
 
 (defn step

@@ -1,4 +1,4 @@
-(ns moon.application.render.window-camera-controls
+(ns moon.render.window-camera-controls
   (:require [moon.camera :as camera]
             [moon.stage :as stage]
             [moon.ui.actor :as actor]

@@ -1,4 +1,4 @@
-(ns moon.application.render.stage
+(ns moon.render.stage
   (:require [moon.stage :as stage]))
 
 (defn step

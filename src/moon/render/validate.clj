@@ -1,4 +1,4 @@
-(ns moon.application.render.validate
+(ns moon.render.validate
   (:require [moon.malli :as m]))
 
 (def schema

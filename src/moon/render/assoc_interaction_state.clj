@@ -1,4 +1,4 @@
-(ns moon.application.render.assoc-interaction-state
+(ns moon.render.assoc-interaction-state
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [moon.app :as app]

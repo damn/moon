@@ -1,4 +1,4 @@
-(ns moon.application.render.draw-on-world-viewport.draw-cell-debug
+(ns moon.render.draw-on-world-viewport.draw-cell-debug
   (:require [moon.camera :as camera]))
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil

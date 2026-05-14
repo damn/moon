@@ -1,4 +1,4 @@
-(ns moon.application.render.get-stage-ctx
+(ns moon.render.get-stage-ctx
   (:require [moon.stage :as stage]))
 
 (defn step

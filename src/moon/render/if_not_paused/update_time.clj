@@ -1,4 +1,4 @@
-(ns moon.application.render.if-not-paused.update-time
+(ns moon.render.if-not-paused.update-time
   (:require [moon.app :as app]))
 
 (defn step

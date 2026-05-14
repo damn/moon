@@ -1,4 +1,4 @@
-(ns moon.application.render.draw-on-world-viewport.highlight-mouseover-tile)
+(ns moon.render.draw-on-world-viewport.highlight-mouseover-tile)
 
 (defn draws
   [{:keys [ctx/colors

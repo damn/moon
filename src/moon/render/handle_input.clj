@@ -1,4 +1,4 @@
-(ns moon.application.render.handle-input
+(ns moon.render.handle-input
   (:require [moon.controls :as controls]
             [moon.ui.actor :as actor]
             [moon.stage :as stage]

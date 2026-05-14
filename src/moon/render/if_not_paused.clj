@@ -1,4 +1,4 @@
-(ns moon.application.render.if-not-paused)
+(ns moon.render.if-not-paused)
 
 (defn step
   [{:keys [ctx/paused?]

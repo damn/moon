@@ -1,4 +1,4 @@
-(ns moon.application.render.update-mouseover-eid
+(ns moon.render.update-mouseover-eid
   (:require [moon.stage :as stage]
             [moon.app :as app]
             [moon.grid :as grid]

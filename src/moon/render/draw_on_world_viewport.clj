@@ -1,4 +1,4 @@
-(ns moon.application.render.draw-on-world-viewport
+(ns moon.render.draw-on-world-viewport
   (:require [moon.batch :as batch]
             [moon.camera :as camera]
             [moon.draws :as draws]

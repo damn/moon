@@ -1,4 +1,4 @@
-(ns moon.application.render.set-cursor
+(ns moon.render.set-cursor
   (:require [moon.app :as app]
             [moon.state :as state]))
 

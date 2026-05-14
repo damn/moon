@@ -1,4 +1,4 @@
-(ns moon.application.render.assoc-paused
+(ns moon.render.assoc-paused
   (:require [moon.app :as app]
             [moon.state :as state]))
 

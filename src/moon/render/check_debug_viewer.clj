@@ -1,4 +1,4 @@
-(ns moon.application.render.check-debug-viewer
+(ns moon.render.check-debug-viewer
   (:require [moon.stage :as stage]
             [moon.app :as app]))
 

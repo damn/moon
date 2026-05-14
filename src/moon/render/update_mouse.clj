@@ -1,4 +1,4 @@
-(ns moon.application.render.update-mouse
+(ns moon.render.update-mouse
   (:require [moon.stage :as stage]
             [moon.viewport :as viewport]
             [moon.app :as app]))

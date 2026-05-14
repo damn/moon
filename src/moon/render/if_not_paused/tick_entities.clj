@@ -1,4 +1,4 @@
-(ns moon.application.render.if-not-paused.tick-entities
+(ns moon.render.if-not-paused.tick-entities
   (:require [clojure.animation :as animation]
             [moon.stage :as stage]
             [clojure.math :as math]

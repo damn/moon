@@ -1,4 +1,4 @@
-(ns moon.application.render.active-entities
+(ns moon.render.active-entities
   (:require [moon.content-grid :as content-grid]))
 
 (defn step

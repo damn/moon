@@ -1,4 +1,4 @@
-(ns moon.application.render.set-camera
+(ns moon.render.set-camera
   (:require [moon.camera :as camera]))
 
 (defn step

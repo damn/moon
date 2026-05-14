@@ -1,4 +1,4 @@
-(ns moon.application.render.draw-tiled-map
+(ns moon.render.draw-tiled-map
   (:require [moon.tiled-map.renderer :as tiled-map-renderer]
             [moon.camera :as camera]
             [moon.raycaster :as raycaster]))
