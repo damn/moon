@@ -1,8 +1,8 @@
 (ns moon.ui.impl.actor
+  (:refer-clojure :exclude [name])
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.utils.align :as align]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [moon.ui.actor :as actor])
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor
                                             Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
@@ -17,122 +17,120 @@
 (defn- button-class? [actor]
   (some #(= com.badlogic.gdx.scenes.scene2d.ui.Button %) (supers (class actor))))
 
-(extend-type Actor
-  actor/Actor
-  (name [actor]
-    (.getName actor))
+(defn name [^Actor actor]
+  (.getName actor))
 
-  (x [actor]
-    (.getX actor))
+(defn x [^Actor actor]
+  (.getX actor))
 
-  (y [actor]
-    (.getY actor))
+(defn y [^Actor actor]
+  (.getY actor))
 
-  (width [actor]
-    (.getWidth actor))
+(defn width [^Actor actor]
+  (.getWidth actor))
 
-  (height [actor]
-    (.getHeight actor))
+(defn height [^Actor actor]
+  (.getHeight actor))
 
-  (user-object [actor]
-    (.getUserObject actor))
+(defn user-object [^Actor actor]
+  (.getUserObject actor))
 
-  (stage [actor]
-    (.getStage actor))
+(defn stage [^Actor actor]
+  (.getStage actor))
 
-  (set-name! [actor name]
-    (.setName actor name))
+(defn set-name! [^Actor actor name]
+  (.setName actor name))
 
-  (set-user-object! [actor object]
-    (.setUserObject actor object))
+(defn set-user-object! [^Actor actor object]
+  (.setUserObject actor object))
 
-  (set-position!
-    ([actor [x y]]
-     (.setPosition actor x y))
-    ([actor x y align]
-     (.setPosition actor x y (align/k->value align))))
+(defn set-position!
+  (^Actor [actor [x y]]
+          (.setPosition actor x y))
+  ([actor x y align]
+   (.setPosition actor x y (align/k->value align))))
 
-  (set-visible! [actor visible?]
-    (.setVisible actor visible?))
+(defn set-visible! [^Actor actor visible?]
+  (.setVisible actor visible?))
 
-  (set-touchable! [actor touchable]
-    (.setTouchable actor (case touchable
-                           :touchable/disabled Touchable/disabled)))
+(defn set-touchable! [^Actor actor touchable]
+  (.setTouchable actor (case touchable
+                         :touchable/disabled Touchable/disabled)))
 
-  (visible? [actor]
-    (.isVisible actor))
+(defn visible? [^Actor actor]
+  (.isVisible actor))
 
-  (hit [actor [x y] touchable?]
-    (.hit actor x y touchable?))
+(defn hit [^Actor actor [x y] touchable?]
+  (.hit actor x y touchable?))
 
-  (remove! [actor]
-    (.remove actor))
+(defn remove! [^Actor actor]
+  (.remove actor))
 
-  (parent [actor]
-    (.getParent actor))
+(defn parent [^Actor actor]
+  (.getParent actor))
 
-  (add-listener! [actor [listener-k listener-params]]
-    (.addListener actor
-                  (case listener-k
-                    :listener/change (let [f listener-params]
-                                       (proxy [ChangeListener] []
-                                         (changed [event actor]
-                                           (f event actor))))
-                    :listener/text-tooltip (let [[tooltip skin] listener-params]
-                                             (TextTooltip. ^String tooltip ^Skin skin))
-                    :listener/click (let [f listener-params]
-                                      (proxy [ClickListener] []
-                                        (clicked [event x y]
-                                          (f event x y)))))))
+(defn add-listener! [^Actor actor [listener-k listener-params]]
+  (.addListener actor
+                (case listener-k
+                  :listener/change (let [f listener-params]
+                                     (proxy [ChangeListener] []
+                                       (changed [event actor]
+                                         (f event actor))))
+                  :listener/text-tooltip (let [[tooltip skin] listener-params]
+                                           (TextTooltip. ^String tooltip ^Skin skin))
+                  :listener/click (let [f listener-params]
+                                    (proxy [ClickListener] []
+                                      (clicked [event x y]
+                                        (f event x y)))))))
 
-  (stage->local-coordinates [actor xy]
-    (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy))))
+(defn stage->local-coordinates [^Actor actor xy]
+  (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy))))
 
-  (find-ancestor [actor ui-type-k]
-    (if-let [parent (actor/parent actor)]
-      (if (instance? (ui-type->class ui-type-k) parent)
-        parent
-        (actor/find-ancestor parent ui-type-k))
-      (throw (Error. (str "Actor has no parent window " actor)))))
+(defn find-ancestor [^Actor actor ui-type-k]
+  (if-let [p (parent actor)]
+    (if (instance? (ui-type->class ui-type-k) p)
+      p
+      (find-ancestor p ui-type-k))
+    (throw (Error. (str "Actor has no parent window " actor)))))
 
-  (button? [actor]
-    (or (button-class? actor)
-        (and (actor/parent actor)
-             (button-class? (actor/parent actor)))))
+(defn button? [^Actor actor]
+  (or (button-class? actor)
+      (and (parent actor)
+           (button-class? (parent actor)))))
 
-  ; FIXME does not work
-  (window-title-bar? [actor]
-    (when (instance? com.badlogic.gdx.scenes.scene2d.ui.Label actor)
-      (when-let [p (actor/parent actor)]
-        (when-let [p (actor/parent p)]
-          (and (instance? com.badlogic.gdx.scenes.scene2d.ui.Window actor)
-               (= (window/title-label p) actor))))))
+; FIXME does not work
+(defn window-title-bar? [^Actor actor]
+  (when (instance? com.badlogic.gdx.scenes.scene2d.ui.Label actor)
+    (when-let [p (parent actor)]
+      (when-let [p (parent p)]
+        (and (instance? com.badlogic.gdx.scenes.scene2d.ui.Window actor)
+             (= (window/title-label p) actor))))))
 
-  (toggle-visible! [actor]
-    (actor/set-visible! actor (not (actor/visible? actor))))
+(defn toggle-visible! [^Actor actor]
+  (set-visible! actor (not (visible? actor))))
 
-  (set-opts! [actor opts]
-    (when-let [user-object (:actor/user-object opts)]
-      (actor/set-user-object! actor user-object))
+(defn set-opts! [^Actor actor opts]
+  (when-let [user-object (:actor/user-object opts)]
+    (set-user-object! actor user-object))
 
-    (when (:actor/position opts)
-      (let [[x y align] (:actor/position opts)]
-        (if align
-          (actor/set-position! actor x y align)
-          (actor/set-position! actor [x y]))))
+  (when (:actor/position opts)
+    (let [[x y align] (:actor/position opts)]
+      (if align
+        (set-position! actor x y align)
+        (set-position! actor [x y]))))
 
-    (when (contains? opts :actor/visible?)
-      (actor/set-visible! actor (:actor/visible? opts)))
+  (when (contains? opts :actor/visible?)
+    (set-visible! actor (:actor/visible? opts)))
 
-    (when-let [touchable (:actor/touchable opts)]
-      (actor/set-touchable! actor touchable))
+  (when-let [touchable (:actor/touchable opts)]
+    (set-touchable! actor touchable))
 
-    (when-let [name (:actor/name opts)]
-      (actor/set-name! actor name))
+  (when-let [name (:actor/name opts)]
+    (set-name! actor name))
 
-    (when-let [listeners (:actor/listeners opts)]
-      (doseq [listener listeners]
-        (actor/add-listener! actor listener)))))
+  (when-let [listeners (:actor/listeners opts)]
+    (doseq [listener listeners]
+      (add-listener! actor listener))))
 
 (defn create
   [{:keys [act! draw!] :as opts}]
@@ -145,4 +143,4 @@
           (draw [batch parent-alpha]
             (when draw!
               (draw! this batch parent-alpha))))
-    (actor/set-opts! opts)))
+    (set-opts! opts)))

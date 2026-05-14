@@ -8,7 +8,6 @@
    ;
 
    ; MORE DEFMETHOD & EXTEND-TYPE (use fn-map ?)
-   moon.ui.impl.actor
    moon.ui.impl.group
    moon.ui.impl.horizontal-group
    moon.ui.impl.image
@@ -42,6 +41,9 @@
    [com.badlogic.gdx.graphics.OrthographicCamera
     moon.gdx.orthographic-camera
     moon.camera/OrthographicCamera]
+   [com.badlogic.gdx.scenes.scene2d.Actor
+    moon.ui.impl.actor
+    moon.ui.actor/Actor]
 
    ]
   ]
