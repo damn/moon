@@ -4,6 +4,12 @@
    ; defmethods simpler just function maps?
    ; -> ala tx/ draw/
    ; => no 'k' first arg
+   moon.schema-widget.animation
+   moon.schema-widget.boolean
+   moon.schema-widget.default
+   moon.schema-widget.enum
+   moon.schema-widget.image
+   moon.schema-widget.map
    moon.schema-impl
    moon.state-impl
    moon.effect-impl
