@@ -112,3 +112,17 @@ TOP 10 LoC:
      352 src//moon/effect_impl.clj
      531 src//moon/schema_impl.clj
     8993 total
+
+Now split out till map and:
+
+     222 src//moon/schema_widget/map.clj
+     222 src//moon/tx/spawn_entity.clj
+     230 src//moon/render/draw_on_world_viewport/draw_entities.clj
+     253 src//moon/schema_impl.clj
+     273 src//moon/render/if_not_paused/tick_entities.clj
+     303 src//moon/grid2d.clj - broken -
+     306 src//moon/world_fns/modules.clj - can be split up easily -
+     331 src//moon/impl/grid.clj - totally broken -
+     335 src//moon/info_impl.clj - totally broken! -
+     352 src//moon/effect_impl.clj - low complexity index
+    9024 total

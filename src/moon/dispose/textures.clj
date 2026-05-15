@@ -1,6 +1,6 @@
 (ns moon.dispose.textures
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clojure.gdx.utils.disposable :refer [dispose!]]))
 
 (defn do!
   [{:keys [ctx/textures]}]
-  (run! Disposable/.dispose (vals textures)))
+  (run! dispose! (vals textures)))

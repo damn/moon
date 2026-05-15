@@ -56,6 +56,11 @@
    [com.badlogic.gdx.scenes.scene2d.Group
     moon.ui.impl.group
     moon.ui.group/Group] ; clojure.gdx -> TODO use 'moon.rename' with moving the file (changing ns?)
+
+
+   [com.badlogic.gdx.utils.Disposable
+    com.badlogic.gdx.utils.disposable
+    clojure.gdx.disposable/Disposable]
    ]
   ]
  [clojure.multifn/add-methods! moon.ui.actor/create

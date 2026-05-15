@@ -1,6 +1,6 @@
 (ns moon.dispose.audio
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clojure.gdx.utils.disposable :refer [dispose!]]))
 
 (defn do!
   [{:keys [ctx/audio]}]
-  (run! Disposable/.dispose (vals audio)))
+  (run! dispose! (vals audio)))

@@ -1,6 +1,6 @@
 (ns moon.dispose.batch
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clojure.gdx.utils.disposable :refer [dispose!]]))
 
 (defn do!
   [{:keys [ctx/batch]}]
-  (Disposable/.dispose batch))
+  (dispose! batch))

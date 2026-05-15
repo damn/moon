@@ -1,6 +1,6 @@
 (ns moon.dispose.tiled-map
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clojure.gdx.utils.disposable :refer [dispose!]]))
 
 (defn do!
   [{:keys [ctx/tiled-map]}]
-  (Disposable/.dispose tiled-map))
+  (dispose! tiled-map))

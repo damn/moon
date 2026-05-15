@@ -1,6 +1,6 @@
 (ns moon.dispose.skin
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clojure.gdx.utils.disposable :refer [dispose!]]))
 
 (defn do!
   [{:keys [ctx/skin]}]
-  (Disposable/.dispose skin))
+  (dispose! skin))

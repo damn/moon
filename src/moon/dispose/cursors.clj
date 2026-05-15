@@ -1,6 +1,6 @@
 (ns moon.dispose.cursors
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clojure.gdx.utils.disposable :refer [dispose!]]))
 
 (defn do!
   [{:keys [ctx/cursors]}]
-  (run! Disposable/.dispose (vals cursors)))
+  (run! dispose! (vals cursors)))

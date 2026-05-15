@@ -1,6 +1,6 @@
 (ns moon.dispose.shape-drawer-texture
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clojure.gdx.utils.disposable :refer [dispose!]]))
 
 (defn do!
   [{:keys [ctx/shape-drawer-texture]}]
-  (Disposable/.dispose shape-drawer-texture))
+  (dispose! shape-drawer-texture))
