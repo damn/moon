@@ -1,4 +1,4 @@
-(ns clojure.gdx.scenes.scene2d.stage)
+(ns moon.stage)
 
 ; TODO viewport getter
 ; etc. ..
