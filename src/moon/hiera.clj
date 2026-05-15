@@ -86,3 +86,28 @@
 ; Plan:
 ; * mark colors, set as data (protocol, finished, yellow, red)
 ; * generate again !
+; * can see status
+
+; => ONLY FORMS not NAMES !
+
+; => green is - one protocol ?
+
+; => IS _DONE_ -> focus on whats not done, first OVERVIEW
+
+; => add TODOS , link issues, ?
+
+(def done
+  '#{
+     moon.stage
+     }
+  )
+
+; => MAYBE FIRST FINISH THE LIBGDX PART !????
+; => make project smaller
+
+
+; FIRST OVERVIEW
+; GREEN = GODO FOR NOW
+; THEN SORT REDS/YELLOWS/ETC
+
+; FIGURE OUT THE _WORST_ (info)?

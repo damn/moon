@@ -6,6 +6,11 @@
 (defn create [_ctx]
   (SpriteBatch.))
 
+; keep the constructor
+; just make the functions into 'SpriteBatch' namespace
+; ? and 'create' too ?
+; and extend separately ? as side effect ?
+
 (extend-type SpriteBatch
   batch/Batch
   (begin! [batch]

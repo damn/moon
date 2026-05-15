@@ -1,3 +1,19 @@
+; TODO create doesnt really need to be here ?
+; just impl and ns = class-name
+; 'create' is somewhere else
+; => methods are implementations, become functions,
+; can go deeper there first (quite simple should be)
+; e.g. Lwjgl3Application -> functions operating on it, or input, etc.
+
+; ui create fns & methods also separate?
+; creaet != part of API
+; data & functions separate ?!
+; => !?
+; com.badlogic.gdx.create.sprite-batch ?
+; e.g. viewport create & camera create @ impl-world-viewport
+; and all the functions and extensions happen separately
+; .....
+; => CREATE DOES NOT MAKE SENSE <=
 (ns space.earlygrey.shape-drawer
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 

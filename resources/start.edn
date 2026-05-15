@@ -1,5 +1,9 @@
 [[clojure.core-ext/require-namespaces!
   [
+
+   ; defmethods simpler just function maps?
+   ; -> ala tx/ draw/
+   ; => no 'k' first arg
    moon.schema-impl
    moon.state-impl
    moon.effect-impl
@@ -17,7 +21,7 @@
    moon.ui.impl.widget
    moon.ui.impl.widget-group
    moon.ui.impl.window
-   moon.ui.data-viewer-window
+   moon.ui.data-viewer-window ; requires itself type knowledge ... can pass also non-declaretd actor to stage?
    moon.ui.error-window
    moon.ui.property-editor-window
    moon.ui.property-overview-window
@@ -26,13 +30,17 @@
    moon.ui-actors.windows.info
    ]]
  [clojure.core-ext/extend-types!
+  ; 'clojure.gdx' because indirectly connected to `com.badlogic.gdx` implementations ?
+   ; GREPPABLE NAME - not just scene2d.foo
   [
    [com.badlogic.gdx.Application
     com.badlogic.gdx.application  ; impl is 'com.badlogic.gdx.backends.lwjgl3.application' ....
     moon.app/App]
+
    [space.earlygrey.shapedrawer.ShapeDrawer
     space.earlygrey.shape-drawer
     moon.shape-drawer/ShapeDrawer]
+
    [com.badlogic.gdx.graphics.OrthographicCamera
     moon.gdx.orthographic-camera
     moon.camera/OrthographicCamera]

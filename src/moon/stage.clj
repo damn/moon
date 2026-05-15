@@ -1,8 +1,11 @@
-(ns moon.stage)
+(ns clojure.gdx.scenes.scene2d.stage)
+
+; TODO viewport getter
+; etc. ..
 
 (defprotocol Stage
   (ctx [_])
-  (set-ctx! [_ ctx])
+  (set-ctx! [_ ctx]) ; with act/draw?
   (add-actor! [_ actor])
   (act! [_])
   (draw! [_])
