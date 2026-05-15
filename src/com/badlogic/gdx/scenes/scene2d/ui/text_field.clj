@@ -1,4 +1,4 @@
-(ns moon.ui.impl.text-field
+(ns com.badlogic.gdx.scenes.scene2d.ui.text-field
   (:require [moon.ui.actor :as actor]
             [moon.ui.text-field :as text-field])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin

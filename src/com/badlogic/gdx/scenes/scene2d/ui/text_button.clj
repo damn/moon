@@ -1,4 +1,4 @@
-(ns moon.ui.impl.text-button
+(ns com.badlogic.gdx.scenes.scene2d.ui.text-button
   (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton)))

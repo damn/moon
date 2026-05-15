@@ -1,4 +1,4 @@
-(ns moon.ui.impl.image-button
+(ns com.badlogic.gdx.scenes.scene2d.ui.image-button
   (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui ImageButton)

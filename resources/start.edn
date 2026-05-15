@@ -14,18 +14,18 @@
    moon.state-impl
    moon.effect-impl
    moon.info-impl
-   moon.ui.impl.horizontal-group
-   moon.ui.impl.image
-   moon.ui.impl.image-button
-   moon.ui.impl.label
-   moon.ui.impl.scroll-pane
-   moon.ui.impl.select-box
-   moon.ui.impl.stack
-   moon.ui.impl.table
-   moon.ui.impl.text-button
-   moon.ui.impl.text-field
-   moon.ui.impl.widget
-   moon.ui.impl.widget-group
+   com.badlogic.gdx.scenes.scene2d.ui.horizontal-group
+   com.badlogic.gdx.scenes.scene2d.ui.image
+   com.badlogic.gdx.scenes.scene2d.ui.image-button
+   com.badlogic.gdx.scenes.scene2d.ui.label
+   com.badlogic.gdx.scenes.scene2d.ui.scroll-pane
+   com.badlogic.gdx.scenes.scene2d.ui.select-box
+   com.badlogic.gdx.scenes.scene2d.ui.stack
+   com.badlogic.gdx.scenes.scene2d.ui.table
+   com.badlogic.gdx.scenes.scene2d.ui.text-button
+   com.badlogic.gdx.scenes.scene2d.ui.text-field
+   com.badlogic.gdx.scenes.scene2d.ui.widget
+   com.badlogic.gdx.scenes.scene2d.ui.widget-group
    moon.ui.impl.window
    moon.ui.data-viewer-window ; requires itself type knowledge ... can pass also non-declaretd actor to stage?
    moon.ui.error-window
@@ -54,7 +54,7 @@
     com.badlogic.gdx.scenes.scene2d.actor
     moon.ui.actor/Actor] ; clojure.gdx
    [com.badlogic.gdx.scenes.scene2d.Group
-    moon.ui.impl.group
+    com.badlogic.gdx.scenes.scene2d.group
     moon.ui.group/Group] ; clojure.gdx -> TODO use 'moon.rename' with moving the file (changing ns?)
 
 
@@ -66,7 +66,7 @@
  [clojure.multifn/add-methods! moon.ui.actor/create
   [
    [:ui/actor com.badlogic.gdx.scenes.scene2d.actor/create]
-   [:ui/group moon.ui.impl.group/create]
+   [:ui/group com.badlogic.gdx.scenes.scene2d.group/create]
    ]
   ]
  [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]

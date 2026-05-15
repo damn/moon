@@ -1,4 +1,4 @@
-(ns moon.ui.impl.widget
+(ns com.badlogic.gdx.scenes.scene2d.ui.widget
   (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Widget)))
 

@@ -1,4 +1,4 @@
-(ns moon.ui.impl.group
+(ns com.badlogic.gdx.scenes.scene2d.group
   (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 

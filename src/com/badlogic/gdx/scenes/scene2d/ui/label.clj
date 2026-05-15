@@ -1,4 +1,4 @@
-(ns moon.ui.impl.label
+(ns com.badlogic.gdx.scenes.scene2d.ui.label
   (:require [moon.ui.actor :as actor]
             moon.ui.label)
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label

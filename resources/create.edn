@@ -11,7 +11,7 @@
  [moon.create.assoc/step :ctx/textures moon.impl.textures/create]
  [moon.create.assoc/step :ctx/world-unit-scale moon.impl.world-unit-scale/create]
  [moon.create.assoc/step :ctx/world-viewport moon.impl.world-viewport/create
-  {:viewport moon.gdx/fit-viewport
+  {:viewport com.badlogic.gdx.utils.viewport.fit-viewport/create
    :camera   com.badlogic.gdx.graphics.orthographic-camera/create}]
  [moon.create.assoc/step :ctx/cursors moon.impl.cursors/create]
  [moon.create.assoc/step :ctx/stage moon.impl.stage/create]

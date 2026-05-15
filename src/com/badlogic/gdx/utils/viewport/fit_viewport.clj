@@ -1,10 +1,10 @@
-(ns moon.gdx
+(ns com.badlogic.gdx.utils.viewport.fit-viewport
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [moon.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
-(defn fit-viewport [width height camera]
+(defn create [width height camera]
   (proxy [FitViewport ILookup] [width height camera]
     (valAt [k]
       (case k
