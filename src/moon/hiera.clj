@@ -82,3 +82,7 @@
  ; :color doesnt work
  ; :bgcolor works
  )
+
+; Plan:
+; * mark colors, set as data (protocol, finished, yellow, red)
+; * generate again !

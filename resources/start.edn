@@ -28,7 +28,7 @@
  [clojure.core-ext/extend-types!
   [
    [com.badlogic.gdx.Application
-    com.badlogic.gdx.application
+    com.badlogic.gdx.application  ; impl is 'com.badlogic.gdx.backends.lwjgl3.application' ....
     moon.app/App]
    [space.earlygrey.shapedrawer.ShapeDrawer
     space.earlygrey.shape-drawer
