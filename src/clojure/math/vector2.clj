@@ -66,6 +66,3 @@
 (defn diagonal-direction? [[x y]]
   (and (not (zero? (float x)))
        (not (zero? (float y)))))
-
-(defn add-vs [vs]
-  (normalise (reduce add [0 0] vs)))
