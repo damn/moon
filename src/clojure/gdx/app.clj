@@ -1,4 +1,4 @@
-(ns moon.app)
+(ns clojure.gdx.app)
 
 (defprotocol App
   (new-sound [_ path])

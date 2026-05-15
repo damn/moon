@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.ui.actor :as actor]
             [moon.stage :as stage]
-            [moon.app :as app]
+            [clojure.gdx.app :as app]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
             [moon.skill :as skill]

@@ -1,5 +1,5 @@
 (ns moon.render.if-not-paused.update-time
-  (:require [moon.app :as app]))
+  (:require [clojure.gdx.app :as app]))
 
 (defn step
   [{:keys [ctx/app

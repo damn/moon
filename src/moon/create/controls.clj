@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [com.badlogic.gdx.input.keys :as input.keys]
-            [moon.app :as app]
+            [clojure.gdx.app :as app]
             [moon.controls :as controls]))
 
 (defn step [ctx]

@@ -1,7 +1,7 @@
 (ns moon.create.add-stage-actors.player-state-draw
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
-            [moon.app :as app]
+            [clojure.gdx.app :as app]
             [moon.draws :as draws]
             [moon.state :as state]
             [moon.textures :as textures]))

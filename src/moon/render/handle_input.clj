@@ -3,7 +3,7 @@
             [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [com.badlogic.gdx.input.buttons :as input.buttons]
-            [moon.app :as app]
+            [clojure.gdx.app :as app]
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.stats :as stats]

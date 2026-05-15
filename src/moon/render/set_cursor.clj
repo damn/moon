@@ -1,5 +1,5 @@
 (ns moon.render.set-cursor
-  (:require [moon.app :as app]
+  (:require [clojure.gdx.app :as app]
             [moon.state :as state]))
 
 (defmethod state/cursor :player-dead

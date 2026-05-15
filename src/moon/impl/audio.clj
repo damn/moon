@@ -1,7 +1,7 @@
 (ns moon.impl.audio
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [moon.app :as app]))
+            [clojure.gdx.app :as app]))
 
 (defn create
   [{:keys [ctx/app]}]

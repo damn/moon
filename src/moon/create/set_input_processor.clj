@@ -1,5 +1,5 @@
 (ns moon.create.set-input-processor
-  (:require [moon.app :as app]))
+  (:require [clojure.gdx.app :as app]))
 
 (defn step
   [{:keys [ctx/app

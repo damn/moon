@@ -3,7 +3,7 @@
             [moon.stage :as stage]
             [clojure.string :as str]
             [moon.db :as db]
-            [moon.app :as app]
+            [clojure.gdx.app :as app]
             [moon.number :as number]))
 
 (defn create

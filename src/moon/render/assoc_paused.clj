@@ -1,5 +1,5 @@
 (ns moon.render.assoc-paused
-  (:require [moon.app :as app]
+  (:require [clojure.gdx.app :as app]
             [moon.state :as state]))
 
 (defmethod state/pause-game? :active-skill

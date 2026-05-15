@@ -1,6 +1,6 @@
 (ns moon.render.check-debug-viewer
   (:require [moon.stage :as stage]
-            [moon.app :as app]))
+            [clojure.gdx.app :as app]))
 
 (defn step
   [{:keys [ctx/controls
