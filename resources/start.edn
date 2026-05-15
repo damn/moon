@@ -43,6 +43,10 @@
     com.badlogic.gdx.application  ; impl is 'com.badlogic.gdx.backends.lwjgl3.application' ....
     clojure.gdx.app/App]
 
+   [com.badlogic.gdx.graphics.g2d.SpriteBatch
+    com.badlogic.gdx.graphics.g2d.sprite-batch
+    moon.batch/Batch]
+
    [space.earlygrey.shapedrawer.ShapeDrawer
     space.earlygrey.shape-drawer
     moon.shape-drawer/ShapeDrawer] ; clojure.gdx
