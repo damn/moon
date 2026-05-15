@@ -1,7 +1,8 @@
 (ns moon.impl.content-grid
-  (:require [moon.content-grid :as content-grid]
-            [moon.grid2d :as g2d]
-            [moon.tiled-map :as tiled-map]))
+  (:require [com.badlogic.gdx.maps.map-properties :as props]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [moon.content-grid :as content-grid]
+            [moon.grid2d :as g2d]))
 
 (defn- update-entity! [{:keys [grid cell-w cell-h]} eid]
   (let [{:keys [moon.content-grid/content-cell
@@ -50,6 +51,6 @@
 
 (defn create
   [{:keys [ctx/tiled-map]}]
-  (create* (tiled-map/width tiled-map)
-           (tiled-map/height tiled-map)
+  (create* (props/get (tiled-map/properties tiled-map) "width")
+           (props/get (tiled-map/properties tiled-map) "height")
            16))

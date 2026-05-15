@@ -1,8 +1,9 @@
 (ns moon.world-fns.uf-caves
-  (:require [moon.grid2d :as g2d]
-            [moon.tiled-map :as tiled-map]
-            [moon.nads :as nads]
-            [clojure.rand :as rand])
+  (:require [clojure.rand :as rand]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [moon.grid2d :as g2d]
+            [moon.nads :as nads])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
@@ -76,7 +77,7 @@
         grid (assoc-transition-cells grid)
 
         position->tile (position->tile-fn grid)
-        tiled-map (tiled-map/create-tiled-map
+        tiled-map (tiled-map/create
                    {:properties {"width"  (g2d/width  grid)
                                  "height" (g2d/height grid)
                                  "tilewidth"  tile-size
@@ -138,7 +139,7 @@
                                 (memoize
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
-                                   (tiled-map/static-tiled-map-tile
+                                   (static-tiled-map-tile/create
                                     (TextureRegion. ^Texture texture
                                                     (int (* (sprite-idx 0) tile-size))
                                                     (int (* (sprite-idx 1) tile-size))

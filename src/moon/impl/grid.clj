@@ -2,21 +2,22 @@
   (:require [clojure.math.circle :as circle]
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
+            [com.badlogic.gdx.maps.map-properties :as props]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [moon.position :as position]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
-            [moon.tiled-map :as tiled-map]
             [moon.cell :as cell])
   (:import (com.badlogic.gdx.math Circle
                                   Intersector
                                   Rectangle)))
 
 (defn create [{:keys [ctx/tiled-map]}]
-  (g2d/create-grid (tiled-map/width tiled-map)
-                   (tiled-map/height tiled-map)
+  (g2d/create-grid (props/get (tiled-map/properties tiled-map) "width")
+                   (props/get (tiled-map/properties tiled-map) "height")
                    (fn [position]
                      (atom (cell/create position
                                         (case (tiled-map/movement-property tiled-map position)

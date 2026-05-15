@@ -1,0 +1,16 @@
+
+src/com/badlogic/gdx/maps/map_properties.clj|1 col 5-26| (ns com.badlogic.gdx.maps.map-properties
+src/com/badlogic/gdx/maps/tiled/tiled_map.clj|1 col 5-26| (ns com.badlogic.gdx.maps.tiled.tiled-map
+src/com/badlogic/gdx/maps/tiled/tiled_map_tile_layer.clj|1 col 5-26| (ns com.badlogic.gdx.maps.tiled.tiled-map-tile-layer
+src/com/badlogic/gdx/maps/tiled/tiles/static_tiled_map_tile.clj|1 col 5-26| (ns com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile
+src/com/badlogic/gdx/maps/tiled/tmx_map_loader.clj|1 col 5-26| (ns com.badlogic.gdx.maps.tiled.tmx-map-loader
+
+src/moon/tiled_map/renderer.clj|2 col 13-34| (:import (com.badlogic.gdx.maps.tiled TiledMap
+
+src/moon/tiled_map.clj|2 col 14-35| (:require [com.badlogic.gdx.maps.map-properties :as props]
+src/moon/tiled_map.clj|3 col 14-35| [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+src/moon/tiled_map.clj|4 col 14-35| [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+src/moon/tiled_map.clj|5 col 14-35| [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile])
+src/moon/tiled_map.clj|6 col 13-34| (:import (com.badlogic.gdx.maps.tiled TiledMap
+
+src/moon/world_fns/modules.clj|7 col 13-34| (:import (com.badlogic.gdx.maps.tiled TiledMap

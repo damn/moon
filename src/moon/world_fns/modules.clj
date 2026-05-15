@@ -1,12 +1,12 @@
 (ns moon.world-fns.modules
-  (:require [moon.grid2d :as g2d]
-            [moon.nads :as nads]
-            [moon.tiled-map :as tiled-map])
-  (:import (com.badlogic.gdx.maps MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMap
-                                        TiledMapTileLayer
-                                        TmxMapLoader)
-           (java.util Random)))
+  (:require [com.badlogic.gdx.maps.map-properties :as props]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [moon.grid2d :as g2d]
+            [moon.nads :as nads])
+  (:import (java.util Random)))
 
 (def ^:private number-modules-x 8)
 (def ^:private number-modules-y 4)
@@ -70,9 +70,9 @@
    unscaled-floor-positions
    unscaled-transition-positions]
   (let [[modules-width modules-height] modules-scale
-        _ (assert (and (= (tiled-map/width modules-tiled-map)
+        _ (assert (and (= (props/get (tiled-map/properties modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (tiled-map/height modules-tiled-map)
+                       (= (props/get (tiled-map/properties modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* modules-scale
@@ -135,28 +135,24 @@
   (assoc w :scaled-grid (g2d/scale-grid (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")))
-
-(defn- props->clj [^MapProperties props]
-  (zipmap (.getKeys   props)
-          (.getValues props)))
+  (assoc w :schema-tiled-map (tmx-map-loader/load! "maps/modules.tmx")))
 
 (defn- grid->tiled-map
-  [^TiledMap schema-tiled-map grid]
-  (tiled-map/create-tiled-map
-   {:properties (merge (props->clj (.getProperties schema-tiled-map))
+  [schema-tiled-map grid]
+  (tiled-map/create
+   {:properties (merge (props/->clj (.getProperties schema-tiled-map))
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})
     :layers (for [layer (.getLayers schema-tiled-map)]
               {:name (.getName layer)
                :visible? (.isVisible layer)
-               :properties (props->clj (.getProperties layer))
+               :properties (props/->clj (.getProperties layer))
                :tiles (for [position (g2d/posis grid)
                             :let [local-position (get grid position)]
                             :when local-position]
                         (when (vector? local-position)
                           (when-let [cell (.getCell layer (local-position 0) (local-position 1))]
-                            [position (tiled-map/copy-tile (.getTile cell))])))})}))
+                            [position (static-tiled-map-tile/copy (.getTile cell))])))})}))
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid
@@ -216,13 +212,6 @@
           {:steps steps
            :area-level-grid grid})))))
 
-(defn- property-value [^TiledMapTileLayer layer [x y] property-key]
-  (if-let [cell (.getCell layer x y)]
-    (if-let [value (.get (.getProperties (.getTile cell)) property-key)]
-      value
-      :undefined)
-    :no-cell))
-
 (defn- last-steps
   [{:keys [
            world/max-area-level
@@ -267,9 +256,9 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (.get (.getLayers tiled-map) "creatures")
-                                                                    p
-                                                                    "id"))))
+                                                    (layer/property-value (.get (.getLayers tiled-map) "creatures")
+                                                                          p
+                                                                          "id"))))
                                             spawn-positions)))
 
 

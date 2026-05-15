@@ -1,7 +1,7 @@
 (ns moon.create.spawn-enemies
-  (:require [moon.db :as db]
-            [moon.txs :as txs]
-            [moon.tiled-map :as tiled-map]))
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [moon.db :as db]
+            [moon.txs :as txs]))
 
 (defn step
   [{:keys [ctx/db
