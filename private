@@ -1,0 +1,178 @@
+
+src/moon/application/create/impl_txs.clj|57 col 2-7| (defn- actions!
+src/moon/application/create/impl_txs.clj|82 col 2-7| (defn- reduce-actions!
+
+src/moon/application/render/assoc_interaction_state.clj|10 col 2-7| (defn- mouseover-actor-info [actor]
+src/moon/application/render/assoc_interaction_state.clj|20 col 2-7| (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
+src/moon/application/render/assoc_interaction_state.clj|31 col 2-7| (defn- interaction-state
+
+src/moon/application/render/draw_on_world_viewport/draw_entities.clj|193 col 2-7| (defn- draw-body-rect [{:keys [body/position body/width body/height]} color-float-bits]
+src/moon/application/render/draw_on_world_viewport/draw_entities.clj|198 col 2-7| (defn- draw-entity
+
+src/moon/application/render/draw_tiled_map.clj|6 col 2-7| (defn- tile-color-setter*
+src/moon/application/render/draw_tiled_map.clj|52 col 2-7| (defn- tile-color-setter
+
+src/moon/application/render/handle_input.clj|12 col 2-7| (defn- creature-speed [{:keys [entity/stats]}]
+src/moon/application/render/handle_input.clj|31 col 2-7| (defn- interaction-state->txs [[k params] stage player-eid]
+
+src/moon/application/render/if_not_paused/tick_entities.clj|22 col 2-7| (defn- move-position [position {:keys [direction speed delta-time]}]
+src/moon/application/render/if_not_paused/tick_entities.clj|25 col 2-7| (defn- move-body [body movement]
+src/moon/application/render/if_not_paused/tick_entities.clj|28 col 2-7| (defn- try-move [grid body entity-id movement]
+src/moon/application/render/if_not_paused/tick_entities.clj|33 col 2-7| (defn- try-move-solid-body [grid body entity-id {[vx vy] :direction :as movement}]
+src/moon/application/render/if_not_paused/tick_entities.clj|40 col 2-7| (defn- npc-effect-ctx
+src/moon/application/render/if_not_paused/tick_entities.clj|55 col 2-7| (defn- npc-choose-skill [ctx entity effect-ctx]
+src/moon/application/render/if_not_paused/tick_entities.clj|67 col 2-7| (defn- update-effect-ctx
+
+src/moon/caves.clj|10 col 2-7| (defn- create-order [random]
+src/moon/caves.clj|13 col 2-7| (defn- get-in-order [v order]
+src/moon/caves.clj|20 col 2-7| (defn- create-rand-4-neighbour-posis [posi n random] ; TODO does more than 1 thing
+src/moon/caves.clj|27 col 2-7| (defn- get-default-adj-num [open-paths random]
+src/moon/caves.clj|42 col 2-7| (defn- get-thin-adj-num [open-paths random]
+src/moon/caves.clj|50 col 2-7| (defn- get-wide-adj-num [open-paths random]
+
+src/moon/dev_loop.clj|13 col 2-7| (defn- handle-throwable! [t]
+src/moon/dev_loop.clj|49 col 2-7| (defn- save-port-file!
+
+src/moon/effect_impl.clj|11 col 2-7| (defn- start-point [body target-body]
+src/moon/effect_impl.clj|17 col 2-7| (defn- end-point [body target-body maxrange]
+src/moon/effect_impl.clj|23 col 2-7| (defn- in-range? [body target-body maxrange]
+src/moon/effect_impl.clj|30 col 2-7| (defn- affected-targets [active-entities raycaster entity]
+src/moon/effect_impl.clj|49 col 2-7| (defn- create-double-ray-endpositions
+src/moon/effect_impl.clj|66 col 2-7| (defn- proj-start-point [body direction size]
+src/moon/effect_impl.clj|71 col 2-7| (defn- entity->melee-damage [{:keys [entity/stats]}]
+src/moon/effect_impl.clj|75 col 2-7| (defn- melee-damage-effect [entity]
+src/moon/effect_impl.clj|80 col 2-7| (defn- effective-armor-save [source-stats target-stats]
+
+src/moon/grid2d.clj|13 col 2-7| (defn- transform-values [data width height f]
+src/moon/grid2d.clj|71 col 2-7| (defn- vector2d [w h f]
+src/moon/grid2d.clj|192 col 3-8| ;(defn- vector1d [width height xyfn]
+src/moon/grid2d.clj|230 col 2-7| (defn- print-cell [celltype]
+src/moon/grid2d.clj|264 col 2-7| (defn- calculate-index-value [position->transition? idx position]
+
+src/moon/hiera.clj|70 col 3-8| (defn- render-node
+
+src/moon/impl/content_grid.clj|6 col 2-7| (defn- update-entity! [{:keys [grid cell-w cell-h]} eid]
+src/moon/impl/content_grid.clj|40 col 2-7| (defn- create* [width height cell-size]
+
+src/moon/impl/db.clj|58 col 2-7| (defn- save!
+
+src/moon/impl/grid.clj|27 col 2-7| (defn- body->occupied-cells
+src/moon/impl/grid.clj|37 col 2-7| (defn- indexed
+src/moon/impl/grid.clj|45 col 2-7| (defn- positions
+src/moon/impl/grid.clj|58 col 2-7| (defn- is-not-allowed-diagonal? [at-idx adjacent-cells]
+src/moon/impl/grid.clj|63 col 2-7| (defn- remove-not-allowed-diagonals [adjacent-cells]
+src/moon/impl/grid.clj|75 col 2-7| (defn- filter-viable-cells [eid adjacent-cells]
+src/moon/impl/grid.clj|87 col 2-7| (defn- get-min-dist-cell [distance-to cells]
+src/moon/impl/grid.clj|92 col 2-7| (defn- viable-cell? [grid distance-to own-dist eid cell]
+src/moon/impl/grid.clj|99 col 2-7| (defn- find-next-cell
+src/moon/impl/grid.clj|133 col 2-7| (defn- inside-cell? [grid entity cell]
+src/moon/impl/grid.clj|154 col 3-8| (defn- faction->tiles->entities-map* [entities]
+src/moon/impl/grid.clj|179 col 2-7| (defn- step [grid faction last-marked-cells]
+src/moon/impl/grid.clj|200 col 2-7| (defn- generate-potential-field
+src/moon/impl/grid.clj|217 col 2-7| (defn- tiles->entities [entities faction]
+
+src/moon/info_impl.clj|28 col 2-7| (defn- ops-info [ops modifier-k]
+src/moon/info_impl.clj|71 col 2-7| (defn- remove-newlines [s]
+src/moon/info_impl.clj|238 col 2-7| (defn- valid-item? [item]
+src/moon/info_impl.clj|287 col 2-7| (defn- valid-skill? [skill]
+
+src/moon/inventory.clj|41 col 2-7| (defn- cells-and-items [inventory slot]
+src/moon/inventory.clj|46 col 2-7| (defn- free-cell [inventory slot item]
+
+src/moon/malli.clj|29 col 2-7| (defn- map-form-k->properties
+
+src/moon/nads.clj|25 col 2-7| (defn- wall-at? [grid posi]
+src/moon/nads.clj|28 col 2-7| (defn- nad-corner? [grid [fromx fromy] [tox toy]]
+src/moon/nads.clj|37 col 2-7| (defn- get-nads [grid]
+src/moon/nads.clj|53 col 2-7| (defn- get-tiles-needing-fix-for-nad [grid [[fromx fromy] [tox toy]]]
+src/moon/nads.clj|78 col 2-7| (defn- mark-nads [grid nads label]
+
+src/moon/position.clj|8 col 4-9| #_(defn- get-8-neighbour-positions [[x y]]
+
+src/moon/schema_impl.clj|67 col 4-9| #_(defn- texture-rows [ctx]
+src/moon/schema_impl.clj|86 col 2-7| (defn- map-widget-table-value [table schemas]
+src/moon/schema_impl.clj|92 col 2-7| (defn- build-value-widget [ctx schema k v]
+src/moon/schema_impl.clj|98 col 2-7| (defn- rebuild!
+src/moon/schema_impl.clj|112 col 2-7| (defn- k->label-text [k]
+src/moon/schema_impl.clj|116 col 2-7| (defn- component-row*
+src/moon/schema_impl.clj|152 col 2-7| (defn- component-row [skin editor-widget k optional-key? table]
+src/moon/schema_impl.clj|195 col 2-7| (defn- horiz-sep [colspan]
+src/moon/schema_impl.clj|204 col 2-7| (defn- interpose-f [f coll]
+src/moon/schema_impl.clj|207 col 2-7| (defn- create-map-widget-table
+src/moon/schema_impl.clj|309 col 2-7| (defn- add-one-to-many-rows
+src/moon/schema_impl.clj|370 col 2-7| (defn- add-one-to-one-rows
+src/moon/schema_impl.clj|434 col 2-7| (defn- rebuild-sound-widget! [table sound-name]
+src/moon/schema_impl.clj|443 col 2-7| (defn- open-select-sounds-handler [table]
+src/moon/schema_impl.clj|479 col 2-7| (defn- sound-columns [skin table sound-name]
+
+src/moon/state_impl.clj|6 col 2-7| (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
+
+src/moon/stats.clj|6 col 2-7| (defn- get-value [base-value modifiers modifier-k]
+src/moon/stats.clj|11 col 2-7| (defn- ->pos-int [val-max]
+src/moon/stats.clj|32 col 2-7| (defn- add*    [mods other-mods] (merge-with ops/add    mods other-mods))
+src/moon/stats.clj|33 col 2-7| (defn- remove* [mods other-mods] (merge-with ops/remove mods other-mods))
+
+src/moon/tiled_map.clj|15 col 2-7| (defn- create-layer
+src/moon/tiled_map.clj|37 col 2-7| (defn- props-add! [props m]
+src/moon/tiled_map.clj|42 col 2-7| (defn- add-layer!
+src/moon/tiled_map.clj|84 col 2-7| (defn- tile-movement-property
+src/moon/tiled_map.clj|100 col 2-7| (defn- movement-property-layers
+
+src/moon/tx/event.clj|5 col 2-7| (defn- send-event! [ctx eid event params]
+
+src/moon/ui/impl/actor.clj|13 col 2-7| (defn- ui-type->class [k]
+src/moon/ui/impl/actor.clj|17 col 2-7| (defn- button-class? [actor]
+
+src/moon/ui/impl/image_button.clj|8 col 2-7| (defn- create-drawable*
+
+src/moon/ui/impl/window.clj|6 col 2-7| (defn- set-opts! [window opts]
+
+src/moon/ui/property_overview_window.clj|34 col 2-7| (defn- overview-table-rows* [skin image-scale rows]
+src/moon/ui/property_overview_window.clj|53 col 2-7| (defn- overview-table-rows
+
+src/moon/ui_actors/action_bar.clj|24 col 2-7| (defn- get-data [action-bar]
+
+src/moon/ui_actors/dev_menu.clj|9 col 2-7| (defn- set-label-text-actor [label text-fn]
+src/moon/ui_actors/dev_menu.clj|16 col 2-7| (defn- add-upd-label!
+src/moon/ui_actors/dev_menu.clj|40 col 2-7| (defn- create-window [skin label items]
+src/moon/ui_actors/dev_menu.clj|54 col 2-7| (defn- main-table [skin menus update-labels]
+
+src/moon/world_fns/modules.clj|21 col 2-7| (defn- module-index->tiled-map-positions
+src/moon/world_fns/modules.clj|30 col 2-7| (defn- floor->module-index []
+src/moon/world_fns/modules.clj|34 col 2-7| (defn- transition-idxvalue->module-index [idxvalue]
+src/moon/world_fns/modules.clj|39 col 2-7| (defn- place-module* [modules-scale
+src/moon/world_fns/modules.clj|65 col 2-7| (defn- place-modules*
+src/moon/world_fns/modules.clj|95 col 2-7| (defn- place-modules
+src/moon/world_fns/modules.clj|108 col 2-7| (defn- print-grid [{:keys [grid] :as world-fn-ctx}]
+src/moon/world_fns/modules.clj|113 col 2-7| (defn- initial-grid
+src/moon/world_fns/modules.clj|123 col 2-7| (defn- assoc-transitions
+src/moon/world_fns/modules.clj|134 col 2-7| (defn- create-scaled-grid [w]
+src/moon/world_fns/modules.clj|137 col 2-7| (defn- load-schema-tiled-map [w]
+src/moon/world_fns/modules.clj|140 col 2-7| (defn- props->clj [^MapProperties props]
+src/moon/world_fns/modules.clj|144 col 2-7| (defn- grid->tiled-map
+src/moon/world_fns/modules.clj|161 col 2-7| (defn- convert-to-tiled-map
+src/moon/world_fns/modules.clj|167 col 2-7| (defn- calculate-start-position [{:keys [start scale] :as w}]
+src/moon/world_fns/modules.clj|179 col 2-7| (defn- create-area-level-grid
+src/moon/world_fns/modules.clj|219 col 2-7| (defn- property-value [^TiledMapTileLayer layer [x y] property-key]
+src/moon/world_fns/modules.clj|226 col 2-7| (defn- last-steps
+
+src/moon/world_fns/uf_caves.clj|9 col 2-7| (defn- assoc-transition-cells [grid]
+src/moon/world_fns/uf_caves.clj|20 col 2-7| (defn- scale-grid [grid start scale]
+src/moon/world_fns/uf_caves.clj|27 col 2-7| (defn- position->tile-fn [grid]
+src/moon/world_fns/uf_caves.clj|64 col 2-7| (defn- last-steps
+src/moon/world_fns/uf_caves.clj|102 col 2-7| (defn- initial-grid
+src/moon/world_fns/uf_caves.clj|114 col 2-7| (defn- fix-nads
+
+test/clojure/grid2d_test.clj|65 col 3-8| ;(defn- vector1d [width height xyfn]
+test/moon/entity/hp_test.clj|5 col 2-7| (defn- ->value [hp-base-value hp-mods]
+test/moon/graphics/tiled_map_renderer_test.clj|17 col 4-9| #_(defn- color-setter [_color _x _y]
+test/moon/levelgen.clj|39 col 2-7| (defn- show-whole-map! [{:keys [ctx/camera
+test/moon/levelgen.clj|53 col 2-7| (defn- generate-level [{:keys [ctx/db
+test/moon/levelgen.clj|78 col 2-7| (defn- edit-window [skin]
+test/moon/levelgen.clj|138 col 2-7| (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
+test/moon/levelgen.clj|150 col 2-7| (defn- camera-movement-controls! [{:keys [ctx/input
+test/moon/levelgen.clj|163 col 2-7| (defn- camera-zoom-controls! [{:keys [ctx/input
+test/moon/mapgen_test.clj|13 col 4-9| #_(defn- map-infos ^String [c]
+test/moon/mapgen_test.clj|40 col 4-9| #_(defn- ->info-window []
+test/moon/mapgen_test.clj|50 col 4-9| #_(defn- render-on-map [_context]
+test/moon/mapgen_test.clj|79 col 4-9| #_(defn- generate-screen-ctx [c properties]
