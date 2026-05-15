@@ -48,7 +48,7 @@
     moon.shape-drawer/ShapeDrawer] ; clojure.gdx
 
    [com.badlogic.gdx.graphics.OrthographicCamera
-    moon.gdx.orthographic-camera
+    com.badlogic.gdx.graphics.orthographic-camera
     moon.camera/OrthographicCamera] ; clojure.gdx
    [com.badlogic.gdx.scenes.scene2d.Actor
     com.badlogic.gdx.scenes.scene2d.actor
@@ -60,7 +60,7 @@
 
    [com.badlogic.gdx.utils.Disposable
     com.badlogic.gdx.utils.disposable
-    clojure.gdx.disposable/Disposable]
+    clojure.gdx.utils.disposable/Disposable]
    ]
   ]
  [clojure.multifn/add-methods! moon.ui.actor/create

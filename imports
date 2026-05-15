@@ -1,13 +1,4 @@
 src/moon/create/impl_draws.clj|7 col 4-11| (:import (com.badlogic.gdx.graphics.g2d BitmapFont
-src/moon/dispose/audio.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
-src/moon/dispose/batch.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
-src/moon/dispose/cursors.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
-src/moon/dispose/default_font.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
-src/moon/dispose/shape_drawer_texture.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
-src/moon/dispose/skin.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
-src/moon/dispose/textures.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
-src/moon/dispose/tiled_map.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
-src/moon/gdx/orthographic_camera.clj|3 col 4-11| (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 src/moon/gdx.clj|4 col 4-11| (:import (clojure.lang ILookup)
 src/moon/impl/batch.clj|3 col 4-11| (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
 src/moon/impl/cursors.clj|5 col 4-11| (:import (com.badlogic.gdx Application)

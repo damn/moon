@@ -12,7 +12,7 @@
  [moon.create.assoc/step :ctx/world-unit-scale moon.impl.world-unit-scale/create]
  [moon.create.assoc/step :ctx/world-viewport moon.impl.world-viewport/create
   {:viewport moon.gdx/fit-viewport
-   :camera   moon.gdx.orthographic-camera/create}]
+   :camera   com.badlogic.gdx.graphics.orthographic-camera/create}]
  [moon.create.assoc/step :ctx/cursors moon.impl.cursors/create]
  [moon.create.assoc/step :ctx/stage moon.impl.stage/create]
  [moon.create.set-input-processor/step]
