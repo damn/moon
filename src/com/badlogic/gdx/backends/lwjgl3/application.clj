@@ -6,3 +6,5 @@
                         (f params))
                       (let [[f params] config]
                         (f params))))
+
+; PROXY ILOOKJUP AND IMPLEMENT clojure.gdx.app
