@@ -30,6 +30,10 @@
    moon.ui-actors.windows.info
    ]]
  [clojure.core-ext/extend-types!
+  ; or jus tcall it 'clojure.gdx.app' so it has an APi
+  ; and is also implementation?
+  ; still good to extend-type where its created
+  ; because thats how it is connected in our app?
   [
    [com.badlogic.gdx.Application
     com.badlogic.gdx.application
@@ -44,7 +48,7 @@
     com.badlogic.gdx.scenes.scene2d.actor
     moon.ui.actor/Actor]
    [com.badlogic.gdx.scenes.scene2d.Group
-    moon.ui.impl.group
+    moon.ui.impl.group ; TODO calling moon.ui.actor/create ! cant go to clojure.gdx ?
     moon.ui.group/Group]
 
    ]
