@@ -1,6 +1,5 @@
 (ns moon.tx.spawn-entity
-  (:require [clojure.animation :as animation]
-            [clojure.math.rectangle :as rectangle]
+  (:require [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
             [moon.effect :as effect]
@@ -79,13 +78,12 @@
                delete-after-stopped?]}]
    _ctx]
   (assert (not (and looping? delete-after-stopped?)))
-  (animation/map->RAnimation
-   {:frames (vec frames)
-    :frame-duration frame-duration
-    :looping? looping?
-    :cnt 0
-    :maxcnt (* (count frames) (float frame-duration))
-    :delete-after-stopped? delete-after-stopped?}))
+  {:frames (vec frames)
+   :frame-duration frame-duration
+   :looping? looping?
+   :cnt 0
+   :maxcnt (* (count frames) (float frame-duration))
+   :delete-after-stopped? delete-after-stopped?})
 
 (q/defrecord Body [body/position
                    body/width
