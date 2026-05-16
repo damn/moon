@@ -74,7 +74,7 @@
     com.badlogic.gdx.graphics.orthographic-camera
     moon.camera/OrthographicCamera] ; clojure.gdx
    [com.badlogic.gdx.scenes.scene2d.Actor
-    com.badlogic.gdx.scenes.scene2d.actor
+    clojure.gdx.scenes.scene2d.actor
     moon.ui.actor/Actor] ; clojure.gdx
    [com.badlogic.gdx.scenes.scene2d.Group
     com.badlogic.gdx.scenes.scene2d.group
@@ -88,7 +88,7 @@
   ]
  [clojure.multifn/add-methods! moon.ui.actor/create
   [
-   [:ui/actor com.badlogic.gdx.scenes.scene2d.actor/create]
+   [:ui/actor clojure.gdx.scenes.scene2d.actor/create]
    [:ui/group com.badlogic.gdx.scenes.scene2d.group/create]
    ]
   ]
