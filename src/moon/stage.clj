@@ -6,5 +6,4 @@
   (act! [_])
   (draw! [_])
   (find-actor [_ name])
-  (mouseover-actor [_ position])
-  (unproject [_ [x y]]))
+  (mouseover-actor [_ position]))

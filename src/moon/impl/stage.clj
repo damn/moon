@@ -1,6 +1,5 @@
 (ns moon.impl.stage
-  (:require [com.badlogic.gdx.math.vector2 :as vector2]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+  (:require [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
@@ -37,10 +36,5 @@
         (group/find-actor name)))
 
   (mouseover-actor [stage position]
-    (let [[x y] (stage/unproject stage position)]
-      (.hit stage x y true)))
-
-  (unproject [stage pos]
-    (-> stage
-        :stage/viewport
-        (viewport/unproject pos))))
+    (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
+      (.hit stage x y true))))
