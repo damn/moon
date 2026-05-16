@@ -1,5 +1,5 @@
 TODO FIX IMPORT NAMESPACEs:
 
 moon.impl.grid -> Intersector
-moon.impl.stage
-moon.tx.spawn-entity
+moon.impl.stage -> CtxStage
+moon.tx.spawn-entity -> Rectangle
