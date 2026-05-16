@@ -94,7 +94,7 @@
   ]
  [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
  [com.badlogic.gdx.backends.lwjgl3.config/use-glfw-async!]
- [com.badlogic.gdx.backends.lwjgl3.application/create
+ [clojure.gdx.backends.lwjgl/application
   {
    :listener [clojure.gdx.application-listener/create #edn/resource "listener.edn"]
    :config [com.badlogic.gdx.backends.lwjgl3.config/create #edn/resource "config.edn"]
