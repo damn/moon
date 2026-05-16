@@ -17,8 +17,8 @@
 
    clojure.gdx.scenes.scene2d.ui.horizontal-group
    clojure.gdx.scenes.scene2d.ui.image
-   com.badlogic.gdx.scenes.scene2d.ui.image-button
-   com.badlogic.gdx.scenes.scene2d.ui.label
+   clojure.gdx.scenes.scene2d.ui.image-button
+   clojure.gdx.scenes.scene2d.ui.label
    com.badlogic.gdx.scenes.scene2d.ui.scroll-pane
    com.badlogic.gdx.scenes.scene2d.ui.select-box
    com.badlogic.gdx.scenes.scene2d.ui.stack
