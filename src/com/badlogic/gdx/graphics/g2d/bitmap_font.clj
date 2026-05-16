@@ -1,5 +1,4 @@
 (ns com.badlogic.gdx.graphics.g2d.bitmap-font
-  (:require [com.badlogic.gdx.utils.align :as align])
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
 
 (defn data [^BitmapFont font]
@@ -15,5 +14,5 @@
          (float x)
          (float y)
          (float target-width)
-         (align/k->value align)
+         align
          wrap?))

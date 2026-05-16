@@ -1,12 +1,31 @@
 (ns moon.render.assoc-interaction-state
-  (:require [com.badlogic.gdx.scenes.scene2d.ui :as ui]
-            [moon.ui.actor :as actor]
+  (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [clojure.gdx.app :as app]
             [clojure.math.vector2 :as v]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [moon.body :as body]
             [moon.skill :as skill]
-            [moon.ui.action-bar :as action-bar]))
+            [moon.ui.action-bar :as action-bar])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
+                                               Label
+                                               Window)))
+
+(defn- button-class? [actor]
+  (some #(= Button %) (supers (class actor))))
+
+(defn- button? [actor]
+  (or (button-class? actor)
+      (and (actor/parent actor)
+           (button-class? (actor/parent actor)))))
+
+; FIXME does not work
+(defn- window-title-bar? [actor]
+  (when (instance? Label actor)
+    (when-let [p (actor/parent actor)]
+      (when-let [p (actor/parent p)]
+        (and (instance? Window actor)
+             (= (window/title-label p) actor))))))
 
 (defn- mouseover-actor-info [actor]
   (let [inventory-slot (and (actor/parent actor)
@@ -14,8 +33,8 @@
                             (actor/user-object (actor/parent actor)))]
     (cond
      inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
-     (ui/window-title-bar? actor) [:mouseover-actor/window-title-bar]
-     (ui/button? actor) [:mouseover-actor/button]
+     (window-title-bar? actor) [:mouseover-actor/window-title-bar]
+     (button? actor)           [:mouseover-actor/button]
      :else                     [:mouseover-actor/unspecified])))
 
 (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
