@@ -40,10 +40,15 @@
  [clojure.core-ext/extend-types!
   ; 'clojure.gdx' because indirectly connected to `com.badlogic.gdx` implementations ?
    ; GREPPABLE NAME - not just scene2d.foo
+
   [
    [com.badlogic.gdx.Application
     com.badlogic.gdx.application  ; impl is 'com.badlogic.gdx.backends.lwjgl3.application' ....
     clojure.gdx.app/App]
+
+   [com.badlogic.gdx.Audio
+    com.badlogic.gdx.audio
+    clojure.audio/Audio]
 
    [com.badlogic.gdx.Files
     com.badlogic.gdx.files

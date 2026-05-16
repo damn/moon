@@ -1,8 +1,8 @@
 (ns clojure.gdx.app)
 
 (defprotocol App
+  (audio [_])
   (files [_])
-  (new-sound [_ path])
   (frames-per-second [_])
   (delta-time [_])
   (new-cursor [_ pixmap hotspot-x hotspot-y])
