@@ -6,13 +6,10 @@
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [moon.body :as body]
             [moon.skill :as skill]
-            [moon.ui.action-bar :as action-bar])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
-                                               Label
-                                               Window)))
+            [moon.ui.action-bar :as action-bar]))
 
 (defn- button-class? [actor]
-  (some #(= Button %) (supers (class actor))))
+  (some #(= com.badlogic.gdx.scenes.scene2d.ui.Button %) (supers (class actor))))
 
 (defn- button? [actor]
   (or (button-class? actor)
@@ -21,10 +18,10 @@
 
 ; FIXME does not work
 (defn- window-title-bar? [actor]
-  (when (instance? Label actor)
+  (when (instance? com.badlogic.gdx.scenes.scene2d.ui.Label actor)
     (when-let [p (actor/parent actor)]
       (when-let [p (actor/parent p)]
-        (and (instance? Window actor)
+        (and (instance? com.badlogic.gdx.scenes.scene2d.ui.Window actor)
              (= (window/title-label p) actor))))))
 
 (defn- mouseover-actor-info [actor]
