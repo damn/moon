@@ -16,7 +16,7 @@
    moon.info-impl
 
    clojure.gdx.scenes.scene2d.ui.horizontal-group
-   com.badlogic.gdx.scenes.scene2d.ui.image
+   clojure.gdx.scenes.scene2d.ui.image
    com.badlogic.gdx.scenes.scene2d.ui.image-button
    com.badlogic.gdx.scenes.scene2d.ui.label
    com.badlogic.gdx.scenes.scene2d.ui.scroll-pane

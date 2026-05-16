@@ -1,28 +1,18 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.image
-  (:require [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [moon.ui.actor :as actor]
-            [moon.ui.image :as image])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui Image)))
+           (com.badlogic.gdx.scenes.scene2d.ui Image)
+           (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
-(defmethod actor/create :ui/image
-  [{:keys [content] :as opts}]
-  (doto (cond
-         (map? content)
-         (Image. (texture-region-drawable/create content))
+(defmulti create class)
 
-         (instance? Texture content)
-         (Image. ^Texture content)
+(defmethod create Texture [texture]
+  (Image. ^Texture texture))
 
-         (instance? TextureRegion content)
-         (Image. ^TextureRegion content)
+(defmethod create TextureRegion [texture-region]
+  (Image. ^TextureRegion texture-region))
 
-         :else
-         (throw (ex-info "Unkown parameter" {:content content})))
-    (actor/set-opts! opts)))
+(defmethod create TextureRegionDrawable [drawable]
+  (Image. ^TextureRegionDrawable drawable))
 
-(extend-type com.badlogic.gdx.scenes.scene2d.ui.Image
-  image/Image
-  (set-drawable! [image drawable]
-    (.setDrawable image (texture-region-drawable/create drawable))))
+(def set-drawable! Image/.setDrawable)
