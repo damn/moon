@@ -1,11 +1,10 @@
 (ns moon.textures
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)))
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
 (defn texture-region [textures {:keys [image/file image/bounds]}]
   (assert file)
   (assert (contains? textures file))
-  (let [^Texture texture (get textures file)]
+  (let [texture (get textures file)]
     (if-let [[x y w h] bounds]
-      (TextureRegion. texture (int x) (int y) (int w) (int h))
-      (TextureRegion. texture))))
+      (texture-region/create texture x y w h)
+      (texture-region/create texture))))

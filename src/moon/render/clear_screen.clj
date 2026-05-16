@@ -1,10 +1,10 @@
 (ns moon.render.clear-screen
   (:require [clojure.gdx.app :as app]
-            [clojure.graphics :as graphics])
-  (:import (com.badlogic.gdx.graphics GL20)))
+            [clojure.graphics :as graphics]
+            [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
 (defn step [{:keys [ctx/app] :as ctx}]
-  (let [^GL20 gl (graphics/gl20 (app/graphics app))]
-    (.glClearColor gl 0 0 0 0)
-    (.glClear gl GL20/GL_COLOR_BUFFER_BIT))
+  (let [gl (graphics/gl20 (app/graphics app))]
+    (gl20/clear-color! gl 0 0 0 0)
+    (gl20/clear! gl gl20/color-buffer-bit))
   ctx)
