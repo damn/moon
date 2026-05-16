@@ -1,6 +1,5 @@
 (ns com.badlogic.gdx.application
-  (:import (com.badlogic.gdx Application)
-           (com.badlogic.gdx.graphics GL20)))
+  (:import (com.badlogic.gdx Application)))
 
 (defn audio [^Application app]
   (.getAudio app))
@@ -8,21 +7,8 @@
 (defn files [^Application app]
   (.getFiles app))
 
-(defn frames-per-second [^Application app]
-  (.getFramesPerSecond (.getGraphics app)))
-
-(defn delta-time [^Application app]
-  (.getDeltaTime (.getGraphics app)))
-
-(defn new-cursor [^Application app pixmap hotspot-x hotspot-y]
-  (.newCursor (.getGraphics app) pixmap hotspot-x hotspot-y))
-
-(defn set-cursor! [^Application app cursor]
-  (.setCursor (.getGraphics app) cursor))
-
-(defn clear! [^Application app r g b a]
-  (.glClearColor (.getGL20 (.getGraphics app)) r g b a)
-  (.glClear      (.getGL20 (.getGraphics app)) GL20/GL_COLOR_BUFFER_BIT))
+(defn graphics [^Application app]
+  (.getGraphics app))
 
 (defn set-input-processor! [^Application this input-processor]
   (.setInputProcessor (.getInput this) input-processor))

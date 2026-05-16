@@ -3,11 +3,7 @@
 (defprotocol App
   (audio [_])
   (files [_])
-  (frames-per-second [_])
-  (delta-time [_])
-  (new-cursor [_ pixmap hotspot-x hotspot-y])
-  (set-cursor! [_ cursor])
-  (clear! [_ r g b a])
+  (graphics [_])
   (set-input-processor! [_ input-processor])
   (key-pressed? [_ key])
   (key-just-pressed? [_ key])

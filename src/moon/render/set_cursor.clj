@@ -1,5 +1,6 @@
 (ns moon.render.set-cursor
   (:require [clojure.gdx.app :as app]
+            [clojure.graphics :as graphics]
             [moon.state :as state]))
 
 (defmethod state/cursor :player-dead
@@ -75,5 +76,5 @@
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (app/set-cursor! app (get cursors cursor-key)))
+    (graphics/set-cursor! (app/graphics app) (get cursors cursor-key)))
   ctx)

@@ -1,6 +1,7 @@
 (ns moon.create.add-stage-actors.dev-menu
   (:require [moon.camera :as camera]
             [moon.stage :as stage]
+            [clojure.graphics :as graphics]
             [clojure.string :as str]
             [moon.db :as db]
             [clojure.gdx.app :as app]
@@ -71,7 +72,7 @@
                                :icon "images/clock.png"}
                               {:label "FPS"
                                :update-fn (fn [{:keys [ctx/app]}]
-                                            (app/frames-per-second app))
+                                            (graphics/frames-per-second (app/graphics app)))
                                :icon "images/fps.png"}
                               {:label "Mouseover-entity id"
                                :update-fn (fn [{:keys [ctx/mouseover-eid]}]

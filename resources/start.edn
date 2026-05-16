@@ -54,6 +54,10 @@
     com.badlogic.gdx.files
     clojure.gdx.files/Files]
 
+   [com.badlogic.gdx.Graphics
+    com.badlogic.gdx.graphics
+    clojure.graphics/Graphics]
+
    [com.badlogic.gdx.graphics.g2d.SpriteBatch
     com.badlogic.gdx.graphics.g2d.sprite-batch
     moon.batch/Batch]
