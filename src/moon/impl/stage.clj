@@ -1,40 +1,36 @@
 (ns moon.impl.stage
-  (:require [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+  (:require [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [moon.viewport :as viewport])
-  (:import (clojure.lang ILookup)
-           (com.badlogic.gdx.scenes.scene2d CtxStage)))
+            [moon.viewport :as viewport]))
 
 (defn create
   [{:keys [ctx/batch]}]
-  (proxy [CtxStage ILookup] [(fit-viewport/create 1440 900) batch]
-    (valAt [k]
-      (case k
-        ; TODO :stage/root
-        :stage/ctx      (.ctx         ^CtxStage this)
-        :stage/viewport (.getViewport ^CtxStage this)))))
+  (ctx-stage/create (fit-viewport/create 1440 900)
+                    batch))
 
-(extend-type CtxStage
+(extend-type com.badlogic.gdx.scenes.scene2d.CtxStage
   stage/Stage
   (set-ctx! [stage ctx]
-    (set! (.ctx stage) ctx))
+    (ctx-stage/set-ctx! stage ctx))
 
   (add-actor! [stage actor]
-    (.addActor stage (actor/create actor)))
+    (ctx-stage/add-actor! stage (actor/create actor)))
 
   (act! [stage]
-    (.act stage))
+    (ctx-stage/act! stage))
 
   (draw! [stage]
-    (.draw stage))
+    (ctx-stage/draw! stage))
 
   (find-actor [stage name]
     (-> stage
-        .getRoot
+        ctx-stage/root
         (group/find-actor name)))
 
   (mouseover-actor [stage position]
-    (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
-      (.hit stage x y true))))
+    (ctx-stage/hit stage
+                   (-> stage :stage/viewport (viewport/unproject position))
+                   true)))
