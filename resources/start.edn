@@ -19,14 +19,12 @@
    clojure.gdx.scenes.scene2d.ui.image
    clojure.gdx.scenes.scene2d.ui.image-button
    clojure.gdx.scenes.scene2d.ui.label
-   com.badlogic.gdx.scenes.scene2d.ui.scroll-pane
-   com.badlogic.gdx.scenes.scene2d.ui.select-box
-   com.badlogic.gdx.scenes.scene2d.ui.stack
+   clojure.gdx.scenes.scene2d.ui.select-box
+   clojure.gdx.scenes.scene2d.ui.stack
    clojure.gdx.scenes.scene2d.ui.table
-   com.badlogic.gdx.scenes.scene2d.ui.text-button
-   com.badlogic.gdx.scenes.scene2d.ui.text-field
-   com.badlogic.gdx.scenes.scene2d.ui.widget
-   com.badlogic.gdx.scenes.scene2d.ui.widget-group
+   clojure.gdx.scenes.scene2d.ui.text-button
+   clojure.gdx.scenes.scene2d.ui.text-field
+   clojure.gdx.scenes.scene2d.ui.widget-group
 
    moon.ui.impl.window
    moon.ui.data-viewer-window ; requires itself type knowledge ... can pass also non-declaretd actor to stage?
@@ -84,13 +82,17 @@
    [com.badlogic.gdx.utils.Disposable
     com.badlogic.gdx.utils.disposable
     clojure.gdx.utils.disposable/Disposable]
-   ]
+
+   [com.badlogic.gdx.utils.viewport.FitViewport
+    com.badlogic.gdx.utils.viewport.fit-viewport
+    moon.viewport/Viewport]]
   ]
  [clojure.multifn/add-methods! moon.ui.actor/create
   [
    [:ui/actor clojure.gdx.scenes.scene2d.actor/create]
    [:ui/group clojure.gdx.scenes.scene2d.group/create]
    [:ui/scroll-pane com.badlogic.gdx.scenes.scene2d.ui.scroll-pane/create]
+   [:ui/widget com.badlogic.gdx.scenes.scene2d.ui.widget/create]
    ]
   ]
  [clojure.gdx.backends.lwjgl/application

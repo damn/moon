@@ -1,5 +1,5 @@
 (ns moon.render.draw-tiled-map
-  (:require [moon.tiled-map.renderer :as tiled-map-renderer]
+  (:require [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [moon.camera :as camera]
             [moon.raycaster :as raycaster]))
 

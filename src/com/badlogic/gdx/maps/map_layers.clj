@@ -7,3 +7,6 @@
 
 (defn get [^MapLayers layers ^String layer-name]
   (.get layers layer-name))
+
+(defn get-index [^MapLayers layers layer]
+  (.getIndex layers layer))

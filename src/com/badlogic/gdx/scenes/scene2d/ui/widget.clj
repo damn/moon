@@ -1,8 +1,7 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.widget
-  (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Widget)))
 
-(defmethod actor/create :ui/widget
+(defn create
   [{:keys [draw!]}]
   (proxy [Widget] []
     (draw [batch parent-alpha]
