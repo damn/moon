@@ -5,7 +5,7 @@
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.grid2d :as g2d]
             [moon.nads :as nads])
   (:import (java.util Random)))

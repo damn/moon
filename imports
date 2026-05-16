@@ -1,7 +1,5 @@
 TODO FIX IMPORT NAMESPACEs:
 
-com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile
-com.badlogic.gdx.scenes.scene2d.ui.scroll-pane
 com.badlogic.gdx.scenes.scene2d.ui.select-box
 com.badlogic.gdx.scenes.scene2d.ui.stack
 com.badlogic.gdx.scenes.scene2d.ui.text-button

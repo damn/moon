@@ -90,6 +90,7 @@
   [
    [:ui/actor clojure.gdx.scenes.scene2d.actor/create]
    [:ui/group clojure.gdx.scenes.scene2d.group/create]
+   [:ui/scroll-pane com.badlogic.gdx.scenes.scene2d.ui.scroll-pane/create]
    ]
   ]
  [clojure.gdx.backends.lwjgl/application

@@ -2,7 +2,7 @@
   (:require [clojure.rand :as rand]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.grid2d :as g2d]
             [moon.nads :as nads]))
 

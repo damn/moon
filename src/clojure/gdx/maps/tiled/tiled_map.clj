@@ -5,7 +5,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (def layers tiled-map/layers)
 
