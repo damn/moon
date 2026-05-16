@@ -4,7 +4,7 @@
 
 (def copy
   (memoize
-   (fn copy [tile]
+   (fn copy [^StaticTiledMapTile tile]
      (assert tile)
      (StaticTiledMapTile. tile))))
 
