@@ -16,3 +16,6 @@
 
 (defn vals [^MapProperties props]
   (.getValues props))
+
+(defn put-all! [^MapProperties props other-props]
+  (.putAll props other-props))

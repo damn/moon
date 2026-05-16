@@ -1,10 +1,13 @@
 (ns clojure.gdx.maps.tiled.tiled-map
   (:require [clojure.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.map-layers :as layers]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [com.badlogic.gdx.maps.map-layers :as layers]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+
+(def layers tiled-map/layers)
 
 (def properties tiled-map/properties)
 
@@ -42,12 +45,12 @@
     (when-let [cell (layer/cell layer position)]
       (let [value (-> cell
                       cell/tile
-                      .getProperties
-                      (.get "movement"))]
+                      tile/properties
+                      (props/get "movement"))]
         (assert value
                 (str "Value for :movement at position "
                      position  " / mapeditor inverted position: " [(position 0)
-                                                                   (- (dec (.get (properties tiled-map) "height"))
+                                                                   (- (dec (props/get (properties tiled-map) "height"))
                                                                       (position 1))]
                      " and layer " (layer/name layer) " is undefined."))
         value))))
@@ -74,16 +77,16 @@
   [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (.get (tiled-map/layers tiled-map) ^String layer-name)]
-    (for [x (range (.getWidth layer))
-          y (range (.getHeight layer))
+        layer (layers/get (tiled-map/layers tiled-map) layer-name)]
+    (for [x (range (layer/width layer))
+          y (range (layer/height layer))
           :let [position [x y]
-                cell (.getCell layer x y)]
+                cell (layer/cell layer position)]
           :when cell
           :let [value (-> cell
                           cell/tile
-                          .getProperties
-                          (.get property-key))]
+                          tile/properties
+                          (props/get property-key))]
           :when value]
       [position value])))
 

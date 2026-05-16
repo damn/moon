@@ -6,4 +6,5 @@
   [{:keys [text skin]}]
   (Label. ^String text ^Skin skin))
 
-(def set-text! Label/.setText)
+(defn set-text! [^Label label ^String text]
+  (.setText label text))

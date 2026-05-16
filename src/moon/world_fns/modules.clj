@@ -1,5 +1,6 @@
 (ns moon.world-fns.modules
   (:require [clojure.gdx.maps.map-properties :as props]
+            [com.badlogic.gdx.maps.map-layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
@@ -141,18 +142,18 @@
 (defn- grid->tiled-map
   [schema-tiled-map grid]
   (tiled-map/create
-   {:properties (merge (props/->clj (.getProperties schema-tiled-map))
+   {:properties (merge (props/->clj (tiled-map/properties schema-tiled-map))
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})
-    :layers (for [layer (.getLayers schema-tiled-map)]
-              {:name (.getName layer)
-               :visible? (.isVisible layer)
-               :properties (props/->clj (.getProperties layer))
+    :layers (for [layer (tiled-map/layers schema-tiled-map)]
+              {:name (layer/name layer)
+               :visible? (layer/visible? layer)
+               :properties (props/->clj (layer/properties layer))
                :tiles (for [position (g2d/posis grid)
                             :let [local-position (get grid position)]
                             :when local-position]
                         (when (vector? local-position)
-                          (when-let [cell (.getCell layer (local-position 0) (local-position 1))]
+                          (when-let [cell (layer/cell layer local-position)]
                             [position (static-tiled-map-tile/copy (cell/tile cell))])))})}))
 
 (defn- convert-to-tiled-map
@@ -257,7 +258,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (layer/property-value (.get (.getLayers tiled-map) "creatures")
+                                                    (layer/property-value (layers/get (tiled-map/layers tiled-map) "creatures")
                                                                           p
                                                                           "id"))))
                                             spawn-positions)))

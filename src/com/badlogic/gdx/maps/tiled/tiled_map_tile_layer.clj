@@ -18,3 +18,12 @@
 
 (defn set-cell! [^TiledMapTileLayer layer [x y] cell]
   (.setCell layer x y cell))
+
+(defn width [^TiledMapTileLayer layer]
+  (.getWidth layer))
+
+(defn height [^TiledMapTileLayer layer]
+  (.getHeight layer))
+
+(defn visible? [^TiledMapTileLayer layer]
+  (.isVisible layer))
