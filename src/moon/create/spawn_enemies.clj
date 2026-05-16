@@ -1,5 +1,5 @@
 (ns moon.create.spawn-enemies
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [moon.db :as db]
             [moon.txs :as txs]))
 
