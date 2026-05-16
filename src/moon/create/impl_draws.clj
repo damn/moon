@@ -1,6 +1,7 @@
 (ns moon.create.impl-draws
   (:require [clojure.string :as str]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as data]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [moon.batch :as batch]
             [moon.draws :as draws]
@@ -56,12 +57,12 @@
                                      ctx/default-font]}
                              {:keys [font scale x y text h-align up?]}]
                             (let [font (or font default-font)
-                                  old-scale (.scaleX (font/data font))
+                                  old-scale (data/scale-x (font/data font))
                                   target-width 0
                                   wrap? false
                                   scale (* (float @unit-scale)
                                            (float (or scale 1)))]
-                              (.setScale (font/data font) (* old-scale scale))
+                              (data/set-scale! (font/data font) (* old-scale scale))
                               (font/draw! font
                                           batch
                                           text
@@ -75,7 +76,7 @@
                                           target-width
                                           :align/center
                                           wrap?)
-                              (.setScale (font/data font) old-scale)))
+                              (data/set-scale! (font/data font) old-scale)))
    :draw/texture-region   (fn
                             [{:keys [ctx/batch
                                      ctx/unit-scale
