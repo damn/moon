@@ -15,7 +15,7 @@
    moon.effect-impl
    moon.info-impl
 
-   com.badlogic.gdx.scenes.scene2d.ui.horizontal-group
+   clojure.gdx.scenes.scene2d.ui.horizontal-group
    com.badlogic.gdx.scenes.scene2d.ui.image
    com.badlogic.gdx.scenes.scene2d.ui.image-button
    com.badlogic.gdx.scenes.scene2d.ui.label
@@ -77,7 +77,7 @@
     clojure.gdx.scenes.scene2d.actor
     moon.ui.actor/Actor] ; clojure.gdx
    [com.badlogic.gdx.scenes.scene2d.Group
-    com.badlogic.gdx.scenes.scene2d.group
+    clojure.gdx.scenes.scene2d.group
     moon.ui.group/Group] ; clojure.gdx -> TODO use 'moon.rename' with moving the file (changing ns?)
 
 
@@ -89,7 +89,7 @@
  [clojure.multifn/add-methods! moon.ui.actor/create
   [
    [:ui/actor clojure.gdx.scenes.scene2d.actor/create]
-   [:ui/group com.badlogic.gdx.scenes.scene2d.group/create]
+   [:ui/group clojure.gdx.scenes.scene2d.group/create]
    ]
   ]
  [clojure.gdx.backends.lwjgl/application

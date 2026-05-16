@@ -1,10 +1,8 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.horizontal-group
-  (:require [moon.ui.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
-(defmethod actor/create :ui/horizontal-group
-  [{:keys [space pad] :as opts}]
+(defn create
+  [{:keys [space pad]}]
   (doto (HorizontalGroup.)
     (.space space)
-    (.pad pad)
-    (actor/set-opts! opts)))
+    (.pad pad)))
