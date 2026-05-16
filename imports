@@ -1,5 +1,3 @@
-src/moon/create/impl_draws.clj|7 col 4-11| (:import (com.badlogic.gdx.graphics.g2d BitmapFont
-
 src/moon/impl/cursors.clj|5 col 4-11| (:import (com.badlogic.gdx Application)
 
 src/moon/impl/default_font.clj|2 col 4-11| (:import (com.badlogic.gdx Application)

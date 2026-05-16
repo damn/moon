@@ -9,7 +9,7 @@
 (def quality-scaling 2)
 
 (defn create
-  [{:keys [ctx/app]}]
+  [{:keys [^Application ctx/app]}]
   (let [generator (FreeTypeFontGenerator. (.internal (.getFiles app) path))
         font (.generateFont generator
                             (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
