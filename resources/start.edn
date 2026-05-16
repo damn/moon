@@ -22,7 +22,7 @@
    com.badlogic.gdx.scenes.scene2d.ui.scroll-pane
    com.badlogic.gdx.scenes.scene2d.ui.select-box
    com.badlogic.gdx.scenes.scene2d.ui.stack
-   com.badlogic.gdx.scenes.scene2d.ui.table
+   clojure.gdx.scenes.scene2d.ui.table
    com.badlogic.gdx.scenes.scene2d.ui.text-button
    com.badlogic.gdx.scenes.scene2d.ui.text-field
    com.badlogic.gdx.scenes.scene2d.ui.widget

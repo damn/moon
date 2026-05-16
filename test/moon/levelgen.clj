@@ -5,7 +5,7 @@
             [clojure.java.io :as io]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
-            com.badlogic.gdx.scenes.scene2d.ui.table
+            clojure.gdx.scenes.scene2d.ui.table
             [moon.ui.table :as table]
             [moon.db :as db]
             [com.badlogic.gdx.graphics.orthographic-camera :as camera]
