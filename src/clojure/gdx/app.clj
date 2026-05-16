@@ -1,6 +1,7 @@
 (ns clojure.gdx.app)
 
 (defprotocol App
+  (files [_])
   (new-sound [_ path])
   (frames-per-second [_])
   (delta-time [_])

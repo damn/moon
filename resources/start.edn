@@ -14,6 +14,7 @@
    moon.state-impl
    moon.effect-impl
    moon.info-impl
+
    com.badlogic.gdx.scenes.scene2d.ui.horizontal-group
    com.badlogic.gdx.scenes.scene2d.ui.image
    com.badlogic.gdx.scenes.scene2d.ui.image-button
@@ -26,6 +27,7 @@
    com.badlogic.gdx.scenes.scene2d.ui.text-field
    com.badlogic.gdx.scenes.scene2d.ui.widget
    com.badlogic.gdx.scenes.scene2d.ui.widget-group
+
    moon.ui.impl.window
    moon.ui.data-viewer-window ; requires itself type knowledge ... can pass also non-declaretd actor to stage?
    moon.ui.error-window
@@ -42,6 +44,10 @@
    [com.badlogic.gdx.Application
     com.badlogic.gdx.application  ; impl is 'com.badlogic.gdx.backends.lwjgl3.application' ....
     clojure.gdx.app/App]
+
+   [com.badlogic.gdx.Files
+    com.badlogic.gdx.files
+    clojure.gdx.files/Files]
 
    [com.badlogic.gdx.graphics.g2d.SpriteBatch
     com.badlogic.gdx.graphics.g2d.sprite-batch

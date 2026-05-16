@@ -1,17 +1,18 @@
 (ns moon.impl.textures
-  (:require [clojure.string :as str])
-  (:import (com.badlogic.gdx Application)
-           (com.badlogic.gdx.files FileHandle)
+  (:require [clojure.gdx.app :as app]
+            [clojure.gdx.files :as files]
+            [clojure.string :as str])
+  (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Texture)))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
 
 (defn create
-  [{:keys [^Application ctx/app]}]
+  [{:keys [ctx/app]}]
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
-                           (loop [[^FileHandle file & remaining] (.list (.internal (.getFiles app) folder))
+                           (loop [[^FileHandle file & remaining] (.list ^FileHandle (files/internal (app/files app) folder))
                                   result []]
                              (cond (nil? file)
                                    result

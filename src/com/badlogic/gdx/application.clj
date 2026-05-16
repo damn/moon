@@ -2,6 +2,9 @@
   (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.graphics GL20)))
 
+(defn files [^Application app]
+  (.getFiles app))
+
 (defn new-sound [^Application app path]
   (.newSound (.getAudio app)
              (.internal (.getFiles app) path)))

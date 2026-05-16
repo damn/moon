@@ -1,6 +1,7 @@
 (ns moon.impl.default-font
-  (:import (com.badlogic.gdx Application)
-           (com.badlogic.gdx.graphics Texture$TextureFilter)
+  (:require [clojure.gdx.app :as app]
+            [clojure.gdx.files :as files])
+  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
@@ -9,8 +10,8 @@
 (def quality-scaling 2)
 
 (defn create
-  [{:keys [^Application ctx/app]}]
-  (let [generator (FreeTypeFontGenerator. (.internal (.getFiles app) path))
+  [{:keys [ctx/app]}]
+  (let [generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
         font (.generateFont generator
                             (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                               (set! (.size params) (* size quality-scaling))
