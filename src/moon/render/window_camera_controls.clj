@@ -3,7 +3,8 @@
             [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [clojure.gdx.app :as app]))
+            [clojure.gdx.app :as app]
+            [clojure.input :as input]))
 
 (def zoom-speed 0.025)
 
@@ -13,23 +14,23 @@
            ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (when (app/key-pressed? app (:zoom-in controls))
+  (when (input/key-pressed? (app/input app) (:zoom-in controls))
     (camera/inc-zoom! (:viewport/camera world-viewport) zoom-speed))
 
-  (when (app/key-pressed? app (:zoom-out controls))
+  (when (input/key-pressed? (app/input app) (:zoom-out controls))
     (camera/inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
 
-  (when (app/key-just-pressed? app (:close-windows-key controls))
+  (when (input/key-just-pressed? (app/input app) (:close-windows-key controls))
     (->> (stage/find-actor stage "moon.ui.windows")
          group/children
          (run! #(actor/set-visible! % false))))
 
-  (when (app/key-just-pressed? app (:toggle-inventory controls))
+  (when (input/key-just-pressed? (app/input app) (:toggle-inventory controls))
     (-> stage
         (stage/find-actor "moon.ui.windows.inventory")
         actor/toggle-visible!))
 
-  (when (app/key-just-pressed? app (:toggle-entity-info controls))
+  (when (input/key-just-pressed? (app/input app) (:toggle-entity-info controls))
     (-> stage
         (stage/find-actor "moon.ui.windows.entity-info")
         actor/toggle-visible!))

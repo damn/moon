@@ -58,6 +58,10 @@
     com.badlogic.gdx.graphics
     clojure.graphics/Graphics]
 
+   [com.badlogic.gdx.Input
+    com.badlogic.gdx.input
+    clojure.input/Input]
+
    [com.badlogic.gdx.graphics.g2d.SpriteBatch
     com.badlogic.gdx.graphics.g2d.sprite-batch
     moon.batch/Batch]

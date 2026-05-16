@@ -4,6 +4,7 @@
             [moon.stage :as stage]
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [clojure.gdx.app :as app]
+            [clojure.input :as input]
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.stats :as stats]
@@ -23,8 +24,8 @@
 (defmethod state/handle-input :player-item-on-cursor
   [_ eid {:keys [ctx/app
                  ctx/stage]}]
-  (let [mouseover-actor (stage/mouseover-actor stage (app/mouse-position app))]
-    (when (and (app/button-just-pressed? app input.buttons/left)
+  (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position (app/input app)))]
+    (when (and (input/button-just-pressed? (app/input app) input.buttons/left)
                (not mouseover-actor))
       [[:tx/event eid :drop-item]])))
 
@@ -83,7 +84,7 @@
                         ctx/stage] :as ctx}]
   (if-let [movement-vector (controls/player-movement-vector ctx)]
     [[:tx/event player-eid :movement-input movement-vector]]
-    (when (app/button-just-pressed? app input.buttons/left)
+    (when (input/button-just-pressed? (app/input app) input.buttons/left)
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))

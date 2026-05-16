@@ -4,16 +4,18 @@
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [com.badlogic.gdx.input.keys :as input.keys]
             [clojure.gdx.app :as app]
+            [clojure.input :as input]
             [moon.controls :as controls]))
 
 (defn step [ctx]
   (extend-type (class ctx)
     controls/Controls
     (player-movement-vector [{:keys [ctx/app]}]
-      (let [r (when (app/key-pressed? app input.keys/d) [1  0])
-            l (when (app/key-pressed? app input.keys/a) [-1 0])
-            u (when (app/key-pressed? app input.keys/w) [0  1])
-            d (when (app/key-pressed? app input.keys/s) [0 -1])]
+      (let [input (app/input app)
+            r (when (input/key-pressed? input input.keys/d) [1  0])
+            l (when (input/key-pressed? input input.keys/a) [-1 0])
+            u (when (input/key-pressed? input input.keys/w) [0  1])
+            d (when (input/key-pressed? input input.keys/s) [0 -1])]
         (when (or r l u d)
           (let [v (v/normalise (reduce v/add [0 0] (remove nil? [r l u d])))]
             (when (pos? (v/length v))

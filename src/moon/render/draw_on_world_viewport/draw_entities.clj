@@ -3,6 +3,7 @@
             [clojure.animation :as animation]
             [moon.stage :as stage]
             [clojure.gdx.app :as app]
+            [clojure.input :as input]
             [clojure.math :as math]
             [moon.draws :as draws]
             [moon.effect :as effect]
@@ -40,7 +41,7 @@
            ctx/world-mouse-position]}]
   ; TODO do not draw here, only at UI view
   ; then graphics can draw world without stage/input
-  (when-not (stage/mouseover-actor stage (app/mouse-position app))
+  (when-not (stage/mouseover-actor stage (input/mouse-position (app/input app)))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image item))
       (moon.player-item-on-cursor/item-place-position world-mouse-position entity)

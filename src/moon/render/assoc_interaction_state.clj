@@ -2,6 +2,7 @@
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
             [clojure.gdx.app :as app]
+            [clojure.input :as input]
             [clojure.math.vector2 :as v]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [moon.body :as body]
@@ -87,4 +88,4 @@
                                                        world-mouse-position
                                                        mouseover-eid
                                                        player-eid
-                                                       (stage/mouseover-actor stage (app/mouse-position app)))))
+                                                       (stage/mouseover-actor stage (input/mouse-position (app/input app))))))

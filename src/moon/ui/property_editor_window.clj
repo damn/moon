@@ -6,6 +6,7 @@
             [moon.stage :as stage]
             [moon.db :as db]
             [clojure.gdx.app :as app]
+            [clojure.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
             [moon.throwable :as throwable]))
@@ -48,7 +49,7 @@
                  :act! (fn [this delta]
                          (when-let [stage (actor/stage this)]
                            (let [{:keys [ctx/app] :as ctx} (stage/ctx stage)]
-                             (when (app/key-just-pressed? app input.keys/enter)
+                             (when (input/key-just-pressed? (app/input app) input.keys/enter)
                                (clicked-save-fn this ctx)))))}]
         save-button {:type :ui/text-button
                      :text "Save [LIGHT_GRAY](ENTER)[]"
