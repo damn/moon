@@ -43,7 +43,7 @@
                                 :drawable {:drawable/texture-region texture-region
                                            :drawable/scale image-scale}
                                 :actor/listeners {:listener/change (fn [event actor]
-                                                                     (on-clicked actor (stage/ctx (event/stage event))))
+                                                                     (on-clicked actor (:stage/ctx (event/stage event))))
                                                   :listener/text-tooltip [tooltip skin]}}
                                {:type :ui/label
                                 :text extra-info-text

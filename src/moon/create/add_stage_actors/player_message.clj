@@ -10,7 +10,7 @@
      :actor/user-object (atom nil)
      :draw! (fn [this _batch _parent-alpha]
               (when-let [stage (actor/stage this)]
-                (draws/handle (stage/ctx stage)
+                (draws/handle (:stage/ctx stage)
                               [(let [state (actor/user-object this)
                                      vp-width (stage/viewport-width stage)
                                      vp-height (stage/viewport-height stage)]

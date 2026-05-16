@@ -1,11 +1,7 @@
 (ns moon.stage)
 
-; TODO viewport getter
-; etc. ..
-
 (defprotocol Stage
-  (ctx [_])
-  (set-ctx! [_ ctx]) ; with act/draw?
+  (set-ctx! [_ ctx])
   (add-actor! [_ actor])
   (act! [_])
   (draw! [_])

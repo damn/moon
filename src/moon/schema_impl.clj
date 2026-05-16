@@ -51,7 +51,7 @@
                                                                     ctx/skin
                                                                     ctx/stage
                                                                     ctx/textures]
-                                                             :as ctx} (stage/ctx (event/stage event))]
+                                                             :as ctx} (:stage/ctx (event/stage event))]
                                                         (stage/add-actor!
                                                          stage
                                                          {:type :ui/property-overview-window
@@ -75,7 +75,7 @@
                   :text "-"
                   :skin skin
                   :actor/listeners {:listener/change (fn [event _actor]
-                                                       (redo-rows (stage/ctx (event/stage event))
+                                                       (redo-rows (:stage/ctx (event/stage event))
                                                                   (disj property-ids id)))}})})])))
 
 (defmethod schema/create :s/one-to-many [[_ property-type] property-ids ctx]
@@ -113,7 +113,7 @@
                                                                       ctx/skin
                                                                       ctx/stage
                                                                       ctx/textures]
-                                                               :as ctx} (stage/ctx (event/stage event))]
+                                                               :as ctx} (:stage/ctx (event/stage event))]
                                                           (stage/add-actor!
                                                            stage
                                                            {:type :ui/property-overview-window
@@ -137,7 +137,7 @@
                    :text "-"
                    :skin skin
                    :actor/listeners {:listener/change (fn [event _actor]
-                                                        (redo-rows (stage/ctx (event/stage event))
+                                                        (redo-rows (:stage/ctx (event/stage event))
                                                                    nil))}})})]])))
 
 (defmethod schema/create :s/one-to-one [[_ property-type] property-id ctx]
@@ -184,13 +184,13 @@
                                                                 :skin skin
                                                                 :actor/listeners {:listener/change
                                                                                   (fn [event actor]
-                                                                                    ((rebuild-sound-widget! table sound-name) actor (stage/ctx (event/stage event))))}})}
+                                                                                    ((rebuild-sound-widget! table sound-name) actor (:stage/ctx (event/stage event))))}})}
                                                       {:actor (actor/create
                                                                {:type :ui/text-button
                                                                 :text "play!"
                                                                 :skin skin
                                                                 :actor/listeners {:listener/change (fn [event _actor]
-                                                                                                     (txs/handle! (stage/ctx (event/stage event))
+                                                                                                     (txs/handle! (:stage/ctx (event/stage event))
                                                                                                                   [[:tx/sound sound-name]]))}})}])} )]
                            {:actor (actor/create {:type :ui/scroll-pane
                                                   :actor table
@@ -205,13 +205,13 @@
              :text sound-name
              :skin skin
              :actor/listeners {:listener/change (fn [event _actor]
-                                                  ((open-select-sounds-handler table) (stage/ctx (event/stage event))))}})}
+                                                  ((open-select-sounds-handler table) (:stage/ctx (event/stage event))))}})}
    {:actor (actor/create
             {:type :ui/text-button
              :text "play!"
              :skin skin
              :actor/listeners {:listener/change (fn [event _actor]
-                                                  (txs/handle! (stage/ctx (event/stage event))
+                                                  (txs/handle! (:stage/ctx (event/stage event))
                                                                [[:tx/sound sound-name]]))}})}])
 
 (defmethod schema/create :s/sound [_  sound-name {:keys [ctx/skin]}]
@@ -227,7 +227,7 @@
                                   :skin skin
                                   :actor/listeners {:listener/change
                                                     (fn [event _actor]
-                                                      ((open-select-sounds-handler table) (stage/ctx (event/stage event))))}})}])])
+                                                      ((open-select-sounds-handler table) (:stage/ctx (event/stage event))))}})}])])
     table))
 
 (defmethod schema/create :s/string [schema v {:keys [ctx/skin]}]

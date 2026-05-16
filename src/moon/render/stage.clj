@@ -6,4 +6,4 @@
   (stage/set-ctx! stage ctx)
   (stage/act!  stage)
   (stage/draw! stage)
-  (stage/ctx stage))
+  (:stage/ctx stage))

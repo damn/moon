@@ -29,6 +29,6 @@
                               {:type :ui/actor
                                :act! (fn [this delta]
                                        (when-let [stage (actor/stage this)]
-                                         (label/set-text! label (set-label-text! (stage/ctx stage))))
+                                         (label/set-text! label (set-label-text! (:stage/ctx stage))))
                                        (widget-group/pack! window))}))
     window))

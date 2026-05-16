@@ -11,7 +11,7 @@
    {:type :ui/actor
     :act! (fn [this _delta]
             (when-let [stage (actor/stage this)]
-              (label/set-text! label (text-fn (stage/ctx stage)))))}))
+              (label/set-text! label (text-fn (:stage/ctx stage)))))}))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
@@ -49,7 +49,7 @@
                      :text label
                      :skin skin
                      :actor/listeners {:listener/change (fn [event actor]
-                                                          (on-click actor (stage/ctx (event/stage event))))}})})]})
+                                                          (on-click actor (:stage/ctx (event/stage event))))}})})]})
 
 (defn- main-table [skin menus update-labels]
   (let [table (actor/create

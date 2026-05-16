@@ -107,7 +107,7 @@
                       :actor/name "inventory-cell"
                       :actor/user-object cell
                       :actor/listeners {:listener/click (fn [event _x _y]
-                                                          (let [{:keys [ctx/player-eid] :as ctx} (stage/ctx (event/stage event))
+                                                          (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
                                                                 entity @player-eid
                                                                 state-k (:state (:entity/fsm entity))]
                                                             (txs/handle! ctx
@@ -119,7 +119,7 @@
                                                (when-let [stage (actor/stage this)]
                                                  (let [{:keys [ctx/player-eid
                                                                ctx/ui-mouse-position]
-                                                        :as ctx} (stage/ctx stage)]
+                                                        :as ctx} (:stage/ctx stage)]
                                                    (draws/handle ctx
                                                                  (draw-cell-rect @player-eid
                                                                                  (actor/x this)

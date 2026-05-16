@@ -48,7 +48,7 @@
         actors [{:type :ui/actor
                  :act! (fn [this delta]
                          (when-let [stage (actor/stage this)]
-                           (let [{:keys [ctx/app] :as ctx} (stage/ctx stage)]
+                           (let [{:keys [ctx/app] :as ctx} (:stage/ctx stage)]
                              (when (input/key-just-pressed? (app/input app) input.keys/enter)
                                (clicked-save-fn this ctx)))))}]
         save-button {:type :ui/text-button
@@ -56,13 +56,13 @@
                      :skin skin
                      :actor/listeners [[:listener/change
                                         (fn [event actor]
-                                          (clicked-save-fn actor (stage/ctx (event/stage event))))]]}
+                                          (clicked-save-fn actor (:stage/ctx (event/stage event))))]]}
         delete-button {:type :ui/text-button
                        :text "Delete"
                        :skin skin
                        :actor/listeners [[:listener/change
                                           (fn [event actor]
-                                            (clicked-delete-fn actor (stage/ctx (event/stage event))))]]}
+                                            (clicked-delete-fn actor (:stage/ctx (event/stage event))))]]}
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor (actor/create save-button) :center? true}
                            {:actor (actor/create delete-button) :center? true}]]

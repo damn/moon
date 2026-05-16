@@ -12,13 +12,11 @@
   (proxy [CtxStage ILookup] [(FitViewport. 1440 900) batch]
     (valAt [k]
       (case k
+        :stage/ctx      (.ctx         ^CtxStage this)
         :stage/viewport (.getViewport ^CtxStage this)))))
 
 (extend-type CtxStage
   stage/Stage
-  (ctx [stage]
-    (.ctx stage))
-
   (set-ctx! [stage ctx]
     (set! (.ctx stage) ctx))
 

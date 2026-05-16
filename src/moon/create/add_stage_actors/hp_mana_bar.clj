@@ -49,5 +49,5 @@
     {:type :ui/actor
      :draw! (fn [this _batch _parent-alpha]
               (when-let [stage (actor/stage this)]
-                (draws/handle (stage/ctx stage)
-                              (create-draws (stage/ctx stage)))))}))
+                (draws/handle (:stage/ctx stage)
+                              (create-draws (:stage/ctx stage)))))}))

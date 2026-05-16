@@ -61,7 +61,7 @@
                                                                                            (and (actor/user-object actor)
                                                                                                 (= k ((actor/user-object actor) 0))))
                                                                                          (group/children table))))
-                                                           (rebuild! (stage/ctx (event/stage event))))}}))
+                                                           (rebuild! (:stage/ctx (event/stage event))))}}))
                             :left? true}
                            {:actor (actor/create
                                     {:type :ui/label
@@ -106,7 +106,7 @@
                   :actor/listeners {:listener/change
                                     (fn [event _actor]
                                       (actor/remove! window)
-                                      (let [ctx (stage/ctx (event/stage event))]
+                                      (let [ctx (:stage/ctx (event/stage event))]
                                         (table/add-rows! map-widget-table [(component-row skin
                                                                                           (build-value-widget ctx
                                                                                                               (get schemas k)
@@ -162,7 +162,7 @@
                                              (fn [event actor]
                                                (let [{:keys [ctx/db
                                                              ctx/stage
-                                                             ctx/skin]} (stage/ctx (event/stage event))]
+                                                             ctx/skin]} (:stage/ctx (event/stage event))]
                                                  (stage/add-actor!
                                                   stage
                                                   {:type :ui/add-component-window
