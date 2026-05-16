@@ -1,37 +1,28 @@
 (ns com.badlogic.gdx.application-listener
-  (:require [com.badlogic.gdx.gdx :as gdx])
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn create
-  [{:keys [state-var
-           create
-           dispose
-           render
-           resize]}]
-  (let [state @state-var]
-    (reify ApplicationListener
-      (create [_]
-        (reset! state
-                (reduce (fn [ctx [f & params]]
-                          (apply f ctx params))
-                        {:ctx/app (gdx/app)}
-                        create)))
+  [{:keys [create!
+           dispose!
+           render!
+           resize!
+           pause!
+           resume!]}]
+  (reify ApplicationListener
+    (create [_]
+      (create!))
 
-      (dispose [_]
-        (doseq [f dispose]
-          (f @state)))
+    (dispose [_]
+      (dispose!))
 
-      (render [_]
-        (swap! state
-               (fn [ctx]
-                 (reduce (fn [ctx [f & params]]
-                           (apply f ctx params))
-                         ctx
-                         render))))
+    (render [_]
+      (render!))
 
-      (resize [_ width height]
-        (doseq [f resize]
-          (f @state width height)))
+    (resize [_ width height]
+      (resize! width height))
 
-      (pause [_])
-      (resume [_]))))
+    (pause [_]
+      (pause!))
+
+    (resume [_]
+      (resume!))))
