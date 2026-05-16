@@ -24,7 +24,7 @@
             (let [layer (.get (tiled-map/layers this) "creatures")]
               (when-let [cell (layer/cell layer tile)]
                 (when-let [id (-> cell
-                                  .getTile
+                                  cell/tile
                                   .getProperties
                                   (.get "id"))]
                   (str "Creature id: " id)))))

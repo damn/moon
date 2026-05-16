@@ -1,7 +1,8 @@
 (ns moon.world-fns.modules
   (:require [clojure.gdx.maps.map-properties :as props]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.grid2d :as g2d]
@@ -152,7 +153,7 @@
                             :when local-position]
                         (when (vector? local-position)
                           (when-let [cell (.getCell layer (local-position 0) (local-position 1))]
-                            [position (static-tiled-map-tile/copy (.getTile cell))])))})}))
+                            [position (static-tiled-map-tile/copy (cell/tile cell))])))})}))
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid
