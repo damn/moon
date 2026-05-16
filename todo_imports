@@ -1,6 +1,8 @@
-TODO FIX IMPORT NAMESPACEs:
 
+com.badlogic.gdx.maps.tiled.tiled-map-tile-layer
 com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile
+
+com.badlogic.gdx.scenes.scene2d.ui.cell ?
 com.badlogic.gdx.scenes.scene2d.ui.scroll-pane
 com.badlogic.gdx.scenes.scene2d.ui.select-box
 com.badlogic.gdx.scenes.scene2d.ui.stack
@@ -10,9 +12,9 @@ com.badlogic.gdx.scenes.scene2d.ui.widget
 com.badlogic.gdx.scenes.scene2d.ui.widget-group
 com.badlogic.gdx.scenes.scene2d.ui.window
 com.badlogic.gdx.scenes.scene2d.ui
+com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable
 com.badlogic.gdx.utils.viewport.fit-viewport
-moon.impl.grid
+
 moon.impl.stage
 moon.tiled-map.renderer
-moon.tx.spawn-entity
-( moon.levelgen )
+moon.levelgen

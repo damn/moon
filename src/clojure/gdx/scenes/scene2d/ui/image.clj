@@ -1,6 +1,6 @@
 (ns clojure.gdx.scenes.scene2d.ui.image
   (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.ui.actor :as actor]
             [moon.ui.image]))
 
