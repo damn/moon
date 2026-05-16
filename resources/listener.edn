@@ -1,7 +1,0 @@
-{
- :state-var moon.application/state
- :create  #edn/resource "create.edn"
- :render  #edn/resource "render.edn"
- :dispose #edn/resource "dispose.edn"
- :resize  #edn/resource "resize.edn"
- }

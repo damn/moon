@@ -92,12 +92,15 @@
    [:ui/group com.badlogic.gdx.scenes.scene2d.group/create]
    ]
   ]
- [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
- [com.badlogic.gdx.backends.lwjgl3.config/use-glfw-async!]
  [clojure.gdx.backends.lwjgl/application
   {
-   :listener [clojure.gdx.application-listener/create #edn/resource "listener.edn"]
-   :config [com.badlogic.gdx.backends.lwjgl3.config/create #edn/resource "config.edn"]
+   :state-var moon.application/state
+   :create  #edn/resource "create.edn"
+   :dispose #edn/resource "dispose.edn"
+   :render  #edn/resource "render.edn"
+   :resize  #edn/resource "resize.edn"
+   :config #edn/resource "config.edn"
+   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
    }
   ]
  ]

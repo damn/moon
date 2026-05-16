@@ -1,23 +1,67 @@
-src/moon/impl/cursors.clj|5 col 4-11| (:import (com.badlogic.gdx Application)
-
-src/moon/impl/default_font.clj|2 col 4-11| (:import (com.badlogic.gdx Application)
-
+src/com/badlogic/gdx/backends/lwjgl3/application.clj|2 col 4-11| (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)))
+src/com/badlogic/gdx/backends/lwjgl3/config.clj|2 col 4-11| (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
+src/com/badlogic/gdx/files/file_handle.clj|2 col 4-11| (:import (com.badlogic.gdx.files FileHandle)))
+src/com/badlogic/gdx/graphics/color.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics Color)))
+src/com/badlogic/gdx/graphics/colors.clj|3 col 4-11| (:import (com.badlogic.gdx.graphics Colors)))
+src/com/badlogic/gdx/graphics/g2d/bitmap_font/data.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData)))
+src/com/badlogic/gdx/graphics/g2d/bitmap_font.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
+src/com/badlogic/gdx/graphics/g2d/freetype/freetype_font_generator/parameter.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator$FreeTypeFontParameter)))
+src/com/badlogic/gdx/graphics/g2d/freetype/freetype_font_generator.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
+src/com/badlogic/gdx/graphics/g2d/sprite_batch.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
+src/com/badlogic/gdx/graphics/g2d/texture_region.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics Texture)
+src/com/badlogic/gdx/graphics/orthographic_camera.clj|3 col 4-11| (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+src/com/badlogic/gdx/graphics/pixmap.clj|2 col 4-11| (:import (com.badlogic.gdx.files FileHandle)
+src/com/badlogic/gdx/graphics/texture/texture_filter.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics Texture$TextureFilter)))
+src/com/badlogic/gdx/graphics/texture.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics Texture
+src/com/badlogic/gdx/graphics.clj|2 col 4-11| (:import (com.badlogic.gdx Graphics)))
+src/com/badlogic/gdx/input/buttons.clj|2 col 4-11| (:import (com.badlogic.gdx Input$Buttons)))
+src/com/badlogic/gdx/input/keys.clj|2 col 4-11| (:import (com.badlogic.gdx Input$Keys)))
+src/com/badlogic/gdx/input.clj|2 col 4-11| (:import (com.badlogic.gdx Input)))
+src/com/badlogic/gdx/maps/map_properties.clj|3 col 4-11| (:import (com.badlogic.gdx.maps MapProperties)))
+src/com/badlogic/gdx/maps/tiled/tiled_map.clj|5 col 4-11| (:import (com.badlogic.gdx.maps.tiled TiledMap
+src/com/badlogic/gdx/maps/tiled/tiled_map_tile_layer.clj|2 col 4-11| (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
+src/com/badlogic/gdx/maps/tiled/tiles/static_tiled_map_tile.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+src/com/badlogic/gdx/maps/tiled/tmx_map_loader.clj|2 col 4-11| (:import (com.badlogic.gdx.maps.tiled TmxMapLoader)))
+src/com/badlogic/gdx/math/vector2.clj|2 col 4-11| (:import (com.badlogic.gdx.math Vector2)))
+src/com/badlogic/gdx/math/vector3.clj|2 col 4-11| (:import (com.badlogic.gdx.math Vector3)))
+src/com/badlogic/gdx/scenes/scene2d/actor.clj|6 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d Actor)
+src/com/badlogic/gdx/scenes/scene2d/event.clj|2 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d Event)))
+src/com/badlogic/gdx/scenes/scene2d/group.clj|3 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d Group)))
+src/com/badlogic/gdx/scenes/scene2d/touchable.clj|2 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d Touchable)))
+src/com/badlogic/gdx/scenes/scene2d/ui/button_group.clj|2 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Button
+src/com/badlogic/gdx/scenes/scene2d/ui/cell.clj|2 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
+src/com/badlogic/gdx/scenes/scene2d/ui/check_box.clj|2 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox
+src/com/badlogic/gdx/scenes/scene2d/ui/horizontal_group.clj|3 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
+src/com/badlogic/gdx/scenes/scene2d/ui/image.clj|5 col 4-11| (:import (com.badlogic.gdx.graphics Texture)
+src/com/badlogic/gdx/scenes/scene2d/ui/image_button.clj|3 col 4-11| (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+src/com/badlogic/gdx/scenes/scene2d/ui/label.clj|4 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Label
+src/com/badlogic/gdx/scenes/scene2d/ui/scroll_pane.clj|3 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d Actor)
+src/com/badlogic/gdx/scenes/scene2d/ui/select_box.clj|4 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox
+src/com/badlogic/gdx/scenes/scene2d/ui/skin.clj|2 col 4-11| (:import (com.badlogic.gdx.files FileHandle)
+src/com/badlogic/gdx/scenes/scene2d/ui/stack.clj|4 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Stack)))
+src/com/badlogic/gdx/scenes/scene2d/ui/table.clj|6 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d Actor)
+src/com/badlogic/gdx/scenes/scene2d/ui/text_button.clj|3 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
+src/com/badlogic/gdx/scenes/scene2d/ui/text_field.clj|4 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
+src/com/badlogic/gdx/scenes/scene2d/ui/tooltip_manager.clj|2 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
+src/com/badlogic/gdx/scenes/scene2d/ui/widget.clj|3 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Widget)))
+src/com/badlogic/gdx/scenes/scene2d/ui/widget_group.clj|4 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui WidgetGroup)))
+src/com/badlogic/gdx/scenes/scene2d/ui/window.clj|2 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
+src/com/badlogic/gdx/scenes/scene2d/ui.clj|2 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
+src/com/badlogic/gdx/scenes/scene2d/utils/texture_region_drawable.clj|3 col 4-11| (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+src/com/badlogic/gdx/utils/align.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Align)))
+src/com/badlogic/gdx/utils/disposable.clj|2 col 4-11| (:import (com.badlogic.gdx.utils Disposable)))
+src/com/badlogic/gdx/utils/viewport/fit_viewport.clj|4 col 4-11| (:import (clojure.lang ILookup)
+src/moon/create_assets_edn.clj|4 col 4-11| (:import (java.io File)))
+src/moon/hiera.clj|4 col 4-11| (:import (java.io File)))
 src/moon/impl/grid.clj|14 col 4-11| (:import (com.badlogic.gdx.math Circle
-
-src/moon/impl/shape_drawer.clj|3 col 4-11| (:import (com.badlogic.gdx.graphics Texture)
-
-src/moon/impl/skin.clj|2 col 4-11| (:import (com.badlogic.gdx Application)
-
 src/moon/impl/stage.clj|6 col 4-11| (:import (com.badlogic.gdx.scenes.scene2d CtxStage)
-
-src/moon/impl/textures.clj|3 col 4-11| (:import (com.badlogic.gdx Application)
-
-src/moon/impl/white_pixel_texture.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics Pixmap
-
+src/moon/rename.clj|4 col 4-11| (:import (java.nio.file Files
+src/moon/render/clear_screen.clj|4 col 4-11| (:import (com.badlogic.gdx.graphics GL20)))
 src/moon/textures.clj|2 col 4-11| (:import (com.badlogic.gdx.graphics Texture)
-
 src/moon/tiled_map/renderer.clj|2 col 4-11| (:import (com.badlogic.gdx.maps.tiled TiledMap
-
-src/moon/tx/spawn_entity.clj|16 col 4-11| (:import (com.badlogic.gdx.math Rectangle)))
-
-src/moon/world_fns/uf_caves.clj|7 col 4-11| (:import (com.badlogic.gdx.graphics Texture)
+src/moon/tx/spawn_entity.clj|15 col 4-11| (:import (com.badlogic.gdx.math Rectangle)))
+src/moon/vector.clj|2 col 4-11| (:import (clojure.lang PersistentVector)))
+src/moon/world_fns/modules.clj|9 col 4-11| (:import (java.util Random)))
+src/space/earlygrey/shape_drawer.clj|18 col 4-11| (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+test/moon/graphics/tiled_map_renderer_test.clj|5 col 4-11| (:import (com.badlogic.gdx.graphics Color OrthographicCamera)
+test/moon/levelgen.clj|14 col 4-11| (:import (com.badlogic.gdx ApplicationListener

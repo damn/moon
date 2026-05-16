@@ -1,8 +1,42 @@
 (ns clojure.gdx.backends.lwjgl
-  (:require [com.badlogic.gdx.backends.lwjgl3.application :as application]))
+  (:require [com.badlogic.gdx.application-listener :as listener]
+            [com.badlogic.gdx.backends.lwjgl3.application :as application]
+            [com.badlogic.gdx.backends.lwjgl3.config :as config]
+            [com.badlogic.gdx.gdx :as gdx]
+            [com.badlogic.gdx.graphics.colors :as colors]))
 
-(defn application [{:keys [listener config]}]
-  (application/create (let [[f params] listener]
-                        (f params))
-                      (let [[f params] config]
-                        (f params))))
+(defn application
+  [{:keys [state-var
+           create
+           dispose
+           render
+           resize
+           config
+           colors
+           ]}]
+  (colors/put! colors)
+  (config/use-glfw-async!)
+  (application/create (listener/create
+                       (let [state @state-var]
+                         {:create! (fn []
+                                     (reset! state
+                                             (reduce (fn [ctx [f & params]]
+                                                       (apply f ctx params))
+                                                     {:ctx/app (gdx/app)}
+                                                     create)))
+                          :dispose! (fn []
+                                      (doseq [f dispose]
+                                        (f @state)))
+                          :render! (fn []
+                                     (swap! state
+                                            (fn [ctx]
+                                              (reduce (fn [ctx [f & params]]
+                                                        (apply f ctx params))
+                                                      ctx
+                                                      render))))
+                          :resize! (fn [width height]
+                                     (doseq [f resize]
+                                       (f @state width height)))
+                          :pause! (fn [])
+                          :resume! (fn [])}))
+                      (config/create config)))
