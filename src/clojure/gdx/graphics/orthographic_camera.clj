@@ -1,5 +1,6 @@
 (ns clojure.gdx.graphics.orthographic-camera
   (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]
+            [com.badlogic.gdx.math.frustum :as frustum]
             [com.badlogic.gdx.math.vector3 :as vector3]))
 
 (def create camera/create)
@@ -7,7 +8,7 @@
 (def zoom camera/zoom)
 
 (defn frustum [camera]
-  (let [plane-points (mapv vector3/->clj (.planePoints (camera/frustum camera)))
+  (let [plane-points (mapv vector3/->clj (frustum/plane-points (camera/frustum camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))
@@ -19,8 +20,8 @@
   (vector3/->clj (camera/position camera)))
 
 (defn set-position! [camera [x y]]
-  (set! (.x (camera/position camera)) x)
-  (set! (.y (camera/position camera)) y)
+  (set! (.x ^com.badlogic.gdx.math.Vector3 (camera/position camera)) x)
+  (set! (.y ^com.badlogic.gdx.math.Vector3 (camera/position camera)) y)
   (camera/update! camera))
 
 (defn set-zoom! [camera amount]
