@@ -25,8 +25,8 @@
                                                                                   (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
                                                                                   (on-click))}})}]]
                      :actor/name "moon.ui.modal-window"
-                     :actor/position [(/ (stage/viewport-width stage) 2)
-                                      (* (stage/viewport-height stage) (/ 3 4))
+                     :actor/position [(/ (:viewport/world-width (:stage/viewport stage)) 2)
+                                      (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))
                                       :align/center]})
   ctx)
 

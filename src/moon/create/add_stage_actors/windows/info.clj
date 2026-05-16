@@ -1,6 +1,5 @@
 (ns moon.create.add-stage-actors.windows.info
-  (:require [moon.stage :as stage]
-            [moon.info :as info]))
+  (:require [moon.info :as info]))
 
 (defn create
   [{:keys [ctx/skin
@@ -9,7 +8,7 @@
    :title "Entity Info"
    :actor-name "moon.ui.windows.entity-info"
    :visible? false
-   :position [(stage/viewport-width stage) 0]
+   :position [(:viewport/world-width (:stage/viewport stage)) 0]
    :set-label-text! (fn [{:keys [ctx/mouseover-eid]
                           :as ctx}]
                       (if-let [eid mouseover-eid]

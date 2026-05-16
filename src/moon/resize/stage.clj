@@ -1,6 +1,6 @@
 (ns moon.resize.stage
-  (:require [moon.stage :as stage]))
+  (:require [moon.viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/stage]} width height]
-  (stage/update-viewport! stage width height))
+  (viewport/update! (:stage/viewport stage) width height true))

@@ -1,6 +1,5 @@
 (ns moon.create.add-stage-actors.player-message
   (:require [moon.ui.actor :as actor]
-            [moon.stage :as stage]
             [moon.draws :as draws]))
 
 (defn create [_ctx]
@@ -12,8 +11,8 @@
               (when-let [stage (actor/stage this)]
                 (draws/handle (:stage/ctx stage)
                               [(let [state (actor/user-object this)
-                                     vp-width (stage/viewport-width stage)
-                                     vp-height (stage/viewport-height stage)]
+                                     vp-width (:viewport/world-width (:stage/viewport stage))
+                                     vp-height (:viewport/world-height (:stage/viewport stage))]
                                  (when-let [text (:text @state)]
                                    [:draw/text {:x (/ vp-width 2)
                                                 :y (+ (/ vp-height 2) 200)

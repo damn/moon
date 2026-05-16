@@ -1,6 +1,5 @@
 (ns moon.create.add-stage-actors.hp-mana-bar
   (:require [moon.ui.actor :as actor]
-            [moon.stage :as stage]
             [moon.draws :as draws]
             [moon.number :as number]
             [moon.stats :as stats]
@@ -21,7 +20,7 @@
                           :hpcontent-file "images/hp.png"
                           :manacontent-file "images/mana.png"
                           :y-mana 80}
-        [x y-mana] [(/ (stage/viewport-width stage) 2)
+        [x y-mana] [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                     y-mana]
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)

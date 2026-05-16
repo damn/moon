@@ -7,7 +7,4 @@
   (draw! [_])
   (find-actor [_ name])
   (mouseover-actor [_ position])
-  (viewport-width [_])
-  (viewport-height [_])
-  (update-viewport! [_ width height])
   (unproject [_ [x y]]))

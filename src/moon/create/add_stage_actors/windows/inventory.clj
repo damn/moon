@@ -6,7 +6,6 @@
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [moon.state :as state]
-            [moon.stage :as stage]
             [moon.txs :as txs]
             [moon.textures :as textures]
             moon.ui.inventory-window))
@@ -160,8 +159,8 @@
                     :pad 4}]]
      :actor/name "moon.ui.windows.inventory"
      :actor/visible? false
-     :actor/position [(stage/viewport-width stage)
-                      (stage/viewport-height stage)]}))
+     :actor/position [(:viewport/world-width (:stage/viewport stage))
+                      (:viewport/world-height (:stage/viewport stage))]}))
 
 (defn- find-cell [group cell]
   (first (filter #(= (actor/user-object %) cell)

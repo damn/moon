@@ -1,17 +1,19 @@
 (ns moon.impl.stage
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [moon.stage :as stage]
             [moon.ui.actor :as actor]
-            [moon.ui.group :as group])
+            [moon.ui.group :as group]
+            [moon.viewport :as viewport])
   (:import (clojure.lang ILookup)
-           (com.badlogic.gdx.scenes.scene2d CtxStage)
-           (com.badlogic.gdx.utils.viewport FitViewport)))
+           (com.badlogic.gdx.scenes.scene2d CtxStage)))
 
 (defn create
   [{:keys [ctx/batch]}]
-  (proxy [CtxStage ILookup] [(FitViewport. 1440 900) batch]
+  (proxy [CtxStage ILookup] [(fit-viewport/create 1440 900) batch]
     (valAt [k]
       (case k
+        ; TODO :stage/root
         :stage/ctx      (.ctx         ^CtxStage this)
         :stage/viewport (.getViewport ^CtxStage this)))))
 
@@ -38,17 +40,7 @@
     (let [[x y] (stage/unproject stage position)]
       (.hit stage x y true)))
 
-  (viewport-width [stage]
-    (FitViewport/.getWorldWidth (:stage/viewport stage)))
-
-  (viewport-height [stage]
-    (FitViewport/.getWorldHeight (:stage/viewport stage)))
-
-  (update-viewport! [stage width height]
-    (FitViewport/.update (:stage/viewport stage) width height true))
-
-  (unproject [stage xy]
+  (unproject [stage pos]
     (-> stage
         :stage/viewport
-        (FitViewport/.unproject (vector2/->java xy))
-        vector2/->clj)))
+        (viewport/unproject pos))))
