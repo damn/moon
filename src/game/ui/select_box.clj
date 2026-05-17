@@ -1,4 +1,4 @@
-(ns clojure.gdx.scenes.scene2d.ui.select-box
+(ns game.ui.select-box
   (:require [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
             [moon.ui.actor :as actor]
             [moon.ui.select-box]))
