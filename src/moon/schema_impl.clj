@@ -196,7 +196,7 @@
                                                   :actor table
                                                   :skin skin})
                             :width  (+ (actor/width table) 50)
-                            :height (min (- (:Viewport/world-height (:stage/viewport stage)) 50)
+                            :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
                                          (actor/height table))})]]})))
 
 (defn- sound-columns [skin table sound-name]
