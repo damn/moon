@@ -7,7 +7,7 @@
  [moon.render.active-entities/step]
  [moon.render.set-camera/step]
  [moon.render.clear-screen/step]
- [moon.render.draw-tiled-map/step]
+ [moon.render.draw-tiled-map/step clojure.gdx.maps.tiled.renderer/draw!]
  [moon.render.draw-on-world-viewport/step [
                                            #_moon.render.draw-on-world-viewport.draw-tile-grid/draws
                                            moon.render.draw-on-world-viewport.draw-cell-debug/draws

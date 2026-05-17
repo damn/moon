@@ -1,6 +1,5 @@
 (ns moon.render.draw-tiled-map
-  (:require [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
-            [moon.camera :as camera]
+  (:require [moon.camera :as camera]
             [moon.raycaster :as raycaster]))
 
 (defn- tile-color-setter*
@@ -68,10 +67,11 @@
            ctx/tiled-map
            ctx/world-unit-scale
            ctx/world-viewport]
-    :as ctx}]
-  (tiled-map-renderer/draw! batch
-                            world-unit-scale
-                            (:viewport/camera world-viewport)
-                            tiled-map
-                            (tile-color-setter ctx))
+    :as ctx}
+   draw-tiled-map!]
+  (draw-tiled-map! batch
+                   world-unit-scale
+                   (:viewport/camera world-viewport)
+                   tiled-map
+                   (tile-color-setter ctx))
   ctx)
