@@ -1,6 +1,6 @@
 (ns moon.schema-widget.map
   (:require [moon.ui.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clojure.scene2d.event :as event]
             [moon.ui.group :as group]
             [moon.stage :as stage]
             [moon.ui.table :as table]

@@ -1,6 +1,6 @@
 (ns moon.ui-actors.dev-menu
   (:require [moon.ui.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clojure.scene2d.event :as event]
             [moon.ui.group :as group]
             [moon.stage :as stage]
             [moon.ui.label :as label]

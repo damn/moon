@@ -78,6 +78,9 @@
     clojure.gdx.scenes.scene2d.group
     moon.ui.group/Group] ; clojure.gdx -> TODO use 'moon.rename' with moving the file (changing ns?)
 
+   [com.badlogic.gdx.scenes.scene2d.Event
+    com.badlogic.gdx.scenes.scene2d.event
+    clojure.scene2d.event/Event]
 
    [com.badlogic.gdx.utils.Disposable
     com.badlogic.gdx.utils.disposable

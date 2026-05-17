@@ -1,7 +1,7 @@
 (ns moon.schema-impl
   (:require clojure.edn
             [moon.ui.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clojure.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.ui.group :as group]
             [moon.stage :as stage]
