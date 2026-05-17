@@ -1,15 +1,20 @@
 [[clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]
  [clojure.core-ext/extend-types! #edn/resource "extends.edn"]
  [clojure.multifn/add-methods! moon.ui.actor/create #edn/resource "actors.edn"]
- [clojure.gdx.backends.lwjgl/application
+ [clojure.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
+ [clojure.gdx.backends.lwjgl/use-glfw-async!]
+ [clojure.gdx.backends.lwjgl/application!
   {
-   :state-var moon.application/state
-   :create  #edn/resource "create.edn"
-   :dispose #edn/resource "dispose.edn"
-   :render  #edn/resource "render.edn"
-   :resize  #edn/resource "resize.edn"
+   :listener [moon.listener/create
+              {
+               :state-var moon.application/state
+               :create  #edn/resource "create.edn"
+               :dispose #edn/resource "dispose.edn"
+               :render  #edn/resource "render.edn"
+               :resize  #edn/resource "resize.edn"
+               }
+              ]
    :config #edn/resource "config.edn"
-   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
    }
   ]
  ]

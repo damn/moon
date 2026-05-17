@@ -1,46 +1,13 @@
 (ns clojure.gdx.backends.lwjgl
   (:require [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.application :as application]
-            [com.badlogic.gdx.backends.lwjgl3.config :as config]
-            [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.graphics.colors :as colors]))
+            [com.badlogic.gdx.backends.lwjgl3.config :as config]))
 
-(defn application
-  [{:keys [state-var
-           create
-           dispose
-           render
-           resize
-           config
-           colors
-           ]}]
+(def use-glfw-async! config/use-glfw-async!)
 
-  (doseq [[name rgba] colors]
-    (colors/put! name (color/create rgba)))
-
-  (config/use-glfw-async!)
-
+(defn application!
+  [{:keys [listener config]}]
   (application/create (listener/create
-                       (let [state @state-var]
-                         {:create! (fn []
-                                     (reset! state
-                                             (reduce (fn [ctx [f & params]]
-                                                       (apply f ctx params))
-                                                     {}
-                                                     create)))
-                          :dispose! (fn []
-                                      (doseq [f dispose]
-                                        (f @state)))
-                          :render! (fn []
-                                     (swap! state
-                                            (fn [ctx]
-                                              (reduce (fn [ctx [f & params]]
-                                                        (apply f ctx params))
-                                                      ctx
-                                                      render))))
-                          :resize! (fn [width height]
-                                     (doseq [f resize]
-                                       (f @state width height)))
-                          :pause! (fn [])
-                          :resume! (fn [])}))
+                       (let [[f params] listener]
+                         (f params)))
                       (config/create config)))
