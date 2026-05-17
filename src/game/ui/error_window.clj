@@ -1,4 +1,4 @@
-(ns moon.ui.error-window
+(ns game.ui.error-window
   (:require [moon.ui.actor :as actor]
             [clojure.repl :as repl]))
 

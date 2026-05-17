@@ -1,4 +1,4 @@
-(ns moon.ui-actors.windows.info
+(ns game.ui.info-window
   (:require [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.stage :as stage]

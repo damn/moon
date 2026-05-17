@@ -24,12 +24,12 @@
  clojure.gdx.scenes.scene2d.ui.text-button
  clojure.gdx.scenes.scene2d.ui.text-field
  clojure.gdx.scenes.scene2d.ui.widget-group
- moon.ui.impl.window
- moon.ui.data-viewer-window
- moon.ui.error-window
- moon.ui.property-editor-window
- moon.ui.property-overview-window
- moon.ui-actors.dev-menu
- moon.ui-actors.action-bar
- moon.ui-actors.windows.info
+ game.ui.window
+ game.ui.data-viewer-window
+ game.ui.error-window
+ game.ui.property-editor-window
+ game.ui.property-overview-window
+ game.ui.dev-menu
+ game.ui.action-bar
+ game.ui.info-window
  ]

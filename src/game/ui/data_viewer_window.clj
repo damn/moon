@@ -1,4 +1,4 @@
-(ns moon.ui.data-viewer-window
+(ns game.ui.data-viewer-window
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]))
 

@@ -1,4 +1,4 @@
-(ns moon.ui-actors.action-bar
+(ns game.ui.action-bar
   (:require [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.action-bar :as action-bar]
