@@ -3,5 +3,3 @@
 
 (defn create [listener config]
   (Lwjgl3Application. listener config))
-
-; PROXY ILOOKJUP AND IMPLEMENT clojure.gdx.app
