@@ -1,0 +1,52 @@
+[
+ [com.badlogic.gdx.Application
+  com.badlogic.gdx.application
+  clojure.gdx.app/App]
+
+ [com.badlogic.gdx.Audio
+  com.badlogic.gdx.audio
+  clojure.audio/Audio]
+
+ [com.badlogic.gdx.Files
+  com.badlogic.gdx.files
+  clojure.gdx.files/Files]
+
+ [com.badlogic.gdx.Graphics
+  com.badlogic.gdx.graphics
+  clojure.graphics/Graphics]
+
+ [com.badlogic.gdx.Input
+  com.badlogic.gdx.input
+  clojure.input/Input]
+
+ [com.badlogic.gdx.graphics.g2d.SpriteBatch
+  com.badlogic.gdx.graphics.g2d.sprite-batch
+  moon.batch/Batch]
+
+ [space.earlygrey.shapedrawer.ShapeDrawer
+  space.earlygrey.shape-drawer
+  moon.shape-drawer/ShapeDrawer]
+
+ [com.badlogic.gdx.graphics.OrthographicCamera
+  clojure.gdx.graphics.orthographic-camera
+  moon.camera/OrthographicCamera]
+
+ [com.badlogic.gdx.scenes.scene2d.Actor
+  clojure.gdx.scenes.scene2d.actor
+  moon.ui.actor/Actor]
+
+ [com.badlogic.gdx.scenes.scene2d.Group
+  clojure.gdx.scenes.scene2d.group
+  moon.ui.group/Group]
+
+ [com.badlogic.gdx.scenes.scene2d.Event
+  com.badlogic.gdx.scenes.scene2d.event
+  clojure.scene2d.event/Event]
+
+ [com.badlogic.gdx.utils.Disposable
+  com.badlogic.gdx.utils.disposable
+  clojure.gdx.utils.disposable/Disposable]
+
+ [com.badlogic.gdx.utils.viewport.FitViewport
+  com.badlogic.gdx.utils.viewport.fit-viewport
+  moon.viewport/Viewport]]
