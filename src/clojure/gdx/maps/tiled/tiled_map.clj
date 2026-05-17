@@ -25,7 +25,7 @@
                              :tileheight (props/get props "tileheight")
                              :name name
                              :visible? visible?
-                             :map-properties (props/create properties)
+                             :map-properties properties
                              :tiles tiles})]
     (layers/add! (tiled-map/layers tiled-map) layer))
   nil)

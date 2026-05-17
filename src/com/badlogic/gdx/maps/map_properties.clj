@@ -2,9 +2,6 @@
   (:refer-clojure :exclude [get keys vals])
   (:import (com.badlogic.gdx.maps MapProperties)))
 
-(defn create []
-  (MapProperties.))
-
 (defn get [^MapProperties map-properties k]
   (.get map-properties k))
 
@@ -16,6 +13,3 @@
 
 (defn vals [^MapProperties props]
   (.getValues props))
-
-(defn put-all! [^MapProperties props other-props]
-  (.putAll props other-props))

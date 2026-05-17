@@ -9,5 +9,5 @@
   {:pre [texture-region
          (string? property-name)]}
   (let [tile (tile/create texture-region)]
-    (props/put! (tile/properties tile) property-name property-value)
+    (props/add! (tile/properties tile) {property-name property-value})
     tile))
