@@ -4,8 +4,7 @@
             [moon.ui.actor :as actor]))
 
 (defmethod schema/create :s/animation
-  [_ animation {:keys [ctx/skin
-                       ctx/textures]}]
+  [_ animation {:keys [ctx/textures]}]
   (actor/create
    {:type :ui/table
     :table/cell-defaults {:pad 1}
