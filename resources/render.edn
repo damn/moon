@@ -1,30 +1,30 @@
 [
- [moon.render.get-stage-ctx/step]
- [moon.render.validate/step]
- [moon.render.update-mouse/step]
- [moon.render.update-mouseover-eid/step]
- [moon.render.check-debug-viewer/step]
- [moon.render.active-entities/step]
- [moon.render.set-camera/step]
- [moon.render.clear-screen/step]
- [moon.render.draw-tiled-map/step clojure.gdx.maps.tiled.renderer/draw!]
- [moon.render.draw-on-world-viewport/step [
-                                           #_moon.render.draw-on-world-viewport.draw-tile-grid/draws
-                                           moon.render.draw-on-world-viewport.draw-cell-debug/draws
-                                           moon.render.draw-on-world-viewport.draw-entities/do!
+ [game.render.get-stage-ctx/step]
+ [game.render.validate/step]
+ [game.render.update-mouse/step]
+ [game.render.update-mouseover-eid/step]
+ [game.render.check-debug-viewer/step]
+ [game.render.active-entities/step]
+ [game.render.set-camera/step]
+ [game.render.clear-screen/step]
+ [game.render.draw-tiled-map/step clojure.gdx.maps.tiled.renderer/draw!]
+ [game.render.draw-on-world-viewport/step [
+                                           #_game.render.draw-on-world-viewport.draw-tile-grid/draws
+                                           game.render.draw-on-world-viewport.draw-cell-debug/draws
+                                           game.render.draw-on-world-viewport.draw-entities/do!
                                            #_moon.geom-test
-                                           moon.render.draw-on-world-viewport.highlight-mouseover-tile/draws
+                                           game.render.draw-on-world-viewport.highlight-mouseover-tile/draws
                                            ]]
- [moon.render.assoc-interaction-state/step]
- [moon.render.set-cursor/step]
- [moon.render.handle-input/step]
- [moon.render.dissoc-interaction-state/step]
- [moon.render.assoc-paused/step]
- [moon.render.if-not-paused/step [moon.render.if-not-paused.update-time/step
-                                  moon.render.if-not-paused.update-potential-fields/step
-                                  moon.render.if-not-paused.tick-entities/step]]
- [moon.render.remove-destroyed-entities/step]
- [moon.render.window-camera-controls/step]
- [moon.render.stage/step]
- [moon.render.validate/step]
+ [game.render.assoc-interaction-state/step]
+ [game.render.set-cursor/step]
+ [game.render.handle-input/step]
+ [game.render.dissoc-interaction-state/step]
+ [game.render.assoc-paused/step]
+ [game.render.if-not-paused/step [game.render.if-not-paused.update-time/step
+                                  game.render.if-not-paused.update-potential-fields/step
+                                  game.render.if-not-paused.tick-entities/step]]
+ [game.render.remove-destroyed-entities/step]
+ [game.render.window-camera-controls/step]
+ [game.render.stage/step]
+ [game.render.validate/step]
  ]

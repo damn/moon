@@ -1,4 +1,4 @@
-[moon.world-fns.uf-caves/create
+[game.world-fns.uf-caves/create
  {:initial-grid-create-fn moon.caves/create
   :tile-size 48
   :texture-path "maps/uf_terrain.png"

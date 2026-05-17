@@ -1,6 +1,6 @@
 (ns moon.levelgen
-  (:require [moon.impl.db :as db-impl]
-            [moon.impl.textures :as textures]
+  (:require [game.impl.db :as db-impl]
+            [game.impl.textures :as textures]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [com.badlogic.gdx.graphics.color :as color]

@@ -1,5 +1,5 @@
 (ns moon.geom-test)
-;(ns moon.render.draw-on-world-viewport.geom-test)
+;(ns game.render.draw-on-world-viewport.geom-test)
 ;(:require [clojure.gdx.graphics.color :as color])
 ;
 ;(comment

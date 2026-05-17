@@ -1,0 +1,25 @@
+(ns game.tx.event
+  (:require [moon.state :as state]
+            [reduce-fsm :as fsm]))
+
+(defn- send-event! [ctx eid event params]
+  (let [fsm (:entity/fsm @eid)
+        _ (assert fsm)
+        old-state-k (:state fsm)
+        new-fsm (fsm/fsm-event fsm event)
+        new-state-k (:state new-fsm)]
+    (when-not (= old-state-k new-state-k)
+      (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
+                            [k (k @eid)])
+            new-state-obj [new-state-k (state/create [new-state-k params] eid ctx)]]
+        [[:tx/assoc       eid :entity/fsm new-fsm]
+         [:tx/assoc       eid new-state-k (new-state-obj 1)]
+         [:tx/dissoc      eid old-state-k]
+         [:tx/state-exit  eid old-state-obj]
+         [:tx/state-enter eid new-state-obj]]))))
+
+(defn do!
+  ([ctx eid event]
+   (send-event! ctx eid event nil))
+  ([ctx eid event params]
+   (send-event! ctx eid event params)))

@@ -1,10 +1,10 @@
 [
- moon.dispose.audio/do!
- moon.dispose.batch/do!
- moon.dispose.cursors/do!
- moon.dispose.default-font/do!
- moon.dispose.shape-drawer-texture/do!
- moon.dispose.skin/do!
- moon.dispose.textures/do!
- moon.dispose.tiled-map/do!
+ game.dispose.audio/do!
+ game.dispose.batch/do!
+ game.dispose.cursors/do!
+ game.dispose.default-font/do!
+ game.dispose.shape-drawer-texture/do!
+ game.dispose.skin/do!
+ game.dispose.textures/do!
+ game.dispose.tiled-map/do!
  ]

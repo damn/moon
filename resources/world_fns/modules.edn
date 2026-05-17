@@ -1,4 +1,4 @@
-[moon.world-fns.modules/create
+[game.world-fns.modules/create
  {:initial-grid-fn moon.caves/create
   :world/map-size 5,
   :world/max-area-level 3,

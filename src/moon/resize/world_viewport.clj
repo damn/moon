@@ -1,6 +1,0 @@
-(ns moon.resize.world-viewport
-  (:require [moon.viewport :as viewport]))
-
-(defn do!
-  [{:keys [ctx/world-viewport]} width height]
-  (viewport/update! world-viewport width height false))

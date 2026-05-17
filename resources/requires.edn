@@ -11,9 +11,9 @@
  game.schema-widget.sound
  game.schema-widget.string
  game.schema-widget.val-max
- moon.state-impl
- moon.effect-impl
- moon.info-impl
+ game.state-impl
+ game.effect-impl
+ game.info-impl
  clojure.gdx.scenes.scene2d.ui.horizontal-group
  clojure.gdx.scenes.scene2d.ui.image
  clojure.gdx.scenes.scene2d.ui.image-button

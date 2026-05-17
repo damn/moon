@@ -1,4 +1,4 @@
 [
- moon.resize.stage/do!
- moon.resize.world-viewport/do!
+ game.resize.stage/do!
+ game.resize.world-viewport/do!
  ]
