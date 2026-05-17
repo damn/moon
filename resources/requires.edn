@@ -1,10 +1,4 @@
 [
-
- ;; THOSE ARE INDEPENDENT ENTRY POINTS
- ;; JUST /app/schema-widget/?
- ;; => show ala folder hierarchy the dependency hierarchy also
- ;; /moon.api/?
- ; and actually just add-methods ....
  moon.schema-widget.animation
  moon.schema-widget.boolean
  moon.schema-widget.default
@@ -17,7 +11,6 @@
  moon.schema-widget.sound
  moon.schema-widget.string
  moon.schema-widget.val-max
- ;;
  moon.state-impl
  moon.effect-impl
  moon.info-impl
