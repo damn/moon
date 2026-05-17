@@ -1,4 +1,0 @@
-TODO FIX IMPORT NAMESPACEs:
-
-moon.impl.grid -> Intersector
-moon.tx.spawn-entity -> Rectangle
