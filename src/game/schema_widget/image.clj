@@ -1,4 +1,4 @@
-(ns moon.schema-widget.image
+(ns game.schema-widget.image
   (:require [moon.schema :as schema]
             [moon.textures :as textures]
             [moon.ui.actor :as actor]))

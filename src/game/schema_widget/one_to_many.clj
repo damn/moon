@@ -1,4 +1,4 @@
-(ns moon.schema-widget.one-to-many
+(ns game.schema-widget.one-to-many
   (:require [moon.ui.actor :as actor]
             [clojure.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]

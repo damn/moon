@@ -1,4 +1,4 @@
-(ns moon.schema-widget.default
+(ns game.schema-widget.default
   (:require [moon.edn :as edn]
             [moon.schema :as schema]
             [moon.string :as string]

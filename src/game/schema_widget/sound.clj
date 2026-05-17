@@ -1,4 +1,4 @@
-(ns moon.schema-widget.sound
+(ns game.schema-widget.sound
   (:require [moon.ui.actor :as actor]
             [clojure.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]

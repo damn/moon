@@ -1,4 +1,4 @@
-(ns moon.schema-widget.map
+(ns game.schema-widget.map
   (:require [moon.ui.actor :as actor]
             [clojure.scene2d.event :as event]
             [moon.ui.group :as group]

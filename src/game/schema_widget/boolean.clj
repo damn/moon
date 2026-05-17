@@ -1,4 +1,4 @@
-(ns moon.schema-widget.boolean
+(ns game.schema-widget.boolean
   (:require [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
             [moon.schema :as schema]))
 

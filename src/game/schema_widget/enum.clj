@@ -1,4 +1,4 @@
-(ns moon.schema-widget.enum
+(ns game.schema-widget.enum
   (:require [clojure.edn]
             [moon.edn :as edn]
             [moon.schema :as schema]

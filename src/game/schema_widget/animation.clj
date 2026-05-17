@@ -1,4 +1,4 @@
-(ns moon.schema-widget.animation
+(ns game.schema-widget.animation
   (:require [moon.schema :as schema]
             [moon.textures :as textures]
             [moon.ui.actor :as actor]))
