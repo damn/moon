@@ -1,13 +1,6 @@
 [[clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]
  [clojure.core-ext/extend-types! #edn/resource "extends.edn"]
- [clojure.multifn/add-methods! moon.ui.actor/create
-  [
-   [:ui/actor clojure.gdx.scenes.scene2d.actor/create]
-   [:ui/group clojure.gdx.scenes.scene2d.group/create]
-   [:ui/scroll-pane com.badlogic.gdx.scenes.scene2d.ui.scroll-pane/create]
-   [:ui/widget com.badlogic.gdx.scenes.scene2d.ui.widget/create]
-   ]
-  ]
+ [clojure.multifn/add-methods! moon.ui.actor/create #edn/resource "actors.edn"]
  [clojure.gdx.backends.lwjgl/application
   {
    :state-var moon.application/state
