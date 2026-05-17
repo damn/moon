@@ -2,7 +2,6 @@
   (:require [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.application :as application]
             [com.badlogic.gdx.backends.lwjgl3.config :as config]
-            [com.badlogic.gdx.gdx :as gdx]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.colors :as colors]))
 
@@ -15,16 +14,19 @@
            config
            colors
            ]}]
+
   (doseq [[name rgba] colors]
     (colors/put! name (color/create rgba)))
+
   (config/use-glfw-async!)
+
   (application/create (listener/create
                        (let [state @state-var]
                          {:create! (fn []
                                      (reset! state
                                              (reduce (fn [ctx [f & params]]
                                                        (apply f ctx params))
-                                                     {:ctx/app (gdx/app)}
+                                                     {}
                                                      create)))
                           :dispose! (fn []
                                       (doseq [f dispose]
