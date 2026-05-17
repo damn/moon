@@ -1,4 +1,4 @@
-(ns clojure.gdx.scenes.scene2d.actor
+(ns game.ui.actor
   (:refer-clojure :exclude [name])
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]

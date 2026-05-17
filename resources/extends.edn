@@ -32,11 +32,11 @@
   moon.camera/OrthographicCamera]
 
  [com.badlogic.gdx.scenes.scene2d.Actor
-  clojure.gdx.scenes.scene2d.actor
+  game.ui.actor
   moon.ui.actor/Actor]
 
  [com.badlogic.gdx.scenes.scene2d.Group
-  clojure.gdx.scenes.scene2d.group
+  game.ui.group
   moon.ui.group/Group]
 
  [com.badlogic.gdx.scenes.scene2d.Event
