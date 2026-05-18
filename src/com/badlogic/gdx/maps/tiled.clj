@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.maps.tiled.tmx-map-loader
+(ns com.badlogic.gdx.maps.tiled
   (:import (com.badlogic.gdx.maps.tiled TmxMapLoader)))
 
 (defn load! [tmx-file]

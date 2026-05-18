@@ -4,7 +4,7 @@
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+            [com.badlogic.gdx.maps.tiled :as tiled]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.grid2d :as g2d]
             [moon.nads :as nads])
@@ -137,7 +137,7 @@
   (assoc w :scaled-grid (g2d/scale-grid (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (tmx-map-loader/load! "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (tiled/load! "maps/modules.tmx")))
 
 (defn- grid->tiled-map
   [schema-tiled-map grid]
