@@ -18,10 +18,6 @@
                                     :speed (or (stats/get-stat-value (:entity/stats @eid) :stats/movement-speed)
                                                0)}]])
 
-(defmethod state/enter :player-item-on-cursor
-  [[_k {:keys [item]}] eid]
-  [[:tx/assoc eid :entity/item-on-cursor item]])
-
 (defmethod state/enter :player-dead
   [_ _eid]
   [[:tx/sound "bfxr_playerdeath"]

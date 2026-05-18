@@ -19,10 +19,6 @@
   [_ _eid _ctx]
   :cursors/walking)
 
-(defmethod state/cursor :player-item-on-cursor
-  [_ _eid _ctx]
-  :cursors/hand-grab)
-
 (defmethod state/cursor :player-idle
   [_ eid {:keys [ctx/interaction-state]}]
   (let [[k params] interaction-state]

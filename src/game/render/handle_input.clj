@@ -21,14 +21,6 @@
                                       :speed (creature-speed @eid)}]]
     [[:tx/event eid :no-movement-input]]))
 
-(defmethod state/handle-input :player-item-on-cursor
-  [_ eid {:keys [ctx/app
-                 ctx/stage]}]
-  (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position (app/input app)))]
-    (when (and (input/button-just-pressed? (app/input app) input.buttons/left)
-               (not mouseover-actor))
-      [[:tx/event eid :drop-item]])))
-
 (defn- interaction-state->txs [[k params] stage player-eid]
   (case k
     :interaction-state/mouseover-actor nil

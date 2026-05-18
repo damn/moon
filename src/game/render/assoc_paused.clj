@@ -15,10 +15,6 @@
   [_]
   false)
 
-(defmethod state/pause-game? :player-item-on-cursor
-  [_]
-  true)
-
 (defmethod state/pause-game? :player-idle
   [_]
   true)

@@ -1,4 +1,5 @@
 [
+ game.state.player-item-on-cursor
  game.schema-widget.animation
  game.schema-widget.boolean
  game.schema-widget.default

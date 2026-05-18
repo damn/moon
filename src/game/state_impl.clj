@@ -25,10 +25,6 @@
   [[_k movement-vector] eid _ctx]
   {:movement-vector movement-vector})
 
-(defmethod state/create :player-item-on-cursor
-  [[_k item] _eid _ctx]
-  {:item item})
-
 (def reaction-time-multiplier 0.016)
 
 (defmethod state/create :npc-moving
