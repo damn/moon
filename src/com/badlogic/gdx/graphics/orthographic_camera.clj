@@ -14,7 +14,7 @@
   (.zoom camera))
 
 (defn frustum [^OrthographicCamera camera]
-  (let [plane-points (mapv vector3/->clj (frustum/plane-points (.frustum camera)))
+  (let [plane-points (mapv vector3/->clj (.planePoints (.frustum camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))
