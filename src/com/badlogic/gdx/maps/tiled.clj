@@ -48,5 +48,5 @@
 
 (extend-type TiledMapTile
   tile/Tile
-  (properies [this]
+  (properties [this]
     (.getProperties this)))
