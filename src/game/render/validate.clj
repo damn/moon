@@ -1,5 +1,6 @@
 (ns game.render.validate
-  (:require [malli.api :as m]))
+  (:require [malli.core :as m]
+            [malli.utils :as mu]))
 
 (def schema
   (m/schema
@@ -47,5 +48,5 @@
     ]))
 
 (defn step [ctx]
-  (m/validate-humanize schema ctx)
+  (mu/validate-humanize schema ctx)
   ctx)

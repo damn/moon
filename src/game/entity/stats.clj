@@ -1,5 +1,5 @@
 (ns game.entity.stats
-  (:require [malli.api :as m]
+  (:require [malli.core :as m]
             [moon.entity :as entity]
             [moon.stats :as stats]
             [moon.ops :as ops]

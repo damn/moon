@@ -4,7 +4,8 @@
             [clojure.pprint :as pprint]
             [moon.db :as db]
             [moon.property :as property]
-            [malli.api :as m]
+            [malli.core :as m]
+            [malli.utils :as mu]
             [moon.map :as map]
             [moon.schemas :as schemas]
             [moon.val-max :as val-max]))
@@ -21,14 +22,14 @@
 (defrecord Schemas []
   schemas/Schemas
   (create-map-schema [schemas ks]
-    (m/create-map-schema ks (fn [k]
-                              (malli-form (get schemas k) schemas))))
+    (mu/create-map-schema ks (fn [k]
+                               (malli-form (get schemas k) schemas))))
 
   (validate [schemas k value]
     (-> (get schemas k)
         (malli-form schemas)
         m/schema
-        (m/validate-humanize value)))
+        (mu/validate-humanize value)))
 
   (build-values [schemas property db]
     (reduce (fn [m k]
@@ -47,13 +48,13 @@
        :else nil)))
 
   (optional-keyset [schemas schema]
-    (m/optional-keyset (malli-form schema schemas)))
+    (mu/optional-keyset (malli-form schema schemas)))
 
   (optional? [schemas schema k]
-    (m/optional? k (malli-form schema schemas)))
+    (mu/optional? k (malli-form schema schemas)))
 
   (map-keys [schemas schema]
-    (m/map-keys (malli-form schema schemas))))
+    (mu/map-keys (malli-form schema schemas))))
 
 (defn- save!
   [{:keys [db/data db/file]}]
