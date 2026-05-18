@@ -1,14 +1,13 @@
 (ns game.impl.stage
   (:require [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
             [moon.viewport :as viewport]))
 
 (defn create
-  [{:keys [ctx/batch]}]
-  (ctx-stage/create (fit-viewport/create 1440 900)
+  [{:keys [ctx/batch]} create-viewport]
+  (ctx-stage/create (create-viewport 1440 900)
                     batch))
 
 (extend-type com.badlogic.gdx.scenes.scene2d.CtxStage
