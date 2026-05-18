@@ -139,9 +139,11 @@
      [[:tx/add-text-effect target "[WHITE]ARMOR" 0.3]]
 
      :else
-     (let [min-max (:damage/min-max (stats/calc-damage (:entity/stats source*)
-                                                       (:entity/stats target*)
-                                                       damage))
+     (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
+                     (:damage/min-max (stats/calc-damage (:entity/stats source*)
+                                                         (:entity/stats target*)
+                                                         damage))
+                     (:damage/min-max damage))
            dmg-amount (rand-int-between min-max)
            new-hp-val (max (- (hp 0) dmg-amount)
                            0)]

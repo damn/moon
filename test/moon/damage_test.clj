@@ -1,5 +1,6 @@
 (ns moon.damage-test
-  (:require moon.stats
+  (:require game.entity.stats
+            moon.stats
             [clojure.test :refer :all]))
 
 (def get-damage moon.stats/calc-damage)
