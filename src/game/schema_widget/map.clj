@@ -1,5 +1,6 @@
 (ns game.schema-widget.map
-  (:require [moon.ui.actor :as actor]
+  (:require [clojure.core-ext :refer [sort-by-k-order]]
+            [moon.ui.actor :as actor]
             [clojure.scene2d.event :as event]
             [moon.ui.group :as group]
             [moon.stage :as stage]
@@ -7,8 +8,7 @@
             [moon.ui.widget-group :as widget-group]
             [clojure.set :as set]
             [moon.schema :as schema]
-            [moon.schemas :as schemas]
-            [moon.order :as order]))
+            [moon.schemas :as schemas]))
 
 (defn- map-widget-table-value [table schemas]
   (into {}
@@ -213,7 +213,7 @@
                        (for [[k v] m]
                          [k (build-value-widget ctx (get schemas k) k v)]))
       :k->optional? #(schemas/optional? schemas schema %)
-      :ks-sorted (map first (order/sort-by-k-order property-k-sort-order m))
+      :ks-sorted (map first (sort-by-k-order property-k-sort-order m))
       :opt? (seq (set/difference (schemas/optional-keyset schemas schema)
                                  (set (keys m))))})))
 

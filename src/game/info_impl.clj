@@ -1,9 +1,9 @@
 (ns game.info-impl
-  (:require [clojure.math :as math]
+  (:require [clojure.core-ext :refer [sort-by-k-order]]
+            [clojure.math :as math]
             [clojure.string :as str]
             [moon.info :as info]
             [moon.ops :as ops]
-            [moon.order :as order]
             [moon.number :as number]
             [moon.stats :as stats]
             [moon.timer :as timer]))
@@ -219,7 +219,7 @@
                              (str "[" color "]" s "[]")
                              s)))]
     (->> entity
-         (order/sort-by-k-order k-order)
+         (sort-by-k-order k-order)
          (keep (fn [{k 0 v 1 :as component}]
                  (str (try (component-info component)
                            (catch Throwable t
