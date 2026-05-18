@@ -1,7 +1,9 @@
 (ns com.badlogic.gdx.maps.tiled
-  (:require [com.badlogic.gdx.maps.map-layers :as layers])
+  (:require [com.badlogic.gdx.maps.map-layers :as layers]
+            [clojure.gdx.maps.map-properties :as props])
   (:import (com.badlogic.gdx.maps MapLayer
-                                  MapLayers)
+                                  MapLayers
+                                  MapProperties)
            (com.badlogic.gdx.maps.tiled TmxMapLoader)))
 
 (defn load! [tmx-file]
@@ -17,3 +19,17 @@
 
   (get-index [layers ^MapLayer layer]
     (.getIndex layers layer)))
+
+(extend-type MapProperties
+  props/Props
+  (get [map-properties k]
+    (.get map-properties k))
+
+  (add! [props m]
+    (doseq [[k v] m]
+      (assert (string? k))
+      (.put props k v)))
+
+  (->clj [props]
+    (zipmap (.getKeys props)
+            (.getValues props))))
