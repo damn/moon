@@ -1,10 +1,8 @@
 (ns game.world-fns.uf-caves
   (:require [clojure.rand :as rand]
             [clojure.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled :as tiled]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [moon.grid2d :as g2d]
-            [moon.nads :as nads]))
+            [moon.grid2d :as g2d]))
 
 (defn- assoc-transition-cells [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid
@@ -68,7 +66,9 @@
            level/creature-properties
            level/create-tile
            level/tile-size
-           level/scaling]}]
+           level/scaling]
+    :as lvlctx
+    }]
   (assert (= #{:wall :ground} (set (g2d/cells grid))))
   (let [
         {:keys [start-position grid]} (scale-grid grid start scaling)
@@ -76,7 +76,7 @@
         grid (assoc-transition-cells grid)
 
         position->tile (position->tile-fn grid)
-        tiled-map (tiled/create-map
+        tiled-map ((:tiled-create-map lvlctx)
                    {:properties {"width"  (g2d/width  grid)
                                  "height" (g2d/height grid)
                                  "tilewidth"  tile-size
@@ -114,11 +114,14 @@
 (defn- fix-nads
   [{:keys [level/grid]
     :as level}]
-  (let [grid (nads/fix-nads grid)]
+  (let [grid ((:grid2d-fix-nads-fn level) grid)]
     (assoc level :level/grid grid)))
 
 (defn create
   [{:keys [initial-grid-create-fn
+           grid2d-fix-nads-fn
+           tiled-create-map
+           tiled-create-tile
            level/creature-properties
            textures
            tile-size
@@ -130,6 +133,8 @@
   (reduce (fn [m f]
             (f m))
           {:initial-grid-create-fn initial-grid-create-fn
+           :grid2d-fix-nads-fn grid2d-fix-nads-fn
+           :tiled-create-map tiled-create-map
            :size cave-size
            :cave-style cave-style
            :random (java.util.Random.)
@@ -138,7 +143,7 @@
                                 (memoize
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
-                                   (tiled/create-tile
+                                   (tiled-create-tile
                                     (texture-region/create texture
                                                            (* (sprite-idx 0) tile-size)
                                                            (* (sprite-idx 1) tile-size)
