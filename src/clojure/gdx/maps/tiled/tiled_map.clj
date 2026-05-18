@@ -3,7 +3,7 @@
             [clojure.tiled-map.props :as props]
             [clojure.tiled-map.layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
+            [clojure.tiled-map.tile :as tile]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 

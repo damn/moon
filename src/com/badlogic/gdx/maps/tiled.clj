@@ -1,11 +1,13 @@
 (ns com.badlogic.gdx.maps.tiled
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.tiled-map.layers :as layers]
-            [clojure.tiled-map.props :as props])
+            [clojure.tiled-map.props :as props]
+            [clojure.tiled-map.tile :as tile])
   (:import (com.badlogic.gdx.maps MapLayer
                                   MapLayers
                                   MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap
+                                        TiledMapTile
                                         TmxMapLoader)))
 
 (defn load! [tmx-file]
@@ -43,3 +45,8 @@
 
   (layers [this]
     (.getLayers this)))
+
+(extend-type TiledMapTile
+  tile/Tile
+  (properies [this]
+    (.getProperties this)))
