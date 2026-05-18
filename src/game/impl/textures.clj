@@ -3,7 +3,9 @@
             [clojure.gdx.files :as files]
             [clojure.string :as str]
             [com.badlogic.gdx.files.file-handle :as file]
-            [com.badlogic.gdx.graphics.texture :as texture]))
+            [com.badlogic.gdx.graphics.texture :as texture]
+            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [moon.textures]))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
@@ -26,3 +28,13 @@
                                    :else
                                    (recur remaining result))))]
              [path (texture/create path)])))
+
+(extend-type clojure.lang.PersistentHashMap
+  moon.textures/Textures
+  (texture-region [textures {:keys [image/file image/bounds]}]
+    (assert file)
+    (assert (contains? textures file))
+    (let [texture (get textures file)]
+      (if-let [[x y w h] bounds]
+        (texture-region/create texture x y w h)
+        (texture-region/create texture)))))
