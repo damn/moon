@@ -1,5 +1,5 @@
 (ns clojure.gdx.maps.tiled.tiles.static-tiled-map-tile
-  (:require [clojure.gdx.maps.map-properties :as props]
+  (:require [clojure.tiled-map.props :as props]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as tile]))
 
 (def copy (memoize tile/copy))

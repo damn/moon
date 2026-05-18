@@ -2,7 +2,7 @@
   (:require [clojure.math.circle :as circle]
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
-            [clojure.gdx.maps.map-properties :as props]
+            [clojure.tiled-map.props :as props]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.math.circle :as gdx-circle]
             [com.badlogic.gdx.math.intersector :as intersector]

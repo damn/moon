@@ -1,9 +1,7 @@
-(ns clojure.gdx.maps.map-properties
+(ns clojure.tiled-map.props
   (:refer-clojure :exclude [get]))
 
 (defprotocol Props
   (get [_ k])
   (add! [_ m])
   (->clj [_]))
-
-

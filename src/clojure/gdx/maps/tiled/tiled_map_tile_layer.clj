@@ -1,6 +1,6 @@
 (ns clojure.gdx.maps.tiled.tiled-map-tile-layer
   (:refer-clojure :exclude [name])
-  (:require [clojure.gdx.maps.map-properties :as props]
+  (:require [clojure.tiled-map.props :as props]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))

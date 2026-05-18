@@ -1,6 +1,6 @@
 (ns game.world-fns.modules
-  (:require [clojure.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.map-layers :as layers]
+  (:require [clojure.tiled-map.props :as props]
+            [clojure.tiled-map.layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]

@@ -1,5 +1,5 @@
 (ns game.impl.explored-tile-corners
-  (:require [clojure.gdx.maps.map-properties :as props]
+  (:require [clojure.tiled-map.props :as props]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [moon.grid2d :as g2d]))
 

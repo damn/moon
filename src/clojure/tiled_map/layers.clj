@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.maps.map-layers
+(ns clojure.tiled-map.layers
   (:refer-clojure :exclude [get]))
 
 (defprotocol Layers

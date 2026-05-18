@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.maps.tiled
-  (:require [com.badlogic.gdx.maps.map-layers :as layers]
-            [clojure.gdx.maps.map-properties :as props])
+  (:require [clojure.tiled-map.layers :as layers]
+            [clojure.tiled-map.props :as props])
   (:import (com.badlogic.gdx.maps MapLayer
                                   MapLayers
                                   MapProperties)
