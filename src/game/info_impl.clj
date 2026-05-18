@@ -205,7 +205,7 @@
                (str "Range: " v " Meters."))})
 
 (comment
- (:skills/death-ray (:entity/skills @(:ctx/player-eid @moon.application/state)))
+ (:skills/death-ray (:entity/skills @(:ctx/player-eid @dev.application/state)))
  ; cooling-down? is not set in the action-bar ....
  ; so not showing as ui not updated
  )
@@ -258,7 +258,7 @@
                        (str "[CYAN]" (stats-modifiers-info (:stats/modifiers item)) "[]"))])))
 
 (comment
- (let [item (get (:inventory.slot/shield (:entity/inventory @(:ctx/player-eid @moon.application/state)))
+ (let [item (get (:inventory.slot/shield (:entity/inventory @(:ctx/player-eid @dev.application/state)))
                  [0 0])]
    (item-info item)
    )
@@ -299,7 +299,7 @@
 (comment
  (binding [*print-level* nil]
    (clojure.pprint/pprint (:skill/effects
-                           (:skills/spawn (:entity/skills @(:ctx/player-eid @moon.application/state))))))
+                           (:skills/spawn (:entity/skills @(:ctx/player-eid @dev.application/state))))))
  )
 
 (defn skill-info [skill]

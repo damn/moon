@@ -38,7 +38,7 @@
 (comment
  (.postRunnable com.badlogic.gdx.Gdx/app
                 (fn []
-                  (:tx/show-modal @moon.application/state
+                  (:tx/show-modal @dev.application/state
                                   {:title "TestTitle"
                                    :text "TextTEXT"
                                    :button-text "testbuttonTEXT"

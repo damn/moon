@@ -7,7 +7,7 @@
   {
    :listener [moon.listener/create
               {
-               :state-var moon.application/state
+               :state-var dev.application/state
                :create  #edn/resource "create.edn"
                :dispose #edn/resource "dispose.edn"
                :render  #edn/resource "render.edn"
