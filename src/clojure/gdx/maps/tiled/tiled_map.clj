@@ -16,7 +16,7 @@
       (tiled-map/add-layer! tiled-map layer))
     tiled-map))
 
-(defn tile-movement-property
+(defn- tile-movement-property
   [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (layer/cell layer position)]
@@ -32,14 +32,14 @@
                      " and layer " (layer/name layer) " is undefined."))
         value))))
 
-(defn movement-property-layers
+(defn- movement-property-layers
   [tiled-map]
   (->> tiled-map
        tiled-map/layers
        reverse
        (filter #(props/get (layer/properties %) "movement-properties"))))
 
-(defn movement-properties [tiled-map position]
+(defn- movement-properties [tiled-map position]
   (for [layer (movement-property-layers tiled-map)]
     [(layer/name layer)
      (tile-movement-property tiled-map layer position)]))
