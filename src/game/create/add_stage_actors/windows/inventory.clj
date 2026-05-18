@@ -1,5 +1,7 @@
 (ns game.create.add-stage-actors.windows.inventory
   (:require [clojure.scene2d.event :as event]
+            [com.badlogic.gdx.graphics.color :as color]
+            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.ui.group :as group]
             [moon.ui.image :as image]
             [moon.ui.actor :as actor]
@@ -82,11 +84,9 @@
                                                            :image/bounds bounds})))
         cell-size 48
         slot->drawable (fn [slot]
-                         {
-                          :drawable/texture-region (slot->texture-region slot)
-                          :drawable/min-size [cell-size cell-size]
-                          :drawable/tint [1 1 1 0.4]
-                          }
+                         (doto (texture-region-drawable/create (slot->texture-region slot))
+                           (texture-region-drawable/set-min-size! [cell-size cell-size])
+                           (texture-region-drawable/tint! (color/create [1 1 1 0.4])))
                          )
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size (:colors/item-rect colors)]
@@ -176,8 +176,9 @@
              (let [cell-widget (window->cell inventory-window cell)
                    image-widget (group/find-actor cell-widget "image-widget")
                    cell-size (:cell-size (actor/user-object image-widget))]
-               (image/set-drawable! image-widget {:drawable/texture-region texture-region
-                                                  :drawable/min-size [cell-size cell-size]})
+               (image/set-drawable! image-widget
+                                    (doto (texture-region-drawable/create texture-region)
+                                      (texture-region-drawable/set-min-size! [cell-size cell-size])))
                (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
                nil)))
 
