@@ -5,9 +5,7 @@
             [clojure.tiled-map.layer.cell :as cell]
             [clojure.tiled-map.layers :as layers]
             [clojure.tiled-map.tile :as tile]
-            [com.badlogic.gdx.maps.tiled :as tiled]
-            [moon.grid2d :as g2d]
-            [moon.nads :as nads])
+            [moon.grid2d :as g2d])
   (:import (java.util Random)))
 
 (def ^:private number-modules-x 8)
@@ -114,10 +112,11 @@
 
 (defn- initial-grid
   [{:keys [initial-grid-fn
+           grid2d-fix-nads-fn
            world/map-size]
     :as world-fn-ctx}]
   (let [{:keys [start grid]} (initial-grid-fn (Random.) map-size map-size :wide)
-        grid (nads/fix-nads grid)]
+        grid (grid2d-fix-nads-fn grid)]
     (assoc world-fn-ctx
            :start start
            :grid grid)))
@@ -137,7 +136,7 @@
   (assoc w :scaled-grid (g2d/scale-grid (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (tiled/load! "maps/modules.tmx")))
+  (assoc w :schema-tiled-map ((:load-tmx-tiled-map w) "maps/modules.tmx")))
 
 (def copy-tile
   (memoize
@@ -147,26 +146,25 @@
 
 (defn- grid->tiled-map
   [schema-tiled-map grid]
-  (tiled/create-map
-   {:properties (merge (props/->clj (tiled-map/properties schema-tiled-map))
-                       {"width" (g2d/width grid)
-                        "height" (g2d/height grid)})
-    :layers (for [layer (tiled-map/layers schema-tiled-map)]
-              {:name (layer/name layer)
-               :visible? (layer/visible? layer)
-               :properties (props/->clj (layer/properties layer))
-               :tiles (for [position (g2d/posis grid)
-                            :let [local-position (get grid position)]
-                            :when local-position]
-                        (when (vector? local-position)
-                          (when-let [cell (layer/cell layer local-position)]
-                            [position (copy-tile (cell/tile cell))])))})}))
+  {:properties (merge (props/->clj (tiled-map/properties schema-tiled-map))
+                      {"width" (g2d/width grid)
+                       "height" (g2d/height grid)})
+   :layers (for [layer (tiled-map/layers schema-tiled-map)]
+             {:name (layer/name layer)
+              :visible? (layer/visible? layer)
+              :properties (props/->clj (layer/properties layer))
+              :tiles (for [position (g2d/posis grid)
+                           :let [local-position (get grid position)]
+                           :when local-position]
+                       (when (vector? local-position)
+                         (when-let [cell (layer/cell layer local-position)]
+                           [position (copy-tile (cell/tile cell))])))})})
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid
            schema-tiled-map]
     :as w}]
-  (assoc w :tiled-map (grid->tiled-map schema-tiled-map scaled-grid)))
+  (assoc w :tiled-map ((:create-tiled-map-object w) (grid->tiled-map schema-tiled-map scaled-grid))))
 
 (defn- calculate-start-position [{:keys [start scale] :as w}]
   (assoc w :start-position (mapv * start scale)))
