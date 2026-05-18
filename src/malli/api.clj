@@ -1,4 +1,4 @@
-(ns moon.malli
+(ns malli.api
   (:require [malli.core :as m]
             [malli.error :as me]))
 

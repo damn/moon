@@ -1,5 +1,5 @@
 (ns game.render.validate
-  (:require [moon.malli :as m]))
+  (:require [malli.api :as m]))
 
 (def schema
   (m/schema

@@ -4,7 +4,7 @@
             [clojure.pprint :as pprint]
             [moon.db :as db]
             [moon.property :as property]
-            [moon.malli :as m]
+            [malli.api :as m]
             [moon.map :as map]
             [moon.schemas :as schemas]
             [moon.val-max :as val-max]))
