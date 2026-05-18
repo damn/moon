@@ -12,7 +12,7 @@
   (mapv #(-> % int (max 0)) val-max))
 
 ; TODO can just pass ops instead of modifiers modifier-k
-(defn apply-max [val-max modifiers modifier-k]
+(defn- apply-max [val-max modifiers modifier-k]
   (assert (m/validate val-max/schema val-max) val-max)
   (let [val-max (update val-max 1 get-value modifiers modifier-k)
         [v mx] (->pos-int val-max)
@@ -21,7 +21,7 @@
   result))
 
 ; TODO can just pass ops instead of modifiers modifier-k
-(defn apply-min [val-max modifiers modifier-k]
+(defn- apply-min [val-max modifiers modifier-k]
   (assert (m/validate val-max/schema val-max) val-max)
   (let [val-max (update val-max 0 get-value modifiers modifier-k)
         [v mx] (->pos-int val-max)
@@ -64,3 +64,17 @@
   [{:keys [stats/hp
            stats/modifiers]}]
   (apply-max hp modifiers :modifier/hp-max))
+
+(defn calc-damage
+  ([source target damage]
+   (update (calc-damage source damage)
+           :damage/min-max
+           apply-max
+           (:stats/modifiers target)
+           :modifier/damage-receive-max))
+  ([source damage]
+   (update damage
+           :damage/min-max
+           #(-> %
+                (apply-min (:stats/modifiers source) :modifier/damage-deal-min)
+                (apply-max (:stats/modifiers source) :modifier/damage-deal-max)))))

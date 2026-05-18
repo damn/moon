@@ -92,20 +92,6 @@
    (effective-armor-save source* target*))
  )
 
-(defn calc-damage
-  ([source target damage]
-   (update (calc-damage source damage)
-           :damage/min-max
-           stats/apply-max
-           (:stats/modifiers target)
-           :modifier/damage-receive-max))
-  ([source damage]
-   (update damage
-           :damage/min-max
-           #(-> %
-                (stats/apply-min (:stats/modifiers source) :modifier/damage-deal-min)
-                (stats/apply-max (:stats/modifiers source) :modifier/damage-deal-max)))))
-
 (defmethod effect/applicable? :effects.target/audiovisual
   [_ {:keys [effect/target]}]
   target)
@@ -153,9 +139,9 @@
      [[:tx/add-text-effect target "[WHITE]ARMOR" 0.3]]
 
      :else
-     (let [min-max (:damage/min-max (calc-damage (:entity/stats source*)
-                                                 (:entity/stats target*)
-                                                 damage))
+     (let [min-max (:damage/min-max (stats/calc-damage (:entity/stats source*)
+                                                       (:entity/stats target*)
+                                                       damage))
            dmg-amount (rand-int-between min-max)
            new-hp-val (max (- (hp 0) dmg-amount)
                            0)]

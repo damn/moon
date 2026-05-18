@@ -1,8 +1,8 @@
 (ns moon.damage-test
-  (:require game.effect-impl
+  (:require moon.stats
             [clojure.test :refer :all]))
 
-(def get-damage game.effect-impl/calc-damage)
+(def get-damage moon.stats/calc-damage)
 
 (deftest modify-source-damage
   (is (= (get-damage {:stats/modifiers {:modifier/damage-deal-min {:op/inc 1
