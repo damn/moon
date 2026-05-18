@@ -1,10 +1,10 @@
 [
- [game.create.assoc/step :ctx/app game.impl.app/create]
+ [game.create.assoc/step :ctx/app game.impl.invoke/create com.badlogic.gdx.gdx/app]
  [game.create.do/step [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/set-initial-time! 0]]
  [game.create.record/step]
  [game.create.impl-txs/step]
  [game.create.impl-draws/step]
- [game.create.assoc/step :ctx/batch game.impl.batch/create]
+ [game.create.assoc/step :ctx/batch game.impl.invoke/create com.badlogic.gdx.graphics.g2d.sprite-batch/create]
  [game.create.assoc/step :ctx/shape-drawer-texture game.impl.white-pixel-texture/create]
  [game.create.assoc/step :ctx/shape-drawer game.impl.shape-drawer/create]
  [game.create.assoc/step :ctx/audio game.impl.audio/create]

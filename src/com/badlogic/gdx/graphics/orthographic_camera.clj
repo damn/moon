@@ -1,6 +1,5 @@
 (ns com.badlogic.gdx.graphics.orthographic-camera
-  (:require [com.badlogic.gdx.math.frustum :as frustum]
-            [com.badlogic.gdx.math.vector3 :as vector3])
+  (:require [com.badlogic.gdx.math.vector3 :as vector3])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn create [{:keys [y-down? world-width world-height]}]
