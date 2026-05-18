@@ -2,88 +2,10 @@
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.tiled-map.props :as props]
             [clojure.tiled-map.layer :as layer]
+            [clojure.tiled-map.layer.cell :as cell]
             [clojure.tiled-map.layers :as layers]
             [clojure.tiled-map.tile :as tile]
-            [clojure.tiled-map.layer.cell :as cell]
-            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
-                                        TiledMapTileLayer$Cell
-                                        )))
-
-(defn- create-layer
-  [{:keys [width
-           height
-           tilewidth
-           tileheight
-           name
-           visible?
-           map-properties
-           tiles]}]
-  {:pre [(string? name)
-         (boolean? visible?)]}
-  (let [layer (doto (TiledMapTileLayer. width height tilewidth tileheight)
-                (.setName name)
-                (.setVisible visible?))]
-    (props/add! (layer/properties layer) map-properties)
-    (doseq [[pos tile] tiles
-            :when tile]
-      (layer/set-cell! layer pos (doto (TiledMapTileLayer$Cell.)
-                                   (.setTile tile))))
-    layer))
-
-(extend-type TiledMapTileLayer$Cell
-  cell/Cell
-  (tile [this]
-    (.getTile this)))
-
-(extend-type TiledMapTileLayer
-  layer/Layer
-  (properties [layer]
-    (.getProperties layer))
-
-  (name [layer]
-    (.getName layer))
-
-  (cell [layer [x y]]
-    (.getCell layer x y))
-
-  (set-cell! [layer [x y] cell]
-    (.setCell layer x y cell))
-
-  (width [layer]
-    (.getWidth layer))
-
-  (height [layer]
-    (.getHeight layer))
-
-  (visible? [layer]
-    (.isVisible layer))
-
-  (property-value [layer pos property-key]
-    (if-let [cell (layer/cell layer pos)]
-      (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
-        value
-        :undefined)
-      :no-cell)))
-
-(defn add-layer!
-  "`properties` is optional. Returns nil."
-  [tiled-map
-   {:keys [name
-           visible?
-           properties
-           tiles]}]
-  (let [props (tiled-map/properties tiled-map) ; shadowing 'properties' otherwise
-        layer (create-layer {:width      (props/get props "width")
-                             :height     (props/get props "height")
-                             :tilewidth  (props/get props "tilewidth")
-                             :tileheight (props/get props "tileheight")
-                             :name name
-                             :visible? visible?
-                             :map-properties properties
-                             :tiles tiles})]
-    (layers/add! (tiled-map/layers tiled-map) layer))
-  nil)
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn create
   [{:keys [properties
@@ -91,7 +13,7 @@
   (let [tiled-map (com.badlogic.gdx.maps.tiled.TiledMap.)]
     (props/add! (tiled-map/properties tiled-map) properties)
     (doseq [layer layers]
-      (add-layer! tiled-map layer))
+      (tiled-map/add-layer! tiled-map layer))
     tiled-map))
 
 (defn tile-movement-property
@@ -156,8 +78,8 @@
      (static-tiled-map-tile/create texture-region "id" id))))
 
 (defn add-creatures-layer! [tiled-map spawn-positions]
-  (add-layer! tiled-map
-              {:name "creatures"
-               :visible? false
-               :tiles (for [[position creature-property] spawn-positions]
-                        [position (creature-tile creature-property)])}))
+  (tiled-map/add-layer! tiled-map
+                        {:name "creatures"
+                         :visible? false
+                         :tiles (for [[position creature-property] spawn-positions]
+                                  [position (creature-tile creature-property)])}))

@@ -2,4 +2,6 @@
 
 (defprotocol TiledMap
   (properties [_])
-  (layers [_]))
+  (layers [_])
+  (add-layer! [_ {:keys [name visible?  properties tiles]}])
+  )
