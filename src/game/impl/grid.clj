@@ -2,6 +2,7 @@
   (:require [clojure.math.circle :as circle]
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
+            [clojure.tiled-map]
             [clojure.tiled-map.props :as props]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.math.circle :as gdx-circle]
@@ -16,8 +17,8 @@
             [moon.cell :as cell]))
 
 (defn create [{:keys [ctx/tiled-map]}]
-  (g2d/create-grid (props/get (tiled-map/properties tiled-map) "width")
-                   (props/get (tiled-map/properties tiled-map) "height")
+  (g2d/create-grid (props/get (clojure.tiled-map/properties tiled-map) "width")
+                   (props/get (clojure.tiled-map/properties tiled-map) "height")
                    (fn [position]
                      (atom (cell/create position
                                         (case (tiled-map/movement-property tiled-map position)

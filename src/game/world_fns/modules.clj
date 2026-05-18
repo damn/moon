@@ -1,5 +1,6 @@
 (ns game.world-fns.modules
-  (:require [clojure.tiled-map.props :as props]
+  (:require [clojure.tiled-map]
+            [clojure.tiled-map.props :as props]
             [clojure.tiled-map.layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
@@ -72,9 +73,9 @@
    unscaled-floor-positions
    unscaled-transition-positions]
   (let [[modules-width modules-height] modules-scale
-        _ (assert (and (= (props/get (tiled-map/properties modules-tiled-map) "width")
+        _ (assert (and (= (props/get (clojure.tiled-map/properties modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (props/get (tiled-map/properties modules-tiled-map) "height")
+                       (= (props/get (clojure.tiled-map/properties modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* modules-scale
@@ -142,10 +143,10 @@
 (defn- grid->tiled-map
   [schema-tiled-map grid]
   (tiled-map/create
-   {:properties (merge (props/->clj (tiled-map/properties schema-tiled-map))
+   {:properties (merge (props/->clj (clojure.tiled-map/properties schema-tiled-map))
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})
-    :layers (for [layer (tiled-map/layers schema-tiled-map)]
+    :layers (for [layer (clojure.tiled-map/layers schema-tiled-map)]
               {:name (layer/name layer)
                :visible? (layer/visible? layer)
                :properties (props/->clj (layer/properties layer))
@@ -258,7 +259,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (layer/property-value (layers/get (tiled-map/layers tiled-map) "creatures")
+                                                    (layer/property-value (layers/get (clojure.tiled-map/layers tiled-map) "creatures")
                                                                           p
                                                                           "id"))))
                                             spawn-positions)))

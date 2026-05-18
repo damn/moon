@@ -1,15 +1,11 @@
 (ns clojure.gdx.maps.tiled.tiled-map
-  (:require [clojure.tiled-map.props :as props]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+  (:require [clojure.tiled-map :as tiled-map]
+            [clojure.tiled-map.props :as props]
             [clojure.tiled-map.layers :as layers]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
-
-(def layers tiled-map/layers)
-
-(def properties tiled-map/properties)
 
 (defn add-layer!
   "`properties` is optional. Returns nil."
@@ -33,7 +29,7 @@
 (defn create
   [{:keys [properties
            layers]}]
-  (let [tiled-map (tiled-map/create)]
+  (let [tiled-map (com.badlogic.gdx.maps.tiled.TiledMap.)]
     (props/add! (tiled-map/properties tiled-map) properties)
     (doseq [layer layers]
       (add-layer! tiled-map layer))
@@ -50,7 +46,7 @@
         (assert value
                 (str "Value for :movement at position "
                      position  " / mapeditor inverted position: " [(position 0)
-                                                                   (- (dec (props/get (properties tiled-map) "height"))
+                                                                   (- (dec (props/get (tiled-map/properties tiled-map) "height"))
                                                                       (position 1))]
                      " and layer " (layer/name layer) " is undefined."))
         value))))

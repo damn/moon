@@ -1,6 +1,6 @@
 (ns clojure.gdx.maps.tiled.renderer
-  (:require [clojure.tiled-map.layers :as layers]
-            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [clojure.tiled-map :as tiled-map]
+            [clojure.tiled-map.layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer])
   (:import (clojure.gdx TiledMapRenderer
                         TiledMapRenderer$ColorSetter)))
