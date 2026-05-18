@@ -4,7 +4,7 @@
             [clojure.math.vector2 :as v]
             [clojure.tiled-map]
             [clojure.tiled-map.props :as props]
-            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.tiled-map :as tiled-map]
             [com.badlogic.gdx.math.circle :as gdx-circle]
             [com.badlogic.gdx.math.intersector :as intersector]
             [com.badlogic.gdx.math.rectangle :as gdx-rectangle]

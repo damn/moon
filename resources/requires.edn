@@ -1,6 +1,4 @@
 [
- com.badlogic.gdx.maps.tiled
-
  game.schema-widget.animation
  game.schema-widget.boolean
  game.schema-widget.default

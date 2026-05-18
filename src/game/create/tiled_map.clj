@@ -9,9 +9,9 @@
   [{:keys [ctx/db
            ctx/textures]
     :as ctx}]
-  (let [[f params] (->> ;"world_fns/modules.edn"
+  (let [[f params] (->> "world_fns/modules.edn"
                         ; "world_fns/vampire.edn"
-                        "world_fns/uf_caves.edn"
+                        ; "world_fns/uf_caves.edn"
                         io/resource
                         slurp
                         edn/read-string)

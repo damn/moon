@@ -1,8 +1,8 @@
 (ns game.world-fns.uf-caves
   (:require [clojure.rand :as rand]
+            [clojure.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled :as tiled]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.grid2d :as g2d]
             [moon.nads :as nads]))
