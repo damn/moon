@@ -4,9 +4,11 @@
             [clojure.tiled-map.layer :as layer]
             [clojure.tiled-map.layers :as layers]
             [clojure.tiled-map.tile :as tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [clojure.tiled-map.layer.cell :as cell]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
+                                        TiledMapTileLayer$Cell
+                                        )))
 
 (defn- create-layer
   [{:keys [width
@@ -25,8 +27,14 @@
     (props/add! (layer/properties layer) map-properties)
     (doseq [[pos tile] tiles
             :when tile]
-      (layer/set-cell! layer pos (cell/create tile)))
+      (layer/set-cell! layer pos (doto (TiledMapTileLayer$Cell.)
+                                   (.setTile tile))))
     layer))
+
+(extend-type TiledMapTileLayer$Cell
+  cell/Cell
+  (tile [this]
+    (.getTile this)))
 
 (extend-type TiledMapTileLayer
   layer/Layer
