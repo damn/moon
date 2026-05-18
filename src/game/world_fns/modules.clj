@@ -116,7 +116,7 @@
   [{:keys [initial-grid-fn
            world/map-size]
     :as world-fn-ctx}]
-  (let [{:keys [start grid]} ((requiring-resolve initial-grid-fn) (Random.) map-size map-size :wide)
+  (let [{:keys [start grid]} (initial-grid-fn (Random.) map-size map-size :wide)
         grid (nads/fix-nads grid)]
     (assoc world-fn-ctx
            :start start

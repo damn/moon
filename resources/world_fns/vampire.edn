@@ -1,2 +1,6 @@
-[game.world-fns.tmx/create {:tmx-file "maps/vampire.tmx"
-                           :start-position [32 71]}]
+[game.world-fns.tmx/create
+ {
+  :tmx-file "maps/vampire.tmx"
+  :start-position [32 71]
+  :load-map-fn com.badlogic.gdx.maps.tiled/load!
+  }]

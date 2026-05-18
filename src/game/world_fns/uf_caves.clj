@@ -129,7 +129,7 @@
            cave-style]}]
   (reduce (fn [m f]
             (f m))
-          {:initial-grid-create-fn (requiring-resolve initial-grid-create-fn)
+          {:initial-grid-create-fn initial-grid-create-fn
            :size cave-size
            :cave-style cave-style
            :random (java.util.Random.)

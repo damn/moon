@@ -1,22 +1,22 @@
 (ns game.create.tiled-map
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
+  (:require [clojure.config :as config]
             [moon.creature-tiles]
             [moon.db :as db]
             [moon.textures :as textures]))
+
+(def world-fn-file
+  ; "world_fns/modules.edn"
+  ; "world_fns/vampire.edn"
+   "world_fns/uf_caves.edn"
+  )
 
 (defn step
   [{:keys [ctx/db
            ctx/textures]
     :as ctx}]
-  (let [[f params] (->> ;"world_fns/modules.edn"
-                        ; "world_fns/vampire.edn"
-                         "world_fns/uf_caves.edn"
-                        io/resource
-                        slurp
-                        edn/read-string)
+  (let [[f params] (config/edn-resource world-fn-file)
         {:keys [tiled-map
-                start-position]} ((requiring-resolve f)
+                start-position]} (f
                                   (assoc params
                                          :level/creature-properties (moon.creature-tiles/prepare
                                                                      (db/all-raw db :properties/creatures)
