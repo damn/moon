@@ -142,7 +142,7 @@
 
 (defn- grid->tiled-map
   [schema-tiled-map grid]
-  (tiled-map/create
+  (tiled/create-map
    {:properties (merge (props/->clj (clojure.tiled-map/properties schema-tiled-map))
                        {"width" (g2d/width grid)
                         "height" (g2d/height grid)})

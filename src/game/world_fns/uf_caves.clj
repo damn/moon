@@ -1,5 +1,6 @@
 (ns game.world-fns.uf-caves
   (:require [clojure.rand :as rand]
+            [com.badlogic.gdx.maps.tiled :as tiled]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
@@ -76,7 +77,7 @@
         grid (assoc-transition-cells grid)
 
         position->tile (position->tile-fn grid)
-        tiled-map (tiled-map/create
+        tiled-map (tiled/create-map
                    {:properties {"width"  (g2d/width  grid)
                                  "height" (g2d/height grid)
                                  "tilewidth"  tile-size

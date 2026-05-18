@@ -126,3 +126,12 @@
         value
         :undefined)
       :no-cell)))
+
+(defn create-map
+  [{:keys [properties
+           layers]}]
+  (let [tiled-map (TiledMap.)]
+    (props/add! (tiled-map/properties tiled-map) properties)
+    (doseq [layer layers]
+      (tiled-map/add-layer! tiled-map layer))
+    tiled-map))

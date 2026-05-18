@@ -7,15 +7,6 @@
             [clojure.tiled-map.tile :as tile]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
-(defn create
-  [{:keys [properties
-           layers]}]
-  (let [tiled-map (com.badlogic.gdx.maps.tiled.TiledMap.)]
-    (props/add! (tiled-map/properties tiled-map) properties)
-    (doseq [layer layers]
-      (tiled-map/add-layer! tiled-map layer))
-    tiled-map))
-
 (defn- tile-movement-property
   [tiled-map layer [x y]]
   (let [position [x y]]
