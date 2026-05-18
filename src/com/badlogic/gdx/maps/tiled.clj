@@ -1,19 +1,27 @@
 (ns com.badlogic.gdx.maps.tiled
-  (:require [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [clojure.tiled-map :as tiled-map]
+  (:require [clojure.tiled-map :as tiled-map]
             [clojure.tiled-map.layer :as layer]
             [clojure.tiled-map.layer.cell :as cell]
             [clojure.tiled-map.layers :as layers]
             [clojure.tiled-map.props :as props]
             [clojure.tiled-map.tile :as tile])
-  (:import (com.badlogic.gdx.maps MapLayer
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps MapLayer
                                   MapLayers
                                   MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap
-                                        TiledMapTile
                                         TiledMapTileLayer
                                         TiledMapTileLayer$Cell
-                                        TmxMapLoader)))
+                                        TmxMapLoader)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
+
+(defn create-tile
+  [texture-region property-name property-value]
+  {:pre [texture-region
+         (string? property-name)]}
+  (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
+    (props/add! (tile/properties tile) {property-name property-value})
+    tile))
 
 (defn- tile-movement-property
   [tiled-map layer [x y]]
@@ -51,7 +59,7 @@
                 tile/texture-region]}]
      (assert (and id
                   texture-region))
-     (static-tiled-map-tile/create texture-region "id" id))))
+     (create-tile texture-region "id" id))))
 
 (defn- create-layer
   [{:keys [width
@@ -156,8 +164,11 @@
         "none"))
   )
 
-(extend-type TiledMapTile
+(extend-type StaticTiledMapTile
   tile/Tile
+  (copy [this]
+    (StaticTiledMapTile. this))
+
   (properties [this]
     (.getProperties this)))
 

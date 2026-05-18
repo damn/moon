@@ -3,7 +3,6 @@
             [clojure.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled :as tiled]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.grid2d :as g2d]
             [moon.nads :as nads]))
 
@@ -139,7 +138,7 @@
                                 (memoize
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
-                                   (static-tiled-map-tile/create
+                                   (tiled/create-tile
                                     (texture-region/create texture
                                                            (* (sprite-idx 0) tile-size)
                                                            (* (sprite-idx 1) tile-size)

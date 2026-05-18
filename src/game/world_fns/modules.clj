@@ -4,8 +4,8 @@
             [clojure.tiled-map.layer :as layer]
             [clojure.tiled-map.layer.cell :as cell]
             [clojure.tiled-map.layers :as layers]
+            [clojure.tiled-map.tile :as tile]
             [com.badlogic.gdx.maps.tiled :as tiled]
-            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.grid2d :as g2d]
             [moon.nads :as nads])
   (:import (java.util Random)))
@@ -139,6 +139,12 @@
 (defn- load-schema-tiled-map [w]
   (assoc w :schema-tiled-map (tiled/load! "maps/modules.tmx")))
 
+(def copy-tile
+  (memoize
+   (fn [tile]
+     (assert tile)
+     (tile/copy tile))))
+
 (defn- grid->tiled-map
   [schema-tiled-map grid]
   (tiled/create-map
@@ -154,7 +160,7 @@
                             :when local-position]
                         (when (vector? local-position)
                           (when-let [cell (layer/cell layer local-position)]
-                            [position (static-tiled-map-tile/copy (cell/tile cell))])))})}))
+                            [position (copy-tile (cell/tile cell))])))})}))
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid
