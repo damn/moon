@@ -1,11 +1,62 @@
 (ns clojure.gdx.maps.tiled.tiled-map
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.tiled-map.props :as props]
+            [clojure.tiled-map.layer :as layer]
             [clojure.tiled-map.layers :as layers]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [clojure.tiled-map.tile :as tile]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
+
+(defn- create-layer
+  [{:keys [width
+           height
+           tilewidth
+           tileheight
+           name
+           visible?
+           map-properties
+           tiles]}]
+  {:pre [(string? name)
+         (boolean? visible?)]}
+  (let [layer (doto (TiledMapTileLayer. width height tilewidth tileheight)
+                (.setName name)
+                (.setVisible visible?))]
+    (props/add! (layer/properties layer) map-properties)
+    (doseq [[pos tile] tiles
+            :when tile]
+      (layer/set-cell! layer pos (cell/create tile)))
+    layer))
+
+(extend-type TiledMapTileLayer
+  layer/Layer
+  (properties [layer]
+    (.getProperties layer))
+
+  (name [layer]
+    (.getName layer))
+
+  (cell [layer [x y]]
+    (.getCell layer x y))
+
+  (set-cell! [layer [x y] cell]
+    (.setCell layer x y cell))
+
+  (width [layer]
+    (.getWidth layer))
+
+  (height [layer]
+    (.getHeight layer))
+
+  (visible? [layer]
+    (.isVisible layer))
+
+  (property-value [layer pos property-key]
+    (if-let [cell (layer/cell layer pos)]
+      (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
+        value
+        :undefined)
+      :no-cell)))
 
 (defn add-layer!
   "`properties` is optional. Returns nil."
@@ -15,7 +66,7 @@
            properties
            tiles]}]
   (let [props (tiled-map/properties tiled-map) ; shadowing 'properties' otherwise
-        layer (layer/create {:width      (props/get props "width")
+        layer (create-layer {:width      (props/get props "width")
                              :height     (props/get props "height")
                              :tilewidth  (props/get props "tilewidth")
                              :tileheight (props/get props "tileheight")
