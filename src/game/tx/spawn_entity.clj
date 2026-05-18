@@ -158,12 +158,6 @@
   [[_ v] _ctx]
   (assoc v :already-hit-bodies #{}))
 
-(defmethod entity/create :entity/stats
-  [[_ v] _ctx]
-  (-> v
-      (update :stats/mana (fn [v] [v v]))
-      (update :stats/hp   (fn [v] [v v]))))
-
 (defmethod entity/after-create :entity/fsm ; TODO do @ creature?
   [[_k {:keys [fsm initial-state]}] eid ctx]
   ; fsm throws when initial-state is not part of states, so no need to assert initial-state
