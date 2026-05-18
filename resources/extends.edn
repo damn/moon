@@ -28,7 +28,7 @@
   moon.shape-drawer/ShapeDrawer]
 
  [com.badlogic.gdx.graphics.OrthographicCamera
-  clojure.gdx.graphics.orthographic-camera
+  com.badlogic.gdx.graphics.orthographic-camera
   moon.camera/OrthographicCamera]
 
  [com.badlogic.gdx.scenes.scene2d.Actor

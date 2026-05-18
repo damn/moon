@@ -1,4 +1,4 @@
-(ns clojure.gdx.maps.tiled.renderer
+(ns com.badlogic.gdx.maps.renderer
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.tiled-map.layer :as layer]
             [clojure.tiled-map.layers :as layers])

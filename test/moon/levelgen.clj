@@ -8,8 +8,8 @@
             game.ui.table
             [moon.ui.table :as table]
             [moon.db :as db]
-            [clojure.gdx.graphics.orthographic-camera :as camera]
-            [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
+            [com.badlogic.gdx.graphics.orthographic-camera :as camera]
+            [com.badlogic.gdx.maps.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx

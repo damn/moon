@@ -13,7 +13,7 @@
  [game.create.assoc/step :ctx/world-unit-scale game.impl.world-unit-scale/create]
  [game.create.assoc/step :ctx/world-viewport game.impl.world-viewport/create
   {:viewport com.badlogic.gdx.utils.viewport.fit-viewport/create
-   :camera   clojure.gdx.graphics.orthographic-camera/create}]
+   :camera   com.badlogic.gdx.graphics.orthographic-camera/create}]
  [game.create.assoc/step :ctx/cursors game.impl.cursors/create]
  [game.create.assoc/step :ctx/stage game.impl.stage/create com.badlogic.gdx.utils.viewport.fit-viewport/create]
  [game.create.set-input-processor/step]

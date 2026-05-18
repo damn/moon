@@ -7,7 +7,7 @@
  [game.render.active-entities/step]
  [game.render.set-camera/step]
  [game.render.clear-screen/step]
- [game.render.draw-tiled-map/step clojure.gdx.maps.tiled.renderer/draw!]
+ [game.render.draw-tiled-map/step com.badlogic.gdx.maps.renderer/draw!]
  [game.render.draw-on-world-viewport/step [
                                            #_game.render.draw-on-world-viewport.draw-tile-grid/draws
                                            game.render.draw-on-world-viewport.draw-cell-debug/draws
