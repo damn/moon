@@ -4,4 +4,4 @@
 
 (defn put! [colors]
   (doseq [[name rgba] colors]
-    (colors/put! name (color/create rgba))))
+    (Colors/put name (color/create rgba))))
