@@ -1,6 +1,5 @@
 <details>
 
-
 *** ___COMMENTS & FIXMES & TODOS &  DEAD CODE !!!! & TESTS MISSING !!! *****
 
 What to do => DO THE TODOS!
@@ -12,7 +11,7 @@ What to do => DO THE TODOS!
 * ^:private/defn-
 * transitives
 * imports
-* coun tlocs
+* count locs
 * hiera
 * hiera cluster 1
 
