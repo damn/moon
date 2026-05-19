@@ -1,12 +1,30 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
+                 ; 1. Step:
+                 ; * facade for whole libgdx libs
+                 ; => dont use themd irectly
+                 ; can rewrite if necessary (although would be ugly but still working)
+
+                 ; => depends on `gdl` ... (separate library no dependencies)
+
+                 ; => plattform abstraction
+
+                 ; or other name 'gdl' ( no m atches .. ok)
+
+                 ; 'BADLOGIC' implements 'GDL' protocols .....
+
+                 ;
                  [com.badlogicgames.gdx/gdx                   "1.14.0"]
+                 [com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]
+                 ;
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.0" :classifier "natives-desktop"]
+                 ;
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
-                 [com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]
+                 ;
                  [space.earlygrey/shapedrawer "2.6.0"]
+                 ;
 
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [metosin/malli "0.13.0"]

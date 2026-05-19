@@ -1,5 +1,5 @@
 (ns game.create.add-stage-actors.windows.inventory
-  (:require [clojure.scene2d.event :as event]
+  (:require [gdl.scene2d.event :as event]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.ui.group :as group]

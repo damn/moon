@@ -3,7 +3,7 @@
             [clojure.java.io :as io]
             [gdl.app :as app]
             [gdl.files :as files]
-            [clojure.graphics :as graphics]
+            [gdl.graphics :as graphics]
             [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 
 (defn create

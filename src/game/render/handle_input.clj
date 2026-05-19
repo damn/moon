@@ -4,7 +4,7 @@
             [moon.stage :as stage]
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [gdl.app :as app]
-            [clojure.input :as input]
+            [gdl.input :as input]
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.stats :as stats]

@@ -1,6 +1,6 @@
 (ns game.render.clear-screen
   (:require [gdl.app :as app]
-            [clojure.graphics :as graphics]
+            [gdl.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
 (defn step [{:keys [ctx/app] :as ctx}]

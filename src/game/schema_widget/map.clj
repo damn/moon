@@ -1,7 +1,7 @@
 (ns game.schema-widget.map
   (:require [clojure.core-ext :refer [sort-by-k-order]]
             [moon.ui.actor :as actor]
-            [clojure.scene2d.event :as event]
+            [gdl.scene2d.event :as event]
             [moon.ui.group :as group]
             [moon.stage :as stage]
             [moon.ui.table :as table]

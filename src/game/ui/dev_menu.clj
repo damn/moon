@@ -1,6 +1,6 @@
 (ns game.ui.dev-menu
   (:require [moon.ui.actor :as actor]
-            [clojure.scene2d.event :as event]
+            [gdl.scene2d.event :as event]
             [moon.ui.group :as group]
             [moon.stage :as stage]
             [moon.ui.label :as label]

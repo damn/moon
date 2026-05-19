@@ -1,5 +1,5 @@
 (ns game.impl.audio
-  (:require [clojure.audio :as audio]
+  (:require [gdl.audio :as audio]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [gdl.app :as app]

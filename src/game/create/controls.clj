@@ -4,7 +4,7 @@
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [com.badlogic.gdx.input.keys :as input.keys]
             [gdl.app :as app]
-            [clojure.input :as input]
+            [gdl.input :as input]
             [moon.controls :as controls]))
 
 (defn step [ctx]

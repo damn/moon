@@ -1,4 +1,4 @@
-(ns clojure.input)
+(ns gdl.input)
 
 (defprotocol Input
   (set-processor! [_ input-processor])

@@ -1,12 +1,12 @@
 (ns game.ui.property-editor-window
   (:require [com.badlogic.gdx.input.keys :as input.keys]
             [moon.ui.actor :as actor]
-            [clojure.scene2d.event :as event]
+            [gdl.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.stage :as stage]
             [moon.db :as db]
             [gdl.app :as app]
-            [clojure.input :as input]
+            [gdl.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
             [moon.throwable :as throwable]))

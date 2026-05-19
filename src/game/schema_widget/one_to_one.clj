@@ -1,6 +1,6 @@
 (ns game.schema-widget.one-to-one
   (:require [moon.ui.actor :as actor]
-            [clojure.scene2d.event :as event]
+            [gdl.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.ui.group :as group]
             [moon.stage :as stage]

@@ -1,6 +1,6 @@
 (ns game.render.if-not-paused.update-time
   (:require [gdl.app :as app]
-            [clojure.graphics :as graphics]))
+            [gdl.graphics :as graphics]))
 
 (defn step
   [{:keys [ctx/app

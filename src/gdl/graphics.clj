@@ -1,4 +1,4 @@
-(ns clojure.graphics)
+(ns gdl.graphics)
 
 (defprotocol Graphics
   (frames-per-second [_])

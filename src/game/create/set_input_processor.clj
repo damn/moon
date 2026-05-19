@@ -1,6 +1,6 @@
 (ns game.create.set-input-processor
   (:require [gdl.app :as app]
-            [clojure.input :as input]))
+            [gdl.input :as input]))
 
 (defn step
   [{:keys [ctx/app

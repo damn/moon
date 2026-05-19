@@ -1,6 +1,6 @@
 (ns game.state.player-item-on-cursor
   (:require [gdl.app :as app]
-            [clojure.input :as input]
+            [gdl.input :as input]
             [clojure.math.vector2 :as v]
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [moon.entity :as entity]
