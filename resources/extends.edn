@@ -1,8 +1,4 @@
 [
- [com.badlogic.gdx.scenes.scene2d.Actor
-  game.ui.actor
-  gdl.scene2d.actor/Actor]
-
  [com.badlogic.gdx.scenes.scene2d.Group
   game.ui.group
   gdl.scene2d.group/Group]

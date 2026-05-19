@@ -1,72 +1,118 @@
 (ns com.badlogic.gdx.scenes.scene2d.actor
-  (:refer-clojure :exclude [name])
+  (:require [com.badlogic.gdx.math.vector2 :as vector2]
+            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
+            [com.badlogic.gdx.utils.align :as align]
+            [gdl.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn create
-  [{:keys [act! draw!]}]
-  (proxy [Actor] []
-    (act [delta]
-      (when act!
-        (act! this delta))
-      (let [^Actor this this]
-        (proxy-super act delta)))
-    (draw [batch parent-alpha]
-      (when draw!
-        (draw! this batch parent-alpha)))))
+  [{:keys [act! draw!] :as opts}]
+  (doto (proxy [Actor] []
+          (act [delta]
+            (when act!
+              (act! this delta))
+            (let [^Actor this this]
+              (proxy-super act delta)))
+          (draw [batch parent-alpha]
+            (when draw!
+              (draw! this batch parent-alpha))))
+    (actor/set-opts! opts)))
 
-(defn name [^Actor actor]
-  (.getName actor))
+(extend-type Actor
+  actor/Actor
+  (name [actor]
+    (.getName actor))
 
-(defn x [^Actor actor]
-  (.getX actor))
+  (x [actor]
+    (.getX actor))
 
-(defn y [^Actor actor]
-  (.getY actor))
+  (y [actor]
+    (.getY actor))
 
-(defn width [^Actor actor]
-  (.getWidth actor))
+  (width [actor]
+    (.getWidth actor))
 
-(defn height [^Actor actor]
-  (.getHeight actor))
+  (height [actor]
+    (.getHeight actor))
 
-(defn user-object [^Actor actor]
-  (.getUserObject actor))
+  (user-object [actor]
+    (.getUserObject actor))
 
-(defn stage [^Actor actor]
-  (.getStage actor))
+  (stage [actor]
+    (.getStage actor))
 
-(defn set-name! [^Actor actor name]
-  (.setName actor name))
+  (set-name! [actor name]
+    (.setName actor name))
 
-(defn set-user-object! [^Actor actor object]
-  (.setUserObject actor object))
+  (set-user-object! [actor object]
+    (.setUserObject actor object))
 
-(defn set-position!
-  ([^Actor actor [x y]]
-   (.setPosition actor x y))
-  ([^Actor actor x y align]
-   (.setPosition actor x y align)))
+  (visible? [actor]
+    (.isVisible actor))
 
-(defn set-visible! [^Actor actor visible?]
-  (.setVisible actor visible?))
+  (hit [^Actor actor [x y] touchable?]
+    (.hit actor x y touchable?))
 
-(defn set-touchable! [^Actor actor touchable]
-  (.setTouchable actor touchable))
+  (remove! [actor]
+    (.remove actor))
 
-(defn visible? [^Actor actor]
-  (.isVisible actor))
+  (parent [actor]
+    (.getParent actor))
 
-(defn hit [^Actor actor [x y] touchable?]
-  (.hit actor x y touchable?))
+  (set-position!
+    ([actor [x y]]
+     (.setPosition actor x y))
+    ([actor x y align]
+     (.setPosition actor x y (align/k->value align))))
 
-(defn remove! [^Actor actor]
-  (.remove actor))
+  (set-visible! [actor visible?]
+    (.setVisible actor visible?))
 
-(defn parent [^Actor actor]
-  (.getParent actor))
+  (set-touchable! [actor touchable]
+    (.setTouchable actor (touchable/k->value touchable)))
 
-(defn add-listener! [^Actor actor listener]
-  (.addListener actor listener))
+  (add-listener! [actor [listener-k listener-params]]
+    (.addListener actor
+                  (case listener-k
+                    :listener/change (change-listener/create listener-params)
+                    :listener/text-tooltip (text-tooltip/create listener-params)
+                    :listener/click (click-listener/create listener-params))))
 
-(defn stage->local-coordinates [^Actor actor vector2]
-  (.stageToLocalCoordinates actor vector2))
+  (stage->local-coordinates [actor xy]
+    (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy))))
+
+  (find-ancestor [actor pred]
+    (if-let [p (actor/parent actor)]
+      (if (pred p)
+        p
+        (actor/find-ancestor p pred))
+      (throw (Error. (str "Actor has no parent window " actor)))))
+
+  (toggle-visible! [actor]
+    (actor/set-visible! actor (not (actor/visible? actor))))
+
+  (set-opts! [actor opts]
+    (when-let [user-object (:actor/user-object opts)]
+      (actor/set-user-object! actor user-object))
+
+    (when (:actor/position opts)
+      (let [[x y align] (:actor/position opts)]
+        (if align
+          (actor/set-position! actor x y align)
+          (actor/set-position! actor [x y]))))
+
+    (when (contains? opts :actor/visible?)
+      (actor/set-visible! actor (:actor/visible? opts)))
+
+    (when-let [touchable (:actor/touchable opts)]
+      (actor/set-touchable! actor touchable))
+
+    (when-let [name (:actor/name opts)]
+      (actor/set-name! actor name))
+
+    (when-let [listeners (:actor/listeners opts)]
+      (doseq [listener listeners]
+        (actor/add-listener! actor listener)))))
