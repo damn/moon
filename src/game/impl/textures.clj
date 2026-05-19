@@ -1,33 +1,32 @@
 (ns game.impl.textures
-  (:require [gdl.app :as app]
-            [gdl.files :as files]
-            [gdl.files.file-handle :as file]
-            [clojure.string :as str]
-            [com.badlogic.gdx.gdx :as gdx]
+  (:require [clojure.string :as str]
             [gdl.graphics.texture :as texture]
-            [moon.textures]))
+            [moon.textures])
+  (:import (com.badlogic.gdx Gdx)
+           (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Texture)))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
 
 (defn create
-  [{:keys [ctx/app]}]
+  []
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
-                           (loop [[file & remaining] (file/list (files/internal (app/files app) folder))
+                           (loop [[^FileHandle file & remaining] (.list (.internal Gdx/files folder))
                                   result []]
                              (cond (nil? file)
                                    result
 
-                                   (file/directory? file)
-                                   (recur (concat remaining (file/list file)) result)
+                                   (.isDirectory file)
+                                   (recur (concat remaining (.list file)) result)
 
-                                   (extensions (file/extension file))
-                                   (recur remaining (conj result (file/path file)))
+                                   (extensions (.extension file))
+                                   (recur remaining (conj result (.path file)))
 
                                    :else
                                    (recur remaining result))))]
-             [path (gdx/texture path)])))
+             [path (Texture. path)])))
 
 (extend-type clojure.lang.PersistentHashMap
   moon.textures/Textures

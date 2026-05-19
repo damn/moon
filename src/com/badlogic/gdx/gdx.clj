@@ -1,6 +1,7 @@
 (ns com.badlogic.gdx.gdx
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [game.impl.textures]
             com.badlogic.gdx.maps.renderer
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector2 :as vector2]
@@ -19,8 +20,6 @@
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
             [gdl.app :as app]
-            [gdl.files :as files]
-            [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
@@ -189,6 +188,7 @@
                                                              (font.data/set-markup-enabled! true))
                                                          skin)
                                              :ctx/unit-scale (atom 1)
+                                             :ctx/textures (game.impl.textures/create)
                                              })
                                           create)))
 
@@ -216,24 +216,13 @@
                         (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
                         (.setForegroundFPS foreground-fps))))
 
-(defn texture [path]
-  (Texture. ^String path))
-
 (extend-type Application
   app/App
-  (files [app]
-    (.getFiles app))
-
   (graphics [app]
     (.getGraphics app))
 
   (input [app]
     (.getInput app)))
-
-(extend-type Files
-  files/Files
-  (internal [files path]
-    (.internal files path)))
 
 (extend-type Graphics
   graphics/Graphics
@@ -263,20 +252,6 @@
   (mouse-position [this]
     [(.getX this)
      (.getY this)]))
-
-(extend-type FileHandle
-  file-handle/FileHandle
-  (list [file]
-    (.list file))
-
-  ( directory? [file]
-    (.isDirectory file))
-
-  (extension [this]
-    (.extension this))
-
-  (path [this]
-    (.path this)))
 
 (extend-type BitmapFont
   bitmap-font/BitmapFont

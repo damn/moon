@@ -4,7 +4,6 @@
            [game.create.record/step]
            [game.create.impl-txs/step]
            [game.create.impl-draws/step]
-           [game.create.assoc/step :ctx/textures game.impl.textures/create]
            [game.create.unorganised/step]
            [game.create.controls/step]
            [game.create.ctx-colors/step]

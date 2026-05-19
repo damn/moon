@@ -104,7 +104,7 @@
              :ctx/files files}
         ctx (assoc ctx :ctx/app Gdx/app)
         ctx (assoc ctx :ctx/db (db-impl/create ctx))
-        ctx (assoc ctx :ctx/textures (textures/create {:ctx/app Gdx/app}))
+        ctx (assoc ctx :ctx/textures (textures/create))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
