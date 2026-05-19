@@ -1,19 +1,10 @@
 {
  :create  [
            [game.create.do/step [clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]]
-
            [game.create.record/step]
            [game.create.impl-txs/step]
            [game.create.impl-draws/step]
-
-           ;;
-
            [game.create.assoc/step :ctx/textures game.impl.textures/create]
-           [game.create.set-input-processor/step]
-           [game.create.assoc/step :ctx/skin game.impl.skin/create]
-
-           ;;
-
            [game.create.unorganised/step]
            [game.create.controls/step]
            [game.create.ctx-colors/step]

@@ -12,7 +12,6 @@
           :ctx/paused? false
 
           ; stuff
-          :ctx/unit-scale (atom 1)
           :ctx/elapsed-time 0
           :ctx/potential-field-cache (atom nil)
           :ctx/id-counter (atom 0)

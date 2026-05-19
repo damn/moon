@@ -5,5 +5,4 @@
   (list [_])
   (directory? [_])
   (extension [_])
-  (path [_])
-  (skin [_]))
+  (path [_]))

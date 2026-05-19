@@ -178,7 +178,16 @@
                                                                                  cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
                                                                              (.dispose pixmap)
                                                                              cursor))))
-                                             :ctx/stage (create-stage (fit-viewport 1440 900) batch)
+                                             :ctx/stage (let [stage (create-stage (fit-viewport 1440 900) batch)]
+                                                          (.setInputProcessor Gdx/input stage)
+                                                          stage)
+                                             :ctx/skin (let [skin (Skin. (.internal Gdx/files "uiskin.json"))]
+                                                         (-> skin
+                                                             (skin/font "default-font")
+                                                             font/data
+                                                             (font.data/set-markup-enabled! true))
+                                                         skin)
+                                             :ctx/unit-scale (atom 1)
                                              })
                                           create)))
 
@@ -241,9 +250,6 @@
 
 (extend-type Input
   input/Input
-  (set-processor! [this input-processor]
-    (.setInputProcessor this input-processor))
-
   (key-pressed? [this key]
     (.isKeyPressed this key))
 
@@ -269,10 +275,7 @@
     (.extension this))
 
   (path [this]
-    (.path this))
-
-  (skin [this]
-    (Skin. this)))
+    (.path this)))
 
 (extend-type BitmapFont
   bitmap-font/BitmapFont
