@@ -9,7 +9,6 @@
            ;;
 
            [game.create.assoc/step :ctx/textures game.impl.textures/create]
-           [game.create.assoc/step :ctx/cursors game.impl.cursors/create]
            [game.create.assoc/step :ctx/stage game.impl.stage/create]
            [game.create.set-input-processor/step]
            [game.create.assoc/step :ctx/skin game.impl.skin/create]

@@ -22,7 +22,6 @@
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
-            [gdl.graphics.pixmap :as pixmap]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.orthographic-camera :as camera]
             [gdl.graphics.shape-drawer :as shape-drawer]
@@ -165,6 +164,13 @@
                                                                                  (orthographic-camera {:y-down? false
                                                                                                        :world-width world-width
                                                                                                        :world-height world-height})))
+                                             :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
+                                                            (update-vals data
+                                                                         (fn [[path [hotspot-x hotspot-y]]]
+                                                                           (let [pixmap (Pixmap. (.internal Gdx/files (format path-format path)))
+                                                                                 cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
+                                                                             (.dispose pixmap)
+                                                                             cursor))))
                                              })
                                           create)))
 
@@ -227,9 +233,6 @@
   (delta-time [graphics]
     (.getDeltaTime graphics))
 
-  (new-cursor [graphics pixmap hotspot-x hotspot-y]
-    (.newCursor graphics pixmap hotspot-x hotspot-y))
-
   (set-cursor! [graphics cursor]
     (.setCursor graphics cursor))
 
@@ -268,9 +271,6 @@
   (path [this]
     (.path this))
 
-  (pixmap [this]
-    (Pixmap. this))
-
   (skin [this]
     (Skin. this)))
 
@@ -302,11 +302,6 @@
 
   (set-markup-enabled! [data enabled?]
     (set! (.markupEnabled data) enabled?)))
-
-(extend-type Pixmap
-  pixmap/Pixmap
-  (dispose! [pixmap]
-    (.dispose pixmap)))
 
 (extend-type Texture
   texture/Texture

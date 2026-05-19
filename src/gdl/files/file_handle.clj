@@ -6,5 +6,4 @@
   (directory? [_])
   (extension [_])
   (path [_])
-  (pixmap [_])
   (skin [_]))
