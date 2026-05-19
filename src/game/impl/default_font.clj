@@ -2,8 +2,8 @@
   (:require [gdl.app :as app]
             [gdl.files :as files]
             [com.badlogic.gdx.graphics.texture.texture-filter :as texture.filter]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
+            [gdl.graphics.g2d.bitmap-font :as font]
+            [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator :as generator]
             [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]))
 

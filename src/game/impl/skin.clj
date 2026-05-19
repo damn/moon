@@ -1,8 +1,8 @@
 (ns game.impl.skin
   (:require [gdl.app :as app]
             [gdl.files :as files]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
+            [gdl.graphics.g2d.bitmap-font :as font]
+            [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
 (defn create

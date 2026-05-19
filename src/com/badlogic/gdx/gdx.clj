@@ -4,6 +4,8 @@
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
+            [gdl.graphics.g2d.bitmap-font :as bitmap-font]
+            [gdl.graphics.g2d.bitmap-font.data :as bitmap-font.data]
             [gdl.input :as input])
   (:import (com.badlogic.gdx Application
                              Audio
@@ -11,7 +13,9 @@
                              Gdx
                              Graphics
                              Input)
-           (com.badlogic.gdx.files FileHandle)))
+           (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics.g2d BitmapFont
+                                          BitmapFont$BitmapFontData)))
 
 (defn app []
   Gdx/app)
@@ -88,3 +92,35 @@
 
   (path [this]
     (.path this)))
+
+(extend-type BitmapFont
+  bitmap-font/BitmapFont
+  (data [font]
+    (.getData font))
+
+  (line-height [font]
+    (.getLineHeight font))
+
+  (draw! [font batch text x y target-width align wrap?]
+    (.draw font
+           batch
+           text
+           (float x)
+           (float y)
+           (float target-width)
+           align
+           wrap?))
+
+  (use-integer-positions! [font bool]
+    (.setUseIntegerPositions font bool)))
+
+(extend-type BitmapFont$BitmapFontData
+  bitmap-font.data/Data
+  (scale-x [data]
+    (.scaleX data))
+
+  (set-scale! [data scale]
+    (.setScale data scale))
+
+  (set-markup-enabled! [data enabled?]
+    (set! (.markupEnabled data) enabled?)))

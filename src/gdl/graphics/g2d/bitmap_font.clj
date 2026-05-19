@@ -1,0 +1,7 @@
+(ns gdl.graphics.g2d.bitmap-font)
+
+(defprotocol BitmapFont
+  (data [_])
+  (line-height [_])
+  (draw! [_ batch text x y target-width align wrap?])
+  (use-integer-positions! [_ bool]))

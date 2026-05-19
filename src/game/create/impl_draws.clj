@@ -1,7 +1,7 @@
 (ns game.create.impl-draws
   (:require [clojure.string :as str]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as data]
+            [gdl.graphics.g2d.bitmap-font :as font]
+            [gdl.graphics.g2d.bitmap-font.data :as data]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.utils.align :as align]
             [gdl.graphics.batch :as batch]
