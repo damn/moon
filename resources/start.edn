@@ -8,7 +8,6 @@
 
            ;;
 
-           [game.create.assoc/step :ctx/audio game.impl.audio/create]
            [game.create.assoc/step :ctx/default-font game.impl.default-font/create]
            [game.create.assoc/step :ctx/textures game.impl.textures/create]
            [game.create.assoc/step :ctx/world-unit-scale game.impl.world-unit-scale/create]

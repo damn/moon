@@ -1,5 +1,7 @@
 (ns com.badlogic.gdx.gdx
-  (:require [com.badlogic.gdx.graphics.color :as color]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.math.vector3 :as vector3]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
@@ -16,7 +18,6 @@
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
             [gdl.app :as app]
-            [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
@@ -46,7 +47,6 @@
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx Application
                              ApplicationListener
-                             Audio
                              Files
                              Gdx
                              Graphics
@@ -114,6 +114,11 @@
 
                                                 ]
                                             {:ctx/app Gdx/app
+                                             :ctx/audio (into {}
+                                                              (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
+                                                                [sound-name
+                                                                 (.newSound Gdx/audio
+                                                                            (.internal Gdx/files (format "sounds/%s.wav" sound-name)))]))
                                              :ctx/batch batch
                                              :ctx/shape-drawer-texture white-pixel-texture
                                              :ctx/shape-drawer (ShapeDrawer. batch (texture/region white-pixel-texture 1 0 1 1))
@@ -177,9 +182,6 @@
 
 (extend-type Application
   app/App
-  (audio [app]
-    (.getAudio app))
-
   (files [app]
     (.getFiles app))
 
@@ -188,11 +190,6 @@
 
   (input [app]
     (.getInput app)))
-
-(extend-type Audio
-  audio/Audio
-  (new-sound [audio file-handle]
-    (.newSound audio file-handle)))
 
 (extend-type Files
   files/Files
