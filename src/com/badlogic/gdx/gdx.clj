@@ -53,7 +53,7 @@
                                                 (f params))]
                         (reify ApplicationListener
                           (create [_]
-                            (create!))
+                            (create! Gdx/app))
 
                           (dispose [_]
                             (dispose!))
@@ -76,9 +76,6 @@
                           (.setTitle title)
                           (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
                           (.setForegroundFPS foreground-fps)))))
-
-(defn app []
-  Gdx/app)
 
 (defn pixmap [width height]
   (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))

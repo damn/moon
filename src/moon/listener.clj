@@ -7,11 +7,11 @@
            render
            resize]}]
   (let [state @state-var]
-    {:create! (fn []
+    {:create! (fn [app]
                 (reset! state
                         (reduce (fn [ctx [f & params]]
                                   (apply f ctx params))
-                                {}
+                                {:ctx/app app}
                                 create)))
      :dispose! (fn []
                  (doseq [f dispose]
