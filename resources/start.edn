@@ -1,8 +1,99 @@
 {
- :create  #edn/resource "create.edn"
- :dispose #edn/resource "dispose.edn"
- :render  #edn/resource "render.edn"
- :resize  #edn/resource "resize.edn"
+ :create  [
+           [game.create.do/step [clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]]
+
+           ;;
+           [game.create.do/step [clojure.multifn/add-methods! gdl.scene2d.actor/create #edn/resource "actors.edn"]]
+           ;;
+
+           [game.create.record/step]
+           [game.create.impl-txs/step]
+           [game.create.impl-draws/step]
+
+           ;;
+
+           [game.create.assoc/step :ctx/batch game.impl.invoke/create com.badlogic.gdx.gdx/sprite-batch]
+           [game.create.assoc/step :ctx/shape-drawer-texture game.impl.white-pixel-texture/create]
+           [game.create.assoc/step :ctx/shape-drawer game.impl.shape-drawer/create]
+           [game.create.assoc/step :ctx/audio game.impl.audio/create]
+           [game.create.assoc/step :ctx/default-font game.impl.default-font/create]
+           [game.create.assoc/step :ctx/textures game.impl.textures/create]
+           [game.create.assoc/step :ctx/world-unit-scale game.impl.world-unit-scale/create]
+           [game.create.assoc/step :ctx/world-viewport game.impl.world-viewport/create
+            {:viewport com.badlogic.gdx.gdx/fit-viewport
+             :camera   com.badlogic.gdx.gdx/orthographic-camera}]
+           [game.create.assoc/step :ctx/cursors game.impl.cursors/create]
+           [game.create.assoc/step :ctx/stage game.impl.stage/create com.badlogic.gdx.gdx/fit-viewport]
+           [game.create.set-input-processor/step]
+           [game.create.assoc/step :ctx/skin game.impl.skin/create]
+
+           ;;
+
+           [game.create.unorganised/step]
+           [game.create.controls/step]
+           [game.create.ctx-colors/step]
+           [game.create.render-z-order/step]
+           [game.create.max-speed/step]
+           [game.create.assoc/step :ctx/db game.impl.db/create]
+           [game.create.add-stage-actors/step [[game.create.add-stage-actors.dev-menu/create]
+                                               [game.create.add-stage-actors.action-bar/create]
+                                               [game.create.add-stage-actors.hp-mana-bar/create]
+                                               [game.create.add-stage-actors.windows/create [game.create.add-stage-actors.windows.info/create
+                                                                                             game.create.add-stage-actors.windows.inventory/create]]
+                                               [game.create.add-stage-actors.player-state-draw/create]
+                                               [game.create.add-stage-actors.player-message/create]]]
+           [game.create.tiled-map/step]
+           [game.create.assoc/step :ctx/grid game.impl.grid/create]
+           [game.create.assoc/step :ctx/content-grid game.impl.content-grid/create]
+           [game.create.assoc/step :ctx/explored-tile-corners game.impl.explored-tile-corners/create]
+           [game.create.assoc/step :ctx/raycaster game.impl.raycaster/create]
+           [game.create.spawn-player/step]
+           [game.create.spawn-enemies/step]
+           ]
+ :dispose [
+           game.dispose.audio/do!
+           game.dispose.batch/do!
+           game.dispose.cursors/do!
+           game.dispose.default-font/do!
+           game.dispose.shape-drawer-texture/do!
+           game.dispose.skin/do!
+           game.dispose.textures/do!
+           game.dispose.tiled-map/do!
+           ]
+ :render  [
+           [game.render.get-stage-ctx/step]
+           [game.render.validate/step]
+           [game.render.update-mouse/step]
+           [game.render.update-mouseover-eid/step]
+           [game.render.check-debug-viewer/step]
+           [game.render.active-entities/step]
+           [game.render.set-camera/step]
+           [game.render.clear-screen/step]
+           [game.render.draw-tiled-map/step com.badlogic.gdx.maps.renderer/draw!]
+           [game.render.draw-on-world-viewport/step [
+                                                     #_game.render.draw-on-world-viewport.draw-tile-grid/draws
+                                                     game.render.draw-on-world-viewport.draw-cell-debug/draws
+                                                     game.render.draw-on-world-viewport.draw-entities/do!
+                                                     #_moon.geom-test
+                                                     game.render.draw-on-world-viewport.highlight-mouseover-tile/draws
+                                                     ]]
+           [game.render.assoc-interaction-state/step]
+           [game.render.set-cursor/step]
+           [game.render.handle-input/step]
+           [game.render.dissoc-interaction-state/step]
+           [game.render.assoc-paused/step]
+           [game.render.if-not-paused/step [game.render.if-not-paused.update-time/step
+                                            game.render.if-not-paused.update-potential-fields/step
+                                            game.render.if-not-paused.tick-entities/step]]
+           [game.render.remove-destroyed-entities/step]
+           [game.render.window-camera-controls/step]
+           [game.render.stage/step]
+           [game.render.validate/step]
+           ]
+ :resize  [
+           game.resize.stage/do!
+           game.resize.world-viewport/do!
+           ]
  :title "Moon"
  :windowed-mode {:width 1440
                  :height 900}
