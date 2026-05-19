@@ -104,7 +104,8 @@
                           (reset! state
                                   (reduce (fn [ctx [f & params]]
                                             (apply f ctx params))
-                                          {:ctx/app Gdx/app}
+                                          {:ctx/app Gdx/app
+                                           :ctx/batch (SpriteBatch.)}
                                           create)))
 
                         (dispose [_]
@@ -136,9 +137,6 @@
 
 (defn texture [path]
   (Texture. ^String path))
-
-(defn sprite-batch []
-  (SpriteBatch.))
 
 (defn fit-viewport
   ([width height]

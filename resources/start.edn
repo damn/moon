@@ -8,7 +8,6 @@
 
            ;;
 
-           [game.create.assoc/step :ctx/batch game.impl.batch/create]
            [game.create.assoc/step :ctx/shape-drawer-texture game.impl.white-pixel-texture/create]
            [game.create.assoc/step :ctx/shape-drawer game.impl.shape-drawer/create]
            [game.create.assoc/step :ctx/audio game.impl.audio/create]
