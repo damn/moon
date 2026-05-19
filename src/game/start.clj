@@ -1,4 +1,4 @@
-(ns moon.start
+(ns game.start
   (:require [clojure.config :refer [edn-resource]]
             [com.badlogic.gdx.gdx :as gdx])
   (:gen-class))
