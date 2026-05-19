@@ -3,7 +3,7 @@
             [gdl.files :as files]
             [gdl.files.file-handle :as file]
             [clojure.string :as str]
-            [com.badlogic.gdx.graphics.texture]
+            [com.badlogic.gdx.gdx :as gdx]
             [gdl.graphics.texture :as texture]
             [moon.textures]))
 
@@ -27,7 +27,7 @@
 
                                    :else
                                    (recur remaining result))))]
-             [path (com.badlogic.gdx.graphics.texture/create path)])))
+             [path (gdx/texture path)])))
 
 (extend-type clojure.lang.PersistentHashMap
   moon.textures/Textures

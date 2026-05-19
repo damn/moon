@@ -6,9 +6,11 @@
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
             [gdl.graphics.pixmap :as pixmap]
+            [gdl.graphics.texture :as texture]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as bitmap-font.data]
             [gdl.graphics.g2d.freetype.font-generator :as font-generator]
+            [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.input :as input])
   (:import (com.badlogic.gdx Application
                              Audio
@@ -20,6 +22,7 @@
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
                                       Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
@@ -29,6 +32,9 @@
 
 (defn pixmap [width height]
   (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))
+
+(defn texture [path]
+  (Texture. ^String path))
 
 (extend-type Application
   app/App
@@ -162,3 +168,19 @@
 
   (dispose! [pixmap]
     (.dispose pixmap)))
+
+(extend-type Texture
+  texture/Texture
+  (region
+    ([texture]
+     (TextureRegion. texture))
+    ([texture x y w h]
+     (TextureRegion. texture (int x) (int y) (int w) (int h)))))
+
+(extend-type TextureRegion
+  texture-region/TextureRegion
+  (width [this]
+    (.getRegionWidth this))
+
+  (height [this]
+    (.getRegionHeight this)))
