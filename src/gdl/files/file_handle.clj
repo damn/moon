@@ -7,4 +7,5 @@
   (extension [_])
   (path [_])
   (freetype-font-generator [_])
-  (pixmap [_]))
+  (pixmap [_])
+  (skin [_]))

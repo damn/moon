@@ -17,6 +17,7 @@
             [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.input :as input]
             [gdl.scene2d.event :as event]
+            [gdl.scene2d.ui.skin :as skin]
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
@@ -43,6 +44,7 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Event)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
@@ -190,7 +192,10 @@
     (FreeTypeFontGenerator. this))
 
   (pixmap [this]
-    (Pixmap. this)))
+    (Pixmap. this))
+
+  (skin [this]
+    (Skin. this)))
 
 (extend-type FreeTypeFontGenerator
   font-generator/FreeTypeFontGenerator
@@ -371,3 +376,8 @@
           vp-ratio-h (/ (* y-diff 2) viewport-height)
           new-zoom (max vp-ratio-w vp-ratio-h)]
       new-zoom)))
+
+(extend-type Skin
+  skin/Skin
+  (font [skin name]
+    (.getFont skin name)))
