@@ -27,8 +27,7 @@
             [gdl.graphics.orthographic-camera :as camera]
             [gdl.graphics.shape-drawer :as shape-drawer]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
-            [gdl.graphics.g2d.bitmap-font.data :as bitmap-font.data]
-            [gdl.graphics.g2d.freetype.font-generator :as font-generator]
+            [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.input :as input]
             [gdl.scene2d.actor :as actor]
@@ -122,6 +121,21 @@
                                              :ctx/batch batch
                                              :ctx/shape-drawer-texture white-pixel-texture
                                              :ctx/shape-drawer (ShapeDrawer. batch (texture/region white-pixel-texture 1 0 1 1))
+                                             :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
+                                                                     size 16
+                                                                     quality-scaling 2
+                                                                     generator (FreeTypeFontGenerator. (.internal Gdx/files path))
+                                                                     font (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                                                                                                     (set! (.size params) (* size quality-scaling))
+                                                                                                     ; Texture$TextureFilter/Linear because scaling to world-units
+                                                                                                     (set! (.minFilter params) Texture$TextureFilter/Linear)
+                                                                                                     (set! (.magFilter params) Texture$TextureFilter/Linear)
+                                                                                                     params))]
+                                                                 (.dispose generator)
+                                                                 (font.data/set-scale! (.getData font) (/ quality-scaling))
+                                                                 (font.data/set-markup-enabled! (.getData font) true)
+                                                                 (.setUseIntegerPositions font false)
+                                                                 font)
                                              })
                                           create)))
 
@@ -245,27 +259,11 @@
   (path [this]
     (.path this))
 
-  (freetype-font-generator [this]
-    (FreeTypeFontGenerator. this))
-
   (pixmap [this]
     (Pixmap. this))
 
   (skin [this]
     (Skin. this)))
-
-(extend-type FreeTypeFontGenerator
-  font-generator/FreeTypeFontGenerator
-  (generate-font [generator {:keys [size]}]
-    (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                               (set! (.size params) size)
-                               ; Texture$TextureFilter/Linear because scaling to world-units
-                               (set! (.minFilter params) Texture$TextureFilter/Linear)
-                               (set! (.magFilter params) Texture$TextureFilter/Linear)
-                               params)))
-
-  (dispose! [generator]
-    (.dispose generator)))
 
 (extend-type BitmapFont
   bitmap-font/BitmapFont
@@ -283,13 +281,10 @@
            (float y)
            (float target-width)
            align
-           wrap?))
-
-  (use-integer-positions! [font bool]
-    (.setUseIntegerPositions font bool)))
+           wrap?)))
 
 (extend-type BitmapFont$BitmapFontData
-  bitmap-font.data/Data
+  font.data/Data
   (scale-x [data]
     (.scaleX data))
 

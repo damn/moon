@@ -6,6 +6,5 @@
   (directory? [_])
   (extension [_])
   (path [_])
-  (freetype-font-generator [_])
   (pixmap [_])
   (skin [_]))

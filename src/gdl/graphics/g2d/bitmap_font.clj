@@ -3,5 +3,4 @@
 (defprotocol BitmapFont
   (data [_])
   (line-height [_])
-  (draw! [_ batch text x y target-width align wrap?])
-  (use-integer-positions! [_ bool]))
+  (draw! [_ batch text x y target-width align wrap?]))
