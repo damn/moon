@@ -1,4 +1,8 @@
 (ns com.badlogic.gdx.utils.disposable
+  (:require [gdl.utils.disposable :as disposable])
   (:import (com.badlogic.gdx.utils Disposable)))
 
-(def dispose! Disposable/.dispose)
+(extend-type Disposable
+  disposable/Disposable
+  (dispose! [this]
+    (.dispose this)))

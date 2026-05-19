@@ -1,13 +1,4 @@
 [
- [com.badlogic.gdx.scenes.scene2d.Event
-  com.badlogic.gdx.scenes.scene2d.event
-  gdl.scene2d.event/Event]
-
- [com.badlogic.gdx.utils.Disposable
-  com.badlogic.gdx.utils.disposable
-  gdl.utils.disposable/Disposable]
- ; TODO @ Sound/Texture/etc. ?! wherever its created !?
-
  [com.badlogic.gdx.utils.viewport.FitViewport
   com.badlogic.gdx.utils.viewport.fit-viewport
   moon.viewport/Viewport]]
