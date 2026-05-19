@@ -1,11 +1,5 @@
 (ns com.badlogic.gdx.graphics.texture
-  (:import (com.badlogic.gdx.graphics Texture
-                                      Pixmap)))
+  (:import (com.badlogic.gdx.graphics Texture)))
 
-(defmulti create class)
-
-(defmethod create String [path]
+(defn create [path]
   (Texture. ^String path))
-
-(defmethod create Pixmap [pixmap]
-  (Texture. ^Pixmap pixmap))

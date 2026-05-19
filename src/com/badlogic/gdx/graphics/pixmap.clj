@@ -2,7 +2,8 @@
   (:require [gdl.graphics.pixmap :as pixmap])
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
-                                      Pixmap$Format)))
+                                      Pixmap$Format
+                                      Texture)))
 
 (defn create
   ([^FileHandle file-handle]
@@ -12,6 +13,9 @@
 
 (extend-type Pixmap
   pixmap/Pixmap
+  (texture [pixmap]
+    (Texture. pixmap))
+
   (set-color! [pixmap r g b a]
     (.setColor pixmap r g b a))
 
