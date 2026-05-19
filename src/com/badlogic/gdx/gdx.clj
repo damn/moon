@@ -33,6 +33,7 @@
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.event :as event]
+            [gdl.scene2d.stage :as stage]
             [gdl.scene2d.ui.image :as image]
             [gdl.scene2d.ui.label :as label]
             [gdl.scene2d.ui.select-box :as select-box]
@@ -66,6 +67,7 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Actor
+                                            CtxStage
                                             Event
                                             Group)
            (com.badlogic.gdx.scenes.scene2d.ui Image
@@ -81,10 +83,6 @@
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
-
-; TODO actually coul;d 'bind-root' 'gdl.plattform/sprite-batch' or something
-; for the constructors
-; => just functions ...
 
 (def state (atom nil))
 
@@ -161,6 +159,14 @@
 (defn orthographic-camera [{:keys [y-down? world-width world-height]}]
   (doto (OrthographicCamera.)
     (.setToOrtho y-down? world-width world-height)))
+
+(defn stage [viewport batch]
+  (proxy [CtxStage ILookup] [viewport batch]
+    (valAt [k]
+      (case k
+        ; TODO :stage/root
+        :stage/ctx      (.ctx         ^CtxStage this)
+        :stage/viewport (.getViewport ^CtxStage this)))))
 
 (extend-type Application
   app/App
@@ -731,3 +737,26 @@
   (proxy [Widget] []
     (draw [batch parent-alpha]
       (draw! this batch parent-alpha))))
+
+(extend-type CtxStage
+  stage/Stage
+  (set-ctx! [stage ctx]
+    (set! (.ctx stage) ctx))
+
+  (add-actor! [stage actor]
+    (.addActor stage (actor/create actor)))
+
+  (act! [stage]
+    (.act stage))
+
+  (draw! [stage]
+    (.draw stage))
+
+  (find-actor [stage name]
+    (-> stage
+        .getRoot
+        (group/find-actor name)))
+
+  (mouseover-actor [stage position]
+    (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
+      (.hit stage x y true))))
