@@ -19,10 +19,6 @@
   com.badlogic.gdx.input
   gdl.input/Input]
 
- [com.badlogic.gdx.graphics.g2d.SpriteBatch
-  com.badlogic.gdx.graphics.g2d.sprite-batch
-  moon.batch/Batch]
-
  [com.badlogic.gdx.graphics.OrthographicCamera
   com.badlogic.gdx.graphics.orthographic-camera
   moon.camera/OrthographicCamera]

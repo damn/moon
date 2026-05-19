@@ -1,4 +1,4 @@
-(ns moon.batch)
+(ns gdl.graphics.batch)
 
 (defprotocol Batch
   (begin! [_])

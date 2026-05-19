@@ -1,5 +1,5 @@
 (ns game.render.draw-on-world-viewport
-  (:require [moon.batch :as batch]
+  (:require [gdl.graphics.batch :as batch]
             [moon.camera :as camera]
             [moon.draws :as draws]
             [gdl.graphics.shape-drawer :as shape-drawer]))
