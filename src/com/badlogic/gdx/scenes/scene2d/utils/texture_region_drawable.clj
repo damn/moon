@@ -4,19 +4,23 @@
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
-(defn create [texture-region]
-  (TextureRegionDrawable. ^TextureRegion texture-region))
-
-(defn set-min-size! [^TextureRegionDrawable drawable [w h]]
+(defn- set-min-size! [^TextureRegionDrawable drawable [w h]]
   (.setMinSize drawable w h))
 
-(defn tint! [^TextureRegionDrawable drawable color]
-  (.tint drawable (color/create color)))
+(defn create
+  [{:keys [drawable/texture-region
+           drawable/size
+           drawable/tint]}]
+  (let [drawable (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+                   (set-min-size! [size size]))]
+    (when tint
+      (.tint drawable (color/create tint)))
+    drawable))
 
 (defn create*
   ^TextureRegionDrawable
   [{:keys [drawable/texture-region
            drawable/scale]}]
-  (doto (create texture-region)
+  (doto (TextureRegionDrawable. ^TextureRegion texture-region)
     (set-min-size! [(* scale (texture-region/width texture-region))
                     (* scale (texture-region/height texture-region))])))

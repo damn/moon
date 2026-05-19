@@ -1,6 +1,5 @@
 (ns game.create.add-stage-actors.windows.inventory
   (:require [gdl.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.ui.image :as image]
             [gdl.scene2d.actor :as actor]
@@ -48,10 +47,9 @@
                                                            :image/bounds bounds})))
         cell-size 48
         slot->drawable (fn [slot]
-                         (doto (texture-region-drawable/create (slot->texture-region slot))
-                           (texture-region-drawable/set-min-size! [cell-size cell-size])
-                           (texture-region-drawable/tint! [1 1 1 0.4]))
-                         )
+                         {:drawable/texture-region (slot->texture-region slot)
+                          :drawable/size cell-size
+                          :drawable/tint [1 1 1 0.4]})
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size (:colors/item-rect colors)]
                           (when (and mouseover?
@@ -140,9 +138,8 @@
              (let [cell-widget (window->cell inventory-window cell)
                    image-widget (group/find-actor cell-widget "image-widget")
                    cell-size (:cell-size (actor/user-object image-widget))]
-               (image/set-drawable! image-widget
-                                    (doto (texture-region-drawable/create texture-region)
-                                      (texture-region-drawable/set-min-size! [cell-size cell-size])))
+               (image/set-drawable! image-widget {:drawable/texture-region texture-region
+                                                  :drawable/size cell-size})
                (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
                nil)))
 

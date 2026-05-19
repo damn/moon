@@ -507,13 +507,15 @@
 
 (defmethod actor/create :ui/image
   [{:keys [content] :as opts}]
-  (doto (com.badlogic.gdx.scenes.scene2d.ui.image/create content)
+  (doto (com.badlogic.gdx.scenes.scene2d.ui.image/create (if (map? content)
+                                                           (texture-region-drawable/create content)
+                                                           content))
     (actor/set-opts! opts)))
 
 (extend-type Image
   image/Image
   (set-drawable! [image drawable]
-    (.setDrawable image drawable)))
+    (.setDrawable image (texture-region-drawable/create drawable))))
 
 (defmethod actor/create :ui/image-button
   [{:keys [drawable] :as opts}]
