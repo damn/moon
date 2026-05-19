@@ -1,17 +1,28 @@
 (ns com.badlogic.gdx.scenes.scene2d.group
+  (:require [gdl.scene2d.actor :as actor]
+            [gdl.scene2d.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
-(defn create []
-  (Group.))
+(defn create [opts]
+  (doto (Group.)
+    (group/set-opts! opts)))
 
-(defn add-actor! [^Group group actor]
-  (.addActor group actor))
+(extend-type Group
+  group/Group
+  (add-actor! [group actor]
+    (.addActor group actor))
 
-(defn children [^Group group]
-  (.getChildren group))
+  (children [group]
+    (.getChildren group))
 
-(defn find-actor [^Group group name]
-  (.findActor group name))
+  (find-actor [group name]
+    (.findActor group name))
 
-(defn clear-children! [^Group group]
-  (.clearChildren group))
+  (clear-children! [group]
+    (.clearChildren group))
+
+  (set-opts! [group opts]
+    (when-let [actors (:group/actors opts)]
+      (run! #(group/add-actor! group (actor/create %)) actors))
+    (actor/set-opts! group opts)))
+

@@ -1,6 +1,6 @@
 [
  [:ui/actor com.badlogic.gdx.scenes.scene2d.actor/create]
- [:ui/group game.ui.group/create]
+ [:ui/group com.badlogic.gdx.scenes.scene2d.group/create]
  [:ui/scroll-pane com.badlogic.gdx.scenes.scene2d.ui.scroll-pane/create]
  [:ui/widget com.badlogic.gdx.scenes.scene2d.ui.widget/create]
  ]
