@@ -8,7 +8,8 @@
             game.ui.table
             [moon.ui.table :as table]
             [moon.db :as db]
-            [com.badlogic.gdx.graphics.orthographic-camera :as camera]
+            [com.badlogic.gdx.graphics.orthographic-camera]
+            [gdl.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.maps.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
   (:import (com.badlogic.gdx ApplicationListener
@@ -42,10 +43,10 @@
                          (/ (.get (.getProperties tiled-map) "height") 2)])
   (camera/set-zoom! camera
                     (camera/calculate-zoom camera
-                                           :left [0 0]
-                                           :top [0 (.get (.getProperties tiled-map) "height")]
-                                           :right [(.get (.getProperties tiled-map) "width") 0]
-                                           :bottom [0 0])))
+                                           {:left [0 0]
+                                            :top [0 (.get (.getProperties tiled-map) "height")]
+                                            :right [(.get (.getProperties tiled-map) "width") 0]
+                                            :bottom [0 0]})))
 
 (def tile-size 48)
 
@@ -110,9 +111,10 @@
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
                                        world-height
-                                       (camera/create {:y-down? false
-                                                       :world-width world-width
-                                                       :world-height world-height})))
+                                       (com.badlogic.gdx.graphics.orthographic-camera/create
+                                        {:y-down? false
+                                         :world-width world-width
+                                         :world-height world-height})))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport
