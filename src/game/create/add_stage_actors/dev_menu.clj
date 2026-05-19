@@ -1,5 +1,5 @@
 (ns game.create.add-stage-actors.dev-menu
-  (:require [moon.camera :as camera]
+  (:require [gdl.graphics.orthographic-camera :as camera]
             [moon.stage :as stage]
             [gdl.graphics :as graphics]
             [clojure.string :as str]

@@ -1,4 +1,4 @@
-(ns moon.camera)
+(ns gdl.graphics.orthographic-camera)
 
 (defprotocol OrthographicCamera
   (combined [_])
@@ -10,8 +10,3 @@
   (inc-zoom! [cam by])
   (calculate-zoom [_ & {:keys [left top right bottom]}])
   (visible-tiles [_]))
-
-
-
-
-

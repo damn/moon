@@ -1,7 +1,7 @@
 [
  [com.badlogic.gdx.graphics.OrthographicCamera
   com.badlogic.gdx.graphics.orthographic-camera
-  moon.camera/OrthographicCamera]
+  gdl.graphics.orthographic-camera/OrthographicCamera]
 
  [com.badlogic.gdx.scenes.scene2d.Actor
   game.ui.actor

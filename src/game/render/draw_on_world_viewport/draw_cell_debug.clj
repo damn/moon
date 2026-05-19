@@ -1,5 +1,5 @@
 (ns game.render.draw-on-world-viewport.draw-cell-debug
-  (:require [moon.camera :as camera]))
+  (:require [gdl.graphics.orthographic-camera :as camera]))
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)

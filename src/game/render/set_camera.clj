@@ -1,5 +1,5 @@
 (ns game.render.set-camera
-  (:require [moon.camera :as camera]))
+  (:require [gdl.graphics.orthographic-camera :as camera]))
 
 (defn step
   [{:keys [ctx/player-eid

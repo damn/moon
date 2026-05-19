@@ -1,6 +1,6 @@
 (ns game.render.draw-on-world-viewport.draw-tile-grid
   (:require [com.badlogic.gdx.graphics.color :as color]
-            [moon.camera :as camera]))
+            [gdl.graphics.orthographic-camera :as camera]))
 
 (defn draws
   [{:keys [ctx/world-viewport]}]

@@ -1,5 +1,5 @@
 (ns game.render.draw-tiled-map
-  (:require [moon.camera :as camera]
+  (:require [gdl.graphics.orthographic-camera :as camera]
             [moon.raycaster :as raycaster]))
 
 (defn- tile-color-setter*
