@@ -1,8 +1,8 @@
 (ns game.impl.textures
   (:require [gdl.app :as app]
             [gdl.files :as files]
+            [gdl.files.file-handle :as file]
             [clojure.string :as str]
-            [com.badlogic.gdx.files.file-handle :as file]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [moon.textures]))

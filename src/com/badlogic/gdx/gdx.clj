@@ -2,6 +2,7 @@
   (:require [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
+            [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
             [gdl.input :as input])
   (:import (com.badlogic.gdx Application
@@ -9,7 +10,8 @@
                              Files
                              Gdx
                              Graphics
-                             Input)))
+                             Input)
+           (com.badlogic.gdx.files FileHandle)))
 
 (defn app []
   Gdx/app)
@@ -72,3 +74,17 @@
   (mouse-position [this]
     [(.getX this)
      (.getY this)]))
+
+(extend-type FileHandle
+  file-handle/FileHandle
+  (list [file]
+    (.list file))
+
+  ( directory? [file]
+    (.isDirectory file))
+
+  (extension [this]
+    (.extension this))
+
+  (path [this]
+    (.path this)))
