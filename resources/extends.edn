@@ -1,24 +1,4 @@
 [
- [com.badlogic.gdx.Application
-  com.badlogic.gdx.application
-  gdl.app/App]
-
- [com.badlogic.gdx.Audio
-  com.badlogic.gdx.audio
-  gdl.audio/Audio]
-
- [com.badlogic.gdx.Files
-  com.badlogic.gdx.files
-  gdl.files/Files]
-
- [com.badlogic.gdx.Graphics
-  com.badlogic.gdx.graphics
-  gdl.graphics/Graphics]
-
- [com.badlogic.gdx.Input
-  com.badlogic.gdx.input
-  gdl.input/Input]
-
  [com.badlogic.gdx.graphics.OrthographicCamera
   com.badlogic.gdx.graphics.orthographic-camera
   moon.camera/OrthographicCamera]
