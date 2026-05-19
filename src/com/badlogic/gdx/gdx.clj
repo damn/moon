@@ -82,7 +82,15 @@
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defn fit-viewport
+(defn- create-stage [viewport batch]
+  (proxy [CtxStage ILookup] [viewport batch]
+    (valAt [k]
+      (case k
+        ; TODO :stage/root
+        :stage/ctx      (.ctx         ^CtxStage this)
+        :stage/viewport (.getViewport ^CtxStage this)))))
+
+(defn- fit-viewport
   ([width height]
    (proxy [FitViewport ILookup] [width height]
      (valAt [k]
@@ -101,7 +109,6 @@
 (defn orthographic-camera [{:keys [y-down? world-width world-height]}]
   (doto (OrthographicCamera.)
     (.setToOrtho y-down? world-width world-height)))
-
 
 (def state (atom nil))
 
@@ -171,6 +178,7 @@
                                                                                  cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
                                                                              (.dispose pixmap)
                                                                              cursor))))
+                                             :ctx/stage (create-stage (fit-viewport 1440 900) batch)
                                              })
                                           create)))
 
@@ -200,14 +208,6 @@
 
 (defn texture [path]
   (Texture. ^String path))
-
-(defn stage [viewport batch]
-  (proxy [CtxStage ILookup] [viewport batch]
-    (valAt [k]
-      (case k
-        ; TODO :stage/root
-        :stage/ctx      (.ctx         ^CtxStage this)
-        :stage/viewport (.getViewport ^CtxStage this)))))
 
 (extend-type Application
   app/App
