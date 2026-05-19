@@ -1,4 +1,5 @@
 (ns com.badlogic.gdx.graphics.pixmap
+  (:require [gdl.graphics.pixmap :as pixmap])
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format)))
@@ -9,11 +10,13 @@
   ([width height]
    (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888)))
 
-(defn dispose! [^Pixmap pixmap]
-  (.dispose pixmap))
+(extend-type Pixmap
+  pixmap/Pixmap
+  (set-color! [pixmap r g b a]
+    (.setColor pixmap r g b a))
 
-(defn set-color! [^Pixmap pixmap r g b a]
-  (.setColor pixmap r g b a))
+  (draw-pixel! [pixmap x y]
+    (.drawPixel pixmap x y))
 
-(defn draw-pixel! [^Pixmap pixmap x y]
-  (.drawPixel pixmap x y))
+  (dispose! [pixmap]
+    (.dispose pixmap)))
