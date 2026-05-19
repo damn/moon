@@ -18,6 +18,7 @@
             [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.input :as input]
             [gdl.scene2d.actor :as actor]
+            [gdl.scene2d.group :as group]
             [gdl.scene2d.event :as event]
             [gdl.scene2d.ui.label :as label]
             [gdl.scene2d.ui.select-box :as select-box]
@@ -52,6 +53,7 @@
                                                HorizontalGroup
                                                SelectBox
                                                Skin
+                                               Stack
                                                TooltipManager)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
@@ -466,3 +468,8 @@
   select-box/SelectBox
   (selected [select-box]
     (.getSelected select-box)))
+
+(defmethod actor/create :ui/stack
+  [opts]
+  (doto (Stack.)
+    (group/set-opts! opts)))
