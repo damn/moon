@@ -66,7 +66,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event)
+                                            Event
+                                            Group)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                ImageButton
                                                Label
@@ -694,3 +695,27 @@
     (when-let [listeners (:actor/listeners opts)]
       (doseq [listener listeners]
         (actor/add-listener! actor listener)))))
+
+(defmethod actor/create :ui/group
+  [opts]
+  (doto (Group.)
+    (group/set-opts! opts)))
+
+(extend-type Group
+  group/Group
+  (add-actor! [group actor]
+    (.addActor group actor))
+
+  (children [group]
+    (.getChildren group))
+
+  (find-actor [group name]
+    (.findActor group name))
+
+  (clear-children! [group]
+    (.clearChildren group))
+
+  (set-opts! [group opts]
+    (when-let [actors (:group/actors opts)]
+      (run! #(group/add-actor! group (actor/create %)) actors))
+    (actor/set-opts! group opts)))
