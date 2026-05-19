@@ -1,5 +1,6 @@
 (ns game.impl.stage
-  (:require [gdl.scene2d.stage :as stage]
+  (:require [com.badlogic.gdx.gdx :as gdx]
+            [gdl.scene2d.stage :as stage]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [gdl.utils.viewport :as viewport])
@@ -7,8 +8,8 @@
            (com.badlogic.gdx.scenes.scene2d CtxStage)))
 
 (defn create
-  [{:keys [ctx/batch]} create-viewport]
-  (proxy [CtxStage ILookup] [(create-viewport 1440 900) batch]
+  [{:keys [ctx/batch]}]
+  (proxy [CtxStage ILookup] [(gdx/fit-viewport 1440 900) batch]
     (valAt [k]
       (case k
         ; TODO :stage/root

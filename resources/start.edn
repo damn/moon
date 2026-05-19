@@ -8,18 +8,16 @@
 
            ;;
 
-           [game.create.assoc/step :ctx/batch game.impl.invoke/create com.badlogic.gdx.gdx/sprite-batch]
+           [game.create.assoc/step :ctx/batch game.impl.batch/create]
            [game.create.assoc/step :ctx/shape-drawer-texture game.impl.white-pixel-texture/create]
            [game.create.assoc/step :ctx/shape-drawer game.impl.shape-drawer/create]
            [game.create.assoc/step :ctx/audio game.impl.audio/create]
            [game.create.assoc/step :ctx/default-font game.impl.default-font/create]
            [game.create.assoc/step :ctx/textures game.impl.textures/create]
            [game.create.assoc/step :ctx/world-unit-scale game.impl.world-unit-scale/create]
-           [game.create.assoc/step :ctx/world-viewport game.impl.world-viewport/create
-            {:viewport com.badlogic.gdx.gdx/fit-viewport
-             :camera   com.badlogic.gdx.gdx/orthographic-camera}]
+           [game.create.assoc/step :ctx/world-viewport game.impl.world-viewport/create]
            [game.create.assoc/step :ctx/cursors game.impl.cursors/create]
-           [game.create.assoc/step :ctx/stage game.impl.stage/create com.badlogic.gdx.gdx/fit-viewport]
+           [game.create.assoc/step :ctx/stage game.impl.stage/create]
            [game.create.set-input-processor/step]
            [game.create.assoc/step :ctx/skin game.impl.skin/create]
 
