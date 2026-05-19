@@ -14,6 +14,7 @@
   (.tint drawable (color/create color)))
 
 (defn create*
+  ^TextureRegionDrawable
   [{:keys [drawable/texture-region
            drawable/scale]}]
   (doto (create texture-region)

@@ -3,6 +3,7 @@
             [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.math.vector3 :as vector3]
             [com.badlogic.gdx.scenes.scene2d.ui.image]
+            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
@@ -52,6 +53,7 @@
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Image
+                                               ImageButton
                                                Label
                                                HorizontalGroup
                                                SelectBox
@@ -486,3 +488,8 @@
   image/Image
   (set-drawable! [image drawable]
     (.setDrawable image drawable)))
+
+(defmethod actor/create :ui/image-button
+  [{:keys [drawable] :as opts}]
+  (doto (ImageButton. (texture-region-drawable/create* drawable))
+    (actor/set-opts! opts)))
