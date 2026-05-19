@@ -1,7 +1,12 @@
-[[clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]
- [clojure.core-ext/extend-types! #edn/resource "extends.edn"]
- [clojure.multifn/add-methods! moon.ui.actor/create #edn/resource "actors.edn"]
- [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
+[
+ ; first do the backend starter (start the window, then initialize the backend independent code)
+ ; all other code is not dependent on the specific backend
+ ; e.g. could be another backend
+ ; so it should go in 'create.edn'
+ ; also make start simpler - maybe just normal code?
+ ; => the whole 'application listener' or game application
+ ; also is not inside the backend starter .....
+ ; just 'desktop starter'
  [com.badlogic.gdx.backends.lwjgl3.config/use-glfw-async!]
  [com.badlogic.gdx.backends.lwjgl3.application/create
   {

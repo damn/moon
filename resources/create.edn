@@ -1,6 +1,10 @@
 [
- [game.create.assoc/step :ctx/app game.impl.invoke/create com.badlogic.gdx.gdx/app]
+ [game.create.do/step [clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]]
+ [game.create.do/step [clojure.core-ext/extend-types! #edn/resource "extends.edn"]]
+ [game.create.do/step [clojure.multifn/add-methods! moon.ui.actor/create #edn/resource "actors.edn"]]
+ [game.create.do/step [com.badlogic.gdx.graphics.colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]}]]
  [game.create.do/step [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/set-initial-time! 0]]
+ [game.create.assoc/step :ctx/app game.impl.invoke/create com.badlogic.gdx.gdx/app]
  [game.create.record/step]
  [game.create.impl-txs/step]
  [game.create.impl-draws/step]
