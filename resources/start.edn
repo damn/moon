@@ -2,10 +2,6 @@
  :create  [
            [game.create.do/step [clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]]
 
-           ;;
-           [game.create.do/step [clojure.multifn/add-methods! gdl.scene2d.actor/create #edn/resource "actors.edn"]]
-           ;;
-
            [game.create.record/step]
            [game.create.impl-txs/step]
            [game.create.impl-draws/step]

@@ -72,10 +72,12 @@
                                                ImageButton
                                                Label
                                                HorizontalGroup
+                                               ScrollPane
                                                SelectBox
                                                Skin
                                                Stack
-                                               TooltipManager)
+                                               TooltipManager
+                                               Widget)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
@@ -719,3 +721,13 @@
     (when-let [actors (:group/actors opts)]
       (run! #(group/add-actor! group (actor/create %)) actors))
     (actor/set-opts! group opts)))
+
+(defmethod actor/create :ui/scroll-pane
+  [{:keys [^Actor actor ^Skin skin]}]
+  (ScrollPane. actor skin))
+
+(defmethod actor/create :ui/widget
+  [{:keys [draw!]}]
+  (proxy [Widget] []
+    (draw [batch parent-alpha]
+      (draw! this batch parent-alpha))))

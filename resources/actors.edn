@@ -1,4 +1,0 @@
-[
- [:ui/scroll-pane com.badlogic.gdx.scenes.scene2d.ui.scroll-pane/create]
- [:ui/widget com.badlogic.gdx.scenes.scene2d.ui.widget/create]
- ]
