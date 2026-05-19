@@ -1,7 +1,10 @@
 [
  [game.create.do/step [clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]]
+
+ ;;
  [game.create.do/step [clojure.multifn/add-methods! gdl.scene2d.actor/create #edn/resource "actors.edn"]]
- [game.create.do/step [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager/set-initial-time! 0]]
+ ;;
+
  [game.create.record/step]
  [game.create.impl-txs/step]
  [game.create.impl-draws/step]

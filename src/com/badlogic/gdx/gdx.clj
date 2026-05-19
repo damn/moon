@@ -46,9 +46,14 @@
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup
-                                               Skin)
+                                               Skin
+                                               TooltipManager)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
+
+; TODO actually coul;d 'bind-root' 'gdl.plattform/sprite-batch' or something
+; for the constructors
+; => just functions ...
 
 (defn start!
   [{:keys [listener config colors]}]
@@ -64,6 +69,7 @@
                                                 (f params))]
                         (reify ApplicationListener
                           (create [_]
+                            (set! (.initialTime (TooltipManager/getInstance)) 0)
                             (create! Gdx/app))
 
                           (dispose [_]
