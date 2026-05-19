@@ -1,6 +1,5 @@
 (ns com.badlogic.gdx.gdx
-  (:require [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
-            [gdl.app :as app]
+  (:require [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
@@ -30,7 +29,8 @@
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
 
 (defn start!
   [{:keys [listener config]}]
@@ -161,8 +161,12 @@
 
 (extend-type FreeTypeFontGenerator
   font-generator/FreeTypeFontGenerator
-  (generate-font [generator parameter]
-    (.generateFont generator (parameter/create parameter)))
+  (generate-font [generator {:keys [size min-filter mag-filter]}]
+    (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                               (set! (.size params) size)
+                               (set! (.minFilter params) min-filter)
+                               (set! (.magFilter params) mag-filter)
+                               params)))
 
   (dispose! [generator]
     (.dispose generator)))
