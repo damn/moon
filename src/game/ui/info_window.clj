@@ -2,7 +2,7 @@
   (:require [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [moon.stage :as stage]
-            [moon.ui.label :as label]
+            [gdl.scene2d.ui.label :as label]
             [moon.ui.table :as table]
             [moon.ui.widget-group :as widget-group]))
 

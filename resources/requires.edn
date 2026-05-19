@@ -18,7 +18,6 @@
  game.info-impl
  game.ui.image ; weird
  game.ui.image-button ; drawable
- game.ui.label
  game.ui.select-box
  game.ui.stack
  game.ui.table

@@ -3,7 +3,7 @@
             [gdl.scene2d.event :as event]
             [gdl.scene2d.group :as group]
             [moon.stage :as stage]
-            [moon.ui.label :as label]
+            [gdl.scene2d.ui.label :as label]
             [moon.ui.table :as table]))
 
 (defn- set-label-text-actor [label text-fn]

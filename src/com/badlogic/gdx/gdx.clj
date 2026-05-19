@@ -19,6 +19,7 @@
             [gdl.input :as input]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
+            [gdl.scene2d.ui.label :as label]
             [gdl.scene2d.ui.skin :as skin]
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport])
@@ -46,7 +47,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Event)
-           (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup
+           (com.badlogic.gdx.scenes.scene2d.ui Label
+                                               HorizontalGroup
                                                Skin
                                                TooltipManager)
            (com.badlogic.gdx.utils Disposable)
@@ -441,3 +443,13 @@
 
   (set-default-line-width! [this width]
     (.setDefaultLineWidth this width)))
+
+(defmethod actor/create :ui/label
+  [{:keys [text skin] :as opts}]
+  (doto (Label. ^String text ^Skin skin)
+    (actor/set-opts! opts)))
+
+(extend-type Label
+  label/Label
+  (set-text! [label text]
+    (.setText label text)))
