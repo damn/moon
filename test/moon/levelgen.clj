@@ -6,7 +6,7 @@
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
             game.ui.table
-            [moon.ui.table :as table]
+            [gdl.scene2d.ui.table :as table]
             [moon.db :as db]
             [gdl.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.maps.renderer :as tiled-map-renderer]

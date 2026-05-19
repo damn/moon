@@ -1,6 +1,6 @@
 (ns game.schema-widget.string
   (:require [gdl.scene2d.actor :as actor]
-            [moon.ui.text-field :as text-field]
+            [gdl.scene2d.ui.text-field :as text-field]
             [moon.schema :as schema]))
 
 (defmethod schema/create :s/string [schema v {:keys [ctx/skin]}]

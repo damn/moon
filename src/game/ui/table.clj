@@ -2,11 +2,11 @@
   (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [gdl.scene2d.actor :as actor]
-            [moon.ui.table]
-            [moon.ui.widget-group :as widget-group]))
+            [gdl.scene2d.ui.table]
+            [gdl.scene2d.ui.widget-group :as widget-group]))
 
 (extend-type com.badlogic.gdx.scenes.scene2d.ui.Table
-  moon.ui.table/Table
+  gdl.scene2d.ui.table/Table
   (add! [table cell-declaration]
     (-> (table/add! table (:actor cell-declaration))
         (cell/set-opts! (dissoc cell-declaration :actor))))
@@ -17,7 +17,7 @@
 
         (cond
          (map? props-or-actor)
-         (moon.ui.table/add! table props-or-actor)
+         (gdl.scene2d.ui.table/add! table props-or-actor)
 
          ; TODO Remove else case
          :else (table/add! table props-or-actor)
@@ -27,7 +27,7 @@
 
    (set-opts! [table opts]
      (when-let [rows (:table/rows opts)]
-       (moon.ui.table/add-rows! table rows)
+       (gdl.scene2d.ui.table/add-rows! table rows)
        (widget-group/pack! table))
      (when-let [defaults (:table/cell-defaults opts)]
        (cell/set-opts! (table/defaults table) defaults))
@@ -35,4 +35,4 @@
 
 (defmethod actor/create :ui/table [opts]
   (doto (table/create)
-    (moon.ui.table/set-opts! opts)))
+    (gdl.scene2d.ui.table/set-opts! opts)))

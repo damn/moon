@@ -1,4 +1,4 @@
-(ns moon.ui.widget-group)
+(ns gdl.scene2d.ui.widget-group)
 
 (defprotocol WidgetGroup
   (pack! [_])

@@ -1,4 +1,4 @@
-(ns moon.ui.table)
+(ns gdl.scene2d.ui.table)
 
 (defprotocol Table
   (add! [_ cell-declaration])

@@ -4,8 +4,8 @@
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [gdl.scene2d.group :as group]
             [moon.stage :as stage]
-            [moon.ui.table :as table]
-            [moon.ui.widget-group :as widget-group]
+            [gdl.scene2d.ui.table :as table]
+            [gdl.scene2d.ui.widget-group :as widget-group]
             [moon.schema :as schema]
             [moon.txs :as txs]))
 

@@ -1,7 +1,7 @@
 (ns game.ui.window
   (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [gdl.scene2d.actor :as actor]
-            [moon.ui.table :as table]))
+            [gdl.scene2d.ui.table :as table]))
 
 (defn- set-opts! [window opts]
   (when (:window/modal? opts)

@@ -1,10 +1,10 @@
 (ns game.ui.widget-group
   (:require [com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [gdl.scene2d.group :as group]
-            [moon.ui.widget-group]))
+            [gdl.scene2d.ui.widget-group]))
 
 (extend-type com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
-  moon.ui.widget-group/WidgetGroup
+  gdl.scene2d.ui.widget-group/WidgetGroup
   (pack! [widget-group]
     (widget-group/pack! widget-group))
 

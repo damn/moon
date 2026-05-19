@@ -3,7 +3,7 @@
             [moon.edn :as edn]
             [moon.schema :as schema]
             [gdl.scene2d.actor :as actor]
-            [moon.ui.text-field :as text-field]))
+            [gdl.scene2d.ui.text-field :as text-field]))
 
 (defmethod schema/create :s/number
   [schema v {:keys [ctx/skin]}]
