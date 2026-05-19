@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx.gdx
   (:require [com.badlogic.gdx.graphics.color :as color]
+            [com.badlogic.gdx.math.vector2 :as vector2]
             [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
@@ -14,8 +15,10 @@
             [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.input :as input]
             [gdl.scene2d.event :as event]
-            [gdl.utils.disposable :as disposable])
-  (:import (com.badlogic.gdx Application
+            [gdl.utils.disposable :as disposable]
+            [gdl.utils.viewport :as viewport])
+  (:import (clojure.lang ILookup)
+           (com.badlogic.gdx Application
                              ApplicationListener
                              Audio
                              Files
@@ -37,7 +40,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Event)
-           (com.badlogic.gdx.utils Disposable)))
+           (com.badlogic.gdx.utils Disposable)
+           (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn start!
   [{:keys [listener config colors]}]
@@ -85,6 +89,22 @@
 
 (defn sprite-batch []
   (SpriteBatch.))
+
+(defn fit-viewport
+  ([width height]
+   (proxy [FitViewport ILookup] [width height]
+     (valAt [k]
+       (case k
+         :viewport/camera       (FitViewport/.getCamera      this)
+         :viewport/world-width  (FitViewport/.getWorldWidth  this)
+         :viewport/world-height (FitViewport/.getWorldHeight this)))))
+  ([width height camera]
+   (proxy [FitViewport ILookup] [width height camera]
+     (valAt [k]
+       (case k
+         :viewport/camera       (FitViewport/.getCamera      this)
+         :viewport/world-width  (FitViewport/.getWorldWidth  this)
+         :viewport/world-height (FitViewport/.getWorldHeight this))))))
 
 (extend-type Application
   app/App
@@ -279,3 +299,13 @@
   event/Event
   (stage [event]
     (.getStage event)))
+
+(extend-type FitViewport
+  viewport/Viewport
+  (update! [viewport screen-width screen-height center-camera?]
+    (.update viewport screen-width screen-height center-camera?))
+
+  (unproject [viewport position]
+    (-> viewport
+        (.unproject (vector2/->java position))
+        vector2/->clj)))
