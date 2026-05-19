@@ -9,8 +9,6 @@
            ;;
 
            [game.create.assoc/step :ctx/textures game.impl.textures/create]
-           [game.create.assoc/step :ctx/world-unit-scale game.impl.world-unit-scale/create]
-           [game.create.assoc/step :ctx/world-viewport game.impl.world-viewport/create]
            [game.create.assoc/step :ctx/cursors game.impl.cursors/create]
            [game.create.assoc/step :ctx/stage game.impl.stage/create]
            [game.create.set-input-processor/step]

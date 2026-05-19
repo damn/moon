@@ -83,6 +83,27 @@
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
+(defn fit-viewport
+  ([width height]
+   (proxy [FitViewport ILookup] [width height]
+     (valAt [k]
+       (case k
+         :viewport/camera       (FitViewport/.getCamera      this)
+         :viewport/world-width  (FitViewport/.getWorldWidth  this)
+         :viewport/world-height (FitViewport/.getWorldHeight this)))))
+  ([width height camera]
+   (proxy [FitViewport ILookup] [width height camera]
+     (valAt [k]
+       (case k
+         :viewport/camera       (FitViewport/.getCamera      this)
+         :viewport/world-width  (FitViewport/.getWorldWidth  this)
+         :viewport/world-height (FitViewport/.getWorldHeight this))))))
+
+(defn orthographic-camera [{:keys [y-down? world-width world-height]}]
+  (doto (OrthographicCamera.)
+    (.setToOrtho y-down? world-width world-height)))
+
+
 (def state (atom nil))
 
 (defn start!
@@ -110,7 +131,7 @@
                                                                           texture (Texture. pixmap)]
                                                                       (.dispose pixmap)
                                                                       texture)
-
+                                                world-unit-scale (float (/ 48))
                                                 ]
                                             {:ctx/app Gdx/app
                                              :ctx/audio (into {}
@@ -136,6 +157,14 @@
                                                                  (font.data/set-markup-enabled! (.getData font) true)
                                                                  (.setUseIntegerPositions font false)
                                                                  font)
+                                             :ctx/world-unit-scale world-unit-scale
+                                             :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
+                                                                       world-height (* 900  world-unit-scale)]
+                                                                   (fit-viewport world-width
+                                                                                 world-height
+                                                                                 (orthographic-camera {:y-down? false
+                                                                                                       :world-width world-width
+                                                                                                       :world-height world-height})))
                                              })
                                           create)))
 
@@ -165,26 +194,6 @@
 
 (defn texture [path]
   (Texture. ^String path))
-
-(defn fit-viewport
-  ([width height]
-   (proxy [FitViewport ILookup] [width height]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this)))))
-  ([width height camera]
-   (proxy [FitViewport ILookup] [width height camera]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this))))))
-
-(defn orthographic-camera [{:keys [y-down? world-width world-height]}]
-  (doto (OrthographicCamera.)
-    (.setToOrtho y-down? world-width world-height)))
 
 (defn stage [viewport batch]
   (proxy [CtxStage ILookup] [viewport batch]
