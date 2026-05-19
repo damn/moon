@@ -1,7 +1,7 @@
 (ns game.schema-widget.one-to-one
   (:require [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.ui :as ui]
+            [gdl.scene2d.ui :as ui]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.stage :as stage]
             [gdl.scene2d.ui.table :as table]
