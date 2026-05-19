@@ -1,7 +1,7 @@
 (ns game.ui.dev-menu
   (:require [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
-            [moon.ui.group :as group]
+            [gdl.scene2d.group :as group]
             [moon.stage :as stage]
             [moon.ui.label :as label]
             [moon.ui.table :as table]))

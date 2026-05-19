@@ -1,4 +1,4 @@
-(ns moon.ui.group)
+(ns gdl.scene2d.group)
 
 (defprotocol Group
   (add-actor! [_ actor])

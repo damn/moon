@@ -2,7 +2,7 @@
   (:require [moon.camera :as camera]
             [moon.stage :as stage]
             [gdl.scene2d.actor :as actor]
-            [moon.ui.group :as group]
+            [gdl.scene2d.group :as group]
             [gdl.app :as app]
             [gdl.input :as input]))
 

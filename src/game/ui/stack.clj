@@ -1,7 +1,7 @@
 (ns game.ui.stack
   (:require [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [gdl.scene2d.actor :as actor]
-            [moon.ui.group :as group]))
+            [gdl.scene2d.group :as group]))
 
 (defmethod actor/create :ui/stack
   [opts]

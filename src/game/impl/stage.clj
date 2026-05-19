@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
             [moon.stage :as stage]
             [gdl.scene2d.actor :as actor]
-            [moon.ui.group :as group]
+            [gdl.scene2d.group :as group]
             [moon.viewport :as viewport]))
 
 (defn create

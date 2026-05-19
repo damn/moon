@@ -54,7 +54,7 @@
 
 (comment
  (move-and-rename! "moon.scene2d.group"
-                   "moon.ui.group")
+                   "gdl.scene2d.group")
 
 
 

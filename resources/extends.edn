@@ -29,7 +29,7 @@
 
  [com.badlogic.gdx.scenes.scene2d.Group
   game.ui.group
-  moon.ui.group/Group]
+  gdl.scene2d.group/Group]
 
  [com.badlogic.gdx.scenes.scene2d.Event
   com.badlogic.gdx.scenes.scene2d.event

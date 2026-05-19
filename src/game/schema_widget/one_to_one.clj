@@ -2,7 +2,7 @@
   (:require [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
-            [moon.ui.group :as group]
+            [gdl.scene2d.group :as group]
             [moon.stage :as stage]
             [moon.ui.table :as table]
             [moon.ui.widget-group :as widget-group]
