@@ -5,4 +5,5 @@
   (list [_])
   (directory? [_])
   (extension [_])
-  (path [_]))
+  (path [_])
+  (freetype-font-generator [_]))

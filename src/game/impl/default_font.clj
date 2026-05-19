@@ -1,11 +1,11 @@
 (ns game.impl.default-font
   (:require [gdl.app :as app]
             [gdl.files :as files]
+            [gdl.files.file-handle :as file-handle]
             [com.badlogic.gdx.graphics.texture.texture-filter :as texture.filter]
             [gdl.graphics.g2d.bitmap-font :as font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
-            [gdl.graphics.g2d.freetype.font-generator :as font-generator]
-            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator :as generator]))
+            [gdl.graphics.g2d.freetype.font-generator :as font-generator]))
 
 (def path "exocet/films.EXL_____.ttf")
 (def size 16)
@@ -13,7 +13,7 @@
 
 (defn create
   [{:keys [ctx/app]}]
-  (let [generator (generator/create (files/internal (app/files app) path))
+  (let [generator (file-handle/freetype-font-generator (files/internal (app/files app) path))
         font (font-generator/generate-font generator
                                            {:size (* size quality-scaling)
                                             ; :texture-filter/linear because scaling to world-units

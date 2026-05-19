@@ -1,11 +1,13 @@
 (ns com.badlogic.gdx.gdx
-  (:require [gdl.app :as app]
+  (:require [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
+            [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as bitmap-font.data]
+            [gdl.graphics.g2d.freetype.font-generator :as font-generator]
             [gdl.input :as input])
   (:import (com.badlogic.gdx Application
                              Audio
@@ -15,7 +17,8 @@
                              Input)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics.g2d BitmapFont
-                                          BitmapFont$BitmapFontData)))
+                                          BitmapFont$BitmapFontData)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
 
 (defn app []
   Gdx/app)
@@ -91,7 +94,18 @@
     (.extension this))
 
   (path [this]
-    (.path this)))
+    (.path this))
+
+  (freetype-font-generator [this]
+    (FreeTypeFontGenerator. this)))
+
+(extend-type FreeTypeFontGenerator
+  font-generator/FreeTypeFontGenerator
+  (generate-font [generator parameter]
+    (.generateFont generator (parameter/create parameter)))
+
+  (dispose! [generator]
+    (.dispose generator)))
 
 (extend-type BitmapFont
   bitmap-font/BitmapFont
