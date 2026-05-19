@@ -105,7 +105,13 @@
                                   (reduce (fn [ctx [f & params]]
                                             (apply f ctx params))
                                           {:ctx/app Gdx/app
-                                           :ctx/batch (SpriteBatch.)}
+                                           :ctx/batch (SpriteBatch.)
+                                           :ctx/shape-drawer-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                                                                                    (.setColor 1 1 1 1)
+                                                                                    (.drawPixel 0 0))
+                                                                           texture (Texture. pixmap)]
+                                                                       (.dispose pixmap)
+                                                                       texture)}
                                           create)))
 
                         (dispose [_]
@@ -131,9 +137,6 @@
                         (.setTitle title)
                         (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
                         (.setForegroundFPS foreground-fps))))
-
-(defn pixmap [width height]
-  (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))
 
 (defn texture [path]
   (Texture. ^String path))
@@ -295,15 +298,6 @@
 
 (extend-type Pixmap
   pixmap/Pixmap
-  (texture [pixmap]
-    (Texture. pixmap))
-
-  (set-color! [pixmap r g b a]
-    (.setColor pixmap r g b a))
-
-  (draw-pixel! [pixmap x y]
-    (.drawPixel pixmap x y))
-
   (dispose! [pixmap]
     (.dispose pixmap)))
 
