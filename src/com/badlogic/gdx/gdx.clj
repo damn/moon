@@ -1,6 +1,7 @@
 (ns com.badlogic.gdx.gdx
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
+            com.badlogic.gdx.maps.renderer
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.math.vector3 :as vector3]
@@ -324,6 +325,13 @@
 
 (extend-type SpriteBatch
   batch/Batch
+  (draw-tiled-map! [batch world-unit-scale camera tiled-map color-setter]
+    (com.badlogic.gdx.maps.renderer/draw! batch
+                                          world-unit-scale
+                                          camera
+                                          tiled-map
+                                          color-setter))
+
   (begin! [batch]
     (.begin batch))
 

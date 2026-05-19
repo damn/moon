@@ -1,5 +1,5 @@
 (ns game.render.draw-tiled-map
-  (:require [com.badlogic.gdx.maps.renderer :as renderer]
+  (:require [gdl.graphics.batch :as batch]
             [gdl.graphics.orthographic-camera :as camera]
             [moon.raycaster :as raycaster]))
 
@@ -69,9 +69,9 @@
            ctx/world-unit-scale
            ctx/world-viewport]
     :as ctx}]
-  (renderer/draw! batch
-                  world-unit-scale
-                  (:viewport/camera world-viewport)
-                  tiled-map
-                  (tile-color-setter ctx))
+  (batch/draw-tiled-map! batch
+                         world-unit-scale
+                         (:viewport/camera world-viewport)
+                         tiled-map
+                         (tile-color-setter ctx))
   ctx)
