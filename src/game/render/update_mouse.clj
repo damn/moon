@@ -1,5 +1,5 @@
 (ns game.render.update-mouse
-  (:require [moon.viewport :as viewport]
+  (:require [gdl.utils.viewport :as viewport]
             [gdl.app :as app]
             [gdl.input :as input]))
 

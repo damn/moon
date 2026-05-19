@@ -1,4 +1,4 @@
 [
  [com.badlogic.gdx.utils.viewport.FitViewport
   com.badlogic.gdx.utils.viewport.fit-viewport
-  moon.viewport/Viewport]]
+  gdl.utils.viewport/Viewport]]

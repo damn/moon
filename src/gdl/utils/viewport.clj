@@ -1,4 +1,4 @@
-(ns moon.viewport)
+(ns gdl.utils.viewport)
 
 (defprotocol Viewport
   (update! [_ screen-width screen-height center-camera?])

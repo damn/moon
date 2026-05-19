@@ -3,7 +3,7 @@
             [moon.stage :as stage]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
-            [moon.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]))
 
 (defn create
   [{:keys [ctx/batch]} create-viewport]
