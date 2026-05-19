@@ -23,10 +23,6 @@
   com.badlogic.gdx.graphics.g2d.sprite-batch
   moon.batch/Batch]
 
- [space.earlygrey.shapedrawer.ShapeDrawer
-  space.earlygrey.shape-drawer
-  moon.shape-drawer/ShapeDrawer]
-
  [com.badlogic.gdx.graphics.OrthographicCamera
   com.badlogic.gdx.graphics.orthographic-camera
   moon.camera/OrthographicCamera]

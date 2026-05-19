@@ -2,7 +2,7 @@
   (:require [moon.batch :as batch]
             [moon.camera :as camera]
             [moon.draws :as draws]
-            [moon.shape-drawer :as shape-drawer]))
+            [gdl.graphics.shape-drawer :as shape-drawer]))
 
 (defn step
   [{:keys [ctx/batch

@@ -1,4 +1,4 @@
-(ns moon.shape-drawer)
+(ns gdl.graphics.shape-drawer)
 
 (defprotocol ShapeDrawer
   (set-color! [_ color-float-bits])

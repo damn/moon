@@ -6,7 +6,7 @@
             [com.badlogic.gdx.utils.align :as align]
             [moon.batch :as batch]
             [moon.draws :as draws]
-            [moon.shape-drawer :as shape-drawer]))
+            [gdl.graphics.shape-drawer :as shape-drawer]))
 
 (def draw-fns
   {
