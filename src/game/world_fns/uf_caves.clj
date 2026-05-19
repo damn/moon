@@ -1,7 +1,7 @@
 (ns game.world-fns.uf-caves
   (:require [clojure.rand :as rand]
             [gdl.tiled-map :as tiled-map]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [gdl.graphics.texture :as texture]
             [moon.grid2d :as g2d]))
 
 (defn- assoc-transition-cells [grid]
@@ -144,11 +144,11 @@
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
                                    (tiled-create-tile
-                                    (texture-region/create texture
-                                                           (* (sprite-idx 0) tile-size)
-                                                           (* (sprite-idx 1) tile-size)
-                                                           tile-size
-                                                           tile-size)
+                                    (texture/region texture
+                                                    (* (sprite-idx 0) tile-size)
+                                                    (* (sprite-idx 1) tile-size)
+                                                    tile-size
+                                                    tile-size)
                                     "movement" movement))))
            :level/spawn-rate spawn-rate
            :level/scaling scaling
