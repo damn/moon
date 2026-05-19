@@ -1,7 +1,5 @@
 (ns com.badlogic.gdx.gdx
-  (:require [com.badlogic.gdx.application-listener :as listener]
-            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
-            [com.badlogic.gdx.backends.lwjgl3.config :as config]
+  (:require [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
             [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
@@ -16,12 +14,14 @@
             [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.input :as input])
   (:import (com.badlogic.gdx Application
+                             ApplicationListener
                              Audio
                              Files
                              Gdx
                              Graphics
                              Input)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
@@ -34,11 +34,39 @@
 
 (defn start!
   [{:keys [listener config]}]
-  (config/use-glfw-async!)
-  (Lwjgl3Application. (listener/create
-                       (let [[f params] listener]
-                         (f params)))
-                      (config/create config)))
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (let [{:keys [create!
+                                    dispose!
+                                    render!
+                                    resize!
+                                    pause!
+                                    resume!]} (let [[f params] listener]
+                                                (f params))]
+                        (reify ApplicationListener
+                          (create [_]
+                            (create!))
+
+                          (dispose [_]
+                            (dispose!))
+
+                          (render [_]
+                            (render!))
+
+                          (resize [_ width height]
+                            (resize! width height))
+
+                          (pause [_]
+                            (pause!))
+
+                          (resume [_]
+                            (resume!))))
+                      (let [{:keys [title
+                                    windowed-mode
+                                    foreground-fps]} config]
+                        (doto (Lwjgl3ApplicationConfiguration.)
+                          (.setTitle title)
+                          (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
+                          (.setForegroundFPS foreground-fps)))))
 
 (defn app []
   Gdx/app)
