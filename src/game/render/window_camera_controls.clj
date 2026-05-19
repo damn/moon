@@ -1,6 +1,6 @@
 (ns game.render.window-camera-controls
   (:require [gdl.graphics.orthographic-camera :as camera]
-            [moon.stage :as stage]
+            [gdl.scene2d.stage :as stage]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [gdl.app :as app]

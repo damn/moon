@@ -5,7 +5,7 @@
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [moon.entity :as entity]
             [moon.inventory :as inventory]
-            [moon.stage :as stage]
+            [gdl.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.textures :as textures]))
 

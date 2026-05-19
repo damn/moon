@@ -1,5 +1,5 @@
 (ns game.render.update-mouseover-eid
-  (:require [moon.stage :as stage]
+  (:require [gdl.scene2d.stage :as stage]
             [gdl.app :as app]
             [gdl.input :as input]
             [moon.grid :as grid]

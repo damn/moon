@@ -3,7 +3,7 @@
             [gdl.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [gdl.scene2d.group :as group]
-            [moon.stage :as stage]
+            [gdl.scene2d.stage :as stage]
             [gdl.scene2d.ui.table :as table]
             [gdl.scene2d.ui.widget-group :as widget-group]
             [moon.schema :as schema]

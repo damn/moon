@@ -1,5 +1,5 @@
 (ns game.reaction-txs.toggle-inventory-visible
-  (:require [moon.stage :as stage]
+  (:require [gdl.scene2d.stage :as stage]
             [gdl.scene2d.actor :as actor]))
 
 (defn do!

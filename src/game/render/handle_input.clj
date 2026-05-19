@@ -1,7 +1,7 @@
 (ns game.render.handle-input
   (:require [moon.controls :as controls]
             [gdl.scene2d.actor :as actor]
-            [moon.stage :as stage]
+            [gdl.scene2d.stage :as stage]
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [gdl.app :as app]
             [gdl.input :as input]

@@ -1,5 +1,5 @@
 (ns game.render.stage
-  (:require [moon.stage :as stage]))
+  (:require [gdl.scene2d.stage :as stage]))
 
 (defn step
   [{:keys [ctx/stage] :as ctx}]

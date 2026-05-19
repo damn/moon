@@ -98,7 +98,7 @@
 
 (def done
   '#{
-     moon.stage
+     gdl.scene2d.stage
      }
   )
 

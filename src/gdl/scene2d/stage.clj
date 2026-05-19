@@ -1,4 +1,4 @@
-(ns moon.stage)
+(ns gdl.scene2d.stage)
 
 (defprotocol Stage
   (set-ctx! [_ ctx])

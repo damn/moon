@@ -3,7 +3,7 @@
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
-            [moon.stage :as stage]
+            [gdl.scene2d.stage :as stage]
             [moon.db :as db]
             [gdl.app :as app]
             [gdl.input :as input]
