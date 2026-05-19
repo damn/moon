@@ -3,7 +3,7 @@
             [moon.edn :as edn]
             [moon.schema :as schema]
             [gdl.scene2d.actor :as actor]
-            [moon.ui.select-box :as select-box]))
+            [gdl.scene2d.ui.select-box :as select-box]))
 
 (defmethod schema/create :s/enum [schema v {:keys [ctx/skin]}]
   (actor/create

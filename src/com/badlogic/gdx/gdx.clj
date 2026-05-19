@@ -20,6 +20,7 @@
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
             [gdl.scene2d.ui.label :as label]
+            [gdl.scene2d.ui.select-box :as select-box]
             [gdl.scene2d.ui.skin :as skin]
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport])
@@ -49,6 +50,7 @@
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Label
                                                HorizontalGroup
+                                               SelectBox
                                                Skin
                                                TooltipManager)
            (com.badlogic.gdx.utils Disposable)
@@ -453,3 +455,14 @@
   label/Label
   (set-text! [label text]
     (.setText label text)))
+
+(defmethod actor/create :ui/select-box
+  [{:keys [items selected skin]}]
+  (doto (SelectBox. ^Skin skin)
+    (.setItems ^"[Ljava.lang.Object;" (into-array items))
+    (.setSelected selected)))
+
+(extend-type SelectBox
+  select-box/SelectBox
+  (selected [select-box]
+    (.getSelected select-box)))
