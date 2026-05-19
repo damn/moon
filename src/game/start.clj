@@ -1,6 +1,5 @@
 (ns game.start
-  (:require [clojure.config :refer [edn-resource]]
-            [com.badlogic.gdx.gdx :as gdx])
+  (:require [clojure.config :refer [edn-resource]])
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration))
@@ -24,7 +23,7 @@
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
-                                            (gdx/create-context {:colors colors})
+                                            {}
                                             create)))
 
                           (dispose [_]

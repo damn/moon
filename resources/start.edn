@@ -1,5 +1,6 @@
 {
  :create  [
+           [game.create.gdx-context/step]
            [game.create.do/step [clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]]
            [game.create.record/step]
            [game.create.impl-txs/step]
@@ -73,5 +74,4 @@
  :windowed-mode {:width 1440
                  :height 900}
  :foreground-fps 60
- :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
  }
