@@ -1,6 +1,6 @@
 (ns game.schema-widget.val-max
   (:require clojure.edn
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.text-field :as text-field]
             [moon.edn :as edn]
             [moon.schema :as schema]))

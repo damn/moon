@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [moon.ui.actor :as actor]))
+            [gdl.scene2d.actor :as actor]))
 
 (defn- create-drawable*
   [{:keys [drawable/texture-region

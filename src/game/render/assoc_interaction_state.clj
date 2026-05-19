@@ -1,5 +1,5 @@
 (ns game.render.assoc-interaction-state
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [moon.stage :as stage]
             [gdl.app :as app]
             [gdl.input :as input]

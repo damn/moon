@@ -1,6 +1,6 @@
 (ns game.ui.property-editor-window
   (:require [com.badlogic.gdx.input.keys :as input.keys]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.stage :as stage]

@@ -2,7 +2,7 @@
   (:require [clojure.edn]
             [moon.edn :as edn]
             [moon.schema :as schema]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.select-box :as select-box]))
 
 (defmethod schema/create :s/enum [schema v {:keys [ctx/skin]}]

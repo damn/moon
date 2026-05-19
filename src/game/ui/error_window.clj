@@ -1,5 +1,5 @@
 (ns game.ui.error-window
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [clojure.repl :as repl]))
 
 (defmacro ^:private with-err-str [& body]

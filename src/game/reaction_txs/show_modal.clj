@@ -1,6 +1,6 @@
 (ns game.reaction-txs.show-modal
   (:require [moon.stage :as stage]
-            [moon.ui.actor :as actor]))
+            [gdl.scene2d.actor :as actor]))
 
 (defn do!
   [{:keys [ctx/skin

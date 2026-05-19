@@ -1,5 +1,5 @@
 (ns game.ui.action-bar
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [moon.ui.group :as group]
             [moon.ui.action-bar :as action-bar]
             [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))

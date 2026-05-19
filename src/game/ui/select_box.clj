@@ -1,6 +1,6 @@
 (ns game.ui.select-box
   (:require [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.select-box]))
 
 (defmethod actor/create :ui/select-box

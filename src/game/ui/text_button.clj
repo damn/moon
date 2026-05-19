@@ -1,6 +1,6 @@
 (ns game.ui.text-button
   (:require [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [moon.ui.actor :as actor]))
+            [gdl.scene2d.actor :as actor]))
 
 (defmethod actor/create :ui/text-button
   [opts]

@@ -1,5 +1,5 @@
 (ns game.ui.property-overview-window
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
             [moon.stage :as stage]
             [moon.db :as db]

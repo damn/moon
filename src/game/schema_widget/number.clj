@@ -2,7 +2,7 @@
   (:require [clojure.edn]
             [moon.edn :as edn]
             [moon.schema :as schema]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.text-field :as text-field]))
 
 (defmethod schema/create :s/number

@@ -2,7 +2,7 @@
   (:require [moon.edn :as edn]
             [moon.schema :as schema]
             [moon.string :as string]
-            [moon.ui.actor :as actor]))
+            [gdl.scene2d.actor :as actor]))
 
 (defmethod schema/create :default
   [_ v {:keys [ctx/skin]}]

@@ -1,5 +1,5 @@
 (ns game.ui.dev-menu
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
             [moon.ui.group :as group]
             [moon.stage :as stage]

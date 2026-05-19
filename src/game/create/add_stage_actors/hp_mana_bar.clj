@@ -1,5 +1,5 @@
 (ns game.create.add-stage-actors.hp-mana-bar
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.number :as number]
             [moon.stats :as stats]

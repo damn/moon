@@ -1,6 +1,6 @@
 (ns game.ui.text-field
   (:require [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.text-field]))
 
 (defmethod actor/create :ui/text-field

@@ -1,7 +1,7 @@
 (ns game.render.window-camera-controls
   (:require [moon.camera :as camera]
             [moon.stage :as stage]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.group :as group]
             [gdl.app :as app]
             [gdl.input :as input]))

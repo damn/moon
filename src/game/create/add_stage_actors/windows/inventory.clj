@@ -4,7 +4,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.ui.group :as group]
             [moon.ui.image :as image]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [moon.state :as state]

@@ -1,5 +1,5 @@
 (ns game.ui.info-window
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [moon.ui.group :as group]
             [moon.stage :as stage]
             [moon.ui.label :as label]

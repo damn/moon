@@ -1,6 +1,6 @@
 (ns game.ui.group
   (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [moon.ui.actor :as actor]))
+            [gdl.scene2d.actor :as actor]))
 
 (def add-actor! group/add-actor!)
 (def children group/children)

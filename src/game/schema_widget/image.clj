@@ -1,7 +1,7 @@
 (ns game.schema-widget.image
   (:require [moon.schema :as schema]
             [moon.textures :as textures]
-            [moon.ui.actor :as actor]))
+            [gdl.scene2d.actor :as actor]))
 
 ; too many ! too big ! scroll ... only show files first & preview?
 ; make tree view from folders, etc. .. !! all creatures animations showing...

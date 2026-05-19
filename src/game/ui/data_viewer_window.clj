@@ -1,5 +1,5 @@
 (ns game.ui.data-viewer-window
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [moon.stage :as stage]))
 
 (defmethod actor/create :ui/data-viewer-window

@@ -25,7 +25,7 @@
 
  [com.badlogic.gdx.scenes.scene2d.Actor
   game.ui.actor
-  moon.ui.actor/Actor]
+  gdl.scene2d.actor/Actor]
 
  [com.badlogic.gdx.scenes.scene2d.Group
   game.ui.group

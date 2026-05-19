@@ -1,7 +1,7 @@
 (ns game.impl.stage
   (:require [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
             [moon.stage :as stage]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.group :as group]
             [moon.viewport :as viewport]))
 

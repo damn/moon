@@ -1,6 +1,6 @@
 (ns game.ui.image
   (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.image]))
 
 (defmethod actor/create :ui/image

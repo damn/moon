@@ -1,6 +1,6 @@
 (ns game.ui.label
   (:require [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             moon.ui.label))
 
 (defmethod actor/create :ui/label

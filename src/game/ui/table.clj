@@ -1,7 +1,7 @@
 (ns game.ui.table
   (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [moon.ui.actor :as actor]
+            [gdl.scene2d.actor :as actor]
             [moon.ui.table]
             [moon.ui.widget-group :as widget-group]))
 

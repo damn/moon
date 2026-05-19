@@ -1,4 +1,4 @@
-(ns moon.ui.actor
+(ns gdl.scene2d.actor
   (:refer-clojure :exclude [name]))
 
 ; ** TODO this contains '2' things !!!

@@ -1,5 +1,5 @@
 (ns game.schema-widget.one-to-one
-  (:require [moon.ui.actor :as actor]
+  (:require [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.ui.group :as group]
