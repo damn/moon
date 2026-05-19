@@ -1,8 +1,8 @@
 (ns game.create.controls
   (:require [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [com.badlogic.gdx.input.buttons :as input.buttons]
-            [com.badlogic.gdx.input.keys :as input.keys]
+            [gdl.input.buttons :as input.buttons]
+            [gdl.input.keys :as input.keys]
             [gdl.app :as app]
             [gdl.input :as input]
             [moon.controls :as controls]))

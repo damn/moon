@@ -1,5 +1,5 @@
 (ns game.render.draw-on-world-viewport.draw-tile-grid
-  (:require [com.badlogic.gdx.graphics.color :as color]
+  (:require [gdl.graphics.color :as color]
             [gdl.graphics.orthographic-camera :as camera]))
 
 (defn draws

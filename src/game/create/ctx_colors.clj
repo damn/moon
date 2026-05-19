@@ -1,5 +1,5 @@
 (ns game.create.ctx-colors
-  (:require [com.badlogic.gdx.graphics.color :as color]))
+  (:require [gdl.graphics.color :as color]))
 
 (def black [0 0 0 1])
 (def white [1 1 1 1])

@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.input.keys
+(ns gdl.input.keys
   (:import (com.badlogic.gdx Input$Keys)))
 
 (def d Input$Keys/D)

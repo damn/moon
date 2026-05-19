@@ -1,7 +1,7 @@
 (ns game.render.clear-screen
   (:require [gdl.app :as app]
             [gdl.graphics :as graphics]
-            [com.badlogic.gdx.graphics.gl20 :as gl20]))
+            [gdl.graphics.gl20 :as gl20]))
 
 (defn step [{:keys [ctx/app] :as ctx}]
   (let [gl (graphics/gl20 (app/graphics app))]

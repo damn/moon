@@ -2,7 +2,7 @@
   (:require [moon.controls :as controls]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.stage :as stage]
-            [com.badlogic.gdx.input.buttons :as input.buttons]
+            [gdl.input.buttons :as input.buttons]
             [gdl.app :as app]
             [gdl.input :as input]
             [moon.inventory :as inventory]
