@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [clojure.config :refer [edn-resource]]
-            com.badlogic.gdx.gdx
+            [com.badlogic.gdx.gdx :as gdx]
             [game.impl.db :as db-impl]
             [game.impl.textures :as textures]
             [com.badlogic.gdx.graphics.color :as color]
@@ -8,7 +8,6 @@
             game.ui.table
             [moon.ui.table :as table]
             [moon.db :as db]
-            [com.badlogic.gdx.graphics.orthographic-camera]
             [gdl.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.maps.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
@@ -111,7 +110,7 @@
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
                                        world-height
-                                       (com.badlogic.gdx.graphics.orthographic-camera/create
+                                       (com.badlogic.gdx.gdx/orthographic-camera
                                         {:y-down? false
                                          :world-width world-width
                                          :world-height world-height})))
