@@ -5,6 +5,7 @@
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
+            [gdl.graphics.pixmap :as pixmap]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as bitmap-font.data]
             [gdl.graphics.g2d.freetype.font-generator :as font-generator]
@@ -16,13 +17,18 @@
                              Graphics
                              Input)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Pixmap)
+           (com.badlogic.gdx.graphics Pixmap
+                                      Pixmap$Format
+                                      Texture)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
 
 (defn app []
   Gdx/app)
+
+(defn pixmap [width height]
+  (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))
 
 (extend-type Application
   app/App
@@ -142,3 +148,17 @@
 
   (set-markup-enabled! [data enabled?]
     (set! (.markupEnabled data) enabled?)))
+
+(extend-type Pixmap
+  pixmap/Pixmap
+  (texture [pixmap]
+    (Texture. pixmap))
+
+  (set-color! [pixmap r g b a]
+    (.setColor pixmap r g b a))
+
+  (draw-pixel! [pixmap x y]
+    (.drawPixel pixmap x y))
+
+  (dispose! [pixmap]
+    (.dispose pixmap)))
