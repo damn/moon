@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx.utils.viewport.fit-viewport
-  (:require [com.badlogic.gdx.math.vector2 :as vector2])
+  (:require [com.badlogic.gdx.math.vector2 :as vector2]
+            [gdl.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
@@ -19,10 +20,12 @@
          :viewport/world-width  (FitViewport/.getWorldWidth  this)
          :viewport/world-height (FitViewport/.getWorldHeight this))))))
 
-(defn update! [^FitViewport viewport screen-width screen-height center-camera?]
-  (.update viewport screen-width screen-height center-camera?))
+(extend-type FitViewport
+  viewport/Viewport
+  (update! [viewport screen-width screen-height center-camera?]
+    (.update viewport screen-width screen-height center-camera?))
 
-(defn unproject [^FitViewport viewport position]
-  (-> viewport
-      (.unproject (vector2/->java position))
-      vector2/->clj))
+  (unproject [viewport position]
+    (-> viewport
+        (.unproject (vector2/->java position))
+        vector2/->clj)))
