@@ -11,6 +11,7 @@
                }
               ]
    :config #edn/resource "config.edn"
+   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
    }
   ]
  ]

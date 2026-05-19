@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx.gdx
-  (:require [gdl.app :as app]
+  (:require [com.badlogic.gdx.graphics.color :as color]
+            [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
@@ -22,7 +23,8 @@
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Pixmap
+           (com.badlogic.gdx.graphics Colors
+                                      Pixmap
                                       Pixmap$Format
                                       Texture
                                       Texture$TextureFilter)
@@ -34,7 +36,9 @@
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
 (defn start!
-  [{:keys [listener config]}]
+  [{:keys [listener config colors]}]
+  (doseq [[name rgba] colors]
+    (Colors/put name (color/create rgba)))
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (let [{:keys [create!
                                     dispose!
