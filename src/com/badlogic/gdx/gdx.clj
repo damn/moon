@@ -184,7 +184,7 @@
                                              :ctx/skin (let [skin (Skin. (.internal Gdx/files "uiskin.json"))]
                                                          (-> skin
                                                              (skin/font "default-font")
-                                                             font/data
+                                                             bitmap-font/data
                                                              (font.data/set-markup-enabled! true))
                                                          skin)
                                              :ctx/unit-scale (atom 1)
