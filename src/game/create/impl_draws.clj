@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [gdl.graphics.g2d.bitmap-font :as font]
             [gdl.graphics.g2d.bitmap-font.data :as data]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [gdl.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.utils.align :as align]
             [gdl.graphics.batch :as batch]
             [moon.draws :as draws]

@@ -1,4 +1,5 @@
 (ns com.badlogic.gdx.graphics.g2d.texture-region
+  (:require [gdl.graphics.g2d.texture-region :as texture-region])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
@@ -8,5 +9,10 @@
   ([^Texture texture x y w h]
    (TextureRegion. texture (int x) (int y) (int w) (int h))))
 
-(def width  TextureRegion/.getRegionWidth)
-(def height TextureRegion/.getRegionHeight)
+(extend-type TextureRegion
+  texture-region/TextureRegion
+  (width [this]
+    (.getRegionWidth this))
+
+  (height [this]
+    (.getRegionHeight this)))
