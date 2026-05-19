@@ -24,7 +24,8 @@
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
-                                      Texture)
+                                      Texture
+                                      Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d BitmapFont
@@ -161,11 +162,12 @@
 
 (extend-type FreeTypeFontGenerator
   font-generator/FreeTypeFontGenerator
-  (generate-font [generator {:keys [size min-filter mag-filter]}]
+  (generate-font [generator {:keys [size]}]
     (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                                (set! (.size params) size)
-                               (set! (.minFilter params) min-filter)
-                               (set! (.magFilter params) mag-filter)
+                               ; Texture$TextureFilter/Linear because scaling to world-units
+                               (set! (.minFilter params) Texture$TextureFilter/Linear)
+                               (set! (.magFilter params) Texture$TextureFilter/Linear)
                                params)))
 
   (dispose! [generator]
