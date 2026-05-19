@@ -1,17 +1,13 @@
-[
- [com.badlogic.gdx.gdx/start!
-  {
-   :listener [moon.listener/create
-              {
-               :state-var dev.application/state
-               :create  #edn/resource "create.edn"
-               :dispose #edn/resource "dispose.edn"
-               :render  #edn/resource "render.edn"
-               :resize  #edn/resource "resize.edn"
-               }
-              ]
-   :config #edn/resource "config.edn"
-   :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
-   }
-  ]
- ]
+{
+ :listener [moon.listener/create
+            {
+             :state-var dev.application/state
+             :create  #edn/resource "create.edn"
+             :dispose #edn/resource "dispose.edn"
+             :render  #edn/resource "render.edn"
+             :resize  #edn/resource "resize.edn"
+             }
+            ]
+ :config #edn/resource "config.edn"
+ :colors {"PRETTY_NAME" [0.84 0.8 0.52 1]}
+ }

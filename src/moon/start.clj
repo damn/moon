@@ -1,7 +1,7 @@
 (ns moon.start
-  (:require [clojure.config :refer [edn-resource]])
+  (:require [clojure.config :refer [edn-resource]]
+            [com.badlogic.gdx.gdx :as gdx])
   (:gen-class))
 
 (defn -main []
-  (doseq [[f & params] (edn-resource "start.edn")]
-    (apply f params)))
+  (gdx/start! (edn-resource "start.edn")))
