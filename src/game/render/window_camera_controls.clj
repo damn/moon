@@ -3,7 +3,7 @@
             [moon.stage :as stage]
             [moon.ui.actor :as actor]
             [moon.ui.group :as group]
-            [clojure.gdx.app :as app]
+            [gdl.app :as app]
             [clojure.input :as input]))
 
 (def zoom-speed 0.025)

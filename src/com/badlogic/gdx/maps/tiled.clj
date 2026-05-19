@@ -1,10 +1,10 @@
 (ns com.badlogic.gdx.maps.tiled
-  (:require [clojure.tiled-map :as tiled-map]
-            [clojure.tiled-map.layer :as layer]
-            [clojure.tiled-map.layer.cell :as cell]
-            [clojure.tiled-map.layers :as layers]
-            [clojure.tiled-map.props :as props]
-            [clojure.tiled-map.tile :as tile])
+  (:require [gdl.tiled-map :as tiled-map]
+            [gdl.tiled-map.layer :as layer]
+            [gdl.tiled-map.layer.cell :as cell]
+            [gdl.tiled-map.layers :as layers]
+            [gdl.tiled-map.props :as props]
+            [gdl.tiled-map.tile :as tile])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps MapLayer
                                   MapLayers

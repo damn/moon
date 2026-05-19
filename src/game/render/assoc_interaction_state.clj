@@ -1,7 +1,7 @@
 (ns game.render.assoc-interaction-state
   (:require [moon.ui.actor :as actor]
             [moon.stage :as stage]
-            [clojure.gdx.app :as app]
+            [gdl.app :as app]
             [clojure.input :as input]
             [clojure.math.vector2 :as v]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]

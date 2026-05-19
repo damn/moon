@@ -1,6 +1,6 @@
 (ns game.impl.default-font
-  (:require [clojure.gdx.app :as app]
-            [clojure.gdx.files :as files]
+  (:require [gdl.app :as app]
+            [gdl.files :as files]
             [com.badlogic.gdx.graphics.texture.texture-filter :as texture.filter]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]

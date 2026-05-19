@@ -1,7 +1,7 @@
 (ns com.badlogic.gdx.maps.renderer
-  (:require [clojure.tiled-map :as tiled-map]
-            [clojure.tiled-map.layer :as layer]
-            [clojure.tiled-map.layers :as layers])
+  (:require [gdl.tiled-map :as tiled-map]
+            [gdl.tiled-map.layer :as layer]
+            [gdl.tiled-map.layers :as layers])
   (:import (clojure.gdx TiledMapRenderer
                         TiledMapRenderer$ColorSetter)))
 

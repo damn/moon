@@ -1,6 +1,6 @@
 (ns game.impl.textures
-  (:require [clojure.gdx.app :as app]
-            [clojure.gdx.files :as files]
+  (:require [gdl.app :as app]
+            [gdl.files :as files]
             [clojure.string :as str]
             [com.badlogic.gdx.files.file-handle :as file]
             [com.badlogic.gdx.graphics.texture :as texture]

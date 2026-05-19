@@ -4,7 +4,7 @@
             [clojure.graphics :as graphics]
             [clojure.string :as str]
             [moon.db :as db]
-            [clojure.gdx.app :as app]
+            [gdl.app :as app]
             [moon.number :as number]))
 
 (defn create

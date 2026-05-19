@@ -1,6 +1,6 @@
 (ns game.render.check-debug-viewer
   (:require [moon.stage :as stage]
-            [clojure.gdx.app :as app]
+            [gdl.app :as app]
             [clojure.input :as input]))
 
 (defn step

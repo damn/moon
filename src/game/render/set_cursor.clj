@@ -1,5 +1,5 @@
 (ns game.render.set-cursor
-  (:require [clojure.gdx.app :as app]
+  (:require [gdl.app :as app]
             [clojure.graphics :as graphics]
             [moon.state :as state]))
 

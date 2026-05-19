@@ -1,6 +1,6 @@
 (ns game.impl.skin
-  (:require [clojure.gdx.app :as app]
-            [clojure.gdx.files :as files]
+  (:require [gdl.app :as app]
+            [gdl.files :as files]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))

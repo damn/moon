@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [com.badlogic.gdx.input.keys :as input.keys]
-            [clojure.gdx.app :as app]
+            [gdl.app :as app]
             [clojure.input :as input]
             [moon.controls :as controls]))
 

@@ -24,7 +24,7 @@
       (replace-in-file! f from to))))
 
 (comment
- (let [from "clojure.gdx"
+ (let [from "gdl"
        to   "moon"]
    (rename! from to)
    )

@@ -1,4 +1,4 @@
-(ns clojure.tiled-map.tile)
+(ns gdl.tiled-map.tile)
 
 (defprotocol Tile
   (copy [_])

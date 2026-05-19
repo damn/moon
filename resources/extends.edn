@@ -1,7 +1,7 @@
 [
  [com.badlogic.gdx.Application
   com.badlogic.gdx.application
-  clojure.gdx.app/App]
+  gdl.app/App]
 
  [com.badlogic.gdx.Audio
   com.badlogic.gdx.audio
@@ -9,7 +9,7 @@
 
  [com.badlogic.gdx.Files
   com.badlogic.gdx.files
-  clojure.gdx.files/Files]
+  gdl.files/Files]
 
  [com.badlogic.gdx.Graphics
   com.badlogic.gdx.graphics
@@ -45,7 +45,7 @@
 
  [com.badlogic.gdx.utils.Disposable
   com.badlogic.gdx.utils.disposable
-  clojure.gdx.utils.disposable/Disposable]
+  gdl.utils.disposable/Disposable]
 
  [com.badlogic.gdx.utils.viewport.FitViewport
   com.badlogic.gdx.utils.viewport.fit-viewport

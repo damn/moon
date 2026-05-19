@@ -1,6 +1,6 @@
 (ns game.render.update-mouse
   (:require [moon.viewport :as viewport]
-            [clojure.gdx.app :as app]
+            [gdl.app :as app]
             [clojure.input :as input]))
 
 (defn step

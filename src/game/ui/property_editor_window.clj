@@ -5,7 +5,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui :as ui]
             [moon.stage :as stage]
             [moon.db :as db]
-            [clojure.gdx.app :as app]
+            [gdl.app :as app]
             [clojure.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]

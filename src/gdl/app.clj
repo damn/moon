@@ -1,4 +1,4 @@
-(ns clojure.gdx.app)
+(ns gdl.app)
 
 (defprotocol App
   (audio [_])

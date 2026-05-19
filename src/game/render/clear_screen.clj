@@ -1,5 +1,5 @@
 (ns game.render.clear-screen
-  (:require [clojure.gdx.app :as app]
+  (:require [gdl.app :as app]
             [clojure.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]))
 

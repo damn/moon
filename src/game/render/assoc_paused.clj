@@ -1,5 +1,5 @@
 (ns game.render.assoc-paused
-  (:require [clojure.gdx.app :as app]
+  (:require [gdl.app :as app]
             [clojure.input :as input]
             [moon.state :as state]))
 

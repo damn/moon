@@ -1,4 +1,4 @@
-(ns clojure.tiled-map.layers
+(ns gdl.tiled-map.layers
   (:refer-clojure :exclude [get]))
 
 (defprotocol Layers

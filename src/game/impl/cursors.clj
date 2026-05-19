@@ -1,8 +1,8 @@
 (ns game.impl.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.gdx.app :as app]
-            [clojure.gdx.files :as files]
+            [gdl.app :as app]
+            [gdl.files :as files]
             [clojure.graphics :as graphics]
             [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 

@@ -1,4 +1,4 @@
-(ns clojure.tiled-map)
+(ns gdl.tiled-map)
 
 (defprotocol TiledMap
   (properties [_])

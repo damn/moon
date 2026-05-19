@@ -2,8 +2,8 @@
   (:require [clojure.audio :as audio]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.gdx.app :as app]
-            [clojure.gdx.files :as files]))
+            [gdl.app :as app]
+            [gdl.files :as files]))
 
 (defn create
   [{:keys [ctx/app]}]
