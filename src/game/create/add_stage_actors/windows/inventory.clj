@@ -1,6 +1,5 @@
 (ns game.create.add-stage-actors.windows.inventory
   (:require [gdl.scene2d.event :as event]
-            [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.scene2d.group :as group]
             [moon.ui.image :as image]
@@ -51,7 +50,7 @@
         slot->drawable (fn [slot]
                          (doto (texture-region-drawable/create (slot->texture-region slot))
                            (texture-region-drawable/set-min-size! [cell-size cell-size])
-                           (texture-region-drawable/tint! (color/create [1 1 1 0.4])))
+                           (texture-region-drawable/tint! [1 1 1 0.4]))
                          )
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size (:colors/item-rect colors)]
