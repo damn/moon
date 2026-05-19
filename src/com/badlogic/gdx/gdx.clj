@@ -1,5 +1,7 @@
 (ns com.badlogic.gdx.gdx
-  (:require [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
+  (:require [com.badlogic.gdx.application-listener :as listener]
+            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
+            [com.badlogic.gdx.backends.lwjgl3.config :as config]
             [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
@@ -18,6 +20,7 @@
                              Gdx
                              Graphics
                              Input)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
@@ -26,6 +29,14 @@
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
+
+(defn start!
+  [{:keys [listener config]}]
+  (config/use-glfw-async!)
+  (Lwjgl3Application. (listener/create
+                       (let [[f params] listener]
+                         (f params)))
+                      (config/create config)))
 
 (defn app []
   Gdx/app)

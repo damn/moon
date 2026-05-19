@@ -1,14 +1,5 @@
 [
- ; first do the backend starter (start the window, then initialize the backend independent code)
- ; all other code is not dependent on the specific backend
- ; e.g. could be another backend
- ; so it should go in 'create.edn'
- ; also make start simpler - maybe just normal code?
- ; => the whole 'application listener' or game application
- ; also is not inside the backend starter .....
- ; just 'desktop starter'
- [com.badlogic.gdx.backends.lwjgl3.config/use-glfw-async!]
- [com.badlogic.gdx.backends.lwjgl3.application/create
+ [com.badlogic.gdx.gdx/start!
   {
    :listener [moon.listener/create
               {
