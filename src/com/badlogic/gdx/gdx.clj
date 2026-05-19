@@ -16,6 +16,7 @@
                              Graphics
                              Input)
            (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Pixmap)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
@@ -97,7 +98,10 @@
     (.path this))
 
   (freetype-font-generator [this]
-    (FreeTypeFontGenerator. this)))
+    (FreeTypeFontGenerator. this))
+
+  (pixmap [this]
+    (Pixmap. this)))
 
 (extend-type FreeTypeFontGenerator
   font-generator/FreeTypeFontGenerator
