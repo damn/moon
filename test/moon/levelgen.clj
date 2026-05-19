@@ -1,8 +1,8 @@
 (ns moon.levelgen
-  (:require [game.impl.db :as db-impl]
+  (:require [clojure.config :refer [edn-resource]]
+            [game.impl.db :as db-impl]
             [game.impl.textures :as textures]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]
+            [com.badlogic.gdx.gdx]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
             game.ui.table
@@ -54,8 +54,8 @@
                                ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
     (.dispose tiled-map))
-  (let [level (let [[f params] (->> level-fn io/resource slurp edn/read-string)]
-                ((requiring-resolve f)
+  (let [level (let [[f params] (edn-resource level-fn)]
+                (f
                  (assoc params
                         :level/creature-properties (moon.creature-tiles/prepare
                                                     (db/all-raw db :properties/creatures)
@@ -105,7 +105,7 @@
              :ctx/files files}
         ctx (assoc ctx :ctx/app Gdx/app)
         ctx (assoc ctx :ctx/db (db-impl/create ctx))
-        ctx (assoc ctx :ctx/textures (textures/create ctx))
+        ctx (assoc ctx :ctx/textures (textures/create {:ctx/app (com.badlogic.gdx.gdx/app)}))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
