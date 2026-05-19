@@ -1,5 +1,4 @@
 {
- :state-var dev.application/state
  :create  #edn/resource "create.edn"
  :dispose #edn/resource "dispose.edn"
  :render  #edn/resource "render.edn"

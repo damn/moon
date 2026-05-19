@@ -57,9 +57,10 @@
 ; for the constructors
 ; => just functions ...
 
+(def state (atom nil))
+
 (defn start!
-  [{:keys [state-var
-           create
+  [{:keys [create
            dispose
            render
            resize
@@ -70,35 +71,34 @@
   (doseq [[name rgba] colors]
     (Colors/put name (color/create rgba)))
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (let [state @state-var]
-                        (reify ApplicationListener
-                          (create [_]
-                            (set! (.initialTime (TooltipManager/getInstance)) 0)
-                            (reset! state
-                                    (reduce (fn [ctx [f & params]]
-                                              (apply f ctx params))
-                                            {:ctx/app Gdx/app}
-                                            create)))
+  (Lwjgl3Application. (reify ApplicationListener
+                        (create [_]
+                          (set! (.initialTime (TooltipManager/getInstance)) 0)
+                          (reset! state
+                                  (reduce (fn [ctx [f & params]]
+                                            (apply f ctx params))
+                                          {:ctx/app Gdx/app}
+                                          create)))
 
-                          (dispose [_]
-                            (doseq [f dispose]
-                              (f @state)))
+                        (dispose [_]
+                          (doseq [f dispose]
+                            (f @state)))
 
-                          (render [_]
-                            (swap! state
-                                   (fn [ctx]
-                                     (reduce (fn [ctx [f & params]]
-                                               (apply f ctx params))
-                                             ctx
-                                             render))))
+                        (render [_]
+                          (swap! state
+                                 (fn [ctx]
+                                   (reduce (fn [ctx [f & params]]
+                                             (apply f ctx params))
+                                           ctx
+                                           render))))
 
-                          (resize [_ width height]
-                            (doseq [f resize]
-                              (f @state width height)))
+                        (resize [_ width height]
+                          (doseq [f resize]
+                            (f @state width height)))
 
-                          (pause [_])
+                        (pause [_])
 
-                          (resume [_])))
+                        (resume [_]))
                       (doto (Lwjgl3ApplicationConfiguration.)
                         (.setTitle title)
                         (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
