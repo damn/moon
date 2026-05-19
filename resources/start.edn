@@ -1,13 +1,9 @@
 {
- :listener [moon.listener/create
-            {
-             :state-var dev.application/state
-             :create  #edn/resource "create.edn"
-             :dispose #edn/resource "dispose.edn"
-             :render  #edn/resource "render.edn"
-             :resize  #edn/resource "resize.edn"
-             }
-            ]
+ :state-var dev.application/state
+ :create  #edn/resource "create.edn"
+ :dispose #edn/resource "dispose.edn"
+ :render  #edn/resource "render.edn"
+ :resize  #edn/resource "resize.edn"
  :title "Moon"
  :windowed-mode {:width 1440
                  :height 900}

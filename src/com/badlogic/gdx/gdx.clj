@@ -58,7 +58,11 @@
 ; => just functions ...
 
 (defn start!
-  [{:keys [listener
+  [{:keys [state-var
+           create
+           dispose
+           render
+           resize
            title
            windowed-mode
            foreground-fps
@@ -66,32 +70,35 @@
   (doseq [[name rgba] colors]
     (Colors/put name (color/create rgba)))
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (let [{:keys [create!
-                                    dispose!
-                                    render!
-                                    resize!
-                                    pause!
-                                    resume!]} (let [[f params] listener]
-                                                (f params))]
+  (Lwjgl3Application. (let [state @state-var]
                         (reify ApplicationListener
                           (create [_]
                             (set! (.initialTime (TooltipManager/getInstance)) 0)
-                            (create! Gdx/app))
+                            (reset! state
+                                    (reduce (fn [ctx [f & params]]
+                                              (apply f ctx params))
+                                            {:ctx/app Gdx/app}
+                                            create)))
 
                           (dispose [_]
-                            (dispose!))
+                            (doseq [f dispose]
+                              (f @state)))
 
                           (render [_]
-                            (render!))
+                            (swap! state
+                                   (fn [ctx]
+                                     (reduce (fn [ctx [f & params]]
+                                               (apply f ctx params))
+                                             ctx
+                                             render))))
 
                           (resize [_ width height]
-                            (resize! width height))
+                            (doseq [f resize]
+                              (f @state width height)))
 
-                          (pause [_]
-                            (pause!))
+                          (pause [_])
 
-                          (resume [_]
-                            (resume!))))
+                          (resume [_])))
                       (doto (Lwjgl3ApplicationConfiguration.)
                         (.setTitle title)
                         (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
