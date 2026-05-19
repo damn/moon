@@ -58,7 +58,11 @@
 ; => just functions ...
 
 (defn start!
-  [{:keys [listener config colors]}]
+  [{:keys [listener
+           title
+           windowed-mode
+           foreground-fps
+           colors]}]
   (doseq [[name rgba] colors]
     (Colors/put name (color/create rgba)))
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
@@ -88,13 +92,10 @@
 
                           (resume [_]
                             (resume!))))
-                      (let [{:keys [title
-                                    windowed-mode
-                                    foreground-fps]} config]
-                        (doto (Lwjgl3ApplicationConfiguration.)
-                          (.setTitle title)
-                          (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
-                          (.setForegroundFPS foreground-fps)))))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle title)
+                        (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
+                        (.setForegroundFPS foreground-fps))))
 
 (defn pixmap [width height]
   (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))
