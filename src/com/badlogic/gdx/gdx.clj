@@ -12,7 +12,9 @@
             [gdl.graphics.g2d.bitmap-font.data :as bitmap-font.data]
             [gdl.graphics.g2d.freetype.font-generator :as font-generator]
             [gdl.graphics.g2d.texture-region :as texture-region]
-            [gdl.input :as input])
+            [gdl.input :as input]
+            [gdl.scene2d.event :as event]
+            [gdl.utils.disposable :as disposable])
   (:import (com.badlogic.gdx Application
                              ApplicationListener
                              Audio
@@ -33,7 +35,9 @@
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
+           (com.badlogic.gdx.scenes.scene2d Event)
+           (com.badlogic.gdx.utils Disposable)))
 
 (defn start!
   [{:keys [listener config colors]}]
@@ -268,3 +272,13 @@
             rotation))
     ([batch texture-region x y w h]
      (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
+
+(extend-type Disposable
+  disposable/Disposable
+  (dispose! [this]
+    (.dispose this)))
+
+(extend-type Event
+  event/Event
+  (stage [event]
+    (.getStage event)))

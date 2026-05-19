@@ -1,10 +1,4 @@
 [
- ; pass ILookup reify :event/stage ?
- com.badlogic.gdx.scenes.scene2d.event
-
- ; TODO @ Sound/Texture/etc. ?! wherever its created !?
- com.badlogic.gdx.utils.disposable
-
  game.entity.stats
  game.state.player-item-on-cursor
  game.schema-widget.animation
