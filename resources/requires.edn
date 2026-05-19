@@ -16,7 +16,6 @@
  game.state-impl
  game.effect-impl
  game.info-impl
- game.ui.table
  game.ui.text-button
  game.ui.text-field
  game.ui.widget-group
