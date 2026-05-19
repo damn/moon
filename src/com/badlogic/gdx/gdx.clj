@@ -16,6 +16,7 @@
             [gdl.graphics.g2d.freetype.font-generator :as font-generator]
             [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.input :as input]
+            [gdl.scene2d.actor :as actor]
             [gdl.scene2d.event :as event]
             [gdl.scene2d.ui.skin :as skin]
             [gdl.utils.disposable :as disposable]
@@ -44,7 +45,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup
+                                               Skin)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
@@ -381,3 +383,10 @@
   skin/Skin
   (font [skin name]
     (.getFont skin name)))
+
+(defmethod actor/create :ui/horizontal-group
+  [{:keys [space pad] :as opts}]
+  (doto (HorizontalGroup.)
+    (.space space)
+    (.pad pad)
+    (actor/set-opts! opts)))

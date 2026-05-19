@@ -16,7 +16,6 @@
  game.state-impl
  game.effect-impl
  game.info-impl
- com.badlogic.gdx.scenes.scene2d.ui.horizontal-group
  game.ui.image
  game.ui.image-button
  game.ui.label
