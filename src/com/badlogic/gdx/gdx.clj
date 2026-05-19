@@ -104,14 +104,20 @@
                           (reset! state
                                   (reduce (fn [ctx [f & params]]
                                             (apply f ctx params))
-                                          {:ctx/app Gdx/app
-                                           :ctx/batch (SpriteBatch.)
-                                           :ctx/shape-drawer-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
-                                                                                    (.setColor 1 1 1 1)
-                                                                                    (.drawPixel 0 0))
-                                                                           texture (Texture. pixmap)]
-                                                                       (.dispose pixmap)
-                                                                       texture)}
+                                          (let [batch (SpriteBatch.)
+                                                white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                                                                                   (.setColor 1 1 1 1)
+                                                                                   (.drawPixel 0 0))
+                                                                          texture (Texture. pixmap)]
+                                                                      (.dispose pixmap)
+                                                                      texture)
+
+                                                ]
+                                            {:ctx/app Gdx/app
+                                             :ctx/batch batch
+                                             :ctx/shape-drawer-texture white-pixel-texture
+                                             :ctx/shape-drawer (ShapeDrawer. batch (texture/region white-pixel-texture 1 0 1 1))
+                                             })
                                           create)))
 
                         (dispose [_]
@@ -345,10 +351,7 @@
             scale-y
             rotation))
     ([batch texture-region x y w h]
-     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h))))
-
-  (shape-drawer [batch texture-region]
-    (ShapeDrawer. batch texture-region)))
+     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
 
 (extend-type Disposable
   disposable/Disposable
