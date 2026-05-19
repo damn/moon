@@ -5,7 +5,6 @@
             [game.impl.textures :as textures]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
-            game.ui.table
             [gdl.scene2d.ui.table :as table]
             [moon.db :as db]
             [gdl.graphics.orthographic-camera :as camera]

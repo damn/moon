@@ -3,8 +3,12 @@
             [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.math.vector3 :as vector3]
             [com.badlogic.gdx.scenes.scene2d.ui.image]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.ui.widget-group]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.app :as app]
             [gdl.audio :as audio]
@@ -29,6 +33,7 @@
             [gdl.scene2d.ui.select-box :as select-box]
             [gdl.scene2d.ui.skin :as skin]
             [gdl.scene2d.ui.table]
+            [gdl.scene2d.ui.text-field]
             [gdl.scene2d.ui.widget-group :as widget-group]
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport])
@@ -529,3 +534,48 @@
 (defmethod actor/create :ui/table [opts]
   (doto (table/create)
     (gdl.scene2d.ui.table/set-opts! opts)))
+
+(defmethod actor/create :ui/text-button
+  [opts]
+  (doto (text-button/create opts)
+    (actor/set-opts! opts)))
+
+(defmethod actor/create :ui/text-field
+  [opts]
+  (doto (text-field/create opts)
+    (actor/set-opts! opts)))
+
+(extend-type com.badlogic.gdx.scenes.scene2d.ui.TextField
+  gdl.scene2d.ui.text-field/TextField
+  (text [text-field]
+    (text-field/text text-field)))
+
+(extend-type com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
+  widget-group/WidgetGroup
+  (pack! [widget-group]
+    (com.badlogic.gdx.scenes.scene2d.ui.widget-group/pack! widget-group))
+
+  (set-opts! [widget-group opts]
+    (when (contains? opts :widget-group/fill-parent?)
+      (com.badlogic.gdx.scenes.scene2d.ui.widget-group/set-fill-parent! widget-group (:widget-group/fill-parent? opts)))
+    (group/set-opts! widget-group opts)))
+
+(defn- window-set-opts! [window opts]
+  (when (:window/modal? opts)
+    (window/set-modal! window true))
+
+  (when-let [skin (:window/close-button? opts)]
+    (gdl.scene2d.ui.table/add! (window/title-table window)
+                               {:actor (actor/create
+                                        {:type :ui/text-button
+                                         :text "X"
+                                         :skin skin
+                                         :actor/listeners {:listener/change (fn [_event _actor]
+                                                                              (actor/remove! window))}})}))
+
+  (gdl.scene2d.ui.table/set-opts! window opts))
+
+(defmethod actor/create :ui/window
+  [opts]
+  (doto (window/create opts)
+    (window-set-opts! opts)))

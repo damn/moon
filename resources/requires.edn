@@ -16,10 +16,6 @@
  game.state-impl
  game.effect-impl
  game.info-impl
- game.ui.text-button
- game.ui.text-field
- game.ui.widget-group
- game.ui.window
  game.ui.data-viewer-window
  game.ui.error-window
  game.ui.property-editor-window
