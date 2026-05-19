@@ -14,5 +14,3 @@
 
 (defmethod create TextureRegionDrawable [drawable]
   (Image. ^TextureRegionDrawable drawable))
-
-(def set-drawable! Image/.setDrawable)

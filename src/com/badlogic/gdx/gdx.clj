@@ -2,6 +2,7 @@
   (:require [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.math.vector3 :as vector3]
+            [com.badlogic.gdx.scenes.scene2d.ui.image]
             [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
@@ -20,6 +21,7 @@
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.event :as event]
+            [gdl.scene2d.ui.image :as image]
             [gdl.scene2d.ui.label :as label]
             [gdl.scene2d.ui.select-box :as select-box]
             [gdl.scene2d.ui.skin :as skin]
@@ -49,7 +51,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Label
+           (com.badlogic.gdx.scenes.scene2d.ui Image
+                                               Label
                                                HorizontalGroup
                                                SelectBox
                                                Skin
@@ -473,3 +476,13 @@
   [opts]
   (doto (Stack.)
     (group/set-opts! opts)))
+
+(defmethod actor/create :ui/image
+  [{:keys [content] :as opts}]
+  (doto (com.badlogic.gdx.scenes.scene2d.ui.image/create content)
+    (actor/set-opts! opts)))
+
+(extend-type Image
+  image/Image
+  (set-drawable! [image drawable]
+    (.setDrawable image drawable)))

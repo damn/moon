@@ -2,7 +2,7 @@
   (:require [gdl.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.scene2d.group :as group]
-            [moon.ui.image :as image]
+            [gdl.scene2d.ui.image :as image]
             [gdl.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
