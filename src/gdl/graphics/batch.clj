@@ -6,4 +6,5 @@
   (set-color! [_ r g b a])
   (set-projection-matrix! [_ matrix])
   (draw! [_ texture-region x y origin-x origin-y width height scale-x scale-y rotation]
-         [_ texture-region x y w h]))
+         [_ texture-region x y w h])
+  (shape-drawer [_ texture-region]))

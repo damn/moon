@@ -11,6 +11,7 @@
             [gdl.graphics.pixmap :as pixmap]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.orthographic-camera :as camera]
+            [gdl.graphics.shape-drawer :as shape-drawer]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as bitmap-font.data]
             [gdl.graphics.g2d.freetype.font-generator :as font-generator]
@@ -49,7 +50,8 @@
                                                Skin
                                                TooltipManager)
            (com.badlogic.gdx.utils Disposable)
-           (com.badlogic.gdx.utils.viewport FitViewport)))
+           (com.badlogic.gdx.utils.viewport FitViewport)
+           (space.earlygrey.shapedrawer ShapeDrawer)))
 
 ; TODO actually coul;d 'bind-root' 'gdl.plattform/sprite-batch' or something
 ; for the constructors
@@ -308,7 +310,10 @@
             scale-y
             rotation))
     ([batch texture-region x y w h]
-     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
+     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h))))
+
+  (shape-drawer [batch texture-region]
+    (ShapeDrawer. batch texture-region)))
 
 (extend-type Disposable
   disposable/Disposable
@@ -396,3 +401,35 @@
     (.space space)
     (.pad pad)
     (actor/set-opts! opts)))
+
+(extend-type ShapeDrawer
+  shape-drawer/ShapeDrawer
+  (set-color! [this color-float-bits]
+    (.setColor this (float color-float-bits)))
+
+  (circle! [this x y radius]
+    (.circle this x y radius))
+
+  (ellipse! [this x y radius-x radius-y]
+    (.ellipse this x y radius-x radius-y))
+
+  (filled-circle! [this x y radius]
+    (.filledCircle this (float x) (float y) (float radius)))
+
+  (filled-rectangle! [this x y w h]
+    (.filledRectangle this (float x) (float y) (float w) (float h)))
+
+  (line! [this sx sy ex ey]
+    (.line this (float sx) (float sy) (float ex) (float ey)))
+
+  (rectangle! [this x y w h]
+    (.rectangle this x y w h))
+
+  (sector! [this center-x center-y radius start-radians radians]
+    (.sector this center-x center-y radius start-radians radians))
+
+  (default-line-width [this]
+    (.getDefaultLineWidth this))
+
+  (set-default-line-width! [this width]
+    (.setDefaultLineWidth this width)))
