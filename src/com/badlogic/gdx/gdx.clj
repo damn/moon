@@ -293,7 +293,7 @@
            (float x)
            (float y)
            (float target-width)
-           align
+           (align/k->value align)
            wrap?)))
 
 (extend-type BitmapFont$BitmapFontData

@@ -3,7 +3,6 @@
             [gdl.graphics.g2d.bitmap-font :as font]
             [gdl.graphics.g2d.bitmap-font.data :as data]
             [gdl.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.utils.align :as align]
             [gdl.graphics.batch :as batch]
             [moon.draws :as draws]
             [gdl.graphics.shape-drawer :as shape-drawer]))
@@ -75,7 +74,7 @@
                                                      (* (font/line-height font)))
                                                  0))
                                           target-width
-                                          (align/k->value :align/center)
+                                          :align/center
                                           wrap?)
                               (data/set-scale! (font/data font) old-scale)))
    :draw/texture-region   (fn
