@@ -33,6 +33,7 @@
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.event :as event]
+            [gdl.scene2d.stage :as stage]
             [gdl.scene2d.ui.check-box :as check-box]
             [gdl.scene2d.ui.image :as image]
             [gdl.scene2d.ui.label :as label]
@@ -42,8 +43,10 @@
             [gdl.scene2d.ui.text-field]
             [gdl.scene2d.ui.widget-group :as widget-group]
             [gdl.sound :as sound]
-            [gdl.utils.disposable :as disposable])
-  (:import (com.badlogic.gdx Application
+            [gdl.utils.disposable :as disposable]
+            [gdl.utils.viewport :as viewport])
+  (:import (clojure.lang ILookup)
+           (com.badlogic.gdx Application
                              ApplicationListener
                              Audio
                              Files
@@ -63,6 +66,7 @@
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
            (com.badlogic.gdx.scenes.scene2d Actor
+                                            CtxStage
                                             Event
                                             Group)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox
@@ -98,6 +102,14 @@
 
 (defn sprite-batch []
   (SpriteBatch.))
+
+(defn stage [viewport batch]
+  (proxy [CtxStage ILookup] [viewport batch]
+    (valAt [k]
+      (case k
+        ; TODO :stage/root
+        :stage/ctx      (.ctx         ^CtxStage this)
+        :stage/viewport (.getViewport ^CtxStage this)))))
 
 (defn application!
   [listener
@@ -671,3 +683,26 @@
     (.isDirectory this))
   (texture [this]
     (Texture. this)))
+
+(extend-type CtxStage
+  stage/Stage
+  (set-ctx! [stage ctx]
+    (set! (.ctx stage) ctx))
+
+  (add-actor! [stage actor]
+    (.addActor stage (actor/create actor)))
+
+  (act! [stage]
+    (.act stage))
+
+  (draw! [stage]
+    (.draw stage))
+
+  (find-actor [stage name]
+    (-> stage
+        .getRoot
+        (group/find-actor name)))
+
+  (mouseover-actor [stage position]
+    (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
+      (.hit stage x y true))))

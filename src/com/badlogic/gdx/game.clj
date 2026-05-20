@@ -4,7 +4,6 @@
             [clojure.java.io :as io]
             [com.badlogic.gdx :as gdx]
             [com.badlogic.gdx.textures]
-            [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdl.app :as app]
@@ -86,7 +85,7 @@
                                                                                  cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                                                              (.dispose pixmap)
                                                                              cursor))))
-                                             :ctx/stage (let [stage (ctx-stage/create (fit-viewport/create 1440 900) batch)]
+                                             :ctx/stage (let [stage (gdx/stage (fit-viewport/create 1440 900) batch)]
                                                           (input/set-processor! (app/input app) stage)
                                                           stage)
                                              :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
