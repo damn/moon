@@ -1,5 +1,7 @@
 (ns com.badlogic.gdx
-  (:require [com.badlogic.gdx.math.vector2 :as vector2]
+  (:require [com.badlogic.gdx.graphics.colors :as colors]
+            [com.badlogic.gdx.math.vector2 :as vector2]
+            [com.badlogic.gdx.math.vector3 :as vector3]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.image]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
@@ -12,16 +14,20 @@
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
+            com.badlogic.gdx.maps.renderer
             [com.badlogic.gdx.utils.align :as align]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.graphics :as graphics]
+            [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
+            [gdl.graphics.shape-drawer :as shape-drawer]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [gdl.graphics.g2d.texture-region :as texture-region]
+            [gdl.graphics.orthographic-camera :as camera]
             [gdl.input :as input]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
@@ -46,8 +52,12 @@
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.graphics Pixmap
+                                      Pixmap$Format
+                                      Texture
+                                      OrthographicCamera)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch
+                                          TextureRegion)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -63,7 +73,29 @@
                                                Skin
                                                Stack
                                                Widget)
-           (com.badlogic.gdx.utils Disposable)))
+           (com.badlogic.gdx.utils Disposable)
+           (space.earlygrey.shapedrawer ShapeDrawer)))
+
+(defn put-colors! [colors]
+  (colors/put! colors))
+
+(defn white-pixel-texture []
+  (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                 (.setColor 1 1 1 1)
+                 (.drawPixel 0 0))
+        texture (Texture. pixmap)]
+    (.dispose pixmap)
+    texture))
+
+(defn orthographic-camera
+  [{:keys [y-down?
+           world-width
+           world-height]}]
+  (doto (OrthographicCamera.)
+    (.setToOrtho y-down? world-width world-height)))
+
+(defn sprite-batch []
+  (SpriteBatch.))
 
 (defn application!
   [listener
@@ -497,3 +529,130 @@
   check-box/CheckBox
   (checked? [this]
     (.isChecked this)))
+
+(extend-type OrthographicCamera
+  camera/OrthographicCamera
+  (combined [camera]
+    (.combined camera))
+
+  (zoom [camera]
+    (.zoom camera))
+
+  (frustum [camera]
+    (let [plane-points (mapv vector3/->clj (.planePoints (.frustum camera)))
+          frustum-points (take 4 plane-points)
+          left-x   (apply min (map first  frustum-points))
+          right-x  (apply max (map first  frustum-points))
+          bottom-y (apply min (map second frustum-points))
+          top-y    (apply max (map second frustum-points))]
+      [left-x right-x bottom-y top-y]))
+
+  (position [camera]
+    (vector3/->clj (.position camera)))
+
+  (set-position! [camera [x y]]
+    (set! (.x (.position camera)) x)
+    (set! (.y (.position camera)) y)
+    (.update camera))
+
+  (set-zoom! [camera amount]
+    (set! (.zoom camera) amount)
+    (.update camera))
+
+  (inc-zoom! [cam by]
+    (camera/set-zoom! cam (max 0.1 (+ (camera/zoom cam) by))))
+
+  (visible-tiles [camera]
+    (let [[left-x right-x bottom-y top-y] (camera/frustum camera)]
+      (for [x (range (int left-x)   (int right-x))
+            y (range (int bottom-y) (+ 2 (int top-y)))]
+        [x y])))
+
+  (calculate-zoom [camera {:keys [left top right bottom]}]
+    (let [viewport-width  (.viewportWidth  camera)
+          viewport-height (.viewportHeight camera)
+          [px py] (camera/position camera)
+          px (float px)
+          py (float py)
+          leftx (float (left 0))
+          rightx (float (right 0))
+          x-diff (max (- px leftx) (- rightx px))
+          topy (float (top 1))
+          bottomy (float (bottom 1))
+          y-diff (max (- topy py) (- py bottomy))
+          vp-ratio-w (/ (* x-diff 2) viewport-width)
+          vp-ratio-h (/ (* y-diff 2) viewport-height)
+          new-zoom (max vp-ratio-w vp-ratio-h)]
+      new-zoom)))
+
+(extend-type SpriteBatch
+  batch/Batch
+  (shape-drawer [batch texture-region]
+    (ShapeDrawer. batch texture-region))
+
+  (draw-tiled-map! [batch world-unit-scale camera tiled-map color-setter]
+    (com.badlogic.gdx.maps.renderer/draw! batch
+                                          world-unit-scale
+                                          camera
+                                          tiled-map
+                                          color-setter))
+
+  (begin! [batch]
+    (.begin batch))
+
+  (end! [batch]
+    (.end batch))
+
+  (set-color! [batch r g b a]
+    (.setColor batch r g b a))
+
+  (set-projection-matrix! [batch matrix]
+    (.setProjectionMatrix batch matrix))
+
+  (draw!
+    ([batch texture-region x y origin-x origin-y width height scale-x scale-y rotation]
+     (.draw batch
+            ^TextureRegion texture-region
+            x
+            y
+            origin-x
+            origin-y
+            width
+            height
+            scale-x
+            scale-y
+            rotation))
+    ([batch texture-region x y w h]
+     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
+
+(extend-type ShapeDrawer
+  shape-drawer/ShapeDrawer
+  (set-color! [this color-float-bits]
+    (.setColor this (float color-float-bits)))
+
+  (circle! [this x y radius]
+    (.circle this x y radius))
+
+  (ellipse! [this x y radius-x radius-y]
+    (.ellipse this x y radius-x radius-y))
+
+  (filled-circle! [this x y radius]
+    (.filledCircle this (float x) (float y) (float radius)))
+
+  (filled-rectangle! [this x y w h]
+    (.filledRectangle this (float x) (float y) (float w) (float h)))
+
+  (line! [this sx sy ex ey]
+    (.line this (float sx) (float sy) (float ex) (float ey)))
+
+  (rectangle! [this x y w h]
+    (.rectangle this x y w h))
+
+  (sector! [this center-x center-y radius start-radians radians]
+    (.sector this center-x center-y radius start-radians radians))
+
+  (default-line-width [this]
+    (.getDefaultLineWidth this))
+
+  (set-default-line-width! [this width]
+    (.setDefaultLineWidth this width)))

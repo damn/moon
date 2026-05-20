@@ -1,8 +1,6 @@
 (ns moon.levelgen
   (:require [clojure.config :refer [edn-resource]]
             [com.badlogic.gdx :as gdx]
-            [com.badlogic.gdx.graphics.orthographic-camera]
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [game.impl.db :as db-impl]
             [com.badlogic.gdx.textures :as textures]
             [gdl.app :as app]
@@ -94,7 +92,7 @@
            ctx/input]}]
   (let [skin (Skin. (files/internal files "uiskin.json")) ; TODO dispose
         ui-viewport (FitViewport. 1440 900)
-        sprite-batch (sprite-batch/create)
+        sprite-batch (gdx/sprite-batch)
         stage (CtxStage. ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
         tile-size 48
@@ -107,7 +105,7 @@
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
                                        world-height
-                                       (com.badlogic.gdx.graphics.orthographic-camera/create
+                                       (gdx/orthographic-camera
                                         {:y-down? false
                                          :world-width world-width
                                          :world-height world-height})))

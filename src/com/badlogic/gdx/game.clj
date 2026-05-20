@@ -3,10 +3,6 @@
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [com.badlogic.gdx :as gdx]
-            [com.badlogic.gdx.graphics]
-            [com.badlogic.gdx.graphics.colors :as colors]
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.textures]
             [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
@@ -42,13 +38,13 @@
          } (edn-resource "start.edn")]
     (gdx/application! (reify listener/ApplicationListener
                         (create! [_ app]
-                          (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
+                          (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
                           (tooltip-manager/set-initial-time! 0)
                           (reset! state
                                   (reduce (fn [ctx [f & params]]
                                             (apply f ctx params))
-                                          (let [batch (sprite-batch/create)
-                                                white-pixel-texture (com.badlogic.gdx.graphics/white-pixel-texture)
+                                          (let [batch (gdx/sprite-batch)
+                                                white-pixel-texture (gdx/white-pixel-texture)
                                                 world-unit-scale (float (/ 48))]
                                             {:ctx/app app
                                              :ctx/audio (into {}
@@ -79,7 +75,7 @@
                                                                        world-height (* 900  world-unit-scale)]
                                                                    (fit-viewport/create world-width
                                                                                         world-height
-                                                                                        (orthographic-camera/create
+                                                                                        (gdx/orthographic-camera
                                                                                          {:y-down? false
                                                                                           :world-width world-width
                                                                                           :world-height world-height})))
