@@ -1,5 +1,6 @@
 (ns game.world-fns.modules
-  (:require [gdl.tiled-map :as tiled-map]
+  (:require moon.tiled-map
+            [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.props :as props]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
@@ -233,7 +234,7 @@
   (let [
 
 
-        can-spawn? #(= "all" (tiled-map/movement-property tiled-map %))
+        can-spawn? #(= "all" (moon.tiled-map/movement-property tiled-map %))
 
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
 

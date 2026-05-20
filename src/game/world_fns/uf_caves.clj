@@ -1,5 +1,6 @@
 (ns game.world-fns.uf-caves
   (:require [clojure.rand :as rand]
+            [moon.tiled-map]
             [gdl.tiled-map :as tiled-map]
             [gdl.graphics.texture :as texture]
             [moon.grid2d :as g2d]))
@@ -87,7 +88,7 @@
                               :tiles (for [position (g2d/posis grid)]
                                        [position (create-tile (position->tile position))])}]})
 
-        can-spawn? #(= "all" (tiled-map/movement-property tiled-map %))
+        can-spawn? #(= "all" (moon.tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)

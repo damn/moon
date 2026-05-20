@@ -10,34 +10,6 @@
             [gdl.tiled-map.tile :as tile])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
-(defn- tile-movement-property
-  [tiled-map layer [x y]]
-  (let [position [x y]]
-    (when-let [cell (layer/cell layer position)]
-      (let [value (-> cell
-                      cell/tile
-                      tile/properties
-                      (props/get "movement"))]
-        (assert value
-                (str "Value for :movement at position "
-                     position  " / mapeditor inverted position: " [(position 0)
-                                                                   (- (dec (props/get (tiled-map/properties tiled-map) "height"))
-                                                                      (position 1))]
-                     " and layer " (layer/name layer) " is undefined."))
-        value))))
-
-(defn- movement-property-layers
-  [tiled-map]
-  (->> tiled-map
-       tiled-map/layers
-       reverse
-       (filter #(props/get (layer/properties %) "movement-properties"))))
-
-(defn- movement-properties [tiled-map position]
-  (for [layer (movement-property-layers tiled-map)]
-    [(layer/name layer)
-     (tile-movement-property tiled-map layer position)]))
-
 (defn create-tile
   [texture-region property-name property-value]
   {:pre [texture-region
@@ -127,11 +99,4 @@
                             tile/properties
                             (props/get property-key))]
             :when value]
-        [position value])))
-
-  (movement-property [tiled-map position]
-    (or (->> tiled-map
-             movement-property-layers
-             (some #(tile-movement-property tiled-map % position)))
-        "none"))
-  )
+        [position value]))))

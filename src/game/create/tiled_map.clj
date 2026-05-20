@@ -5,9 +5,9 @@
             [moon.textures :as textures]))
 
 (def world-fn-file
-  ; "world_fns/modules.edn"
+   "world_fns/modules.edn"
   ; "world_fns/vampire.edn"
-   "world_fns/uf_caves.edn"
+  ; "world_fns/uf_caves.edn"
   )
 
 (defn step
