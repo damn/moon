@@ -25,9 +25,37 @@
   (remove! [_])
   (parent [_])
   (stage->local-coordinates [actor xy])
-  (add-listener! [actor [listener-k listener-params]])
-  (find-ancestor [_ pred])
-  (button? [_])
-  (window-title-bar? [_])
-  (toggle-visible! [_])
-  (set-opts! [_ opts]))
+  (add-listener! [actor [listener-k listener-params]]))
+
+(defn find-ancestor [actor pred]
+  (if-let [p (parent actor)]
+    (if (pred p)
+      p
+      (find-ancestor p pred))
+    (throw (Error. (str "Actor has no parent window " actor)))))
+
+(defn toggle-visible! [actor]
+  (set-visible! actor (not (visible? actor))))
+
+(defn set-opts! [actor opts]
+  (when-let [user-object (:actor/user-object opts)]
+    (set-user-object! actor user-object))
+
+  (when (:actor/position opts)
+    (let [[x y align] (:actor/position opts)]
+      (if align
+        (set-position! actor x y align)
+        (set-position! actor [x y]))))
+
+  (when (contains? opts :actor/visible?)
+    (set-visible! actor (:actor/visible? opts)))
+
+  (when-let [touchable (:actor/touchable opts)]
+    (set-touchable! actor touchable))
+
+  (when-let [name (:actor/name opts)]
+    (set-name! actor name))
+
+  (when-let [listeners (:actor/listeners opts)]
+    (doseq [listener listeners]
+      (add-listener! actor listener))))

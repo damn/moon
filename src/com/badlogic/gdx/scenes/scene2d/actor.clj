@@ -1,9 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.actor
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
             [gdl.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
@@ -20,6 +17,9 @@
             (when draw!
               (draw! this batch parent-alpha))))
     (actor/set-opts! opts)))
+
+(defmulti create-listener (fn [[listener-k listener-params]]
+                            listener-k))
 
 (extend-type Actor
   actor/Actor
@@ -75,44 +75,7 @@
     (.setTouchable actor (touchable/k->value touchable)))
 
   (add-listener! [actor [listener-k listener-params]]
-    (.addListener actor
-                  (case listener-k
-                    :listener/change (change-listener/create listener-params)
-                    :listener/text-tooltip (text-tooltip/create listener-params)
-                    :listener/click (click-listener/create listener-params))))
+    (.addListener actor (create-listener [listener-k listener-params])))
 
   (stage->local-coordinates [actor xy]
-    (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy))))
-
-  (find-ancestor [actor pred]
-    (if-let [p (actor/parent actor)]
-      (if (pred p)
-        p
-        (actor/find-ancestor p pred))
-      (throw (Error. (str "Actor has no parent window " actor)))))
-
-  (toggle-visible! [actor]
-    (actor/set-visible! actor (not (actor/visible? actor))))
-
-  (set-opts! [actor opts]
-    (when-let [user-object (:actor/user-object opts)]
-      (actor/set-user-object! actor user-object))
-
-    (when (:actor/position opts)
-      (let [[x y align] (:actor/position opts)]
-        (if align
-          (actor/set-position! actor x y align)
-          (actor/set-position! actor [x y]))))
-
-    (when (contains? opts :actor/visible?)
-      (actor/set-visible! actor (:actor/visible? opts)))
-
-    (when-let [touchable (:actor/touchable opts)]
-      (actor/set-touchable! actor touchable))
-
-    (when-let [name (:actor/name opts)]
-      (actor/set-name! actor name))
-
-    (when-let [listeners (:actor/listeners opts)]
-      (doseq [listener listeners]
-        (actor/add-listener! actor listener)))))
+    (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy)))))

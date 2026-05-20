@@ -38,6 +38,7 @@
             com.badlogic.gdx.scenes.scene2d.ui.image
             com.badlogic.gdx.scenes.scene2d.ui.text-button
             com.badlogic.gdx.scenes.scene2d.ui.text-field
+            com.badlogic.gdx.scenes.scene2d.ui.text-tooltip
             com.badlogic.gdx.scenes.scene2d.ui.skin
             com.badlogic.gdx.scenes.scene2d.ui.table
             com.badlogic.gdx.scenes.scene2d.ui.image
@@ -45,6 +46,9 @@
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             com.badlogic.gdx.scenes.scene2d.ui.window
             com.badlogic.gdx.scenes.scene2d.ui.widget-group
+
+            com.badlogic.gdx.scenes.scene2d.utils.change-listener
+            com.badlogic.gdx.scenes.scene2d.utils.click-listener
 
             com.badlogic.gdx.maps.renderer
 
