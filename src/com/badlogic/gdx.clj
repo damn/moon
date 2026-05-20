@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.gdx
+(ns com.badlogic.gdx
   (:import (com.badlogic.gdx Gdx)))
 
 (defn app []

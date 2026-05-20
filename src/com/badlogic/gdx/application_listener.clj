@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.application-listener
-  (:require [com.badlogic.gdx.gdx :as gdx]
+  (:require [com.badlogic.gdx :as gdx]
             [gdl.application-listener :as listener])
   (:import (com.badlogic.gdx ApplicationListener)))
 
