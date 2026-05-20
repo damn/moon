@@ -3,5 +3,4 @@
 (defprotocol TiledMap
   (dispose! [_])
   (properties [_])
-  (layers [_])
-  (add-layer! [_ {:keys [name visible?  properties tiles]}]))
+  (layers [_]))

@@ -21,5 +21,5 @@
   (let [tiled-map (com.badlogic.gdx.maps.tiled.tiled-map/create)]
     (props/add! (tiled-map/properties tiled-map) properties)
     (doseq [layer layers]
-      (tiled-map/add-layer! tiled-map layer))
+      (moon.tiled-map/add-layer! tiled-map layer))
     tiled-map))
