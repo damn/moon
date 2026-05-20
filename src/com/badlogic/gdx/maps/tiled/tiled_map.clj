@@ -4,7 +4,6 @@
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.layer :as layer]
-            [gdl.tiled-map.layer.cell :as cell]
             [gdl.tiled-map.layers :as layers]
             [gdl.tiled-map.props :as props]
             [gdl.tiled-map.tile :as tile])
@@ -83,20 +82,4 @@
                           {:name "creatures"
                            :visible? false
                            :tiles (for [[position creature-property] spawn-positions]
-                                    [position (creature-tile creature-property)])}))
-
-  (spawn-positions [tiled-map]
-    (let [layer-name "creatures"
-          property-key "id"
-          layer (layers/get (tiled-map/layers tiled-map) layer-name)]
-      (for [x (range (layer/width layer))
-            y (range (layer/height layer))
-            :let [position [x y]
-                  cell (layer/cell layer position)]
-            :when cell
-            :let [value (-> cell
-                            cell/tile
-                            tile/properties
-                            (props/get property-key))]
-            :when value]
-        [position value]))))
+                                    [position (creature-tile creature-property)])})))

@@ -3,6 +3,7 @@
             [gdl.tiled-map.props :as props]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
+            [gdl.tiled-map.layers :as layers]
             [gdl.tiled-map.tile :as tile]))
 
 (defn- tile-movement-property
@@ -29,12 +30,28 @@
        (filter #(props/get (layer/properties %) "movement-properties"))))
 
 #_(defn- movement-properties [tiled-map position]
-  (for [layer (movement-property-layers tiled-map)]
-    [(layer/name layer)
-     (tile-movement-property tiled-map layer position)]))
+    (for [layer (movement-property-layers tiled-map)]
+      [(layer/name layer)
+       (tile-movement-property tiled-map layer position)]))
 
 (defn movement-property [tiled-map position]
   (or (->> tiled-map
            movement-property-layers
            (some #(tile-movement-property tiled-map % position)))
       "none"))
+
+(defn spawn-positions [tiled-map]
+  (let [layer-name "creatures"
+        property-key "id"
+        layer (layers/get (tiled-map/layers tiled-map) layer-name)]
+    (for [x (range (layer/width layer))
+          y (range (layer/height layer))
+          :let [position [x y]
+                cell (layer/cell layer position)]
+          :when cell
+          :let [value (-> cell
+                          cell/tile
+                          tile/properties
+                          (props/get property-key))]
+          :when value]
+      [position value])))
