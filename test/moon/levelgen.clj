@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [clojure.config :refer [edn-resource]]
-            [com.badlogic.gdx.backends.lwjgl :as lwjgl]
+            [com.badlogic.gdx :as gdx]
             [com.badlogic.gdx.graphics.orthographic-camera]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [game.impl.db :as db-impl]
@@ -187,25 +187,25 @@
 (def state (atom nil))
 
 (defn -main []
-  (lwjgl/application! (reify listener/ApplicationListener
-                        (create! [_ app]
-                          (reset! state (create! {:ctx/files    (app/files app)
-                                                  :ctx/graphics (app/graphics app)
-                                                  :ctx/input    (app/input app)})))
+  (gdx/application! (reify listener/ApplicationListener
+                      (create! [_ app]
+                        (reset! state (create! {:ctx/files    (app/files app)
+                                                :ctx/graphics (app/graphics app)
+                                                :ctx/input    (app/input app)})))
 
-                        (dispose! [_]
-                          (dispose! @state))
+                      (dispose! [_]
+                        (dispose! @state))
 
-                        (render! [_]
-                          (swap! state render!))
+                      (render! [_]
+                        (swap! state render!))
 
-                        (resize! [_ width height]
-                          (resize! @state width height))
+                      (resize! [_ width height]
+                        (resize! @state width height))
 
-                        (pause! [_])
+                      (pause! [_])
 
-                        (resume! [_]))
-                      {:title "Levelgen Test"
-                       :windowed-mode {:width 1440
-                                       :height 900}
-                       :foreground-fps 60}))
+                      (resume! [_]))
+                    {:title "Levelgen Test"
+                     :windowed-mode {:width 1440
+                                     :height 900}
+                     :foreground-fps 60}))

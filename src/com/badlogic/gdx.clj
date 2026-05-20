@@ -14,6 +14,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
             [gdl.app :as app]
+            [gdl.application-listener :as listener]
             [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.graphics :as graphics]
@@ -36,12 +37,15 @@
             [gdl.sound :as sound]
             [gdl.utils.disposable :as disposable])
   (:import (com.badlogic.gdx Application
+                             ApplicationListener
                              Audio
                              Files
                              Gdx
                              Graphics
                              Input)
            (com.badlogic.gdx.audio Sound)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.graphics.g2d BitmapFont
@@ -61,8 +65,34 @@
                                                Widget)
            (com.badlogic.gdx.utils Disposable)))
 
-(defn app []
-  Gdx/app)
+(defn application!
+  [listener
+   {:keys [title
+           windowed-mode
+           foreground-fps]}]
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (reify ApplicationListener
+                        (create [_]
+                          (listener/create! listener Gdx/app))
+
+                        (dispose [_]
+                          (listener/dispose! listener))
+
+                        (render [_]
+                          (listener/render! listener))
+
+                        (resize [_ width height]
+                          (listener/resize! listener width height))
+
+                        (pause [_]
+                          (listener/pause! listener))
+
+                        (resume [_]
+                          (listener/resume! listener)))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle title)
+                        (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
+                        (.setForegroundFPS foreground-fps))))
 
 (extend-type Application
   app/App
