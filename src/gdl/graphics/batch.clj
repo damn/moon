@@ -1,6 +1,7 @@
 (ns gdl.graphics.batch)
 
 (defprotocol Batch
+  (shape-drawer [_ texture-region])
   (draw-tiled-map! [_ world-unit-scale camera tiled-map color-setter])
   (begin! [_])
   (end! [_])

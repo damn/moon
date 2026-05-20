@@ -29,8 +29,8 @@
             [gdl.sound :as sound]
             [gdl.files :as files]
             [gdl.graphics :as graphics]
+            [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
-            [gdl.graphics.shape-drawer :as shape-drawer]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [gdl.graphics.g2d.texture-region :as texture-region]
@@ -76,8 +76,7 @@
                                                Stack
                                                Widget)
            (com.badlogic.gdx.utils Disposable)
-           (com.badlogic.gdx.utils.viewport FitViewport)
-           (space.earlygrey.shapedrawer ShapeDrawer))
+           (com.badlogic.gdx.utils.viewport FitViewport))
   (:gen-class))
 
 (extend-type Graphics
@@ -185,38 +184,6 @@
     (.space space)
     (.pad pad)
     (actor/set-opts! opts)))
-
-(extend-type ShapeDrawer
-  shape-drawer/ShapeDrawer
-  (set-color! [this color-float-bits]
-    (.setColor this (float color-float-bits)))
-
-  (circle! [this x y radius]
-    (.circle this x y radius))
-
-  (ellipse! [this x y radius-x radius-y]
-    (.ellipse this x y radius-x radius-y))
-
-  (filled-circle! [this x y radius]
-    (.filledCircle this (float x) (float y) (float radius)))
-
-  (filled-rectangle! [this x y w h]
-    (.filledRectangle this (float x) (float y) (float w) (float h)))
-
-  (line! [this sx sy ex ey]
-    (.line this (float sx) (float sy) (float ex) (float ey)))
-
-  (rectangle! [this x y w h]
-    (.rectangle this x y w h))
-
-  (sector! [this center-x center-y radius start-radians radians]
-    (.sector this center-x center-y radius start-radians radians))
-
-  (default-line-width [this]
-    (.getDefaultLineWidth this))
-
-  (set-default-line-width! [this width]
-    (.setDefaultLineWidth this width)))
 
 (defmethod actor/create :ui/label
   [{:keys [text skin] :as opts}]
@@ -572,7 +539,7 @@
                                                                                     (files/internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
                                                :ctx/batch batch
                                                :ctx/shape-drawer-texture white-pixel-texture
-                                               :ctx/shape-drawer (ShapeDrawer. batch (texture/region white-pixel-texture 1 0 1 1))
+                                               :ctx/shape-drawer (batch/shape-drawer batch (texture/region white-pixel-texture 1 0 1 1))
                                                :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                                                                        size 16
                                                                        quality-scaling 2
