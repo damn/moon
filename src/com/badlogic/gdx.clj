@@ -9,6 +9,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.ui.widget-group]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
@@ -17,6 +18,7 @@
             com.badlogic.gdx.maps.renderer
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.audio :as audio]
@@ -83,32 +85,15 @@
                                                SelectBox
                                                Skin
                                                Stack
-                                               TooltipManager
                                                Widget)
            (com.badlogic.gdx.utils Disposable)
-           (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (def clear-screen! screen-utils/clear!)
 
-(defn fit-viewport
-  ([width height]
-   (proxy [FitViewport ILookup] [width height]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this)))))
-  ([width height camera]
-   (proxy [FitViewport ILookup] [width height camera]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this))))))
+(def fit-viewport fit-viewport/create)
 
-(defn tooltip-manager-set-initial-time! [value]
-  (set! (.initialTime (TooltipManager/getInstance)) value))
+(def tooltip-manager-set-initial-time! tooltip-manager/set-initial-time!)
 
 (def put-colors! colors/put!)
 
@@ -742,16 +727,6 @@
   (mouseover-actor [stage position]
     (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
       (.hit stage x y true))))
-
-(extend-type FitViewport
-  viewport/Viewport
-  (update! [viewport screen-width screen-height center-camera?]
-    (.update viewport screen-width screen-height center-camera?))
-
-  (unproject [viewport position]
-    (-> viewport
-        (.unproject (vector2/->java position))
-        vector2/->clj)))
 
 (extend-type FreeTypeFontGenerator
   font-generator/FreeTypeFontGenerator
