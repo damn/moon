@@ -5,6 +5,7 @@
             [com.badlogic.gdx.graphics.orthographic-camera]
             [game.impl.db :as db-impl]
             [com.badlogic.gdx.textures :as textures]
+            [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
@@ -190,16 +191,21 @@
 (defn -main []
   (lwjgl/application! (reify listener/ApplicationListener
                         (create! [_ app]
-                          (reset! state (create! {:ctx/files    (.getFiles app)
-                                                  :ctx/graphics (.getGraphics app)
-                                                  :ctx/input    (.getInput app)})))
+                          (reset! state (create! {:ctx/files    (app/files app)
+                                                  :ctx/graphics (app/graphics app)
+                                                  :ctx/input    (app/input app)})))
+
                         (dispose! [_]
                           (dispose! @state))
+
                         (render! [_]
                           (swap! state render!))
+
                         (resize! [_ width height]
                           (resize! @state width height))
+
                         (pause! [_])
+
                         (resume! [_]))
                       {:title "Levelgen Test"
                        :windowed-mode {:width 1440
