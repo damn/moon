@@ -29,6 +29,7 @@
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.graphics.orthographic-camera :as camera]
+            [gdl.graphics.g2d.freetype.font-generator :as font-generator]
             [gdl.input :as input]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
@@ -61,10 +62,12 @@
                                       Pixmap$Format
                                       Texture
                                       OrthographicCamera)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch
-                                          TextureRegion)
            (com.badlogic.gdx.graphics.g2d BitmapFont
-                                          BitmapFont$BitmapFontData)
+                                          BitmapFont$BitmapFontData
+                                          SpriteBatch
+                                          TextureRegion)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Actor
                                             CtxStage
                                             Event
@@ -703,7 +706,13 @@
   (directory? [this]
     (.isDirectory this))
   (texture [this]
-    (Texture. this)))
+    (Texture. this))
+  (pixmap [this]
+    (Pixmap. this))
+  (skin [this]
+    (Skin. this))
+  (freetype-font-generator [this]
+    (FreeTypeFontGenerator. this)))
 
 (extend-type CtxStage
   stage/Stage
@@ -737,3 +746,17 @@
     (-> viewport
         (.unproject (vector2/->java position))
         vector2/->clj)))
+
+(extend-type FreeTypeFontGenerator
+  font-generator/FreeTypeFontGenerator
+  (generate-font [this {:keys [size
+                               min-filter
+                               mag-filter]}]
+    (.generateFont this (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                          (set! (.size params) size)
+                          (set! (.minFilter params) min-filter)
+                          (set! (.magFilter params) mag-filter)
+                          params)))
+
+  (dispose! [this]
+    (.dispose this)))

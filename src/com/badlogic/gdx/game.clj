@@ -8,18 +8,16 @@
             [gdl.application-listener :as listener]
             [gdl.audio :as audio]
             [gdl.files :as files]
+            [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
+            [gdl.graphics.g2d.freetype.font-generator :as font-generator]
             [gdl.input :as input]
             [gdl.scene2d.ui.skin :as skin])
-  (:import (com.badlogic.gdx.graphics Pixmap
-                                      Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin))
+  (:import (com.badlogic.gdx.graphics Texture$TextureFilter))
   (:gen-class))
 
 (def state (atom nil))
@@ -55,14 +53,13 @@
                                              :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                                                                      size 16
                                                                      quality-scaling 2
-                                                                     generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
-                                                                     font (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                                                                                                     (set! (.size params) (* size quality-scaling))
-                                                                                                     ; Texture$TextureFilter/Linear because scaling to world-units
-                                                                                                     (set! (.minFilter params) Texture$TextureFilter/Linear)
-                                                                                                     (set! (.magFilter params) Texture$TextureFilter/Linear)
-                                                                                                     params))]
-                                                                 (.dispose generator)
+                                                                     generator (file-handle/freetype-font-generator (files/internal (app/files app) path))
+                                                                     font (font-generator/generate-font generator
+                                                                                                        {:size (* size quality-scaling)
+                                                                                                         ; Texture$TextureFilter/Linear because scaling to world-units
+                                                                                                         :min-filter Texture$TextureFilter/Linear
+                                                                                                         :mag-filter Texture$TextureFilter/Linear})]
+                                                                 (font-generator/dispose! generator)
                                                                  (font.data/set-scale! (.getData font) (/ quality-scaling))
                                                                  (font.data/set-markup-enabled! (.getData font) true)
                                                                  (.setUseIntegerPositions font false)
@@ -79,14 +76,14 @@
                                              :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                                                             (update-vals data
                                                                          (fn [[path [hotspot-x hotspot-y]]]
-                                                                           (let [pixmap (Pixmap. (files/internal (app/files app) (format path-format path)))
+                                                                           (let [pixmap (file-handle/pixmap (files/internal (app/files app) (format path-format path)))
                                                                                  cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                                                              (.dispose pixmap)
                                                                              cursor))))
                                              :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
                                                           (input/set-processor! (app/input app) stage)
                                                           stage)
-                                             :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
+                                             :ctx/skin (let [skin (file-handle/skin (files/internal (app/files app) "uiskin.json"))]
                                                          (-> skin
                                                              (skin/font "default-font")
                                                              bitmap-font/data
