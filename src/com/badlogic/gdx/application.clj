@@ -50,7 +50,6 @@
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
-           (com.badlogic.gdx Input)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics Pixmap
                                       Texture
@@ -77,21 +76,6 @@
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport))
   (:gen-class))
-
-(extend-type Input
-  input/Input
-  (key-pressed? [this key]
-    (.isKeyPressed this key))
-
-  (key-just-pressed? [this key]
-    (.isKeyJustPressed this key))
-
-  (button-just-pressed? [this button]
-    (.isButtonJustPressed this button))
-
-  (mouse-position [this]
-    [(.getX this)
-     (.getY this)]))
 
 (extend-type BitmapFont
   bitmap-font/BitmapFont
@@ -557,7 +541,7 @@
                                                                                (.dispose pixmap)
                                                                                cursor))))
                                                :ctx/stage (let [stage (create-stage (fit-viewport 1440 900) batch)]
-                                                            (.setInputProcessor (app/input app) stage)
+                                                            (input/set-processor! (app/input app) stage)
                                                             stage)
                                                :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
                                                            (-> skin

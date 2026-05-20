@@ -2,13 +2,14 @@
   (:require [gdl.app :as app]
             [gdl.audio :as audio]
             [gdl.files :as files]
-            [gdl.graphics :as graphics])
+            [gdl.graphics :as graphics]
+            [gdl.input :as input])
   (:import (com.badlogic.gdx Application
                              Audio
                              Files
                              Gdx
                              Graphics
-                             )))
+                             Input)))
 
 (defn app []
   Gdx/app)
@@ -53,3 +54,21 @@
 
   (gl20 [graphics]
     (.getGL20 graphics)))
+
+(extend-type Input
+  input/Input
+  (set-processor! [this input-processor]
+    (.setInputProcessor this input-processor))
+
+  (key-pressed? [this key]
+    (.isKeyPressed this key))
+
+  (key-just-pressed? [this key]
+    (.isKeyJustPressed this key))
+
+  (button-just-pressed? [this button]
+    (.isButtonJustPressed this button))
+
+  (mouse-position [this]
+    [(.getX this)
+     (.getY this)]))
