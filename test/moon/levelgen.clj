@@ -1,31 +1,29 @@
 (ns moon.levelgen
   (:require [clojure.config :refer [edn-resource]]
             [com.badlogic.gdx :as gdx]
-            [game.impl.db :as db-impl]
             [com.badlogic.gdx.textures :as textures]
+            [game.impl.db :as db-impl]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.color :as color]
+            [gdl.graphics.orthographic-camera :as camera]
             [gdl.graphics.texture :as texture]
             [gdl.input :as input]
             [gdl.input.keys :as input.keys]
-            [com.badlogic.gdx.math.vector3 :as vector3]
             [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.stage :as stage]
             [gdl.scene2d.event :as event]
-            [gdl.scene2d.ui.table :as table]
+            [gdl.scene2d.stage :as stage]
             [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layers :as layers]
             [gdl.tiled-map.props :as props]
-            [moon.db :as db]
-            [gdl.graphics.orthographic-camera :as camera]
-            [moon.creature-tiles]
             [gdl.utils.disposable :as disposable]
-            [gdl.utils.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]
+            [moon.creature-tiles]
+            [moon.db :as db]))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -97,7 +95,7 @@
   [{:keys [ctx/files
            ctx/graphics
            ctx/input]}]
-  (let [skin (file-handle/skin (files/internal files "uiskin.json")) ; TODO dispose
+  (let [skin (file-handle/skin (files/internal files "uiskin.json"))
         ui-viewport (gdx/fit-viewport 1440 900)
         sprite-batch (gdx/sprite-batch)
         stage (gdx/stage ui-viewport sprite-batch)
@@ -131,9 +129,10 @@
     ctx))
 
 (defn dispose!
-  [{:keys [ctx/sprite-batch
+  [{:keys [ctx/skin
+           ctx/sprite-batch
            ctx/tiled-map]}]
-  ; TODO dispose skin?
+  (disposable/dispose! skin)
   (disposable/dispose! sprite-batch)
   (disposable/dispose! tiled-map))
 
