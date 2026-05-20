@@ -15,7 +15,7 @@
             com.badlogic.gdx.graphics.g2d.bitmap-font
             com.badlogic.gdx.graphics.g2d.bitmap-font.data
             com.badlogic.gdx.graphics.g2d.texture-region
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            com.badlogic.gdx.graphics.g2d.sprite-batch
 
             com.badlogic.gdx.graphics.g2d.freetype.font-generator
 
@@ -70,8 +70,6 @@
 (def pixmap pixmap/create)
 
 (def orthographic-camera orthographic-camera/create)
-
-(def sprite-batch sprite-batch/create)
 
 (def stage ctx-stage/create)
 

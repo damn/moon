@@ -92,12 +92,13 @@
                                                                  (on-clicked actor (:stage/ctx (event/stage event))))}})}])})
 
 (defn create!
-  [{:keys [ctx/files
-           ctx/graphics
-           ctx/input]}]
-  (let [skin (file-handle/skin (files/internal files "uiskin.json"))
+  [app]
+  (let [files (app/files app)
+        graphics (app/graphics app)
+        input (app/input app)
+        skin (file-handle/skin (files/internal files "uiskin.json"))
         ui-viewport (gdx/fit-viewport 1440 900)
-        sprite-batch (gdx/sprite-batch)
+        sprite-batch (app/sprite-batch app)
         stage (gdx/stage ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
         tile-size 48
@@ -193,9 +194,7 @@
 (defn -main []
   (gdx/application! (reify listener/ApplicationListener
                       (create! [_ app]
-                        (reset! state (create! {:ctx/files    (app/files app)
-                                                :ctx/graphics (app/graphics app)
-                                                :ctx/input    (app/input app)})))
+                        (reset! state (create! app)))
 
                       (dispose! [_]
                         (dispose! @state))

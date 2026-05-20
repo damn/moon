@@ -5,3 +5,6 @@
   (files [_])
   (graphics [_])
   (input [_]))
+
+(defprotocol SpriteBatch
+  (sprite-batch [_]))
