@@ -3,5 +3,5 @@
   (:import (com.badlogic.gdx.graphics Colors)))
 
 (defn put! [colors]
-  (doseq [[name rgba] colors]
+  (doseq [[name rgba] colors] ; can be simpler, only interop
     (Colors/put name (color/create rgba))))

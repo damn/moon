@@ -4,6 +4,6 @@
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)))
 
 (defn create [listener config]
-  (config/use-glfw-async!)
+  (config/use-glfw-async!) ; not really necessary here
   (Lwjgl3Application. (application-listener/create listener)
                       (config/create config)))
