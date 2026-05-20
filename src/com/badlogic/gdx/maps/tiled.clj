@@ -1,18 +1,17 @@
 (ns com.badlogic.gdx.maps.tiled
-  (:require [gdl.tiled-map :as tiled-map]
+  (:require com.badlogic.gdx.maps.map-layers
+            com.badlogic.gdx.maps.map-properties
+            [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+            [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
             [gdl.tiled-map.layers :as layers]
             [gdl.tiled-map.props :as props]
             [gdl.tiled-map.tile :as tile])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapLayer
-                                  MapLayers
-                                  MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer
-                                        TiledMapTileLayer$Cell
-                                        TmxMapLoader)
+                                        TiledMapTileLayer$Cell)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn create-tile
@@ -82,33 +81,7 @@
                                    (.setTile tile))))
     layer))
 
-(defn load! [tmx-file]
-  (.load (TmxMapLoader.) tmx-file))
-
-(extend-type MapLayers
-  layers/Layers
-  (add! [layers layer]
-    (.add layers layer))
-
-  (get [layers ^String layer-name]
-    (.get layers layer-name))
-
-  (get-index [layers ^MapLayer layer]
-    (.getIndex layers layer)))
-
-(extend-type MapProperties
-  props/Props
-  (get [map-properties k]
-    (.get map-properties k))
-
-  (add! [props m]
-    (doseq [[k v] m]
-      (assert (string? k))
-      (.put props k v)))
-
-  (->clj [props]
-    (zipmap (.getKeys props)
-            (.getValues props))))
+(def load! tmx-map-loader/load!)
 
 (extend-type TiledMap
   tiled-map/TiledMap
