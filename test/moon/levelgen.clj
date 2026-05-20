@@ -6,23 +6,24 @@
             [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.files :as files]
+            [gdl.files.file-handle :as file-handle]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.color :as color]
+            [gdl.graphics.texture :as texture]
             [gdl.input.keys :as input.keys]
             [com.badlogic.gdx.math.vector3 :as vector3]
+            [gdl.scene2d.stage :as stage]
+            [gdl.scene2d.event :as event]
             [gdl.scene2d.ui.table :as table]
+            [gdl.tiled-map :as tiled-map]
+            [gdl.tiled-map.props :as props]
             [moon.db :as db]
             [gdl.graphics.orthographic-camera :as camera]
-            [moon.creature-tiles])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               TextButton
+            [moon.creature-tiles]
+            [gdl.utils.viewport :as viewport])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton
                                                Window)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
-           (com.badlogic.gdx.utils ScreenUtils)
-           (com.badlogic.gdx.utils.viewport FitViewport)
-           (com.badlogic.gdx.scenes.scene2d CtxStage)))
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -34,13 +35,13 @@
 (defn- show-whole-map! [{:keys [ctx/camera
                                 ctx/tiled-map]}]
   (camera/set-position! camera
-                        [(/ (.get (.getProperties tiled-map) "width") 2)
-                         (/ (.get (.getProperties tiled-map) "height") 2)])
+                        [(/ (props/get (tiled-map/properties tiled-map) "width") 2)
+                         (/ (props/get (tiled-map/properties tiled-map) "height") 2)])
   (camera/set-zoom! camera
                     (camera/calculate-zoom camera
                                            {:left [0 0]
-                                            :top [0 (.get (.getProperties tiled-map) "height")]
-                                            :right [(.get (.getProperties tiled-map) "width") 0]
+                                            :top [0 (props/get (tiled-map/properties tiled-map) "height")]
+                                            :right [(props/get (tiled-map/properties tiled-map) "width") 0]
                                             :bottom [0 0]})))
 
 (def tile-size 48)
@@ -60,8 +61,8 @@
                                                       (assert (contains? textures file))
                                                       (let [texture (get textures file)]
                                                         (if-let [[x y w h] bounds]
-                                                          (TextureRegion. texture x y w h)
-                                                          (TextureRegion. texture)))))
+                                                          (texture/region texture x y w h)
+                                                          (texture/region texture)))))
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
@@ -77,12 +78,12 @@
                            :let [on-clicked (fn [actor ctx]
                                               (let [stage (.getStage actor)
                                                     new-ctx (generate-level ctx level-fn)]
-                                                (set! (.ctx stage) new-ctx)))]]
+                                                (stage/set-ctx! stage new-ctx)))]]
                        [{:actor (doto (TextButton. (str "Generate " level-fn) skin)
                                   (.addListener
                                    (proxy [ChangeListener] []
                                      (changed [event actor]
-                                       (on-clicked actor (.ctx (Event/.getStage event)))))))}]))
+                                       (on-clicked actor (:stage/ctx (event/stage event)))))))}]))
     (.pack window)
     window))
 
@@ -90,10 +91,10 @@
   [{:keys [ctx/files
            ctx/graphics
            ctx/input]}]
-  (let [skin (Skin. (files/internal files "uiskin.json")) ; TODO dispose
-        ui-viewport (FitViewport. 1440 900)
+  (let [skin (file-handle/skin (files/internal files "uiskin.json")) ; TODO dispose
+        ui-viewport (gdx/fit-viewport 1440 900)
         sprite-batch (gdx/sprite-batch)
-        stage (CtxStage. ui-viewport sprite-batch)
+        stage (gdx/stage ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
@@ -103,12 +104,12 @@
         ctx (assoc ctx :ctx/textures (textures/create files))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
-                         (FitViewport. world-width
-                                       world-height
-                                       (gdx/orthographic-camera
-                                        {:y-down? false
-                                         :world-width world-width
-                                         :world-height world-height})))
+                         (gdx/fit-viewport world-width
+                                           world-height
+                                           (gdx/orthographic-camera
+                                            {:y-down? false
+                                             :world-width world-width
+                                             :world-height world-height})))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport
@@ -163,24 +164,24 @@
 (defn render!
   [{:keys [ctx/stage]
     :as ctx}]
-  (let [ctx (if-let [new-ctx (.ctx stage)]
+  (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (ScreenUtils/clear 0 0 0 0)
+    (gdx/clear-screen! 0 0 0 0)
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)
-    (set! (.ctx stage) ctx)
-    (.act stage)
-    (.draw stage)
-    (.ctx stage)))
+    (stage/set-ctx! stage ctx)
+    (stage/act! stage)
+    (stage/draw! stage)
+    (:stage/ctx stage)))
 
 (defn resize!
   [{:keys [ctx/ui-viewport
            ctx/world-viewport]}
    width height]
-  (.update ui-viewport    width height true)
-  (.update world-viewport width height false))
+  (viewport/update! ui-viewport    width height true)
+  (viewport/update! world-viewport width height false))
 
 (def state (atom nil))
 

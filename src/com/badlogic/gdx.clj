@@ -83,9 +83,13 @@
                                                Stack
                                                TooltipManager
                                                Widget)
-           (com.badlogic.gdx.utils Disposable)
+           (com.badlogic.gdx.utils Disposable
+                                   ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
+
+(defn clear-screen! [r g b a]
+  (ScreenUtils/clear r g b a))
 
 (defn fit-viewport
   ([width height]
@@ -303,7 +307,7 @@
 (extend-type Label
   label/Label
   (set-text! [label text]
-    (.setText label text)))
+    (.setText label ^String text)))
 
 (defmethod actor/create :ui/select-box
   [{:keys [items selected skin]}]
