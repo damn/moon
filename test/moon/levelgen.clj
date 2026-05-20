@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [clojure.config :refer [edn-resource]]
-            [com.badlogic.gdx :as gdx]
+            [com.badlogic.gdx.graphics.orthographic-camera]
             [game.impl.db :as db-impl]
             [com.badlogic.gdx.textures :as textures]
             [gdl.graphics.color :as color]
@@ -109,7 +109,7 @@
                              world-height (* 900  world-unit-scale)]
                          (FitViewport. world-width
                                        world-height
-                                       (gdx/orthographic-camera
+                                       (com.badlogic.gdx.graphics.orthographic-camera/create
                                         {:y-down? false
                                          :world-width world-width
                                          :world-height world-height})))
