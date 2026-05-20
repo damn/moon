@@ -23,6 +23,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
+            [gdl.application-listener :as listener]
             [gdl.app :as app]
             [gdl.sound :as sound]
             [gdl.graphics :as graphics]
@@ -48,7 +49,6 @@
             [gdl.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx Application
-                             ApplicationListener
                              Files
                              Gdx
                              Graphics
@@ -563,8 +563,8 @@
                 ]
          :as config
          } (edn-resource "start.edn")]
-    (lwjgl/application! (reify ApplicationListener
-                          (create [_]
+    (lwjgl/application! (reify listener/ApplicationListener
+                          (create! [_ app]
                             (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
                             (tooltip-manager/set-initial-time! 0)
                             (reset! state
@@ -573,7 +573,7 @@
                                             (let [batch (sprite-batch/create)
                                                   white-pixel-texture (com.badlogic.gdx.graphics/white-pixel-texture)
                                                   world-unit-scale (float (/ 48))]
-                                              {:ctx/app Gdx/app
+                                              {:ctx/app app
                                                :ctx/audio (into {}
                                                                 (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                                                                   [sound-name
@@ -626,11 +626,11 @@
                                                :ctx/textures (com.badlogic.gdx.textures/create)})
                                             create)))
 
-                          (dispose [_]
+                          (dispose! [_]
                             (doseq [f dispose]
                               (f @state)))
 
-                          (render [_]
+                          (render! [_]
                             (swap! state
                                    (fn [ctx]
                                      (reduce (fn [ctx [f & params]]
@@ -638,11 +638,11 @@
                                              ctx
                                              render))))
 
-                          (resize [_ width height]
+                          (resize! [_ width height]
                             (doseq [f resize]
                               (f @state width height)))
 
-                          (pause [_])
+                          (pause! [_])
 
-                          (resume [_]))
+                          (resume! [_]))
                         config)))

@@ -5,6 +5,7 @@
             [com.badlogic.gdx.graphics.orthographic-camera]
             [game.impl.db :as db-impl]
             [com.badlogic.gdx.textures :as textures]
+            [gdl.application-listener :as listener]
             [gdl.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
             [gdl.scene2d.ui.table :as table]
@@ -12,9 +13,7 @@
             [gdl.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.maps.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
-  (:import (com.badlogic.gdx ApplicationListener
-                             Gdx
-                             Input$Keys)
+  (:import (com.badlogic.gdx Input$Keys)
            (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
@@ -102,7 +101,6 @@
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage
              :ctx/files files}
-        ctx (assoc ctx :ctx/app Gdx/app)
         ctx (assoc ctx :ctx/db (db-impl/create ctx))
         ctx (assoc ctx :ctx/textures (textures/create))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
@@ -190,19 +188,19 @@
 (def state (atom nil))
 
 (defn -main []
-  (lwjgl/application! (reify ApplicationListener
-                        (create [_]
-                          (reset! state (create! {:ctx/files    Gdx/files
-                                                  :ctx/graphics Gdx/graphics
-                                                  :ctx/input    Gdx/input})))
-                        (dispose [_]
+  (lwjgl/application! (reify listener/ApplicationListener
+                        (create! [_ app]
+                          (reset! state (create! {:ctx/files    (.getFiles app)
+                                                  :ctx/graphics (.getGraphics app)
+                                                  :ctx/input    (.getInput app)})))
+                        (dispose! [_]
                           (dispose! @state))
-                        (render [_]
+                        (render! [_]
                           (swap! state render!))
-                        (resize [_ width height]
+                        (resize! [_ width height]
                           (resize! @state width height))
-                        (pause [_])
-                        (resume [_]))
+                        (pause! [_])
+                        (resume! [_]))
                       {:title "Levelgen Test"
                        :windowed-mode {:width 1440
                                        :height 900}
