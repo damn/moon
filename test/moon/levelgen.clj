@@ -16,8 +16,7 @@
             [gdl.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.maps.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
-  (:import (com.badlogic.gdx.graphics Color)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch
+  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
@@ -171,7 +170,7 @@
   (let [ctx (if-let [new-ctx (.ctx stage)]
               new-ctx
               ctx)]
-    (ScreenUtils/clear Color/BLACK)
+    (ScreenUtils/clear 0 0 0 0)
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)
