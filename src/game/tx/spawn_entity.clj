@@ -1,7 +1,6 @@
 (ns game.tx.spawn-entity
   (:require [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
-            [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.effect :as effect]
             [moon.entity :as entity]
@@ -12,7 +11,8 @@
             [moon.stats :as stats]
             [moon.timer :as timer]
             [qrecord.core :as q]
-            [reduce-fsm :as fsm]))
+            [reduce-fsm :as fsm])
+  (:import (com.badlogic.gdx.math Rectangle)))
 
 (comment
 
@@ -98,7 +98,7 @@
              body/height]}]
     (let [[x y] [(- (position 0) (/ width  2))
                  (- (position 1) (/ height 2))]]
-      (gdx-rectangle/create x y width height)))
+      (Rectangle. x y width height)))
 
   (touched-tiles
     [{:keys [body/position
@@ -111,8 +111,8 @@
       :height height}))
 
   (overlaps? [body other-body]
-    (gdx-rectangle/overlaps? (body/rectangle body)
-                             (body/rectangle other-body)))
+    (.overlaps ^Rectangle (body/rectangle body)
+               ^Rectangle (body/rectangle other-body)))
 
   (distance [body other-body]
     (v/distance (:body/position body)
