@@ -2,6 +2,7 @@
   (:require [clojure.config :refer [edn-resource]]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [com.badlogic.gdx.backends.lwjgl :as lwjgl]
             [com.badlogic.gdx.graphics]
             [com.badlogic.gdx.textures]
             [com.badlogic.gdx.graphics.colors :as colors]
@@ -53,8 +54,6 @@
                              Graphics
                              Input)
            (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Pixmap
                                       Texture
                                       Texture$TextureFilter)
@@ -556,17 +555,15 @@
 (def state (atom nil))
 
 (defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (let [{:keys [create
                 dispose
                 render
                 resize
-                title
-                windowed-mode
-                foreground-fps
                 colors
-                ]} (edn-resource "start.edn")]
-    (Lwjgl3Application. (reify ApplicationListener
+                ]
+         :as config
+         } (edn-resource "start.edn")]
+    (lwjgl/application! (reify ApplicationListener
                           (create [_]
                             (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
                             (tooltip-manager/set-initial-time! 0)
@@ -648,7 +645,4 @@
                           (pause [_])
 
                           (resume [_]))
-                        (doto (Lwjgl3ApplicationConfiguration.)
-                          (.setTitle title)
-                          (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
-                          (.setForegroundFPS foreground-fps)))))
+                        config)))
