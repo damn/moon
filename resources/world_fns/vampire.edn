@@ -2,5 +2,5 @@
  {
   :tmx-file "maps/vampire.tmx"
   :start-position [32 71]
-  :load-map-fn com.badlogic.gdx.maps.tiled/load!
+  :load-map-fn moon.tiled/load!
   }]

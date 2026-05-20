@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.maps.tiled
+(ns moon.tiled
   (:require moon.tiled-map
             com.badlogic.gdx.maps.map-layers
             com.badlogic.gdx.maps.map-properties
