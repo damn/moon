@@ -11,6 +11,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.image]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
+            [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
@@ -77,7 +78,6 @@
                                                SelectBox
                                                Skin
                                                Stack
-                                               TooltipManager
                                                Widget)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
@@ -608,11 +608,11 @@
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
                             (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
+                            (tooltip-manager/set-initial-time 0)
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
-                                            (let [_ (set! (.initialTime (TooltipManager/getInstance)) 0)
-                                                  batch (SpriteBatch.)
+                                            (let [batch (SpriteBatch.)
                                                   white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
                                                                                      (.setColor 1 1 1 1)
                                                                                      (.drawPixel 0 0))
