@@ -9,14 +9,14 @@
             [gdl.application-listener :as listener]
             [gdl.files :as files]
             [gdl.graphics.color :as color]
+            [gdl.input.keys :as input.keys]
             [com.badlogic.gdx.math.vector3 :as vector3]
             [gdl.scene2d.ui.table :as table]
             [moon.db :as db]
             [gdl.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.maps.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
-  (:import (com.badlogic.gdx Input$Keys)
-           (com.badlogic.gdx.graphics Color)
+  (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
@@ -154,16 +154,16 @@
                                                (update (vector3/->clj (.position camera))
                                                        idx
                                                        #(f % camera-movement-speed))))]
-    (if (.isKeyPressed input Input$Keys/LEFT)  (apply-position 0 -))
-    (if (.isKeyPressed input Input$Keys/RIGHT) (apply-position 0 +))
-    (if (.isKeyPressed input Input$Keys/UP)    (apply-position 1 +))
-    (if (.isKeyPressed input Input$Keys/DOWN)  (apply-position 1 -))))
+    (if (.isKeyPressed input input.keys/left)  (apply-position 0 -))
+    (if (.isKeyPressed input input.keys/right) (apply-position 0 +))
+    (if (.isKeyPressed input input.keys/up)    (apply-position 1 +))
+    (if (.isKeyPressed input input.keys/down)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (.isKeyPressed input Input$Keys/MINUS)  (camera/inc-zoom! camera zoom-speed))
-  (when (.isKeyPressed input Input$Keys/EQUALS) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (.isKeyPressed input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
+  (when (.isKeyPressed input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
 
 (defn render!
   [{:keys [ctx/stage]

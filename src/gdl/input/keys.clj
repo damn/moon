@@ -13,3 +13,7 @@
 (def i Input$Keys/I)
 (def e Input$Keys/E)
 (def enter Input$Keys/ENTER)
+(def left Input$Keys/LEFT)
+(def right Input$Keys/RIGHT)
+(def up Input$Keys/UP)
+(def down Input$Keys/DOWN)
