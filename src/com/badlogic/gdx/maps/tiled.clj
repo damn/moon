@@ -74,7 +74,7 @@
          (boolean? visible?)]}
   (let [layer (doto (TiledMapTileLayer. width height tilewidth tileheight)
                 (.setName name)
-                (.setVisible visible?))]
+                (layer/set-visible! visible?))]
     (props/add! (layer/properties layer) map-properties)
     (doseq [[pos tile] tiles
             :when tile]
@@ -112,6 +112,9 @@
 
 (extend-type TiledMap
   tiled-map/TiledMap
+  (dispose! [this]
+    (.dispose this))
+
   (properties [this]
     (.getProperties this))
 
@@ -179,6 +182,9 @@
 
 (extend-type TiledMapTileLayer
   layer/Layer
+  (set-visible! [layer visible?]
+    (.setVisible layer visible?))
+
   (properties [layer]
     (.getProperties layer))
 

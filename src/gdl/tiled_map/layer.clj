@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [name]))
 
 (defprotocol Layer
+  (set-visible! [_ visible?])
   (properties [_])
   (name [_])
   (cell [_ [x y]])

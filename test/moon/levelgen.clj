@@ -16,6 +16,8 @@
             [gdl.scene2d.event :as event]
             [gdl.scene2d.ui.table :as table]
             [gdl.tiled-map :as tiled-map]
+            [gdl.tiled-map.layer :as layer]
+            [gdl.tiled-map.layers :as layers]
             [gdl.tiled-map.props :as props]
             [moon.db :as db]
             [gdl.graphics.orthographic-camera :as camera]
@@ -46,11 +48,12 @@
 
 (def tile-size 48)
 
-(defn- generate-level [{:keys [ctx/db
-                               ctx/textures
-                               ctx/tiled-map] :as ctx} level-fn]
+(defn- generate-level
+  [{:keys [ctx/db
+           ctx/textures
+           ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
-    (.dispose tiled-map))
+    (tiled-map/dispose! tiled-map))
   (let [level (let [[f params] (edn-resource level-fn)]
                 (f
                  (assoc params
@@ -67,7 +70,10 @@
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
-    (.setVisible (.get (.getLayers tiled-map) "creatures") true)
+    (-> tiled-map
+        tiled-map/layers
+        (layers/get "creatures")
+        (layer/set-visible! true))
     (show-whole-map! ctx)
     ctx))
 
