@@ -111,8 +111,7 @@
 (defn tooltip-manager-set-initial-time! [value]
   (set! (.initialTime (TooltipManager/getInstance)) value))
 
-(defn put-colors! [colors]
-  (colors/put! colors))
+(def put-colors! colors/put!)
 
 (defn white-pixel-texture []
   (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
