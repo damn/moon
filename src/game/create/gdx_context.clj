@@ -20,6 +20,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
             [gdl.app :as app]
+            [gdl.sound :as sound]
             [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
@@ -49,6 +50,7 @@
                              Gdx
                              Graphics
                              Input)
+           (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics Colors
                                       Pixmap
                                       Pixmap$Format
@@ -709,3 +711,8 @@
   check-box/CheckBox
   (checked? [this]
     (.isChecked this)))
+
+(extend-type Sound
+  sound/Sound
+  (play! [this]
+    (.play this)))

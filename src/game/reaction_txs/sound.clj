@@ -1,8 +1,9 @@
-(ns game.reaction-txs.sound)
+(ns game.reaction-txs.sound
+  (:require [gdl.sound :as sound]))
 
 (defn do!
   [{:keys [ctx/audio] :as ctx} sound-name]
   (let [sounds audio]
     (assert (contains? sounds sound-name) (str sound-name))
-    (com.badlogic.gdx.audio.Sound/.play (get sounds sound-name)))
+    (sound/play! (get sounds sound-name)))
   ctx)
