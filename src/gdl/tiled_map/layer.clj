@@ -9,5 +9,4 @@
   (set-cell! [_ [x y] cell])
   (width [_])
   (height [_])
-  (visible? [_])
-  (property-value [_ pos property-key]))
+  (visible? [_]))

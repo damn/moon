@@ -219,6 +219,13 @@
           {:steps steps
            :area-level-grid grid})))))
 
+(defn- property-value [layer pos property-key]
+  (if-let [cell (layer/cell layer pos)]
+    (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
+      value
+      :undefined)
+    :no-cell))
+
 (defn- last-steps
   [{:keys [
            world/max-area-level
@@ -263,9 +270,9 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (layer/property-value (layers/get (tiled-map/layers tiled-map) "creatures")
-                                                                          p
-                                                                          "id"))))
+                                                    (property-value (layers/get (tiled-map/layers tiled-map) "creatures")
+                                                                    p
+                                                                    "id"))))
                                             spawn-positions)))
 
 
