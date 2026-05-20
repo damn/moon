@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx.application
-  (:require [clojure.config :refer [edn-resource]])
+  (:require [clojure.config :refer [edn-resource]]
+            [com.badlogic.gdx :as gdx])
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration))
@@ -23,7 +24,7 @@
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
-                                            {}
+                                            (gdx/create-context)
                                             create)))
 
                           (dispose [_]

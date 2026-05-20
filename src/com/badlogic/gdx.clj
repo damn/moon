@@ -110,73 +110,72 @@
   (doto (OrthographicCamera.)
     (.setToOrtho y-down? world-width world-height)))
 
-(defn step
-  [ctx]
-  (merge ctx
-         (let [_ (doseq [[name rgba] {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
-                   (Colors/put name (color/create rgba)))
-               _ (set! (.initialTime (TooltipManager/getInstance)) 0)
-               batch (SpriteBatch.)
-               white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
-                                                  (.setColor 1 1 1 1)
-                                                  (.drawPixel 0 0))
-                                         texture (Texture. pixmap)]
-                                     (.dispose pixmap)
-                                     texture)
-               world-unit-scale (float (/ 48))]
-           {:ctx/app Gdx/app
-            ; input.graphics
-            ; clear-screen ....
+(defn create-context
+  []
+  (let [_ (doseq [[name rgba] {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
+            (Colors/put name (color/create rgba)))
+        _ (set! (.initialTime (TooltipManager/getInstance)) 0)
+        batch (SpriteBatch.)
+        white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                                           (.setColor 1 1 1 1)
+                                           (.drawPixel 0 0))
+                                  texture (Texture. pixmap)]
+                              (.dispose pixmap)
+                              texture)
+        world-unit-scale (float (/ 48))]
+    {:ctx/app Gdx/app
+     ; input.graphics
+     ; clear-screen ....
 
-            :ctx/audio (into {}
-                             (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
-                               [sound-name
-                                (.newSound Gdx/audio
-                                           (.internal Gdx/files (format "sounds/%s.wav" sound-name)))]))
-            :ctx/batch batch
-            :ctx/shape-drawer-texture white-pixel-texture
-            :ctx/shape-drawer (ShapeDrawer. batch (texture/region white-pixel-texture 1 0 1 1))
-            :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
-                                    size 16
-                                    quality-scaling 2
-                                    generator (FreeTypeFontGenerator. (.internal Gdx/files path))
-                                    font (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                                                                    (set! (.size params) (* size quality-scaling))
-                                                                    ; Texture$TextureFilter/Linear because scaling to world-units
-                                                                    (set! (.minFilter params) Texture$TextureFilter/Linear)
-                                                                    (set! (.magFilter params) Texture$TextureFilter/Linear)
-                                                                    params))]
-                                (.dispose generator)
-                                (font.data/set-scale! (.getData font) (/ quality-scaling))
-                                (font.data/set-markup-enabled! (.getData font) true)
-                                (.setUseIntegerPositions font false)
-                                font)
-            :ctx/world-unit-scale world-unit-scale
-            :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
-                                      world-height (* 900  world-unit-scale)]
-                                  (fit-viewport world-width
-                                                world-height
-                                                (orthographic-camera {:y-down? false
-                                                                      :world-width world-width
-                                                                      :world-height world-height})))
-            :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
-                           (update-vals data
-                                        (fn [[path [hotspot-x hotspot-y]]]
-                                          (let [pixmap (Pixmap. (.internal Gdx/files (format path-format path)))
-                                                cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
-                                            (.dispose pixmap)
-                                            cursor))))
-            :ctx/stage (let [stage (create-stage (fit-viewport 1440 900) batch)]
-                         (.setInputProcessor Gdx/input stage)
-                         stage)
-            :ctx/skin (let [skin (Skin. (.internal Gdx/files "uiskin.json"))]
-                        (-> skin
-                            (skin/font "default-font")
-                            bitmap-font/data
-                            (font.data/set-markup-enabled! true))
-                        skin)
-            :ctx/unit-scale (atom 1)
-            :ctx/textures (com.badlogic.gdx.textures/create)})))
+     :ctx/audio (into {}
+                      (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
+                        [sound-name
+                         (.newSound Gdx/audio
+                                    (.internal Gdx/files (format "sounds/%s.wav" sound-name)))]))
+     :ctx/batch batch
+     :ctx/shape-drawer-texture white-pixel-texture
+     :ctx/shape-drawer (ShapeDrawer. batch (texture/region white-pixel-texture 1 0 1 1))
+     :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
+                             size 16
+                             quality-scaling 2
+                             generator (FreeTypeFontGenerator. (.internal Gdx/files path))
+                             font (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                                                             (set! (.size params) (* size quality-scaling))
+                                                             ; Texture$TextureFilter/Linear because scaling to world-units
+                                                             (set! (.minFilter params) Texture$TextureFilter/Linear)
+                                                             (set! (.magFilter params) Texture$TextureFilter/Linear)
+                                                             params))]
+                         (.dispose generator)
+                         (font.data/set-scale! (.getData font) (/ quality-scaling))
+                         (font.data/set-markup-enabled! (.getData font) true)
+                         (.setUseIntegerPositions font false)
+                         font)
+     :ctx/world-unit-scale world-unit-scale
+     :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
+                               world-height (* 900  world-unit-scale)]
+                           (fit-viewport world-width
+                                         world-height
+                                         (orthographic-camera {:y-down? false
+                                                               :world-width world-width
+                                                               :world-height world-height})))
+     :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
+                    (update-vals data
+                                 (fn [[path [hotspot-x hotspot-y]]]
+                                   (let [pixmap (Pixmap. (.internal Gdx/files (format path-format path)))
+                                         cursor (.newCursor Gdx/graphics pixmap hotspot-x hotspot-y)]
+                                     (.dispose pixmap)
+                                     cursor))))
+     :ctx/stage (let [stage (create-stage (fit-viewport 1440 900) batch)]
+                  (.setInputProcessor Gdx/input stage)
+                  stage)
+     :ctx/skin (let [skin (Skin. (.internal Gdx/files "uiskin.json"))]
+                 (-> skin
+                     (skin/font "default-font")
+                     bitmap-font/data
+                     (font.data/set-markup-enabled! true))
+                 skin)
+     :ctx/unit-scale (atom 1)
+     :ctx/textures (com.badlogic.gdx.textures/create)}))
 
 (extend-type Application
   app/App
