@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx
-  (:require [com.badlogic.gdx.graphics.colors :as colors]
+  (:require [com.badlogic.gdx.backends.lwjgl3.application :as application]
+            [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.pixmap :as pixmap]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -22,7 +23,6 @@
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdl.app :as app]
-            [gdl.application-listener :as listener]
             [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
@@ -47,15 +47,11 @@
             [gdl.sound :as sound]
             [gdl.utils.disposable :as disposable])
   (:import (com.badlogic.gdx Application
-                             ApplicationListener
                              Audio
                              Files
-                             Gdx
                              Graphics
                              Input)
            (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Texture)
@@ -95,34 +91,7 @@
 
 (def stage ctx-stage/create)
 
-(defn application!
-  [listener
-   {:keys [title
-           windowed-mode
-           foreground-fps]}]
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (reify ApplicationListener
-                        (create [_]
-                          (listener/create! listener Gdx/app))
-
-                        (dispose [_]
-                          (listener/dispose! listener))
-
-                        (render [_]
-                          (listener/render! listener))
-
-                        (resize [_ width height]
-                          (listener/resize! listener width height))
-
-                        (pause [_]
-                          (listener/pause! listener))
-
-                        (resume [_]
-                          (listener/resume! listener)))
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle title)
-                        (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
-                        (.setForegroundFPS foreground-fps))))
+(def application! application/create)
 
 (extend-type Application
   app/App
