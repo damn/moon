@@ -1,8 +1,9 @@
 (ns game.ui.action-bar
   (:require [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
-            [moon.ui.action-bar :as action-bar]
-            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))
+            [moon.ui.action-bar :as action-bar])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button
+                                               ButtonGroup)))
 
 (defmethod actor/create :ui/action-bar [_]
   (actor/create
@@ -13,9 +14,9 @@
                             :space 2
                             :pad 2
                             :actor/name "moon.ui.action-bar.horizontal-group"
-                            :actor/user-object (button-group/create
-                                                {:max-check-count 1
-                                                 :min-check-count 0})})
+                            :actor/user-object (doto (ButtonGroup.)
+                                                 (.setMaxCheckCount 1)
+                                                 (.setMinCheckCount 0))})
                    :expand? true
                    :bottom? true}]]
     :actor/name "moon.ui.action-bar"
@@ -31,7 +32,7 @@
 (extend-type com.badlogic.gdx.scenes.scene2d.ui.Table
   action-bar/ActionBar
   (selected-skill [action-bar]
-    (when-let [skill-button (button-group/checked (:button-group (get-data action-bar)))]
+    (when-let [skill-button (ButtonGroup/.getChecked (:button-group (get-data action-bar)))]
       (actor/user-object skill-button)))
 
   (add-skill!
@@ -48,12 +49,12 @@
                    :actor/listeners {:listener/text-tooltip [tooltip-text skin]}
                    :actor/user-object skill-id})]
       (group/add-actor! horizontal-group button)
-      (button-group/add! button-group button)
+      (ButtonGroup/.add button-group ^Button button)
       nil))
 
   (remove-skill! [action-bar skill-id]
     (let [{:keys [horizontal-group button-group]} (get-data action-bar)
           button (get horizontal-group skill-id)]
       (actor/remove! button)
-      (button-group/remove! button-group button)
+      (ButtonGroup/.remove button-group ^Button button)
       nil)))
