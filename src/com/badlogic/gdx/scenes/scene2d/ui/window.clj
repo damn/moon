@@ -6,9 +6,6 @@
   [{:keys [title skin]}]
   (Window. ^String title ^Skin skin))
 
-(defn title-label [window]
-  (Window/.getTitleLabel window))
-
 (defn set-modal! [window modal?]
   (Window/.setModal window modal?))
 
