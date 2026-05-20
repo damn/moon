@@ -1,5 +1,10 @@
 (ns com.badlogic.gdx
-  (:require [com.badlogic.gdx.backends.lwjgl3.application :as application]
+  (:require com.badlogic.gdx.application
+            com.badlogic.gdx.audio
+            com.badlogic.gdx.files
+            com.badlogic.gdx.graphics
+            com.badlogic.gdx.input
+            [com.badlogic.gdx.backends.lwjgl3.application :as application]
             [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.pixmap :as pixmap]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
@@ -22,17 +27,12 @@
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [gdl.app :as app]
-            [gdl.audio :as audio]
-            [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
-            [gdl.graphics :as graphics]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.graphics.g2d.freetype.font-generator :as font-generator]
-            [gdl.input :as input]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.event :as event]
@@ -46,12 +46,7 @@
             [gdl.scene2d.ui.widget-group :as widget-group]
             [gdl.sound :as sound]
             [gdl.utils.disposable :as disposable])
-  (:import (com.badlogic.gdx Application
-                             Audio
-                             Files
-                             Graphics
-                             Input)
-           (com.badlogic.gdx.audio Sound)
+  (:import (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Texture)
@@ -92,65 +87,6 @@
 (def stage ctx-stage/create)
 
 (def application! application/create)
-
-(extend-type Application
-  app/App
-  (audio [app]
-    (.getAudio app))
-
-  (files [app]
-    (.getFiles app))
-
-  (graphics [app]
-    (.getGraphics app))
-
-  (input [app]
-    (.getInput app)))
-
-(extend-type Audio
-  audio/Audio
-  (new-sound [this file-handle]
-    (.newSound this file-handle)))
-
-(extend-type Files
-  files/Files
-  (internal [this path]
-    (.internal this path)))
-
-(extend-type Graphics
-  graphics/Graphics
-  (frames-per-second [graphics]
-    (.getFramesPerSecond graphics))
-
-  (delta-time [graphics]
-    (.getDeltaTime graphics))
-
-  (new-cursor [graphics pixmap hotspot-x hotspot-y]
-    (.newCursor graphics pixmap hotspot-x hotspot-y))
-
-  (set-cursor! [graphics cursor]
-    (.setCursor graphics cursor))
-
-  (gl20 [graphics]
-    (.getGL20 graphics)))
-
-(extend-type Input
-  input/Input
-  (set-processor! [this input-processor]
-    (.setInputProcessor this input-processor))
-
-  (key-pressed? [this key]
-    (.isKeyPressed this key))
-
-  (key-just-pressed? [this key]
-    (.isKeyJustPressed this key))
-
-  (button-just-pressed? [this button]
-    (.isButtonJustPressed this button))
-
-  (mouse-position [this]
-    [(.getX this)
-     (.getY this)]))
 
 (extend-type Sound
   sound/Sound
