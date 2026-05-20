@@ -3,13 +3,15 @@
             [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.graphics :as graphics]
-            [gdl.input :as input])
+            [gdl.input :as input]
+            [gdl.sound :as sound])
   (:import (com.badlogic.gdx Application
                              Audio
                              Files
                              Gdx
                              Graphics
-                             Input)))
+                             Input)
+           (com.badlogic.gdx.audio Sound)))
 
 (defn app []
   Gdx/app)
@@ -72,3 +74,8 @@
   (mouse-position [this]
     [(.getX this)
      (.getY this)]))
+
+(extend-type Sound
+  sound/Sound
+  (play! [this]
+    (.play this)))

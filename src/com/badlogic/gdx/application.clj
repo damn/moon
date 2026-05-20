@@ -24,10 +24,10 @@
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdl.application-listener :as listener]
             [gdl.app :as app]
             [gdl.audio :as audio]
-            [gdl.sound :as sound]
             [gdl.files :as files]
             [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
@@ -47,11 +47,8 @@
             [gdl.scene2d.ui.table]
             [gdl.scene2d.ui.text-field]
             [gdl.scene2d.ui.widget-group :as widget-group]
-            [gdl.utils.disposable :as disposable]
-            [gdl.utils.viewport :as viewport])
-  (:import (clojure.lang ILookup)
-           (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.graphics Pixmap
+            [gdl.utils.disposable :as disposable])
+  (:import (com.badlogic.gdx.graphics Pixmap
                                       Texture
                                       Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -72,8 +69,7 @@
                                                Skin
                                                Stack
                                                Widget)
-           (com.badlogic.gdx.utils Disposable)
-           (com.badlogic.gdx.utils.viewport FitViewport))
+           (com.badlogic.gdx.utils Disposable))
   (:gen-class))
 
 (extend-type BitmapFont
@@ -130,16 +126,6 @@
   event/Event
   (stage [event]
     (.getStage event)))
-
-(extend-type FitViewport
-  viewport/Viewport
-  (update! [viewport screen-width screen-height center-camera?]
-    (.update viewport screen-width screen-height center-camera?))
-
-  (unproject [viewport position]
-    (-> viewport
-        (.unproject (vector2/->java position))
-        vector2/->clj)))
 
 (extend-type Skin
   skin/Skin
@@ -426,27 +412,6 @@
   (checked? [this]
     (.isChecked this)))
 
-(extend-type Sound
-  sound/Sound
-  (play! [this]
-    (.play this)))
-
-(defn- fit-viewport
-  ([width height]
-   (proxy [FitViewport ILookup] [width height]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this)))))
-  ([width height camera]
-   (proxy [FitViewport ILookup] [width height camera]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this))))))
-
 (def state (atom nil))
 
 (defn -main []
@@ -495,12 +460,12 @@
                                                :ctx/world-unit-scale world-unit-scale
                                                :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
                                                                          world-height (* 900  world-unit-scale)]
-                                                                     (fit-viewport world-width
-                                                                                   world-height
-                                                                                   (orthographic-camera/create
-                                                                                    {:y-down? false
-                                                                                     :world-width world-width
-                                                                                     :world-height world-height})))
+                                                                     (fit-viewport/create world-width
+                                                                                          world-height
+                                                                                          (orthographic-camera/create
+                                                                                           {:y-down? false
+                                                                                            :world-width world-width
+                                                                                            :world-height world-height})))
                                                :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                                                               (update-vals data
                                                                            (fn [[path [hotspot-x hotspot-y]]]
@@ -508,7 +473,7 @@
                                                                                    cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                                                                (.dispose pixmap)
                                                                                cursor))))
-                                               :ctx/stage (let [stage (ctx-stage/create (fit-viewport 1440 900) batch)]
+                                               :ctx/stage (let [stage (ctx-stage/create (fit-viewport/create 1440 900) batch)]
                                                             (input/set-processor! (app/input app) stage)
                                                             stage)
                                                :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
