@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx
   (:require [com.badlogic.gdx.graphics.colors :as colors]
+            [com.badlogic.gdx.graphics.pixmap :as pixmap]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.math.vector2 :as vector2]
@@ -27,7 +28,6 @@
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
             [gdl.graphics.texture :as texture]
-            [gdl.graphics.pixmap :as pixmap]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [gdl.graphics.g2d.texture-region :as texture-region]
@@ -58,7 +58,6 @@
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
-                                      Pixmap$Format
                                       Texture)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData
@@ -88,13 +87,7 @@
 
 (def put-colors! colors/put!)
 
-(defn white-pixel-texture []
-  (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
-                 (.setColor 1 1 1 1)
-                 (.drawPixel 0 0))
-        texture (Texture. pixmap)]
-    (pixmap/dispose! pixmap)
-    texture))
+(def pixmap pixmap/create)
 
 (def orthographic-camera orthographic-camera/create)
 
@@ -570,8 +563,3 @@
 
   (dispose! [this]
     (.dispose this)))
-
-(extend-type Pixmap
-  pixmap/Pixmap
-  (dispose! [pixmap]
-    (.dispose pixmap)))

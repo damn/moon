@@ -40,7 +40,12 @@
                                   (reduce (fn [ctx [f & params]]
                                             (apply f ctx params))
                                           (let [batch (gdx/sprite-batch)
-                                                white-pixel-texture (gdx/white-pixel-texture)
+                                                white-pixel-texture (let [pixmap (doto (gdx/pixmap 1 1)
+                                                                                   (pixmap/set-color! 1 1 1 1)
+                                                                                   (pixmap/draw-pixel! 0 0))
+                                                                          texture (pixmap/texture pixmap)]
+                                                                      (pixmap/dispose! pixmap)
+                                                                      texture)
                                                 world-unit-scale (float (/ 48))]
                                             {:ctx/app app
                                              :ctx/audio (into {}
