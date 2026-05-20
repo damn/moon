@@ -2,6 +2,7 @@
   (:require [clojure.config :refer [edn-resource]]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [com.badlogic.gdx.graphics]
             [com.badlogic.gdx.textures]
             [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
@@ -55,7 +56,6 @@
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics Pixmap
-                                      Pixmap$Format
                                       Texture
                                       Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -574,12 +574,7 @@
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
                                             (let [batch (sprite-batch/create)
-                                                  white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
-                                                                                     (.setColor 1 1 1 1)
-                                                                                     (.drawPixel 0 0))
-                                                                            texture (Texture. pixmap)]
-                                                                        (.dispose pixmap)
-                                                                        texture)
+                                                  white-pixel-texture (com.badlogic.gdx.graphics/white-pixel-texture)
                                                   world-unit-scale (float (/ 48))]
                                               {:ctx/app Gdx/app
                                                :ctx/audio (into {}
