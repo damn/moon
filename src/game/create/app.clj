@@ -1,7 +1,6 @@
 (ns game.create.app
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [gdx.api :as gdx]
             [game.textures]
             [gdl.app :as app]
             [gdl.audio :as audio]
@@ -19,10 +18,10 @@
             [gdl.scene2d.ui.skin :as skin]))
 
 (defn step [app]
-  (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-  (gdx/tooltip-manager-set-initial-time! 0)
-  (let [batch (app/sprite-batch app)
-        white-pixel-texture (let [pixmap (doto (gdx/pixmap 1 1)
+  (app/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
+  (app/tooltip-manager-set-initial-time! 0)
+  (let [batch (app/sprite-batch)
+        white-pixel-texture (let [pixmap (doto (app/pixmap 1 1)
                                            (pixmap/set-color! 1 1 1 1)
                                            (pixmap/draw-pixel! 0 0))
                                   texture (pixmap/texture pixmap)]
@@ -55,9 +54,9 @@
      :ctx/world-unit-scale world-unit-scale
      :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
                                world-height (* 900  world-unit-scale)]
-                           (gdx/fit-viewport world-width
+                           (app/fit-viewport world-width
                                              world-height
-                                             (gdx/orthographic-camera
+                                             (app/orthographic-camera
                                               {:y-down? false
                                                :world-width world-width
                                                :world-height world-height})))
@@ -68,7 +67,7 @@
                                          cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                      (pixmap/dispose! pixmap)
                                      cursor))))
-     :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
+     :ctx/stage (let [stage (app/stage (app/fit-viewport 1440 900) batch)]
                   (input/set-processor! (app/input app) stage)
                   stage)
      :ctx/skin (let [skin (file-handle/skin (files/internal (app/files app) "uiskin.json"))]

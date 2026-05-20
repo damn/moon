@@ -97,9 +97,9 @@
         graphics (app/graphics app)
         input (app/input app)
         skin (file-handle/skin (files/internal files "uiskin.json"))
-        ui-viewport (gdx/fit-viewport 1440 900)
-        sprite-batch (app/sprite-batch app)
-        stage (gdx/stage ui-viewport sprite-batch)
+        ui-viewport (app/fit-viewport 1440 900)
+        sprite-batch (app/sprite-batch)
+        stage (app/stage ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
@@ -109,9 +109,9 @@
         ctx (assoc ctx :ctx/textures (textures/create files))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
-                         (gdx/fit-viewport world-width
+                         (app/fit-viewport world-width
                                            world-height
-                                           (gdx/orthographic-camera
+                                           (app/orthographic-camera
                                             {:y-down? false
                                              :world-width world-width
                                              :world-height world-height})))
@@ -173,7 +173,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (gdx/clear-screen! [0 0 0 0])
+    (app/clear-screen! [0 0 0 0])
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)

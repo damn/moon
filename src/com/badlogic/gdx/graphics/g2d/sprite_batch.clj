@@ -1,14 +1,10 @@
 (ns com.badlogic.gdx.graphics.g2d.sprite-batch
-  (:require [gdl.app :as app]
-            [gdl.graphics.batch :as batch])
-  (:import (com.badlogic.gdx Application)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch
+  (:require [gdl.graphics.batch :as batch])
+  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)))
 
-(extend-type Application
-  app/SpriteBatch
-  (sprite-batch [_application]
-    (SpriteBatch.)))
+(defn create []
+  (SpriteBatch.))
 
 (extend-type SpriteBatch
   batch/Batch

@@ -6,5 +6,11 @@
   (graphics [_])
   (input [_]))
 
-(defprotocol SpriteBatch
-  (sprite-batch [_]))
+(declare sprite-batch
+         clear-screen!
+         fit-viewport
+         tooltip-manager-set-initial-time!
+         put-colors!
+         pixmap
+         orthographic-camera
+         stage)

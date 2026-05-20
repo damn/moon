@@ -1,5 +1,6 @@
 (ns gdx.api
-  (:require com.badlogic.gdx.application
+  (:require [gdl.app :as app]
+            com.badlogic.gdx.application
 
             com.badlogic.gdx.audio
             com.badlogic.gdx.audio.sound
@@ -15,7 +16,7 @@
             com.badlogic.gdx.graphics.g2d.bitmap-font
             com.badlogic.gdx.graphics.g2d.bitmap-font.data
             com.badlogic.gdx.graphics.g2d.texture-region
-            com.badlogic.gdx.graphics.g2d.sprite-batch
+            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
 
             com.badlogic.gdx.graphics.g2d.freetype.font-generator
 
@@ -59,18 +60,13 @@
             space.earlygrey.shape-drawer
             ))
 
-(def clear-screen! screen-utils/clear!)
-
-(def fit-viewport fit-viewport/create)
-
-(def tooltip-manager-set-initial-time! tooltip-manager/set-initial-time!)
-
-(def put-colors! colors/put!)
-
-(def pixmap pixmap/create)
-
-(def orthographic-camera orthographic-camera/create)
-
-(def stage ctx-stage/create)
+(.bindRoot #'app/sprite-batch sprite-batch/create)
+(.bindRoot #'app/clear-screen! screen-utils/clear!)
+(.bindRoot #'app/fit-viewport fit-viewport/create)
+(.bindRoot #'app/tooltip-manager-set-initial-time! tooltip-manager/set-initial-time!)
+(.bindRoot #'app/put-colors! colors/put!)
+(.bindRoot #'app/pixmap pixmap/create)
+(.bindRoot #'app/orthographic-camera orthographic-camera/create)
+(.bindRoot #'app/stage ctx-stage/create)
 
 (def application! application/create)
