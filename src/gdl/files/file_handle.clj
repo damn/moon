@@ -5,8 +5,16 @@
   (list [_])
   (path [_])
   (extension [_])
-  (directory? [_])
-  (texture [_])
-  (pixmap [_])
-  (skin [_])
+  (directory? [_]))
+
+(defprotocol Texture
+  (texture [_]))
+
+(defprotocol Pixmap
+  (pixmap [_]))
+
+(defprotocol Skin
+  (skin [_]))
+
+(defprotocol FreetypeFontGenerator
   (freetype-font-generator [_]))

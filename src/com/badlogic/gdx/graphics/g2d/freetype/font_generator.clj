@@ -1,7 +1,14 @@
 (ns com.badlogic.gdx.graphics.g2d.freetype.font-generator
-  (:require [gdl.graphics.g2d.freetype.font-generator :as font-generator])
-  (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+  (:require [gdl.files.file-handle :as file-handle]
+            [gdl.graphics.g2d.freetype.font-generator :as font-generator])
+  (:import (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
+
+(extend-type FileHandle
+  file-handle/FreetypeFontGenerator
+  (freetype-font-generator [file-handle]
+    (FreeTypeFontGenerator. file-handle)))
 
 (extend-type FreeTypeFontGenerator
   font-generator/FreeTypeFontGenerator

@@ -1,7 +1,14 @@
 (ns com.badlogic.gdx.graphics.texture
-  (:require [gdl.graphics.texture :as texture])
-  (:import (com.badlogic.gdx.graphics Texture)
+  (:require [gdl.files.file-handle :as file-handle]
+            [gdl.graphics.texture :as texture])
+  (:import (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
+
+(extend-type FileHandle
+  file-handle/Texture
+  (texture [file-handle]
+    (Texture. file-handle)))
 
 (extend-type Texture
   texture/Texture
