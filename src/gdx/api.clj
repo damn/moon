@@ -1,6 +1,5 @@
 (ns gdx.api
-  (:require [gdl.app :as app]
-            com.badlogic.gdx.application
+  (:require com.badlogic.gdx.application
 
             com.badlogic.gdx.audio
             com.badlogic.gdx.audio.sound
@@ -9,14 +8,14 @@
             com.badlogic.gdx.files.file-handle
 
             com.badlogic.gdx.graphics
-            [com.badlogic.gdx.graphics.colors :as colors]
-            [com.badlogic.gdx.graphics.pixmap :as pixmap]
+            com.badlogic.gdx.graphics.colors
+            com.badlogic.gdx.graphics.pixmap
             com.badlogic.gdx.graphics.texture
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+            com.badlogic.gdx.graphics.orthographic-camera
             com.badlogic.gdx.graphics.g2d.bitmap-font
             com.badlogic.gdx.graphics.g2d.bitmap-font.data
             com.badlogic.gdx.graphics.g2d.texture-region
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            com.badlogic.gdx.graphics.g2d.sprite-batch
 
             com.badlogic.gdx.graphics.g2d.freetype.font-generator
 
@@ -24,7 +23,7 @@
 
             [com.badlogic.gdx.backends.lwjgl3.application :as application]
 
-            [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
+            com.badlogic.gdx.scenes.scene2d.ctx-stage
             com.badlogic.gdx.scenes.scene2d.actor
             com.badlogic.gdx.scenes.scene2d.group
             com.badlogic.gdx.scenes.scene2d.event
@@ -44,7 +43,7 @@
             com.badlogic.gdx.scenes.scene2d.ui.table
             com.badlogic.gdx.scenes.scene2d.ui.image
             com.badlogic.gdx.scenes.scene2d.ui.check-box
-            [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+            com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager
             com.badlogic.gdx.scenes.scene2d.ui.window
             com.badlogic.gdx.scenes.scene2d.ui.widget-group
 
@@ -54,19 +53,10 @@
             com.badlogic.gdx.maps.renderer
 
             com.badlogic.gdx.utils.disposable
-            [com.badlogic.gdx.utils.screen-utils :as screen-utils]
+            com.badlogic.gdx.utils.screen-utils
 
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            com.badlogic.gdx.utils.viewport.fit-viewport
             space.earlygrey.shape-drawer
             ))
-
-(.bindRoot #'app/sprite-batch sprite-batch/create)
-(.bindRoot #'app/clear-screen! screen-utils/clear!)
-(.bindRoot #'app/fit-viewport fit-viewport/create)
-(.bindRoot #'app/tooltip-manager-set-initial-time! tooltip-manager/set-initial-time!)
-(.bindRoot #'app/put-colors! colors/put!)
-(.bindRoot #'app/pixmap pixmap/create)
-(.bindRoot #'app/orthographic-camera orthographic-camera/create)
-(.bindRoot #'app/stage ctx-stage/create)
 
 (def application! application/create)

@@ -1,14 +1,16 @@
 (ns com.badlogic.gdx.graphics.orthographic-camera
   (:require [com.badlogic.gdx.math.vector3 :as vector3]
+            [gdl.app :as app]
             [gdl.graphics.orthographic-camera :as camera])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
-(defn create
-  [{:keys [y-down?
-           world-width
-           world-height]}]
-  (doto (OrthographicCamera.)
-    (.setToOrtho y-down? world-width world-height)))
+(.bindRoot #'app/orthographic-camera
+           (fn
+             [{:keys [y-down?
+                      world-width
+                      world-height]}]
+             (doto (OrthographicCamera.)
+               (.setToOrtho y-down? world-width world-height))))
 
 (extend-type OrthographicCamera
   camera/OrthographicCamera

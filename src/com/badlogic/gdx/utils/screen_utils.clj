@@ -1,5 +1,7 @@
 (ns com.badlogic.gdx.utils.screen-utils
+  (:require [gdl.app :as app])
   (:import (com.badlogic.gdx.utils ScreenUtils)))
 
-(defn clear! [[r g b a]]
-  (ScreenUtils/clear r g b a))
+(.bindRoot #'app/clear-screen!
+           (fn [[r g b a]]
+             (ScreenUtils/clear r g b a)))

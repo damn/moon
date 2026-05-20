@@ -1,18 +1,20 @@
 (ns com.badlogic.gdx.scenes.scene2d.ctx-stage
-  (:require [gdl.scene2d.actor :as actor]
+  (:require [gdl.app :as app]
+            [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.stage :as stage]
             [gdl.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.scenes.scene2d CtxStage)))
 
-(defn create [viewport batch]
-  (proxy [CtxStage ILookup] [viewport batch]
-    (valAt [k]
-      (case k
-        ; TODO :stage/root
-        :stage/ctx      (.ctx         ^CtxStage this)
-        :stage/viewport (.getViewport ^CtxStage this)))))
+(.bindRoot #'app/stage
+           (fn [viewport batch]
+             (proxy [CtxStage ILookup] [viewport batch]
+               (valAt [k]
+                 (case k
+                   ; TODO :stage/root
+                   :stage/ctx      (.ctx         ^CtxStage this)
+                   :stage/viewport (.getViewport ^CtxStage this))))))
 
 (extend-type CtxStage
   stage/Stage
