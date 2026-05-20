@@ -17,6 +17,8 @@
             com.badlogic.gdx.graphics.g2d.texture-region
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
 
+            com.badlogic.gdx.graphics.g2d.freetype.font-generator
+
             com.badlogic.gdx.input
 
             [com.badlogic.gdx.backends.lwjgl3.application :as application]
@@ -48,10 +50,7 @@
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
 
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-
-            [gdl.graphics.g2d.freetype.font-generator :as font-generator])
-  (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
+            ))
 
 (def clear-screen! screen-utils/clear!)
 
@@ -70,17 +69,3 @@
 (def stage ctx-stage/create)
 
 (def application! application/create)
-
-(extend-type FreeTypeFontGenerator
-  font-generator/FreeTypeFontGenerator
-  (generate-font [this {:keys [size
-                               min-filter
-                               mag-filter]}]
-    (.generateFont this (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                          (set! (.size params) size)
-                          (set! (.minFilter params) min-filter)
-                          (set! (.magFilter params) mag-filter)
-                          params)))
-
-  (dispose! [this]
-    (.dispose this)))
