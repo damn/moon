@@ -1,8 +1,14 @@
 (ns com.badlogic.gdx
   (:require com.badlogic.gdx.application
             com.badlogic.gdx.audio
+            com.badlogic.gdx.audio.sound
             com.badlogic.gdx.files
+            com.badlogic.gdx.files.file-handle
             com.badlogic.gdx.graphics
+            com.badlogic.gdx.graphics.texture
+            com.badlogic.gdx.graphics.g2d.bitmap-font
+            com.badlogic.gdx.graphics.g2d.bitmap-font.data
+            com.badlogic.gdx.graphics.g2d.texture-region
             com.badlogic.gdx.input
             [com.badlogic.gdx.backends.lwjgl3.application :as application]
             [com.badlogic.gdx.graphics.colors :as colors]
@@ -11,11 +17,13 @@
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
+            com.badlogic.gdx.scenes.scene2d.event
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.image]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
+            com.badlogic.gdx.scenes.scene2d.ui.skin
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
@@ -25,38 +33,22 @@
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]
+            com.badlogic.gdx.utils.disposable
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [gdl.files.file-handle :as file-handle]
-            [gdl.graphics.texture :as texture]
-            [gdl.graphics.g2d.bitmap-font :as bitmap-font]
-            [gdl.graphics.g2d.bitmap-font.data :as font.data]
-            [gdl.graphics.g2d.texture-region :as texture-region]
             [gdl.graphics.g2d.freetype.font-generator :as font-generator]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
-            [gdl.scene2d.event :as event]
             [gdl.scene2d.ui.check-box :as check-box]
             [gdl.scene2d.ui.image :as image]
             [gdl.scene2d.ui.label :as label]
             [gdl.scene2d.ui.select-box :as select-box]
-            [gdl.scene2d.ui.skin :as skin]
             [gdl.scene2d.ui.table]
             [gdl.scene2d.ui.text-field]
-            [gdl.scene2d.ui.widget-group :as widget-group]
-            [gdl.sound :as sound]
-            [gdl.utils.disposable :as disposable])
-  (:import (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Pixmap
-                                      Texture)
-           (com.badlogic.gdx.graphics.g2d BitmapFont
-                                          BitmapFont$BitmapFontData
-                                          TextureRegion)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+            [gdl.scene2d.ui.widget-group :as widget-group])
+  (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event
                                             Group)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox
                                                Image
@@ -67,8 +59,7 @@
                                                SelectBox
                                                Skin
                                                Stack
-                                               Widget)
-           (com.badlogic.gdx.utils Disposable)))
+                                               Widget)))
 
 (def clear-screen! screen-utils/clear!)
 
@@ -87,74 +78,6 @@
 (def stage ctx-stage/create)
 
 (def application! application/create)
-
-(extend-type Sound
-  sound/Sound
-  (play! [this]
-    (.play this)))
-
-(extend-type BitmapFont
-  bitmap-font/BitmapFont
-  (data [font]
-    (.getData font))
-
-  (line-height [font]
-    (.getLineHeight font))
-
-  (draw! [font batch text x y target-width align wrap?]
-    (.draw font
-           batch
-           text
-           (float x)
-           (float y)
-           (float target-width)
-           (align/k->value align)
-           wrap?))
-
-  (set-use-integer-positions! [font use-integer-positions?]
-    (.setUseIntegerPositions font use-integer-positions?)))
-
-(extend-type BitmapFont$BitmapFontData
-  font.data/Data
-  (scale-x [data]
-    (.scaleX data))
-
-  (set-scale! [data scale]
-    (.setScale data scale))
-
-  (set-markup-enabled! [data enabled?]
-    (set! (.markupEnabled data) enabled?)))
-
-(extend-type Texture
-  texture/Texture
-  (region
-    ([texture]
-     (TextureRegion. texture))
-    ([texture x y w h]
-     (TextureRegion. texture (int x) (int y) (int w) (int h)))))
-
-(extend-type TextureRegion
-  texture-region/TextureRegion
-  (width [this]
-    (.getRegionWidth this))
-
-  (height [this]
-    (.getRegionHeight this)))
-
-(extend-type Disposable
-  disposable/Disposable
-  (dispose! [this]
-    (.dispose this)))
-
-(extend-type Event
-  event/Event
-  (stage [event]
-    (.getStage event)))
-
-(extend-type Skin
-  skin/Skin
-  (font [skin name]
-    (.getFont skin name)))
 
 (defmethod actor/create :ui/horizontal-group
   [{:keys [space pad] :as opts}]
@@ -435,25 +358,6 @@
   check-box/CheckBox
   (checked? [this]
     (.isChecked this)))
-
-(extend-type FileHandle
-  file-handle/FileHandle
-  (list [this]
-    (.list this))
-  (path [this]
-    (.path this))
-  (extension [this]
-    (.extension this))
-  (directory? [this]
-    (.isDirectory this))
-  (texture [this]
-    (Texture. this))
-  (pixmap [this]
-    (Pixmap. this))
-  (skin [this]
-    (Skin. this))
-  (freetype-font-generator [this]
-    (FreeTypeFontGenerator. this)))
 
 (extend-type FreeTypeFontGenerator
   font-generator/FreeTypeFontGenerator

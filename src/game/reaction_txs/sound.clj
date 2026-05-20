@@ -1,5 +1,5 @@
 (ns game.reaction-txs.sound
-  (:require [gdl.sound :as sound]))
+  (:require [gdl.audio.sound :as sound]))
 
 (defn do!
   [{:keys [ctx/audio] :as ctx} sound-name]
