@@ -96,7 +96,7 @@
         creatures (for [position spawn-positions
                         :when (<= (rand) spawn-rate)]
                     [position (rand-nth creatures)])]
-    (tiled-map/add-creatures-layer! tiled-map creatures)
+    (moon.tiled-map/add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position start-position}))
 

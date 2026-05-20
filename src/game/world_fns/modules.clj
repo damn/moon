@@ -277,7 +277,7 @@
                                    (<= (rand) spawn-rate)
                                    (seq creatures))]
                     [position (rand-nth creatures)])]
-    (tiled-map/add-creatures-layer! tiled-map creatures)
+    (moon.tiled-map/add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position (get-free-position-in-area-level 0)
      :area-level-grid scaled-area-level-grid}))

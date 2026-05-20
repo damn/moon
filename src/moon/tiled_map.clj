@@ -1,5 +1,6 @@
 (ns moon.tiled-map
-  (:require [gdl.tiled-map :as tiled-map]
+  (:require [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.props :as props]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
@@ -55,3 +56,28 @@
                           (props/get property-key))]
           :when value]
       [position value])))
+
+(defn create-tile
+  [texture-region property-name property-value]
+  {:pre [texture-region
+         (string? property-name)]}
+  (let [tile (static-tiled-map-tile/create texture-region)]
+    (props/add! (tile/properties tile) {property-name property-value})
+    tile))
+
+; out of memory error -> each texture region is a new object
+; so either memoize on id or property/image already calculated !? idk
+(def ^:private creature-tile
+  (memoize
+   (fn [{:keys [tile/id
+                tile/texture-region]}]
+     (assert (and id
+                  texture-region))
+     (create-tile texture-region "id" id))))
+
+(defn add-creatures-layer! [tiled-map spawn-positions]
+  (tiled-map/add-layer! tiled-map
+                        {:name "creatures"
+                         :visible? false
+                         :tiles (for [[position creature-property] spawn-positions]
+                                  [position (creature-tile creature-property)])}))

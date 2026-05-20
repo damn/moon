@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx.maps.tiled
-  (:require com.badlogic.gdx.maps.map-layers
+  (:require moon.tiled-map
+            com.badlogic.gdx.maps.map-layers
             com.badlogic.gdx.maps.map-properties
             com.badlogic.gdx.maps.tiled.tiled-map
             [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
@@ -10,7 +11,7 @@
             [gdl.tiled-map.props :as props]
             [gdl.tiled-map.tile :as tile]))
 
-(def create-tile com.badlogic.gdx.maps.tiled.tiled-map/create-tile)
+(def create-tile moon.tiled-map/create-tile)
 
 (def load! tmx-map-loader/load!)
 
