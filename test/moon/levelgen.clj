@@ -2,7 +2,7 @@
   (:require [clojure.config :refer [edn-resource]]
             [com.badlogic.gdx.gdx :as gdx]
             [game.impl.db :as db-impl]
-            [game.impl.textures :as textures]
+            [com.badlogic.gdx.textures :as textures]
             [gdl.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
             [gdl.scene2d.ui.table :as table]

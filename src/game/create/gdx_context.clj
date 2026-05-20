@@ -1,7 +1,7 @@
 (ns game.create.gdx-context
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [game.impl.textures]
+            [com.badlogic.gdx.textures]
             com.badlogic.gdx.maps.renderer
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.math.vector2 :as vector2]
@@ -174,7 +174,7 @@
                             (font.data/set-markup-enabled! true))
                         skin)
             :ctx/unit-scale (atom 1)
-            :ctx/textures (game.impl.textures/create)})))
+            :ctx/textures (com.badlogic.gdx.textures/create)})))
 
 (extend-type Application
   app/App

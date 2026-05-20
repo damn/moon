@@ -1,7 +1,7 @@
 (ns game.reaction-txs.set-item
   (:require [moon.info :as info]
             [gdl.scene2d.stage :as stage]
-            [moon.textures :as textures]
+            [gdl.textures :as textures]
             [moon.ui.inventory-window :as inventory-window]))
 
 (defn do!

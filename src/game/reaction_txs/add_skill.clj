@@ -1,7 +1,7 @@
 (ns game.reaction-txs.add-skill
   (:require [moon.info :as info]
             [gdl.scene2d.stage :as stage]
-            [moon.textures :as textures]
+            [gdl.textures :as textures]
             [moon.ui.action-bar :as action-bar]))
 
 (defn do!

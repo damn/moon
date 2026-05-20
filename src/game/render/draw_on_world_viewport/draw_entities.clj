@@ -8,7 +8,7 @@
             [moon.throwable :as throwable]
             [moon.raycaster :as raycaster]
             [moon.timer :as timer]
-            [moon.textures :as textures]
+            [gdl.textures :as textures]
             [moon.order :as order]))
 
 (defmethod entity/render :entity/temp-modifier

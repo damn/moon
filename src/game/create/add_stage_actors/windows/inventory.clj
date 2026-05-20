@@ -7,7 +7,7 @@
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.txs :as txs]
-            [moon.textures :as textures]
+            [gdl.textures :as textures]
             moon.ui.inventory-window))
 
 (defmethod state/clicked-inventory-cell :player-idle

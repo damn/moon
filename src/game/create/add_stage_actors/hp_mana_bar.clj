@@ -3,7 +3,7 @@
             [moon.draws :as draws]
             [moon.number :as number]
             [moon.stats :as stats]
-            [moon.textures :as textures]
+            [gdl.textures :as textures]
             [moon.val-max :as val-max]))
 
 (defn create
