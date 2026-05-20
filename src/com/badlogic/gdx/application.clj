@@ -9,6 +9,7 @@
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.math.vector2 :as vector2]
+            [com.badlogic.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.image]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
@@ -38,7 +39,6 @@
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.group :as group]
             [gdl.scene2d.event :as event]
-            [gdl.scene2d.stage :as stage]
             [gdl.scene2d.ui.check-box :as check-box]
             [gdl.scene2d.ui.image :as image]
             [gdl.scene2d.ui.label :as label]
@@ -60,7 +60,6 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d Actor
-                                            CtxStage
                                             Event
                                             Group)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox
@@ -417,29 +416,6 @@
     (draw [batch parent-alpha]
       (draw! this batch parent-alpha))))
 
-(extend-type CtxStage
-  stage/Stage
-  (set-ctx! [stage ctx]
-    (set! (.ctx stage) ctx))
-
-  (add-actor! [stage actor]
-    (.addActor stage (actor/create actor)))
-
-  (act! [stage]
-    (.act stage))
-
-  (draw! [stage]
-    (.draw stage))
-
-  (find-actor [stage name]
-    (-> stage
-        .getRoot
-        (group/find-actor name)))
-
-  (mouseover-actor [stage position]
-    (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
-      (.hit stage x y true))))
-
 (defmethod actor/create :ui/check-box
   [{:keys [skin checked?]}]
   (doto (CheckBox. "" ^Skin skin)
@@ -454,14 +430,6 @@
   sound/Sound
   (play! [this]
     (.play this)))
-
-(defn- create-stage [viewport batch]
-  (proxy [CtxStage ILookup] [viewport batch]
-    (valAt [k]
-      (case k
-        ; TODO :stage/root
-        :stage/ctx      (.ctx         ^CtxStage this)
-        :stage/viewport (.getViewport ^CtxStage this)))))
 
 (defn- fit-viewport
   ([width height]
@@ -540,7 +508,7 @@
                                                                                    cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                                                                (.dispose pixmap)
                                                                                cursor))))
-                                               :ctx/stage (let [stage (create-stage (fit-viewport 1440 900) batch)]
+                                               :ctx/stage (let [stage (ctx-stage/create (fit-viewport 1440 900) batch)]
                                                             (input/set-processor! (app/input app) stage)
                                                             stage)
                                                :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
