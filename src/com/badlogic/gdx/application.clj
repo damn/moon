@@ -1,4 +1,4 @@
-(ns game.start
+(ns com.badlogic.gdx.application
   (:require [clojure.config :refer [edn-resource]])
   (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
