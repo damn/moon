@@ -46,6 +46,8 @@
             com.badlogic.gdx.scenes.scene2d.ui.window
             com.badlogic.gdx.scenes.scene2d.ui.widget-group
 
+            com.badlogic.gdx.maps.renderer
+
             com.badlogic.gdx.utils.disposable
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
 

@@ -1,7 +1,6 @@
 (ns gdl.graphics.batch)
 
 (defprotocol Batch
-  (draw-tiled-map! [_ world-unit-scale camera tiled-map color-setter])
   (begin! [_])
   (end! [_])
   (set-color! [_ r g b a])
@@ -11,3 +10,6 @@
 
 (defprotocol ShapeDrawer
   (shape-drawer [_ texture-region]))
+
+(defprotocol TiledMapRenderer
+  (draw-tiled-map! [_ world-unit-scale camera tiled-map color-setter]))

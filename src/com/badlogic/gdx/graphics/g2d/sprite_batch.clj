@@ -1,6 +1,5 @@
 (ns com.badlogic.gdx.graphics.g2d.sprite-batch
-  (:require com.badlogic.gdx.maps.renderer
-            [gdl.graphics.batch :as batch])
+  (:require [gdl.graphics.batch :as batch])
   (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)))
 
@@ -9,13 +8,6 @@
 
 (extend-type SpriteBatch
   batch/Batch
-  (draw-tiled-map! [batch world-unit-scale camera tiled-map color-setter]
-    (com.badlogic.gdx.maps.renderer/draw! batch
-                                          world-unit-scale
-                                          camera
-                                          tiled-map
-                                          color-setter))
-
   (begin! [batch]
     (.begin batch))
 
