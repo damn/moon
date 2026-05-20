@@ -1,6 +1,6 @@
 {
  :create  [
-           [game.create.gdx-context/step]
+           [com.badlogic.gdx/step]
            [game.create.do/step [clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]]
            [game.create.record/step]
            [game.create.impl-txs/step]

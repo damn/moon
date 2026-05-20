@@ -1,4 +1,4 @@
-(ns game.create.gdx-context
+(ns com.badlogic.gdx
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [com.badlogic.gdx.textures]
