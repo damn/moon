@@ -50,6 +50,7 @@
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
 
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            space.earlygrey.shape-drawer
             ))
 
 (def clear-screen! screen-utils/clear!)
