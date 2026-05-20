@@ -78,9 +78,30 @@
                                                SelectBox
                                                Skin
                                                Stack
+                                               TooltipManager
                                                Widget)
            (com.badlogic.gdx.utils Disposable)
+           (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
+
+(defn fit-viewport
+  ([width height]
+   (proxy [FitViewport ILookup] [width height]
+     (valAt [k]
+       (case k
+         :viewport/camera       (FitViewport/.getCamera      this)
+         :viewport/world-width  (FitViewport/.getWorldWidth  this)
+         :viewport/world-height (FitViewport/.getWorldHeight this)))))
+  ([width height camera]
+   (proxy [FitViewport ILookup] [width height camera]
+     (valAt [k]
+       (case k
+         :viewport/camera       (FitViewport/.getCamera      this)
+         :viewport/world-width  (FitViewport/.getWorldWidth  this)
+         :viewport/world-height (FitViewport/.getWorldHeight this))))))
+
+(defn tooltip-manager-set-initial-time! [value]
+  (set! (.initialTime (TooltipManager/getInstance)) value))
 
 (defn put-colors! [colors]
   (colors/put! colors))
@@ -706,3 +727,13 @@
   (mouseover-actor [stage position]
     (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
       (.hit stage x y true))))
+
+(extend-type FitViewport
+  viewport/Viewport
+  (update! [viewport screen-width screen-height center-camera?]
+    (.update viewport screen-width screen-height center-camera?))
+
+  (unproject [viewport position]
+    (-> viewport
+        (.unproject (vector2/->java position))
+        vector2/->clj)))

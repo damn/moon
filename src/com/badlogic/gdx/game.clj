@@ -4,8 +4,6 @@
             [clojure.java.io :as io]
             [com.badlogic.gdx :as gdx]
             [com.badlogic.gdx.textures]
-            [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.audio :as audio]
@@ -38,7 +36,7 @@
     (gdx/application! (reify listener/ApplicationListener
                         (create! [_ app]
                           (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-                          (tooltip-manager/set-initial-time! 0)
+                          (gdx/tooltip-manager-set-initial-time! 0)
                           (reset! state
                                   (reduce (fn [ctx [f & params]]
                                             (apply f ctx params))
@@ -72,12 +70,12 @@
                                              :ctx/world-unit-scale world-unit-scale
                                              :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
                                                                        world-height (* 900  world-unit-scale)]
-                                                                   (fit-viewport/create world-width
-                                                                                        world-height
-                                                                                        (gdx/orthographic-camera
-                                                                                         {:y-down? false
-                                                                                          :world-width world-width
-                                                                                          :world-height world-height})))
+                                                                   (gdx/fit-viewport world-width
+                                                                                     world-height
+                                                                                     (gdx/orthographic-camera
+                                                                                      {:y-down? false
+                                                                                       :world-width world-width
+                                                                                       :world-height world-height})))
                                              :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                                                             (update-vals data
                                                                          (fn [[path [hotspot-x hotspot-y]]]
@@ -85,7 +83,7 @@
                                                                                  cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                                                              (.dispose pixmap)
                                                                              cursor))))
-                                             :ctx/stage (let [stage (gdx/stage (fit-viewport/create 1440 900) batch)]
+                                             :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
                                                           (input/set-processor! (app/input app) stage)
                                                           stage)
                                              :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
