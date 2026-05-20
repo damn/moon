@@ -20,6 +20,7 @@
             [gdl.application-listener :as listener]
             [gdl.audio :as audio]
             [gdl.files :as files]
+            [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
@@ -52,6 +53,7 @@
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
                                       Texture
@@ -656,3 +658,16 @@
 
   (set-default-line-width! [this width]
     (.setDefaultLineWidth this width)))
+
+(extend-type FileHandle
+  file-handle/FileHandle
+  (list [this]
+    (.list this))
+  (path [this]
+    (.path this))
+  (extension [this]
+    (.extension this))
+  (directory? [this]
+    (.isDirectory this))
+  (texture [this]
+    (Texture. this)))

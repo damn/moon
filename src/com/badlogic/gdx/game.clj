@@ -96,7 +96,7 @@
                                                              (font.data/set-markup-enabled! true))
                                                          skin)
                                              :ctx/unit-scale (atom 1)
-                                             :ctx/textures (com.badlogic.gdx.textures/create)})
+                                             :ctx/textures (com.badlogic.gdx.textures/create (app/files app))})
                                           create)))
 
                         (dispose! [_]
