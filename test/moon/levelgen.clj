@@ -3,21 +3,21 @@
             [clojure.config :refer [edn-resource]]
             [com.badlogic.gdx.backends.lwjgl :as lwjgl]
             [com.badlogic.gdx.graphics.orthographic-camera]
+            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [game.impl.db :as db-impl]
             [com.badlogic.gdx.textures :as textures]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.files :as files]
+            [gdl.graphics.batch :as batch]
             [gdl.graphics.color :as color]
             [gdl.input.keys :as input.keys]
             [com.badlogic.gdx.math.vector3 :as vector3]
             [gdl.scene2d.ui.table :as table]
             [moon.db :as db]
             [gdl.graphics.orthographic-camera :as camera]
-            [com.badlogic.gdx.maps.renderer :as tiled-map-renderer]
             [moon.creature-tiles])
-  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
-                                          TextureRegion)
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Event)
            (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton
@@ -95,7 +95,7 @@
            ctx/input]}]
   (let [skin (Skin. (files/internal files "uiskin.json")) ; TODO dispose
         ui-viewport (FitViewport. 1440 900)
-        sprite-batch (SpriteBatch.)
+        sprite-batch (sprite-batch/create)
         stage (CtxStage. ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
         tile-size 48
@@ -136,14 +136,13 @@
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
                                 ctx/color-setter
                                 ctx/tiled-map
-                                ctx/tiled-map-renderer
                                 ctx/world-unit-scale
                                 ctx/world-viewport]}]
-  (tiled-map-renderer/draw! sprite-batch
-                            world-unit-scale
-                            (.getCamera world-viewport)
-                            tiled-map
-                            color-setter))
+  (batch/draw-tiled-map! sprite-batch
+                         world-unit-scale
+                         (.getCamera world-viewport)
+                         tiled-map
+                         color-setter))
 
 (defn- camera-movement-controls! [{:keys [ctx/input
                                           ctx/camera
