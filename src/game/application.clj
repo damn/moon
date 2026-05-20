@@ -8,7 +8,7 @@
 
 (defn -main []
   (let [{:keys [create
-                dispose
+                dispose!
                 render
                 resize
                 colors
@@ -24,8 +24,7 @@
                                           create)))
 
                         (dispose! [_]
-                          (doseq [f dispose]
-                            (f @state)))
+                          (dispose! @state))
 
                         (render! [_]
                           (swap! state

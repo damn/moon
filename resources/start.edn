@@ -26,16 +26,7 @@
            [game.create.spawn-player/step]
            [game.create.spawn-enemies/step]
            ]
- :dispose [
-           game.dispose.audio/do!
-           game.dispose.batch/do!
-           game.dispose.cursors/do!
-           game.dispose.default-font/do!
-           game.dispose.shape-drawer-texture/do!
-           game.dispose.skin/do!
-           game.dispose.textures/do!
-           game.dispose.tiled-map/do!
-           ]
+ :dispose! game.dispose/do!
  :render  [
            [game.render.get-stage-ctx/step]
            [game.render.validate/step]
