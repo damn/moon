@@ -7,6 +7,7 @@
             [com.badlogic.gdx.textures :as textures]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
+            [gdl.files :as files]
             [gdl.graphics.color :as color]
             [com.badlogic.gdx.math.vector3 :as vector3]
             [gdl.scene2d.ui.table :as table]
@@ -93,7 +94,7 @@
   [{:keys [ctx/files
            ctx/graphics
            ctx/input]}]
-  (let [skin (Skin. (.internal files "uiskin.json")) ; TODO dispose
+  (let [skin (Skin. (files/internal files "uiskin.json")) ; TODO dispose
         ui-viewport (FitViewport. 1440 900)
         sprite-batch (SpriteBatch.)
         stage (CtxStage. ui-viewport sprite-batch)

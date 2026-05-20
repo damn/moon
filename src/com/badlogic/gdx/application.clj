@@ -25,7 +25,9 @@
             [com.badlogic.gdx.utils.align :as align]
             [gdl.application-listener :as listener]
             [gdl.app :as app]
+            [gdl.audio :as audio]
             [gdl.sound :as sound]
+            [gdl.files :as files]
             [gdl.graphics :as graphics]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.shape-drawer :as shape-drawer]
@@ -48,8 +50,7 @@
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
-           (com.badlogic.gdx Files
-                             Graphics
+           (com.badlogic.gdx Graphics
                              Input)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics Pixmap
@@ -567,15 +568,15 @@
                                                :ctx/audio (into {}
                                                                 (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                                                                   [sound-name
-                                                                   (.newSound (app/audio app)
-                                                                              (.internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
+                                                                   (audio/new-sound (app/audio app)
+                                                                                    (files/internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
                                                :ctx/batch batch
                                                :ctx/shape-drawer-texture white-pixel-texture
                                                :ctx/shape-drawer (ShapeDrawer. batch (texture/region white-pixel-texture 1 0 1 1))
                                                :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                                                                        size 16
                                                                        quality-scaling 2
-                                                                       generator (FreeTypeFontGenerator. (.internal (app/files app) path))
+                                                                       generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
                                                                        font (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                                                                                                        (set! (.size params) (* size quality-scaling))
                                                                                                        ; Texture$TextureFilter/Linear because scaling to world-units
@@ -599,14 +600,14 @@
                                                :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                                                               (update-vals data
                                                                            (fn [[path [hotspot-x hotspot-y]]]
-                                                                             (let [pixmap (Pixmap. (.internal (app/files app) (format path-format path)))
+                                                                             (let [pixmap (Pixmap. (files/internal (app/files app) (format path-format path)))
                                                                                    cursor (.newCursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                                                                (.dispose pixmap)
                                                                                cursor))))
                                                :ctx/stage (let [stage (create-stage (fit-viewport 1440 900) batch)]
                                                             (.setInputProcessor (app/input app) stage)
                                                             stage)
-                                               :ctx/skin (let [skin (Skin. (.internal (app/files app) "uiskin.json"))]
+                                               :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
                                                            (-> skin
                                                                (skin/font "default-font")
                                                                bitmap-font/data
