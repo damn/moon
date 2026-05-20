@@ -1,6 +1,7 @@
 (ns com.badlogic.gdx
   (:require [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.image]
@@ -15,7 +16,6 @@
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
-            com.badlogic.gdx.maps.renderer
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
@@ -25,10 +25,8 @@
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics :as graphics]
-            [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.pixmap :as pixmap]
-            [gdl.graphics.shape-drawer :as shape-drawer]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [gdl.graphics.g2d.texture-region :as texture-region]
@@ -66,7 +64,6 @@
                                       Texture)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData
-                                          SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
@@ -84,8 +81,7 @@
                                                Skin
                                                Stack
                                                Widget)
-           (com.badlogic.gdx.utils Disposable)
-           (space.earlygrey.shapedrawer ShapeDrawer)))
+           (com.badlogic.gdx.utils Disposable)))
 
 (def clear-screen! screen-utils/clear!)
 
@@ -105,8 +101,7 @@
 
 (def orthographic-camera orthographic-camera/create)
 
-(defn sprite-batch []
-  (SpriteBatch.))
+(def sprite-batch sprite-batch/create)
 
 (defn stage [viewport batch]
   (proxy [CtxStage ILookup] [viewport batch]
@@ -551,78 +546,6 @@
   check-box/CheckBox
   (checked? [this]
     (.isChecked this)))
-
-(extend-type SpriteBatch
-  batch/Batch
-  (shape-drawer [batch texture-region]
-    (ShapeDrawer. batch texture-region))
-
-  (draw-tiled-map! [batch world-unit-scale camera tiled-map color-setter]
-    (com.badlogic.gdx.maps.renderer/draw! batch
-                                          world-unit-scale
-                                          camera
-                                          tiled-map
-                                          color-setter))
-
-  (begin! [batch]
-    (.begin batch))
-
-  (end! [batch]
-    (.end batch))
-
-  (set-color! [batch r g b a]
-    (.setColor batch r g b a))
-
-  (set-projection-matrix! [batch matrix]
-    (.setProjectionMatrix batch matrix))
-
-  (draw!
-    ([batch texture-region x y origin-x origin-y width height scale-x scale-y rotation]
-     (.draw batch
-            ^TextureRegion texture-region
-            x
-            y
-            origin-x
-            origin-y
-            width
-            height
-            scale-x
-            scale-y
-            rotation))
-    ([batch texture-region x y w h]
-     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
-
-(extend-type ShapeDrawer
-  shape-drawer/ShapeDrawer
-  (set-color! [this color-float-bits]
-    (.setColor this (float color-float-bits)))
-
-  (circle! [this x y radius]
-    (.circle this x y radius))
-
-  (ellipse! [this x y radius-x radius-y]
-    (.ellipse this x y radius-x radius-y))
-
-  (filled-circle! [this x y radius]
-    (.filledCircle this (float x) (float y) (float radius)))
-
-  (filled-rectangle! [this x y w h]
-    (.filledRectangle this (float x) (float y) (float w) (float h)))
-
-  (line! [this sx sy ex ey]
-    (.line this (float sx) (float sy) (float ex) (float ey)))
-
-  (rectangle! [this x y w h]
-    (.rectangle this x y w h))
-
-  (sector! [this center-x center-y radius start-radians radians]
-    (.sector this center-x center-y radius start-radians radians))
-
-  (default-line-width [this]
-    (.getDefaultLineWidth this))
-
-  (set-default-line-width! [this width]
-    (.setDefaultLineWidth this width)))
 
 (extend-type FileHandle
   file-handle/FileHandle
