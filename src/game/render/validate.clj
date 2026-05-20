@@ -7,7 +7,17 @@
    [:map {:closed true}
     [:ctx/app :some]
     [:ctx/audio :some]
+    ; create
+    ; dispose
+    ; game.reaction-txs.sound play sound
+    ; all sound names
+    ; :ctx/gdx ?
+
     [:ctx/batch :some]
+    ; DRAWS
+    ; draw on world viewport
+    ; draw tiled map
+
     [:ctx/cursors :some]
     [:ctx/default-font :some]
     [:ctx/skin :some]

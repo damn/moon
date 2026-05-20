@@ -33,6 +33,7 @@
             [gdl.scene2d.group :as group]
             [gdl.scene2d.event :as event]
             [gdl.scene2d.stage :as stage]
+            [gdl.scene2d.ui.check-box :as check-box]
             [gdl.scene2d.ui.image :as image]
             [gdl.scene2d.ui.label :as label]
             [gdl.scene2d.ui.select-box :as select-box]
@@ -64,7 +65,8 @@
                                             CtxStage
                                             Event
                                             Group)
-           (com.badlogic.gdx.scenes.scene2d.ui Image
+           (com.badlogic.gdx.scenes.scene2d.ui CheckBox
+                                               Image
                                                ImageButton
                                                Label
                                                HorizontalGroup
@@ -121,6 +123,9 @@
                                      texture)
                world-unit-scale (float (/ 48))]
            {:ctx/app Gdx/app
+            ; input.graphics
+            ; clear-screen ....
+
             :ctx/audio (into {}
                              (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                                [sound-name
@@ -694,3 +699,13 @@
   (mouseover-actor [stage position]
     (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
       (.hit stage x y true))))
+
+(defmethod actor/create :ui/check-box
+  [{:keys [skin checked?]}]
+  (doto (CheckBox. "" ^Skin skin)
+    (.setChecked checked?)))
+
+(extend-type CheckBox
+  check-box/CheckBox
+  (checked? [this]
+    (.isChecked this)))

@@ -1,13 +1,15 @@
 (ns game.schema-widget.boolean
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
+  (:require [gdl.scene2d.actor :as actor]
+            [gdl.scene2d.ui.check-box :as check-box]
             [moon.schema :as schema]))
 
 (defmethod schema/create :s/boolean
   [_ checked? {:keys [ctx/skin]}]
-  (check-box/create {:skin skin
-                     :checked? checked?}))
+  (actor/create
+   {:type :ui/check-box
+    :skin skin
+    :checked? checked?}))
 
 (defmethod schema/value :s/boolean
   [_ widget _schemas]
   (check-box/checked? widget))
-
