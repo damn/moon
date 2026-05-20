@@ -608,7 +608,7 @@
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]
                             (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-                            (tooltip-manager/set-initial-time 0)
+                            (tooltip-manager/set-initial-time! 0)
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
