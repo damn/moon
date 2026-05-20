@@ -82,6 +82,12 @@
 
 (extend-type Application
   app/App
+  (audio [app]
+    (.getAudio app))
+
+  (files [app]
+    (.getFiles app))
+
   (graphics [app]
     (.getGraphics app))
 
@@ -576,15 +582,15 @@
                                                :ctx/audio (into {}
                                                                 (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                                                                   [sound-name
-                                                                   (.newSound (.getAudio app)
-                                                                              (.internal (.getFiles app) (format "sounds/%s.wav" sound-name)))]))
+                                                                   (.newSound (app/audio app)
+                                                                              (.internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
                                                :ctx/batch batch
                                                :ctx/shape-drawer-texture white-pixel-texture
                                                :ctx/shape-drawer (ShapeDrawer. batch (texture/region white-pixel-texture 1 0 1 1))
                                                :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                                                                        size 16
                                                                        quality-scaling 2
-                                                                       generator (FreeTypeFontGenerator. (.internal (.getFiles app) path))
+                                                                       generator (FreeTypeFontGenerator. (.internal (app/files app) path))
                                                                        font (.generateFont generator (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                                                                                                        (set! (.size params) (* size quality-scaling))
                                                                                                        ; Texture$TextureFilter/Linear because scaling to world-units
@@ -608,14 +614,14 @@
                                                :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                                                               (update-vals data
                                                                            (fn [[path [hotspot-x hotspot-y]]]
-                                                                             (let [pixmap (Pixmap. (.internal (.getFiles app) (format path-format path)))
-                                                                                   cursor (.newCursor (.getGraphics app) pixmap hotspot-x hotspot-y)]
+                                                                             (let [pixmap (Pixmap. (.internal (app/files app) (format path-format path)))
+                                                                                   cursor (.newCursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                                                                (.dispose pixmap)
                                                                                cursor))))
                                                :ctx/stage (let [stage (create-stage (fit-viewport 1440 900) batch)]
-                                                            (.setInputProcessor (.getInput app) stage)
+                                                            (.setInputProcessor (app/input app) stage)
                                                             stage)
-                                               :ctx/skin (let [skin (Skin. (.internal (.getFiles app) "uiskin.json"))]
+                                               :ctx/skin (let [skin (Skin. (.internal (app/files app) "uiskin.json"))]
                                                            (-> skin
                                                                (skin/font "default-font")
                                                                bitmap-font/data
