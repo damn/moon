@@ -24,6 +24,7 @@
             [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
+            [gdl.graphics.pixmap :as pixmap]
             [gdl.graphics.shape-drawer :as shape-drawer]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
@@ -118,7 +119,7 @@
                  (.setColor 1 1 1 1)
                  (.drawPixel 0 0))
         texture (Texture. pixmap)]
-    (.dispose pixmap)
+    (pixmap/dispose! pixmap)
     texture))
 
 (defn orthographic-camera
@@ -248,7 +249,10 @@
            (float y)
            (float target-width)
            (align/k->value align)
-           wrap?)))
+           wrap?))
+
+  (set-use-integer-positions! [font use-integer-positions?]
+    (.setUseIntegerPositions font use-integer-positions?)))
 
 (extend-type BitmapFont$BitmapFontData
   font.data/Data
@@ -764,3 +768,8 @@
 
   (dispose! [this]
     (.dispose this)))
+
+(extend-type Pixmap
+  pixmap/Pixmap
+  (dispose! [pixmap]
+    (.dispose pixmap)))

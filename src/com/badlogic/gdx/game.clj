@@ -12,12 +12,13 @@
             [gdl.graphics :as graphics]
             [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
+            [gdl.graphics.pixmap :as pixmap]
+            [gdl.graphics.texture.filter :as texture.filter]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
             [gdl.graphics.g2d.bitmap-font.data :as font.data]
             [gdl.graphics.g2d.freetype.font-generator :as font-generator]
             [gdl.input :as input]
             [gdl.scene2d.ui.skin :as skin])
-  (:import (com.badlogic.gdx.graphics Texture$TextureFilter))
   (:gen-class))
 
 (def state (atom nil))
@@ -56,13 +57,13 @@
                                                                      generator (file-handle/freetype-font-generator (files/internal (app/files app) path))
                                                                      font (font-generator/generate-font generator
                                                                                                         {:size (* size quality-scaling)
-                                                                                                         ; Texture$TextureFilter/Linear because scaling to world-units
-                                                                                                         :min-filter Texture$TextureFilter/Linear
-                                                                                                         :mag-filter Texture$TextureFilter/Linear})]
+                                                                                                         ; texture.filter/linear because scaling to world-units
+                                                                                                         :min-filter texture.filter/linear
+                                                                                                         :mag-filter texture.filter/linear})]
                                                                  (font-generator/dispose! generator)
-                                                                 (font.data/set-scale! (.getData font) (/ quality-scaling))
-                                                                 (font.data/set-markup-enabled! (.getData font) true)
-                                                                 (.setUseIntegerPositions font false)
+                                                                 (font.data/set-scale! (bitmap-font/data font) (/ quality-scaling))
+                                                                 (font.data/set-markup-enabled! (bitmap-font/data font) true)
+                                                                 (bitmap-font/set-use-integer-positions! font false)
                                                                  font)
                                              :ctx/world-unit-scale world-unit-scale
                                              :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
@@ -78,7 +79,7 @@
                                                                          (fn [[path [hotspot-x hotspot-y]]]
                                                                            (let [pixmap (file-handle/pixmap (files/internal (app/files app) (format path-format path)))
                                                                                  cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
-                                                                             (.dispose pixmap)
+                                                                             (pixmap/dispose! pixmap)
                                                                              cursor))))
                                              :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
                                                           (input/set-processor! (app/input app) stage)
