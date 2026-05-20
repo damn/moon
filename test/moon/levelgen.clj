@@ -172,7 +172,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (gdx/clear-screen! 0 0 0 0)
+    (gdx/clear-screen! [0 0 0 0])
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)

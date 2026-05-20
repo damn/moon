@@ -16,6 +16,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             com.badlogic.gdx.maps.renderer
             [com.badlogic.gdx.utils.align :as align]
+            [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.audio :as audio]
@@ -84,13 +85,11 @@
                                                Stack
                                                TooltipManager
                                                Widget)
-           (com.badlogic.gdx.utils Disposable
-                                   ScreenUtils)
+           (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defn clear-screen! [r g b a]
-  (ScreenUtils/clear r g b a))
+(def clear-screen! screen-utils/clear!)
 
 (defn fit-viewport
   ([width height]
