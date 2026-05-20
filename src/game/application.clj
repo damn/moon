@@ -10,7 +10,7 @@
   (let [{:keys [create
                 dispose!
                 render
-                resize
+                resize!
                 colors
                 ]
          :as config
@@ -35,8 +35,7 @@
                                            render))))
 
                         (resize! [_ width height]
-                          (doseq [f resize]
-                            (f @state width height)))
+                          (resize! @state width height))
 
                         (pause! [_])
 

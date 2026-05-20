@@ -57,10 +57,7 @@
            [game.render.stage/step]
            [game.render.validate/step]
            ]
- :resize  [
-           game.resize.stage/do!
-           game.resize.world-viewport/do!
-           ]
+ :resize!  game.resize/do!
  :title "Moon"
  :windowed-mode {:width 1440
                  :height 900}
