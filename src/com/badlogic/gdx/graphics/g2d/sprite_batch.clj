@@ -1,0 +1,45 @@
+(ns com.badlogic.gdx.graphics.g2d.sprite-batch
+  (:require com.badlogic.gdx.maps.renderer
+            [gdl.graphics.batch :as batch])
+  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
+                                          TextureRegion)))
+
+(defn create []
+  (SpriteBatch.))
+
+(extend-type SpriteBatch
+  batch/Batch
+  (draw-tiled-map! [batch world-unit-scale camera tiled-map color-setter]
+    (com.badlogic.gdx.maps.renderer/draw! batch
+                                          world-unit-scale
+                                          camera
+                                          tiled-map
+                                          color-setter))
+
+  (begin! [batch]
+    (.begin batch))
+
+  (end! [batch]
+    (.end batch))
+
+  (set-color! [batch r g b a]
+    (.setColor batch r g b a))
+
+  (set-projection-matrix! [batch matrix]
+    (.setProjectionMatrix batch matrix))
+
+  (draw!
+    ([batch texture-region x y origin-x origin-y width height scale-x scale-y rotation]
+     (.draw batch
+            ^TextureRegion texture-region
+            x
+            y
+            origin-x
+            origin-y
+            width
+            height
+            scale-x
+            scale-y
+            rotation))
+    ([batch texture-region x y w h]
+     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))

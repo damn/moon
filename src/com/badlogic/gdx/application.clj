@@ -3,9 +3,9 @@
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [com.badlogic.gdx.textures]
-            com.badlogic.gdx.maps.renderer
             [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.image]
@@ -24,7 +24,6 @@
             [gdl.app :as app]
             [gdl.sound :as sound]
             [gdl.graphics :as graphics]
-            [gdl.graphics.batch :as batch]
             [gdl.graphics.texture :as texture]
             [gdl.graphics.shape-drawer :as shape-drawer]
             [gdl.graphics.g2d.bitmap-font :as bitmap-font]
@@ -59,8 +58,7 @@
                                       Pixmap$Format
                                       Texture
                                       Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch
-                                          TextureRegion)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           BitmapFont$BitmapFontData)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
@@ -165,43 +163,6 @@
 
   (height [this]
     (.getRegionHeight this)))
-
-(extend-type SpriteBatch
-  batch/Batch
-  (draw-tiled-map! [batch world-unit-scale camera tiled-map color-setter]
-    (com.badlogic.gdx.maps.renderer/draw! batch
-                                          world-unit-scale
-                                          camera
-                                          tiled-map
-                                          color-setter))
-
-  (begin! [batch]
-    (.begin batch))
-
-  (end! [batch]
-    (.end batch))
-
-  (set-color! [batch r g b a]
-    (.setColor batch r g b a))
-
-  (set-projection-matrix! [batch matrix]
-    (.setProjectionMatrix batch matrix))
-
-  (draw!
-    ([batch texture-region x y origin-x origin-y width height scale-x scale-y rotation]
-     (.draw batch
-            ^TextureRegion texture-region
-            x
-            y
-            origin-x
-            origin-y
-            width
-            height
-            scale-x
-            scale-y
-            rotation))
-    ([batch texture-region x y w h]
-     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
 
 (extend-type Disposable
   disposable/Disposable
@@ -612,7 +573,7 @@
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
-                                            (let [batch (SpriteBatch.)
+                                            (let [batch (sprite-batch/create)
                                                   white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
                                                                                      (.setColor 1 1 1 1)
                                                                                      (.drawPixel 0 0))
