@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [clojure.config :refer [edn-resource]]
-            [com.badlogic.gdx :as gdx]
+            [gdx.api :as gdx]
             [game.textures :as textures]
             [game.impl.db :as db-impl]
             [gdl.app :as app]

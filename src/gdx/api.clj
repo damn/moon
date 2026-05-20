@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx
+(ns gdx.api
   (:require com.badlogic.gdx.application
 
             com.badlogic.gdx.audio

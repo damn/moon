@@ -2,7 +2,7 @@
   (:require [clojure.config :refer [edn-resource]]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [com.badlogic.gdx :as gdx]
+            [gdx.api :as gdx]
             [game.textures]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
