@@ -1,6 +1,5 @@
 (ns com.badlogic.gdx.game
-  (:require com.badlogic.gdx.application
-            [clojure.config :refer [edn-resource]]
+  (:require [clojure.config :refer [edn-resource]]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [com.badlogic.gdx.backends.lwjgl :as lwjgl]

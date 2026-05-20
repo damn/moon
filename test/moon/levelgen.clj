@@ -1,6 +1,5 @@
 (ns moon.levelgen
-  (:require com.badlogic.gdx.application
-            [clojure.config :refer [edn-resource]]
+  (:require [clojure.config :refer [edn-resource]]
             [com.badlogic.gdx.backends.lwjgl :as lwjgl]
             [com.badlogic.gdx.graphics.orthographic-camera]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
