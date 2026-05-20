@@ -10,8 +10,10 @@
             [gdl.graphics.batch :as batch]
             [gdl.graphics.color :as color]
             [gdl.graphics.texture :as texture]
+            [gdl.input :as input]
             [gdl.input.keys :as input.keys]
             [com.badlogic.gdx.math.vector3 :as vector3]
+            [gdl.scene2d.actor :as actor]
             [gdl.scene2d.stage :as stage]
             [gdl.scene2d.event :as event]
             [gdl.scene2d.ui.table :as table]
@@ -22,10 +24,8 @@
             [moon.db :as db]
             [gdl.graphics.orthographic-camera :as camera]
             [moon.creature-tiles]
-            [gdl.utils.viewport :as viewport])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui TextButton
-                                               Window)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
+            [gdl.utils.disposable :as disposable]
+            [gdl.utils.viewport :as viewport]))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -78,20 +78,20 @@
     ctx))
 
 (defn- edit-window [skin]
-  (let [window (Window. "Edit" skin)]
-    (table/add-rows! window
-                     (for [level-fn level-fns
-                           :let [on-clicked (fn [actor ctx]
-                                              (let [stage (.getStage actor)
-                                                    new-ctx (generate-level ctx level-fn)]
-                                                (stage/set-ctx! stage new-ctx)))]]
-                       [{:actor (doto (TextButton. (str "Generate " level-fn) skin)
-                                  (.addListener
-                                   (proxy [ChangeListener] []
-                                     (changed [event actor]
-                                       (on-clicked actor (:stage/ctx (event/stage event)))))))}]))
-    (.pack window)
-    window))
+  {:type :ui/window
+   :title "Edit"
+   :skin skin
+   :table/rows (for [level-fn level-fns
+                     :let [on-clicked (fn [actor ctx]
+                                        (let [stage (actor/stage actor)
+                                              new-ctx (generate-level ctx level-fn)]
+                                          (stage/set-ctx! stage new-ctx)))]]
+                 [{:actor (actor/create
+                           {:type :ui/text-button
+                            :text (str "Generate " level-fn)
+                            :skin skin
+                            :actor/listeners {:listener/change (fn [event actor]
+                                                                 (on-clicked actor (:stage/ctx (event/stage event))))}})}])})
 
 (defn create!
   [{:keys [ctx/files
@@ -101,7 +101,7 @@
         ui-viewport (gdx/fit-viewport 1440 900)
         sprite-batch (gdx/sprite-batch)
         stage (gdx/stage ui-viewport sprite-batch)
-        _  (.setInputProcessor input stage)
+        _  (input/set-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage
@@ -120,22 +120,22 @@
                    :ctx/input input
                    :ctx/world-viewport world-viewport
                    :ctx/ui-viewport ui-viewport
-                   :ctx/camera (.getCamera world-viewport)
+                   :ctx/camera (:viewport/camera world-viewport)
                    :ctx/color-setter (constantly (color/float-bits [1 1 1 1]))
                    :ctx/zoom-speed 0.1
                    :ctx/camera-movement-speed 1
                    :ctx/sprite-batch sprite-batch
                    :ctx/world-unit-scale world-unit-scale)
         ctx (generate-level ctx initial-level-fn)]
-    (.addActor (:ctx/stage ctx) (edit-window skin))
+    (stage/add-actor! (:ctx/stage ctx) (edit-window skin))
     ctx))
 
 (defn dispose!
   [{:keys [ctx/sprite-batch
-           ctx/tiled-map ]}]
+           ctx/tiled-map]}]
   ; TODO dispose skin?
-  (.dispose sprite-batch)
-  (.dispose tiled-map))
+  (disposable/dispose! sprite-batch)
+  (disposable/dispose! tiled-map))
 
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
                                 ctx/color-setter
@@ -144,7 +144,7 @@
                                 ctx/world-viewport]}]
   (batch/draw-tiled-map! sprite-batch
                          world-unit-scale
-                         (.getCamera world-viewport)
+                         (:viewport/camera world-viewport)
                          tiled-map
                          color-setter))
 
@@ -153,19 +153,19 @@
                                           ctx/camera-movement-speed]}]
   (let [apply-position (fn [idx f]
                          (camera/set-position! camera
-                                               (update (vector3/->clj (.position camera))
+                                               (update (camera/position camera)
                                                        idx
                                                        #(f % camera-movement-speed))))]
-    (if (.isKeyPressed input input.keys/left)  (apply-position 0 -))
-    (if (.isKeyPressed input input.keys/right) (apply-position 0 +))
-    (if (.isKeyPressed input input.keys/up)    (apply-position 1 +))
-    (if (.isKeyPressed input input.keys/down)  (apply-position 1 -))))
+    (if (input/key-pressed? input input.keys/left)  (apply-position 0 -))
+    (if (input/key-pressed? input input.keys/right) (apply-position 0 +))
+    (if (input/key-pressed? input input.keys/up)    (apply-position 1 +))
+    (if (input/key-pressed? input input.keys/down)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (.isKeyPressed input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
-  (when (.isKeyPressed input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (input/key-pressed? input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
+  (when (input/key-pressed? input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
 
 (defn render!
   [{:keys [ctx/stage]
