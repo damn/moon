@@ -1,9 +1,15 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.text-field
+  (:require [gdl.scene2d.actor :as actor]
+            [gdl.scene2d.ui.text-field :as text-field])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextField)))
 
-(defn create
-  [{:keys [text skin]}]
-  (TextField. ^String text ^Skin skin))
+(defmethod actor/create :ui/text-field
+  [{:keys [text skin] :as opts}]
+  (doto (TextField. ^String text ^Skin skin)
+    (actor/set-opts! opts)))
 
-(def text TextField/.getText)
+(extend-type com.badlogic.gdx.scenes.scene2d.ui.TextField
+  text-field/TextField
+  (text [text-field]
+    (.getText text-field)))
