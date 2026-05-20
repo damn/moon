@@ -1,11 +1,14 @@
 (ns com.badlogic.gdx
   (:require [gdl.app :as app]
             [gdl.audio :as audio]
-            [gdl.files :as files])
+            [gdl.files :as files]
+            [gdl.graphics :as graphics])
   (:import (com.badlogic.gdx Application
                              Audio
                              Files
-                             Gdx)))
+                             Gdx
+                             Graphics
+                             )))
 
 (defn app []
   Gdx/app)
@@ -33,3 +36,20 @@
   files/Files
   (internal [this path]
     (.internal this path)))
+
+(extend-type Graphics
+  graphics/Graphics
+  (frames-per-second [graphics]
+    (.getFramesPerSecond graphics))
+
+  (delta-time [graphics]
+    (.getDeltaTime graphics))
+
+  (new-cursor [graphics pixmap hotspot-x hotspot-y]
+    (.newCursor graphics pixmap hotspot-x hotspot-y))
+
+  (set-cursor! [graphics cursor]
+    (.setCursor graphics cursor))
+
+  (gl20 [graphics]
+    (.getGL20 graphics)))

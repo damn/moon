@@ -50,8 +50,7 @@
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
-           (com.badlogic.gdx Graphics
-                             Input)
+           (com.badlogic.gdx Input)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics Pixmap
                                       Texture
@@ -78,20 +77,6 @@
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport))
   (:gen-class))
-
-(extend-type Graphics
-  graphics/Graphics
-  (frames-per-second [graphics]
-    (.getFramesPerSecond graphics))
-
-  (delta-time [graphics]
-    (.getDeltaTime graphics))
-
-  (set-cursor! [graphics cursor]
-    (.setCursor graphics cursor))
-
-  (gl20 [graphics]
-    (.getGL20 graphics)))
 
 (extend-type Input
   input/Input
@@ -568,7 +553,7 @@
                                                               (update-vals data
                                                                            (fn [[path [hotspot-x hotspot-y]]]
                                                                              (let [pixmap (Pixmap. (files/internal (app/files app) (format path-format path)))
-                                                                                   cursor (.newCursor (app/graphics app) pixmap hotspot-x hotspot-y)]
+                                                                                   cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                                                                (.dispose pixmap)
                                                                                cursor))))
                                                :ctx/stage (let [stage (create-stage (fit-viewport 1440 900) batch)]
