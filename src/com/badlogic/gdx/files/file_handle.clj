@@ -46,6 +46,25 @@
   (pixmap [this]
     (Pixmap. this))
 
+;	/** Creates a new Pixmap instance from the given file. The file must be a Png, Jpeg or Bitmap. Paletted formats are not
+;	 * supported.
+;	 *
+;	 * @param file the {@link FileHandle} */
+;	public Pixmap (FileHandle file) {
+;		try {
+;			byte[] bytes = file.readBytes();
+;			pixmap = new Gdx2DPixmap(bytes, 0, bytes.length, 0);
+;		} catch (Exception e) {
+;			throw new GdxRuntimeException("Couldn't load file: " + file, e);
+;		}
+;	}
+
+;	/** Constructs a new Pixmap from a {@link Gdx2DPixmap}.
+;	 * @param pixmap */
+;	public Pixmap (Gdx2DPixmap pixmap) {
+;		this.pixmap = pixmap;
+;	}
+;
   (skin [this]
     (Skin. this))
 
