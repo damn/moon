@@ -2,23 +2,22 @@
   (:require com.badlogic.gdx.maps.map-layers
             com.badlogic.gdx.maps.map-properties
             [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as tiled-map-tile-layer.cell]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
             [gdl.tiled-map.layers :as layers]
             [gdl.tiled-map.props :as props]
             [gdl.tiled-map.tile :as tile])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps.tiled TiledMap
-                                        TiledMapTileLayer
-                                        TiledMapTileLayer$Cell)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
+  (:import (com.badlogic.gdx.maps.tiled TiledMap
+                                        TiledMapTileLayer)))
 
 (defn create-tile
   [texture-region property-name property-value]
   {:pre [texture-region
          (string? property-name)]}
-  (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
+  (let [tile (static-tiled-map-tile/create texture-region)]
     (props/add! (tile/properties tile) {property-name property-value})
     tile))
 
@@ -77,8 +76,7 @@
     (props/add! (layer/properties layer) map-properties)
     (doseq [[pos tile] tiles
             :when tile]
-      (layer/set-cell! layer pos (doto (TiledMapTileLayer$Cell.)
-                                   (.setTile tile))))
+      (layer/set-cell! layer pos (tiled-map-tile-layer.cell/create tile)))
     layer))
 
 (def load! tmx-map-loader/load!)
@@ -139,19 +137,6 @@
              (some #(tile-movement-property tiled-map % position)))
         "none"))
   )
-
-(extend-type StaticTiledMapTile
-  tile/Tile
-  (copy [this]
-    (StaticTiledMapTile. this))
-
-  (properties [this]
-    (.getProperties this)))
-
-(extend-type TiledMapTileLayer$Cell
-  cell/Cell
-  (tile [this]
-    (.getTile this)))
 
 (extend-type TiledMapTileLayer
   layer/Layer
