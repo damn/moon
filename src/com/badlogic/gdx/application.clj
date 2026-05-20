@@ -48,8 +48,7 @@
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
-           (com.badlogic.gdx Application
-                             Files
+           (com.badlogic.gdx Files
                              Graphics
                              Input)
            (com.badlogic.gdx.audio Sound)
@@ -79,20 +78,6 @@
            (com.badlogic.gdx.utils.viewport FitViewport)
            (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
-
-(extend-type Application
-  app/App
-  (audio [app]
-    (.getAudio app))
-
-  (files [app]
-    (.getFiles app))
-
-  (graphics [app]
-    (.getGraphics app))
-
-  (input [app]
-    (.getInput app)))
 
 (extend-type Graphics
   graphics/Graphics
