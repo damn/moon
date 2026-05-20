@@ -1,7 +1,7 @@
 {
+ :requires #edn/resource "requires.edn"
  :create  [
            [game.create.app/step]
-           [game.create.do/step [clojure.core-ext/require-namespaces! #edn/resource "requires.edn"]]
            [game.create.record/step]
            [game.create.impl-txs/step]
            [game.create.impl-draws/step]

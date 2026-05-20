@@ -1,9 +1,6 @@
 (ns clojure.core-ext
   (:import (clojure.lang PersistentVector)))
 
-(defn require-namespaces! [namespaces]
-  (run! require namespaces))
-
 (defn index-of [k ^PersistentVector v]
   (let [idx (.indexOf v k)]
     (if (= -1 idx)

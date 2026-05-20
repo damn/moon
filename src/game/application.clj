@@ -7,7 +7,8 @@
 (def state (atom nil))
 
 (defn -main []
-  (let [{:keys [create
+  (let [{:keys [requires
+                create
                 dispose!
                 render
                 resize!
@@ -15,6 +16,7 @@
                 ]
          :as config
          } (edn-resource "start.edn")]
+    (run! require requires)
     (gdx/application! (reify listener/ApplicationListener
                         (create! [_ app]
                           (reset! state
