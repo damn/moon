@@ -1,9 +1,9 @@
-(ns com.badlogic.gdx.game
+(ns game.application
   (:require [clojure.config :refer [edn-resource]]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [com.badlogic.gdx :as gdx]
-            [com.badlogic.gdx.textures]
+            [game.textures]
             [gdl.app :as app]
             [gdl.application-listener :as listener]
             [gdl.audio :as audio]
@@ -91,7 +91,7 @@
                                                              (font.data/set-markup-enabled! true))
                                                          skin)
                                              :ctx/unit-scale (atom 1)
-                                             :ctx/textures (com.badlogic.gdx.textures/create (app/files app))})
+                                             :ctx/textures (game.textures/create (app/files app))})
                                           create)))
 
                         (dispose! [_]

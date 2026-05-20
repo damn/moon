@@ -1,6 +1,6 @@
 (ns game.schema-widget.image
   (:require [moon.schema :as schema]
-            [gdl.textures :as textures]
+            [moon.textures :as textures]
             [gdl.scene2d.actor :as actor]))
 
 ; too many ! too big ! scroll ... only show files first & preview?

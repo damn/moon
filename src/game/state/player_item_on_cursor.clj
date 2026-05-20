@@ -7,7 +7,7 @@
             [moon.inventory :as inventory]
             [gdl.scene2d.stage :as stage]
             [moon.state :as state]
-            [gdl.textures :as textures]))
+            [moon.textures :as textures]))
 
 ; It is possible to put items out of sight, losing them.
 ; Because line of sight checks center of entity only, not corners

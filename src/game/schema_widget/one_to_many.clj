@@ -9,7 +9,7 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.schema :as schema]
-            [gdl.textures :as textures]))
+            [moon.textures :as textures]))
 
 (defn- add-one-to-many-rows
   [{:keys [ctx/db

@@ -1,6 +1,6 @@
 (ns game.schema-widget.animation
   (:require [moon.schema :as schema]
-            [gdl.textures :as textures]
+            [moon.textures :as textures]
             [gdl.scene2d.actor :as actor]))
 
 (defmethod schema/create :s/animation

@@ -42,7 +42,7 @@
   :source-paths ["src"]
   :java-source-paths ["java-src"]
   :resource-paths ["resources/"]
-  :aliases {"dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'com.badlogic.gdx.game/-main))"]
+  :aliases {"dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'game.application/-main))"]
             "levelgen" ["run" "-m" "dev.loop" "((requiring-resolve 'moon.levelgen/-main))"]
             "nsgraph"  ["run" "-m" "dev.loop" "((requiring-resolve 'ns-graph.core/-main))"]
             "app-test" ["run" "-m" "dev.loop" "((requiring-resolve 'moon.backends.lwjgl-test/-main))"]
@@ -61,9 +61,9 @@
                 ;*unchecked-math* :warn-on-boxed
                 ;*assert* false
                 *print-level* 3}
-  :profiles {:uberjar {:aot [com.badlogic.gdx.game]}}
+  :profiles {:uberjar {:aot [game.application]}}
   :uberjar-name "moon.jar"
-  :main com.badlogic.gdx.game)
+  :main game.application)
 
 ; * Notes
 

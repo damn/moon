@@ -2,7 +2,7 @@
   (:require [clojure.config :as config]
             [moon.creature-tiles]
             [moon.db :as db]
-            [gdl.textures :as textures]))
+            [moon.textures :as textures]))
 
 (def world-fn-file
   ; "world_fns/modules.edn"

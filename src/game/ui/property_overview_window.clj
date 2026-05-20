@@ -4,7 +4,7 @@
             [gdl.scene2d.stage :as stage]
             [moon.db :as db]
             [moon.property :as property]
-            [gdl.textures :as textures]))
+            [moon.textures :as textures]))
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10

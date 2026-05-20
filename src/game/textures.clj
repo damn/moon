@@ -1,9 +1,9 @@
-(ns com.badlogic.gdx.textures
+(ns game.textures
   (:require [clojure.string :as str]
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics.texture :as texture]
-            [gdl.textures]))
+            [moon.textures]))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
@@ -28,7 +28,7 @@
              [path (file-handle/texture (files/internal files path))])))
 
 (extend-type clojure.lang.PersistentHashMap
-  gdl.textures/Textures
+  moon.textures/Textures
   (texture-region [textures {:keys [image/file image/bounds]}]
     (assert file)
     (assert (contains? textures file))
