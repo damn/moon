@@ -1,8 +1,4 @@
-(ns gdl.graphics.color
-  (:import (com.badlogic.gdx.graphics Color)))
+(ns gdl.graphics.color)
 
-(defn float-bits [[r g b a]]
-  (Color/toFloatBits (float r)
-                     (float g)
-                     (float b)
-                     (float a)))
+(defn float-bits
+  [[r g b a]])
