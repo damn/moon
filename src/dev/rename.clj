@@ -1,3 +1,12 @@
+; I want to rename all ns in `com.badlogic.gdx` folder
+; are they used anywhere?...
+; thjeyre all lowercase
+
+; 1. step get all ns names in that folder o.o
+; 2. step move all the files? and rename
+
+
+
 (ns dev.rename
   (:require [clojure.java.io :as io]
             [clojure.string :as str])
