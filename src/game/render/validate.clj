@@ -6,19 +6,25 @@
   (m/schema
    [:map {:closed true}
     ; GDX app
-    [:ctx/app :some]
+    [:ctx/app :some] ; <- input, audio, files, graphics
+
     [:ctx/audio :some]
+
+    ; Graphics:
     [:ctx/batch :some]
     [:ctx/cursors :some]
     [:ctx/default-font :some]
-    [:ctx/skin :some]
-    [:ctx/stage :some]
     [:ctx/unit-scale :some]
     [:ctx/world-unit-scale :some]
     [:ctx/world-viewport :some]
     [:ctx/shape-drawer :some]
     [:ctx/shape-drawer-texture :some]
     [:ctx/textures :some]
+
+    ; UI
+    [:ctx/skin :some]
+    [:ctx/stage :some]
+
 
     ; Frame
     [:ctx/active-entities :any]
@@ -28,7 +34,7 @@
     [:ctx/world-mouse-position :any]
 
     ; Constants
-    [:ctx/colors :some]
+    [:ctx/colors :some] ; cant as not bind-root'ed...
     [:ctx/controls :some]
     [:ctx/controls-info :some]
     [:ctx/max-delta :some]
@@ -39,23 +45,24 @@
 
     ; Game (level, time, db ?)
     ; The 'game' could be a separate library with no ligdx dependencies (which it is already)
-    [:ctx/content-grid :some]
-    ; :ctx/player-eid
-    ; :ctx/grid
 
+    ; LEVEL
+    [:ctx/content-grid :some]
     [:ctx/entity-ids :some]
     [:ctx/explored-tile-corners :some]
     [:ctx/factions-iterations :some]
     [:ctx/grid :some]
     [:ctx/id-counter :some]
     [:ctx/potential-field-cache :some]
+    [:ctx/raycaster :some]
+    [:ctx/start-position :some]
+    [:ctx/tiled-map :some]
+
+    ; ETC?
     [:ctx/db :some]
     [:ctx/elapsed-time :some]
     [:ctx/paused? :some]
     [:ctx/player-eid :some]
-    [:ctx/raycaster :some]
-    [:ctx/start-position :some]
-    [:ctx/tiled-map :some]
     ]))
 
 (defn step [ctx]
