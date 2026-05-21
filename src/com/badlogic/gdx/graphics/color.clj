@@ -9,5 +9,6 @@
                                 (float b)
                                 (float a))))
 
-(defn create [[r g b a]]
-  (Color. r g b a))
+(.bindRoot #'color/create
+           (fn [[r g b a]]
+             (Color. r g b a)))

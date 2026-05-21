@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.graphics.colors
   (:require [gdl.app :as app]
-            [com.badlogic.gdx.graphics.color :as color])
+            [gdl.graphics.color :as color])
   (:import (com.badlogic.gdx.graphics Colors)))
 
 (.bindRoot #'app/put-colors!

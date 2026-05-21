@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.image
-  (:require [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+  (:require [gdl.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdl.scene2d.actor :as actor]
             [gdl.scene2d.ui.image :as image])
   (:import (com.badlogic.gdx.graphics Texture)
