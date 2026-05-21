@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.maps.map-properties
-  (:require [gdl.tiled-map.props :as props])
+  (:require [gdl.maps.map-properties :as props])
   (:import (com.badlogic.gdx.maps MapProperties)))
 
 (extend-type MapProperties

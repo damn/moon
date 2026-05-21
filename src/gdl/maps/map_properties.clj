@@ -1,4 +1,4 @@
-(ns gdl.tiled-map.props
+(ns gdl.maps.map-properties
   (:refer-clojure :exclude [get]))
 
 (defprotocol Props

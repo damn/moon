@@ -1,6 +1,6 @@
 (ns game.impl.explored-tile-corners
   (:require [gdl.tiled-map :as tiled-map]
-            [gdl.tiled-map.props :as props]
+            [gdl.maps.map-properties :as props]
             [moon.grid2d :as g2d]))
 
 (defn create

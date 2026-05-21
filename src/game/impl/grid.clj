@@ -3,7 +3,7 @@
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.tiled-map]
-            [gdl.tiled-map.props :as props]
+            [gdl.maps.map-properties :as props]
             [gdl.tiled-map :as tiled-map]
             [moon.position :as position]
             [moon.body :as body]

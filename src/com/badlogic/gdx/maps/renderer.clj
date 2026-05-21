@@ -2,7 +2,7 @@
   (:require [gdl.graphics.batch :as batch]
             [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.layer :as layer]
-            [gdl.tiled-map.layers :as layers])
+            [gdl.maps.map-layers :as layers])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (clojure.gdx TiledMapRenderer
                         TiledMapRenderer$ColorSetter)))

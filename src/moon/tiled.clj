@@ -4,8 +4,8 @@
             [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
-            [gdl.tiled-map.layers :as layers]
-            [gdl.tiled-map.props :as props]
+            [gdl.maps.map-layers :as layers]
+            [gdl.maps.map-properties :as props]
             [gdl.tiled-map.tile :as tile]))
 
 (def create-tile moon.tiled-map/create-tile)

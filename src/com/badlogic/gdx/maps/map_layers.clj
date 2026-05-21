@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.maps.map-layers
-  (:require [gdl.tiled-map.layers :as layers])
+  (:require [gdl.maps.map-layers :as layers])
   (:import (com.badlogic.gdx.maps MapLayer
                                   MapLayers)))
 
