@@ -1,6 +1,7 @@
 (ns moon.tiled-map
   (:require [gdl.tiled-map :as tiled-map]
             [gdl.maps.map-properties :as props]
+            [gdl.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
             [gdl.maps.map-layers :as layers]
@@ -117,3 +118,14 @@
                :visible? false
                :tiles (for [[position creature-property] spawn-positions]
                         [position (creature-tile creature-property)])}))
+
+(def load! tmx-map-loader/load!)
+
+(defn create-map
+  [{:keys [properties
+           layers]}]
+  (let [tiled-map (tiled-map/create)]
+    (props/add! (tiled-map/properties tiled-map) properties)
+    (doseq [layer layers]
+      (add-layer! tiled-map layer))
+    tiled-map))
