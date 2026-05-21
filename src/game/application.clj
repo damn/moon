@@ -1,9 +1,10 @@
 (ns game.application
   (:require [clojure.config :refer [edn-resource]]
-            [com.badlogic.gdx.application-listener :as application-listener]
-            [com.badlogic.gdx.backends.lwjgl3.application-configuration :as config]
-            [gdl.application-listener :as listener])
-  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application))
+            [gdl.impl])
+  (:import (com.badlogic.gdx Gdx
+                             ApplicationListener)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration))
   (:gen-class))
 
 (def state (atom nil))
@@ -14,36 +15,38 @@
                 dispose!
                 render
                 resize!
-                colors
-                ]
-         :as config
-         } (edn-resource "start.edn")]
+                title
+                windowed-mode
+                foreground-fps]} (edn-resource "start.edn")]
     (run! require requires)
-    (config/use-glfw-async!)
-    (Lwjgl3Application. (application-listener/create
-                         (reify listener/ApplicationListener
-                           (create! [_ app]
-                             (reset! state
+    (gdl.impl/load!)
+    (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+    (Lwjgl3Application. (reify ApplicationListener
+                          (create [_]
+                            (reset! state
+                                    (reduce (fn [ctx [f & params]]
+                                              (apply f ctx params))
+                                            Gdx/app
+                                            create)))
+
+                          (dispose [_]
+                            (dispose! @state))
+
+                          (render [_]
+                            (swap! state
+                                   (fn [ctx]
                                      (reduce (fn [ctx [f & params]]
                                                (apply f ctx params))
-                                             app
-                                             create)))
+                                             ctx
+                                             render))))
 
-                           (dispose! [_]
-                             (dispose! @state))
+                          (resize [_ width height]
+                            (resize! @state width height))
 
-                           (render! [_]
-                             (swap! state
-                                    (fn [ctx]
-                                      (reduce (fn [ctx [f & params]]
-                                                (apply f ctx params))
-                                              ctx
-                                              render))))
+                          (pause [_])
 
-                           (resize! [_ width height]
-                             (resize! @state width height))
-
-                           (pause! [_])
-
-                           (resume! [_])))
-                      (config/create config))))
+                          (resume [_]))
+                        (doto (Lwjgl3ApplicationConfiguration.)
+                          (.setTitle title)
+                          (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
+                          (.setForegroundFPS foreground-fps)))))

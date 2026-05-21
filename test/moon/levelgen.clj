@@ -1,10 +1,9 @@
 (ns moon.levelgen
   (:require [clojure.config :refer [edn-resource]]
-            [gdx.api :as gdx]
             [game.textures :as textures]
             [game.impl.db :as db-impl]
+            [gdl.impl]
             [gdl.app :as app]
-            [gdl.application-listener :as listener]
             [gdl.files :as files]
             [gdl.files.file-handle :as file-handle]
             [gdl.graphics.batch :as batch]
@@ -23,7 +22,11 @@
             [gdl.utils.disposable :as disposable]
             [gdl.utils.viewport :as viewport]
             [moon.creature-tiles]
-            [moon.db :as db]))
+            [moon.db :as db])
+  (:import (com.badlogic.gdx Gdx
+                             ApplicationListener)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -192,23 +195,25 @@
 (def state (atom nil))
 
 (defn -main []
-  (gdx/application! (reify listener/ApplicationListener
-                      (create! [_ app]
-                        (reset! state (create! app)))
+  (gdl.impl/load!)
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (reify ApplicationListener
+                        (create [_]
+                          (reset! state (create! Gdx/app)))
 
-                      (dispose! [_]
-                        (dispose! @state))
+                        (dispose [_]
+                          (dispose! @state))
 
-                      (render! [_]
-                        (swap! state render!))
+                        (render [_]
+                          (swap! state render!))
 
-                      (resize! [_ width height]
-                        (resize! @state width height))
+                        (resize [_ width height]
+                          (resize! @state width height))
 
-                      (pause! [_])
+                        (pause [_])
 
-                      (resume! [_]))
-                    {:title "Levelgen Test"
-                     :windowed-mode {:width 1440
-                                     :height 900}
-                     :foreground-fps 60}))
+                        (resume [_]))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Levelgen Test")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))
