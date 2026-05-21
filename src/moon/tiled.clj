@@ -1,6 +1,6 @@
 (ns moon.tiled
   (:require moon.tiled-map
-            [gdl.tiled-map.tmx-map-loader :as tmx-map-loader]
+            [gdl.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
