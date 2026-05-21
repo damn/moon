@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [clojure.config :refer [edn-resource]]
-            [game.textures :as textures]
+            [game.impl.textures]
             [game.impl.db :as db-impl]
             [clojure.impl]
             [clojure.application-listener :as listener]
@@ -108,7 +108,7 @@
         ctx {:ctx/stage stage
              :ctx/files files}
         ctx (assoc ctx :ctx/db (db-impl/create ctx))
-        ctx (assoc ctx :ctx/textures (textures/create files))
+        ctx (assoc ctx :ctx/textures (game.impl.textures/create {:ctx/app app}))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (app/fit-viewport world-width

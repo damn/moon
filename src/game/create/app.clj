@@ -1,7 +1,6 @@
 (ns game.create.app
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [game.textures]
             [clojure.app :as app]
             [clojure.audio :as audio]
             [clojure.files :as files]
@@ -76,5 +75,4 @@
                      bitmap-font/data
                      (font.data/set-markup-enabled! true))
                  skin)
-     :ctx/unit-scale (atom 1)
-     :ctx/textures (game.textures/create (app/files app))}))
+     :ctx/unit-scale (atom 1)}))
