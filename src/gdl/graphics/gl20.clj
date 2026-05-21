@@ -1,10 +1,8 @@
-(ns gdl.graphics.gl20
-  (:import (com.badlogic.gdx.graphics GL20)))
+(ns gdl.graphics.gl20)
 
-(def color-buffer-bit GL20/GL_COLOR_BUFFER_BIT)
+(declare color-buffer-bit)
 
-(defn clear-color! [^GL20 gl20 r g b a]
-  (.glClearColor gl20 r g b a))
+(defprotocol GL20
+  (clear-color! [_ r g b a])
+  (clear! [_ mask]))
 
-(defn clear! [^GL20 gl20 mask]
-  (.glClear gl20 mask))
