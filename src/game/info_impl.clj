@@ -8,13 +8,6 @@
             [moon.stats :as stats]
             [moon.timer :as timer]))
 
-; TODO # 1
-; TODO
-; 1. step like item - validate incoming data - only then can I create info string if I know what data
-; means what _schema_ is there !
-; or every has 'info-depth' 'info' 'debug' 'player-info' ?
-; => TESTS.....
-
 (def ^:private non-val-max-stat-ks
   [:stats/movement-speed
    :stats/aggro-range
@@ -64,7 +57,7 @@
  )
 
 (defn stats-modifiers-info [mods]
-  (when (seq mods) ; ?
+  (when (seq mods)
     (str/join "\n" (keep (fn [[k ops]]
                            (ops-info ops k)) mods))))
 
@@ -132,8 +125,7 @@
                                   (if (= damage modified)
                                     (damage/info-text damage)
                                     (str (damage/info-text damage) "\nModified: " (damage/info modified))))
-                                (damage/info-text damage)) ; property menu no source,modifiers
-                            )
+                                (damage/info-text damage)) )
 
    :effects.target/kill (fn [_ _ctx]
                           "Kills target")
@@ -229,12 +221,6 @@
          (str/join "\n")
          remove-newlines)))
 
-
-
-
-
-
-
 (defn- valid-item? [item]
   (let [keyset (set (keys item))]
     (or (= #{:property/id
@@ -269,20 +255,6 @@
   :property/id :items/shield-mystic-great,
   :property/pretty-name "Great Mystic Shield"}
  )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 (defn- valid-skill? [skill]
   (= #{:property/id
