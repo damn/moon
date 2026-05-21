@@ -13,7 +13,7 @@
                 create
                 dispose!
                 render
-                resize! ]
+                resize!]
          :as config} (edn-resource "start.edn")]
     (run! require requires)
     (clojure.impl/load!)

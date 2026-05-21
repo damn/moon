@@ -13,4 +13,3 @@
   label/Label
   (set-text! [label text]
     (.setText label ^String text)))
-
