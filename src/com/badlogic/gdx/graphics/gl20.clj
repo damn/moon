@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.graphics.gl20
-  (:require [gdl.graphics.gl20 :as gl20])
+  (:require [clojure.graphics.gl20 :as gl20])
   (:import (com.badlogic.gdx.graphics GL20)))
 
 (.bindRoot #'gl20/color-buffer-bit GL20/GL_COLOR_BUFFER_BIT)

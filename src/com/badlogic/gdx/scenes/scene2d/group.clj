@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.group
-  (:require [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.group :as group])
+  (:require [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.group :as group])
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defmethod actor/create :ui/group

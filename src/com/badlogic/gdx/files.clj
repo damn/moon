@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.files
-  (:require [gdl.files :as files])
+  (:require [clojure.files :as files])
   (:import (com.badlogic.gdx Files)))
 
 (extend-type Files

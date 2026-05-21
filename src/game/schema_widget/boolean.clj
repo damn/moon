@@ -1,6 +1,6 @@
 (ns game.schema-widget.boolean
-  (:require [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.ui.check-box :as check-box]
+  (:require [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.ui.check-box :as check-box]
             [moon.schema :as schema]))
 
 (defmethod schema/create :s/boolean

@@ -1,7 +1,7 @@
 (ns com.badlogic.gdx.graphics.pixmap
-  (:require [gdl.app :as app]
-            [gdl.files.file-handle :as file-handle]
-            [gdl.graphics.pixmap :as pixmap])
+  (:require [clojure.app :as app]
+            [clojure.files.file-handle :as file-handle]
+            [clojure.graphics.pixmap :as pixmap])
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format

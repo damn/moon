@@ -28,7 +28,7 @@
      dev,
      moon.throwable
      clojure.math
-     gdl.scene2d.actor,
+     clojure.scene2d.actor,
      }
   )
 
@@ -98,7 +98,7 @@
 
 (def done
   '#{
-     gdl.scene2d.stage
+     clojure.scene2d.stage
      }
   )
 

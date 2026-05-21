@@ -1,11 +1,11 @@
 (ns game.schema-widget.map
   (:require [clojure.core-ext :refer [sort-by-k-order]]
-            [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.event :as event]
-            [gdl.scene2d.group :as group]
-            [gdl.scene2d.stage :as stage]
-            [gdl.scene2d.ui.table :as table]
-            [gdl.scene2d.ui.widget-group :as widget-group]
+            [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.event :as event]
+            [clojure.scene2d.group :as group]
+            [clojure.scene2d.stage :as stage]
+            [clojure.scene2d.ui.table :as table]
+            [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.set :as set]
             [moon.schema :as schema]
             [moon.schemas :as schemas]))

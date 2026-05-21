@@ -1,7 +1,7 @@
 (ns com.badlogic.gdx.utils.viewport.fit-viewport
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
-            [gdl.app :as app]
-            [gdl.utils.viewport :as viewport])
+            [clojure.app :as app]
+            [clojure.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 

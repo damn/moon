@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.files.file-handle
-  (:require [gdl.files.file-handle :as file-handle])
+  (:require [clojure.files.file-handle :as file-handle])
   (:import (com.badlogic.gdx.files FileHandle)))
 
 (extend-type FileHandle

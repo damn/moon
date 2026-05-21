@@ -1,6 +1,6 @@
 (ns game.reaction-txs.show-modal
-  (:require [gdl.scene2d.stage :as stage]
-            [gdl.scene2d.actor :as actor]))
+  (:require [clojure.scene2d.stage :as stage]
+            [clojure.scene2d.actor :as actor]))
 
 (defn do!
   [{:keys [ctx/skin

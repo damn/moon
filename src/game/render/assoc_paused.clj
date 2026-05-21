@@ -1,6 +1,6 @@
 (ns game.render.assoc-paused
-  (:require [gdl.app :as app]
-            [gdl.input :as input]
+  (:require [clojure.app :as app]
+            [clojure.input :as input]
             [moon.state :as state]))
 
 (defmethod state/pause-game? :active-skill

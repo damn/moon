@@ -24,7 +24,7 @@
       (replace-in-file! f from to))))
 
 (comment
- (let [from "gdl"
+ (let [from "clojure"
        to   "moon"]
    (rename! from to)
    )
@@ -54,7 +54,7 @@
 
 (comment
  (move-and-rename! "moon.scene2d.group"
-                   "gdl.scene2d.group")
+                   "clojure.scene2d.group")
 
 
 

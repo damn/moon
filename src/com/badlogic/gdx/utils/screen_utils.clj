@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.utils.screen-utils
-  (:require [gdl.app :as app])
+  (:require [clojure.app :as app])
   (:import (com.badlogic.gdx.utils ScreenUtils)))
 
 (.bindRoot #'app/clear-screen!

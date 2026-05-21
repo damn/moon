@@ -1,6 +1,6 @@
 (ns space.earlygrey.shape-drawer
-  (:require [gdl.graphics.batch :as batch]
-            [gdl.graphics.shape-drawer :as shape-drawer])
+  (:require [clojure.graphics.batch :as batch]
+            [clojure.graphics.shape-drawer :as shape-drawer])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 

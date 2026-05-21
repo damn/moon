@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.widget
-  (:require [gdl.scene2d.actor :as actor])
+  (:require [clojure.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Widget)))
 
 (defmethod actor/create :ui/widget

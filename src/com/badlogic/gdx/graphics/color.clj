@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.graphics.color
-  (:require [gdl.graphics.color :as color])
+  (:require [clojure.graphics.color :as color])
   (:import (com.badlogic.gdx.graphics Color)))
 
 (.bindRoot #'color/float-bits

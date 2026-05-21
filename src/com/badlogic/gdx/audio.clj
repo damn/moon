@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.audio
-  (:require [gdl.audio :as audio])
+  (:require [clojure.audio :as audio])
   (:import (com.badlogic.gdx Audio)))
 
 (extend-type Audio

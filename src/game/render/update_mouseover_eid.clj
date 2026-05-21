@@ -1,7 +1,7 @@
 (ns game.render.update-mouseover-eid
-  (:require [gdl.scene2d.stage :as stage]
-            [gdl.app :as app]
-            [gdl.input :as input]
+  (:require [clojure.scene2d.stage :as stage]
+            [clojure.app :as app]
+            [clojure.input :as input]
             [moon.grid :as grid]
             [moon.order :as order]
             [moon.raycaster :as raycaster]))

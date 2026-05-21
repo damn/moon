@@ -1,6 +1,6 @@
 (ns moon.geom-test)
 ;(ns game.render.draw-on-world-viewport.geom-test)
-;(:require [gdl.graphics.color :as color])
+;(:require [clojure.graphics.color :as color])
 ;
 ;(comment
 ; (require '[moon.grid :as grid])

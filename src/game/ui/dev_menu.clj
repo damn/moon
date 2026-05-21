@@ -1,10 +1,10 @@
 (ns game.ui.dev-menu
-  (:require [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.event :as event]
-            [gdl.scene2d.group :as group]
-            [gdl.scene2d.stage :as stage]
-            [gdl.scene2d.ui.label :as label]
-            [gdl.scene2d.ui.table :as table]))
+  (:require [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.event :as event]
+            [clojure.scene2d.group :as group]
+            [clojure.scene2d.stage :as stage]
+            [clojure.scene2d.ui.label :as label]
+            [clojure.scene2d.ui.table :as table]))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create

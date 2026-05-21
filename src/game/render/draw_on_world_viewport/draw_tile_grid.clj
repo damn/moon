@@ -1,6 +1,6 @@
 (ns game.render.draw-on-world-viewport.draw-tile-grid
-  (:require [gdl.graphics.color :as color]
-            [gdl.graphics.orthographic-camera :as camera]))
+  (:require [clojure.graphics.color :as color]
+            [clojure.graphics.orthographic-camera :as camera]))
 
 (defn draws
   [{:keys [ctx/world-viewport]}]

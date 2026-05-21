@@ -1,10 +1,10 @@
 (ns game.create.controls
   (:require [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [gdl.input.buttons :as input.buttons]
-            [gdl.input.keys :as input.keys]
-            [gdl.app :as app]
-            [gdl.input :as input]
+            [clojure.input.buttons :as input.buttons]
+            [clojure.input.keys :as input.keys]
+            [clojure.app :as app]
+            [clojure.input :as input]
             [moon.controls :as controls]))
 
 (defn step [ctx]

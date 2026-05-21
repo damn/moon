@@ -1,6 +1,6 @@
 (ns game.render.if-not-paused.tick-entities
   (:require [clojure.animation :as animation]
-            [gdl.scene2d.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [clojure.math :as math]
             [clojure.math.vector2 :as v]
             [moon.body :as body]

@@ -2,25 +2,25 @@
   (:require [clojure.config :refer [edn-resource]]
             [game.textures :as textures]
             [game.impl.db :as db-impl]
-            [gdl.impl]
-            [gdl.app :as app]
-            [gdl.files :as files]
-            [gdl.files.file-handle :as file-handle]
-            [gdl.graphics.batch :as batch]
-            [gdl.graphics.color :as color]
-            [gdl.graphics.orthographic-camera :as camera]
-            [gdl.graphics.texture :as texture]
-            [gdl.input :as input]
-            [gdl.input.keys :as input.keys]
-            [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.event :as event]
-            [gdl.scene2d.stage :as stage]
-            [gdl.tiled-map :as tiled-map]
-            [gdl.tiled-map.layer :as layer]
-            [gdl.maps.map-layers :as layers]
-            [gdl.maps.map-properties :as props]
-            [gdl.utils.disposable :as disposable]
-            [gdl.utils.viewport :as viewport]
+            [clojure.impl]
+            [clojure.app :as app]
+            [clojure.files :as files]
+            [clojure.files.file-handle :as file-handle]
+            [clojure.graphics.batch :as batch]
+            [clojure.graphics.color :as color]
+            [clojure.graphics.orthographic-camera :as camera]
+            [clojure.graphics.texture :as texture]
+            [clojure.input :as input]
+            [clojure.input.keys :as input.keys]
+            [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.event :as event]
+            [clojure.scene2d.stage :as stage]
+            [clojure.tiled-map :as tiled-map]
+            [clojure.tiled-map.layer :as layer]
+            [clojure.maps.map-layers :as layers]
+            [clojure.maps.map-properties :as props]
+            [clojure.utils.disposable :as disposable]
+            [clojure.utils.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
   (:import (com.badlogic.gdx Gdx
@@ -195,7 +195,7 @@
 (def state (atom nil))
 
 (defn -main []
-  (gdl.impl/load!)
+  (clojure.impl/load!)
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]

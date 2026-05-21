@@ -1,5 +1,5 @@
 (ns game.create.add-stage-actors.player-message
-  (:require [gdl.scene2d.actor :as actor]
+  (:require [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]))
 
 (defn create [_ctx]

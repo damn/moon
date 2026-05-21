@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.maps.tiled.tiled-map-tile-layer
-  (:require [gdl.tiled-map.layer :as layer])
+  (:require [clojure.tiled-map.layer :as layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
 (.bindRoot #'layer/create

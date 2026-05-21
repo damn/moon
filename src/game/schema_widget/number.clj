@@ -2,8 +2,8 @@
   (:require [clojure.edn]
             [moon.edn :as edn]
             [moon.schema :as schema]
-            [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.ui.text-field :as text-field]))
+            [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.ui.text-field :as text-field]))
 
 (defmethod schema/create :s/number
   [schema v {:keys [ctx/skin]}]

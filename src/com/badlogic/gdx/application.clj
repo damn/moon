@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.application
-  (:require [gdl.app :as app])
+  (:require [clojure.app :as app])
   (:import (com.badlogic.gdx Application)))
 
 (extend-type Application

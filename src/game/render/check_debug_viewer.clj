@@ -1,7 +1,7 @@
 (ns game.render.check-debug-viewer
-  (:require [gdl.scene2d.stage :as stage]
-            [gdl.app :as app]
-            [gdl.input :as input]))
+  (:require [clojure.scene2d.stage :as stage]
+            [clojure.app :as app]
+            [clojure.input :as input]))
 
 (defn step
   [{:keys [ctx/controls

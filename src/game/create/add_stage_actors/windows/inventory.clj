@@ -1,8 +1,8 @@
 (ns game.create.add-stage-actors.windows.inventory
-  (:require [gdl.scene2d.event :as event]
-            [gdl.scene2d.group :as group]
-            [gdl.scene2d.ui.image :as image]
-            [gdl.scene2d.actor :as actor]
+  (:require [clojure.scene2d.event :as event]
+            [clojure.scene2d.group :as group]
+            [clojure.scene2d.ui.image :as image]
+            [clojure.scene2d.actor :as actor]
             [moon.draws :as draws]
             [moon.inventory :as inventory]
             [moon.state :as state]

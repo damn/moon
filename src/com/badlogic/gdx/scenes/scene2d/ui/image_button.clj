@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.image-button
-  (:require [gdl.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [gdl.scene2d.actor :as actor])
+  (:require [clojure.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [clojure.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui ImageButton)))
 
 (defmethod actor/create :ui/image-button

@@ -1,5 +1,5 @@
 (ns game.reaction-txs.remove-item
-  (:require [gdl.scene2d.stage :as stage]
+  (:require [clojure.scene2d.stage :as stage]
             [moon.ui.inventory-window :as inventory-window]))
 
 (defn do!

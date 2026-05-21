@@ -1,6 +1,6 @@
 (ns game.application
   (:require [clojure.config :refer [edn-resource]]
-            [gdl.impl])
+            [clojure.impl])
   (:import (com.badlogic.gdx Gdx
                              ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
@@ -19,7 +19,7 @@
                 windowed-mode
                 foreground-fps]} (edn-resource "start.edn")]
     (run! require requires)
-    (gdl.impl/load!)
+    (clojure.impl/load!)
     (Lwjgl3ApplicationConfiguration/useGlfwAsync)
     (Lwjgl3Application. (reify ApplicationListener
                           (create [_]

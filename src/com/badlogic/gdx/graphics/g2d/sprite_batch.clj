@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.graphics.g2d.sprite-batch
-  (:require [gdl.app :as app]
-            [gdl.graphics.batch :as batch])
+  (:require [clojure.app :as app]
+            [clojure.graphics.batch :as batch])
   (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)))
 

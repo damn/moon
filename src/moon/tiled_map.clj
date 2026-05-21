@@ -1,11 +1,11 @@
 (ns moon.tiled-map
-  (:require [gdl.tiled-map :as tiled-map]
-            [gdl.maps.map-properties :as props]
-            [gdl.maps.tiled.tmx-map-loader :as tmx-map-loader]
-            [gdl.tiled-map.layer :as layer]
-            [gdl.tiled-map.layer.cell :as cell]
-            [gdl.maps.map-layers :as layers]
-            [gdl.tiled-map.tile :as tile]))
+  (:require [clojure.tiled-map :as tiled-map]
+            [clojure.maps.map-properties :as props]
+            [clojure.maps.tiled.tmx-map-loader :as tmx-map-loader]
+            [clojure.tiled-map.layer :as layer]
+            [clojure.tiled-map.layer.cell :as cell]
+            [clojure.maps.map-layers :as layers]
+            [clojure.tiled-map.tile :as tile]))
 
 (defn- create-layer
   [{:keys [width

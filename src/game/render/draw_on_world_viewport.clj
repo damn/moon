@@ -1,8 +1,8 @@
 (ns game.render.draw-on-world-viewport
-  (:require [gdl.graphics.batch :as batch]
-            [gdl.graphics.orthographic-camera :as camera]
+  (:require [clojure.graphics.batch :as batch]
+            [clojure.graphics.orthographic-camera :as camera]
             [moon.draws :as draws]
-            [gdl.graphics.shape-drawer :as shape-drawer]))
+            [clojure.graphics.shape-drawer :as shape-drawer]))
 
 (defn step
   [{:keys [ctx/batch

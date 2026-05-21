@@ -1,11 +1,11 @@
 (ns game.create.impl-draws
   (:require [clojure.string :as str]
-            [gdl.graphics.g2d.bitmap-font :as font]
-            [gdl.graphics.g2d.bitmap-font.data :as data]
-            [gdl.graphics.g2d.texture-region :as texture-region]
-            [gdl.graphics.batch :as batch]
+            [clojure.graphics.g2d.bitmap-font :as font]
+            [clojure.graphics.g2d.bitmap-font.data :as data]
+            [clojure.graphics.g2d.texture-region :as texture-region]
+            [clojure.graphics.batch :as batch]
             [moon.draws :as draws]
-            [gdl.graphics.shape-drawer :as shape-drawer]))
+            [clojure.graphics.shape-drawer :as shape-drawer]))
 
 (def draw-fns
   {

@@ -1,11 +1,11 @@
 (ns game.state.player-item-on-cursor
-  (:require [gdl.app :as app]
-            [gdl.input :as input]
+  (:require [clojure.app :as app]
+            [clojure.input :as input]
             [clojure.math.vector2 :as v]
-            [gdl.input.buttons :as input.buttons]
+            [clojure.input.buttons :as input.buttons]
             [moon.entity :as entity]
             [moon.inventory :as inventory]
-            [gdl.scene2d.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.textures :as textures]))
 

@@ -1,9 +1,9 @@
 (ns com.badlogic.gdx.scenes.scene2d.ctx-stage
-  (:require [gdl.app :as app]
-            [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.group :as group]
-            [gdl.scene2d.stage :as stage]
-            [gdl.utils.viewport :as viewport])
+  (:require [clojure.app :as app]
+            [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.group :as group]
+            [clojure.scene2d.stage :as stage]
+            [clojure.utils.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.scenes.scene2d CtxStage)))
 

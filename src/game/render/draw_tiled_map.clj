@@ -1,6 +1,6 @@
 (ns game.render.draw-tiled-map
-  (:require [gdl.graphics.batch :as batch]
-            [gdl.graphics.orthographic-camera :as camera]
+  (:require [clojure.graphics.batch :as batch]
+            [clojure.graphics.orthographic-camera :as camera]
             [moon.raycaster :as raycaster]))
 
 (defn- tile-color-setter*

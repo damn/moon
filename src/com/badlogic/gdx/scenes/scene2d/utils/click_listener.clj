@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.scenes.scene2d.utils.click-listener
-  (:require [gdl.scene2d.listener :as listener])
+  (:require [clojure.scene2d.listener :as listener])
   (:import (com.badlogic.gdx.scenes.scene2d.utils ClickListener)))
 
 (defmethod listener/create

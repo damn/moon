@@ -1,7 +1,7 @@
 (ns game.render.clear-screen
-  (:require [gdl.app :as app]
-            [gdl.graphics :as graphics]
-            [gdl.graphics.gl20 :as gl20]))
+  (:require [clojure.app :as app]
+            [clojure.graphics :as graphics]
+            [clojure.graphics.gl20 :as gl20]))
 
 (defn step [{:keys [ctx/app] :as ctx}]
   (let [gl (graphics/gl20 (app/graphics app))]

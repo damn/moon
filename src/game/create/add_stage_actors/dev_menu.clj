@@ -1,10 +1,10 @@
 (ns game.create.add-stage-actors.dev-menu
-  (:require [gdl.graphics.orthographic-camera :as camera]
-            [gdl.scene2d.stage :as stage]
-            [gdl.graphics :as graphics]
+  (:require [clojure.graphics.orthographic-camera :as camera]
+            [clojure.scene2d.stage :as stage]
+            [clojure.graphics :as graphics]
             [clojure.string :as str]
             [moon.db :as db]
-            [gdl.app :as app]
+            [clojure.app :as app]
             [moon.number :as number]))
 
 (defn create

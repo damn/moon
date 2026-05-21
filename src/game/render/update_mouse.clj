@@ -1,7 +1,7 @@
 (ns game.render.update-mouse
-  (:require [gdl.utils.viewport :as viewport]
-            [gdl.app :as app]
-            [gdl.input :as input]))
+  (:require [clojure.utils.viewport :as viewport]
+            [clojure.app :as app]
+            [clojure.input :as input]))
 
 (defn step
   [{:keys [ctx/app

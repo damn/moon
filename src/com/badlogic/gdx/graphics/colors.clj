@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.graphics.colors
-  (:require [gdl.app :as app]
-            [gdl.graphics.color :as color])
+  (:require [clojure.app :as app]
+            [clojure.graphics.color :as color])
   (:import (com.badlogic.gdx.graphics Colors)))
 
 (.bindRoot #'app/put-colors!

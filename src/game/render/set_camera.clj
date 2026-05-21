@@ -1,5 +1,5 @@
 (ns game.render.set-camera
-  (:require [gdl.graphics.orthographic-camera :as camera]))
+  (:require [clojure.graphics.orthographic-camera :as camera]))
 
 (defn step
   [{:keys [ctx/player-eid

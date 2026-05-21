@@ -2,8 +2,8 @@
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.utils.align :as align]
-            [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.listener :as listener])
+            [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.listener :as listener])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defmethod actor/create :ui/actor

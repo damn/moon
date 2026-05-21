@@ -1,6 +1,6 @@
 (ns game.render.set-cursor
-  (:require [gdl.app :as app]
-            [gdl.graphics :as graphics]
+  (:require [clojure.app :as app]
+            [clojure.graphics :as graphics]
             [moon.state :as state]))
 
 (defmethod state/cursor :player-dead

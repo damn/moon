@@ -1,10 +1,10 @@
 (ns game.render.window-camera-controls
-  (:require [gdl.graphics.orthographic-camera :as camera]
-            [gdl.scene2d.stage :as stage]
-            [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.group :as group]
-            [gdl.app :as app]
-            [gdl.input :as input]))
+  (:require [clojure.graphics.orthographic-camera :as camera]
+            [clojure.scene2d.stage :as stage]
+            [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.group :as group]
+            [clojure.app :as app]
+            [clojure.input :as input]))
 
 (def zoom-speed 0.025)
 

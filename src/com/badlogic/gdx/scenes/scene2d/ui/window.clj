@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.window
-  (:require [gdl.scene2d.actor :as actor]
-            [gdl.scene2d.ui.table :as table])
+  (:require [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)))
 

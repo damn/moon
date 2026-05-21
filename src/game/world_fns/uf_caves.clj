@@ -1,8 +1,8 @@
 (ns game.world-fns.uf-caves
   (:require [clojure.rand :as rand]
             [moon.tiled-map]
-            [gdl.tiled-map :as tiled-map]
-            [gdl.graphics.texture :as texture]
+            [clojure.tiled-map :as tiled-map]
+            [clojure.graphics.texture :as texture]
             [moon.grid2d :as g2d]))
 
 (defn- assoc-transition-cells [grid]

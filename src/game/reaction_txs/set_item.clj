@@ -1,6 +1,6 @@
 (ns game.reaction-txs.set-item
   (:require [moon.info :as info]
-            [gdl.scene2d.stage :as stage]
+            [clojure.scene2d.stage :as stage]
             [moon.textures :as textures]
             [moon.ui.inventory-window :as inventory-window]))
 

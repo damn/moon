@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.input
-  (:require [gdl.input :as input])
+  (:require [clojure.input :as input])
   (:import (com.badlogic.gdx Input)))
 
 (extend-type Input

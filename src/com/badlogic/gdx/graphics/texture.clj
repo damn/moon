@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.graphics.texture
-  (:require [gdl.files.file-handle :as file-handle]
-            [gdl.graphics.texture :as texture])
+  (:require [clojure.files.file-handle :as file-handle]
+            [clojure.graphics.texture :as texture])
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))

@@ -1,8 +1,8 @@
 (ns game.textures
   (:require [clojure.string :as str]
-            [gdl.files :as files]
-            [gdl.files.file-handle :as file-handle]
-            [gdl.graphics.texture :as texture]
+            [clojure.files :as files]
+            [clojure.files.file-handle :as file-handle]
+            [clojure.graphics.texture :as texture]
             [moon.textures]))
 
 (def folder "resources/")

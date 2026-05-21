@@ -1,5 +1,5 @@
 (ns game.create.add-stage-actors
-  (:require [gdl.scene2d.stage :as stage]))
+  (:require [clojure.scene2d.stage :as stage]))
 
 (defn step
   [{:keys [ctx/stage]

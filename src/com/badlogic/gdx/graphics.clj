@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.graphics
-  (:require [gdl.graphics :as graphics])
+  (:require [clojure.graphics :as graphics])
   (:import (com.badlogic.gdx Graphics)))
 
 (extend-type Graphics

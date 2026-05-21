@@ -1,7 +1,7 @@
 (ns com.badlogic.gdx.graphics.orthographic-camera
   (:require [com.badlogic.gdx.math.vector3 :as vector3]
-            [gdl.app :as app]
-            [gdl.graphics.orthographic-camera :as camera])
+            [clojure.app :as app]
+            [clojure.graphics.orthographic-camera :as camera])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (.bindRoot #'app/orthographic-camera

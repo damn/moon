@@ -1,11 +1,11 @@
 (ns game.world-fns.modules
   (:require moon.tiled-map
-            [gdl.tiled-map :as tiled-map]
-            [gdl.maps.map-properties :as props]
-            [gdl.tiled-map.layer :as layer]
-            [gdl.tiled-map.layer.cell :as cell]
-            [gdl.maps.map-layers :as layers]
-            [gdl.tiled-map.tile :as tile]
+            [clojure.tiled-map :as tiled-map]
+            [clojure.maps.map-properties :as props]
+            [clojure.tiled-map.layer :as layer]
+            [clojure.tiled-map.layer.cell :as cell]
+            [clojure.maps.map-layers :as layers]
+            [clojure.tiled-map.tile :as tile]
             [moon.grid2d :as g2d])
   (:import (java.util Random)))
 

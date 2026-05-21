@@ -1,6 +1,6 @@
 (ns game.impl.content-grid
-  (:require [gdl.tiled-map :as tiled-map]
-            [gdl.maps.map-properties :as props]
+  (:require [clojure.tiled-map :as tiled-map]
+            [clojure.maps.map-properties :as props]
             [moon.content-grid :as content-grid]
             [moon.grid2d :as g2d]))
 
