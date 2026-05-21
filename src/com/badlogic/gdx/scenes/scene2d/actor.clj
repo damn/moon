@@ -2,7 +2,8 @@
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.utils.align :as align]
-            [gdl.scene2d.actor :as actor])
+            [gdl.scene2d.actor :as actor]
+            [gdl.scene2d.listener :as listener])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defmethod actor/create :ui/actor
@@ -17,9 +18,6 @@
             (when draw!
               (draw! this batch parent-alpha))))
     (actor/set-opts! opts)))
-
-(defmulti create-listener (fn [[listener-k listener-params]]
-                            listener-k))
 
 (extend-type Actor
   actor/Actor
@@ -75,7 +73,7 @@
     (.setTouchable actor (touchable/k->value touchable)))
 
   (add-listener! [actor [listener-k listener-params]]
-    (.addListener actor (create-listener [listener-k listener-params])))
+    (.addListener actor (listener/create [listener-k listener-params])))
 
   (stage->local-coordinates [actor xy]
     (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy)))))

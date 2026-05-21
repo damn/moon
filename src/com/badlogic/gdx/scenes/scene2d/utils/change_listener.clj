@@ -1,8 +1,8 @@
 (ns com.badlogic.gdx.scenes.scene2d.utils.change-listener
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor])
+  (:require [gdl.scene2d.listener :as listener])
   (:import (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
-(defmethod actor/create-listener
+(defmethod listener/create
   :listener/change
   [[_ f]]
   (proxy [ChangeListener] []

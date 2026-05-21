@@ -119,7 +119,8 @@
                :tiles (for [[position creature-property] spawn-positions]
                         [position (creature-tile creature-property)])}))
 
-(def load! tmx-map-loader/load!)
+(defn load! [path]
+  (tmx-map-loader/load! path))
 
 (defn create-map
   [{:keys [properties
