@@ -1,7 +1,21 @@
 [
+ game.entity.animation
+ game.entity.alert-friendlies-after-duration
+ game.entity.delete-after-duration
  game.entity.movement
+ game.entity.skills
  game.entity.stats
+ game.entity.string-effect
+ game.entity.temp-modifier
+ game.entity.projectile-collision
+
+ game.state.active-skill
+ game.state.npc-idle
+ game.state.npc-sleeping
+ game.state.npc-moving
  game.state.player-item-on-cursor
+ game.state.stunned
+
  game.schema-widget.animation
  game.schema-widget.boolean
  game.schema-widget.default
@@ -14,6 +28,7 @@
  game.schema-widget.sound
  game.schema-widget.string
  game.schema-widget.val-max
+
  game.state-impl
  game.effect.audiovisual
  game.effect.target-all
