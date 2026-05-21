@@ -1,4 +1,5 @@
 [
+ game.entity.movement
  game.entity.stats
  game.state.player-item-on-cursor
  game.schema-widget.animation
