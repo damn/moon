@@ -5,19 +5,10 @@
 (def schema
   (m/schema
    [:map {:closed true}
+    ; GDX app
     [:ctx/app :some]
     [:ctx/audio :some]
-    ; create
-    ; dispose
-    ; game.reaction-txs.sound play sound
-    ; all sound names
-    ; :ctx/gdx ?
-
     [:ctx/batch :some]
-    ; DRAWS
-    ; draw on world viewport
-    ; draw tiled map
-
     [:ctx/cursors :some]
     [:ctx/default-font :some]
     [:ctx/skin :some]
@@ -29,33 +20,42 @@
     [:ctx/shape-drawer-texture :some]
     [:ctx/textures :some]
 
+    ; Frame
     [:ctx/active-entities :any]
+    [:ctx/delta-time :any]
+    [:ctx/mouseover-eid :any]
+    [:ctx/ui-mouse-position :any]
+    [:ctx/world-mouse-position :any]
+
+    ; Constants
     [:ctx/colors :some]
-    [:ctx/content-grid :some]
     [:ctx/controls :some]
     [:ctx/controls-info :some]
-    [:ctx/db :some]
-    [:ctx/delta-time :any]
-    [:ctx/elapsed-time :some]
+    [:ctx/max-delta :some]
+    [:ctx/max-speed :some]
+    [:ctx/minimum-size :some]
+    [:ctx/render-z-order :some]
+    [:ctx/z-orders :some]
+
+    ; Game (level, time, db ?)
+    ; The 'game' could be a separate library with no ligdx dependencies (which it is already)
+    [:ctx/content-grid :some]
+    ; :ctx/player-eid
+    ; :ctx/grid
+
     [:ctx/entity-ids :some]
     [:ctx/explored-tile-corners :some]
     [:ctx/factions-iterations :some]
     [:ctx/grid :some]
     [:ctx/id-counter :some]
-    [:ctx/max-delta :some]
-    [:ctx/max-speed :some]
-    [:ctx/minimum-size :some]
-    [:ctx/mouseover-eid :any]
+    [:ctx/potential-field-cache :some]
+    [:ctx/db :some]
+    [:ctx/elapsed-time :some]
     [:ctx/paused? :some]
     [:ctx/player-eid :some]
-    [:ctx/potential-field-cache :some]
     [:ctx/raycaster :some]
-    [:ctx/render-z-order :some]
     [:ctx/start-position :some]
     [:ctx/tiled-map :some]
-    [:ctx/ui-mouse-position :any]
-    [:ctx/world-mouse-position :any]
-    [:ctx/z-orders :some]
     ]))
 
 (defn step [ctx]
