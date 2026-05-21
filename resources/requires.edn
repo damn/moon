@@ -14,6 +14,11 @@
  game.schema-widget.string
  game.schema-widget.val-max
  game.state-impl
+ game.effect.audiovisual
+ game.effect.target-all
+ game.effect.target-entity
+ game.effect.spawn
+ game.effect.projectile
  game.effect-impl
  game.info-impl
  game.ui.data-viewer-window
