@@ -2,8 +2,8 @@
   (:require [clojure.application-listener :as listener]
             [clojure.config :refer [edn-resource]]
             [clojure.impl]
-            [com.badlogic.gdx.backends.lwjgl3.application :as application]
-            [com.badlogic.gdx.backends.lwjgl3.application-configuration :as config])
+            [clojure.gdx.backends.lwjgl3.application :as application]
+            [clojure.gdx.backends.lwjgl3.application-configuration :as config])
   (:gen-class))
 
 (def state (atom nil))

@@ -22,8 +22,8 @@
             [clojure.maps.map-properties :as props]
             [clojure.utils.disposable :as disposable]
             [clojure.utils.viewport :as viewport]
-            [com.badlogic.gdx.backends.lwjgl3.application :as application]
-            [com.badlogic.gdx.backends.lwjgl3.application-configuration :as config]
+            [clojure.gdx.backends.lwjgl3.application :as application]
+            [clojure.gdx.backends.lwjgl3.application-configuration :as config]
             [moon.creature-tiles]
             [moon.db :as db]))
 

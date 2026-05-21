@@ -1,67 +1,67 @@
-[com.badlogic.gdx.application
+[clojure.gdx.application
 
- com.badlogic.gdx.audio
- com.badlogic.gdx.audio.sound
+ clojure.gdx.audio
+ clojure.gdx.audio.sound
 
- com.badlogic.gdx.files
- com.badlogic.gdx.files.file-handle
+ clojure.gdx.files
+ clojure.gdx.files.file-handle
 
- com.badlogic.gdx.graphics
- com.badlogic.gdx.graphics.color
- com.badlogic.gdx.graphics.colors
- com.badlogic.gdx.graphics.gl20
- com.badlogic.gdx.graphics.pixmap
- com.badlogic.gdx.graphics.texture
- com.badlogic.gdx.graphics.orthographic-camera
- com.badlogic.gdx.graphics.g2d.bitmap-font
- com.badlogic.gdx.graphics.g2d.bitmap-font.data
- com.badlogic.gdx.graphics.g2d.texture-region
- com.badlogic.gdx.graphics.g2d.sprite-batch
+ clojure.gdx.graphics
+ clojure.gdx.graphics.color
+ clojure.gdx.graphics.colors
+ clojure.gdx.graphics.gl20
+ clojure.gdx.graphics.pixmap
+ clojure.gdx.graphics.texture
+ clojure.gdx.graphics.orthographic-camera
+ clojure.gdx.graphics.g2d.bitmap-font
+ clojure.gdx.graphics.g2d.bitmap-font.data
+ clojure.gdx.graphics.g2d.texture-region
+ clojure.gdx.graphics.g2d.sprite-batch
 
- com.badlogic.gdx.graphics.g2d.freetype.font-generator
+ clojure.gdx.graphics.g2d.freetype.font-generator
 
- com.badlogic.gdx.input
+ clojure.gdx.input
 
- com.badlogic.gdx.scenes.scene2d.ctx-stage
- com.badlogic.gdx.scenes.scene2d.actor
- com.badlogic.gdx.scenes.scene2d.group
- com.badlogic.gdx.scenes.scene2d.event
+ clojure.gdx.scenes.scene2d.ctx-stage
+ clojure.gdx.scenes.scene2d.actor
+ clojure.gdx.scenes.scene2d.group
+ clojure.gdx.scenes.scene2d.event
 
- com.badlogic.gdx.scenes.scene2d.ui.widget
- com.badlogic.gdx.scenes.scene2d.ui.scroll-pane
- com.badlogic.gdx.scenes.scene2d.ui.horizontal-group
- com.badlogic.gdx.scenes.scene2d.ui.label
- com.badlogic.gdx.scenes.scene2d.ui.image-button
- com.badlogic.gdx.scenes.scene2d.ui.select-box
- com.badlogic.gdx.scenes.scene2d.ui.stack
- com.badlogic.gdx.scenes.scene2d.ui.image
- com.badlogic.gdx.scenes.scene2d.ui.text-button
- com.badlogic.gdx.scenes.scene2d.ui.text-field
- com.badlogic.gdx.scenes.scene2d.ui.text-tooltip
- com.badlogic.gdx.scenes.scene2d.ui.skin
- com.badlogic.gdx.scenes.scene2d.ui.table
- com.badlogic.gdx.scenes.scene2d.ui.image
- com.badlogic.gdx.scenes.scene2d.ui.check-box
- com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager
- com.badlogic.gdx.scenes.scene2d.ui.window
- com.badlogic.gdx.scenes.scene2d.ui.widget-group
+ clojure.gdx.scenes.scene2d.ui.widget
+ clojure.gdx.scenes.scene2d.ui.scroll-pane
+ clojure.gdx.scenes.scene2d.ui.horizontal-group
+ clojure.gdx.scenes.scene2d.ui.label
+ clojure.gdx.scenes.scene2d.ui.image-button
+ clojure.gdx.scenes.scene2d.ui.select-box
+ clojure.gdx.scenes.scene2d.ui.stack
+ clojure.gdx.scenes.scene2d.ui.image
+ clojure.gdx.scenes.scene2d.ui.text-button
+ clojure.gdx.scenes.scene2d.ui.text-field
+ clojure.gdx.scenes.scene2d.ui.text-tooltip
+ clojure.gdx.scenes.scene2d.ui.skin
+ clojure.gdx.scenes.scene2d.ui.table
+ clojure.gdx.scenes.scene2d.ui.image
+ clojure.gdx.scenes.scene2d.ui.check-box
+ clojure.gdx.scenes.scene2d.ui.tooltip-manager
+ clojure.gdx.scenes.scene2d.ui.window
+ clojure.gdx.scenes.scene2d.ui.widget-group
 
- com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable
- com.badlogic.gdx.scenes.scene2d.utils.change-listener
- com.badlogic.gdx.scenes.scene2d.utils.click-listener
+ clojure.gdx.scenes.scene2d.utils.texture-region-drawable
+ clojure.gdx.scenes.scene2d.utils.change-listener
+ clojure.gdx.scenes.scene2d.utils.click-listener
 
- com.badlogic.gdx.maps.map-layers
- com.badlogic.gdx.maps.map-properties
- com.badlogic.gdx.maps.tiled.tiled-map
- com.badlogic.gdx.maps.tiled.tiled-map-tile-layer
- com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell
- com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile
- com.badlogic.gdx.maps.tiled.tmx-map-loader
- com.badlogic.gdx.maps.renderer
+ clojure.gdx.maps.map-layers
+ clojure.gdx.maps.map-properties
+ clojure.gdx.maps.tiled.tiled-map
+ clojure.gdx.maps.tiled.tiled-map-tile-layer
+ clojure.gdx.maps.tiled.tiled-map-tile-layer.cell
+ clojure.gdx.maps.tiled.tiles.static-tiled-map-tile
+ clojure.gdx.maps.tiled.tmx-map-loader
+ clojure.gdx.maps.renderer
 
- com.badlogic.gdx.utils.disposable
- com.badlogic.gdx.utils.screen-utils
+ clojure.gdx.utils.disposable
+ clojure.gdx.utils.screen-utils
 
- com.badlogic.gdx.utils.viewport.fit-viewport
+ clojure.gdx.utils.viewport.fit-viewport
  space.earlygrey.shape-drawer
  ]
