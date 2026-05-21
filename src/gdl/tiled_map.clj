@@ -1,5 +1,7 @@
 (ns gdl.tiled-map)
 
+(declare create)
+
 (defprotocol TiledMap
   (dispose! [_])
   (properties [_])

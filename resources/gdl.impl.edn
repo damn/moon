@@ -47,6 +47,13 @@
  com.badlogic.gdx.scenes.scene2d.utils.change-listener
  com.badlogic.gdx.scenes.scene2d.utils.click-listener
 
+ com.badlogic.gdx.maps.map-layers
+ com.badlogic.gdx.maps.map-properties
+ com.badlogic.gdx.maps.tiled.tiled-map
+ com.badlogic.gdx.maps.tiled.tiled-map-tile-layer
+ com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell
+ com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile
+ com.badlogic.gdx.maps.tiled.tmx-map-loader
  com.badlogic.gdx.maps.renderer
 
  com.badlogic.gdx.utils.disposable

@@ -2,9 +2,10 @@
   (:require [gdl.tiled-map.layer.cell :as cell])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
-(defn create [tile]
-  (doto (TiledMapTileLayer$Cell.)
-    (.setTile tile)))
+(.bindRoot #'cell/create
+           (fn [tile]
+             (doto (TiledMapTileLayer$Cell.)
+               (.setTile tile))))
 
 (extend-type TiledMapTileLayer$Cell
   cell/Cell

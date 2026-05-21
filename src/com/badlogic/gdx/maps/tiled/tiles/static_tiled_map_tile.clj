@@ -3,8 +3,9 @@
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
-(defn create [^TextureRegion texture-region]
-  (StaticTiledMapTile. texture-region))
+(.bindRoot #'tile/create
+           (fn [^TextureRegion texture-region]
+             (StaticTiledMapTile. texture-region)))
 
 (extend-type StaticTiledMapTile
   tile/Tile

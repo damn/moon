@@ -1,8 +1,5 @@
 (ns moon.tiled-map
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as tiled-map-tile-layer.cell]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdl.tiled-map :as tiled-map]
+  (:require [gdl.tiled-map :as tiled-map]
             [gdl.tiled-map.props :as props]
             [gdl.tiled-map.layer :as layer]
             [gdl.tiled-map.layer.cell :as cell]
@@ -20,13 +17,13 @@
            tiles]}]
   {:pre [(string? name)
          (boolean? visible?)]}
-  (let [layer (doto (tiled-map-tile-layer/create width height tilewidth tileheight)
+  (let [layer (doto (layer/create width height tilewidth tileheight)
                 (.setName name)
                 (layer/set-visible! visible?))]
     (props/add! (layer/properties layer) map-properties)
     (doseq [[pos tile] tiles
             :when tile]
-      (layer/set-cell! layer pos (tiled-map-tile-layer.cell/create tile)))
+      (layer/set-cell! layer pos (cell/create tile)))
     layer))
 
 (defn add-layer!
@@ -100,7 +97,7 @@
   [texture-region property-name property-value]
   {:pre [texture-region
          (string? property-name)]}
-  (let [tile (static-tiled-map-tile/create texture-region)]
+  (let [tile (tile/create texture-region)]
     (props/add! (tile/properties tile) {property-name property-value})
     tile))
 

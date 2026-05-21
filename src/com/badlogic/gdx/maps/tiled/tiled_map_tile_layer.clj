@@ -2,8 +2,9 @@
   (:require [gdl.tiled-map.layer :as layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
-(defn create [width height tilewidth tileheight]
-  (TiledMapTileLayer. width height tilewidth tileheight))
+(.bindRoot #'layer/create
+           (fn [width height tilewidth tileheight]
+             (TiledMapTileLayer. width height tilewidth tileheight)))
 
 (extend-type TiledMapTileLayer
   layer/Layer

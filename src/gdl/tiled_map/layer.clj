@@ -1,6 +1,8 @@
 (ns gdl.tiled-map.layer
   (:refer-clojure :exclude [name]))
 
+(declare create)
+
 (defprotocol Layer
   (set-visible! [_ visible?])
   (properties [_])
