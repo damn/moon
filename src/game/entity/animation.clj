@@ -22,3 +22,9 @@
    (when (and (:delete-after-stopped? animation)
               (animation/stopped? animation))
      [:tx/mark-destroyed eid])])
+
+(defmethod entity/render :entity/animation
+  [[_k animation] entity ctx]
+  (entity/render [:entity/image (animation/current-frame animation)]
+                 entity
+                 ctx))

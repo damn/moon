@@ -2,9 +2,13 @@
  game.entity.animation
  game.entity.alert-friendlies-after-duration
  game.entity.body
+ game.entity.clickable
  game.entity.delete-after-duration
  game.entity.fsm
+ game.entity.image
  game.entity.inventory
+ game.entity.line-render
+ game.entity.mouseover
  game.entity.movement
  game.entity.skills
  game.entity.stats
