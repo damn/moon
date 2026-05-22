@@ -5,6 +5,10 @@
             [moon.grid :as grid]
             [moon.grid2d :as g2d]))
 
+(defmethod entity/create :entity/projectile-collision
+  [[_ v] _ctx]
+  (assoc v :already-hit-bodies #{}))
+
 (defmethod entity/tick :entity/projectile-collision
   [[_k {:keys [entity-effects already-hit-bodies piercing?]}]
    eid

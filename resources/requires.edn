@@ -1,7 +1,10 @@
 [
  game.entity.animation
  game.entity.alert-friendlies-after-duration
+ game.entity.body
  game.entity.delete-after-duration
+ game.entity.fsm
+ game.entity.inventory
  game.entity.movement
  game.entity.skills
  game.entity.stats
