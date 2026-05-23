@@ -77,7 +77,7 @@
         grid (assoc-transition-cells grid)
 
         position->tile (position->tile-fn grid)
-        tiled-map ((:tiled-create-map lvlctx)
+        tiled-map (moon.tiled-map/create-map
                    {:properties {"width"  (g2d/width  grid)
                                  "height" (g2d/height grid)
                                  "tilewidth"  tile-size
@@ -121,8 +121,6 @@
 (defn create
   [{:keys [initial-grid-create-fn
            grid2d-fix-nads-fn
-           tiled-create-map
-           tiled-create-tile
            level/creature-properties
            textures
            tile-size
@@ -135,7 +133,6 @@
             (f m))
           {:initial-grid-create-fn initial-grid-create-fn
            :grid2d-fix-nads-fn grid2d-fix-nads-fn
-           :tiled-create-map tiled-create-map
            :size cave-size
            :cave-style cave-style
            :random (java.util.Random.)
@@ -144,7 +141,7 @@
                                 (memoize
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
-                                   (tiled-create-tile
+                                   (moon.tiled-map/create-tile
                                     (texture/region texture
                                                     (* (sprite-idx 0) tile-size)
                                                     (* (sprite-idx 1) tile-size)
