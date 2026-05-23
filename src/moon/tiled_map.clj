@@ -26,7 +26,7 @@
       (layer/set-cell! layer pos (cell/create tile)))
     layer))
 
-(defn add-layer!
+(defn- add-layer!
   [tiled-map {:keys [name
                      visible?
                      properties
