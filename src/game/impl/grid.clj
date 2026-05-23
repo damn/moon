@@ -26,6 +26,7 @@
                                           "air"  :air
                                           "all"  :all))))))
 
+; (g2d/get-cells grid (body/occupied-tiles body))
 (defn- body->occupied-cells
   [grid
    {:keys [body/position
@@ -36,6 +37,7 @@
     (g2d/get-cells grid (body/touched-tiles body))
     [(grid (mapv int position))]))
 
+; core utils
 (defn- indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
   from 's' and indexes count up from zero.
@@ -44,11 +46,14 @@
   [s]
   (map vector (iterate inc 0) s))
 
+; core utils
 (defn- positions
   "Returns a lazy sequence containing the positions at which pred
   is true for items in coll."
   [pred coll]
   (for [[idx elt] (indexed coll) :when (pred elt)] idx))
+
+; TODO split out potential field update / find-direction ...
 
 (let [order (position/get-8-neighbours [0 0])]
   (def ^:private diagonal-check-indizes
@@ -302,6 +307,10 @@
     (cell/nearest-entity @(grid (mapv int (:body/position (:entity/body entity))))
                          (faction/enemy (:entity/faction entity))))
 
+  ; TODO EXTEND-TYPE CONTEXT
+  ; movement-ai
+  ; `moon.game` or `moon.ctx`
+  ; just require to load it
   (find-direction [grid eid]
     (let [position (:body/position (:entity/body @eid))
           own-cell (grid (mapv int position))
@@ -319,6 +328,7 @@
          (when-not (inside-cell? grid @eid target-cell)
            (v/direction position (:middle @target-cell)))))))
 
+  ; inside game.render.if-not-paused.update-potential-fields ???
   (tick! [grid pf-cache faction entities max-iterations]
     (let [tiles->entities (tiles->entities entities faction)
           last-state   [faction :tiles->entities]
