@@ -51,7 +51,7 @@
   (visible? [actor]
     (.isVisible actor))
 
-  (hit [^Actor actor [x y] touchable?]
+  (hit [actor [x y] touchable?]
     (.hit actor x y touchable?))
 
   (remove! [actor]
