@@ -117,7 +117,6 @@
                                :tiles (for [[position creature-property] spawn-positions]
                                         [position (creature-tile creature-property)])})))
 
-; TODO rather 3 simple steps repeated than 1 complicated?
 (defn create-map
   [{:keys [properties
            layers]}]
