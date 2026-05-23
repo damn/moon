@@ -3,8 +3,6 @@
             [game.impl.textures]
             [game.impl.db :as db-impl]
             [clojure.impl]
-            [clojure.application-listener :as listener]
-            [clojure.gdx.application-listener]
             [clojure.gdx.gdx :as gdx]
             [clojure.app :as app]
             [clojure.files :as files]
@@ -27,7 +25,8 @@
             [clojure.gdx.backends.lwjgl3.application :as application]
             [clojure.gdx.backends.lwjgl3.application-configuration :as config]
             [moon.creature-tiles]
-            [moon.db :as db]))
+            [moon.db :as db])
+  (:import (com.badlogic.gdx ApplicationListener)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -198,23 +197,22 @@
 (defn -main []
   (clojure.impl/load!)
   (config/use-glfw-async!)
-  (application/create (clojure.gdx.application-listener/create
-                       (reify listener/ApplicationListener
-                         (create! [_]
-                           (reset! state (create! (gdx/app))))
+  (application/create (reify ApplicationListener
+                        (create [_]
+                          (reset! state (create! (gdx/app))))
 
-                         (dispose! [_]
-                           (dispose! @state))
+                        (dispose [_]
+                          (dispose! @state))
 
-                         (render! [_]
-                           (swap! state render!))
+                        (render [_]
+                          (swap! state render!))
 
-                         (resize! [_ width height]
-                           (resize! @state width height))
+                        (resize [_ width height]
+                          (resize! @state width height))
 
-                         (pause! [_])
+                        (pause [_])
 
-                         (resume! [_])))
+                        (resume [_]))
                       (config/create
                        {:title "Levelgen Test"
                         :windowed-mode {:width 1440

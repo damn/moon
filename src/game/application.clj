@@ -1,11 +1,10 @@
 (ns game.application
-  (:require [clojure.application-listener :as listener]
-            [clojure.config :refer [edn-resource]]
+  (:require [clojure.config :refer [edn-resource]]
             [clojure.impl]
             [clojure.gdx.gdx :as gdx]
-            [clojure.gdx.application-listener]
             [clojure.gdx.backends.lwjgl3.application :as application]
             [clojure.gdx.backends.lwjgl3.application-configuration :as config])
+  (:import (com.badlogic.gdx ApplicationListener))
   (:gen-class))
 
 (def state (atom nil))
@@ -21,30 +20,29 @@
 
     (clojure.impl/load!)
     (config/use-glfw-async!)
-    (application/create (clojure.gdx.application-listener/create
-                         (reify listener/ApplicationListener
-                           (create! [_]
-                             (reset! state
+    (application/create (reify ApplicationListener
+                          (create [_]
+                            (reset! state
+                                    (reduce (fn [ctx [f & params]]
+                                              (apply f ctx params))
+                                            (gdx/app)
+                                            create)))
+
+                          (dispose [_]
+                            (dispose! @state))
+
+                          (render [_]
+                            (swap! state
+                                   (fn [ctx]
                                      (reduce (fn [ctx [f & params]]
                                                (apply f ctx params))
-                                             (gdx/app)
-                                             create)))
+                                             ctx
+                                             render))))
 
-                           (dispose! [_]
-                             (dispose! @state))
+                          (resize [_ width height]
+                            (resize! @state width height))
 
-                           (render! [_]
-                             (swap! state
-                                    (fn [ctx]
-                                      (reduce (fn [ctx [f & params]]
-                                                (apply f ctx params))
-                                              ctx
-                                              render))))
+                          (pause [_])
 
-                           (resize! [_ width height]
-                             (resize! @state width height))
-
-                           (pause! [_])
-
-                           (resume! [_])))
+                          (resume [_]))
                         (config/create config))))
