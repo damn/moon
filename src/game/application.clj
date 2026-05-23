@@ -2,6 +2,7 @@
   (:require [clojure.application-listener :as listener]
             [clojure.config :refer [edn-resource]]
             [clojure.impl]
+            [clojure.gdx.gdx :as gdx]
             [clojure.gdx.application-listener]
             [clojure.gdx.backends.lwjgl3.application :as application]
             [clojure.gdx.backends.lwjgl3.application-configuration :as config])
@@ -22,11 +23,11 @@
     (config/use-glfw-async!)
     (application/create (clojure.gdx.application-listener/create
                          (reify listener/ApplicationListener
-                           (create! [_ application]
+                           (create! [_]
                              (reset! state
                                      (reduce (fn [ctx [f & params]]
                                                (apply f ctx params))
-                                             application
+                                             (gdx/app)
                                              create)))
 
                            (dispose! [_]

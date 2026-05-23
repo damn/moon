@@ -1,12 +1,11 @@
 (ns clojure.gdx.application-listener
-  (:require [clojure.application-listener :as listener]
-            [clojure.gdx.gdx :as gdx])
+  (:require [clojure.application-listener :as listener])
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn create [listener]
   (reify ApplicationListener
     (create [_]
-      (listener/create! listener (gdx/app)))
+      (listener/create! listener))
 
     (dispose [_]
       (listener/dispose! listener))

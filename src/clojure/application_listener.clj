@@ -1,7 +1,7 @@
 (ns clojure.application-listener)
 
 (defprotocol ApplicationListener
-  (create! [_ application])
+  (create! [_])
   (dispose! [_])
   (render! [_])
   (resize! [_ width height])

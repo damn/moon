@@ -5,6 +5,7 @@
             [clojure.impl]
             [clojure.application-listener :as listener]
             [clojure.gdx.application-listener]
+            [clojure.gdx.gdx :as gdx]
             [clojure.app :as app]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
@@ -199,8 +200,8 @@
   (config/use-glfw-async!)
   (application/create (clojure.gdx.application-listener/create
                        (reify listener/ApplicationListener
-                         (create! [_ application]
-                           (reset! state (create! application)))
+                         (create! [_]
+                           (reset! state (create! (gdx/app))))
 
                          (dispose! [_]
                            (dispose! @state))
