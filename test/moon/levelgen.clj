@@ -4,6 +4,7 @@
             [game.impl.db :as db-impl]
             [clojure.impl]
             [clojure.application-listener :as listener]
+            [clojure.gdx.application-listener]
             [clojure.app :as app]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
@@ -196,22 +197,23 @@
 (defn -main []
   (clojure.impl/load!)
   (config/use-glfw-async!)
-  (application/create (reify listener/ApplicationListener
-                        (create! [_ application]
-                          (reset! state (create! application)))
+  (application/create (clojure.gdx.application-listener/create
+                       (reify listener/ApplicationListener
+                         (create! [_ application]
+                           (reset! state (create! application)))
 
-                        (dispose! [_]
-                          (dispose! @state))
+                         (dispose! [_]
+                           (dispose! @state))
 
-                        (render! [_]
-                          (swap! state render!))
+                         (render! [_]
+                           (swap! state render!))
 
-                        (resize! [_ width height]
-                          (resize! @state width height))
+                         (resize! [_ width height]
+                           (resize! @state width height))
 
-                        (pause! [_])
+                         (pause! [_])
 
-                        (resume! [_]))
+                         (resume! [_])))
                       (config/create
                        {:title "Levelgen Test"
                         :windowed-mode {:width 1440
