@@ -1,7 +1,6 @@
 [game.world-fns.modules/create
  {:initial-grid-fn moon.caves/create
   :grid2d-fix-nads-fn moon.nads/fix-nads
-  :create-tiled-map-object moon.tiled-map/create-map
   :world/map-size 5,
   :world/max-area-level 3,
   :world/spawn-rate 0.05}]

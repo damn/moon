@@ -166,7 +166,7 @@
   [{:keys [scaled-grid
            schema-tiled-map]
     :as w}]
-  (assoc w :tiled-map ((:create-tiled-map-object w) (grid->tiled-map schema-tiled-map scaled-grid))))
+  (assoc w :tiled-map (moon.tiled-map/create-map (grid->tiled-map schema-tiled-map scaled-grid))))
 
 (defn- calculate-start-position [{:keys [start scale] :as w}]
   (assoc w :start-position (mapv * start scale)))
