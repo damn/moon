@@ -26,22 +26,20 @@
       (layer/set-cell! layer pos (cell/create tile)))
     layer))
 
-(defn- add-layer!
+(defn- create-layer*
   [tiled-map {:keys [name
                      visible?
                      properties
                      tiles]}]
-  (let [props (tiled-map/properties tiled-map) ; shadowing 'properties' otherwise
-        layer (create-layer {:width      (props/get props "width")
-                             :height     (props/get props "height")
-                             :tilewidth  (props/get props "tilewidth")
-                             :tileheight (props/get props "tileheight")
-                             :name name
-                             :visible? visible?
-                             :map-properties properties
-                             :tiles tiles})]
-    (layers/add! (tiled-map/layers tiled-map) layer))
-  nil)
+  (let [props (tiled-map/properties tiled-map)]
+    (create-layer {:width      (props/get props "width")
+                   :height     (props/get props "height")
+                   :tilewidth  (props/get props "tilewidth")
+                   :tileheight (props/get props "tileheight")
+                   :name name
+                   :visible? visible?
+                   :map-properties properties
+                   :tiles tiles})))
 
 (defn- tile-movement-property
   [tiled-map layer [x y]]
@@ -112,11 +110,12 @@
      (create-tile texture-region "id" id))))
 
 (defn add-creatures-layer! [tiled-map spawn-positions]
-  (add-layer! tiled-map
-              {:name "creatures"
-               :visible? false
-               :tiles (for [[position creature-property] spawn-positions]
-                        [position (creature-tile creature-property)])}))
+  (layers/add! (tiled-map/layers tiled-map)
+               (create-layer* tiled-map
+                              {:name "creatures"
+                               :visible? false
+                               :tiles (for [[position creature-property] spawn-positions]
+                                        [position (creature-tile creature-property)])})))
 
 ; TODO rather 3 simple steps repeated than 1 complicated?
 (defn create-map
@@ -125,5 +124,5 @@
   (let [tiled-map (tiled-map/create)]
     (props/add! (tiled-map/properties tiled-map) properties)
     (doseq [layer layers]
-      (add-layer! tiled-map layer))
+      (layers/add! (tiled-map/layers tiled-map) (create-layer* tiled-map layer)))
     tiled-map))
