@@ -212,7 +212,8 @@
                         (pause! [_])
 
                         (resume! [_]))
-                      {:title "Levelgen Test"
-                       :windowed-mode {:width 1440
-                                       :height 900}
-                       :foreground-fps 60}))
+                      (config/create
+                       {:title "Levelgen Test"
+                        :windowed-mode {:width 1440
+                                        :height 900}
+                        :foreground-fps 60})))

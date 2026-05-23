@@ -16,6 +16,7 @@
                 resize!]
          :as config} (edn-resource "start.edn")]
     (run! require requires)
+
     (clojure.impl/load!)
     (config/use-glfw-async!)
     (application/create (reify listener/ApplicationListener
@@ -43,4 +44,4 @@
                           (pause! [_])
 
                           (resume! [_]))
-                        config)))
+                        (config/create config))))
