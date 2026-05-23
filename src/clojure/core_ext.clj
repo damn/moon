@@ -1,11 +1,17 @@
 (ns clojure.core-ext
-  (:require [clojure.lang.persistent-vector :as v]))
+  (:import (clojure.lang PersistentVector)))
+
+(defn index-of [^PersistentVector v k]
+  (let [idx (.indexOf v k)]
+    (if (= -1 idx)
+      nil
+      idx)))
 
 (comment
 
  ; simpler way to do 'sort-by-k-order':
 
- (v/index-of [:a :b :foo :c] :foo)
+ (index-of [:a :b :foo :c] :foo)
  (contains? [:a :b :foo :c] :foo)
  (def order [:low :medium :high])
  (def items [:high :low :medium :low :high])
@@ -19,5 +25,5 @@
 
 (defn sort-by-k-order [k-order components]
   (let [max-count (inc (count k-order))]
-    (sort-by (fn [[k _]] (or (v/index-of k-order k) max-count))
+    (sort-by (fn [[k _]] (or (index-of k-order k) max-count))
              components)))
