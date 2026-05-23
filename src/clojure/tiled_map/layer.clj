@@ -5,6 +5,7 @@
 
 (defprotocol Layer
   (set-visible! [_ visible?])
+  (set-name! [_ name])
   (properties [_])
   (name [_])
   (cell [_ [x y]])

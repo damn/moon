@@ -11,6 +11,9 @@
   (set-visible! [layer visible?]
     (.setVisible layer visible?))
 
+  (set-name! [layer name]
+    (.setName layer name))
+
   (properties [layer]
     (.getProperties layer))
 

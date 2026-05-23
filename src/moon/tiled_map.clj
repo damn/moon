@@ -18,7 +18,7 @@
   {:pre [(string? name)
          (boolean? visible?)]}
   (let [layer (doto (layer/create width height tilewidth tileheight)
-                (.setName name)
+                (layer/set-name! name)
                 (layer/set-visible! visible?))]
     (props/add! (layer/properties layer) map-properties)
     (doseq [[pos tile] tiles
