@@ -1,8 +1,8 @@
-(ns game.world-fns.tmx)
+(ns game.world-fns.tmx
+  (:require [clojure.maps.tiled.tmx-map-loader :as tmx-map-loader]))
 
 (defn create
   [{:keys [tmx-file
-           start-position
-           load-map-fn]}]
-  {:tiled-map (load-map-fn tmx-file)
+           start-position]}]
+  {:tiled-map (tmx-map-loader/load! tmx-file)
    :start-position start-position})

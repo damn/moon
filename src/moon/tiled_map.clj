@@ -1,7 +1,6 @@
 (ns moon.tiled-map
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.maps.map-properties :as props]
-            [clojure.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [clojure.tiled-map.layer :as layer]
             [clojure.tiled-map.layer.cell :as cell]
             [clojure.maps.map-layers :as layers]
@@ -119,9 +118,7 @@
                :tiles (for [[position creature-property] spawn-positions]
                         [position (creature-tile creature-property)])}))
 
-(defn load! [path]
-  (tmx-map-loader/load! path))
-
+; TODO rather 3 simple steps repeated than 1 complicated?
 (defn create-map
   [{:keys [properties
            layers]}]

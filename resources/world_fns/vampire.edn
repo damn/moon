@@ -2,5 +2,4 @@
  {
   :tmx-file "maps/vampire.tmx"
   :start-position [32 71]
-  :load-map-fn moon.tiled-map/load!
   }]

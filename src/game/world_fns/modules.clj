@@ -1,6 +1,7 @@
 (ns game.world-fns.modules
   (:require moon.tiled-map
             [clojure.tiled-map :as tiled-map]
+            [clojure.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [clojure.maps.map-properties :as props]
             [clojure.tiled-map.layer :as layer]
             [clojure.tiled-map.layer.cell :as cell]
@@ -137,7 +138,7 @@
   (assoc w :scaled-grid (g2d/scale-grid (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map ((:load-tmx-tiled-map w) "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (tmx-map-loader/load! "maps/modules.tmx")))
 
 (def copy-tile
   (memoize
