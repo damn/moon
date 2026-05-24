@@ -1,11 +1,16 @@
 (ns moon.tiled-map
-  (:require [clojure.tiled-map :as tiled-map]
+  (:require [clojure.maps.map-layers :as layers]
             [clojure.maps.map-properties :as props]
-            [clojure.tiled-map.layer :as layer]
-            [clojure.tiled-map.layer.cell :as cell]
-            [clojure.maps.map-layers :as layers]
-            [clojure.tiled-map.tile :as tile]))
+            [clojure.maps.tiled.tiled-map :as tiled-map]
+            [clojure.maps.tiled.tiled-map-tile-layer :as layer]
+            [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [clojure.maps.tiled.tiles.static-tiled-map-tile :as tile]))
 
+; Depends on:
+; * layer
+; * layer.cell
+; * props
+; => so should go to 'layer' ....
 (defn- create-layer
   [{:keys [width
            height
@@ -26,6 +31,11 @@
       (layer/set-cell! layer pos (cell/create tile)))
     layer))
 
+; used with add-layer!
+; depends on:
+; * tiled-map
+; * layer
+; so should go to tiled-map
 (defn- create-layer*
   [tiled-map {:keys [name
                      visible?
@@ -41,6 +51,7 @@
                    :map-properties properties
                    :tiles tiles})))
 
+; pass 'movement' string?
 (defn- tile-movement-property
   [tiled-map layer [x y]]
   (let [position [x y]]
@@ -57,6 +68,7 @@
                      " and layer " (layer/name layer) " is undefined."))
         value))))
 
+; ??
 (defn- movement-property-layers
   [tiled-map]
   (->> tiled-map
@@ -64,17 +76,20 @@
        reverse
        (filter #(props/get (layer/properties %) "movement-properties"))))
 
+; ??
 #_(defn- movement-properties [tiled-map position]
     (for [layer (movement-property-layers tiled-map)]
       [(layer/name layer)
        (tile-movement-property tiled-map layer position)]))
 
+; ??
 (defn movement-property [tiled-map position]
   (or (->> tiled-map
            movement-property-layers
            (some #(tile-movement-property tiled-map % position)))
       "none"))
 
+; positions-with-proeprty?, pass stirngs ?
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
@@ -91,6 +106,7 @@
           :when value]
       [position value])))
 
+; do create tile at add layer
 (defn create-tile
   [texture-region property-name property-value]
   {:pre [texture-region

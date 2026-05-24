@@ -1,7 +1,7 @@
 (ns clojure.gdx.maps.renderer
   (:require [clojure.graphics.batch :as batch]
-            [clojure.tiled-map :as tiled-map]
-            [clojure.tiled-map.layer :as layer]
+            [clojure.maps.tiled.tiled-map :as tiled-map]
+            [clojure.maps.tiled.tiled-map-tile-layer :as layer]
             [clojure.maps.map-layers :as layers])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (clojure.gdx TiledMapRenderer

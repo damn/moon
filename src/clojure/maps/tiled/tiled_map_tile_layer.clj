@@ -1,4 +1,4 @@
-(ns clojure.tiled-map.layer
+(ns clojure.maps.tiled.tiled-map-tile-layer
   (:refer-clojure :exclude [name]))
 
 (declare create)

@@ -1,4 +1,4 @@
-(ns clojure.tiled-map.tile)
+(ns clojure.maps.tiled.tiles.static-tiled-map-tile)
 
 (declare create)
 

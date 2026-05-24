@@ -1,4 +1,4 @@
-(ns clojure.tiled-map.layer.cell)
+(ns clojure.maps.tiled.tiled-map-tile-layer.cell)
 
 (declare create)
 

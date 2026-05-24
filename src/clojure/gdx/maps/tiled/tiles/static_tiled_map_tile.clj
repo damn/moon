@@ -1,5 +1,5 @@
 (ns clojure.gdx.maps.tiled.tiles.static-tiled-map-tile
-  (:require [clojure.tiled-map.tile :as tile])
+  (:require [clojure.maps.tiled.tiles.static-tiled-map-tile :as tile])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 

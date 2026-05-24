@@ -4,7 +4,7 @@
             [clojure.math.vector2 :as v]
             [moon.tiled-map]
             [clojure.maps.map-properties :as props]
-            [clojure.tiled-map :as tiled-map]
+            [clojure.maps.tiled.tiled-map :as tiled-map]
             [moon.position :as position]
             [moon.body :as body]
             [moon.cell :as cell]
