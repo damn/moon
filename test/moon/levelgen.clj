@@ -3,6 +3,7 @@
             [game.impl.textures]
             [game.impl.db :as db-impl]
             [clojure.impl]
+            [clojure.gdx.application-listener :as listener]
             [clojure.gdx.gdx :as gdx]
             [clojure.app :as app]
             [clojure.files :as files]
@@ -25,8 +26,7 @@
             [clojure.gdx.backends.lwjgl3.application :as application]
             [clojure.gdx.backends.lwjgl3.application-configuration :as config]
             [moon.creature-tiles]
-            [moon.db :as db])
-  (:import (com.badlogic.gdx ApplicationListener)))
+            [moon.db :as db]))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -197,22 +197,28 @@
 (defn -main []
   (clojure.impl/load!)
   (config/use-glfw-async!)
-  (application/create (reify ApplicationListener
-                        (create [_]
+  (application/create (listener/create
+                       {:create!
+                        (fn []
                           (reset! state (create! (gdx/app))))
 
-                        (dispose [_]
+                        :dispose!
+                        (fn []
                           (dispose! @state))
 
-                        (render [_]
+                        :render!
+                        (fn []
                           (swap! state render!))
 
-                        (resize [_ width height]
+                        :resize!
+                        (fn [width height]
                           (resize! @state width height))
 
-                        (pause [_])
+                        :pause!
+                        (fn [])
 
-                        (resume [_]))
+                        :resume!
+                        (fn [])})
                       (config/create
                        {:title "Levelgen Test"
                         :windowed-mode {:width 1440

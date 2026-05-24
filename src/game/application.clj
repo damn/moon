@@ -1,10 +1,10 @@
 (ns game.application
   (:require [clojure.config :refer [edn-resource]]
             [clojure.impl]
+            [clojure.gdx.application-listener :as listener]
             [clojure.gdx.gdx :as gdx]
             [clojure.gdx.backends.lwjgl3.application :as application]
             [clojure.gdx.backends.lwjgl3.application-configuration :as config])
-  (:import (com.badlogic.gdx ApplicationListener))
   (:gen-class))
 
 (def state (atom nil))
@@ -20,18 +20,21 @@
 
     (clojure.impl/load!)
     (config/use-glfw-async!)
-    (application/create (reify ApplicationListener
-                          (create [_]
+    (application/create (listener/create
+                         {:create!
+                          (fn []
                             (reset! state
                                     (reduce (fn [ctx [f & params]]
                                               (apply f ctx params))
                                             (gdx/app)
                                             create)))
 
-                          (dispose [_]
+                          :dispose!
+                          (fn []
                             (dispose! @state))
 
-                          (render [_]
+                          :render!
+                          (fn []
                             (swap! state
                                    (fn [ctx]
                                      (reduce (fn [ctx [f & params]]
@@ -39,10 +42,13 @@
                                              ctx
                                              render))))
 
-                          (resize [_ width height]
+                          :resize!
+                          (fn [width height]
                             (resize! @state width height))
 
-                          (pause [_])
+                          :pause!
+                          (fn [])
 
-                          (resume [_]))
+                          :resume!
+                          (fn [])})
                         (config/create config))))
