@@ -1,15 +1,7 @@
 (ns clojure.tiled-map.layer
   (:refer-clojure :exclude [name]))
 
-(defn create
-  [{:keys [width
-           height
-           tilewidth
-           tileheight
-           name
-           visible?
-           map-properties
-           tiles]}])
+(declare create)
 
 (defprotocol Layer
   (set-visible! [_ visible?])

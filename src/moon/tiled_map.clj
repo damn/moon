@@ -6,13 +6,33 @@
             [clojure.maps.map-layers :as layers]
             [clojure.tiled-map.tile :as tile]))
 
+(defn- create-layer
+  [{:keys [width
+           height
+           tilewidth
+           tileheight
+           name
+           visible?
+           map-properties
+           tiles]}]
+  {:pre [(string? name)
+         (boolean? visible?)]}
+  (let [layer (doto (layer/create width height tilewidth tileheight)
+                (layer/set-name! name)
+                (layer/set-visible! visible?))]
+    (props/add! (layer/properties layer) map-properties)
+    (doseq [[pos tile] tiles
+            :when tile]
+      (layer/set-cell! layer pos (cell/create tile)))
+    layer))
+
 (defn- create-layer*
   [tiled-map {:keys [name
                      visible?
                      properties
                      tiles]}]
   (let [props (tiled-map/properties tiled-map)]
-    (layer/create {:width      (props/get props "width")
+    (create-layer {:width      (props/get props "width")
                    :height     (props/get props "height")
                    :tilewidth  (props/get props "tilewidth")
                    :tileheight (props/get props "tileheight")
