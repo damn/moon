@@ -15,5 +15,7 @@
   (valid-position? [_ body entity-id])
   (nearest-enemy-distance [_ entity])
   (nearest-enemy [_ entity])
-  (find-direction [_ eid])
   (tick! [_ pf-cache faction entities max-iterations]))
+
+(defprotocol NpcMovementAI
+  (find-direction [_ eid]))

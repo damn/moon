@@ -53,12 +53,3 @@
   :profiles {:uberjar {:aot [game.application]}}
   :uberjar-name "moon.jar"
   :main game.application)
-
-; * Notes
-
-; * openjdk@8 stops working with long error
-; * fireplace 'cp' evaluation does not work with openJDK17
-; * using openjdk@11 right now and it works.
-; -> report to vim fireplace?
-
-; :FireplaceConnect 7888
