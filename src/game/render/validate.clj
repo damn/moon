@@ -6,9 +6,9 @@
   (m/schema
    [:map {:closed true}
     ; GDX app
-    [:ctx/app :some] ; <- input, audio, files, graphics
+    [:ctx/app :some] ; <- input, (audio), (files), graphics
 
-    [:ctx/audio :some]
+    [:ctx/audio :some] ; 'sounds'
 
     ; Graphics:
     [:ctx/batch :some]
