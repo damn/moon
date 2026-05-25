@@ -4,22 +4,20 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)))
 
-(defn- window-set-opts! [window opts]
-  (when (:window/modal? opts)
-    (Window/.setModal window true))
-
-  (when-let [skin (:window/close-button? opts)]
-    (table/add! (Window/.getTitleTable window)
-                {:actor (actor/create
-                         {:type :ui/text-button
-                          :text "X"
-                          :skin skin
-                          :actor/listeners {:listener/change (fn [_event _actor]
-                                                               (actor/remove! window))}})}))
-
-  (table/set-opts! window opts))
-
 (defmethod actor/create :ui/window
   [{:keys [title skin] :as opts}]
-  (doto (Window. ^String title ^Skin skin)
-    (window-set-opts! opts)))
+  (let [window (Window. ^String title ^Skin skin)]
+    (when (:window/modal? opts)
+      (.setModal window true))
+
+    (when-let [skin (:window/close-button? opts)]
+      (table/add! (.getTitleTable window)
+                  {:actor (actor/create
+                           {:type :ui/text-button
+                            :text "X"
+                            :skin skin
+                            :actor/listeners {:listener/change (fn [_event _actor]
+                                                                 (actor/remove! window))}})}))
+
+    (table/set-opts! window opts)
+    window))
