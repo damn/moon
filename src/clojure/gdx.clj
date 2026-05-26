@@ -57,6 +57,7 @@
             clojure.gdx.maps.renderer
             clojure.gdx.utils.disposable
             space.earlygrey.shape-drawer
+            [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.math.vector3 :as vector3])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx Application
