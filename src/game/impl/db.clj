@@ -107,7 +107,7 @@
     (map #(schemas/build-values schemas % this)
          (db/all-raw this property-type))))
 
-(defn create [_ctx]
+(defn create []
   (let [schemas (map->Schemas (-> "schema.edn" io/resource slurp edn/read-string))
         properties-file (io/resource "properties.edn")
         properties (-> properties-file slurp edn/read-string)]

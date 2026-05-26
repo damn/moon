@@ -1,4 +1,11 @@
 (ns game.ctx
+  ; TODO all the abbreviations
+  ; 'gdl.*'
+  ; gdl is a proposed game development language with just API = protocols
+  ; each protocol is released separately
+  ; we try to create a language for wiritng video games through the context
+  ; you are writing a langauge exactly for your game .....
+  ; it can become one ?
   (:require [clojure.app :as app]
             [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
@@ -38,6 +45,7 @@
             [clojure.utils.disposable :refer [dispose!]]
             [clojure.utils.viewport :as viewport]
             [game.impl.textures]
+            [game.impl.db]
             [malli.core :as m]
             [malli.utils :as mu]
             [moon.controls :as controls]
@@ -786,3 +794,6 @@
            ctx/max-delta]
     :as ctx}]
   (assoc ctx :ctx/max-speed (/ minimum-size max-delta)))
+
+(defn create-db [ctx]
+  (assoc ctx :ctx/db (game.impl.db/create)))
