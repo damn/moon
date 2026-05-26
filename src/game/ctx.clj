@@ -546,8 +546,6 @@
   (:viewport/world-height world-viewport))
 
 (defn create-app [app]
-  (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-  (gdx/set-tooltip-initial-time! 0)
   (let [batch (gdx/sprite-batch)
         white-pixel-texture (let [pixmap (doto (gdx/pixmap 1 1)
                                            (pixmap/set-color! 1 1 1 1)

@@ -178,6 +178,7 @@
 (def state (atom nil))
 
 (defn -main []
+  (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (gdx/use-glfw-async!)
   (gdx/application!
    (let [{:keys [create
@@ -189,6 +190,7 @@
 
       :create!
       (fn [app]
+        (gdx/set-tooltip-initial-time! 0)
         (reset! state
                 (reduce (fn [ctx [f & params]]
                           (apply f ctx params))
