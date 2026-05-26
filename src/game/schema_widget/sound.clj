@@ -6,6 +6,7 @@
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.table :as table]
             [clojure.scene2d.ui.widget-group :as widget-group]
+            [game.ctx :as ctx]
             [moon.schema :as schema]
             [moon.txs :as txs]))
 
@@ -21,9 +22,9 @@
       (actor/set-user-object! table [k sound-name]))))
 
 (defn- open-select-sounds-handler [table]
-  (fn [{:keys [ctx/audio
-               ctx/skin
-               ctx/stage]}]
+  (fn [{:keys [ctx/skin
+               ctx/stage]
+        :as ctx}]
     (stage/add-actor! stage
                       {:type :ui/window
                        :title "Choose"
@@ -34,7 +35,7 @@
                        [[(let [table (actor/create
                                       {:type :ui/table
                                        :table/cell-defaults {:pad 5}
-                                       :table/rows (for [sound-name (map first audio)]
+                                       :table/rows (for [sound-name (ctx/sound-names ctx)]
                                                      [{:actor (actor/create
                                                                {:type :ui/text-button
                                                                 :text sound-name

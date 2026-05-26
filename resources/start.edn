@@ -27,7 +27,7 @@
            [game.create.spawn-player/step]
            [game.create.spawn-enemies/step]
            ]
- :dispose! game.dispose/do!
+ :dispose! game.ctx/dispose!
  :render  [
            [game.render.get-stage-ctx/step]
            [game.render.validate/step]
