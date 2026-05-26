@@ -362,3 +362,5 @@
                          (:viewport/camera world-viewport)
                          tiled-map
                          (tile-color-setter ctx)))
+
+(def world-unit-scale :ctx/world-unit-scale)

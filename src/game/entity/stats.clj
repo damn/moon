@@ -1,5 +1,6 @@
 (ns game.entity.stats
-  (:require [malli.core :as m]
+  (:require [game.ctx :as ctx]
+            [malli.core :as m]
             [moon.entity :as entity]
             [moon.stats :as stats]
             [moon.ops :as ops]
@@ -91,16 +92,15 @@
       (update :stats/hp   (fn [v] [v v]))))
 
 (defmethod entity/render :entity/stats
-  [_ entity {:keys [ctx/colors
-                    ctx/world-unit-scale]}]
+  [_ entity {:keys [ctx/colors] :as ctx}]
   (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [body/position body/width body/height]} (:entity/body entity)
             [x y] position
             x (- x (/ width  2))
             y (+ y (/ height 2))
-            height (* 5 world-unit-scale)
-            border (* 1 world-unit-scale)]
+            height (* 5 (ctx/world-unit-scale ctx))
+            border (* 1 (ctx/world-unit-scale ctx))]
         [[:draw/filled-rectangle x y width height (:colors/hp-bar-rect colors)]
          [:draw/filled-rectangle
           (+ x border)
