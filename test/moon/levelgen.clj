@@ -6,6 +6,7 @@
             [clojure.gdx.application-listener :as listener]
             [clojure.gdx.gdx :as gdx]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.utils.screen-utils :as screen-utils]
             [clojure.app :as app]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
@@ -177,7 +178,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (app/clear-screen! [0 0 0 0])
+    (screen-utils/clear! [0 0 0 0])
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)

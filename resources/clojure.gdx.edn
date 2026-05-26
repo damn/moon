@@ -59,7 +59,6 @@
  clojure.gdx.maps.renderer
 
  clojure.gdx.utils.disposable
- clojure.gdx.utils.screen-utils
 
  clojure.gdx.utils.viewport.fit-viewport
  space.earlygrey.shape-drawer

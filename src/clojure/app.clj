@@ -6,8 +6,7 @@
   (graphics [_])
   (input [_]))
 
-(declare clear-screen!
-         fit-viewport
+(declare fit-viewport
          tooltip-manager-set-initial-time!
          put-colors!
          pixmap
