@@ -3,8 +3,6 @@
             [game.impl.textures]
             [game.impl.db :as db-impl]
             [clojure.gdx :as gdx]
-            [clojure.gdx.utils.screen-utils :as screen-utils]
-            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.app :as app]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
@@ -98,7 +96,7 @@
         graphics (app/graphics app)
         input (app/input app)
         skin (file-handle/skin (files/internal files "uiskin.json"))
-        ui-viewport (fit-viewport/create 1440 900)
+        ui-viewport (gdx/fit-viewport 1440 900)
         sprite-batch (gdx/sprite-batch)
         stage (gdx/stage ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
@@ -110,12 +108,12 @@
         ctx (assoc ctx :ctx/textures (game.impl.textures/create {:ctx/app app}))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
-                         (fit-viewport/create world-width
-                                              world-height
-                                              (gdx/orthographic-camera
-                                               {:y-down? false
-                                                :world-width world-width
-                                                :world-height world-height})))
+                         (gdx/fit-viewport world-width
+                                           world-height
+                                           (gdx/orthographic-camera
+                                            {:y-down? false
+                                             :world-width world-width
+                                             :world-height world-height})))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport
@@ -174,7 +172,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (screen-utils/clear! [0 0 0 0])
+    (gdx/clear-screen! [0 0 0 0])
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)

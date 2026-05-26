@@ -57,8 +57,7 @@
             clojure.gdx.maps.renderer
             clojure.gdx.utils.disposable
             space.earlygrey.shape-drawer
-            [clojure.gdx.math.vector3 :as vector3]
-            )
+            [clojure.gdx.math.vector3 :as vector3])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx Application
                              ApplicationListener
@@ -75,7 +74,10 @@
                                       OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d CtxStage)))
+           (com.badlogic.gdx.scenes.scene2d CtxStage)
+           (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
+           (com.badlogic.gdx.utils ScreenUtils)
+           (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn application!
   [{:keys [title
@@ -266,3 +268,35 @@
 
   (texture [pixmap]
     (Texture. pixmap)))
+
+(defn clear-screen! [[r g b a]]
+  (ScreenUtils/clear r g b a))
+
+(defn fit-viewport
+  ([width height]
+   (proxy [FitViewport ILookup] [width height]
+     (valAt [k]
+       (case k
+         :viewport/camera       (FitViewport/.getCamera      this)
+         :viewport/world-width  (FitViewport/.getWorldWidth  this)
+         :viewport/world-height (FitViewport/.getWorldHeight this)))))
+  ([width height camera]
+   (proxy [FitViewport ILookup] [width height camera]
+     (valAt [k]
+       (case k
+         :viewport/camera       (FitViewport/.getCamera      this)
+         :viewport/world-width  (FitViewport/.getWorldWidth  this)
+         :viewport/world-height (FitViewport/.getWorldHeight this))))))
+
+(extend-type FitViewport
+  viewport/Viewport
+  (update! [viewport screen-width screen-height center-camera?]
+    (.update viewport screen-width screen-height center-camera?))
+
+  (unproject [viewport position]
+    (-> viewport
+        (.unproject (vector2/->java position))
+        vector2/->clj)))
+
+(defn set-tooltip-initial-time! [value]
+  (set! (.initialTime (TooltipManager/getInstance)) value))
