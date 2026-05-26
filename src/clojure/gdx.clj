@@ -50,7 +50,8 @@
             space.earlygrey.shape-drawer)
   (:import (com.badlogic.gdx Application
                              ApplicationListener
-                             Audio)
+                             Audio
+                             Gdx)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)))
@@ -68,7 +69,7 @@
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
-                          (create!))
+                          (create! Gdx/app))
 
                         (dispose [_]
                           (dispose!))

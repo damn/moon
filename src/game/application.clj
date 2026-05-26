@@ -49,8 +49,7 @@
             game.ui.action-bar
             game.ui.info-window
             [clojure.config :refer [edn-resource]]
-            [clojure.gdx]
-            [clojure.gdx.gdx :as gdx])
+            [clojure.gdx :as gdx])
   (:gen-class))
 
 (def state (atom nil))
@@ -61,14 +60,14 @@
                 render
                 resize!]
          :as config} (edn-resource "start.edn")]
-    (clojure.gdx/application!
+    (gdx/application!
      (merge config
             {:create!
-             (fn []
+             (fn [app]
                (reset! state
                        (reduce (fn [ctx [f & params]]
                                  (apply f ctx params))
-                               (gdx/app)
+                               app
                                create)))
 
              :dispose!

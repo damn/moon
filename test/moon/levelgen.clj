@@ -2,8 +2,7 @@
   (:require [clojure.config :refer [edn-resource]]
             [game.impl.textures]
             [game.impl.db :as db-impl]
-            [clojure.gdx]
-            [clojure.gdx.gdx :as gdx]
+            [clojure.gdx :as gdx]
             [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
@@ -197,13 +196,13 @@
 (def state (atom nil))
 
 (defn -main []
-  (clojure.gdx/application!
+  (gdx/application!
    {:title "Levelgen Test"
     :windowed-mode {:width 1440
                     :height 900}
     :foreground-fps 60
-    :create! (fn []
-               (reset! state (create! (gdx/app))))
+    :create! (fn [app]
+               (reset! state (create! app)))
 
     :dispose! (fn []
                 (dispose! @state))
