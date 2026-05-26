@@ -9,6 +9,7 @@
             [clojure.gdx.graphics.pixmap]
             [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
             [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
@@ -72,7 +73,7 @@
                                          cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                      (pixmap/dispose! pixmap)
                                      cursor))))
-     :ctx/stage (let [stage (app/stage (fit-viewport/create 1440 900) batch)]
+     :ctx/stage (let [stage (ctx-stage/create (fit-viewport/create 1440 900) batch)]
                   (input/set-processor! (app/input app) stage)
                   stage)
      :ctx/skin (let [skin (file-handle/skin (files/internal (app/files app) "uiskin.json"))]

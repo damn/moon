@@ -5,5 +5,3 @@
   (files [_])
   (graphics [_])
   (input [_]))
-
-(declare stage)

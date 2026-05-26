@@ -7,6 +7,7 @@
             [clojure.gdx.gdx :as gdx]
             [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
             [clojure.gdx.utils.screen-utils :as screen-utils]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.app :as app]
@@ -106,7 +107,7 @@
         skin (file-handle/skin (files/internal files "uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (sprite-batch/create)
-        stage (app/stage ui-viewport sprite-batch)
+        stage (ctx-stage/create ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
