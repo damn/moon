@@ -9,6 +9,7 @@
   (:require [clojure.app :as app]
             [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
+            [clojure.config :as config]
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
@@ -49,12 +50,21 @@
             [malli.core :as m]
             [malli.utils :as mu]
             [moon.controls :as controls]
+            [moon.db :as db]
+            [moon.creature-tiles]
             [moon.draws :as draws]
             [moon.raycaster :as raycaster]
             [moon.state :as state]
+            [moon.textures :as textures]
             [moon.txs :as txs]
             [moon.order :as order]
             [qrecord.core :as q]))
+
+(def world-fn-file
+   "world_fns/modules.edn"
+  ; "world_fns/vampire.edn"
+  ; "world_fns/uf_caves.edn"
+  )
 
 (defn- actions!
   [txs-fn-map ctx txs]
@@ -797,3 +807,27 @@
 
 (defn create-db [ctx]
   (assoc ctx :ctx/db (game.impl.db/create)))
+
+(defn add-stage-actors
+  [{:keys [ctx/stage]
+    :as ctx}
+   actor-fns]
+  (doseq [[actor-fn & params] actor-fns]
+    (stage/add-actor! stage (apply actor-fn ctx params)))
+  ctx)
+
+(defn create-tiled-map
+  [{:keys [ctx/db
+           ctx/textures]
+    :as ctx}]
+  (let [[f params] (config/edn-resource world-fn-file)
+        {:keys [tiled-map
+                start-position]} (f
+                                  (assoc params
+                                         :level/creature-properties (moon.creature-tiles/prepare
+                                                                     (db/all-raw db :properties/creatures)
+                                                                     #(textures/texture-region textures %))
+                                         :textures textures))]
+    (assoc ctx
+           :ctx/tiled-map tiled-map
+           :ctx/start-position start-position)))
