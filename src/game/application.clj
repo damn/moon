@@ -6,6 +6,7 @@
             [moon.grid :as grid]
             [moon.entity :as entity]
             [moon.timer :as timer]
+            [game.ctx :as ctx]
             game.entity.delete-after-duration
             game.entity.fsm
             game.entity.image
@@ -178,40 +179,41 @@
 
 (defn -main []
   (gdx/use-glfw-async!)
-  (let [{:keys [create
-                dispose!
-                render
-                resize!]
-         :as config} (edn-resource "start.edn")]
-    (gdx/application!
-     (merge config
-            {:create!
-             (fn [app]
-               (reset! state
-                       (reduce (fn [ctx [f & params]]
-                                 (apply f ctx params))
-                               app
-                               create)))
+  (gdx/application!
+   (let [{:keys [create
+                 render]} (edn-resource "start.edn")]
+     {:title "Moon"
+      :windowed-mode {:width 1440
+                      :height 900}
+      :foreground-fps 60
 
-             :dispose!
-             (fn []
-               (dispose! @state))
+      :create!
+      (fn [app]
+        (reset! state
+                (reduce (fn [ctx [f & params]]
+                          (apply f ctx params))
+                        app
+                        create)))
 
-             :render!
-             (fn []
-               (swap! state
-                      (fn [ctx]
-                        (reduce (fn [ctx [f & params]]
-                                  (apply f ctx params))
-                                ctx
-                                render))))
+      :dispose!
+      (fn []
+        (ctx/dispose! @state))
 
-             :resize!
-             (fn [width height]
-               (resize! @state width height))
+      :render!
+      (fn []
+        (swap! state
+               (fn [ctx]
+                 (reduce (fn [ctx [f & params]]
+                           (apply f ctx params))
+                         ctx
+                         render))))
 
-             :pause!
-             (fn [])
+      :resize!
+      (fn [width height]
+        (ctx/resize! @state width height))
 
-             :resume!
-             (fn [])}))))
+      :pause!
+      (fn [])
+
+      :resume!
+      (fn [])})))

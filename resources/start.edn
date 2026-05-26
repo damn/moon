@@ -1,9 +1,3 @@
-; TODO tx-core/ & tx/
-; core is those which return nil and actually _do_ something
-; same with draws/
-; TODO :tx/swap
-;:tx/swap   (fn [_ctx eid & params]
-;             (apply swap! eid params)
 {
  :create  [
            [game.ctx/create-app]
@@ -73,7 +67,6 @@
            [game.create.spawn-player/step]
            [game.create.spawn-enemies/step]
            ]
- :dispose! game.ctx/dispose!
  :render  [
            [game.render.get-stage-ctx/step]
            [game.render.validate/step]
@@ -104,9 +97,4 @@
            [game.render.stage/step]
            [game.render.validate/step]
            ]
- :resize!  game.ctx/resize!
- :title "Moon"
- :windowed-mode {:width 1440
-                 :height 900}
- :foreground-fps 60
  }
