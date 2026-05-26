@@ -20,7 +20,13 @@
             [malli.utils :as mu]
             [moon.draws :as draws]
             [moon.raycaster :as raycaster]
-            [moon.state :as state]))
+            [moon.state :as state]
+            [qrecord.core :as q]))
+
+(q/defrecord Context [])
+
+(defn create-record [ctx]
+  (merge (map->Context {}) ctx))
 
 (def schema
   (m/schema
