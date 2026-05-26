@@ -1,10 +1,9 @@
 (ns game.render.assoc-interaction-state
   (:require [clojure.scene2d.actor :as actor]
             [clojure.scene2d.stage :as stage]
-            [clojure.app :as app]
-            [clojure.input :as input]
             [clojure.scene2d.ui :as ui]
             [clojure.math.vector2 :as v]
+            [game.ctx :as ctx]
             [moon.body :as body]
             [moon.skill :as skill]
             [moon.ui.action-bar :as action-bar]))
@@ -62,8 +61,7 @@
      [:interaction-state/no-skill-selected])))
 
 (defn step
-  [{:keys [ctx/app
-           ctx/mouseover-eid
+  [{:keys [ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
            ctx/world-mouse-position]
@@ -72,4 +70,4 @@
                                                        world-mouse-position
                                                        mouseover-eid
                                                        player-eid
-                                                       (stage/mouseover-actor stage (input/mouse-position (app/input app))))))
+                                                       (stage/mouseover-actor stage (ctx/mouse-position ctx)))))

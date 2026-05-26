@@ -1,14 +1,12 @@
 (ns game.render.update-mouseover-eid
   (:require [clojure.scene2d.stage :as stage]
-            [clojure.app :as app]
-            [clojure.input :as input]
+            [game.ctx :as ctx]
             [moon.grid :as grid]
             [moon.order :as order]
             [moon.raycaster :as raycaster]))
 
 (defn step
-  [{:keys [ctx/app
-           ctx/mouseover-eid
+  [{:keys [ctx/mouseover-eid
            ctx/stage
            ctx/player-eid
            ctx/grid
@@ -16,7 +14,7 @@
            ctx/render-z-order
            ctx/world-mouse-position]
     :as ctx}]
-  (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position (app/input app)))
+  (let [mouseover-actor (stage/mouseover-actor stage (ctx/mouse-position ctx))
         position world-mouse-position
         new-eid (if mouseover-actor
                   nil

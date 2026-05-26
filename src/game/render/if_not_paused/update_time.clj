@@ -1,12 +1,10 @@
 (ns game.render.if-not-paused.update-time
-  (:require [clojure.app :as app]
-            [clojure.graphics :as graphics]))
+  (:require [game.ctx :as ctx]))
 
 (defn step
-  [{:keys [ctx/app
-           ctx/max-delta]
+  [{:keys [ctx/max-delta]
     :as ctx}]
-  (let [delta-ms (min (graphics/delta-time (app/graphics app)) max-delta)]
+  (let [delta-ms (min (ctx/delta-time ctx) max-delta)]
     (-> ctx
         (assoc :ctx/delta-time delta-ms)
         (update :ctx/elapsed-time + delta-ms))))

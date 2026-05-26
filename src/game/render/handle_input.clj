@@ -3,8 +3,7 @@
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.stage :as stage]
             [clojure.input.buttons :as input.buttons]
-            [clojure.app :as app]
-            [clojure.input :as input]
+            [game.ctx :as ctx]
             [moon.inventory :as inventory]
             [moon.state :as state]
             [moon.stats :as stats]
@@ -71,12 +70,11 @@
      [:tx/show-message "No selected skill"]]))
 
 (defmethod state/handle-input :player-idle
-  [_ player-eid {:keys [ctx/app
-                        ctx/interaction-state
+  [_ player-eid {:keys [ctx/interaction-state
                         ctx/stage] :as ctx}]
   (if-let [movement-vector (controls/player-movement-vector ctx)]
     [[:tx/event player-eid :movement-input movement-vector]]
-    (when (input/button-just-pressed? (app/input app) input.buttons/left)
+    (when (ctx/button-just-pressed? ctx input.buttons/left)
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))

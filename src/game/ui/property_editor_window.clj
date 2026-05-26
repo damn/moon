@@ -4,9 +4,8 @@
             [clojure.scene2d.event :as event]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
+            [game.ctx :as ctx]
             [moon.db :as db]
-            [clojure.app :as app]
-            [clojure.input :as input]
             [moon.property :as property]
             [moon.schema :as schema]
             [moon.throwable :as throwable]))
@@ -48,8 +47,8 @@
         actors [{:type :ui/actor
                  :act! (fn [this delta]
                          (when-let [stage (actor/stage this)]
-                           (let [{:keys [ctx/app] :as ctx} (:stage/ctx stage)]
-                             (when (input/key-just-pressed? (app/input app) input.keys/enter)
+                           (let [ctx (:stage/ctx stage)]
+                             (when (ctx/key-just-pressed? ctx input.keys/enter)
                                (clicked-save-fn this ctx)))))}]
         save-button {:type :ui/text-button
                      :text "Save [LIGHT_GRAY](ENTER)[]"

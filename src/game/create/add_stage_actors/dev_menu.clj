@@ -1,10 +1,9 @@
 (ns game.create.add-stage-actors.dev-menu
   (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.scene2d.stage :as stage]
-            [clojure.graphics :as graphics]
             [clojure.string :as str]
+            [game.ctx :as ctx]
             [moon.db :as db]
-            [clojure.app :as app]
             [moon.number :as number]))
 
 (defn create
@@ -71,8 +70,7 @@
                                             (str (number/readable elapsed-time) " seconds"))
                                :icon "images/clock.png"}
                               {:label "FPS"
-                               :update-fn (fn [{:keys [ctx/app]}]
-                                            (graphics/frames-per-second (app/graphics app)))
+                               :update-fn ctx/frames-per-second
                                :icon "images/fps.png"}
                               {:label "Mouseover-entity id"
                                :update-fn (fn [{:keys [ctx/mouseover-eid]}]

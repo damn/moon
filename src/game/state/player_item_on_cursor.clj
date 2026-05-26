@@ -1,8 +1,7 @@
 (ns game.state.player-item-on-cursor
-  (:require [clojure.app :as app]
-            [clojure.input :as input]
-            [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2 :as v]
             [clojure.input.buttons :as input.buttons]
+            [game.ctx :as ctx]
             [moon.entity :as entity]
             [moon.inventory :as inventory]
             [clojure.scene2d.stage :as stage]
@@ -45,14 +44,14 @@
         (:entity/item-on-cursor entity)]])))
 
 (defmethod state/draw-ui-view :player-item-on-cursor
-  [_ eid {:keys [ctx/app
-                 ctx/stage
+  [_ eid {:keys [ctx/stage
                  ctx/textures
-                 ctx/ui-mouse-position]}]
+                 ctx/ui-mouse-position]
+          :as ctx}]
   ; TODO see player-item-on-cursor at render layers
   ; always draw it here at right position, then render layers does not need input/stage
   ; can pass world to graphics, not handle here at application
-  (when (stage/mouseover-actor stage (input/mouse-position (app/input app)))
+  (when (stage/mouseover-actor stage (ctx/mouse-position ctx))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
       ui-mouse-position
@@ -100,23 +99,23 @@
 (defmethod entity/render :player-item-on-cursor
   [[_k {:keys [item]}]
    entity
-   {:keys [ctx/app
-           ctx/stage
+   {:keys [ctx/stage
            ctx/textures
-           ctx/world-mouse-position]}]
+           ctx/world-mouse-position]
+    :as ctx}]
   ; TODO do not draw here, only at UI view
   ; then graphics can draw world without stage/input
-  (when-not (stage/mouseover-actor stage (input/mouse-position (app/input app)))
+  (when-not (stage/mouseover-actor stage (ctx/mouse-position ctx))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image item))
       (item-place-position world-mouse-position entity)
       {:center? true}]]))
 
 (defmethod state/handle-input :player-item-on-cursor
-  [_ eid {:keys [ctx/app
-                 ctx/stage]}]
-  (let [mouseover-actor (stage/mouseover-actor stage (input/mouse-position (app/input app)))]
-    (when (and (input/button-just-pressed? (app/input app) input.buttons/left)
+  [_ eid {:keys [ctx/stage]
+          :as ctx}]
+  (let [mouseover-actor (stage/mouseover-actor stage (ctx/mouse-position ctx))]
+    (when (and (ctx/button-just-pressed? ctx input.buttons/left)
                (not mouseover-actor))
       [[:tx/event eid :drop-item]])))
 

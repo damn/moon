@@ -1,14 +1,12 @@
 (ns game.render.update-mouse
   (:require [clojure.utils.viewport :as viewport]
-            [clojure.app :as app]
-            [clojure.input :as input]))
+            [game.ctx :as ctx]))
 
 (defn step
-  [{:keys [ctx/app
-           ctx/stage
+  [{:keys [ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (let [mp (input/mouse-position (app/input app))]
+  (let [mp (ctx/mouse-position ctx)]
     (-> ctx
         (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
         (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
