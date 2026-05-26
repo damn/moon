@@ -6,7 +6,6 @@
   (graphics [_])
   (input [_]))
 
-(declare put-colors!
-         pixmap
+(declare pixmap
          orthographic-camera
          stage)

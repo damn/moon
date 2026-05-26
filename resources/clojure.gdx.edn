@@ -8,7 +8,6 @@
 
  clojure.gdx.graphics
  clojure.gdx.graphics.color
- clojure.gdx.graphics.colors
  clojure.gdx.graphics.gl20
  clojure.gdx.graphics.pixmap
  clojure.gdx.graphics.texture
