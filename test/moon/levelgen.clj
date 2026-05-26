@@ -3,7 +3,6 @@
             [game.impl.textures]
             [game.impl.db :as db-impl]
             [clojure.gdx]
-            [clojure.gdx.application-listener :as listener]
             [clojure.gdx.gdx :as gdx]
             [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -28,8 +27,6 @@
             [clojure.maps.map-properties :as props]
             [clojure.utils.disposable :as disposable]
             [clojure.utils.viewport :as viewport]
-            [clojure.gdx.backends.lwjgl3.application :as application]
-            [clojure.gdx.backends.lwjgl3.application-configuration :as config]
             [moon.creature-tiles]
             [moon.db :as db]))
 
@@ -200,32 +197,23 @@
 (def state (atom nil))
 
 (defn -main []
-  (clojure.gdx/load!)
-  (config/use-glfw-async!)
-  (application/create (listener/create
-                       {:create!
-                        (fn []
-                          (reset! state (create! (gdx/app))))
+  (clojure.gdx/application!
+   {:title "Levelgen Test"
+    :windowed-mode {:width 1440
+                    :height 900}
+    :foreground-fps 60
+    :create! (fn []
+               (reset! state (create! (gdx/app))))
 
-                        :dispose!
-                        (fn []
-                          (dispose! @state))
+    :dispose! (fn []
+                (dispose! @state))
 
-                        :render!
-                        (fn []
-                          (swap! state render!))
+    :render! (fn []
+               (swap! state render!))
 
-                        :resize!
-                        (fn [width height]
-                          (resize! @state width height))
+    :resize! (fn [width height]
+               (resize! @state width height))
 
-                        :pause!
-                        (fn [])
+    :pause! (fn [])
 
-                        :resume!
-                        (fn [])})
-                      (config/create
-                       {:title "Levelgen Test"
-                        :windowed-mode {:width 1440
-                                        :height 900}
-                        :foreground-fps 60})))
+    :resume! (fn [])}))

@@ -50,10 +50,7 @@
             game.ui.info-window
             [clojure.config :refer [edn-resource]]
             [clojure.gdx]
-            [clojure.gdx.application-listener :as listener]
-            [clojure.gdx.gdx :as gdx]
-            [clojure.gdx.backends.lwjgl3.application :as application]
-            [clojure.gdx.backends.lwjgl3.application-configuration :as config])
+            [clojure.gdx.gdx :as gdx])
   (:gen-class))
 
 (def state (atom nil))
@@ -64,37 +61,35 @@
                 render
                 resize!]
          :as config} (edn-resource "start.edn")]
-    (clojure.gdx/load!)
-    (config/use-glfw-async!)
-    (application/create (listener/create
-                         {:create!
-                          (fn []
-                            (reset! state
-                                    (reduce (fn [ctx [f & params]]
-                                              (apply f ctx params))
-                                            (gdx/app)
-                                            create)))
+    (clojure.gdx/application!
+     (merge config
+            {:create!
+             (fn []
+               (reset! state
+                       (reduce (fn [ctx [f & params]]
+                                 (apply f ctx params))
+                               (gdx/app)
+                               create)))
 
-                          :dispose!
-                          (fn []
-                            (dispose! @state))
+             :dispose!
+             (fn []
+               (dispose! @state))
 
-                          :render!
-                          (fn []
-                            (swap! state
-                                   (fn [ctx]
-                                     (reduce (fn [ctx [f & params]]
-                                               (apply f ctx params))
-                                             ctx
-                                             render))))
+             :render!
+             (fn []
+               (swap! state
+                      (fn [ctx]
+                        (reduce (fn [ctx [f & params]]
+                                  (apply f ctx params))
+                                ctx
+                                render))))
 
-                          :resize!
-                          (fn [width height]
-                            (resize! @state width height))
+             :resize!
+             (fn [width height]
+               (resize! @state width height))
 
-                          :pause!
-                          (fn [])
+             :pause!
+             (fn [])
 
-                          :resume!
-                          (fn [])})
-                        (config/create config))))
+             :resume!
+             (fn [])}))))
