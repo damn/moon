@@ -6,8 +6,7 @@
   (graphics [_])
   (input [_]))
 
-(declare tooltip-manager-set-initial-time!
-         put-colors!
+(declare put-colors!
          pixmap
          orthographic-camera
          stage)

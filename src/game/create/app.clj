@@ -6,6 +6,7 @@
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.batch :as batch]
@@ -20,7 +21,7 @@
 
 (defn step [app]
   (app/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-  (app/tooltip-manager-set-initial-time! 0)
+  (tooltip-manager/set-initial-time! 0)
   (let [batch (sprite-batch/create)
         white-pixel-texture (let [pixmap (doto (app/pixmap 1 1)
                                            (pixmap/set-color! 1 1 1 1)
