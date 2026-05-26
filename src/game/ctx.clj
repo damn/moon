@@ -33,6 +33,7 @@
             [clojure.string :as str]
             [clojure.utils.disposable :refer [dispose!]]
             [clojure.utils.viewport :as viewport]
+            [game.impl.textures]
             [malli.core :as m]
             [malli.utils :as mu]
             [moon.draws :as draws]
@@ -521,3 +522,7 @@
                      (font.data/set-markup-enabled! true))
                  skin)
      :ctx/unit-scale (atom 1)}))
+
+(defn create-textures
+  [ctx]
+  (assoc ctx :ctx/textures (game.impl.textures/create ctx)))
