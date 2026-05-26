@@ -1,6 +1,5 @@
 (ns game.create.add-stage-actors.dev-menu
-  (:require [clojure.graphics.orthographic-camera :as camera]
-            [clojure.scene2d.stage :as stage]
+  (:require [clojure.scene2d.stage :as stage]
             [clojure.string :as str]
             [game.ctx :as ctx]
             [moon.db :as db]
@@ -86,8 +85,7 @@
                                :update-fn (fn [{:keys [ctx/world-mouse-position]}]
                                             (mapv int world-mouse-position))}
                               {:label "Zoom"
-                               :update-fn (fn [{:keys [ctx/world-viewport]}]
-                                            (camera/zoom (:viewport/camera world-viewport)))
+                               :update-fn ctx/camera-zoom
                                :icon "images/zoom.png"}
                               ]]
                     (if (:icon item)

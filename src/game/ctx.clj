@@ -9,9 +9,13 @@
             [clojure.graphics.g2d.bitmap-font :as font]
             [clojure.graphics.g2d.bitmap-font.data :as data]
             [clojure.graphics.g2d.texture-region :as texture-region]
+            [clojure.scene2d.stage :as stage]
+            [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.group :as group]
             [clojure.input :as input]
             [clojure.string :as str]
             [clojure.utils.disposable :refer [dispose!]]
+            [clojure.utils.viewport :as viewport]
             [malli.core :as m]
             [malli.utils :as mu]
             [moon.draws :as draws]
@@ -364,3 +368,72 @@
                          (tile-color-setter ctx)))
 
 (def world-unit-scale :ctx/world-unit-scale)
+
+(defn camera-zoom [{:keys [ctx/world-viewport]}]
+  (camera/zoom (:viewport/camera world-viewport)))
+
+(defn visible-tiles [{:keys [ctx/world-viewport]}]
+  (camera/visible-tiles (:viewport/camera world-viewport)))
+
+(defn camera-frustum [{:keys [ctx/world-viewport]}]
+  (camera/frustum (:viewport/camera world-viewport)))
+
+(defn set-camera-position!
+  [{:keys [ctx/player-eid
+           ctx/world-viewport]
+    :as ctx}]
+  (camera/set-position! (:viewport/camera world-viewport)
+                        (:body/position (:entity/body @player-eid))))
+
+(defn update-mouse-positions
+  [{:keys [ctx/stage
+           ctx/world-viewport]
+    :as ctx}]
+  (let [mp (mouse-position ctx)]
+    (-> ctx
+        (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
+        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
+
+(def zoom-speed 0.025)
+
+(defn window-camera-controls
+  [{:keys [ctx/controls
+           ctx/stage
+           ctx/world-viewport]
+    :as ctx}]
+  (when (key-pressed? ctx (:zoom-in controls))
+    (camera/inc-zoom! (:viewport/camera world-viewport) zoom-speed))
+
+  (when (key-pressed? ctx (:zoom-out controls))
+    (camera/inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
+
+  (when (key-just-pressed? ctx (:close-windows-key controls))
+    (->> (stage/find-actor stage "moon.ui.windows")
+         group/children
+         (run! #(actor/set-visible! % false))))
+
+  (when (key-just-pressed? ctx (:toggle-inventory controls))
+    (-> stage
+        (stage/find-actor "moon.ui.windows.inventory")
+        actor/toggle-visible!))
+
+  (when (key-just-pressed? ctx (:toggle-entity-info controls))
+    (-> stage
+        (stage/find-actor "moon.ui.windows.entity-info")
+        actor/toggle-visible!))
+  ctx)
+
+(defn resize!
+  [{:keys [ctx/stage
+           ctx/world-viewport]}
+   width height]
+  (viewport/update! (:stage/viewport stage) width height true)
+  (viewport/update! world-viewport width height false))
+
+(defn world-viewport-width
+  [{:keys [ctx/world-viewport]}]
+  (:viewport/world-width world-viewport))
+
+(defn world-viewport-height
+  [{:keys [ctx/world-viewport]}]
+  (:viewport/world-height world-viewport))

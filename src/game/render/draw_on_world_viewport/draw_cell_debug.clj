@@ -1,5 +1,5 @@
 (ns game.render.draw-on-world-viewport.draw-cell-debug
-  (:require [clojure.graphics.orthographic-camera :as camera]))
+  (:require [game.ctx :as ctx]))
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)
@@ -8,10 +8,10 @@
 (defn draws
   [{:keys [ctx/colors
            ctx/grid
-           ctx/factions-iterations
-           ctx/world-viewport]}]
+           ctx/factions-iterations]
+    :as ctx}]
   (apply concat
-         (for [[x y] (camera/visible-tiles (:viewport/camera world-viewport))
+         (for [[x y] (ctx/visible-tiles ctx)
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]

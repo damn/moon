@@ -1,15 +1,15 @@
 (ns game.render.draw-on-world-viewport.draw-tile-grid
   (:require [clojure.graphics.color :as color]
-            [clojure.graphics.orthographic-camera :as camera]))
+            [game.ctx :as ctx]))
 
 (defn draws
-  [{:keys [ctx/world-viewport]}]
-  (let [[left-x _right-x bottom-y _top-y] (camera/frustum (:viewport/camera world-viewport))]
+  [ctx]
+  (let [[left-x _right-x bottom-y _top-y] (ctx/camera-frustum ctx)]
     [[:draw/grid
       (int left-x)
       (int bottom-y)
-      (inc (int (:viewport/world-width  world-viewport)))
-      (+ 2 (int (:viewport/world-height world-viewport)))
+      (inc (int (ctx/world-viewport-width ctx)))
+      (+ 2 (int (ctx/world-viewport-height ctx)))
       1
       1
       (color/float-bits [1 1 1 0.8])]]))

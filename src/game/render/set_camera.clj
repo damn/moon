@@ -1,10 +1,7 @@
 (ns game.render.set-camera
-  (:require [clojure.graphics.orthographic-camera :as camera]))
+  (:require [game.ctx :as ctx]))
 
 (defn step
-  [{:keys [ctx/player-eid
-           ctx/world-viewport]
-    :as ctx}]
-  (camera/set-position! (:viewport/camera world-viewport)
-                        (:body/position (:entity/body @player-eid)))
+  [ctx]
+  (ctx/set-camera-position! ctx)
   ctx)

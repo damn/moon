@@ -31,7 +31,7 @@
  :render  [
            [game.render.get-stage-ctx/step]
            [game.render.validate/step]
-           [game.render.update-mouse/step]
+           [game.ctx/update-mouse-positions]
            [game.render.update-mouseover-eid/step]
            [game.render.check-debug-viewer/step]
            [game.render.active-entities/step]
@@ -54,11 +54,11 @@
                                             game.render.if-not-paused.update-potential-fields/step
                                             game.render.if-not-paused.tick-entities/step]]
            [game.render.remove-destroyed-entities/step]
-           [game.render.window-camera-controls/step]
+           [game.ctx/window-camera-controls]
            [game.render.stage/step]
            [game.render.validate/step]
            ]
- :resize!  game.resize/do!
+ :resize!  game.ctx/resize!
  :title "Moon"
  :windowed-mode {:width 1440
                  :height 900}
