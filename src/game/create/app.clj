@@ -7,6 +7,7 @@
             [clojure.files.file-handle :as file-handle]
             [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.graphics.pixmap]
+            [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
@@ -60,7 +61,7 @@
                                world-height (* 900  world-unit-scale)]
                            (fit-viewport/create world-width
                                                 world-height
-                                                (app/orthographic-camera
+                                                (orthographic-camera/create
                                                  {:y-down? false
                                                   :world-width world-width
                                                   :world-height world-height})))

@@ -5,6 +5,7 @@
             [clojure.impl]
             [clojure.gdx.application-listener :as listener]
             [clojure.gdx.gdx :as gdx]
+            [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.utils.screen-utils :as screen-utils]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
@@ -117,7 +118,7 @@
                              world-height (* 900  world-unit-scale)]
                          (fit-viewport/create world-width
                                               world-height
-                                              (app/orthographic-camera
+                                              (orthographic-camera/create
                                                {:y-down? false
                                                 :world-width world-width
                                                 :world-height world-height})))

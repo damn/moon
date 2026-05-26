@@ -1,16 +1,14 @@
 (ns clojure.gdx.graphics.orthographic-camera
   (:require [clojure.gdx.math.vector3 :as vector3]
-            [clojure.app :as app]
             [clojure.graphics.orthographic-camera :as camera])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
-(.bindRoot #'app/orthographic-camera
-           (fn
-             [{:keys [y-down?
-                      world-width
-                      world-height]}]
-             (doto (OrthographicCamera.)
-               (.setToOrtho y-down? world-width world-height))))
+(defn create
+  [{:keys [y-down?
+           world-width
+           world-height]}]
+  (doto (OrthographicCamera.)
+    (.setToOrtho y-down? world-width world-height)))
 
 (extend-type OrthographicCamera
   camera/OrthographicCamera

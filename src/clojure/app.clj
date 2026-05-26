@@ -6,5 +6,4 @@
   (graphics [_])
   (input [_]))
 
-(declare orthographic-camera
-         stage)
+(declare stage)
