@@ -2,7 +2,7 @@
   (:require [clojure.config :refer [edn-resource]]
             [game.impl.textures]
             [game.impl.db :as db-impl]
-            [clojure.impl]
+            [clojure.gdx]
             [clojure.gdx.application-listener :as listener]
             [clojure.gdx.gdx :as gdx]
             [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
@@ -200,7 +200,7 @@
 (def state (atom nil))
 
 (defn -main []
-  (clojure.impl/load!)
+  (clojure.gdx/load!)
   (config/use-glfw-async!)
   (application/create (listener/create
                        {:create!
