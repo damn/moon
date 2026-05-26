@@ -52,7 +52,7 @@
                                                       :tx/add-skill                game.reaction-txs.add-skill/do!
                                                       }
                                 }]
-           [game.create.impl-draws/step]
+           [game.ctx/impl-draws!]
            [game.create.unorganised/step]
            [game.create.controls/step]
            [game.create.ctx-colors/step]
