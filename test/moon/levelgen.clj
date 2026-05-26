@@ -5,6 +5,7 @@
             [clojure.impl]
             [clojure.gdx.application-listener :as listener]
             [clojure.gdx.gdx :as gdx]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.app :as app]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
@@ -101,7 +102,7 @@
         input (app/input app)
         skin (file-handle/skin (files/internal files "uiskin.json"))
         ui-viewport (app/fit-viewport 1440 900)
-        sprite-batch (app/sprite-batch)
+        sprite-batch (sprite-batch/create)
         stage (app/stage ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
         tile-size 48

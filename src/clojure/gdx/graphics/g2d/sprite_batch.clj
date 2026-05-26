@@ -1,12 +1,10 @@
 (ns clojure.gdx.graphics.g2d.sprite-batch
-  (:require [clojure.app :as app]
-            [clojure.graphics.batch :as batch])
+  (:require [clojure.graphics.batch :as batch])
   (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)))
 
-(.bindRoot #'app/sprite-batch
-           (fn []
-             (SpriteBatch.)))
+(defn create []
+  (SpriteBatch.))
 
 (extend-type SpriteBatch
   batch/Batch

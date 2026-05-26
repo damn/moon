@@ -6,8 +6,7 @@
   (graphics [_])
   (input [_]))
 
-(declare sprite-batch
-         clear-screen!
+(declare clear-screen!
          fit-viewport
          tooltip-manager-set-initial-time!
          put-colors!
