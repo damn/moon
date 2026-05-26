@@ -1,15 +1,13 @@
 (ns clojure.gdx.graphics.pixmap
-  (:require [clojure.app :as app]
-            [clojure.files.file-handle :as file-handle]
+  (:require [clojure.files.file-handle :as file-handle]
             [clojure.graphics.pixmap :as pixmap])
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
                                       Texture)))
 
-(.bindRoot #'app/pixmap
-           (fn [w h]
-             (Pixmap. (int w) (int h) Pixmap$Format/RGBA8888)))
+(defn create [w h]
+  (Pixmap. (int w) (int h) Pixmap$Format/RGBA8888))
 
 (extend-type FileHandle
   file-handle/Pixmap

@@ -6,6 +6,5 @@
   (graphics [_])
   (input [_]))
 
-(declare pixmap
-         orthographic-camera
+(declare orthographic-camera
          stage)

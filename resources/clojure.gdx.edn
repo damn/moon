@@ -9,7 +9,6 @@
  clojure.gdx.graphics
  clojure.gdx.graphics.color
  clojure.gdx.graphics.gl20
- clojure.gdx.graphics.pixmap
  clojure.gdx.graphics.texture
  clojure.gdx.graphics.orthographic-camera
  clojure.gdx.graphics.g2d.bitmap-font
