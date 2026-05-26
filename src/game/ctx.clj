@@ -1,17 +1,34 @@
 (ns game.ctx
   (:require [clojure.app :as app]
+            [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
+            [clojure.edn :as edn]
+            [clojure.files :as files]
+            [clojure.files.file-handle :as file-handle]
+            [clojure.gdx.graphics.colors :as colors]
+            [clojure.gdx.graphics.pixmap]
+            [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
+            [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.batch :as batch]
+            [clojure.graphics.texture :as texture]
+            [clojure.graphics.texture.filter :as texture.filter]
+            [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.gl20 :as gl20]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.graphics.g2d.bitmap-font :as font]
-            [clojure.graphics.g2d.bitmap-font.data :as data]
+            [clojure.graphics.g2d.bitmap-font.data :as font.data]
+            [clojure.graphics.g2d.freetype.font-generator :as font-generator]
             [clojure.graphics.g2d.texture-region :as texture-region]
+            [clojure.java.io :as io]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.group :as group]
+            [clojure.scene2d.ui.skin :as skin]
             [clojure.input :as input]
             [clojure.string :as str]
             [clojure.utils.disposable :refer [dispose!]]
@@ -229,12 +246,12 @@
            ctx/default-font]}
    {:keys [font scale x y text h-align up?]}]
   (let [font (or font default-font)
-        old-scale (data/scale-x (font/data font))
+        old-scale (font.data/scale-x (font/data font))
         target-width 0
         wrap? false
         scale (* (float @unit-scale)
                  (float (or scale 1)))]
-    (data/set-scale! (font/data font) (* old-scale scale))
+    (font.data/set-scale! (font/data font) (* old-scale scale))
     (font/draw! font
                 batch
                 text
@@ -248,7 +265,7 @@
                 target-width
                 :align/center
                 wrap?)
-    (data/set-scale! (font/data font) old-scale)))
+    (font.data/set-scale! (font/data font) old-scale)))
 
 (defn draw-texture-region!
   [{:keys [ctx/batch
@@ -443,3 +460,64 @@
 (defn world-viewport-height
   [{:keys [ctx/world-viewport]}]
   (:viewport/world-height world-viewport))
+
+(defn create-app [app]
+  (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
+  (tooltip-manager/set-initial-time! 0)
+  (let [batch (sprite-batch/create)
+        white-pixel-texture (let [pixmap (doto (clojure.gdx.graphics.pixmap/create 1 1)
+                                           (pixmap/set-color! 1 1 1 1)
+                                           (pixmap/draw-pixel! 0 0))
+                                  texture (pixmap/texture pixmap)]
+                              (pixmap/dispose! pixmap)
+                              texture)
+        world-unit-scale (float (/ 48))]
+    {:ctx/app app
+     :ctx/audio (into {}
+                      (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
+                        [sound-name
+                         (audio/new-sound (app/audio app)
+                                          (files/internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
+     :ctx/batch batch
+     :ctx/shape-drawer-texture white-pixel-texture
+     :ctx/shape-drawer (batch/shape-drawer batch (texture/region white-pixel-texture 1 0 1 1))
+     :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
+                             size 16
+                             quality-scaling 2
+                             generator (file-handle/freetype-font-generator (files/internal (app/files app) path))
+                             font (font-generator/generate-font generator
+                                                                {:size (* size quality-scaling)
+                                                                 ; texture.filter/linear because scaling to world-units
+                                                                 :min-filter texture.filter/linear
+                                                                 :mag-filter texture.filter/linear})]
+                         (font-generator/dispose! generator)
+                         (font.data/set-scale! (font/data font) (/ quality-scaling))
+                         (font.data/set-markup-enabled! (font/data font) true)
+                         (font/set-use-integer-positions! font false)
+                         font)
+     :ctx/world-unit-scale world-unit-scale
+     :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
+                               world-height (* 900  world-unit-scale)]
+                           (fit-viewport/create world-width
+                                                world-height
+                                                (orthographic-camera/create
+                                                 {:y-down? false
+                                                  :world-width world-width
+                                                  :world-height world-height})))
+     :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
+                    (update-vals data
+                                 (fn [[path [hotspot-x hotspot-y]]]
+                                   (let [pixmap (file-handle/pixmap (files/internal (app/files app) (format path-format path)))
+                                         cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
+                                     (pixmap/dispose! pixmap)
+                                     cursor))))
+     :ctx/stage (let [stage (ctx-stage/create (fit-viewport/create 1440 900) batch)]
+                  (input/set-processor! (app/input app) stage)
+                  stage)
+     :ctx/skin (let [skin (file-handle/skin (files/internal (app/files app) "uiskin.json"))]
+                 (-> skin
+                     (skin/font "default-font")
+                     font/data
+                     (font.data/set-markup-enabled! true))
+                 skin)
+     :ctx/unit-scale (atom 1)}))

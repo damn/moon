@@ -1,7 +1,7 @@
 {
  :requires #edn/resource "requires.edn"
  :create  [
-           [game.create.app/step]
+           [game.ctx/create-app]
            [game.create.assoc/step :ctx/textures game.impl.textures/create]
            [game.ctx/create-record]
            [game.create.impl-txs/step]
