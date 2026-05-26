@@ -3,6 +3,15 @@
             [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
             [clojure.edn :as edn]
+            [clojure.files.file-handle :as file-handle]
+            [clojure.graphics.batch :as batch]
+            [clojure.graphics.color :as color]
+            [clojure.graphics.pixmap :as pixmap]
+            [clojure.graphics.orthographic-camera :as camera]
+            [clojure.scene2d.actor :as actor]
+            [clojure.scene2d.group :as group]
+            [clojure.scene2d.stage :as stage]
+            [clojure.utils.viewport :as viewport]
             [clojure.java.io :as io]
             clojure.gdx.files
             clojure.gdx.files.file-handle
@@ -47,14 +56,26 @@
             clojure.gdx.maps.tiled.tmx-map-loader
             clojure.gdx.maps.renderer
             clojure.gdx.utils.disposable
-            space.earlygrey.shape-drawer)
-  (:import (com.badlogic.gdx Application
+            space.earlygrey.shape-drawer
+            [clojure.gdx.math.vector3 :as vector3]
+            )
+  (:import (clojure.lang ILookup)
+           (com.badlogic.gdx Application
                              ApplicationListener
                              Audio
                              Gdx)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)))
+                                             Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Colors
+                                      Pixmap
+                                      Pixmap$Format
+                                      Texture
+                                      OrthographicCamera)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch
+                                          TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d CtxStage)))
 
 (defn application!
   [{:keys [title
@@ -113,3 +134,135 @@
   sound/Sound
   (play! [this]
     (.play this)))
+
+(defn put-colors! [colors]
+  (doseq [[name rgba] colors]
+    (Colors/put name (color/create rgba))))
+
+(defn pixmap [w h]
+  (Pixmap. (int w) (int h) Pixmap$Format/RGBA8888))
+
+(defn orthographic-camera
+  [{:keys [y-down?
+           world-width
+           world-height]}]
+  (doto (OrthographicCamera.)
+    (.setToOrtho y-down? world-width world-height)))
+
+(extend-type OrthographicCamera
+  camera/OrthographicCamera
+  (viewport-width [camera]
+    (.viewportWidth camera))
+
+  (viewport-height [camera]
+    (.viewportHeight camera))
+
+  (combined [camera]
+    (.combined camera))
+
+  (zoom [camera]
+    (.zoom camera))
+
+  (frustum [camera]
+    (let [plane-points (mapv vector3/->clj (.planePoints (.frustum camera)))
+          frustum-points (take 4 plane-points)
+          left-x   (apply min (map first  frustum-points))
+          right-x  (apply max (map first  frustum-points))
+          bottom-y (apply min (map second frustum-points))
+          top-y    (apply max (map second frustum-points))]
+      [left-x right-x bottom-y top-y]))
+
+  (position [camera]
+    (vector3/->clj (.position camera)))
+
+  (set-position! [camera [x y]]
+    (set! (.x (.position camera)) x)
+    (set! (.y (.position camera)) y)
+    (.update camera))
+
+  (set-zoom! [camera amount]
+    (set! (.zoom camera) amount)
+    (.update camera)))
+
+(defn sprite-batch []
+  (SpriteBatch.))
+
+(extend-type SpriteBatch
+  batch/Batch
+  (begin! [batch]
+    (.begin batch))
+
+  (end! [batch]
+    (.end batch))
+
+  (set-color! [batch r g b a]
+    (.setColor batch r g b a))
+
+  (set-projection-matrix! [batch matrix]
+    (.setProjectionMatrix batch matrix))
+
+  (draw!
+    ([batch texture-region x y origin-x origin-y width height scale-x scale-y rotation]
+     (.draw batch
+            ^TextureRegion texture-region
+            x
+            y
+            origin-x
+            origin-y
+            width
+            height
+            scale-x
+            scale-y
+            rotation))
+    ([batch texture-region x y w h]
+     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
+
+(defn stage [viewport batch]
+  (proxy [CtxStage ILookup] [viewport batch]
+    (valAt [k]
+      (case k
+        ; TODO :stage/root
+        :stage/ctx      (.ctx         ^CtxStage this)
+        :stage/viewport (.getViewport ^CtxStage this)))))
+
+(extend-type CtxStage
+  stage/Stage
+  (set-ctx! [stage ctx]
+    (set! (.ctx stage) ctx))
+
+  (add-actor! [stage actor]
+    (.addActor stage (actor/create actor)))
+
+  (act! [stage]
+    (.act stage))
+
+  (draw! [stage]
+    (.draw stage))
+
+  (find-actor [stage name]
+    (-> stage
+        .getRoot
+        (group/find-actor name)))
+
+  (mouseover-actor [stage position]
+    (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
+      (.hit stage x y true))))
+
+(extend-type FileHandle
+  file-handle/Pixmap
+  (pixmap [file-handle]
+    (Pixmap. file-handle)))
+
+(extend-type Pixmap
+  pixmap/Pixmap
+  (dispose! [pixmap]
+    (.dispose pixmap))
+
+  (set-color! [pixmap r g b a]
+    (.setColor pixmap r g b a))
+
+  (draw-pixel! [pixmap x y]
+    (.drawPixel pixmap x y))
+
+  (texture [pixmap]
+    (Texture. pixmap)))

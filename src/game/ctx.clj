@@ -14,11 +14,7 @@
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.graphics.color :as color]
-            [clojure.gdx.graphics.colors :as colors]
-            [clojure.gdx.graphics.pixmap]
-            [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [clojure.gdx.scenes.scene2d.ctx-stage :as ctx-stage]
+            [clojure.gdx :as gdx]
             [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
@@ -552,10 +548,10 @@
   (:viewport/world-height world-viewport))
 
 (defn create-app [app]
-  (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
+  (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (tooltip-manager/set-initial-time! 0)
-  (let [batch (sprite-batch/create)
-        white-pixel-texture (let [pixmap (doto (clojure.gdx.graphics.pixmap/create 1 1)
+  (let [batch (gdx/sprite-batch)
+        white-pixel-texture (let [pixmap (doto (gdx/pixmap 1 1)
                                            (pixmap/set-color! 1 1 1 1)
                                            (pixmap/draw-pixel! 0 0))
                                   texture (pixmap/texture pixmap)]
@@ -590,7 +586,7 @@
                                world-height (* 900  world-unit-scale)]
                            (fit-viewport/create world-width
                                                 world-height
-                                                (orthographic-camera/create
+                                                (gdx/orthographic-camera
                                                  {:y-down? false
                                                   :world-width world-width
                                                   :world-height world-height})))
@@ -601,7 +597,7 @@
                                          cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                      (pixmap/dispose! pixmap)
                                      cursor))))
-     :ctx/stage (let [stage (ctx-stage/create (fit-viewport/create 1440 900) batch)]
+     :ctx/stage (let [stage (gdx/stage (fit-viewport/create 1440 900) batch)]
                   (input/set-processor! (app/input app) stage)
                   stage)
      :ctx/skin (let [skin (file-handle/skin (files/internal (app/files app) "uiskin.json"))]
