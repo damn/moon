@@ -191,6 +191,7 @@
 (def state (atom nil))
 
 (defn -main []
+  (gdx/use-glfw-async!)
   (gdx/application!
    {:title "Levelgen Test"
     :windowed-mode {:width 1440

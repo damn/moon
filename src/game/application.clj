@@ -177,6 +177,7 @@
 (def state (atom nil))
 
 (defn -main []
+  (gdx/use-glfw-async!)
   (let [{:keys [create
                 dispose!
                 render
