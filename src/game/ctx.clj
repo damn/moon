@@ -2,11 +2,20 @@
   (:require [clojure.app :as app]
             [clojure.audio.sound :as sound]
             [clojure.graphics :as graphics]
+            [clojure.graphics.batch :as batch]
             [clojure.graphics.gl20 :as gl20]
+            [clojure.graphics.orthographic-camera :as camera]
+            [clojure.graphics.shape-drawer :as shape-drawer]
+            [clojure.graphics.g2d.bitmap-font :as font]
+            [clojure.graphics.g2d.bitmap-font.data :as data]
+            [clojure.graphics.g2d.texture-region :as texture-region]
             [clojure.input :as input]
+            [clojure.string :as str]
             [clojure.utils.disposable :refer [dispose!]]
             [malli.core :as m]
-            [malli.utils :as mu]))
+            [malli.utils :as mu]
+            [moon.draws :as draws]
+            [moon.raycaster :as raycaster]))
 
 (def schema
   (m/schema
@@ -135,3 +144,153 @@
 (defn sound-names
   [{:keys [ctx/audio]}]
   (map first audio))
+
+(defn draw-text!
+  [{:keys [ctx/batch
+           ctx/unit-scale
+           ctx/default-font]}
+   {:keys [font scale x y text h-align up?]}]
+  (let [font (or font default-font)
+        old-scale (data/scale-x (font/data font))
+        target-width 0
+        wrap? false
+        scale (* (float @unit-scale)
+                 (float (or scale 1)))]
+    (data/set-scale! (font/data font) (* old-scale scale))
+    (font/draw! font
+                batch
+                text
+                x
+                (+ y (if up?
+                       (-> text
+                           (str/split #"\n")
+                           count
+                           (* (font/line-height font)))
+                       0))
+                target-width
+                :align/center
+                wrap?)
+    (data/set-scale! (font/data font) old-scale)))
+
+(defn draw-texture-region!
+  [{:keys [ctx/batch
+           ctx/unit-scale
+           ctx/world-unit-scale]}
+   texture-region
+   [x y]
+   & {:keys [center? rotation]}]
+  (let [[w h] (let [dimensions [(texture-region/width  texture-region)
+                                (texture-region/height texture-region)]]
+                (if (= @unit-scale 1)
+                  dimensions
+                  (mapv (comp float (partial * world-unit-scale))
+                        dimensions)))]
+    (if center?
+      (batch/draw! batch
+                   texture-region
+                   (- (float x) (/ (float w) 2))
+                   (- (float y) (/ (float h) 2))
+                   (/ (float w) 2)
+                   (/ (float h) 2)
+                   w
+                   h
+                   1
+                   1
+                   (or rotation 0))
+      (batch/draw! batch texture-region x y w h))))
+
+(defn draw-on-world-viewport!
+  [{:keys [ctx/batch
+           ctx/shape-drawer
+           ctx/unit-scale
+           ctx/world-unit-scale
+           ctx/world-viewport]
+    :as ctx}
+   draw-fns]
+  ; fix scene2d.ui.tooltip flickering
+  ; _everything_ flickers with TextToolTip!
+  ; it changes batch color somehow and does not change it back ! FIXME
+  (batch/set-color! batch 1 1 1 1)
+  ;
+  (batch/set-projection-matrix! batch (camera/combined (:viewport/camera world-viewport)))
+  (batch/begin! batch)
+  (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
+    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
+    (reset! unit-scale world-unit-scale)
+    (doseq [f draw-fns]
+      (draws/handle ctx (f ctx)))
+    (reset! unit-scale 1)
+    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
+  (batch/end! batch))
+
+(defn- tile-color-setter*
+  [{:keys [ray-blocked?
+           explored-tile-corners
+           light-position
+           see-all-tiles?
+           explored-tile-color
+           visible-tile-color
+           invisible-tile-color]}]
+  #_(reset! do-once false)
+  (let [light-cache (atom {})]
+    (fn tile-color-setter [_color x y]
+      (let [position [(int x) (int y)]
+            explored? (get @explored-tile-corners position) ; TODO needs int call ?
+            base-color (if explored?
+                         explored-tile-color
+                         invisible-tile-color)
+            cache-entry (get @light-cache position :not-found)
+            blocked? (if (= cache-entry :not-found)
+                       (let [blocked? (ray-blocked? light-position position)]
+                         (swap! light-cache assoc position blocked?)
+                         blocked?)
+                       cache-entry)]
+        #_(when @do-once
+            (swap! ray-positions conj position))
+        (if blocked?
+          (if see-all-tiles?
+            visible-tile-color
+            base-color)
+          (do (when-not explored?
+                (swap! explored-tile-corners assoc (mapv int position) true))
+             visible-tile-color))))))
+
+(comment
+ (def ^:private count-rays? false)
+
+ (def ray-positions (atom []))
+ (def do-once (atom true))
+
+ (count @ray-positions)
+ 2256
+ (count (distinct @ray-positions))
+ 608
+ (* 608 4)
+ 2432
+ )
+
+(defn- tile-color-setter
+  [{:keys [ctx/colors
+           ctx/explored-tile-corners
+           ctx/raycaster
+           ctx/world-viewport]}]
+  (tile-color-setter*
+   {:ray-blocked? (partial raycaster/blocked? raycaster)
+    :explored-tile-corners explored-tile-corners
+    :light-position (camera/position (:viewport/camera world-viewport))
+    :see-all-tiles? false
+    :explored-tile-color  (:colors/explored-tile colors)
+    :visible-tile-color   (:colors/visible-tile colors)
+    :invisible-tile-color (:colors/invisible-tile colors)}))
+
+(defn draw-tiled-map!
+  [{:keys [ctx/batch
+           ctx/tiled-map
+           ctx/world-unit-scale
+           ctx/world-viewport]
+    :as ctx}]
+  (batch/draw-tiled-map! batch
+                         world-unit-scale
+                         (:viewport/camera world-viewport)
+                         tiled-map
+                         (tile-color-setter ctx)))
