@@ -5,7 +5,6 @@
 ;:tx/swap   (fn [_ctx eid & params]
 ;             (apply swap! eid params)
 {
- :requires #edn/resource "requires.edn"
  :create  [
            [game.ctx/create-app]
            [game.ctx/create-textures]
