@@ -7,6 +7,7 @@
             [clojure.gdx.gdx :as gdx]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.utils.screen-utils :as screen-utils]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.app :as app]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
@@ -102,7 +103,7 @@
         graphics (app/graphics app)
         input (app/input app)
         skin (file-handle/skin (files/internal files "uiskin.json"))
-        ui-viewport (app/fit-viewport 1440 900)
+        ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (sprite-batch/create)
         stage (app/stage ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
@@ -114,12 +115,12 @@
         ctx (assoc ctx :ctx/textures (game.impl.textures/create {:ctx/app app}))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
-                         (app/fit-viewport world-width
-                                           world-height
-                                           (app/orthographic-camera
-                                            {:y-down? false
-                                             :world-width world-width
-                                             :world-height world-height})))
+                         (fit-viewport/create world-width
+                                              world-height
+                                              (app/orthographic-camera
+                                               {:y-down? false
+                                                :world-width world-width
+                                                :world-height world-height})))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport

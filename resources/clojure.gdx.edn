@@ -60,6 +60,5 @@
 
  clojure.gdx.utils.disposable
 
- clojure.gdx.utils.viewport.fit-viewport
  space.earlygrey.shape-drawer
  ]

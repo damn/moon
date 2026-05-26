@@ -6,8 +6,7 @@
   (graphics [_])
   (input [_]))
 
-(declare fit-viewport
-         tooltip-manager-set-initial-time!
+(declare tooltip-manager-set-initial-time!
          put-colors!
          pixmap
          orthographic-camera

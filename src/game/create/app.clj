@@ -6,6 +6,7 @@
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.graphics :as graphics]
             [clojure.graphics.batch :as batch]
             [clojure.graphics.texture :as texture]
@@ -54,12 +55,12 @@
      :ctx/world-unit-scale world-unit-scale
      :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
                                world-height (* 900  world-unit-scale)]
-                           (app/fit-viewport world-width
-                                             world-height
-                                             (app/orthographic-camera
-                                              {:y-down? false
-                                               :world-width world-width
-                                               :world-height world-height})))
+                           (fit-viewport/create world-width
+                                                world-height
+                                                (app/orthographic-camera
+                                                 {:y-down? false
+                                                  :world-width world-width
+                                                  :world-height world-height})))
      :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                     (update-vals data
                                  (fn [[path [hotspot-x hotspot-y]]]
@@ -67,7 +68,7 @@
                                          cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                      (pixmap/dispose! pixmap)
                                      cursor))))
-     :ctx/stage (let [stage (app/stage (app/fit-viewport 1440 900) batch)]
+     :ctx/stage (let [stage (app/stage (fit-viewport/create 1440 900) batch)]
                   (input/set-processor! (app/input app) stage)
                   stage)
      :ctx/skin (let [skin (file-handle/skin (files/internal (app/files app) "uiskin.json"))]
