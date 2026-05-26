@@ -53,8 +53,8 @@
                                                       }
                                 }]
            [game.ctx/impl-draws!]
-           [game.create.unorganised/step]
-           [game.create.controls/step]
+           [game.ctx/unorganised]
+           [game.ctx/create-controls]
            [game.create.ctx-colors/step]
            [game.create.render-z-order/step]
            [game.create.max-speed/step]

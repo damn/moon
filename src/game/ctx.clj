@@ -30,12 +30,16 @@
             [clojure.scene2d.group :as group]
             [clojure.scene2d.ui.skin :as skin]
             [clojure.input :as input]
+            [clojure.input.buttons :as input.buttons]
+            [clojure.input.keys :as input.keys]
+            [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [clojure.utils.disposable :refer [dispose!]]
             [clojure.utils.viewport :as viewport]
             [game.impl.textures]
             [malli.core :as m]
             [malli.utils :as mu]
+            [moon.controls :as controls]
             [moon.draws :as draws]
             [moon.raycaster :as raycaster]
             [moon.state :as state]
@@ -657,3 +661,64 @@
               :when component]
         (apply (get draw-fns k) ctx (rest component)))))
   ctx)
+
+(defn unorganised [ctx]
+  (assoc ctx
+
+         ;frame
+         :ctx/active-entities nil
+         :ctx/delta-time nil
+         :ctx/ui-mouse-position nil
+         :ctx/world-mouse-position nil
+         :ctx/mouseover-eid nil
+         :ctx/paused? false
+
+         ; stuff
+         :ctx/elapsed-time 0
+         :ctx/potential-field-cache (atom nil)
+         :ctx/id-counter (atom 0)
+         :ctx/entity-ids (atom {})
+
+         ; constants (config & not state?)
+         :ctx/factions-iterations {:good 15 :evil 5}
+         :ctx/max-delta 0.04
+         :ctx/minimum-size 0.39
+         :ctx/z-orders [:z-order/on-ground
+                        :z-order/ground
+                        :z-order/flying
+                        :z-order/effect]
+         ))
+
+(defn create-controls [ctx]
+  (extend-type Context
+    controls/Controls
+    (player-movement-vector [ctx]
+      (let [r (when (key-pressed? ctx input.keys/d) [1  0])
+            l (when (key-pressed? ctx input.keys/a) [-1 0])
+            u (when (key-pressed? ctx input.keys/w) [0  1])
+            d (when (key-pressed? ctx input.keys/s) [0 -1])]
+        (when (or r l u d)
+          (let [v (v/normalise (reduce v/add [0 0] (remove nil? [r l u d])))]
+            (when (pos? (v/length v))
+              v)))))
+    )
+  (assoc ctx
+         :ctx/controls {
+                        :zoom-in input.keys/minus
+                        :zoom-out input.keys/equals
+                        :unpause-once input.keys/p
+                        :unpause-continously input.keys/space
+                        :close-windows-key input.keys/escape
+                        :toggle-inventory  input.keys/i
+                        :toggle-entity-info input.keys/e
+                        :open-debug-button input.buttons/right
+                        }
+         :ctx/controls-info (str/join "\n"
+                                      ["[W][A][S][D] - Move"
+                                       "[ESCAPE] - Close windows"
+                                       "[I] - Inventory window"
+                                       "[E] - Entity Info window"
+                                       "[-]/[=] - Zoom"
+                                       "[P]/[SPACE] - Unpause"
+                                       "rightclick on tile or entity - open debug data window"
+                                       "Leftmouse click - use skill/drop item on cursor"])))
