@@ -1,6 +1,5 @@
 (ns game.application
-  (:require moon.grid.npc-movement-ai
-            game.entity.animation
+  (:require game.entity.animation
             game.entity.alert-friendlies-after-duration
             game.entity.body
             game.entity.clickable
