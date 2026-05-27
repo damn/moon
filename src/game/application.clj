@@ -2,8 +2,6 @@
   (:require [game.ctx :as ctx]
 
             game.state.player-item-on-cursor
-            game.state.stunned
-            game.state-impl
 
             game.schema-widget.animation
             game.schema-widget.boolean
