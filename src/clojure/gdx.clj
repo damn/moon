@@ -80,9 +80,6 @@
            (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
-(defn use-glfw-async! []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync))
-
 (defn application!
   [{:keys [title
            windowed-mode
@@ -93,6 +90,7 @@
            resize!
            pause!
            resume!]}]
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
   (Lwjgl3Application. (reify ApplicationListener
                         (create [_]
                           (create! Gdx/app))

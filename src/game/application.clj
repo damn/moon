@@ -965,6 +965,8 @@
   (:viewport/world-height world-viewport))
 
 (defn create-app [app]
+  (gdx/set-tooltip-initial-time! 0)
+  (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (let [batch (gdx/sprite-batch)
         white-pixel-texture (let [pixmap (doto (gdx/pixmap 1 1)
                                            (pixmap/set-color! 1 1 1 1)
@@ -2147,9 +2149,13 @@
 
 (def state (atom nil))
 
-(defn -main []
-  (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-  (gdx/use-glfw-async!)
+; Let's see where the 'ctx' goes,
+; maybe the game-model, board, can be a sub-context ?
+; ...
+(defn -main
+  "As libgdx is cross-plattform, our main function is only concerned
+  with the lwjgl/desktop backend."
+  []
   (gdx/application!
    {:title "Moon"
     :windowed-mode {:width 1440
@@ -2158,7 +2164,6 @@
 
     :create!
     (fn [app]
-      (gdx/set-tooltip-initial-time! 0)
       (reset! state (create! app)))
 
     :dispose!
