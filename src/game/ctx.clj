@@ -1191,14 +1191,6 @@
 (defn create-db [ctx]
   (assoc ctx :ctx/db (game.impl.db/create)))
 
-(defn add-stage-actors
-  [{:keys [ctx/stage]
-    :as ctx}
-   actor-fns]
-  (doseq [[actor-fn & params] actor-fns]
-    (stage/add-actor! stage (apply actor-fn ctx params)))
-  ctx)
-
 (defn create-tiled-map
   [{:keys [ctx/db
            ctx/textures]
@@ -1582,4 +1574,17 @@
                           :components {:entity/fsm {:fsm :fsms/npc
                                                     :initial-state :npc-sleeping}
                                        :entity/faction :evil}}]))
+  ctx)
+
+(defn add-stage-actors
+  [{:keys [ctx/stage]
+    :as ctx}]
+  (doseq [[actor-fn & params] [[create-dev-menu]
+                               [create-action-bar]
+                               [create-hp-mana-bar]
+                               [create-windows [create-info-window
+                                                create-inventory-window]]
+                               [create-player-state-draw]
+                               [create-player-message-actor]]]
+    (stage/add-actor! stage (apply actor-fn ctx params)))
   ctx)
