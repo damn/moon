@@ -83,40 +83,73 @@
             [reduce-fsm :as fsm])
   (:gen-class))
 
+(def schema
+  (m/schema
+   [:map {:closed true}
+    ; GDX app
+    [:ctx/app :some] ; <- input, (audio), (files), graphics
+
+    [:ctx/audio :some] ; 'sounds'
+
+    ; Graphics:
+    [:ctx/batch :some]
+    [:ctx/cursors :some]
+    [:ctx/default-font :some]
+    [:ctx/unit-scale :some]
+    [:ctx/world-unit-scale :some]
+    [:ctx/world-viewport :some]
+    [:ctx/shape-drawer :some]
+    [:ctx/shape-drawer-texture :some]
+    [:ctx/textures :some]
+
+    ; UI
+    [:ctx/skin :some]
+    [:ctx/stage :some]
+
+
+    ; Frame
+    [:ctx/active-entities :any]
+    [:ctx/delta-time :any]
+    [:ctx/mouseover-eid :any]
+    [:ctx/ui-mouse-position :any]
+    [:ctx/world-mouse-position :any]
+
+    ; Constants
+    [:ctx/colors :some] ; cant as not bind-root'ed...
+    [:ctx/controls :some]
+    [:ctx/controls-info :some]
+    [:ctx/max-delta :some]
+    [:ctx/max-speed :some]
+    [:ctx/minimum-size :some]
+    [:ctx/render-z-order :some]
+    [:ctx/z-orders :some]
+
+    ; Game (level, time, db ?)
+    ; The 'game' could be a separate library with no ligdx dependencies (which it is already)
+
+    ; LEVEL
+    [:ctx/content-grid :some]
+    [:ctx/entity-ids :some]
+    [:ctx/explored-tile-corners :some]
+    [:ctx/factions-iterations :some]
+    [:ctx/grid :some]
+    [:ctx/id-counter :some]
+    [:ctx/potential-field-cache :some]
+    [:ctx/raycaster :some]
+    [:ctx/start-position :some]
+    [:ctx/tiled-map :some]
+
+    ; ETC?
+    [:ctx/db :some]
+    [:ctx/elapsed-time :some]
+    [:ctx/paused? :some]
+    [:ctx/player-eid :some]
+    ]))
+
 (def world-fn-file
    "world_fns/modules.edn"
   ; "world_fns/vampire.edn"
   ; "world_fns/uf_caves.edn"
-  )
-
-(q/defrecord Context []
-  ctx/Context
-  (world-unit-scale [ctx]
-    (:ctx/world-unit-scale ctx))
-
-  (mouse-position [{:keys [ctx/app]}]
-    (input/mouse-position (app/input app)))
-
-  (button-just-pressed? [{:keys [ctx/app]} input-button]
-    (input/button-just-pressed? (app/input app) input-button))
-
-  ; It is possible to put items out of sight, losing them.
-  ; Because line of sight checks center of entity only, not corners
-  ; this is okay, you have thrown the item over a hill, thats possible.
-  (item-place-position [{:keys [ctx/world-mouse-position]} player-entity]
-    (let [player-position (:body/position (:entity/body player-entity))
-          ; so you cannot put it out of your own reach
-          maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
-      (v/add player-position
-             (v/scale (v/direction player-position world-mouse-position)
-                      (min maxrange
-                           (v/distance player-position world-mouse-position))))))
-
-  (sound-names [{:keys [ctx/audio]}]
-    (map first audio))
-
-  (key-just-pressed? [{:keys [ctx/app]} input-key]
-    (input/key-just-pressed? (app/input app) input-key))
   )
 
 (q/defrecord Entity [entity/body])
@@ -460,84 +493,49 @@
 
  )
 
-(defn impl-txs! [ctx]
-  (extend-type Context
-    txs/Txs
-    (handle! [ctx txs]
-      (let [handled-txs (try (txs-fn-map/actions! txs-fn-map ctx txs)
-                             (catch Throwable t
-                               (throw (ex-info "Error handling txs"
-                                               {:txs txs} t))))]
-        (txs-fn-map/reduce-actions! reaction-txs-fn-map
-                                    ctx
-                                    handled-txs))))
-  ctx)
+(q/defrecord Context []
+  ctx/Context
+  (world-unit-scale [ctx]
+    (:ctx/world-unit-scale ctx))
+
+  (mouse-position [{:keys [ctx/app]}]
+    (input/mouse-position (app/input app)))
+
+  (button-just-pressed? [{:keys [ctx/app]} input-button]
+    (input/button-just-pressed? (app/input app) input-button))
+
+  ; It is possible to put items out of sight, losing them.
+  ; Because line of sight checks center of entity only, not corners
+  ; this is okay, you have thrown the item over a hill, thats possible.
+  (item-place-position [{:keys [ctx/world-mouse-position]} player-entity]
+    (let [player-position (:body/position (:entity/body player-entity))
+          ; so you cannot put it out of your own reach
+          maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
+      (v/add player-position
+             (v/scale (v/direction player-position world-mouse-position)
+                      (min maxrange
+                           (v/distance player-position world-mouse-position))))))
+
+  (sound-names [{:keys [ctx/audio]}]
+    (map first audio))
+
+  (key-just-pressed? [{:keys [ctx/app]} input-key]
+    (input/key-just-pressed? (app/input app) input-key))
+
+  txs/Txs
+  (handle! [ctx txs]
+    (let [handled-txs (try (txs-fn-map/actions! txs-fn-map ctx txs)
+                           (catch Throwable t
+                             (throw (ex-info "Error handling txs"
+                                             {:txs txs} t))))]
+      (txs-fn-map/reduce-actions! reaction-txs-fn-map
+                                  ctx
+                                  handled-txs)))
+  )
 
 (defn create-record [ctx]
   (merge (map->Context {}) ctx))
 
-(def schema
-  (m/schema
-   [:map {:closed true}
-    ; GDX app
-    [:ctx/app :some] ; <- input, (audio), (files), graphics
-
-    [:ctx/audio :some] ; 'sounds'
-
-    ; Graphics:
-    [:ctx/batch :some]
-    [:ctx/cursors :some]
-    [:ctx/default-font :some]
-    [:ctx/unit-scale :some]
-    [:ctx/world-unit-scale :some]
-    [:ctx/world-viewport :some]
-    [:ctx/shape-drawer :some]
-    [:ctx/shape-drawer-texture :some]
-    [:ctx/textures :some]
-
-    ; UI
-    [:ctx/skin :some]
-    [:ctx/stage :some]
-
-
-    ; Frame
-    [:ctx/active-entities :any]
-    [:ctx/delta-time :any]
-    [:ctx/mouseover-eid :any]
-    [:ctx/ui-mouse-position :any]
-    [:ctx/world-mouse-position :any]
-
-    ; Constants
-    [:ctx/colors :some] ; cant as not bind-root'ed...
-    [:ctx/controls :some]
-    [:ctx/controls-info :some]
-    [:ctx/max-delta :some]
-    [:ctx/max-speed :some]
-    [:ctx/minimum-size :some]
-    [:ctx/render-z-order :some]
-    [:ctx/z-orders :some]
-
-    ; Game (level, time, db ?)
-    ; The 'game' could be a separate library with no ligdx dependencies (which it is already)
-
-    ; LEVEL
-    [:ctx/content-grid :some]
-    [:ctx/entity-ids :some]
-    [:ctx/explored-tile-corners :some]
-    [:ctx/factions-iterations :some]
-    [:ctx/grid :some]
-    [:ctx/id-counter :some]
-    [:ctx/potential-field-cache :some]
-    [:ctx/raycaster :some]
-    [:ctx/start-position :some]
-    [:ctx/tiled-map :some]
-
-    ; ETC?
-    [:ctx/db :some]
-    [:ctx/elapsed-time :some]
-    [:ctx/paused? :some]
-    [:ctx/player-eid :some]
-    ]))
 
 (defn validate [ctx]
   (mu/validate-humanize schema ctx)
@@ -1531,7 +1529,6 @@
       create-app
       create-textures
       create-record
-      impl-txs!
       impl-draws!
       unorganised
       create-controls
