@@ -34,6 +34,7 @@
             [clojure.input.keys :as input.keys]
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
+            [clojure.txs-fn-map :as txs-fn-map]
             [clojure.utils.disposable :as disposable]
             [clojure.utils.viewport :as viewport]
             [game.impl.content-grid]
@@ -87,57 +88,6 @@
   ; "world_fns/vampire.edn"
   ; "world_fns/uf_caves.edn"
   )
-
-(defn- actions!
-  [txs-fn-map ctx txs]
-  (loop [ctx ctx
-         txs txs
-         handled-txs []]
-    (if (empty? txs)
-      handled-txs
-      (let [[k & params :as tx] (first txs)]
-        (if tx
-          (let [_ (assert (vector? tx))
-                f (get txs-fn-map k)
-                _ (assert f (str "Cannot find function for tx: " k))
-                new-txs (try
-                         (apply f ctx params)
-                         (catch Throwable t
-                           (throw (ex-info "Error handling tx"
-                                           {:tx tx}
-                                           t))))]
-
-            ; TODO VALID RETURNS -> check!
-            ; either nil? or vector of transactions (vectors = vector with keyword & params?)
-            (recur ctx
-                   (concat (or new-txs []) (rest txs))
-                   (conj handled-txs tx)))
-          (recur ctx
-                 (rest txs)
-                 handled-txs))))))
-
-(defn- reduce-actions!
-  [txs-fn-map ctx txs]
-  (loop [ctx ctx
-         txs txs]
-    (if (empty? txs)
-      ctx
-      (let [[k & params :as tx] (first txs)]
-        (if tx
-          (let [_ (assert (vector? tx))
-                f (get txs-fn-map k)
-                new-ctx (try
-                         (if (nil? f)
-                           ctx
-                           (apply f ctx params))
-                         (catch Throwable t
-                           (throw (ex-info "Error handling tx"
-                                           {:tx tx}
-                                           t))))]
-            (recur new-ctx
-                   (rest txs)))
-          (recur ctx
-                 (rest txs)))))))
 
 (declare mouse-position
          button-just-pressed?
@@ -561,13 +511,13 @@
   (extend-type Context
     txs/Txs
     (handle! [ctx txs]
-      (let [handled-txs (try (actions! txs-fn-map ctx txs)
+      (let [handled-txs (try (txs-fn-map/actions! txs-fn-map ctx txs)
                              (catch Throwable t
                                (throw (ex-info "Error handling txs"
                                                {:txs txs} t))))]
-        (reduce-actions! reaction-txs-fn-map
-                         ctx
-                         handled-txs))))
+        (txs-fn-map/reduce-actions! reaction-txs-fn-map
+                                    ctx
+                                    handled-txs))))
   ctx)
 
 (defn create-record [ctx]
