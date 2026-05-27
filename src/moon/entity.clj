@@ -4,13 +4,16 @@
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
+            [moon.effect :as effect]
             [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
             [moon.inventory :as inventory]
             [moon.timer :as timer]
             [moon.textures :as textures]
+            [moon.skill]
             [moon.state :as state]
+            [moon.stats :as stats]
             [moon.number :as number]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
@@ -342,3 +345,33 @@
          (when rotate-in-movement-direction?
            [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v/angle-from-vector direction)])
          [:tx/move-entity eid]]))))
+
+(defmethod tick :entity/skills
+  [[_k skills] eid {:keys [ctx/elapsed-time]}]
+  (for [{:keys [skill/cooling-down?] :as skill} (vals skills)
+        :when (and cooling-down?
+                   (timer/stopped? elapsed-time cooling-down?))]
+    [:tx/assoc-in eid [:entity/skills (:property/id skill) :skill/cooling-down?] false]))
+
+(defmethod after-create :entity/skills ; TODO same like inventory ?
+  [[_k skills] eid _ctx]
+  (cons [:tx/assoc eid :entity/skills nil]
+        (for [skill skills]
+          [:tx/add-skill eid skill])))
+
+(.bindRoot #'moon.skill/usable-state
+           (fn [{:keys [skill/cooling-down? skill/effects] :as skill}
+                entity
+                effect-ctx]
+             (cond
+              cooling-down?
+              :cooldown
+
+              (stats/not-enough-mana? (:entity/stats entity) skill)
+              :not-enough-mana
+
+              (not (seq (filter #(effect/applicable? % effect-ctx) effects)))
+              :invalid-params
+
+              :else
+              :usable)))

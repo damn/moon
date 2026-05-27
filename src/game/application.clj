@@ -1,6 +1,5 @@
 (ns game.application
   (:require [game.ctx :as ctx]
-            game.entity.skills
             game.entity.stats
             game.entity.string-effect
             game.entity.temp-modifier
