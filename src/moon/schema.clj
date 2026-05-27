@@ -1,6 +1,7 @@
 (ns moon.schema
   (:require [clojure.core-ext :refer [sort-by-k-order
-                                      ->edn-str]]
+                                      ->edn-str
+                                      truncate]]
             [clojure.edn :as edn]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
@@ -15,7 +16,6 @@
             [clojure.set :as set]
             [moon.ctx :as ctx]
             [moon.db :as db]
-            [moon.string :as string]
             [moon.schemas :as schemas]
             [moon.property :as property]
             [moon.textures :as textures]
@@ -31,7 +31,7 @@
   [_ v {:keys [ctx/skin]}]
   (actor/create
    {:type :ui/label
-    :text (string/truncate (->edn-str v) 60)
+    :text (truncate (->edn-str v) 60)
     :skin skin}))
 
 (defmethod value :default
