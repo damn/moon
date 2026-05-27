@@ -1,7 +1,10 @@
 (ns moon.entity
-  (:require [clojure.math.rectangle :as rectangle]
+  (:require [clojure.animation :as animation]
+            [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
+            [moon.grid :as grid]
+            [moon.timer :as timer]
             [qrecord.core :as q])
   (:import (com.badlogic.gdx.math Rectangle)))
 
@@ -105,3 +108,55 @@
     :collides? collides?
     :z-order z-order
     :rotation-angle (or rotation-angle 0)}))
+
+(defmethod render :entity/clickable
+  [[_k {:keys [text]}]
+   {:keys [entity/body
+           entity/mouseover?]}
+   _ctx]
+  (when (and mouseover? text)
+    (let [[x y] (:body/position body)]
+      [[:draw/text {:text text
+                    :x x
+                    :y (+ y (/ (:body/height body) 2))
+                    :up? true}]])))
+
+(defmethod create :entity/animation
+  [[_k {:keys [animation/frames
+               animation/frame-duration
+               animation/looping?
+               delete-after-stopped?]}]
+   _ctx]
+  (assert (not (and looping? delete-after-stopped?)))
+  {:frames (vec frames)
+   :frame-duration frame-duration
+   :looping? looping?
+   :cnt 0
+   :maxcnt (* (count frames) (float frame-duration))
+   :delete-after-stopped? delete-after-stopped?})
+
+(defmethod tick :entity/animation
+  [[_k animation] eid {:keys [ctx/delta-time]}]
+  [[:tx/assoc eid :entity/animation (animation/tick animation delta-time)]
+   (when (and (:delete-after-stopped? animation)
+              (animation/stopped? animation))
+     [:tx/mark-destroyed eid])])
+
+(defmethod render :entity/animation
+  [[_k animation] entity ctx]
+  (render [:entity/image (animation/current-frame animation)]
+          entity
+          ctx))
+
+(defmethod tick :entity/alert-friendlies-after-duration
+  [[_k {:keys [counter faction]}]
+   eid
+   {:keys [ctx/elapsed-time
+           ctx/grid]}]
+  (when (timer/stopped? elapsed-time counter)
+    (cons [:tx/mark-destroyed eid]
+          (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
+                                   :radius 4}
+                                  (grid/circle->entities grid)
+                                  (filter #(= (:entity/faction @%) faction)))]
+            [:tx/event friendly-eid :alert]))))

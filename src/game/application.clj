@@ -1,9 +1,5 @@
 (ns game.application
-  (:require [clojure.animation :as animation]
-            [moon.grid :as grid]
-            [moon.entity :as entity]
-            [moon.timer :as timer]
-            [game.ctx :as ctx]
+  (:require [game.ctx :as ctx]
             game.entity.delete-after-duration
             game.entity.fsm
             game.entity.image
@@ -51,58 +47,6 @@
             game.ui.info-window
             [clojure.gdx :as gdx])
   (:gen-class))
-
-(defmethod entity/render :entity/clickable
-  [[_k {:keys [text]}]
-   {:keys [entity/body
-           entity/mouseover?]}
-   _ctx]
-  (when (and mouseover? text)
-    (let [[x y] (:body/position body)]
-      [[:draw/text {:text text
-                    :x x
-                    :y (+ y (/ (:body/height body) 2))
-                    :up? true}]])))
-
-(defmethod entity/create :entity/animation
-  [[_k {:keys [animation/frames
-               animation/frame-duration
-               animation/looping?
-               delete-after-stopped?]}]
-   _ctx]
-  (assert (not (and looping? delete-after-stopped?)))
-  {:frames (vec frames)
-   :frame-duration frame-duration
-   :looping? looping?
-   :cnt 0
-   :maxcnt (* (count frames) (float frame-duration))
-   :delete-after-stopped? delete-after-stopped?})
-
-(defmethod entity/tick :entity/animation
-  [[_k animation] eid {:keys [ctx/delta-time]}]
-  [[:tx/assoc eid :entity/animation (animation/tick animation delta-time)]
-   (when (and (:delete-after-stopped? animation)
-              (animation/stopped? animation))
-     [:tx/mark-destroyed eid])])
-
-(defmethod entity/render :entity/animation
-  [[_k animation] entity ctx]
-  (entity/render [:entity/image (animation/current-frame animation)]
-                 entity
-                 ctx))
-
-(defmethod entity/tick :entity/alert-friendlies-after-duration
-  [[_k {:keys [counter faction]}]
-   eid
-   {:keys [ctx/elapsed-time
-           ctx/grid]}]
-  (when (timer/stopped? elapsed-time counter)
-    (cons [:tx/mark-destroyed eid]
-          (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
-                                   :radius 4}
-                                  (grid/circle->entities grid)
-                                  (filter #(= (:entity/faction @%) faction)))]
-            [:tx/event friendly-eid :alert]))))
 
 (def state (atom nil))
 
