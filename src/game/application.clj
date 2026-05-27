@@ -1,8 +1,6 @@
 (ns game.application
   (:require [game.ctx :as ctx]
 
-            game.state.npc-sleeping
-            game.state.npc-moving
             game.state.player-item-on-cursor
             game.state.stunned
             game.state-impl

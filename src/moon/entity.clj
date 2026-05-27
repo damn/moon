@@ -557,3 +557,23 @@
       [[:tx/event eid :start-action [skill effect-ctx]]]
       [[:tx/event eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
                                               [0 0])]])))
+
+(defmethod tick :npc-sleeping
+  [_ eid {:keys [ctx/grid]}]
+  (let [entity @eid]
+    (when-let [distance (grid/nearest-enemy-distance grid entity)]
+      (when (<= distance (stats/get-stat-value (:entity/stats entity) :stats/aggro-range))
+        [[:tx/event eid :alert]]))))
+
+(defmethod render :npc-sleeping
+  [_ {:keys [entity/body]} _ctx]
+  (let [[x y] (:body/position body)]
+    [[:draw/text {:text "zzz"
+                  :x x
+                  :y (+ y (/ (:body/height body) 2))
+                  :up? true}]]))
+
+(defmethod tick :npc-moving
+  [[_k {:keys [timer]}] eid {:keys [ctx/elapsed-time]}]
+  (when (timer/stopped? elapsed-time timer)
+    [[:tx/event eid :timer-finished]]))
