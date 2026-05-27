@@ -57,6 +57,7 @@
             [moon.order :as order]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory-window :as inventory-window]
+            [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm]))
 
@@ -1298,3 +1299,89 @@
                       (update item :icon #(get textures %))
                       item))
    :skin skin})
+
+(defn create-action-bar [_ctx]
+  {:type :ui/action-bar})
+
+(defn create-hp-mana-bar
+  [{:keys [ctx/textures
+           ctx/stage]}]
+  (let [{:keys [rahmen-file
+                rahmenw
+                rahmenh
+                hpcontent-file
+                manacontent-file
+                y-mana]} {:rahmen-file "images/rahmen.png"
+                          :rahmenw 150
+                          :rahmenh 26
+                          :hpcontent-file "images/hp.png"
+                          :manacontent-file "images/mana.png"
+                          :y-mana 80}
+        [x y-mana] [(/ (:viewport/world-width (:stage/viewport stage)) 2)
+                    y-mana]
+        rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
+        y-hp (+ y-mana rahmenh)
+        render-hpmana-bar (fn [x y content-file minmaxval name]
+                            [[:draw/texture-region rahmen-tex-reg [x y]]
+                             [:draw/texture-region
+                              (textures/texture-region textures
+                                                       {:image/file content-file
+                                                        :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
+                              [x y]]
+                             [:draw/text {:text (str (number/readable (minmaxval 0))
+                                                     "/"
+                                                     (minmaxval 1)
+                                                     " "
+                                                     name)
+                                          :x (+ x 75)
+                                          :y (+ y 2)
+                                          :up? true}]])
+        create-draws (fn [{:keys [ctx/player-eid]}]
+                       (let [stats (:entity/stats @player-eid)
+                             x (- x (/ rahmenw 2))]
+                         (concat
+                          (render-hpmana-bar x y-hp   hpcontent-file   (stats/get-hitpoints stats) "HP")
+                          (render-hpmana-bar x y-mana manacontent-file (stats/get-mana      stats) "MP"))))]
+    {:type :ui/actor
+     :draw! (fn [this _batch _parent-alpha]
+              (when-let [stage (actor/stage this)]
+                (draws/handle (:stage/ctx stage)
+                              (create-draws (:stage/ctx stage)))))}))
+
+(defn create-windows [ctx actor-fns]
+  {:type :ui/group
+   :group/actors (for [f actor-fns]
+                   (f ctx))
+   :actor/name "moon.ui.windows"})
+
+(defn create-player-state-draw [_ctx]
+  {:type :ui/actor
+   :draw! (fn [this _batch _parent-alpha]
+            (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/stage this))
+                  entity @player-eid
+                  state-k (:state (:entity/fsm entity))]
+              (draws/handle ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))})
+
+(defn create-player-message-actor [_ctx]
+  (let [message-duration-seconds 0.5]
+    {:type :ui/actor
+     :actor/name "player-message"
+     :actor/user-object (atom nil)
+     :draw! (fn [this _batch _parent-alpha]
+              (when-let [stage (actor/stage this)]
+                (draws/handle (:stage/ctx stage)
+                              [(let [state (actor/user-object this)
+                                     vp-width (:viewport/world-width (:stage/viewport stage))
+                                     vp-height (:viewport/world-height (:stage/viewport stage))]
+                                 (when-let [text (:text @state)]
+                                   [:draw/text {:x (/ vp-width 2)
+                                                :y (+ (/ vp-height 2) 200)
+                                                :text text
+                                                :scale 2.5
+                                                :up? true}]))])))
+     :act! (fn [this delta]
+             (let [state (actor/user-object this)]
+               (when (:text @state)
+                 (swap! state update :counter + delta)
+                 (when (>= (:counter @state) message-duration-seconds)
+                   (reset! state nil)))))}))

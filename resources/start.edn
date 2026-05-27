@@ -12,12 +12,12 @@
            [game.ctx/create-max-speed]
            [game.ctx/create-db]
            [game.ctx/add-stage-actors [[game.ctx/create-dev-menu]
-                                       [game.create.add-stage-actors.action-bar/create]
-                                       [game.create.add-stage-actors.hp-mana-bar/create]
-                                       [game.create.add-stage-actors.windows/create [game.create.add-stage-actors.windows.info/create
-                                                                                     game.create.add-stage-actors.windows.inventory/create]]
-                                       [game.create.add-stage-actors.player-state-draw/create]
-                                       [game.create.add-stage-actors.player-message/create]]]
+                                       [game.ctx/create-action-bar]
+                                       [game.ctx/create-hp-mana-bar]
+                                       [game.ctx/create-windows [game.create.add-stage-actors.windows.info/create
+                                                                 game.create.add-stage-actors.windows.inventory/create]]
+                                       [game.ctx/create-player-state-draw]
+                                       [game.ctx/create-player-message-actor]]]
            [game.ctx/create-tiled-map]
            [game.create.assoc/step :ctx/grid game.impl.grid/create]
            [game.create.assoc/step :ctx/content-grid game.impl.content-grid/create]
