@@ -21,7 +21,6 @@
             game.effect.target-entity
             game.effect.spawn
             game.effect.projectile
-            game.effect-impl
 
             game.ui.data-viewer-window
             game.ui.error-window
