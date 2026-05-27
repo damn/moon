@@ -9,6 +9,7 @@
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
+            [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
 
             [clojure.gdx :as gdx]
 
@@ -897,7 +898,7 @@
   (:viewport/world-height world-viewport))
 
 (defn create-app [app]
-  (gdx/set-tooltip-initial-time! 0)
+  (tooltip-manager/set-initial-time! 0)
   (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (let [batch (SpriteBatch.)
         white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)

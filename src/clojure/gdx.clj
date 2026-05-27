@@ -43,7 +43,6 @@
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics OrthographicCamera)
-           (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
            (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
@@ -182,6 +181,3 @@
     (-> viewport
         (.unproject (vector2/->java position))
         vector2/->clj)))
-
-(defn set-tooltip-initial-time! [value]
-  (set! (.initialTime (TooltipManager/getInstance)) value))
