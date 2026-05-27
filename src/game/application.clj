@@ -1,6 +1,5 @@
 (ns game.application
   (:require [game.ctx :as ctx]
-            game.entity.inventory
             game.entity.line-render
             game.entity.mouseover
             game.entity.movement

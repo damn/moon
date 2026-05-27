@@ -4,6 +4,8 @@
             [clojure.math.vector2 :as v]
             [moon.body :as body]
             [moon.grid :as grid]
+            [moon.grid2d :as g2d]
+            [moon.inventory :as inventory]
             [moon.timer :as timer]
             [moon.textures :as textures]
             [moon.state :as state]
@@ -248,3 +250,13 @@
                                         :fsms/npc npc-fsm) initial-state nil)
                                      :state initial-state)]
    [:tx/assoc eid initial-state (state/create [initial-state nil] eid ctx)]])
+
+
+(defmethod after-create :entity/inventory ; TODO do @ creature
+  [[_k items] eid _ctx]
+  (cons [:tx/assoc eid :entity/inventory (->> inventory/empty-inventory
+                                              (map (fn [[slot [width height]]]
+                                                     [slot (g2d/create-grid width height (constantly nil))]))
+                                              (into {}))]
+        (for [item items] ; TODO just call on inventory itself? -> and callback player-refresh ?
+          [:tx/pickup-item eid item])))
