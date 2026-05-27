@@ -1,8 +1,5 @@
 (ns game.application
   (:require [game.ctx :as ctx]
-            game.entity.line-render
-            game.entity.mouseover
-            game.entity.movement
             game.entity.skills
             game.entity.stats
             game.entity.string-effect

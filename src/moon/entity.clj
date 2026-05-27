@@ -1,14 +1,17 @@
 (ns moon.entity
   (:require [clojure.animation :as animation]
+            [clojure.math :as math]
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
+            [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
             [moon.inventory :as inventory]
             [moon.timer :as timer]
             [moon.textures :as textures]
             [moon.state :as state]
+            [moon.number :as number]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx.math Rectangle)))
@@ -260,3 +263,82 @@
                                               (into {}))]
         (for [item items] ; TODO just call on inventory itself? -> and callback player-refresh ?
           [:tx/pickup-item eid item])))
+
+(defmethod render :entity/line-render
+  [[_k {:keys [thick? end color]}]
+   {:keys [entity/body]}
+   _ctx]
+  (let [position (:body/position body)]
+    (if thick?
+      [[:draw/with-line-width
+        4
+        [[:draw/line position end color]]]]
+      [[:draw/line position end color]])))
+
+(def mouseover-ellipse-width 5)
+
+(defmethod render :entity/mouseover?
+  [_
+   {:keys [entity/body
+           entity/faction]}
+   {:keys [ctx/colors
+           ctx/player-eid]}]
+  (let [player @player-eid]
+    [[:draw/with-line-width mouseover-ellipse-width
+      [[:draw/ellipse
+        (:body/position body)
+        (/ (:body/width  body) 2)
+        (/ (:body/height body) 2)
+        (cond (= faction (faction/enemy (:entity/faction player)))
+              (:colors/enemy-color colors)
+              (= faction (:entity/faction player))
+              (:colors/friendly-color colors)
+              :else
+              (:colors/neutral-color colors))]]]]))
+
+(defn- move-position [position {:keys [direction speed delta-time]}]
+  (mapv #(+ %1 (* %2 speed delta-time)) position direction))
+
+(defn- move-body [body movement]
+  (update body :body/position move-position movement))
+
+(defn- try-move [grid body entity-id movement]
+  (let [new-body (move-body body movement)]
+    (when (grid/valid-position? grid new-body entity-id)
+      new-body)))
+
+(defn- try-move-solid-body [grid body entity-id {[vx vy] :direction :as movement}]
+  (let [xdir (math/signum (float vx))
+        ydir (math/signum (float vy))]
+    (or (try-move grid body entity-id movement)
+        (try-move grid body entity-id (assoc movement :direction [xdir 0]))
+        (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
+
+(defmethod tick :entity/movement
+  [[_k
+    {:keys [direction
+            speed
+            rotate-in-movement-direction?]
+     :as movement}]
+   eid
+   {:keys [ctx/delta-time
+           ctx/grid
+           ctx/max-speed]}]
+  (assert (<= 0 speed max-speed)
+          (pr-str speed))
+  (assert (vector? direction))
+  (assert (or (zero? (v/length direction))
+              (number/nearly-equal? 1 (v/length direction)))
+          (str "cannot understand direction: " (pr-str direction)))
+  (when-not (or (zero? (v/length direction))
+                (nil? speed)
+                (zero? speed))
+    (let [movement (assoc movement :delta-time delta-time)
+          body (:entity/body @eid)]
+      (when-let [body (if (:body/collides? body)
+                        (try-move-solid-body grid body (:entity/id @eid) movement)
+                        (move-body body movement))]
+        [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
+         (when rotate-in-movement-direction?
+           [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v/angle-from-vector direction)])
+         [:tx/move-entity eid]]))))
