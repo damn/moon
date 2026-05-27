@@ -36,7 +36,6 @@
             clojure.gdx.maps.map-properties
             clojure.gdx.maps.tiled.tiled-map
             clojure.gdx.maps.tiled.tiled-map-tile-layer
-            clojure.gdx.maps.tiled.tiles.static-tiled-map-tile
             clojure.gdx.maps.tiled.tmx-map-loader
             clojure.gdx.maps.renderer
             clojure.gdx.utils.disposable

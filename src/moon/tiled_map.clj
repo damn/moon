@@ -2,9 +2,10 @@
   (:require [clojure.maps.map-layers :as layers]
             [clojure.maps.map-properties :as props]
             [clojure.maps.tiled.tiled-map :as tiled-map]
-            [clojure.maps.tiled.tiled-map-tile-layer :as layer]
-            [clojure.maps.tiled.tiles.static-tiled-map-tile :as tile])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
+            [clojure.maps.tiled.tiled-map-tile-layer :as layer])
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 ; Depends on:
 ; * layer
@@ -59,7 +60,7 @@
     (when-let [cell (layer/cell layer position)]
       (let [value (-> cell
                       .getTile
-                      tile/properties
+                      .getProperties
                       (props/get "movement"))]
         (assert value
                 (str "Value for :movement at position "
@@ -102,7 +103,7 @@
           :when cell
           :let [value (-> cell
                           .getTile
-                          tile/properties
+                          .getProperties
                           (props/get property-key))]
           :when value]
       [position value])))
@@ -112,8 +113,8 @@
   [texture-region property-name property-value]
   {:pre [texture-region
          (string? property-name)]}
-  (let [tile (tile/create texture-region)]
-    (props/add! (tile/properties tile) {property-name property-value})
+  (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
+    (props/add! (.getProperties tile) {property-name property-value})
     tile))
 
 ; out of memory error -> each texture region is a new object

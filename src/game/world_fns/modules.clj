@@ -5,9 +5,9 @@
             [clojure.maps.map-properties :as props]
             [clojure.maps.tiled.tiled-map-tile-layer :as layer]
             [clojure.maps.map-layers :as layers]
-            [clojure.maps.tiled.tiles.static-tiled-map-tile :as tile]
             [moon.grid2d :as g2d])
-  (:import (java.util Random)))
+  (:import (java.util Random)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (def ^:private number-modules-x 8)
 (def ^:private number-modules-y 4)
@@ -143,7 +143,7 @@
   (memoize
    (fn [tile]
      (assert tile)
-     (tile/copy tile))))
+     (StaticTiledMapTile. tile))))
 
 (defn- grid->tiled-map
   [schema-tiled-map grid]
@@ -221,7 +221,7 @@
 
 (defn- property-value [layer pos property-key]
   (if-let [cell (layer/cell layer pos)]
-    (if-let [value (props/get (tile/properties (.getTile cell)) property-key)]
+    (if-let [value (props/get (.getProperties (.getTile cell)) property-key)]
       value
       :undefined)
     :no-cell))
