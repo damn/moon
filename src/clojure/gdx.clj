@@ -7,7 +7,6 @@
             [clojure.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.utils.viewport :as viewport]
-            [clojure.java.io :as io]
             clojure.gdx.graphics
             clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor
@@ -38,7 +37,6 @@
             clojure.gdx.maps.tiled.tiled-map-tile-layer
             clojure.gdx.maps.renderer
             clojure.gdx.utils.disposable
-            space.earlygrey.shape-drawer
             [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.math.vector3 :as vector3])
   (:import (clojure.lang ILookup)
