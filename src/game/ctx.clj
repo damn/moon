@@ -785,30 +785,6 @@
                    (or rotation 0))
       (batch/draw! batch texture-region x y w h))))
 
-(defn draw-on-world-viewport!
-  [{:keys [ctx/batch
-           ctx/shape-drawer
-           ctx/unit-scale
-           ctx/world-unit-scale
-           ctx/world-viewport]
-    :as ctx}
-   draw-fns]
-  ; fix scene2d.ui.tooltip flickering
-  ; _everything_ flickers with TextToolTip!
-  ; it changes batch color somehow and does not change it back ! FIXME
-  (batch/set-color! batch 1 1 1 1)
-  ;
-  (batch/set-projection-matrix! batch (camera/combined (:viewport/camera world-viewport)))
-  (batch/begin! batch)
-  (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
-    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
-    (reset! unit-scale world-unit-scale)
-    (doseq [f draw-fns]
-      (draws/handle ctx (f ctx)))
-    (reset! unit-scale 1)
-    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (batch/end! batch)
-  ctx)
 
 (defn- tile-color-setter*
   [{:keys [ray-blocked?
@@ -2083,35 +2059,55 @@
           :air  (:colors/mouseover-tile-air colors)
           :none (:colors/mouseover-tile-none colors))]])))
 
+(defn draw-on-world-viewport!
+  [{:keys [ctx/batch
+           ctx/shape-drawer
+           ctx/unit-scale
+           ctx/world-unit-scale
+           ctx/world-viewport]
+    :as ctx}]
+  ; fix scene2d.ui.tooltip flickering
+  ; _everything_ flickers with TextToolTip!
+  ; it changes batch color somehow and does not change it back ! FIXME
+  (batch/set-color! batch 1 1 1 1)
+  ;
+  (batch/set-projection-matrix! batch (camera/combined (:viewport/camera world-viewport)))
+  (batch/begin! batch)
+  (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
+    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
+    (reset! unit-scale world-unit-scale)
+    (doseq [f [
+               #_draw-tile-grid
+               draw-cell-debug
+               draw-entities!
+               #_moon.geom-test
+               highlight-mouseover-tile
+               ]]
+      (draws/handle ctx (f ctx)))
+    (reset! unit-scale 1)
+    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
+  (batch/end! batch)
+  ctx)
+
 (defn render! [ctx]
-  (reduce (fn [ctx [f & params]]
-            (apply f ctx params))
-          ctx
-          [
-           [get-stage-ctx]
-           [validate]
-           [update-mouse-positions]
-           [update-mouseover-eid]
-           [check-debug-viewer]
-           [set-active-entities]
-           [set-camera-position!]
-           [clear-screen!]
-           [draw-tiled-map!]
-           [draw-on-world-viewport! [
-                                     #_draw-tile-grid
-                                     draw-cell-debug
-                                     draw-entities!
-                                     #_moon.geom-test
-                                     highlight-mouseover-tile
-                                     ]]
-           [assoc-interaction-state]
-           [set-cursor!]
-           [handle-player-state-input!]
-           [dissoc-interaction-state]
-           [assoc-paused]
-           [if-not-paused-steps]
-           [remove-destroyed-entities!]
-           [window-camera-controls]
-           [update-draw-stage]
-           [validate]
-           ]))
+  (-> ctx
+      get-stage-ctx
+      validate
+      update-mouse-positions
+      update-mouseover-eid
+      check-debug-viewer
+      set-active-entities
+      set-camera-position!
+      clear-screen!
+      draw-tiled-map!
+      draw-on-world-viewport!
+      assoc-interaction-state
+      set-cursor!
+      handle-player-state-input!
+      dissoc-interaction-state
+      assoc-paused
+      if-not-paused-steps
+      remove-destroyed-entities!
+      window-camera-controls
+      update-draw-stage
+      validate))
