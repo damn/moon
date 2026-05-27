@@ -1,6 +1,5 @@
 (ns game.application
-  (:require [clojure.app :as app]
-            [clojure.audio :as audio]
+  (:require [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
             [clojure.core-ext :refer [edn-resource
                                       safe-merge
@@ -93,7 +92,8 @@
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx.graphics Texture$TextureFilter))
+  (:import (com.badlogic.gdx Application)
+           (com.badlogic.gdx.graphics Texture$TextureFilter))
   (:gen-class))
 
 ; Try only to be used here
@@ -597,10 +597,10 @@
     (:ctx/world-unit-scale ctx))
 
   (mouse-position [{:keys [ctx/app]}]
-    (input/mouse-position (app/input app)))
+    (input/mouse-position (Application/.getInput app)))
 
   (button-just-pressed? [{:keys [ctx/app]} input-button]
-    (input/button-just-pressed? (app/input app) input-button))
+    (input/button-just-pressed? (Application/.getInput app) input-button))
 
   ; It is possible to put items out of sight, losing them.
   ; Because line of sight checks center of entity only, not corners
@@ -618,7 +618,7 @@
     (map first audio))
 
   (key-just-pressed? [{:keys [ctx/app]} input-key]
-    (input/key-just-pressed? (app/input app) input-key))
+    (input/key-just-pressed? (Application/.getInput app) input-key))
 
   txs/Txs
   (handle! [ctx txs]
@@ -646,15 +646,15 @@
 
 (defn delta-time
   [{:keys [ctx/app]}]
-  (graphics/delta-time (app/graphics app)))
+  (graphics/delta-time (Application/.getGraphics app)))
 
 (defn frames-per-second
   [{:keys [ctx/app]}]
-  (graphics/frames-per-second (app/graphics app)))
+  (graphics/frames-per-second (Application/.getGraphics app)))
 
 (defn clear-screen!
   [{:keys [ctx/app] :as ctx}]
-  (let [gl (graphics/gl20 (app/graphics app))]
+  (let [gl (graphics/gl20 (Application/.getGraphics app))]
     (gl20/clear-color! gl 0 0 0 0)
     (gl20/clear! gl gl20/color-buffer-bit))
   ctx)
@@ -728,12 +728,12 @@
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! (app/graphics app) (get cursors cursor-key)))
+    (graphics/set-cursor! (Application/.getGraphics app) (get cursors cursor-key)))
   ctx)
 
 (defn key-pressed?
   [{:keys [ctx/app]} input-key]
-  (input/key-pressed? (app/input app) input-key))
+  (input/key-pressed? (Application/.getInput app) input-key))
 
 (defn dispose!
   [{:keys [ctx/audio
@@ -911,15 +911,15 @@
      :ctx/audio (into {}
                       (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                         [sound-name
-                         (audio/new-sound (app/audio app)
-                                          (files/internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
+                         (audio/new-sound (Application/.getAudio app)
+                                          (files/internal (Application/.getFiles app) (format "sounds/%s.wav" sound-name)))]))
      :ctx/batch batch
      :ctx/shape-drawer-texture white-pixel-texture
      :ctx/shape-drawer (batch/shape-drawer batch (texture/region white-pixel-texture 1 0 1 1))
      :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                              size 16
                              quality-scaling 2
-                             generator (file-handle/freetype-font-generator (files/internal (app/files app) path))
+                             generator (file-handle/freetype-font-generator (files/internal (Application/.getFiles app) path))
                              font (font-generator/generate-font generator
                                                                 {:size (* size quality-scaling)
                                                                  ; texture.filter/linear because scaling to world-units
@@ -942,14 +942,14 @@
      :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                     (update-vals data
                                  (fn [[path [hotspot-x hotspot-y]]]
-                                   (let [pixmap (file-handle/pixmap (files/internal (app/files app) (format path-format path)))
-                                         cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
+                                   (let [pixmap (file-handle/pixmap (files/internal (Application/.getFiles app) (format path-format path)))
+                                         cursor (graphics/new-cursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
                                      (pixmap/dispose! pixmap)
                                      cursor))))
      :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
-                  (input/set-processor! (app/input app) stage)
+                  (input/set-processor! (Application/.getInput app) stage)
                   stage)
-     :ctx/skin (let [skin (file-handle/skin (files/internal (app/files app) "uiskin.json"))]
+     :ctx/skin (let [skin (file-handle/skin (files/internal (Application/.getFiles app) "uiskin.json"))]
                  (-> skin
                      (skin/font "default-font")
                      font/data
@@ -959,7 +959,7 @@
 
 (defn create-textures
   [ctx]
-  (assoc ctx :ctx/textures (game.impl.textures/create (app/files (:ctx/app ctx)))))
+  (assoc ctx :ctx/textures (game.impl.textures/create (Application/.getFiles (:ctx/app ctx)))))
 
 (defn unorganised [ctx]
   (assoc ctx

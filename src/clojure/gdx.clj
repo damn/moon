@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require [clojure.app :as app]
-            [clojure.audio :as audio]
+  (:require [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
             [clojure.edn :as edn]
             [clojure.files.file-handle :as file-handle]
@@ -60,8 +59,7 @@
             [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.math.vector3 :as vector3])
   (:import (clojure.lang ILookup)
-           (com.badlogic.gdx Application
-                             ApplicationListener
+           (com.badlogic.gdx ApplicationListener
                              Audio
                              Gdx)
            (com.badlogic.gdx.audio Sound)
@@ -113,20 +111,6 @@
                         (.setTitle title)
                         (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
                         (.setForegroundFPS foreground-fps))))
-
-(extend-type Application
-  app/App
-  (audio [app]
-    (.getAudio app))
-
-  (files [app]
-    (.getFiles app))
-
-  (graphics [app]
-    (.getGraphics app))
-
-  (input [app]
-    (.getInput app)))
 
 (extend-type Audio
   audio/Audio
