@@ -7,9 +7,6 @@
   (extension [_])
   (directory? [_]))
 
-(defprotocol Texture
-  (texture [_]))
-
 (defprotocol Pixmap
   (pixmap [_]))
 

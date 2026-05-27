@@ -3,7 +3,8 @@
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.graphics.texture :as texture]
-            [moon.textures]))
+            [moon.textures])
+  (:import (com.badlogic.gdx.graphics Texture)))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
@@ -25,7 +26,7 @@
 
                                    :else
                                    (recur remaining result))))]
-             [path (file-handle/texture (files/internal files path))])))
+             [path (Texture. (files/internal files path))])))
 
 (extend-type clojure.lang.PersistentHashMap
   moon.textures/Textures
