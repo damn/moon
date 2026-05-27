@@ -1,7 +1,6 @@
 (ns game.application
   (:require [game.ctx :as ctx]
 
-            game.entity.stats
             game.entity.string-effect
             game.entity.temp-modifier
             game.entity.projectile-collision

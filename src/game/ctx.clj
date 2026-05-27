@@ -43,6 +43,7 @@
             [game.impl.db]
             [malli.core :as m]
             [malli.utils :as mu]
+            [moon.ctx]
             [moon.body :as body]
             [moon.controls :as controls]
             [moon.content-grid :as content-grid]
@@ -144,7 +145,10 @@
           (recur ctx
                  (rest txs)))))))
 
-(q/defrecord Context [])
+(q/defrecord Context []
+  moon.ctx/Context
+  (world-unit-scale [ctx]
+    (:ctx/world-unit-scale ctx)))
 
 (q/defrecord Entity [entity/body])
 
