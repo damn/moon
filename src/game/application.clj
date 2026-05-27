@@ -15,7 +15,6 @@
             [clojure.gdx.stage]
 
 
-            [clojure.graphics :as graphics]
             [clojure.gdx.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
@@ -653,15 +652,15 @@
 
 (defn delta-time
   [{:keys [ctx/app]}]
-  (graphics/delta-time (Application/.getGraphics app)))
+  (.getDeltaTime (Application/.getGraphics app)))
 
 (defn frames-per-second
   [{:keys [ctx/app]}]
-  (graphics/frames-per-second (Application/.getGraphics app)))
+  (.getFramesPerSecond (Application/.getGraphics app)))
 
 (defn clear-screen!
   [{:keys [ctx/app] :as ctx}]
-  (let [gl (graphics/gl20 (Application/.getGraphics app))]
+  (let [gl (.getGL20 (Application/.getGraphics app))]
     (.glClearColor gl 0 0 0 0)
     (.glClear gl GL20/GL_COLOR_BUFFER_BIT))
   ctx)
@@ -735,7 +734,7 @@
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! (Application/.getGraphics app) (get cursors cursor-key)))
+    (.setCursor (Application/.getGraphics app) (get cursors cursor-key)))
   ctx)
 
 (defn key-pressed?
@@ -952,7 +951,7 @@
                     (update-vals data
                                  (fn [[path [hotspot-x hotspot-y]]]
                                    (let [pixmap (Pixmap. (.internal (Application/.getFiles app) (format path-format path)))
-                                         cursor (graphics/new-cursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
+                                         cursor (.newCursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
                                      (.dispose pixmap)
                                      cursor))))
      :ctx/stage (let [stage (clojure.gdx.stage/create (fit-viewport/create 1440 900) batch)]

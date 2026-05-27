@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require clojure.gdx.graphics
-            clojure.gdx.input
+  (:require clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor
             clojure.gdx.scenes.scene2d.group
             clojure.gdx.scenes.scene2d.event
