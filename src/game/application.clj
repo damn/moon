@@ -7,6 +7,7 @@
                                       reduce-actions!]]
             [clojure.edn :as edn]
             [clojure.gdx.graphics.color :as color]
+            [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
 
             [clojure.gdx :as gdx]
@@ -896,7 +897,7 @@
 
 (defn create-app [app]
   (gdx/set-tooltip-initial-time! 0)
-  (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
+  (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (let [batch (SpriteBatch.)
         white-pixel-texture (let [pixmap (doto (gdx/pixmap 1 1)
                                            (pixmap/set-color! 1 1 1 1)

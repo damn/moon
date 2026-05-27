@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require [clojure.gdx.graphics.color :as color]
-            [clojure.graphics.pixmap :as pixmap]
+  (:require [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.group :as group]
@@ -44,8 +43,7 @@
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Colors
-                                      Pixmap
+           (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
                                       Texture
                                       OrthographicCamera)
@@ -86,10 +84,6 @@
                         (.setTitle title)
                         (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
                         (.setForegroundFPS foreground-fps))))
-
-(defn put-colors! [colors]
-  (doseq [[name rgba] colors]
-    (Colors/put name (color/create rgba))))
 
 (defn pixmap [w h]
   (Pixmap. (int w) (int h) Pixmap$Format/RGBA8888))
