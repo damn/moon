@@ -12,6 +12,7 @@
                  [fr.reuz/qrecord "0.1.0"]
                  [org.clj-commons/pretty "3.2.0"]
                  [org.clojure/clojure "1.12.0"]
+                 [clojure.core-ext "0.1"]
 
                  ; DEV:
                  [nrepl "0.9.0"]
