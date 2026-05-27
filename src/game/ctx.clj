@@ -148,7 +148,8 @@
                  (rest txs)))))))
 
 (declare mouse-position
-         button-just-pressed?)
+         button-just-pressed?
+         key-just-pressed?)
 
 (q/defrecord Context []
   moon.ctx/Context
@@ -172,6 +173,12 @@
              (v/scale (v/direction player-position world-mouse-position)
                       (min maxrange
                            (v/distance player-position world-mouse-position))))))
+
+  (sound-names [{:keys [ctx/audio]}]
+    (map first audio))
+
+  (key-just-pressed? [ctx key]
+    (key-just-pressed? ctx key))
   )
 
 (q/defrecord Entity [entity/body])
@@ -748,10 +755,6 @@
   (disposable/dispose! skin)
   (run! disposable/dispose! (vals textures))
   (disposable/dispose! tiled-map))
-
-(defn sound-names
-  [{:keys [ctx/audio]}]
-  (map first audio))
 
 (defn draw-text!
   [{:keys [ctx/batch

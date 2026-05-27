@@ -4,7 +4,7 @@
             [clojure.scene2d.event :as event]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
-            [game.ctx :as ctx]
+            [moon.ctx :as ctx]
             [moon.db :as db]
             [moon.property :as property]
             [moon.schema :as schema]

@@ -4,4 +4,6 @@
   (world-unit-scale [_])
   (mouse-position [_])
   (button-just-pressed? [_ button])
-  (item-place-position [_ player-entity]))
+  (key-just-pressed? [_ key])
+  (item-place-position [_ player-entity])
+  (sound-names [_]))
