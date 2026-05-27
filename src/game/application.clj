@@ -81,8 +81,12 @@
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx Application)
+  (:import (com.badlogic.gdx Application
+                             ApplicationListener
+                             Gdx)
            (com.badlogic.gdx.audio Sound)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20
                                       Pixmap
                                       Pixmap$Format
@@ -2017,30 +2021,24 @@
 (def state (atom nil))
 
 (defn -main []
-  (gdx/application!
-   {:title "Moon"
-    :windowed-mode {:width 1440
-                    :height 900}
-    :foreground-fps 60
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (reify ApplicationListener
+                        (create [_]
+                          (reset! state (create! Gdx/app)))
 
-    :create!
-    (fn [app]
-      (reset! state (create! app)))
+                        (dispose [_]
+                          (dispose! @state))
 
-    :dispose!
-    (fn []
-      (dispose! @state))
+                        (render [_]
+                          (swap! state render!))
 
-    :render!
-    (fn []
-      (swap! state render!))
+                        (resize [_ width height]
+                          (resize! @state width height))
 
-    :resize!
-    (fn [width height]
-      (resize! @state width height))
+                        (pause [_])
 
-    :pause!
-    (fn [])
-
-    :resume!
-    (fn [])}))
+                        (resume [_]))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Moon")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))

@@ -37,46 +37,8 @@
             [clojure.gdx.math.vector3 :as vector3])
   (:import (clojure.gdx Stage)
            (clojure.lang ILookup)
-           (com.badlogic.gdx ApplicationListener
-                             Gdx)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.utils.viewport FitViewport)))
-
-(defn application!
-  [{:keys [title
-           windowed-mode
-           foreground-fps
-           create!
-           dispose!
-           render!
-           resize!
-           pause!
-           resume!]}]
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (reify ApplicationListener
-                        (create [_]
-                          (create! Gdx/app))
-
-                        (dispose [_]
-                          (dispose!))
-
-                        (render [_]
-                          (render!))
-
-                        (resize [_ width height]
-                          (resize! width height))
-
-                        (pause [_]
-                          (pause!))
-
-                        (resume [_]
-                          (resume!)))
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle title)
-                        (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
-                        (.setForegroundFPS foreground-fps))))
 
 (defn orthographic-camera
   [{:keys [y-down?

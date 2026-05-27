@@ -19,7 +19,11 @@
             [clojure.utils.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
-  (:import (com.badlogic.gdx Application)
+  (:import (com.badlogic.gdx Application
+                             ApplicationListener
+                             Gdx)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
@@ -192,23 +196,24 @@
 (def state (atom nil))
 
 (defn -main []
-  (gdx/application!
-   {:title "Levelgen Test"
-    :windowed-mode {:width 1440
-                    :height 900}
-    :foreground-fps 60
-    :create! (fn [app]
-               (reset! state (create! app)))
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (reify ApplicationListener
+                        (create [_]
+                          (reset! state (create! Gdx/app)))
 
-    :dispose! (fn []
-                (dispose! @state))
+                        (dispose [_]
+                          (dispose! @state))
 
-    :render! (fn []
-               (swap! state render!))
+                        (render [_]
+                          (swap! state render!))
 
-    :resize! (fn [width height]
-               (resize! @state width height))
+                        (resize [_ width height]
+                          (resize! @state width height))
 
-    :pause! (fn [])
+                        (pause [_])
 
-    :resume! (fn [])}))
+                        (resume [_]))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Levelgen Test")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))
