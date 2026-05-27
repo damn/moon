@@ -1,6 +1,7 @@
 (ns moon.schema
-  (:require [clojure.core-ext :refer [sort-by-k-order]]
-            [clojure.edn]
+  (:require [clojure.core-ext :refer [sort-by-k-order
+                                      ->edn-str]]
+            [clojure.edn :as edn]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
@@ -14,7 +15,6 @@
             [clojure.set :as set]
             [moon.ctx :as ctx]
             [moon.db :as db]
-            [moon.edn :as edn]
             [moon.string :as string]
             [moon.schemas :as schemas]
             [moon.property :as property]
@@ -31,7 +31,7 @@
   [_ v {:keys [ctx/skin]}]
   (actor/create
    {:type :ui/label
-    :text (string/truncate (edn/->str v) 60)
+    :text (string/truncate (->edn-str v) 60)
     :skin skin}))
 
 (defmethod value :default
@@ -64,11 +64,11 @@
   (actor/create
    {:type :ui/select-box
     :skin skin
-    :items (map edn/->str (rest schema))
-    :selected (edn/->str v)}))
+    :items (map ->edn-str (rest schema))
+    :selected (->edn-str v)}))
 
 (defmethod value :s/enum [_  widget _schemas]
-  (clojure.edn/read-string (select-box/selected widget)))
+  (edn/read-string (select-box/selected widget)))
 
 ; too many ! too big ! scroll ... only show files first & preview?
 ; make tree view from folders, etc. .. !! all creatures animations showing...
@@ -306,13 +306,13 @@
   [schema v {:keys [ctx/skin]}]
   (actor/create
    {:type :ui/text-field
-    :text (edn/->str v)
+    :text (->edn-str v)
     :skin skin
     :actor/listeners {:listener/text-tooltip [(str schema) skin]}}))
 
 (defmethod value :s/number
   [_  widget _schemas]
-  (clojure.edn/read-string (text-field/text widget)))
+  (edn/read-string (text-field/text widget)))
 
 (defn- add-one-to-many-rows
   [{:keys [ctx/db
@@ -529,10 +529,10 @@
   [schema v {:keys [ctx/skin]}]
   (actor/create
    {:type :ui/text-field
-    :text (edn/->str v)
+    :text (->edn-str v)
     :skin skin
     :actor/listeners {:listener/text-tooltip [(str schema) skin]}}))
 
 (defmethod value :s/val-max
   [_  widget _schemas]
-  (clojure.edn/read-string (text-field/text widget)))
+  (edn/read-string (text-field/text widget)))
