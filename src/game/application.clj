@@ -1,10 +1,6 @@
 (ns game.application
   (:require [game.ctx :as ctx]
 
-            game.entity.string-effect
-            game.entity.temp-modifier
-            game.entity.projectile-collision
-
             game.state.active-skill
             game.state.npc-idle
             game.state.npc-sleeping

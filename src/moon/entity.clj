@@ -4,6 +4,7 @@
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
             [moon.body :as body]
+            [moon.cell :as cell]
             [moon.ctx :as ctx]
             [moon.effect :as effect]
             [moon.faction :as faction]
@@ -399,3 +400,69 @@
           (- (* width ratio) (* 2 border))
           (- height          (* 2 border))
           ((:colors/hp-bar colors) ratio)]]))))
+
+(defmethod tick :entity/string-effect
+  [[_k {:keys [counter]}]
+   eid
+   {:keys [ctx/elapsed-time]}]
+  (when (timer/stopped? elapsed-time counter)
+    [[:tx/dissoc eid :entity/string-effect]]))
+
+(defmethod render :entity/string-effect
+  [[_k {:keys [text]}] entity ctx]
+  (let [[x y] (:body/position (:entity/body entity))]
+    [[:draw/text {:text text
+                  :x x
+                  :y (+ y
+                        (/ (:body/height (:entity/body entity)) 2)
+                        (* 5 (ctx/world-unit-scale ctx)))
+                  :scale 2
+                  :up? true}]]))
+
+(defmethod tick :entity/temp-modifier
+  [[_k {:keys [modifiers counter]}]
+   eid
+   {:keys [ctx/elapsed-time]}]
+  (when (timer/stopped? elapsed-time counter)
+    [[:tx/dissoc eid :entity/temp-modifier]
+     [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
+
+(defmethod render :entity/temp-modifier
+  [_ entity {:keys [ctx/colors]}]
+  [[:draw/filled-circle
+    (:body/position (:entity/body entity))
+    0.5
+    (:colors/temp-modifier colors)]])
+
+(defmethod create :entity/projectile-collision
+  [[_ v] _ctx]
+  (assoc v :already-hit-bodies #{}))
+
+(defmethod tick :entity/projectile-collision
+  [[_k {:keys [entity-effects already-hit-bodies piercing?]}]
+   eid
+   {:keys [ctx/grid]}]
+  (let [entity @eid
+        cells* (map deref (g2d/get-cells grid (body/touched-tiles (:entity/body entity))))
+        hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
+                                        (not= (:entity/faction entity)
+                                              (:entity/faction @%))
+                                        (:body/collides? (:entity/body @%))
+                                        (body/overlaps? (:entity/body entity)
+                                                        (:entity/body @%)))
+                                  (grid/cells->entities cells*)))
+        destroy? (or (and hit-entity (not piercing?))
+                     (some #(cell/blocked? % (:body/z-order (:entity/body entity))) cells*))]
+    [(when destroy?
+       [:tx/mark-destroyed eid])
+     (when hit-entity
+       [:tx/assoc-in
+        eid
+        [:entity/projectile-collision
+         :already-hit-bodies]
+        (conj already-hit-bodies hit-entity)])
+     (when hit-entity
+       [:tx/effect
+        {:effect/source eid
+         :effect/target hit-entity}
+        entity-effects])]))
