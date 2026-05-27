@@ -1890,16 +1890,69 @@
                   (not (or (key-just-pressed? ctx (:unpause-once controls))
                            (key-pressed? ctx (:unpause-continously controls))))))))
 
+(defn update-time
+  [{:keys [ctx/max-delta]
+    :as ctx}]
+  (let [delta-ms (min (delta-time ctx) max-delta)]
+    (-> ctx
+        (assoc :ctx/delta-time delta-ms)
+        (update :ctx/elapsed-time + delta-ms))))
+
+(defn update-potential-fields!
+  [{:keys [ctx/active-entities
+           ctx/factions-iterations
+           ctx/grid
+           ctx/potential-field-cache]
+    :as ctx}]
+  (doseq [[faction max-iterations] factions-iterations]
+    (grid/tick! grid
+                potential-field-cache
+                faction
+                active-entities
+                max-iterations))
+  ctx)
+
+(defn tick-entities!
+  [{:keys [ctx/active-entities
+           ctx/skin
+           ctx/stage]
+    :as ctx}]
+  (try
+   ; TODO should not have effects which interfere in eid order (remove?)
+   ; convert attacks self!?
+   (txs/handle! ctx (mapcat (fn [eid]
+                              (mapcat (fn [[k v]]
+                                        (comment
+                                         :ctx/delta-time
+                                         :ctx/grid
+                                         :ctx/raycaster
+                                         :ctx/max-speed
+                                         :ctx/elapsed-time
+                                         :ctx/raycaster
+                                         ; effect/useful? what is used
+                                         )
+                                        (try (entity/tick [k v] eid ctx)
+                                             (catch Throwable t
+                                               (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
+                                      @eid))
+                            active-entities))
+   (catch Throwable t
+     (throwable/pretty-pst t)
+     (stage/add-actor! stage
+                       {:type :ui/error-window
+                        :skin skin
+                        :throwable t})))
+  ctx)
+
 (defn if-not-paused-steps
   [{:keys [ctx/paused?]
-    :as ctx}
-   fns]
+    :as ctx}]
   (if paused?
     ctx
-    (reduce (fn [ctx f]
-              (f ctx))
-            ctx
-            fns)))
+    (-> ctx
+        update-time
+        update-potential-fields!
+        tick-entities!)))
 
 (defmethod entity/destroy :entity/destroy-audiovisual
   [[_ audiovisuals-id] eid]
@@ -2030,10 +2083,6 @@
           :air  (:colors/mouseover-tile-air colors)
           :none (:colors/mouseover-tile-none colors))]])))
 
-(require 'game.render.if-not-paused.update-time)
-(require 'game.render.if-not-paused.update-potential-fields)
-(require 'game.render.if-not-paused.tick-entities)
-
 (defn render! [ctx]
   (reduce (fn [ctx [f & params]]
             (apply f ctx params))
@@ -2060,9 +2109,7 @@
            [handle-player-state-input!]
            [dissoc-interaction-state]
            [assoc-paused]
-           [if-not-paused-steps [game.render.if-not-paused.update-time/step
-                                 game.render.if-not-paused.update-potential-fields/step
-                                 game.render.if-not-paused.tick-entities/step]]
+           [if-not-paused-steps]
            [remove-destroyed-entities!]
            [window-camera-controls]
            [update-draw-stage]
