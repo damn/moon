@@ -22,7 +22,8 @@
   (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.utils ScreenUtils)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -172,7 +173,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (gdx/clear-screen! [0 0 0 0])
+    (ScreenUtils/clear 0 0 0 0)
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)

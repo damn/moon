@@ -41,9 +41,7 @@
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics OrthographicCamera)
-           (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn application!
@@ -152,9 +150,6 @@
   (mouseover-actor [stage position]
     (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
       (.hit stage x y true))))
-
-(defn clear-screen! [[r g b a]]
-  (ScreenUtils/clear r g b a))
 
 (defn fit-viewport
   ([width height]
