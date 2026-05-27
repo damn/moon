@@ -31,7 +31,6 @@
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
             [clojure.scene2d.ui.image :as image]
-            [clojure.scene2d.ui.skin :as skin]
 
             [clojure.input :as input]
             [clojure.input.buttons :as input.buttons]
@@ -94,7 +93,8 @@
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter))
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin))
   (:gen-class))
 
 ; Try only to be used here
@@ -952,9 +952,9 @@
      :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
                   (input/set-processor! (Application/.getInput app) stage)
                   stage)
-     :ctx/skin (let [skin (file-handle/skin (files/internal (Application/.getFiles app) "uiskin.json"))]
+     :ctx/skin (let [skin (Skin. (files/internal (Application/.getFiles app) "uiskin.json"))]
                  (-> skin
-                     (skin/font "default-font")
+                     (.getFont "default-font")
                      font/data
                      (font.data/set-markup-enabled! true))
                  skin)

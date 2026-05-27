@@ -35,7 +35,6 @@
             clojure.gdx.scenes.scene2d.ui.text-button
             clojure.gdx.scenes.scene2d.ui.text-field
             clojure.gdx.scenes.scene2d.ui.text-tooltip
-            clojure.gdx.scenes.scene2d.ui.skin
             clojure.gdx.scenes.scene2d.ui.table
             clojure.gdx.scenes.scene2d.ui.image
             clojure.gdx.scenes.scene2d.ui.check-box
