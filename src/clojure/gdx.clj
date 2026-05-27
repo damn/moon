@@ -1,10 +1,5 @@
 (ns clojure.gdx
-  (:require [clojure.graphics.orthographic-camera :as camera]
-            [clojure.scene2d.actor :as actor]
-            [clojure.scene2d.group :as group]
-            [clojure.scene2d.stage :as stage]
-            [clojure.gdx.viewport :as viewport]
-            clojure.gdx.graphics
+  (:require clojure.gdx.graphics
             clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor
             clojure.gdx.scenes.scene2d.group
@@ -32,81 +27,4 @@
             clojure.gdx.maps.map-properties
             clojure.gdx.maps.tiled.tiled-map
             clojure.gdx.maps.tiled.tiled-map-tile-layer
-            clojure.gdx.utils.disposable
-            [clojure.gdx.math.vector3 :as vector3])
-  (:import (clojure.gdx Stage)
-           (clojure.lang ILookup)
-           (com.badlogic.gdx.graphics OrthographicCamera)))
-
-(defn orthographic-camera
-  [{:keys [y-down?
-           world-width
-           world-height]}]
-  (doto (OrthographicCamera.)
-    (.setToOrtho y-down? world-width world-height)))
-
-(extend-type OrthographicCamera
-  camera/OrthographicCamera
-  (viewport-width [camera]
-    (.viewportWidth camera))
-
-  (viewport-height [camera]
-    (.viewportHeight camera))
-
-  (combined [camera]
-    (.combined camera))
-
-  (zoom [camera]
-    (.zoom camera))
-
-  (frustum [camera]
-    (let [plane-points (mapv vector3/->clj (.planePoints (.frustum camera)))
-          frustum-points (take 4 plane-points)
-          left-x   (apply min (map first  frustum-points))
-          right-x  (apply max (map first  frustum-points))
-          bottom-y (apply min (map second frustum-points))
-          top-y    (apply max (map second frustum-points))]
-      [left-x right-x bottom-y top-y]))
-
-  (position [camera]
-    (vector3/->clj (.position camera)))
-
-  (set-position! [camera [x y]]
-    (set! (.x (.position camera)) x)
-    (set! (.y (.position camera)) y)
-    (.update camera))
-
-  (set-zoom! [camera amount]
-    (set! (.zoom camera) amount)
-    (.update camera)))
-
-(defn stage [viewport batch]
-  (proxy [Stage ILookup] [viewport batch]
-    (valAt [k]
-      (case k
-        ; TODO :stage/root
-        :stage/ctx      (.ctx         ^Stage this)
-        :stage/viewport (.getViewport ^Stage this)))))
-
-(extend-type Stage
-  stage/Stage
-  (set-ctx! [stage ctx]
-    (set! (.ctx stage) ctx))
-
-  (add-actor! [stage actor]
-    (.addActor stage (actor/create actor)))
-
-  (act! [stage]
-    (.act stage))
-
-  (draw! [stage]
-    (.draw stage))
-
-  (find-actor [stage name]
-    (-> stage
-        .getRoot
-        (group/find-actor name)))
-
-  (mouseover-actor [stage position]
-    (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
-      (.hit stage x y true))))
+            clojure.gdx.utils.disposable))

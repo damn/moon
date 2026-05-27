@@ -2,11 +2,12 @@
   (:require [clojure.core-ext :refer [edn-resource]]
             [game.impl.textures]
             [game.impl.db :as db-impl]
-            [clojure.gdx :as gdx]
+            [clojure.gdx]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.gdx.fit-viewport :as fit-viewport]
-            [clojure.graphics.orthographic-camera :as camera]
+            [clojure.gdx.orthographic-camera :as camera]
+            [clojure.gdx.stage]
             [clojure.input :as input]
             [clojure.input.keys :as input.keys]
             [clojure.scene2d.actor :as actor]
@@ -104,7 +105,7 @@
         skin (Skin. (.internal files "uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (SpriteBatch.)
-        stage (gdx/stage ui-viewport sprite-batch)
+        stage (clojure.gdx.stage/create ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
@@ -116,7 +117,7 @@
                              world-height (* 900  world-unit-scale)]
                          (fit-viewport/create world-width
                                               world-height
-                                              (gdx/orthographic-camera
+                                              (camera/create
                                                {:y-down? false
                                                 :world-width world-width
                                                 :world-height world-height})))

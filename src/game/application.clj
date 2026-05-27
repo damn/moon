@@ -6,17 +6,17 @@
                                       actions!
                                       reduce-actions!]]
             [clojure.edn :as edn]
+            [clojure.gdx]
             [clojure.gdx.fit-viewport :as fit-viewport]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+            [clojure.gdx.stage]
 
-
-            [clojure.gdx :as gdx]
 
             [clojure.graphics :as graphics]
-            [clojure.graphics.orthographic-camera :as camera]
+            [clojure.gdx.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
             [clojure.scene2d.actor :as actor]
@@ -944,7 +944,7 @@
                                world-height (* 900  world-unit-scale)]
                            (fit-viewport/create world-width
                                                 world-height
-                                                (gdx/orthographic-camera
+                                                (camera/create
                                                  {:y-down? false
                                                   :world-width world-width
                                                   :world-height world-height})))
@@ -955,7 +955,7 @@
                                          cursor (graphics/new-cursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
                                      (.dispose pixmap)
                                      cursor))))
-     :ctx/stage (let [stage (gdx/stage (fit-viewport/create 1440 900) batch)]
+     :ctx/stage (let [stage (clojure.gdx.stage/create (fit-viewport/create 1440 900) batch)]
                   (input/set-processor! (Application/.getInput app) stage)
                   stage)
      :ctx/skin (let [skin (Skin. (.internal (Application/.getFiles app) "uiskin.json"))]
