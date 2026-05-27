@@ -1385,3 +1385,21 @@
                  (swap! state update :counter + delta)
                  (when (>= (:counter @state) message-duration-seconds)
                    (reset! state nil)))))}))
+
+(defn create-info-window
+  [{:keys [ctx/skin
+           ctx/stage]}]
+  {:type :ui/info-window
+   :title "Entity Info"
+   :actor-name "moon.ui.windows.entity-info"
+   :visible? false
+   :position [(:viewport/world-width (:stage/viewport stage)) 0]
+   :set-label-text! (fn [{:keys [ctx/mouseover-eid]
+                          :as ctx}]
+                      (if-let [eid mouseover-eid]
+                        (info/text (apply dissoc @eid [:entity/skills
+                                                       :entity/faction
+                                                       :active-skill])
+                                   ctx)
+                        ""))
+   :skin skin})
