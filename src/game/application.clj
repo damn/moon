@@ -20,8 +20,6 @@
             [clojure.graphics.gl20 :as gl20]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.shape-drawer :as shape-drawer]
-            [clojure.graphics.g2d.bitmap-font :as font]
-            [clojure.graphics.g2d.bitmap-font.data :as font.data]
             [clojure.graphics.g2d.texture-region :as texture-region]
             [clojure.java.io :as io]
             [clojure.scene2d.actor :as actor]
@@ -92,9 +90,11 @@
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics Pixmap
                                       Texture$TextureFilter)
+           (com.badlogic.gdx.graphics.g2d BitmapFont)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin))
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.utils Align))
   (:gen-class))
 
 ; Try only to be used here
@@ -215,27 +215,27 @@
                                      ctx/unit-scale
                                      ctx/default-font]}
                              {:keys [font scale x y text h-align up?]}]
-                            (let [font (or font default-font)
-                                  old-scale (font.data/scale-x (font/data font))
+                            (let [^BitmapFont font (or font default-font)
+                                  old-scale (.scaleX (.getData font))
                                   target-width 0
                                   wrap? false
                                   scale (* (float @unit-scale)
                                            (float (or scale 1)))]
-                              (font.data/set-scale! (font/data font) (* old-scale scale))
-                              (font/draw! font
-                                          batch
-                                          text
-                                          x
-                                          (+ y (if up?
-                                                 (-> text
-                                                     (str/split #"\n")
-                                                     count
-                                                     (* (font/line-height font)))
-                                                 0))
-                                          target-width
-                                          :align/center
-                                          wrap?)
-                              (font.data/set-scale! (font/data font) old-scale)))
+                              (.setScale (.getData font) (* old-scale scale))
+                              (.draw font
+                                     batch
+                                     text
+                                     (float x)
+                                     (float (+ y (if up?
+                                                   (-> text
+                                                       (str/split #"\n")
+                                                       count
+                                                       (* (.getLineHeight font)))
+                                                   0)))
+                                     (float target-width)
+                                     Align/center
+                                     wrap?)
+                              (.setScale (.getData font) old-scale)))
    :draw/texture-region   (fn
                             [{:keys [ctx/batch
                                      ctx/unit-scale
@@ -929,9 +929,9 @@
                                                    (set! (.magFilter params) Texture$TextureFilter/Linear)
                                                    params))]
                          (.dispose generator)
-                         (font.data/set-scale! (font/data font) (/ quality-scaling))
-                         (font.data/set-markup-enabled! (font/data font) true)
-                         (font/set-use-integer-positions! font false)
+                         (.setScale (.getData font) (/ quality-scaling))
+                         (set! (.markupEnabled (.getData font)) true)
+                         (.setUseIntegerPositions font false)
                          font)
      :ctx/world-unit-scale world-unit-scale
      :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
@@ -953,10 +953,10 @@
                   (input/set-processor! (Application/.getInput app) stage)
                   stage)
      :ctx/skin (let [skin (Skin. (files/internal (Application/.getFiles app) "uiskin.json"))]
-                 (-> skin
-                     (.getFont "default-font")
-                     font/data
-                     (font.data/set-markup-enabled! true))
+                 (set! (.markupEnabled (-> skin
+                                           (.getFont "default-font")
+                                           .getData))
+                       true)
                  skin)
      :ctx/unit-scale (atom 1)}))
 

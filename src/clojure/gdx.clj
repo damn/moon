@@ -15,8 +15,6 @@
             clojure.gdx.graphics.color
             clojure.gdx.graphics.gl20
             clojure.gdx.graphics.texture
-            clojure.gdx.graphics.g2d.bitmap-font
-            clojure.gdx.graphics.g2d.bitmap-font.data
             clojure.gdx.graphics.g2d.texture-region
             clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor
