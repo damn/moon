@@ -1,8 +1,6 @@
 (ns game.application
   (:require [game.ctx :as ctx]
 
-            game.state.active-skill
-            game.state.npc-idle
             game.state.npc-sleeping
             game.state.npc-moving
             game.state.player-item-on-cursor
