@@ -52,7 +52,6 @@
             game.ui.dev-menu
             game.ui.action-bar
             game.ui.info-window
-            [clojure.config :refer [edn-resource]]
             [clojure.gdx :as gdx]
             [qrecord.core :as q])
   (:import (com.badlogic.gdx.math Rectangle))
@@ -181,36 +180,30 @@
   (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (gdx/use-glfw-async!)
   (gdx/application!
-   (let [{:keys [render]} (edn-resource "start.edn")]
-     {:title "Moon"
-      :windowed-mode {:width 1440
-                      :height 900}
-      :foreground-fps 60
+   {:title "Moon"
+    :windowed-mode {:width 1440
+                    :height 900}
+    :foreground-fps 60
 
-      :create!
-      (fn [app]
-        (gdx/set-tooltip-initial-time! 0)
-        (reset! state (ctx/create! app)))
+    :create!
+    (fn [app]
+      (gdx/set-tooltip-initial-time! 0)
+      (reset! state (ctx/create! app)))
 
-      :dispose!
-      (fn []
-        (ctx/dispose! @state))
+    :dispose!
+    (fn []
+      (ctx/dispose! @state))
 
-      :render!
-      (fn []
-        (swap! state
-               (fn [ctx]
-                 (reduce (fn [ctx [f & params]]
-                           (apply f ctx params))
-                         ctx
-                         render))))
+    :render!
+    (fn []
+      (swap! state ctx/render!))
 
-      :resize!
-      (fn [width height]
-        (ctx/resize! @state width height))
+    :resize!
+    (fn [width height]
+      (ctx/resize! @state width height))
 
-      :pause!
-      (fn [])
+    :pause!
+    (fn [])
 
-      :resume!
-      (fn [])})))
+    :resume!
+    (fn [])}))

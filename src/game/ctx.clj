@@ -1920,3 +1920,45 @@
   (stage/act!  stage)
   (stage/draw! stage)
   (:stage/ctx stage))
+
+(require 'game.render.draw-on-world-viewport.draw-cell-debug)
+(require 'game.render.draw-on-world-viewport.draw-entities)
+(require 'game.render.draw-on-world-viewport.highlight-mouseover-tile)
+(require 'game.render.if-not-paused.update-time)
+(require 'game.render.if-not-paused.update-potential-fields)
+(require 'game.render.if-not-paused.tick-entities)
+
+(defn render! [ctx]
+  (reduce (fn [ctx [f & params]]
+            (apply f ctx params))
+          ctx
+          [
+           [get-stage-ctx]
+           [validate]
+           [update-mouse-positions]
+           [update-mouseover-eid]
+           [check-debug-viewer]
+           [set-active-entities]
+           [set-camera-position!]
+           [clear-screen!]
+           [draw-tiled-map!]
+           [draw-on-world-viewport! [
+                                     #_game.render.draw-on-world-viewport.draw-tile-grid/draws
+                                     game.render.draw-on-world-viewport.draw-cell-debug/draws
+                                     game.render.draw-on-world-viewport.draw-entities/do!
+                                     #_moon.geom-test
+                                     game.render.draw-on-world-viewport.highlight-mouseover-tile/draws
+                                     ]]
+           [assoc-interaction-state]
+           [set-cursor!]
+           [handle-player-state-input!]
+           [dissoc-interaction-state]
+           [assoc-paused]
+           [if-not-paused-steps [game.render.if-not-paused.update-time/step
+                                 game.render.if-not-paused.update-potential-fields/step
+                                 game.render.if-not-paused.tick-entities/step]]
+           [remove-destroyed-entities!]
+           [window-camera-controls]
+           [update-draw-stage]
+           [validate]
+           ]))
