@@ -19,7 +19,6 @@
             [clojure.graphics.batch :as batch]
             [clojure.graphics.color :as color]
             [clojure.graphics.texture :as texture]
-            [clojure.graphics.texture.filter :as texture.filter]
             [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.gl20 :as gl20]
             [clojure.graphics.orthographic-camera :as camera]
@@ -94,6 +93,7 @@
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
+  (:import (com.badlogic.gdx.graphics Texture$TextureFilter))
   (:gen-class))
 
 ; Try only to be used here
@@ -923,8 +923,8 @@
                              font (font-generator/generate-font generator
                                                                 {:size (* size quality-scaling)
                                                                  ; texture.filter/linear because scaling to world-units
-                                                                 :min-filter texture.filter/linear
-                                                                 :mag-filter texture.filter/linear})]
+                                                                 :min-filter Texture$TextureFilter/Linear
+                                                                 :mag-filter Texture$TextureFilter/Linear})]
                          (font-generator/dispose! generator)
                          (font.data/set-scale! (font/data font) (/ quality-scaling))
                          (font.data/set-markup-enabled! (font/data font) true)
