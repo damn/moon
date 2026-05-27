@@ -3,7 +3,7 @@
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
-            [clojure.utils.viewport :as viewport]
+            [clojure.gdx.viewport :as viewport]
             clojure.gdx.graphics
             clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor
@@ -33,12 +33,10 @@
             clojure.gdx.maps.tiled.tiled-map
             clojure.gdx.maps.tiled.tiled-map-tile-layer
             clojure.gdx.utils.disposable
-            [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.math.vector3 :as vector3])
   (:import (clojure.gdx Stage)
            (clojure.lang ILookup)
-           (com.badlogic.gdx.graphics OrthographicCamera)
-           (com.badlogic.gdx.utils.viewport FitViewport)))
+           (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn orthographic-camera
   [{:keys [y-down?
@@ -112,29 +110,3 @@
   (mouseover-actor [stage position]
     (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
       (.hit stage x y true))))
-
-(defn fit-viewport
-  ([width height]
-   (proxy [FitViewport ILookup] [width height]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this)))))
-  ([width height camera]
-   (proxy [FitViewport ILookup] [width height camera]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this))))))
-
-(extend-type FitViewport
-  viewport/Viewport
-  (update! [viewport screen-width screen-height center-camera?]
-    (.update viewport screen-width screen-height center-camera?))
-
-  (unproject [viewport position]
-    (-> viewport
-        (.unproject (vector2/->java position))
-        vector2/->clj)))

@@ -5,6 +5,7 @@
             [clojure.gdx :as gdx]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
+            [clojure.gdx.fit-viewport :as fit-viewport]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.input :as input]
             [clojure.input.keys :as input.keys]
@@ -16,7 +17,7 @@
             [clojure.maps.map-layers :as layers]
             [clojure.maps.map-properties :as props]
             [clojure.utils.disposable :as disposable]
-            [clojure.utils.viewport :as viewport]
+            [clojure.gdx.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
   (:import (com.badlogic.gdx Application
@@ -101,7 +102,7 @@
         graphics (.getGraphics app)
         input (.getInput app)
         skin (Skin. (.internal files "uiskin.json"))
-        ui-viewport (gdx/fit-viewport 1440 900)
+        ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (SpriteBatch.)
         stage (gdx/stage ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
@@ -113,12 +114,12 @@
         ctx (assoc ctx :ctx/textures (game.impl.textures/create files))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
-                         (gdx/fit-viewport world-width
-                                           world-height
-                                           (gdx/orthographic-camera
-                                            {:y-down? false
-                                             :world-width world-width
-                                             :world-height world-height})))
+                         (fit-viewport/create world-width
+                                              world-height
+                                              (gdx/orthographic-camera
+                                               {:y-down? false
+                                                :world-width world-width
+                                                :world-height world-height})))
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport

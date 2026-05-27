@@ -6,10 +6,12 @@
                                       actions!
                                       reduce-actions!]]
             [clojure.edn :as edn]
+            [clojure.gdx.fit-viewport :as fit-viewport]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+
 
             [clojure.gdx :as gdx]
 
@@ -31,7 +33,7 @@
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [clojure.utils.disposable :as disposable]
-            [clojure.utils.viewport :as viewport]
+            [clojure.gdx.viewport :as viewport]
 
             [game.impl.content-grid]
             [game.impl.explored-tile-corners]
@@ -940,12 +942,12 @@
      :ctx/world-unit-scale world-unit-scale
      :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
                                world-height (* 900  world-unit-scale)]
-                           (gdx/fit-viewport world-width
-                                             world-height
-                                             (gdx/orthographic-camera
-                                              {:y-down? false
-                                               :world-width world-width
-                                               :world-height world-height})))
+                           (fit-viewport/create world-width
+                                                world-height
+                                                (gdx/orthographic-camera
+                                                 {:y-down? false
+                                                  :world-width world-width
+                                                  :world-height world-height})))
      :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                     (update-vals data
                                  (fn [[path [hotspot-x hotspot-y]]]
@@ -953,7 +955,7 @@
                                          cursor (graphics/new-cursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
                                      (.dispose pixmap)
                                      cursor))))
-     :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
+     :ctx/stage (let [stage (gdx/stage (fit-viewport/create 1440 900) batch)]
                   (input/set-processor! (Application/.getInput app) stage)
                   stage)
      :ctx/skin (let [skin (Skin. (.internal (Application/.getFiles app) "uiskin.json"))]
