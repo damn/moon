@@ -53,6 +53,7 @@
             [moon.raycaster :as raycaster]
             [moon.state :as state]
             [moon.stats :as stats]
+            [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
             [moon.textures :as textures]
             [moon.txs :as txs]
@@ -1549,3 +1550,36 @@
                ; ... first find the listener
                #_(tooltip/remove! cell-widget)
                nil)))
+
+(defn spawn-player
+  [{:keys [ctx/db
+           ctx/entity-ids
+           ctx/start-position]
+    :as ctx}]
+  (txs/handle! ctx
+               [[:tx/spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                     :creature-property (db/build db :creatures/vampire)
+                                     :components {:entity/fsm {:fsm :fsms/player
+                                                               :initial-state :player-idle}
+                                                  :entity/faction :good
+                                                  :entity/player? true
+                                                  :entity/free-skill-points 3
+                                                  :entity/clickable {:type :clickable/player}
+                                                  :entity/click-distance-tiles 1.5}}]])
+  (let [eid (get @entity-ids 1)]
+    (assert (:entity/player? @eid))
+    (assoc ctx :ctx/player-eid eid)))
+
+(defn spawn-enemies
+  [{:keys [ctx/db
+           ctx/tiled-map]
+    :as ctx}]
+  (txs/handle!
+   ctx
+   (for [[position creature-id] (tiled-map/spawn-positions tiled-map)]
+     [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
+                          :creature-property (db/build db (keyword creature-id))
+                          :components {:entity/fsm {:fsm :fsms/npc
+                                                    :initial-state :npc-sleeping}
+                                       :entity/faction :evil}}]))
+  ctx)

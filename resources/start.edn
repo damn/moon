@@ -23,8 +23,8 @@
            [game.create.assoc/step :ctx/content-grid game.impl.content-grid/create]
            [game.create.assoc/step :ctx/explored-tile-corners game.impl.explored-tile-corners/create]
            [game.create.assoc/step :ctx/raycaster game.impl.raycaster/create]
-           [game.create.spawn-player/step]
-           [game.create.spawn-enemies/step]
+           [game.ctx/spawn-player]
+           [game.ctx/spawn-enemies]
            ]
  :render  [
            [game.render.get-stage-ctx/step]
