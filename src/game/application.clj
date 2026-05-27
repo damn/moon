@@ -1,8 +1,5 @@
 (ns game.application
   (:require [clojure.animation :as animation]
-            [clojure.math.rectangle :as rectangle]
-            [clojure.math.vector2 :as v]
-            [moon.body :as body]
             [moon.grid :as grid]
             [moon.entity :as entity]
             [moon.timer :as timer]
