@@ -4,7 +4,6 @@
             [clojure.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [clojure.maps.map-properties :as props]
             [clojure.maps.tiled.tiled-map-tile-layer :as layer]
-            [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [clojure.maps.map-layers :as layers]
             [clojure.maps.tiled.tiles.static-tiled-map-tile :as tile]
             [moon.grid2d :as g2d])
@@ -160,7 +159,7 @@
                            :when local-position]
                        (when (vector? local-position)
                          (when-let [cell (layer/cell layer local-position)]
-                           [position (copy-tile (cell/tile cell))])))})})
+                           [position (copy-tile (.getTile cell))])))})})
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid
@@ -222,7 +221,7 @@
 
 (defn- property-value [layer pos property-key]
   (if-let [cell (layer/cell layer pos)]
-    (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
+    (if-let [value (props/get (tile/properties (.getTile cell)) property-key)]
       value
       :undefined)
     :no-cell))

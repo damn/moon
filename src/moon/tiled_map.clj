@@ -3,8 +3,8 @@
             [clojure.maps.map-properties :as props]
             [clojure.maps.tiled.tiled-map :as tiled-map]
             [clojure.maps.tiled.tiled-map-tile-layer :as layer]
-            [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [clojure.maps.tiled.tiles.static-tiled-map-tile :as tile]))
+            [clojure.maps.tiled.tiles.static-tiled-map-tile :as tile])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
 ; Depends on:
 ; * layer
@@ -28,7 +28,8 @@
     (props/add! (layer/properties layer) map-properties)
     (doseq [[pos tile] tiles
             :when tile]
-      (layer/set-cell! layer pos (cell/create tile)))
+      (layer/set-cell! layer pos (doto (TiledMapTileLayer$Cell.)
+                                   (.setTile tile))))
     layer))
 
 ; used with add-layer!
@@ -57,7 +58,7 @@
   (let [position [x y]]
     (when-let [cell (layer/cell layer position)]
       (let [value (-> cell
-                      cell/tile
+                      .getTile
                       tile/properties
                       (props/get "movement"))]
         (assert value
@@ -100,7 +101,7 @@
                 cell (layer/cell layer position)]
           :when cell
           :let [value (-> cell
-                          cell/tile
+                          .getTile
                           tile/properties
                           (props/get property-key))]
           :when value]
