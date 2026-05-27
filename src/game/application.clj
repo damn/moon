@@ -8,16 +8,14 @@
                                       reduce-actions!]]
             [clojure.edn :as edn]
             [clojure.files :as files]
-            [clojure.graphics.color :as color]
+            [clojure.gdx.graphics.color :as color]
 
             [clojure.gdx :as gdx]
 
             [clojure.graphics :as graphics]
             [clojure.graphics.batch :as batch]
-            [clojure.graphics.color :as color]
             [clojure.graphics.texture :as texture]
             [clojure.graphics.pixmap :as pixmap]
-            [clojure.graphics.gl20 :as gl20]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
@@ -87,7 +85,8 @@
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.graphics Pixmap
+           (com.badlogic.gdx.graphics GL20
+                                      Pixmap
                                       Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           TextureRegion)
@@ -656,8 +655,8 @@
 (defn clear-screen!
   [{:keys [ctx/app] :as ctx}]
   (let [gl (graphics/gl20 (Application/.getGraphics app))]
-    (gl20/clear-color! gl 0 0 0 0)
-    (gl20/clear! gl gl20/color-buffer-bit))
+    (.glClearColor gl 0 0 0 0)
+    (.glClear gl GL20/GL_COLOR_BUFFER_BIT))
   ctx)
 
 (defmethod state/cursor :player-dead

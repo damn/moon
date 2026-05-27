@@ -2,7 +2,7 @@
   (:require [clojure.audio :as audio]
             [clojure.edn :as edn]
             [clojure.graphics.batch :as batch]
-            [clojure.graphics.color :as color]
+            [clojure.gdx.graphics.color :as color]
             [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.scene2d.actor :as actor]
@@ -12,8 +12,6 @@
             [clojure.java.io :as io]
             clojure.gdx.files
             clojure.gdx.graphics
-            clojure.gdx.graphics.color
-            clojure.gdx.graphics.gl20
             clojure.gdx.graphics.texture
             clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor
