@@ -2013,13 +2013,7 @@
 
 (def state (atom nil))
 
-; Let's see where the 'ctx' goes,
-; maybe the game-model, board, can be a sub-context ?
-; ...
-(defn -main
-  "As libgdx is cross-plattform, our main function is only concerned
-  with the lwjgl/desktop backend."
-  []
+(defn -main []
   (gdx/application!
    {:title "Moon"
     :windowed-mode {:width 1440
