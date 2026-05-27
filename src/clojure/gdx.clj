@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require [clojure.edn :as edn]
-            [clojure.graphics.batch :as batch]
+  (:require [clojure.graphics.batch :as batch]
             [clojure.gdx.graphics.color :as color]
             [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.orthographic-camera :as camera]
