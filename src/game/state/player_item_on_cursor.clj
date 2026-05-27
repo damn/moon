@@ -1,25 +1,11 @@
 (ns game.state.player-item-on-cursor
-  (:require [clojure.math.vector2 :as v]
-            [clojure.input.buttons :as input.buttons]
+  (:require [clojure.input.buttons :as input.buttons]
             [moon.ctx :as ctx]
             [moon.entity :as entity]
             [moon.inventory :as inventory]
             [clojure.scene2d.stage :as stage]
             [moon.state :as state]
             [moon.textures :as textures]))
-
-; It is possible to put items out of sight, losing them.
-; Because line of sight checks center of entity only, not corners
-; this is okay, you have thrown the item over a hill, thats possible.
-(defn- item-place-position
-  [world-mouse-position player-entity]
-  (let [player-position (:body/position (:entity/body player-entity))
-        ; so you cannot put it out of your own reach
-        maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
-    (v/add player-position
-           (v/scale (v/direction player-position world-mouse-position)
-                    (min maxrange
-                         (v/distance player-position world-mouse-position))))))
 
 (defmethod state/create :player-item-on-cursor
   [[_k item] _eid _ctx]
@@ -30,7 +16,7 @@
   [[:tx/assoc eid :entity/item-on-cursor item]])
 
 (defmethod state/exit :player-item-on-cursor
-  [_ eid {:keys [ctx/world-mouse-position]}]
+  [_ eid ctx]
   ; at clicked-cell when we put it into a inventory-cell
   ; we do not want to drop it on the ground too additonally,
   ; so we dissoc it there manually. Otherwise it creates another item
@@ -40,7 +26,7 @@
       [[:tx/sound "bfxr_itemputground"]
        [:tx/dissoc eid :entity/item-on-cursor]
        [:tx/spawn-item
-        (item-place-position world-mouse-position entity)
+        (ctx/item-place-position ctx entity)
         (:entity/item-on-cursor entity)]])))
 
 (defmethod state/draw-ui-view :player-item-on-cursor
@@ -100,15 +86,14 @@
   [[_k {:keys [item]}]
    entity
    {:keys [ctx/stage
-           ctx/textures
-           ctx/world-mouse-position]
+           ctx/textures]
     :as ctx}]
   ; TODO do not draw here, only at UI view
   ; then graphics can draw world without stage/input
   (when-not (stage/mouseover-actor stage (ctx/mouse-position ctx))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image item))
-      (item-place-position world-mouse-position entity)
+      (ctx/item-place-position ctx entity)
       {:center? true}]]))
 
 (defmethod state/handle-input :player-item-on-cursor
