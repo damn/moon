@@ -34,6 +34,10 @@
             [clojure.string :as str]
             [clojure.utils.disposable :as disposable]
             [clojure.utils.viewport :as viewport]
+            [game.impl.content-grid]
+            [game.impl.explored-tile-corners]
+            [game.impl.grid]
+            [game.impl.raycaster]
             [game.impl.textures]
             [game.impl.db]
             [malli.core :as m]
@@ -1588,3 +1592,22 @@
                                [create-player-message-actor]]]
     (stage/add-actor! stage (apply actor-fn ctx params)))
   ctx)
+
+(defn create-grid
+  [{:keys [ctx/tiled-map]
+    :as ctx}]
+  (assoc ctx :ctx/grid (game.impl.grid/create tiled-map)))
+
+(defn create-content-grid
+  [{:keys [ctx/tiled-map]
+    :as ctx}]
+  (assoc ctx :ctx/content-grid (game.impl.content-grid/create tiled-map)))
+
+(defn create-explored-tile-corners
+  [{:keys [ctx/tiled-map]
+    :as ctx}]
+  (assoc ctx :ctx/explored-tile-corners (game.impl.explored-tile-corners/create tiled-map)))
+
+(defn create-raycaster
+  [{:keys [ctx/grid] :as ctx}]
+  (assoc ctx :ctx/raycaster (game.impl.raycaster/create grid)))

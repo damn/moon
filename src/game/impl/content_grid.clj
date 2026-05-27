@@ -50,7 +50,7 @@
     :cell-h cell-size}))
 
 (defn create
-  [{:keys [ctx/tiled-map]}]
+  [tiled-map]
   (create* (props/get (tiled-map/properties tiled-map) "width")
            (props/get (tiled-map/properties tiled-map) "height")
            16))

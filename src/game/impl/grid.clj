@@ -15,7 +15,7 @@
                                   Intersector
                                   Rectangle)))
 
-(defn create [{:keys [ctx/tiled-map]}]
+(defn create [tiled-map]
   (g2d/create-grid (props/get (tiled-map/properties tiled-map) "width")
                    (props/get (tiled-map/properties tiled-map) "height")
                    (fn [position]

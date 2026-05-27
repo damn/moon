@@ -4,7 +4,7 @@
             [moon.grid2d :as g2d]))
 
 (defn create
-  [{:keys [ctx/tiled-map]}]
+  [tiled-map]
   (atom (g2d/create-grid (props/get (tiled-map/properties tiled-map) "width")
                          (props/get (tiled-map/properties tiled-map) "height")
                          (constantly false))))

@@ -4,7 +4,7 @@
             [moon.cell :as cell]
             [moon.raycaster]))
 
-(defn create [{:keys [ctx/grid]}]
+(defn create [grid]
   (let [width  (g2d/width  grid)
         height (g2d/height grid)
         cells  (for [cell (map deref (g2d/cells grid))]
