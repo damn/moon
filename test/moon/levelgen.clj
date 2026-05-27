@@ -3,7 +3,6 @@
             [game.impl.textures]
             [game.impl.db :as db-impl]
             [clojure.gdx :as gdx]
-            [clojure.files :as files]
             [clojure.graphics.batch :as batch]
             [clojure.gdx.graphics.color :as color]
             [clojure.graphics.orthographic-camera :as camera]
@@ -95,7 +94,7 @@
   (let [files (.getFiles app)
         graphics (.getGraphics app)
         input (.getInput app)
-        skin (Skin. (files/internal files "uiskin.json"))
+        skin (Skin. (.internal files "uiskin.json"))
         ui-viewport (gdx/fit-viewport 1440 900)
         sprite-batch (gdx/sprite-batch)
         stage (gdx/stage ui-viewport sprite-batch)

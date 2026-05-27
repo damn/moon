@@ -6,7 +6,6 @@
                                       actions!
                                       reduce-actions!]]
             [clojure.edn :as edn]
-            [clojure.files :as files]
             [clojure.gdx.graphics.color :as color]
 
             [clojure.gdx :as gdx]
@@ -910,14 +909,14 @@
                       (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                         [sound-name
                          (.newSound (Application/.getAudio app)
-                                    (files/internal (Application/.getFiles app) (format "sounds/%s.wav" sound-name)))]))
+                                    (.internal (Application/.getFiles app) (format "sounds/%s.wav" sound-name)))]))
      :ctx/batch batch
      :ctx/shape-drawer-texture white-pixel-texture
      :ctx/shape-drawer (batch/shape-drawer batch (TextureRegion. white-pixel-texture 1 0 1 1))
      :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                              size 16
                              quality-scaling 2
-                             generator (FreeTypeFontGenerator. (files/internal (Application/.getFiles app) path))
+                             generator (FreeTypeFontGenerator. (.internal (Application/.getFiles app) path))
                              font (.generateFont generator
                                                  (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                                                    (set! (.size params) (* size quality-scaling))
@@ -942,14 +941,14 @@
      :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                     (update-vals data
                                  (fn [[path [hotspot-x hotspot-y]]]
-                                   (let [pixmap (Pixmap. (files/internal (Application/.getFiles app) (format path-format path)))
+                                   (let [pixmap (Pixmap. (.internal (Application/.getFiles app) (format path-format path)))
                                          cursor (graphics/new-cursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
                                      (pixmap/dispose! pixmap)
                                      cursor))))
      :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
                   (input/set-processor! (Application/.getInput app) stage)
                   stage)
-     :ctx/skin (let [skin (Skin. (files/internal (Application/.getFiles app) "uiskin.json"))]
+     :ctx/skin (let [skin (Skin. (.internal (Application/.getFiles app) "uiskin.json"))]
                  (set! (.markupEnabled (-> skin
                                            (.getFont "default-font")
                                            .getData))

@@ -9,7 +9,6 @@
             [clojure.scene2d.stage :as stage]
             [clojure.utils.viewport :as viewport]
             [clojure.java.io :as io]
-            clojure.gdx.files
             clojure.gdx.graphics
             clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor

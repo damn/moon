@@ -1,8 +1,8 @@
 (ns game.impl.textures
   (:require [clojure.string :as str]
-            [clojure.files :as files]
             [moon.textures])
-  (:import (com.badlogic.gdx.files FileHandle)
+  (:import (com.badlogic.gdx Files)
+           (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
@@ -10,10 +10,10 @@
 (def extensions #{"png" "bmp"})
 
 (defn create
-  [files]
+  [^Files files]
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
-                           (loop [[^FileHandle file & remaining] (.list (files/internal files folder))
+                           (loop [[^FileHandle file & remaining] (.list (.internal files folder))
                                   result []]
                              (cond (nil? file)
                                    result
@@ -26,7 +26,7 @@
 
                                    :else
                                    (recur remaining result))))]
-             [path (Texture. (files/internal files path))])))
+             [path (Texture. (.internal files path))])))
 
 (extend-type clojure.lang.PersistentHashMap
   moon.textures/Textures
