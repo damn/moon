@@ -15,7 +15,7 @@
             [clojure.graphics.batch :as batch]
             [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.orthographic-camera :as camera]
-            [clojure.graphics.shape-drawer :as shape-drawer]
+            [space.earlygrey.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
@@ -913,7 +913,7 @@
                                     (.internal (Application/.getFiles app) (format "sounds/%s.wav" sound-name)))]))
      :ctx/batch batch
      :ctx/shape-drawer-texture white-pixel-texture
-     :ctx/shape-drawer (batch/shape-drawer batch (TextureRegion. white-pixel-texture 1 0 1 1))
+     :ctx/shape-drawer (shape-drawer/create batch (TextureRegion. white-pixel-texture 1 0 1 1))
      :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                              size 16
                              quality-scaling 2

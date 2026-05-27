@@ -1,16 +1,23 @@
 (ns space.earlygrey.shape-drawer
-  (:require [clojure.graphics.batch :as batch]
-            [clojure.graphics.shape-drawer :as shape-drawer])
-  (:import (com.badlogic.gdx.graphics.g2d Batch)
-           (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(extend-type Batch
-  batch/ShapeDrawer
-  (shape-drawer [batch texture-region]
-    (ShapeDrawer. batch texture-region)))
+(defn create [batch texture-region]
+  (ShapeDrawer. batch texture-region))
+
+(defprotocol PShapeDrawer
+  (set-color! [_ color-float-bits])
+  (circle! [_ x y radius])
+  (ellipse! [_ x y radius-x radius-y])
+  (filled-circle! [_ x y radius])
+  (filled-rectangle! [_ x y w h])
+  (line! [_ sx sy ex ey])
+  (rectangle! [_ x y w h])
+  (sector! [_ center-x center-y radius start-radians radians])
+  (default-line-width [_])
+  (set-default-line-width! [_ width]))
 
 (extend-type ShapeDrawer
-  shape-drawer/ShapeDrawer
+  PShapeDrawer
   (set-color! [this color-float-bits]
     (.setColor this (float color-float-bits)))
 
