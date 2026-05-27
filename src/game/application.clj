@@ -86,12 +86,13 @@
 (def schema
   (m/schema
    [:map {:closed true}
-    ; GDX app
-    [:ctx/app :some] ; <- input, (audio), (files), graphics
+    ; Input, Audio, Files, Graphics
+    [:ctx/app :some]
 
-    [:ctx/audio :some] ; 'sounds'
+    ; Audio, Files
+    [:ctx/audio :some]
 
-    ; Graphics:
+    ; Graphics
     [:ctx/batch :some]
     [:ctx/cursors :some]
     [:ctx/default-font :some]
@@ -106,7 +107,6 @@
     [:ctx/skin :some]
     [:ctx/stage :some]
 
-
     ; Frame
     [:ctx/active-entities :any]
     [:ctx/delta-time :any]
@@ -115,7 +115,7 @@
     [:ctx/world-mouse-position :any]
 
     ; Constants
-    [:ctx/colors :some] ; cant as not bind-root'ed...
+    [:ctx/colors :some]
     [:ctx/controls :some]
     [:ctx/controls-info :some]
     [:ctx/max-delta :some]
@@ -124,10 +124,8 @@
     [:ctx/render-z-order :some]
     [:ctx/z-orders :some]
 
-    ; Game (level, time, db ?)
-    ; The 'game' could be a separate library with no ligdx dependencies (which it is already)
-
-    ; LEVEL
+    ; Game
+    ; The 'game' could be a separate library with no libgdx dependencies?
     [:ctx/content-grid :some]
     [:ctx/entity-ids :some]
     [:ctx/explored-tile-corners :some]
@@ -138,8 +136,6 @@
     [:ctx/raycaster :some]
     [:ctx/start-position :some]
     [:ctx/tiled-map :some]
-
-    ; ETC?
     [:ctx/db :some]
     [:ctx/elapsed-time :some]
     [:ctx/paused? :some]
