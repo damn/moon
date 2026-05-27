@@ -1,7 +1,6 @@
 (ns clojure.gdx
   (:require [clojure.audio :as audio]
             [clojure.edn :as edn]
-            [clojure.files.file-handle :as file-handle]
             [clojure.graphics.batch :as batch]
             [clojure.graphics.color :as color]
             [clojure.graphics.pixmap :as pixmap]
@@ -12,7 +11,6 @@
             [clojure.utils.viewport :as viewport]
             [clojure.java.io :as io]
             clojure.gdx.files
-            clojure.gdx.files.file-handle
             clojure.gdx.graphics
             clojure.gdx.graphics.color
             clojure.gdx.graphics.gl20
@@ -225,11 +223,6 @@
   (mouseover-actor [stage position]
     (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
       (.hit stage x y true))))
-
-(extend-type FileHandle
-  file-handle/Pixmap
-  (pixmap [file-handle]
-    (Pixmap. file-handle)))
 
 (extend-type Pixmap
   pixmap/Pixmap

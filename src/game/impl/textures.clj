@@ -1,10 +1,10 @@
 (ns game.impl.textures
   (:require [clojure.string :as str]
             [clojure.files :as files]
-            [clojure.files.file-handle :as file-handle]
             [clojure.graphics.texture :as texture]
             [moon.textures])
-  (:import (com.badlogic.gdx.graphics Texture)))
+  (:import (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Texture)))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
@@ -13,16 +13,16 @@
   [files]
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
-                           (loop [[file & remaining] (file-handle/list (files/internal files folder))
+                           (loop [[^FileHandle file & remaining] (.list (files/internal files folder))
                                   result []]
                              (cond (nil? file)
                                    result
 
-                                   (file-handle/directory? file)
-                                   (recur (concat remaining (file-handle/list file)) result)
+                                   (.isDirectory file)
+                                   (recur (concat remaining (.list file)) result)
 
-                                   (extensions (file-handle/extension file))
-                                   (recur remaining (conj result (file-handle/path file)))
+                                   (extensions (.extension file))
+                                   (recur remaining (conj result (.path file)))
 
                                    :else
                                    (recur remaining result))))]

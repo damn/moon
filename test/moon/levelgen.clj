@@ -4,7 +4,6 @@
             [game.impl.db :as db-impl]
             [clojure.gdx :as gdx]
             [clojure.files :as files]
-            [clojure.files.file-handle :as file-handle]
             [clojure.graphics.batch :as batch]
             [clojure.graphics.color :as color]
             [clojure.graphics.orthographic-camera :as camera]
@@ -22,7 +21,8 @@
             [clojure.utils.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
-  (:import (com.badlogic.gdx Application)))
+  (:import (com.badlogic.gdx Application)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -95,7 +95,7 @@
   (let [files (.getFiles app)
         graphics (.getGraphics app)
         input (.getInput app)
-        skin (file-handle/skin (files/internal files "uiskin.json"))
+        skin (Skin. (files/internal files "uiskin.json"))
         ui-viewport (gdx/fit-viewport 1440 900)
         sprite-batch (gdx/sprite-batch)
         stage (gdx/stage ui-viewport sprite-batch)

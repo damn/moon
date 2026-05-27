@@ -8,7 +8,6 @@
                                       reduce-actions!]]
             [clojure.edn :as edn]
             [clojure.files :as files]
-            [clojure.files.file-handle :as file-handle]
             [clojure.graphics.color :as color]
 
             [clojure.gdx :as gdx]
@@ -91,7 +90,8 @@
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.graphics Texture$TextureFilter)
+           (com.badlogic.gdx.graphics Pixmap
+                                      Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d.ui Skin))
@@ -945,7 +945,7 @@
      :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                     (update-vals data
                                  (fn [[path [hotspot-x hotspot-y]]]
-                                   (let [pixmap (file-handle/pixmap (files/internal (Application/.getFiles app) (format path-format path)))
+                                   (let [pixmap (Pixmap. (files/internal (Application/.getFiles app) (format path-format path)))
                                          cursor (graphics/new-cursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
                                      (pixmap/dispose! pixmap)
                                      cursor))))
