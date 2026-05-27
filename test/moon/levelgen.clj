@@ -5,6 +5,7 @@
             [clojure.gdx :as gdx]
             [clojure.graphics.batch :as batch]
             [clojure.gdx.graphics.color :as color]
+            [clojure.gdx.maps.renderer :as tiled-map-renderer]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.input :as input]
             [clojure.input.keys :as input.keys]
@@ -140,11 +141,11 @@
                                 ctx/tiled-map
                                 ctx/world-unit-scale
                                 ctx/world-viewport]}]
-  (batch/draw-tiled-map! sprite-batch
-                         world-unit-scale
-                         (:viewport/camera world-viewport)
-                         tiled-map
-                         color-setter))
+  (tiled-map-renderer/draw! sprite-batch
+                            world-unit-scale
+                            (:viewport/camera world-viewport)
+                            tiled-map
+                            color-setter))
 
 (defn- camera-movement-controls! [{:keys [ctx/input
                                           ctx/camera

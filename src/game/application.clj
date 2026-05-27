@@ -7,6 +7,7 @@
                                       reduce-actions!]]
             [clojure.edn :as edn]
             [clojure.gdx.graphics.color :as color]
+            [clojure.gdx.maps.renderer :as tiled-map-renderer]
 
             [clojure.gdx :as gdx]
 
@@ -816,11 +817,11 @@
            ctx/world-unit-scale
            ctx/world-viewport]
     :as ctx}]
-  (batch/draw-tiled-map! batch
-                         world-unit-scale
-                         (:viewport/camera world-viewport)
-                         tiled-map
-                         (tile-color-setter ctx))
+  (tiled-map-renderer/draw! batch
+                            world-unit-scale
+                            (:viewport/camera world-viewport)
+                            tiled-map
+                            (tile-color-setter ctx))
   ctx)
 
 (defn camera-zoom [{:keys [ctx/world-viewport]}]

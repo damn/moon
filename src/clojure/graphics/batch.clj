@@ -10,6 +10,3 @@
 
 (defprotocol ShapeDrawer
   (shape-drawer [_ texture-region]))
-
-(defprotocol TiledMapRenderer
-  (draw-tiled-map! [_ world-unit-scale camera tiled-map color-setter]))
