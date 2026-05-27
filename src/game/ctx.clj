@@ -147,10 +147,19 @@
           (recur ctx
                  (rest txs)))))))
 
+(declare mouse-position
+         button-just-pressed?)
+
 (q/defrecord Context []
   moon.ctx/Context
   (world-unit-scale [ctx]
-    (:ctx/world-unit-scale ctx)))
+    (:ctx/world-unit-scale ctx))
+
+  (mouse-position [ctx]
+    (mouse-position ctx))
+
+  (button-just-pressed? [ctx button]
+    (button-just-pressed? ctx button)))
 
 (q/defrecord Entity [entity/body])
 
