@@ -2,7 +2,12 @@
   (:require [clojure.app :as app]
             [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
-            [clojure.config :as config]
+            [clojure.core-ext :refer [edn-resource
+                                      safe-merge
+                                      define-order
+                                      sort-by-order
+                                      actions!
+                                      reduce-actions!]]
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
@@ -38,7 +43,6 @@
 
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [clojure.txs-fn-map :as txs-fn-map]
             [clojure.utils.disposable :as disposable]
             [clojure.utils.viewport :as viewport]
 
@@ -75,7 +79,6 @@
             [moon.grid :as grid]
             [moon.info :as info]
             [moon.inventory :as inventory]
-            [moon.map :as map]
             [moon.number :as number]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]
@@ -86,7 +89,6 @@
             [moon.timer :as timer]
             [moon.textures :as textures]
             [moon.txs :as txs]
-            [moon.order :as order]
             [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory-window :as inventory-window]
             [moon.val-max :as val-max]
@@ -484,7 +486,7 @@
                                                                :collides? true
                                                                :z-order :z-order/ground #_(if flying? :z-order/flying :z-order/ground)}))
                                         (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-                                        (map/safe-merge components))]])
+                                        (safe-merge components))]])
    :tx/spawn-entity             (fn [ctx entity]
                                   (let [entity (reduce (fn [m [k v]]
                                                          (assoc m k (entity/create [k v] ctx)))
@@ -620,13 +622,13 @@
 
   txs/Txs
   (handle! [ctx txs]
-    (let [handled-txs (try (txs-fn-map/actions! txs-fn-map ctx txs)
+    (let [handled-txs (try (actions! txs-fn-map ctx txs)
                            (catch Throwable t
                              (throw (ex-info "Error handling txs"
                                              {:txs txs} t))))]
-      (txs-fn-map/reduce-actions! reaction-txs-fn-map
-                                  ctx
-                                  handled-txs)))
+      (reduce-actions! reaction-txs-fn-map
+                       ctx
+                       handled-txs)))
 
   draws/Draws
   (handle [ctx draws]
@@ -1074,7 +1076,7 @@
 (defn create-render-z-order
   [{:keys [ctx/z-orders]
     :as ctx}]
-  (assoc ctx :ctx/render-z-order (order/define-order z-orders)))
+  (assoc ctx :ctx/render-z-order (define-order z-orders)))
 
 (defn create-max-speed
   [{:keys [ctx/minimum-size
@@ -1089,7 +1091,7 @@
   [{:keys [ctx/db
            ctx/textures]
     :as ctx}]
-  (let [[f params] (config/edn-resource world-fn-file)
+  (let [[f params] (edn-resource world-fn-file)
         {:keys [tiled-map
                 start-position]} (f
                                   (assoc params
@@ -1545,7 +1547,7 @@
                         hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
                                      (grid/point->entities grid position))]
                     (->> render-z-order
-                         (order/sort-by-order hits #(:body/z-order (:entity/body @%)))
+                         (sort-by-order hits #(:body/z-order (:entity/body @%)))
                          reverse
                          (filter #(raycaster/line-of-sight? raycaster player @%))
                          first)))]
@@ -1936,9 +1938,9 @@
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
                            (raycaster/line-of-sight? raycaster player entity)))]
-    (doseq [[z-order entities] (order/sort-by-order (group-by (comp :body/z-order :entity/body) entities)
-                                                    first
-                                                    render-z-order)
+    (doseq [[z-order entities] (sort-by-order (group-by (comp :body/z-order :entity/body) entities)
+                                              first
+                                              render-z-order)
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]

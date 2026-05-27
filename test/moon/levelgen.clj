@@ -1,5 +1,5 @@
 (ns moon.levelgen
-  (:require [clojure.config :refer [edn-resource]]
+  (:require [clojure.core-ext :refer [edn-resource]]
             [game.impl.textures]
             [game.impl.db :as db-impl]
             [clojure.gdx :as gdx]

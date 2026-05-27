@@ -1,12 +1,12 @@
 (ns game.impl.db
-  (:require [clojure.edn :as edn]
+  (:require [clojure.core-ext :refer [recur-sort]]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]
             [moon.db :as db]
             [moon.property :as property]
             [malli.core :as m]
             [malli.utils :as mu]
-            [moon.map :as map]
             [moon.schemas :as schemas]
             [moon.val-max :as val-max]))
 
@@ -60,7 +60,7 @@
   [{:keys [db/data db/file]}]
   (let [data (->> (vals data)
                   (sort-by property/type)
-                  (map map/recur-sort)
+                  (map recur-sort)
                   doall)]
     (.start
      (Thread.
