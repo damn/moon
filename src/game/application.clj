@@ -23,8 +23,6 @@
             game.effect.projectile
             game.effect-impl
 
-            game.info-impl
-
             game.ui.data-viewer-window
             game.ui.error-window
             game.ui.property-editor-window
