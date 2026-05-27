@@ -51,7 +51,7 @@
                                       OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d CtxStage)
+           (com.badlogic.gdx.scenes.scene2d Stage)
            (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
            (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)))
@@ -173,14 +173,14 @@
      (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
 
 (defn stage [viewport batch]
-  (proxy [CtxStage ILookup] [viewport batch]
+  (proxy [Stage ILookup] [viewport batch]
     (valAt [k]
       (case k
         ; TODO :stage/root
-        :stage/ctx      (.ctx         ^CtxStage this)
-        :stage/viewport (.getViewport ^CtxStage this)))))
+        :stage/ctx      (.ctx         ^Stage this)
+        :stage/viewport (.getViewport ^Stage this)))))
 
-(extend-type CtxStage
+(extend-type Stage
   stage/Stage
   (set-ctx! [stage ctx]
     (set! (.ctx stage) ctx))
