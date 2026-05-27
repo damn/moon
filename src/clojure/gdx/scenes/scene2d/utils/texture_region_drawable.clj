@@ -1,6 +1,5 @@
 (ns clojure.gdx.scenes.scene2d.utils.texture-region-drawable
   (:require [clojure.graphics.color :as color]
-            [clojure.graphics.g2d.texture-region :as texture-region]
             [clojure.scene2d.utils.texture-region-drawable :as texture-region-drawable])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
@@ -22,5 +21,5 @@
              [{:keys [drawable/texture-region
                       drawable/scale]}]
              (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-               (.setMinSize (* scale (texture-region/width texture-region))
-                            (* scale (texture-region/height texture-region))))))
+               (.setMinSize (* scale (.getRegionWidth texture-region))
+                            (* scale (.getRegionHeight texture-region))))))
