@@ -11,7 +11,7 @@
            [game.ctx/create-render-z-order]
            [game.ctx/create-max-speed]
            [game.ctx/create-db]
-           [game.ctx/add-stage-actors [[game.create.add-stage-actors.dev-menu/create]
+           [game.ctx/add-stage-actors [[game.ctx/create-dev-menu]
                                        [game.create.add-stage-actors.action-bar/create]
                                        [game.create.add-stage-actors.hp-mana-bar/create]
                                        [game.create.add-stage-actors.windows/create [game.create.add-stage-actors.windows.info/create
