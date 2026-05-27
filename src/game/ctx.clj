@@ -1611,3 +1611,25 @@
 (defn create-raycaster
   [{:keys [ctx/grid] :as ctx}]
   (assoc ctx :ctx/raycaster (game.impl.raycaster/create grid)))
+
+(defn create! [app]
+  (-> app
+      create-app
+      create-textures
+      create-record
+      impl-txs!
+      impl-draws!
+      unorganised
+      create-controls
+      create-colors
+      create-render-z-order
+      create-max-speed
+      create-db
+      add-stage-actors
+      create-tiled-map
+      create-grid
+      create-content-grid
+      create-explored-tile-corners
+      create-raycaster
+      spawn-player
+      spawn-enemies))

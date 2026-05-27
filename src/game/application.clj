@@ -181,8 +181,7 @@
   (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (gdx/use-glfw-async!)
   (gdx/application!
-   (let [{:keys [create
-                 render]} (edn-resource "start.edn")]
+   (let [{:keys [render]} (edn-resource "start.edn")]
      {:title "Moon"
       :windowed-mode {:width 1440
                       :height 900}
@@ -191,11 +190,7 @@
       :create!
       (fn [app]
         (gdx/set-tooltip-initial-time! 0)
-        (reset! state
-                (reduce (fn [ctx [f & params]]
-                          (apply f ctx params))
-                        app
-                        create)))
+        (reset! state (ctx/create! app)))
 
       :dispose!
       (fn []
