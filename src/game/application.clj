@@ -1,7 +1,5 @@
 (ns game.application
   (:require [game.ctx :as ctx]
-            game.entity.delete-after-duration
-            game.entity.fsm
             game.entity.image
             game.entity.inventory
             game.entity.line-render
