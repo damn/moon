@@ -3,12 +3,6 @@
 
             game.state.player-item-on-cursor
 
-            game.effect.audiovisual
-            game.effect.target-all
-            game.effect.target-entity
-            game.effect.spawn
-            game.effect.projectile
-
             game.ui.data-viewer-window
             game.ui.error-window
             game.ui.property-editor-window

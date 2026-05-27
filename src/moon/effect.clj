@@ -1,7 +1,9 @@
 (ns moon.effect
-  (:require [moon.faction :as faction]
+  (:require [clojure.math.vector2 :as v]
             [clojure.rand :refer [rand-int-between]]
+            [moon.faction :as faction]
             [moon.stats :as stats]
+            [moon.raycaster :as raycaster]
             [moon.timer :as timer]))
 
 (defmulti applicable?
@@ -167,3 +169,196 @@
 (defmethod handle :effects.target/stun
   [[_ duration] {:keys [effect/target]} _ctx]
   [[:tx/event target :stun duration]])
+
+(defmethod applicable? :effects/audiovisual
+  [_ {:keys [effect/target-position]}]
+  target-position)
+
+(defmethod useful? :effects/audiovisual
+  [_ _effect-ctx _ctx]
+  false)
+
+(defmethod handle :effects/audiovisual
+  [[_ audiovisual] {:keys [effect/target-position]} _ctx]
+  [[:tx/audiovisual target-position audiovisual]])
+
+(defn- affected-targets [active-entities raycaster entity]
+  (->> active-entities
+       (filter #(:entity/species @%))
+       (filter #(raycaster/line-of-sight? raycaster entity @%))
+       (remove #(:entity/player? @%))))
+
+(defmethod applicable? :effects/target-all
+  [_ _] ; TODO check ..
+  true)
+
+(defmethod useful? :effects/target-all
+  [_ _effect-ctx _ctx]
+  false)
+
+(defmethod handle :effects/target-all
+  [[_ {:keys [entity-effects]}]
+   {:keys [effect/source]}
+   {:keys [ctx/active-entities
+           ctx/colors
+           ctx/raycaster]}]
+  (let [source* @source]
+    (apply concat
+           (for [target (affected-targets active-entities raycaster source*)]
+             [[:tx/spawn-line
+               {:start (:body/position (:entity/body source*)) #_(start-point source* target*)
+                :end (:body/position (:entity/body @target))
+                :duration 0.05
+                :color (:colors/target-all-line colors)
+                :thick? true}]
+              [:tx/effect
+               {:effect/source source
+                :effect/target target}
+               entity-effects]]))))
+
+(defmethod render :effects/target-all
+  [_
+   {:keys [effect/source]}
+   {:keys [ctx/active-entities
+           ctx/colors
+           ctx/raycaster]}]
+  (let [source* @source]
+    (for [target* (map deref (affected-targets active-entities raycaster source*))]
+      [:draw/line
+       (:body/position (:entity/body source*)) #_(start-point source* target*)
+       (:body/position (:entity/body target*))
+
+       (:colors/target-all-render colors)])))
+
+; TODO use at projectile & also adjust rotation
+(defn- start-point [body target-body]
+  (v/add (:body/position body)
+         (v/scale (v/direction (:body/position body)
+                               (:body/position target-body))
+                  (/ (:body/width body) 2))))
+
+(defn- end-point [body target-body maxrange]
+  (v/add (start-point body target-body)
+         (v/scale (v/direction (:body/position body)
+                               (:body/position target-body))
+                  maxrange)))
+
+
+(defn- in-range? [body target-body maxrange]
+  (< (- (float (v/distance (:body/position body)
+                           (:body/position target-body)))
+        (float (/ (:body/width body)  2))
+        (float (/ (:body/width target-body) 2)))
+     (float maxrange)))
+
+(defmethod applicable? :effects/target-entity
+  [[_ {:keys [entity-effects]}] {:keys [effect/target] :as effect-ctx}]
+  (and target
+       (seq (filter #(applicable? % effect-ctx) entity-effects))))
+
+(defmethod useful? :effects/target-entity
+  [[_ {:keys [maxrange]}] {:keys [effect/source effect/target]} _ctx]
+  (in-range? (:entity/body @source)
+             (:entity/body @target)
+             maxrange))
+
+(defmethod handle :effects/target-entity
+  [[_ {:keys [maxrange entity-effects]}]
+   {:keys [effect/source effect/target] :as effect-ctx}
+   {:keys [ctx/colors]}]
+  (let [body        (:entity/body @source)
+        target-body (:entity/body @target)]
+    (if (in-range? body target-body maxrange)
+      [[:tx/spawn-line {:start (start-point body target-body)
+                        :end (:body/position target-body)
+                        :duration 0.05
+                        :color (:colors/target-entity-line colors)
+                        :thick? true}]
+       [:tx/effect effect-ctx entity-effects]]
+      [[:tx/audiovisual
+        (end-point body target-body maxrange)
+        :audiovisuals/hit-ground]])))
+
+(defmethod render :effects/target-entity
+  [[_ {:keys [maxrange]}]
+   {:keys [effect/source effect/target]}
+   {:keys [ctx/colors]}]
+  (when target
+    (let [body        (:entity/body @source)
+          target-body (:entity/body @target)]
+      [[:draw/line
+        (start-point body target-body)
+        (end-point body target-body maxrange)
+        (if (in-range? body target-body maxrange)
+          (:colors/target-entity-in-range colors)
+          (:colors/target-entity-not-in-range colors))]])))
+
+(defmethod applicable? :effects/spawn
+  [_ {:keys [effect/source effect/target-position]}]
+  (and (:entity/faction @source)
+       target-position))
+
+(defmethod handle :effects/spawn
+  [[_ {:keys [property/id] :as property}]
+   {:keys [effect/source effect/target-position]}
+   _ctx]
+  [[:tx/spawn-creature {:position target-position
+                        :creature-property property
+                        :components {:entity/fsm {:fsm :fsms/npc
+                                                  :initial-state :npc-idle}
+                                     :entity/faction (:entity/faction @source)}}]])
+
+(defn- create-double-ray-endpositions
+  [[start-x start-y]
+   [target-x target-y]
+   path-w]
+  {:pre [(< path-w 0.98)]} ; wieso 0.98??
+  (let [path-w (+ path-w 0.02) ;etwas gr�sser damit z.b. projektil nicht an ecken anst�sst
+        v (v/direction [start-x start-y]
+                       [target-y target-y])
+        [normal1 normal2] (v/normal-vectors v)
+        normal1 (v/scale normal1 (/ path-w 2))
+        normal2 (v/scale normal2 (/ path-w 2))
+        start1  (v/add [start-x  start-y]  normal1)
+        start2  (v/add [start-x  start-y]  normal2)
+        target1 (v/add [target-x target-y] normal1)
+        target2 (v/add [target-x target-y] normal2)]
+    [start1,target1,start2,target2]))
+
+(defn- proj-start-point [body direction size]
+  (v/add (:body/position body)
+         (v/scale direction
+                  (+ (/ (:body/width body) 2) size 0.1))))
+
+(defmethod applicable? :effects/projectile
+  [_ {:keys [effect/target-direction]}]
+  ; TODO for npcs need target -- anyway only with direction
+  ; faction @ source also ?
+  target-direction)
+
+(defmethod useful? :effects/projectile
+  [[_ {:keys [projectile/max-range] :as projectile}]
+   {:keys [effect/source effect/target]}
+   {:keys [ctx/raycaster]}]
+  ; TODO valid params direction has to be  non-nil (entities not los player ) ?
+  (let [source-p (:body/position (:entity/body @source))
+        target-p (:body/position (:entity/body @target))]
+    ; is path blocked ereally needed? we need LOS also right to have a target-direction as AI?
+    (and (not (let [[start1,target1,start2,target2] (create-double-ray-endpositions source-p target-p (:projectile/size projectile))]
+                (or
+                 (raycaster/blocked? raycaster start1 target1)
+                 (raycaster/blocked? raycaster start2 target2))))
+         ; TODO not taking into account body sizes
+         (< (v/distance source-p ; entity/distance function protocol EntityPosition
+                        target-p)
+            max-range))))
+
+(defmethod handle :effects/projectile
+  [[_ projectile] {:keys [effect/source effect/target-direction]} _ctx]
+  [[:tx/spawn-projectile
+    {:position (proj-start-point (:entity/body @source)
+                                 target-direction
+                                 (:projectile/size projectile))
+     :direction target-direction
+     :faction (:entity/faction @source)}
+    projectile]])
