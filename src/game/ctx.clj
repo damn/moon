@@ -1,11 +1,4 @@
 (ns game.ctx
-  ; TODO all the abbreviations
-  ; 'gdl.*'
-  ; gdl is a proposed game development language with just API = protocols
-  ; each protocol is released separately
-  ; we try to create a language for wiritng video games through the context
-  ; you are writing a langauge exactly for your game .....
-  ; it can become one ?
   (:require [clojure.app :as app]
             [clojure.audio :as audio]
             [clojure.audio.sound :as sound]
