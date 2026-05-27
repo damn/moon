@@ -37,7 +37,7 @@
             [clojure.input.keys :as input.keys]
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [clojure.utils.disposable :refer [dispose!]]
+            [clojure.utils.disposable :as disposable]
             [clojure.utils.viewport :as viewport]
             [game.impl.textures]
             [game.impl.db]
@@ -305,14 +305,14 @@
            ctx/skin
            ctx/textures
            ctx/tiled-map]}]
-  (run! dispose! (vals audio))
-  (dispose! batch)
-  (run! dispose! (vals cursors))
-  (dispose! default-font)
-  (dispose! shape-drawer-texture)
-  (dispose! skin)
-  (run! dispose! (vals textures))
-  (dispose! tiled-map))
+  (run! disposable/dispose! (vals audio))
+  (disposable/dispose! batch)
+  (run! disposable/dispose! (vals cursors))
+  (disposable/dispose! default-font)
+  (disposable/dispose! shape-drawer-texture)
+  (disposable/dispose! skin)
+  (run! disposable/dispose! (vals textures))
+  (disposable/dispose! tiled-map))
 
 (defn play-sound!
   [{:keys [ctx/audio]} sound-name]
