@@ -3,16 +3,7 @@
            [game.ctx/create-app]
            [game.ctx/create-textures]
            [game.ctx/create-record]
-           [game.ctx/impl-txs! {:reaction-txs-fn-map {
-                                                      :tx/sound                    game.reaction-txs.sound/do!
-                                                      :tx/toggle-inventory-visible game.reaction-txs.toggle-inventory-visible/do!
-                                                      :tx/show-message             game.reaction-txs.show-message/do!
-                                                      :tx/show-modal               game.reaction-txs.show-modal/do!
-                                                      :tx/set-item                 game.reaction-txs.set-item/do!
-                                                      :tx/remove-item              game.reaction-txs.remove-item/do!
-                                                      :tx/add-skill                game.reaction-txs.add-skill/do!
-                                                      }
-                                }]
+           [game.ctx/impl-txs!]
            [game.ctx/impl-draws!]
            [game.ctx/unorganised]
            [game.ctx/create-controls]

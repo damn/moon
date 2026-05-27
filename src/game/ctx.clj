@@ -51,6 +51,7 @@
             [moon.effect :as effect]
             [moon.entity :as entity]
             [moon.grid :as grid]
+            [moon.info :as info]
             [moon.inventory :as inventory]
             [moon.map :as map]
             [moon.raycaster :as raycaster]
@@ -60,6 +61,8 @@
             [moon.textures :as textures]
             [moon.txs :as txs]
             [moon.order :as order]
+            [moon.ui.action-bar :as action-bar]
+            [moon.ui.inventory-window :as inventory-window]
             [qrecord.core :as q]
             [reduce-fsm :as fsm]))
 
@@ -400,7 +403,116 @@
    }
   )
 
-(defn impl-txs! [ctx {:keys [reaction-txs-fn-map]}]
+(def reaction-txs-fn-map
+  {
+   :tx/sound                    (fn
+                                  [{:keys [ctx/audio] :as ctx} sound-name]
+                                  (let [sounds audio]
+                                    (assert (contains? sounds sound-name) (str sound-name))
+                                    (sound/play! (get sounds sound-name)))
+                                  ctx)
+   :tx/toggle-inventory-visible (fn
+                                  [{:keys [ctx/stage] :as ctx}]
+                                  (-> stage
+                                      (stage/find-actor "moon.ui.windows.inventory")
+                                      actor/toggle-visible!)
+                                  ctx)
+   :tx/show-message             (fn
+                                  [{:keys [ctx/stage] :as ctx} message]
+                                  (-> stage
+                                      (stage/find-actor "player-message")
+                                      (actor/set-user-object! (atom {:text message
+                                                                     :counter 0})))
+                                  ctx)
+   :tx/show-modal               (fn
+                                  [{:keys [ctx/skin
+                                           ctx/stage]
+                                    :as ctx}
+                                   {:keys [title text button-text on-click]}]
+                                  (assert (not (stage/find-actor stage "moon.ui.modal-window")))
+                                  (stage/add-actor! stage
+                                                    {:type :ui/window
+                                                     :title title
+                                                     :skin skin
+                                                     :window/modal? true
+                                                     :table/rows [[{:actor (actor/create
+                                                                            {:type :ui/label
+                                                                             :text text
+                                                                             :skin skin})}]
+                                                                  [{:actor (actor/create
+                                                                            {:type :ui/text-button
+                                                                             :text button-text
+                                                                             :skin skin
+                                                                             :actor/listeners {:listener/change (fn [_event _actor]
+                                                                                                                  (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
+                                                                                                                  (on-click))}})}]]
+                                                     :actor/name "moon.ui.modal-window"
+                                                     :actor/position [(/ (:viewport/world-width (:stage/viewport stage)) 2)
+                                                                      (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))
+                                                                      :align/center]})
+                                  ctx)
+   :tx/set-item                 (fn
+                                  [{:keys [ctx/skin
+                                           ctx/stage
+                                           ctx/textures]
+                                    :as ctx}
+                                   eid cell item]
+                                  (when (:entity/player? @eid)
+                                    (-> stage
+                                        ;(group/find-actor "moon.ui.windows")
+                                        (stage/find-actor "moon.ui.windows.inventory")
+                                        (inventory-window/set-item! cell {:texture-region (textures/texture-region textures (:entity/image item))
+                                                                          :tooltip-text (info/text item ctx)}
+                                                                    skin)))
+                                  ctx)
+   :tx/remove-item              (fn
+                                  [{:keys [ctx/stage] :as ctx} eid cell]
+                                  (when (:entity/player? @eid)
+                                    (-> stage
+                                        ;(group/find-actor "moon.ui.windows")
+                                        (stage/find-actor "moon.ui.windows.inventory")
+                                        (inventory-window/remove-item! cell)))
+                                  ctx)
+   :tx/add-skill                (fn
+                                  [{:keys [ctx/skin
+                                           ctx/stage
+                                           ctx/textures]
+                                    :as ctx}
+                                   eid skill]
+                                  (when (:entity/player? @eid)
+                                    (-> stage
+                                        (stage/find-actor "moon.ui.action-bar")
+                                        (action-bar/add-skill! {:skill-id (:property/id skill)
+                                                                :texture-region (textures/texture-region textures (:entity/image skill))
+                                                                :tooltip-text (info/text skill ctx)}
+                                                               skin)))
+                                  ctx)
+   }
+  )
+
+
+   #_(remove-skill! [stage skill-id]
+                    (-> stage
+                        (stage/find-actor "moon.ui.action-bar")
+                        (action-bar/remove-skill! skill-id)))
+
+; no window movable type cursor appears here like in player idle
+; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
+; => input events handling
+; hmmm interesting ... can disable @ item in cursor  / moving / etc.
+
+(comment
+ (.postRunnable com.badlogic.gdx.Gdx/app
+                (fn []
+                  (:tx/show-modal @dev.application/state
+                                  {:title "TestTitle"
+                                   :text "TextTEXT"
+                                   :button-text "testbuttonTEXT"
+                                   :on-click (fn [])})))
+
+ )
+
+(defn impl-txs! [ctx]
   (extend-type Context
     txs/Txs
     (handle! [ctx txs]
@@ -600,12 +712,6 @@
   (disposable/dispose! skin)
   (run! disposable/dispose! (vals textures))
   (disposable/dispose! tiled-map))
-
-(defn play-sound!
-  [{:keys [ctx/audio]} sound-name]
-  (let [sounds audio]
-    (assert (contains? sounds sound-name) (str sound-name))
-    (sound/play! (get sounds sound-name))))
 
 (defn sound-names
   [{:keys [ctx/audio]}]
