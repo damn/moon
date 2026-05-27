@@ -20,7 +20,6 @@
             clojure.gdx.graphics.g2d.bitmap-font
             clojure.gdx.graphics.g2d.bitmap-font.data
             clojure.gdx.graphics.g2d.texture-region
-            clojure.gdx.graphics.g2d.freetype.font-generator
             clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor
             clojure.gdx.scenes.scene2d.group

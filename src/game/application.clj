@@ -23,7 +23,6 @@
             [clojure.graphics.shape-drawer :as shape-drawer]
             [clojure.graphics.g2d.bitmap-font :as font]
             [clojure.graphics.g2d.bitmap-font.data :as font.data]
-            [clojure.graphics.g2d.freetype.font-generator :as font-generator]
             [clojure.graphics.g2d.texture-region :as texture-region]
             [clojure.java.io :as io]
             [clojure.scene2d.actor :as actor]
@@ -93,7 +92,9 @@
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.graphics Texture$TextureFilter))
+           (com.badlogic.gdx.graphics Texture$TextureFilter)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter))
   (:gen-class))
 
 ; Try only to be used here
@@ -919,13 +920,15 @@
      :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                              size 16
                              quality-scaling 2
-                             generator (file-handle/freetype-font-generator (files/internal (Application/.getFiles app) path))
-                             font (font-generator/generate-font generator
-                                                                {:size (* size quality-scaling)
-                                                                 ; texture.filter/linear because scaling to world-units
-                                                                 :min-filter Texture$TextureFilter/Linear
-                                                                 :mag-filter Texture$TextureFilter/Linear})]
-                         (font-generator/dispose! generator)
+                             generator (FreeTypeFontGenerator. (files/internal (Application/.getFiles app) path))
+                             font (.generateFont generator
+                                                 (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                                                   (set! (.size params) (* size quality-scaling))
+                                                   ; texture.filter/linear because scaling to world-units
+                                                   (set! (.minFilter params) Texture$TextureFilter/Linear)
+                                                   (set! (.magFilter params) Texture$TextureFilter/Linear)
+                                                   params))]
+                         (.dispose generator)
                          (font.data/set-scale! (font/data font) (/ quality-scaling))
                          (font.data/set-markup-enabled! (font/data font) true)
                          (font/set-use-integer-positions! font false)

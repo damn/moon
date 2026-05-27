@@ -15,6 +15,3 @@
 
 (defprotocol Skin
   (skin [_]))
-
-(defprotocol FreetypeFontGenerator
-  (freetype-font-generator [_]))
