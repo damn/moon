@@ -1,8 +1,6 @@
 (ns game.application
   (:require [game.ctx :as ctx]
 
-            game.state.player-item-on-cursor
-
             game.ui.data-viewer-window
             game.ui.error-window
             game.ui.property-editor-window

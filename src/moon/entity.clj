@@ -3,6 +3,7 @@
             [clojure.math :as math]
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
+            [clojure.scene2d.stage :as stage]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.ctx :as ctx]
@@ -589,3 +590,17 @@
     (:body/position body)
     0.5
     (:colors/stunned colors)]])
+
+(defmethod render :player-item-on-cursor
+  [[_k {:keys [item]}]
+   entity
+   {:keys [ctx/stage
+           ctx/textures]
+    :as ctx}]
+  ; TODO do not draw here, only at UI view
+  ; then graphics can draw world without stage/input
+  (when-not (stage/mouseover-actor stage (ctx/mouse-position ctx))
+    [[:draw/texture-region
+      (textures/texture-region textures (:entity/image item))
+      (ctx/item-place-position ctx entity)
+      {:center? true}]]))
