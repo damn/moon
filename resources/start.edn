@@ -3,39 +3,7 @@
            [game.ctx/create-app]
            [game.ctx/create-textures]
            [game.ctx/create-record]
-           [game.ctx/impl-txs! {:txs-fn-map {
-                                             :tx/state-exit               game.tx.state-exit/do!
-                                             :tx/audiovisual              game.tx.audiovisual/do!
-                                             :tx/assoc                    game.tx.assoc/do!
-                                             :tx/assoc-in                 game.tx.assoc-in/do!
-                                             :tx/dissoc                   game.tx.dissoc/do!
-                                             :tx/update                   game.tx.update/do!
-                                             :tx/mark-destroyed           game.tx.mark-destroyed/do!
-                                             :tx/set-cooldown             game.tx.set-cooldown/do!
-                                             :tx/add-text-effect          game.tx.add-text-effect/do!
-                                             :tx/add-skill                game.tx.add-skill/do!
-                                             :tx/set-item                 game.tx.set-item/do!
-                                             :tx/remove-item              game.tx.remove-item/do!
-                                             :tx/pickup-item              game.tx.pickup-item/do!
-                                             :tx/event                    game.tx.event/do!
-                                             :tx/register-eid             game.tx.register-eid/do!
-                                             :tx/unregister-eid           game.tx.unregister-eid/do!
-                                             :tx/state-enter              game.tx.state-enter/do!
-                                             :tx/effect                   game.tx.effect/do!
-                                             :tx/spawn-alert              game.tx.spawn-alert/do!
-                                             :tx/spawn-line               game.tx.spawn-line/do!
-                                             :tx/move-entity              game.tx.move-entity/do!
-                                             :tx/spawn-projectile         game.tx.spawn-projectile/do!
-                                             :tx/spawn-effect             game.tx.spawn-effect/do!
-                                             :tx/spawn-item               game.tx.spawn-item/do!
-                                             :tx/spawn-creature           game.tx.spawn-creature/do!
-                                             :tx/spawn-entity             game.tx.spawn-entity/do!
-                                             :tx/sound                    game.tx.nothing/do!
-                                             :tx/toggle-inventory-visible game.tx.nothing/do!
-                                             :tx/show-message             game.tx.nothing/do!
-                                             :tx/show-modal               game.tx.nothing/do!
-                                             }
-                                :reaction-txs-fn-map {
+           [game.ctx/impl-txs! {:reaction-txs-fn-map {
                                                       :tx/sound                    game.reaction-txs.sound/do!
                                                       :tx/toggle-inventory-visible game.reaction-txs.toggle-inventory-visible/do!
                                                       :tx/show-message             game.reaction-txs.show-message/do!
