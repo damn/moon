@@ -1,8 +1,7 @@
 (ns clojure.gdx.maps.renderer
-  (:require [clojure.maps.tiled.tiled-map :as tiled-map]
-            [clojure.maps.tiled.tiled-map-tile-layer :as layer]
-            [clojure.maps.map-layers :as layers])
-  (:import (clojure.gdx TiledMapRenderer
+  (:import (com.badlogic.gdx.maps.tiled TiledMap
+                                        TiledMapTileLayer)
+           (clojure.gdx TiledMapRenderer
                         TiledMapRenderer$ColorSetter)))
 
 (defn draw!
@@ -12,9 +11,9 @@
                                       (apply [_ color x y]
                                         (color-setter color x y))))
                    (.setView camera))
-        layers (tiled-map/layers tiled-map)]
+        layers (TiledMap/.getLayers tiled-map)]
     (->> layers
-         (filter layer/visible?)
-         (map #(layers/get-index layers %))
+         (filter TiledMapTileLayer/.isVisible) ; TODO already done
+         (map #(.getIndex layers ^TiledMapTileLayer %))
          int-array
          (.render renderer))))
