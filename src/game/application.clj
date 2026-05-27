@@ -1,15 +1,19 @@
 (ns game.application
   (:require [game.ctx :as ctx]
+
             game.entity.stats
             game.entity.string-effect
             game.entity.temp-modifier
             game.entity.projectile-collision
+
             game.state.active-skill
             game.state.npc-idle
             game.state.npc-sleeping
             game.state.npc-moving
             game.state.player-item-on-cursor
             game.state.stunned
+            game.state-impl
+
             game.schema-widget.animation
             game.schema-widget.boolean
             game.schema-widget.default
@@ -22,14 +26,16 @@
             game.schema-widget.sound
             game.schema-widget.string
             game.schema-widget.val-max
-            game.state-impl
+
             game.effect.audiovisual
             game.effect.target-all
             game.effect.target-entity
             game.effect.spawn
             game.effect.projectile
             game.effect-impl
+
             game.info-impl
+
             game.ui.data-viewer-window
             game.ui.error-window
             game.ui.property-editor-window
@@ -37,6 +43,7 @@
             game.ui.dev-menu
             game.ui.action-bar
             game.ui.info-window
+
             [clojure.gdx :as gdx])
   (:gen-class))
 
