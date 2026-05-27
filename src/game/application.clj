@@ -1,6 +1,5 @@
 (ns game.application
   (:require [clojure.audio :as audio]
-            [clojure.audio.sound :as sound]
             [clojure.core-ext :refer [edn-resource
                                       safe-merge
                                       define-order
@@ -93,6 +92,7 @@
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Application)
+           (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics Texture$TextureFilter))
   (:gen-class))
 
@@ -510,7 +510,7 @@
                                   [{:keys [ctx/audio] :as ctx} sound-name]
                                   (let [sounds audio]
                                     (assert (contains? sounds sound-name) (str sound-name))
-                                    (sound/play! (get sounds sound-name)))
+                                    (Sound/.play (get sounds sound-name)))
                                   ctx)
    :tx/toggle-inventory-visible (fn
                                   [{:keys [ctx/stage] :as ctx}]

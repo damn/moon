@@ -1,6 +1,5 @@
 (ns clojure.gdx
   (:require [clojure.audio :as audio]
-            [clojure.audio.sound :as sound]
             [clojure.edn :as edn]
             [clojure.files.file-handle :as file-handle]
             [clojure.graphics.batch :as batch]
@@ -62,7 +61,6 @@
            (com.badlogic.gdx ApplicationListener
                              Audio
                              Gdx)
-           (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
@@ -116,11 +114,6 @@
   audio/Audio
   (new-sound [this file-handle]
     (.newSound this file-handle)))
-
-(extend-type Sound
-  sound/Sound
-  (play! [this]
-    (.play this)))
 
 (defn put-colors! [colors]
   (doseq [[name rgba] colors]
