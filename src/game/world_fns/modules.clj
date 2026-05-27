@@ -1,12 +1,12 @@
 (ns game.world-fns.modules
   (:require moon.tiled-map
             [clojure.maps.tiled.tiled-map :as tiled-map]
-            [clojure.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [clojure.maps.map-properties :as props]
             [clojure.maps.tiled.tiled-map-tile-layer :as layer]
             [clojure.maps.map-layers :as layers]
             [moon.grid2d :as g2d])
   (:import (java.util Random)
+           (com.badlogic.gdx.maps.tiled TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (def ^:private number-modules-x 8)
@@ -137,7 +137,7 @@
   (assoc w :scaled-grid (g2d/scale-grid (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (tmx-map-loader/load! "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")))
 
 (def copy-tile
   (memoize
