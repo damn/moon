@@ -3,19 +3,6 @@
 
             game.state.player-item-on-cursor
 
-            game.schema-widget.animation
-            game.schema-widget.boolean
-            game.schema-widget.default
-            game.schema-widget.enum
-            game.schema-widget.image
-            game.schema-widget.map
-            game.schema-widget.number
-            game.schema-widget.one-to-many
-            game.schema-widget.one-to-one
-            game.schema-widget.sound
-            game.schema-widget.string
-            game.schema-widget.val-max
-
             game.effect.audiovisual
             game.effect.target-all
             game.effect.target-entity
