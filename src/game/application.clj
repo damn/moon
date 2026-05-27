@@ -12,7 +12,6 @@
             [clojure.gdx :as gdx]
 
             [clojure.graphics :as graphics]
-            [clojure.graphics.batch :as batch]
             [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
@@ -87,6 +86,7 @@
                                       Pixmap
                                       Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d BitmapFont
+                                          SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
@@ -234,7 +234,7 @@
                                      wrap?)
                               (.setScale (.getData font) old-scale)))
    :draw/texture-region   (fn
-                            [{:keys [ctx/batch
+                            [{:keys [^SpriteBatch ctx/batch
                                      ctx/unit-scale
                                      ctx/world-unit-scale]}
                              ^TextureRegion texture-region
@@ -247,18 +247,18 @@
                                             (mapv (comp float (partial * world-unit-scale))
                                                   dimensions)))]
                               (if center?
-                                (batch/draw! batch
-                                             texture-region
-                                             (- (float x) (/ (float w) 2))
-                                             (- (float y) (/ (float h) 2))
-                                             (/ (float w) 2)
-                                             (/ (float h) 2)
-                                             w
-                                             h
-                                             1
-                                             1
-                                             (or rotation 0))
-                                (batch/draw! batch texture-region x y w h))))
+                                (.draw batch
+                                       texture-region
+                                       (- (float x) (/ (float w) 2))
+                                       (- (float y) (/ (float h) 2))
+                                       (/ (float w) 2)
+                                       (/ (float h) 2)
+                                       w
+                                       h
+                                       1
+                                       1
+                                       (or rotation 0))
+                                (.draw batch texture-region (float x) (float y) (float w) (float h)))))
    :draw/with-line-width  (fn
                             [{:keys [ctx/shape-drawer]
                               :as ctx}
@@ -897,7 +897,7 @@
 (defn create-app [app]
   (gdx/set-tooltip-initial-time! 0)
   (gdx/put-colors! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-  (let [batch (gdx/sprite-batch)
+  (let [batch (SpriteBatch.)
         white-pixel-texture (let [pixmap (doto (gdx/pixmap 1 1)
                                            (pixmap/set-color! 1 1 1 1)
                                            (pixmap/draw-pixel! 0 0))
@@ -1959,7 +1959,7 @@
           :none (:colors/mouseover-tile-none colors))]])))
 
 (defn draw-on-world-viewport!
-  [{:keys [ctx/batch
+  [{:keys [^SpriteBatch ctx/batch
            ctx/shape-drawer
            ctx/unit-scale
            ctx/world-unit-scale
@@ -1968,10 +1968,10 @@
   ; fix scene2d.ui.tooltip flickering
   ; _everything_ flickers with TextToolTip!
   ; it changes batch color somehow and does not change it back ! FIXME
-  (batch/set-color! batch 1 1 1 1)
+  (.setColor batch 1 1 1 1)
   ;
-  (batch/set-projection-matrix! batch (camera/combined (:viewport/camera world-viewport)))
-  (batch/begin! batch)
+  (.setProjectionMatrix batch (camera/combined (:viewport/camera world-viewport)))
+  (.begin batch)
   (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
@@ -1985,7 +1985,7 @@
       (draws/handle ctx (f ctx)))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (batch/end! batch)
+  (.end batch)
   ctx)
 
 (defn render! [ctx]

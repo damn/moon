@@ -20,7 +20,8 @@
             [moon.creature-tiles]
             [moon.db :as db])
   (:import (com.badlogic.gdx Application)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch
+                                          TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
@@ -96,7 +97,7 @@
         input (.getInput app)
         skin (Skin. (.internal files "uiskin.json"))
         ui-viewport (gdx/fit-viewport 1440 900)
-        sprite-batch (gdx/sprite-batch)
+        sprite-batch (SpriteBatch.)
         stage (gdx/stage ui-viewport sprite-batch)
         _  (input/set-processor! input stage)
         tile-size 48

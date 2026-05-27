@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require [clojure.graphics.batch :as batch]
-            [clojure.gdx.graphics.color :as color]
+  (:require [clojure.gdx.graphics.color :as color]
             [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.scene2d.actor :as actor]
@@ -50,8 +49,6 @@
                                       Pixmap$Format
                                       Texture
                                       OrthographicCamera)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch
-                                          TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
            (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)))
@@ -138,39 +135,6 @@
   (set-zoom! [camera amount]
     (set! (.zoom camera) amount)
     (.update camera)))
-
-(defn sprite-batch []
-  (SpriteBatch.))
-
-(extend-type SpriteBatch
-  batch/Batch
-  (begin! [batch]
-    (.begin batch))
-
-  (end! [batch]
-    (.end batch))
-
-  (set-color! [batch r g b a]
-    (.setColor batch r g b a))
-
-  (set-projection-matrix! [batch matrix]
-    (.setProjectionMatrix batch matrix))
-
-  (draw!
-    ([batch texture-region x y origin-x origin-y width height scale-x scale-y rotation]
-     (.draw batch
-            ^TextureRegion texture-region
-            x
-            y
-            origin-x
-            origin-y
-            width
-            height
-            scale-x
-            scale-y
-            rotation))
-    ([batch texture-region x y w h]
-     (.draw batch ^TextureRegion texture-region (float x) (float y) (float w) (float h)))))
 
 (defn stage [viewport batch]
   (proxy [Stage ILookup] [viewport batch]
