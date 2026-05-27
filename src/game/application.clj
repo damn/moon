@@ -52,7 +52,7 @@
             game.ui.info-window
             [malli.core :as m]
             [malli.utils :as mu]
-            [moon.ctx]
+            [moon.ctx :as ctx]
             [moon.body :as body]
             [moon.controls :as controls]
             [moon.content-grid :as content-grid]
@@ -89,20 +89,16 @@
   ; "world_fns/uf_caves.edn"
   )
 
-(declare mouse-position
-         button-just-pressed?
-         key-just-pressed?)
-
 (q/defrecord Context []
-  moon.ctx/Context
+  ctx/Context
   (world-unit-scale [ctx]
     (:ctx/world-unit-scale ctx))
 
-  (mouse-position [ctx]
-    (mouse-position ctx))
+  (mouse-position [{:keys [ctx/app]}]
+    (input/mouse-position (app/input app)))
 
-  (button-just-pressed? [ctx button]
-    (button-just-pressed? ctx button))
+  (button-just-pressed? [{:keys [ctx/app]} input-button]
+    (input/button-just-pressed? (app/input app) input-button))
 
   ; It is possible to put items out of sight, losing them.
   ; Because line of sight checks center of entity only, not corners
@@ -119,8 +115,8 @@
   (sound-names [{:keys [ctx/audio]}]
     (map first audio))
 
-  (key-just-pressed? [ctx key]
-    (key-just-pressed? ctx key))
+  (key-just-pressed? [{:keys [ctx/app]} input-key]
+    (input/key-just-pressed? (app/input app) input-key))
   )
 
 (q/defrecord Entity [entity/body])
@@ -681,18 +677,6 @@
   [{:keys [ctx/app]} input-key]
   (input/key-pressed? (app/input app) input-key))
 
-(defn key-just-pressed?
-  [{:keys [ctx/app]} input-key]
-  (input/key-just-pressed? (app/input app) input-key))
-
-(defn mouse-position
-  [{:keys [ctx/app]}]
-  (input/mouse-position (app/input app)))
-
-(defn button-just-pressed?
-  [{:keys [ctx/app]} input-button]
-  (input/button-just-pressed? (app/input app) input-button))
-
 (defn dispose!
   [{:keys [ctx/audio
            ctx/batch
@@ -862,7 +846,7 @@
   [{:keys [ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (let [mp (mouse-position ctx)]
+  (let [mp (ctx/mouse-position ctx)]
     (-> ctx
         (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
         (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
@@ -880,17 +864,17 @@
   (when (key-pressed? ctx (:zoom-out controls))
     (camera/inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
 
-  (when (key-just-pressed? ctx (:close-windows-key controls))
+  (when (ctx/key-just-pressed? ctx (:close-windows-key controls))
     (->> (stage/find-actor stage "moon.ui.windows")
          group/children
          (run! #(actor/set-visible! % false))))
 
-  (when (key-just-pressed? ctx (:toggle-inventory controls))
+  (when (ctx/key-just-pressed? ctx (:toggle-inventory controls))
     (-> stage
         (stage/find-actor "moon.ui.windows.inventory")
         actor/toggle-visible!))
 
-  (when (key-just-pressed? ctx (:toggle-entity-info controls))
+  (when (ctx/key-just-pressed? ctx (:toggle-entity-info controls))
     (-> stage
         (stage/find-actor "moon.ui.windows.entity-info")
         actor/toggle-visible!))
@@ -1622,7 +1606,7 @@
            ctx/render-z-order
            ctx/world-mouse-position]
     :as ctx}]
-  (let [mouseover-actor (stage/mouseover-actor stage (mouse-position ctx))
+  (let [mouseover-actor (stage/mouseover-actor stage (ctx/mouse-position ctx))
         position world-mouse-position
         new-eid (if mouseover-actor
                   nil
@@ -1648,7 +1632,7 @@
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
-  (when (button-just-pressed? ctx (:open-debug-button controls))
+  (when (ctx/button-just-pressed? ctx (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage
@@ -1729,7 +1713,7 @@
                                                        world-mouse-position
                                                        mouseover-eid
                                                        player-eid
-                                                       (stage/mouseover-actor stage (mouse-position ctx)))))
+                                                       (stage/mouseover-actor stage (ctx/mouse-position ctx)))))
 
 (defn- creature-speed [{:keys [entity/stats]}]
   (or (stats/get-stat-value stats :stats/movement-speed)
@@ -1796,7 +1780,7 @@
                         ctx/stage] :as ctx}]
   (if-let [movement-vector (controls/player-movement-vector ctx)]
     [[:tx/event player-eid :movement-input movement-vector]]
-    (when (button-just-pressed? ctx input.buttons/left)
+    (when (ctx/button-just-pressed? ctx input.buttons/left)
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))
@@ -1845,7 +1829,7 @@
          (or #_error
              (and pausing?
                   (state/pause-game? (:state (:entity/fsm @player-eid)))
-                  (not (or (key-just-pressed? ctx (:unpause-once controls))
+                  (not (or (ctx/key-just-pressed? ctx (:unpause-once controls))
                            (key-pressed? ctx (:unpause-continously controls))))))))
 
 (defn update-time
