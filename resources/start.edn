@@ -15,7 +15,7 @@
                                        [game.ctx/create-action-bar]
                                        [game.ctx/create-hp-mana-bar]
                                        [game.ctx/create-windows [game.ctx/create-info-window
-                                                                 game.create.add-stage-actors.windows.inventory/create]]
+                                                                 game.ctx/create-inventory-window]]
                                        [game.ctx/create-player-state-draw]
                                        [game.ctx/create-player-message-actor]]]
            [game.ctx/create-tiled-map]
