@@ -7,7 +7,7 @@
                                       reduce-actions!]]
             [clojure.edn :as edn]
             [clojure.gdx.graphics.color :as color]
-            [clojure.gdx.maps.renderer :as tiled-map-renderer]
+            [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
 
             [clojure.gdx :as gdx]
 

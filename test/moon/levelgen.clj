@@ -5,7 +5,7 @@
             [clojure.gdx :as gdx]
             [clojure.graphics.batch :as batch]
             [clojure.gdx.graphics.color :as color]
-            [clojure.gdx.maps.renderer :as tiled-map-renderer]
+            [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.input :as input]
             [clojure.input.keys :as input.keys]

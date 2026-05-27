@@ -35,7 +35,6 @@
             clojure.gdx.maps.map-properties
             clojure.gdx.maps.tiled.tiled-map
             clojure.gdx.maps.tiled.tiled-map-tile-layer
-            clojure.gdx.maps.renderer
             clojure.gdx.utils.disposable
             [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.math.vector3 :as vector3])

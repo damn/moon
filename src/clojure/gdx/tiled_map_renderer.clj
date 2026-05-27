@@ -1,4 +1,4 @@
-(ns clojure.gdx.maps.renderer
+(ns clojure.gdx.tiled-map-renderer
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)
            (clojure.gdx TiledMapRenderer
