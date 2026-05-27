@@ -25,6 +25,7 @@
             [clojure.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
+            [clojure.scene2d.ui :as ui]
             [clojure.scene2d.ui.image :as image]
             [clojure.scene2d.ui.skin :as skin]
             [clojure.input :as input]
@@ -42,6 +43,7 @@
             [game.impl.db]
             [malli.core :as m]
             [malli.utils :as mu]
+            [moon.body :as body]
             [moon.controls :as controls]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
@@ -57,6 +59,7 @@
             [moon.raycaster :as raycaster]
             [moon.state :as state]
             [moon.stats :as stats]
+            [moon.skill :as skill]
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
             [moon.textures :as textures]
@@ -594,7 +597,8 @@
     ]))
 
 (defn validate [ctx]
-  (mu/validate-humanize schema ctx))
+  (mu/validate-humanize schema ctx)
+  ctx)
 
 (defn delta-time
   [{:keys [ctx/app]}]
@@ -605,10 +609,11 @@
   (graphics/frames-per-second (app/graphics app)))
 
 (defn clear-screen!
-  [{:keys [ctx/app]}]
+  [{:keys [ctx/app] :as ctx}]
   (let [gl (graphics/gl20 (app/graphics app))]
     (gl20/clear-color! gl 0 0 0 0)
-    (gl20/clear! gl gl20/color-buffer-bit)))
+    (gl20/clear! gl gl20/color-buffer-bit))
+  ctx)
 
 (defmethod state/cursor :player-dead
   [_ _eid _ctx]
@@ -679,7 +684,8 @@
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! (app/graphics app) (get cursors cursor-key))))
+    (graphics/set-cursor! (app/graphics app) (get cursors cursor-key)))
+  ctx)
 
 (defn key-pressed?
   [{:keys [ctx/app]} input-key]
@@ -795,7 +801,8 @@
       (draws/handle ctx (f ctx)))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (batch/end! batch))
+  (batch/end! batch)
+  ctx)
 
 (defn- tile-color-setter*
   [{:keys [ray-blocked?
@@ -867,7 +874,8 @@
                          world-unit-scale
                          (:viewport/camera world-viewport)
                          tiled-map
-                         (tile-color-setter ctx)))
+                         (tile-color-setter ctx))
+  ctx)
 
 (def world-unit-scale :ctx/world-unit-scale)
 
@@ -885,7 +893,8 @@
            ctx/world-viewport]
     :as ctx}]
   (camera/set-position! (:viewport/camera world-viewport)
-                        (:body/position (:entity/body @player-eid))))
+                        (:body/position (:entity/body @player-eid)))
+  ctx)
 
 (defn update-mouse-positions
   [{:keys [ctx/stage
@@ -1633,3 +1642,281 @@
       create-raycaster
       spawn-player
       spawn-enemies))
+
+(defn get-stage-ctx
+  [{:keys [ctx/stage]
+    :as ctx}]
+  (or (:stage/ctx stage)
+      ctx)) ; first render stage does not have ctx set.
+
+(defn update-mouseover-eid
+  [{:keys [ctx/mouseover-eid
+           ctx/stage
+           ctx/player-eid
+           ctx/grid
+           ctx/raycaster
+           ctx/render-z-order
+           ctx/world-mouse-position]
+    :as ctx}]
+  (let [mouseover-actor (stage/mouseover-actor stage (mouse-position ctx))
+        position world-mouse-position
+        new-eid (if mouseover-actor
+                  nil
+                  (let [player @player-eid
+                        hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
+                                     (grid/point->entities grid position))]
+                    (->> render-z-order
+                         (order/sort-by-order hits #(:body/z-order (:entity/body @%)))
+                         reverse
+                         (filter #(raycaster/line-of-sight? raycaster player @%))
+                         first)))]
+    (when mouseover-eid
+      (swap! mouseover-eid dissoc :entity/mouseover?))
+    (when new-eid
+      (swap! new-eid assoc :entity/mouseover? true))
+    (assoc ctx :ctx/mouseover-eid new-eid)))
+
+(defn check-debug-viewer
+  [{:keys [ctx/controls
+           ctx/mouseover-eid
+           ctx/skin
+           ctx/stage
+           ctx/grid
+           ctx/world-mouse-position]
+    :as ctx}]
+  (when (button-just-pressed? ctx (:open-debug-button controls))
+    (let [data (or (and mouseover-eid @mouseover-eid)
+                   @(grid (mapv int world-mouse-position)))]
+      (stage/add-actor! stage
+                        {:type :ui/data-viewer-window
+                         :title "Data View"
+                         :data data
+                         :width 500
+                         :height 500
+                         :skin skin})))
+  ctx)
+
+(defn set-active-entities
+  [{:keys [ctx/player-eid
+           ctx/content-grid]
+    :as ctx}]
+  (assoc ctx :ctx/active-entities
+         (content-grid/active-entities content-grid @player-eid)))
+
+(defn- mouseover-actor-info [actor]
+  (let [inventory-slot (and (actor/parent actor)
+                            (= "inventory-cell" (actor/name (actor/parent actor)))
+                            (actor/user-object (actor/parent actor)))]
+    (cond
+     inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
+     (ui/window-title-bar? actor) [:mouseover-actor/window-title-bar]
+     (ui/button? actor)           [:mouseover-actor/button]
+     :else                     [:mouseover-actor/unspecified])))
+
+(defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
+  (let [target-position (or (and mouseover-eid
+                                 (:body/position (:entity/body @mouseover-eid)))
+                            world-mouse-position)]
+    {:effect/source player-eid
+     :effect/target mouseover-eid
+     :effect/target-position target-position
+     :effect/target-direction (v/direction (:body/position (:entity/body @player-eid))
+                                           target-position)}))
+
+
+(defn- interaction-state
+  [stage
+   world-mouse-position
+   mouseover-eid
+   player-eid
+   mouseover-actor]
+  (cond
+   mouseover-actor
+   [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
+
+   (and mouseover-eid
+        (:entity/clickable @mouseover-eid))
+   [:interaction-state/clickable-mouseover-eid
+    {:clicked-eid mouseover-eid
+     :in-click-range? (< (body/distance (:entity/body @player-eid)
+                                        (:entity/body @mouseover-eid))
+                         (:entity/click-distance-tiles @player-eid))}]
+
+   :else
+   (if-let [skill-id (-> stage
+                         (stage/find-actor "moon.ui.action-bar")
+                         action-bar/selected-skill)]
+     (let [entity @player-eid
+           skill (skill-id (:entity/skills entity))
+           effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
+           state (skill/usable-state skill entity effect-ctx)]
+       (if (= state :usable)
+         [:interaction-state.skill/usable [skill effect-ctx]]
+         [:interaction-state.skill/not-usable state]))
+     [:interaction-state/no-skill-selected])))
+
+(defn assoc-interaction-state
+  [{:keys [ctx/mouseover-eid
+           ctx/stage
+           ctx/player-eid
+           ctx/world-mouse-position]
+    :as ctx}]
+  (assoc ctx :ctx/interaction-state (interaction-state stage
+                                                       world-mouse-position
+                                                       mouseover-eid
+                                                       player-eid
+                                                       (stage/mouseover-actor stage (mouse-position ctx)))))
+
+(defn- creature-speed [{:keys [entity/stats]}]
+  (or (stats/get-stat-value stats :stats/movement-speed)
+      0))
+
+(defmethod state/handle-input :player-moving
+  [_ eid ctx]
+  (if-let [movement-vector (controls/player-movement-vector ctx)]
+    [[:tx/assoc eid :entity/movement {:direction movement-vector
+                                      :speed (creature-speed @eid)}]]
+    [[:tx/event eid :no-movement-input]]))
+
+(defn- interaction-state->txs [[k params] stage player-eid]
+  (case k
+    :interaction-state/mouseover-actor nil
+
+    :interaction-state/clickable-mouseover-eid
+    (let [{:keys [clicked-eid
+                  in-click-range?]} params]
+      (if in-click-range?
+        (case (:type (:entity/clickable @clicked-eid))
+          :clickable/player
+          [[:tx/toggle-inventory-visible]]
+
+          :clickable/item
+          (let [item (:entity/item @clicked-eid)]
+            (cond
+             (-> stage
+                 (stage/find-actor "moon.ui.windows.inventory")
+                 actor/visible?)
+             [[:tx/sound "bfxr_takeit"]
+              [:tx/mark-destroyed clicked-eid]
+              [:tx/event player-eid :pickup-item item]]
+
+             (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
+             [[:tx/sound "bfxr_pickup"]
+              [:tx/mark-destroyed clicked-eid]
+              [:tx/pickup-item player-eid item]]
+
+             :else
+             [[:tx/sound "bfxr_denied"]
+              [:tx/show-message "Your Inventory is full"]])))
+        [[:tx/sound "bfxr_denied"]
+         [:tx/show-message "Too far away"]]))
+
+    :interaction-state.skill/usable
+    (let [[skill effect-ctx] params]
+      [[:tx/event player-eid :start-action [skill effect-ctx]]])
+
+    :interaction-state.skill/not-usable
+    (let [state params]
+      [[:tx/sound "bfxr_denied"]
+       [:tx/show-message (case state
+                           :cooldown "Skill is still on cooldown"
+                           :not-enough-mana "Not enough mana"
+                           :invalid-params "Cannot use this here")]])
+
+    :interaction-state/no-skill-selected
+    [[:tx/sound "bfxr_denied"]
+     [:tx/show-message "No selected skill"]]))
+
+(defmethod state/handle-input :player-idle
+  [_ player-eid {:keys [ctx/interaction-state
+                        ctx/stage] :as ctx}]
+  (if-let [movement-vector (controls/player-movement-vector ctx)]
+    [[:tx/event player-eid :movement-input movement-vector]]
+    (when (button-just-pressed? ctx input.buttons/left)
+      (interaction-state->txs interaction-state
+                              stage
+                              player-eid))))
+
+
+(defn handle-player-state-input!
+  [{:keys [ctx/player-eid]
+    :as ctx}]
+  (let [eid player-eid
+        entity @eid
+        state-k (:state (:entity/fsm entity))
+        txs (state/handle-input [state-k (state-k entity)] eid ctx)]
+    (txs/handle! ctx txs))
+  ctx)
+
+(defn dissoc-interaction-state [ctx]
+  (dissoc ctx :ctx/interaction-state))
+
+(defmethod state/pause-game? :active-skill
+  [_]
+  false)
+
+(defmethod state/pause-game? :stunned
+  [_]
+  false)
+
+(defmethod state/pause-game? :player-moving
+  [_]
+  false)
+
+(defmethod state/pause-game? :player-idle
+  [_]
+  true)
+
+(defmethod state/pause-game? :player-dead
+  [_]
+  true)
+
+(def pausing? true)
+
+(defn assoc-paused
+  [{:keys [ctx/controls
+           ctx/player-eid]
+    :as ctx}]
+  (assoc ctx :ctx/paused?
+         (or #_error
+             (and pausing?
+                  (state/pause-game? (:state (:entity/fsm @player-eid)))
+                  (not (or (key-just-pressed? ctx (:unpause-once controls))
+                           (key-pressed? ctx (:unpause-continously controls))))))))
+
+(defn if-not-paused-steps
+  [{:keys [ctx/paused?]
+    :as ctx}
+   fns]
+  (if paused?
+    ctx
+    (reduce (fn [ctx f]
+              (f ctx))
+            ctx
+            fns)))
+
+(defmethod entity/destroy :entity/destroy-audiovisual
+  [[_ audiovisuals-id] eid]
+  [[:tx/audiovisual
+    (:body/position (:entity/body @eid))
+    audiovisuals-id]])
+
+(defn remove-destroyed-entities!
+  [ctx]
+  (txs/handle! ctx (mapcat
+                    (fn [eid]
+                      (cons
+                       [:tx/unregister-eid eid]
+                       (mapcat (fn [[k v]]
+                                 (entity/destroy [k v] eid))
+                               @eid)))
+                    (filter (comp :entity/destroyed? deref)
+                            (vals @(:ctx/entity-ids ctx)))))
+  ctx)
+
+(defn update-draw-stage
+  [{:keys [ctx/stage] :as ctx}]
+  (stage/set-ctx! stage ctx)
+  (stage/act!  stage)
+  (stage/draw! stage)
+  (:stage/ctx stage))

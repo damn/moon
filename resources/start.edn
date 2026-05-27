@@ -1,32 +1,32 @@
 {
  :render  [
-           [game.render.get-stage-ctx/step]
-           [game.render.validate/step]
+           [game.ctx/get-stage-ctx]
+           [game.ctx/validate]
            [game.ctx/update-mouse-positions]
-           [game.render.update-mouseover-eid/step]
-           [game.render.check-debug-viewer/step]
-           [game.render.active-entities/step]
-           [game.render.set-camera/step]
-           [game.render.clear-screen/step]
-           [game.render.draw-tiled-map/step]
-           [game.render.draw-on-world-viewport/step [
-                                                     #_game.render.draw-on-world-viewport.draw-tile-grid/draws
-                                                     game.render.draw-on-world-viewport.draw-cell-debug/draws
-                                                     game.render.draw-on-world-viewport.draw-entities/do!
-                                                     #_moon.geom-test
-                                                     game.render.draw-on-world-viewport.highlight-mouseover-tile/draws
-                                                     ]]
-           [game.render.assoc-interaction-state/step]
-           [game.render.set-cursor/step]
-           [game.render.handle-input/step]
-           [game.render.dissoc-interaction-state/step]
-           [game.render.assoc-paused/step]
-           [game.render.if-not-paused/step [game.render.if-not-paused.update-time/step
-                                            game.render.if-not-paused.update-potential-fields/step
-                                            game.render.if-not-paused.tick-entities/step]]
-           [game.render.remove-destroyed-entities/step]
+           [game.ctx/update-mouseover-eid]
+           [game.ctx/check-debug-viewer]
+           [game.ctx/set-active-entities]
+           [game.ctx/set-camera-position!]
+           [game.ctx/clear-screen!]
+           [game.ctx/draw-tiled-map!]
+           [game.ctx/draw-on-world-viewport! [
+                                              #_game.render.draw-on-world-viewport.draw-tile-grid/draws
+                                              game.render.draw-on-world-viewport.draw-cell-debug/draws
+                                              game.render.draw-on-world-viewport.draw-entities/do!
+                                              #_moon.geom-test
+                                              game.render.draw-on-world-viewport.highlight-mouseover-tile/draws
+                                              ]]
+           [game.ctx/assoc-interaction-state]
+           [game.ctx/set-cursor!]
+           [game.ctx/handle-player-state-input!]
+           [game.ctx/dissoc-interaction-state]
+           [game.ctx/assoc-paused]
+           [game.ctx/if-not-paused-steps [game.render.if-not-paused.update-time/step
+                                          game.render.if-not-paused.update-potential-fields/step
+                                          game.render.if-not-paused.tick-entities/step]]
+           [game.ctx/remove-destroyed-entities!]
            [game.ctx/window-camera-controls]
-           [game.render.stage/step]
-           [game.render.validate/step]
+           [game.ctx/update-draw-stage]
+           [game.ctx/validate]
            ]
  }
