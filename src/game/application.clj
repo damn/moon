@@ -1,6 +1,5 @@
 (ns game.application
-  (:require [clojure.audio :as audio]
-            [clojure.core-ext :refer [edn-resource
+  (:require [clojure.core-ext :refer [edn-resource
                                       safe-merge
                                       define-order
                                       sort-by-order
@@ -910,8 +909,8 @@
      :ctx/audio (into {}
                       (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                         [sound-name
-                         (audio/new-sound (Application/.getAudio app)
-                                          (files/internal (Application/.getFiles app) (format "sounds/%s.wav" sound-name)))]))
+                         (.newSound (Application/.getAudio app)
+                                    (files/internal (Application/.getFiles app) (format "sounds/%s.wav" sound-name)))]))
      :ctx/batch batch
      :ctx/shape-drawer-texture white-pixel-texture
      :ctx/shape-drawer (batch/shape-drawer batch (TextureRegion. white-pixel-texture 1 0 1 1))

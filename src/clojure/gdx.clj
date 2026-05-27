@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require [clojure.audio :as audio]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.graphics.batch :as batch]
             [clojure.gdx.graphics.color :as color]
             [clojure.graphics.pixmap :as pixmap]
@@ -48,7 +47,6 @@
             [clojure.gdx.math.vector3 :as vector3])
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx ApplicationListener
-                             Audio
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
@@ -98,11 +96,6 @@
                         (.setTitle title)
                         (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
                         (.setForegroundFPS foreground-fps))))
-
-(extend-type Audio
-  audio/Audio
-  (new-sound [this file-handle]
-    (.newSound this file-handle)))
 
 (defn put-colors! [colors]
   (doseq [[name rgba] colors]
