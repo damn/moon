@@ -105,7 +105,7 @@
         ctx {:ctx/stage stage
              :ctx/files files}
         ctx (assoc ctx :ctx/db (db-impl/create))
-        ctx (assoc ctx :ctx/textures (game.impl.textures/create {:ctx/app app}))
+        ctx (assoc ctx :ctx/textures (game.impl.textures/create files))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (gdx/fit-viewport world-width

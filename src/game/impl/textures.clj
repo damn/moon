@@ -1,6 +1,5 @@
 (ns game.impl.textures
   (:require [clojure.string :as str]
-            [clojure.app :as app]
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.graphics.texture :as texture]
@@ -10,24 +9,23 @@
 (def extensions #{"png" "bmp"})
 
 (defn create
-  [{:keys [ctx/app]}]
-  (let [files (app/files app)]
-    (into {} (for [path (map (fn [path]
-                               (str/replace-first path folder ""))
-                             (loop [[file & remaining] (file-handle/list (files/internal files folder))
-                                    result []]
-                               (cond (nil? file)
-                                     result
+  [files]
+  (into {} (for [path (map (fn [path]
+                             (str/replace-first path folder ""))
+                           (loop [[file & remaining] (file-handle/list (files/internal files folder))
+                                  result []]
+                             (cond (nil? file)
+                                   result
 
-                                     (file-handle/directory? file)
-                                     (recur (concat remaining (file-handle/list file)) result)
+                                   (file-handle/directory? file)
+                                   (recur (concat remaining (file-handle/list file)) result)
 
-                                     (extensions (file-handle/extension file))
-                                     (recur remaining (conj result (file-handle/path file)))
+                                   (extensions (file-handle/extension file))
+                                   (recur remaining (conj result (file-handle/path file)))
 
-                                     :else
-                                     (recur remaining result))))]
-               [path (file-handle/texture (files/internal files path))]))))
+                                   :else
+                                   (recur remaining result))))]
+             [path (file-handle/texture (files/internal files path))])))
 
 (extend-type clojure.lang.PersistentHashMap
   moon.textures/Textures

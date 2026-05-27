@@ -83,11 +83,15 @@
             [reduce-fsm :as fsm])
   (:gen-class))
 
+; Try only to be used here
+; then make ctx protocols
+; then see what's used together
+; and data abstraction
 (def schema
   (m/schema
    [:map {:closed true}
     ; Input, Audio, Files, Graphics
-    [:ctx/app :some]
+    [:ctx/app :some] ; ~~ only used in this ns ~~ ✅
 
     ; Audio, Files
     [:ctx/audio :some]
@@ -944,7 +948,7 @@
 
 (defn create-textures
   [ctx]
-  (assoc ctx :ctx/textures (game.impl.textures/create ctx)))
+  (assoc ctx :ctx/textures (game.impl.textures/create (app/files (:ctx/app ctx)))))
 
 (defn unorganised [ctx]
   (assoc ctx
