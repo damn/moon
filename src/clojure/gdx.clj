@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require [clojure.graphics.pixmap :as pixmap]
-            [clojure.graphics.orthographic-camera :as camera]
+  (:require [clojure.graphics.orthographic-camera :as camera]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
@@ -43,10 +42,7 @@
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Pixmap
-                                      Pixmap$Format
-                                      Texture
-                                      OrthographicCamera)
+           (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
            (com.badlogic.gdx.utils ScreenUtils)
            (com.badlogic.gdx.utils.viewport FitViewport)))
@@ -84,9 +80,6 @@
                         (.setTitle title)
                         (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
                         (.setForegroundFPS foreground-fps))))
-
-(defn pixmap [w h]
-  (Pixmap. (int w) (int h) Pixmap$Format/RGBA8888))
 
 (defn orthographic-camera
   [{:keys [y-down?
@@ -160,20 +153,6 @@
   (mouseover-actor [stage position]
     (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
       (.hit stage x y true))))
-
-(extend-type Pixmap
-  pixmap/Pixmap
-  (dispose! [pixmap]
-    (.dispose pixmap))
-
-  (set-color! [pixmap r g b a]
-    (.setColor pixmap r g b a))
-
-  (draw-pixel! [pixmap x y]
-    (.drawPixel pixmap x y))
-
-  (texture [pixmap]
-    (Texture. pixmap)))
 
 (defn clear-screen! [[r g b a]]
   (ScreenUtils/clear r g b a))

@@ -13,7 +13,6 @@
             [clojure.gdx :as gdx]
 
             [clojure.graphics :as graphics]
-            [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
@@ -85,6 +84,8 @@
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics GL20
                                       Pixmap
+                                      Pixmap$Format
+                                      Texture
                                       Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d BitmapFont
                                           SpriteBatch
@@ -899,11 +900,11 @@
   (gdx/set-tooltip-initial-time! 0)
   (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (let [batch (SpriteBatch.)
-        white-pixel-texture (let [pixmap (doto (gdx/pixmap 1 1)
-                                           (pixmap/set-color! 1 1 1 1)
-                                           (pixmap/draw-pixel! 0 0))
-                                  texture (pixmap/texture pixmap)]
-                              (pixmap/dispose! pixmap)
+        white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
+                                           (.setColor 1 1 1 1)
+                                           (.drawPixel 0 0))
+                                  texture (Texture. pixmap)]
+                              (.dispose pixmap)
                               texture)
         world-unit-scale (float (/ 48))]
     {:ctx/app app
@@ -945,7 +946,7 @@
                                  (fn [[path [hotspot-x hotspot-y]]]
                                    (let [pixmap (Pixmap. (.internal (Application/.getFiles app) (format path-format path)))
                                          cursor (graphics/new-cursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
-                                     (pixmap/dispose! pixmap)
+                                     (.dispose pixmap)
                                      cursor))))
      :ctx/stage (let [stage (gdx/stage (gdx/fit-viewport 1440 900) batch)]
                   (input/set-processor! (Application/.getInput app) stage)
