@@ -3,7 +3,6 @@
             [game.impl.textures]
             [game.impl.db :as db-impl]
             [clojure.gdx :as gdx]
-            [clojure.graphics.batch :as batch]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.graphics.orthographic-camera :as camera]
