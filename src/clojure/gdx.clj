@@ -12,7 +12,6 @@
             [clojure.java.io :as io]
             clojure.gdx.files
             clojure.gdx.graphics
-            clojure.gdx.graphics.texture
             clojure.gdx.input
             clojure.gdx.scenes.scene2d.actor
             clojure.gdx.scenes.scene2d.group

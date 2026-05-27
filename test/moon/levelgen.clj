@@ -7,7 +7,6 @@
             [clojure.graphics.batch :as batch]
             [clojure.gdx.graphics.color :as color]
             [clojure.graphics.orthographic-camera :as camera]
-            [clojure.graphics.texture :as texture]
             [clojure.input :as input]
             [clojure.input.keys :as input.keys]
             [clojure.scene2d.actor :as actor]
@@ -22,6 +21,7 @@
             [moon.creature-tiles]
             [moon.db :as db])
   (:import (com.badlogic.gdx Application)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
@@ -61,8 +61,8 @@
                                                       (assert (contains? textures file))
                                                       (let [texture (get textures file)]
                                                         (if-let [[x y w h] bounds]
-                                                          (texture/region texture x y w h)
-                                                          (texture/region texture)))))
+                                                          (TextureRegion. texture x y w h)
+                                                          (TextureRegion. texture)))))
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]

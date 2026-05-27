@@ -14,7 +14,6 @@
 
             [clojure.graphics :as graphics]
             [clojure.graphics.batch :as batch]
-            [clojure.graphics.texture :as texture]
             [clojure.graphics.pixmap :as pixmap]
             [clojure.graphics.orthographic-camera :as camera]
             [clojure.graphics.shape-drawer :as shape-drawer]
@@ -915,7 +914,7 @@
                                           (files/internal (Application/.getFiles app) (format "sounds/%s.wav" sound-name)))]))
      :ctx/batch batch
      :ctx/shape-drawer-texture white-pixel-texture
-     :ctx/shape-drawer (batch/shape-drawer batch (texture/region white-pixel-texture 1 0 1 1))
+     :ctx/shape-drawer (batch/shape-drawer batch (TextureRegion. white-pixel-texture 1 0 1 1))
      :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                              size 16
                              quality-scaling 2

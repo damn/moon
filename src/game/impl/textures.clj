@@ -1,10 +1,10 @@
 (ns game.impl.textures
   (:require [clojure.string :as str]
             [clojure.files :as files]
-            [clojure.graphics.texture :as texture]
             [moon.textures])
   (:import (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Texture)))
+           (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
@@ -35,5 +35,5 @@
     (assert (contains? textures file))
     (let [texture (get textures file)]
       (if-let [[x y w h] bounds]
-        (texture/region texture x y w h)
-        (texture/region texture)))))
+        (TextureRegion. texture (int x) (int y) (int w) (int h))
+        (TextureRegion. texture)))))
