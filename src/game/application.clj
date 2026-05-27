@@ -7,7 +7,9 @@
             [clojure.files :as files]
             [clojure.files.file-handle :as file-handle]
             [clojure.graphics.color :as color]
+
             [clojure.gdx :as gdx]
+
             [clojure.graphics :as graphics]
             [clojure.graphics.batch :as batch]
             [clojure.graphics.color :as color]
@@ -29,29 +31,38 @@
             [clojure.scene2d.ui :as ui]
             [clojure.scene2d.ui.image :as image]
             [clojure.scene2d.ui.skin :as skin]
+
             [clojure.input :as input]
             [clojure.input.buttons :as input.buttons]
             [clojure.input.keys :as input.keys]
+
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [clojure.txs-fn-map :as txs-fn-map]
             [clojure.utils.disposable :as disposable]
             [clojure.utils.viewport :as viewport]
+
             [game.impl.content-grid]
             [game.impl.explored-tile-corners]
             [game.impl.grid]
             [game.impl.raycaster]
             [game.impl.textures]
             [game.impl.db]
+
             game.ui.data-viewer-window
             game.ui.error-window
+
+            ; separate application ? better ! ?
             game.ui.property-editor-window
             game.ui.property-overview-window
+
             game.ui.dev-menu
             game.ui.action-bar
             game.ui.info-window
+
             [malli.core :as m]
             [malli.utils :as mu]
+
             [moon.ctx :as ctx]
             [moon.body :as body]
             [moon.controls :as controls]
@@ -94,26 +105,26 @@
     [:ctx/app :some] ; ~~ only used in this ns ~~ ✅
 
     ; Audio, Files
-    [:ctx/audio :some]
+    [:ctx/audio :some] ; ~~ only used in this ns ~~ ✅
 
     ; Graphics
-    [:ctx/batch :some]
-    [:ctx/cursors :some]
-    [:ctx/default-font :some]
-    [:ctx/unit-scale :some]
-    [:ctx/world-unit-scale :some]
-    [:ctx/world-viewport :some]
-    [:ctx/shape-drawer :some]
-    [:ctx/shape-drawer-texture :some]
-    [:ctx/textures :some]
+    [:ctx/batch :some] ; ~~ only used in this ns ~~ ✅
+    [:ctx/cursors :some] ; ~~ only used in this ns ~~ ✅
+    [:ctx/default-font :some] ; ~~ only used in this ns ~~ ✅
+    [:ctx/unit-scale :some] ; ~~ only used in this ns ~~ ✅
+    [:ctx/world-unit-scale :some] ; ~~ only used in this ns ~~ ✅ -- accessed through ctx/world-unit-scale protocol
+    [:ctx/world-viewport :some] ; ~~ only used in this ns ~~ ✅
+    [:ctx/shape-drawer :some] ; ~~ only used in this ns ~~ ✅
+    [:ctx/shape-drawer-texture :some] ; ~~ only used in this ns ~~ ✅
+    [:ctx/textures :some] ; 💥⚠️
 
     ; UI
-    [:ctx/skin :some]
-    [:ctx/stage :some]
+    [:ctx/skin :some] ; 💥⚠️
+    [:ctx/stage :some] ; 💥⚠️
 
     ; Frame
-    [:ctx/active-entities :any]
-    [:ctx/delta-time :any]
+    [:ctx/active-entities :any] ; 💥⚠️
+    [:ctx/delta-time :any] ; 💥⚠️
     [:ctx/mouseover-eid :any]
     [:ctx/ui-mouse-position :any]
     [:ctx/world-mouse-position :any]
@@ -812,8 +823,6 @@
                          tiled-map
                          (tile-color-setter ctx))
   ctx)
-
-(def world-unit-scale :ctx/world-unit-scale)
 
 (defn camera-zoom [{:keys [ctx/world-viewport]}]
   (camera/zoom (:viewport/camera world-viewport)))
