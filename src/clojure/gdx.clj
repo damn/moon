@@ -1,6 +1,5 @@
 (ns clojure.gdx
   (:require clojure.gdx.scenes.scene2d.ui.text-tooltip
-            clojure.gdx.scenes.scene2d.ui.table
             clojure.gdx.scenes.scene2d.ui.image
             clojure.gdx.scenes.scene2d.ui.check-box
             clojure.gdx.scenes.scene2d.ui.window

@@ -3,7 +3,7 @@
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [clojure.scene2d.ui.table :as table]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.scene2d.ui.widget-group :as widget-group]))
 
 (defmethod actor/create :ui/info-window

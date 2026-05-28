@@ -6,7 +6,7 @@
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [clojure.scene2d.ui.table :as table]))
+            [clojure.gdx.scenes.scene2d.ui.table :as table]))
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create
