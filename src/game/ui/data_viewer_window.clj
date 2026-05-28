@@ -2,6 +2,7 @@
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.scene2d.stage :as stage]))
 
 (defmethod actor/create :ui/data-viewer-window
@@ -29,9 +30,8 @@
                    (str (class v))))
         v->actor (fn [v skin]
                    (if (map? v)
-                     (actor/create
-                      {:type :ui/text-button
-                       :text "Map"
+                     (text-button/create
+                      {:text "Map"
                        :skin skin
                        :actor/listeners [[:listener/change
                                           (fn [_event actor]

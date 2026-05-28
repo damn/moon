@@ -3,7 +3,7 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton)))
 
-(defmethod actor/create :ui/text-button
+(defn create
   [{:keys [text skin] :as opts}]
   (doto (TextButton. ^String text ^Skin skin)
     (actor/set-opts! opts)))

@@ -11,6 +11,7 @@
             [clojure.input.keys :as input.keys]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.viewport :as viewport]
             [moon.creature-tiles]
@@ -85,9 +86,8 @@
                                         (let [stage (actor/stage actor)
                                               new-ctx (generate-level ctx level-fn)]
                                           (stage/set-ctx! stage new-ctx)))]]
-                 [{:actor (actor/create
-                           {:type :ui/text-button
-                            :text (str "Generate " level-fn)
+                 [{:actor (text-button/create
+                           {:text (str "Generate " level-fn)
                             :skin skin
                             :actor/listeners {:listener/change (fn [event actor]
                                                                  (on-clicked actor (:stage/ctx (event/stage event))))}})}])})

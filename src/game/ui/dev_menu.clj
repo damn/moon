@@ -3,6 +3,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.scene2d.ui.table :as table]))
@@ -43,9 +44,8 @@
    :window/close-button? skin
    :table/rows [(for [{:keys [label on-click]} items]
                   {:actor
-                   (actor/create
-                    {:type :ui/text-button
-                     :text label
+                   (text-button/create
+                    {:text label
                      :skin skin
                      :actor/listeners {:listener/change (fn [event actor]
                                                           (on-click actor (:stage/ctx (event/stage event))))}})})]})
@@ -55,9 +55,8 @@
                {:type :ui/table
                 :table/rows [(for [{:keys [label items]} menus]
                                {:actor
-                                (actor/create
-                                 {:type :ui/text-button
-                                  :text label
+                                (text-button/create
+                                 {:text label
                                   :skin skin
                                   :actor/listeners {:listener/change (fn [event actor]
                                                                        (stage/add-actor! (event/stage event)

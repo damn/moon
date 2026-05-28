@@ -17,6 +17,7 @@
             [clojure.gdx.graphics.colors :as colors]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.stage]
 
 
@@ -553,9 +554,8 @@
                                                       :table/rows [[{:actor (label/create
                                                                              {:text text
                                                                               :skin skin})}]
-                                                                   [{:actor (actor/create
-                                                                             {:type :ui/text-button
-                                                                              :text button-text
+                                                                   [{:actor (text-button/create
+                                                                             {:text button-text
                                                                               :skin skin
                                                                               :actor/listeners {:listener/change (fn [_event _actor]
                                                                                                                    (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))

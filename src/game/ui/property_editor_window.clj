@@ -3,6 +3,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
             [moon.ctx :as ctx]
@@ -52,21 +53,19 @@
                             (let [ctx (:stage/ctx stage)]
                               (when (ctx/key-just-pressed? ctx input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
-        save-button {:type :ui/text-button
-                     :text "Save [LIGHT_GRAY](ENTER)[]"
+        save-button {:text "Save [LIGHT_GRAY](ENTER)[]"
                      :skin skin
                      :actor/listeners [[:listener/change
                                         (fn [event actor]
                                           (clicked-save-fn actor (:stage/ctx (event/stage event))))]]}
-        delete-button {:type :ui/text-button
-                       :text "Delete"
+        delete-button {:text "Delete"
                        :skin skin
                        :actor/listeners [[:listener/change
                                           (fn [event actor]
                                             (clicked-delete-fn actor (:stage/ctx (event/stage event))))]]}
         scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor (actor/create save-button) :center? true}
-                           {:actor (actor/create delete-button) :center? true}]]
+                          [{:actor (text-button/create save-button) :center? true}
+                           {:actor (text-button/create delete-button) :center? true}]]
         rows [[(let [table (actor/create
                             {:type :ui/table
                              :table/cell-defaults {:pad 5}

@@ -9,6 +9,7 @@
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.scene2d.ui.check-box :as check-box]
@@ -133,9 +134,8 @@
             {:type :ui/table
              :table/cell-defaults {:pad 2}
              :table/rows [[{:actor (when display-remove-component-button?
-                                     (actor/create
-                                      {:type :ui/text-button
-                                       :text "-"
+                                     (text-button/create
+                                      {:text "-"
                                        :skin skin
                                        :actor/listeners {:listener/change
                                                          (fn [event _actor]
@@ -180,9 +180,8 @@
     (table/add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (actor/create
-                 {:type :ui/text-button
-                  :skin skin
+       [{:actor (text-button/create
+                 {:skin skin
                   :text (name k)
                   :actor/listeners {:listener/change
                                     (fn [event _actor]
@@ -235,9 +234,8 @@
     (table/add-rows!
      table
      (concat [(when opt?
-                [{:actor (actor/create
-                          {:type :ui/text-button
-                           :text "Add component"
+                [{:actor (text-button/create
+                          {:text "Add component"
                            :skin skin
                            :actor/listeners {:listener/change
                                              (fn [event actor]
@@ -328,9 +326,8 @@
                     (widget-group/pack! (actor/find-ancestor table ui/window?)))]
     (table/add-rows!
      table
-     [[{:actor (actor/create
-                {:type :ui/text-button
-                 :text "+"
+     [[{:actor (text-button/create
+                {:text "+"
                  :skin skin
                  :actor/listeners {:listener/change (fn [event _actor]
                                                       (let [{:keys [ctx/db
@@ -356,9 +353,8 @@
                     :actor/user-object property-id
                     :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))
       (for [id property-ids]
-        {:actor (actor/create
-                 {:type :ui/text-button
-                  :text "-"
+        {:actor (text-button/create
+                 {:text "-"
                   :skin skin
                   :actor/listeners {:listener/change (fn [event _actor]
                                                        (redo-rows (:stage/ctx (event/stage event))
@@ -390,9 +386,8 @@
     (table/add-rows!
      table
      [[(when-not property-id
-         {:actor (actor/create
-                  {:type :ui/text-button
-                   :text "+"
+         {:actor (text-button/create
+                  {:text "+"
                    :skin skin
                    :actor/listeners {:listener/change (fn [event _actor]
                                                         (let [{:keys [ctx/db
@@ -418,9 +413,8 @@
                      :actor/user-object property-id
                      :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))]
       [(when property-id
-         {:actor (actor/create
-                  {:type :ui/text-button
-                   :text "-"
+         {:actor (text-button/create
+                  {:text "-"
                    :skin skin
                    :actor/listeners {:listener/change (fn [event _actor]
                                                         (redo-rows (:stage/ctx (event/stage event))
@@ -465,16 +459,14 @@
                                        {:type :ui/table
                                         :table/cell-defaults {:pad 5}
                                         :table/rows (for [sound-name (ctx/sound-names ctx)]
-                                                      [{:actor (actor/create
-                                                                {:type :ui/text-button
-                                                                 :text sound-name
+                                                      [{:actor (text-button/create
+                                                                {:text sound-name
                                                                  :skin skin
                                                                  :actor/listeners {:listener/change
                                                                                    (fn [event actor]
                                                                                      ((rebuild-sound-widget! table sound-name) actor (:stage/ctx (event/stage event))))}})}
-                                                       {:actor (actor/create
-                                                                {:type :ui/text-button
-                                                                 :text "play!"
+                                                       {:actor (text-button/create
+                                                                {:text "play!"
                                                                  :skin skin
                                                                  :actor/listeners {:listener/change (fn [event _actor]
                                                                                                       (txs/handle! (:stage/ctx (event/stage event))
@@ -487,15 +479,13 @@
                                           (actor/height table))})]]}))))
 
 (defn- sound-columns [skin table sound-name]
-  [{:actor (actor/create
-            {:type :ui/text-button
-             :text sound-name
+  [{:actor (text-button/create
+            {:text sound-name
              :skin skin
              :actor/listeners {:listener/change (fn [event _actor]
                                                   ((open-select-sounds-handler table) (:stage/ctx (event/stage event))))}})}
-   {:actor (actor/create
-            {:type :ui/text-button
-             :text "play!"
+   {:actor (text-button/create
+            {:text "play!"
              :skin skin
              :actor/listeners {:listener/change (fn [event _actor]
                                                   (txs/handle! (:stage/ctx (event/stage event))
@@ -508,9 +498,8 @@
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)
                               [{:actor
-                                (actor/create
-                                 {:type :ui/text-button
-                                  :text "No sound"
+                                (text-button/create
+                                 {:text "No sound"
                                   :skin skin
                                   :actor/listeners {:listener/change
                                                     (fn [event _actor]

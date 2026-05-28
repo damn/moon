@@ -1,6 +1,7 @@
 (ns clojure.gdx.scenes.scene2d.ui.window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.scene2d.ui.table :as table])
+            [clojure.scene2d.ui.table :as table]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)))
 
@@ -12,9 +13,8 @@
 
     (when-let [skin (:window/close-button? opts)]
       (table/add! (.getTitleTable window)
-                  {:actor (actor/create
-                           {:type :ui/text-button
-                            :text "X"
+                  {:actor (text-button/create
+                           {:text "X"
                             :skin skin
                             :actor/listeners {:listener/change (fn [_event _actor]
                                                                  (actor/remove! window))}})}))
