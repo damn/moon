@@ -10,7 +10,7 @@
   * moon.entity
   * moon.state
   * moon.info
-  * draws/txs/raycaster/etc protocols
+  * raycaster/etc protocols
 
   => entity in here move ???
   effect/state/info too ?
@@ -87,7 +87,6 @@
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
             [moon.textures :as textures]
-            [moon.txs :as txs]
             [game.ui.action-bar :as action-bar]
             [moon.ui.inventory-window :as inventory-window]
             [moon.val-max :as val-max]
@@ -642,8 +641,7 @@
             :when component]
       (apply (get draw-fns k) ctx (rest component))))
 
-  txs/Txs
-  (handle! [ctx txs]
+  (do! [ctx txs]
     (let [handled-txs (try (actions! txs-fn-map ctx txs)
                            (catch Throwable t
                              (throw (ex-info "Error handling txs"
@@ -651,8 +649,6 @@
       (reduce-actions! reaction-txs-fn-map
                        ctx
                        handled-txs)))
-
-
   )
 
 (defn create-record [ctx]
@@ -1374,7 +1370,7 @@
                                                           (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
                                                                 entity @player-eid
                                                                 state-k (:state (:entity/fsm entity))]
-                                                            (txs/handle! ctx
+                                                            (ctx/do! ctx
                                                                          (state/clicked-inventory-cell [state-k (state-k entity)]
                                                                                                        player-eid
                                                                                                        cell))))}
@@ -1431,7 +1427,7 @@
            ctx/entity-ids
            ctx/start-position]
     :as ctx}]
-  (txs/handle! ctx
+  (ctx/do! ctx
                [[:tx/spawn-creature {:position (mapv (partial + 0.5) start-position)
                                      :creature-property (db/build db :creatures/vampire)
                                      :components {:entity/fsm {:fsm :fsms/player
@@ -1449,7 +1445,7 @@
   [{:keys [ctx/db
            ctx/tiled-map]
     :as ctx}]
-  (txs/handle!
+  (ctx/do!
    ctx
    (for [[position creature-id] (tiled-map/spawn-positions tiled-map)]
      [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
@@ -1718,7 +1714,7 @@
         entity @eid
         state-k (:state (:entity/fsm entity))
         txs (state/handle-input [state-k (state-k entity)] eid ctx)]
-    (txs/handle! ctx txs))
+    (ctx/do! ctx txs))
   ctx)
 
 (defn dissoc-interaction-state [ctx]
@@ -1787,7 +1783,7 @@
   (try
    ; TODO should not have effects which interfere in eid order (remove?)
    ; convert attacks self!?
-   (txs/handle! ctx (mapcat (fn [eid]
+   (ctx/do! ctx (mapcat (fn [eid]
                               (mapcat (fn [[k v]]
                                         (comment
                                          :ctx/delta-time
@@ -1829,7 +1825,7 @@
 
 (defn remove-destroyed-entities!
   [ctx]
-  (txs/handle! ctx (mapcat
+  (ctx/do! ctx (mapcat
                     (fn [eid]
                       (cons
                        [:tx/unregister-eid eid]

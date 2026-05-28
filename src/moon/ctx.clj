@@ -7,4 +7,5 @@
   (key-just-pressed? [_ key])
   (item-place-position [_ player-entity])
   (sound-names [_])
-  (draw! [_ draws]))
+  (draw! [_ draws])
+  (do! [_ txs]))

@@ -29,8 +29,7 @@
             [moon.schemas :as schemas]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.throwable :as throwable]
-            [moon.txs :as txs]))
+            [moon.throwable :as throwable]))
 
 (defmulti create (fn [[schema-k :as _schema] v ctx]
                    schema-k))
@@ -535,7 +534,7 @@
                                                                 {:text "play!"
                                                                  :skin skin
                                                                  :actor/listeners {:listener/change (fn [event _actor]
-                                                                                                      (txs/handle! (:stage/ctx (event/stage event))
+                                                                                                      (ctx/do! (:stage/ctx (event/stage event))
                                                                                                                    [[:tx/sound sound-name]]))}})}])} )]
                             {:actor (scroll-pane/create
                                      {:actor table
@@ -554,7 +553,7 @@
             {:text "play!"
              :skin skin
              :actor/listeners {:listener/change (fn [event _actor]
-                                                  (txs/handle! (:stage/ctx (event/stage event))
+                                                  (ctx/do! (:stage/ctx (event/stage event))
                                                                [[:tx/sound sound-name]]))}})}])
 
 (defmethod create :s/sound [_  sound-name {:keys [ctx/skin]}]
