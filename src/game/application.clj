@@ -61,7 +61,6 @@
 
             [moon.ctx :as ctx]
             [moon.body :as body]
-            [moon.controls :as controls]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.creature-tiles]
@@ -1000,19 +999,17 @@
                         :z-order/effect]
          ))
 
+(defn player-movement-vector [ctx]
+  (let [r (when (key-pressed? ctx input.keys/d) [1  0])
+        l (when (key-pressed? ctx input.keys/a) [-1 0])
+        u (when (key-pressed? ctx input.keys/w) [0  1])
+        d (when (key-pressed? ctx input.keys/s) [0 -1])]
+    (when (or r l u d)
+      (let [v (v/normalise (reduce v/add [0 0] (remove nil? [r l u d])))]
+        (when (pos? (v/length v))
+          v)))))
+
 (defn create-controls [ctx]
-  (extend-type Context
-    controls/Controls
-    (player-movement-vector [ctx]
-      (let [r (when (key-pressed? ctx input.keys/d) [1  0])
-            l (when (key-pressed? ctx input.keys/a) [-1 0])
-            u (when (key-pressed? ctx input.keys/w) [0  1])
-            d (when (key-pressed? ctx input.keys/s) [0 -1])]
-        (when (or r l u d)
-          (let [v (v/normalise (reduce v/add [0 0] (remove nil? [r l u d])))]
-            (when (pos? (v/length v))
-              v)))))
-    )
   (assoc ctx
          :ctx/controls {
                         :zoom-in input.keys/minus
@@ -1643,7 +1640,7 @@
 
 (defmethod state/handle-input :player-moving
   [_ eid ctx]
-  (if-let [movement-vector (controls/player-movement-vector ctx)]
+  (if-let [movement-vector (player-movement-vector ctx)]
     [[:tx/assoc eid :entity/movement {:direction movement-vector
                                       :speed (creature-speed @eid)}]]
     [[:tx/event eid :no-movement-input]]))
@@ -1700,7 +1697,7 @@
 (defmethod state/handle-input :player-idle
   [_ player-eid {:keys [ctx/interaction-state
                         ctx/stage] :as ctx}]
-  (if-let [movement-vector (controls/player-movement-vector ctx)]
+  (if-let [movement-vector (player-movement-vector ctx)]
     [[:tx/event player-eid :movement-input movement-vector]]
     (when (ctx/button-just-pressed? ctx input.buttons/left)
       (interaction-state->txs interaction-state
