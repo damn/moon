@@ -1,5 +1,5 @@
 ; Remove:
-; * bind-root
+; * bind-root [x]
 ; * protocols
 ; * extend-type
 ; * (multimethods)   - just function maps ?
@@ -28,7 +28,6 @@
             [clojure.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
-            [clojure.scene2d.ui.image :as image]
 
             [clojure.input.buttons :as input.buttons]
             [clojure.input.keys :as input.keys]
@@ -1421,36 +1420,6 @@
      :actor/visible? false
      :actor/position [(:viewport/world-width (:stage/viewport stage))
                       (:viewport/world-height (:stage/viewport stage))]}))
-
-(defn- find-inventory-window-cell [group cell]
-  (first (filter #(= (actor/user-object %) cell)
-                 (group/children group))))
-
-(defn- window->cell [inventory-window cell]
-  (-> inventory-window
-      (group/find-actor "inventory-cell-table")
-      (find-inventory-window-cell cell)))
-
-(.bindRoot #'moon.ui.inventory-window/set-item!
-           (defn set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
-             (let [cell-widget (window->cell inventory-window cell)
-                   image-widget (group/find-actor cell-widget "image-widget")
-                   cell-size (:cell-size (actor/user-object image-widget))]
-               (image/set-drawable! image-widget {:drawable/texture-region texture-region
-                                                  :drawable/size cell-size})
-               (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
-               nil)))
-
-(.bindRoot #'moon.ui.inventory-window/remove-item!
-           (defn remove-item! [inventory-window cell]
-             (let [cell-widget (window->cell inventory-window cell)
-                   image-widget (group/find-actor cell-widget "image-widget")]
-               (image/set-drawable! image-widget (:background-drawable (actor/user-object image-widget)))
-               ; !! TODO FIXME FIXME FIXME !!!
-               ;(.removeListener actor (.getListeners actor))
-               ; ... first find the listener
-               #_(tooltip/remove! cell-widget)
-               nil)))
 
 (defn spawn-player
   [{:keys [ctx/db
