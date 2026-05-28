@@ -12,7 +12,7 @@
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
-            [clojure.scene2d.ui.check-box :as check-box]
+            [clojure.gdx.scenes.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.gdx.scenes.scene2d.ui.select-box :as select-box]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
@@ -54,9 +54,8 @@
 
 (defmethod create :s/boolean
   [_ checked? {:keys [ctx/skin]}]
-  (actor/create
-   {:type :ui/check-box
-    :skin skin
+  (check-box/create
+   {:skin skin
     :checked? checked?}))
 
 (defmethod value :s/boolean
