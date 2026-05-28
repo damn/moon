@@ -3,7 +3,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui ImageButton)))
 
-(defmethod actor/create :ui/image-button
+(defn create
   [{:keys [drawable] :as opts}]
   (doto (ImageButton. (texture-region-drawable/create* drawable))
     (actor/set-opts! opts)))

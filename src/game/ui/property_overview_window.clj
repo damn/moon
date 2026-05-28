@@ -3,6 +3,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]))
@@ -40,9 +41,8 @@
                   extra-info-text]} row]
       {:actor (actor/create
                {:type :ui/stack
-                :group/actors [(actor/create
-                                {:type :ui/image-button
-                                 :drawable {:drawable/texture-region texture-region
+                :group/actors [(image-button/create
+                                {:drawable {:drawable/texture-region texture-region
                                             :drawable/scale image-scale}
                                  :actor/listeners {:listener/change (fn [event actor]
                                                                       (on-clicked actor (:stage/ctx (event/stage event))))

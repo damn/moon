@@ -9,6 +9,7 @@
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.scene2d.ui.select-box :as select-box]
@@ -45,9 +46,8 @@
    {:type :ui/table
     :table/cell-defaults {:pad 1}
     :table/rows [(for [image (:animation/frames animation)]
-                   {:actor (actor/create
-                            {:type :ui/image-button
-                             :drawable {:drawable/texture-region (textures/texture-region textures image)
+                   {:actor (image-button/create
+                            {:drawable {:drawable/texture-region (textures/texture-region textures image)
                                         :drawable/scale 2}})})]}))
 
 (defmethod create :s/boolean
@@ -83,9 +83,8 @@
 (defmethod create :s/image
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
-  (actor/create
-   {:type :ui/image-button
-    :drawable {:drawable/texture-region (textures/texture-region textures image)
+  (image-button/create
+   {:drawable {:drawable/texture-region (textures/texture-region textures image)
                :drawable/scale 2}})
   #_(ui/image-button image
                      (fn [_actor ctx]
