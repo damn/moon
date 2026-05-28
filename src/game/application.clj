@@ -1,21 +1,16 @@
-; Remove:
-; * bind-root [x]
-; * protocols
-; * extend-type
-; * (multimethods)   - just function maps ? - or actual protocols ? @ create types ... ?
 (ns game.application
   (:require [clojure.core-ext :refer [edn-resource
                                       safe-merge
                                       define-order
                                       sort-by-order
                                       actions!
-                                      reduce-actions!]] ; good library ✅, externalised
-            [clojure.edn :as edn] ; good library ✅, externalised
-            [clojure.gdx.fit-viewport :as fit-viewport] ; good library ✅, externalised
-            [clojure.gdx.graphics.color :as color] ; good library ✅, externalised
-            [clojure.gdx.graphics.colors :as colors] ; good library ✅, externalised
-            [clojure.gdx.tiled-map-renderer :as tiled-map-renderer] ; good library ✅, externalised
-            [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager] ; good library ✅, externalised
+                                      reduce-actions!]]
+            [clojure.edn :as edn]
+            [clojure.gdx.fit-viewport :as fit-viewport]
+            [clojure.gdx.graphics.color :as color]
+            [clojure.gdx.graphics.colors :as colors]
+            [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
+            [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
