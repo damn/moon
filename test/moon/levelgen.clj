@@ -2,7 +2,6 @@
   (:require [clojure.core-ext :refer [edn-resource]]
             [game.impl.textures]
             [game.impl.db :as db-impl]
-            [clojure.gdx]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.gdx.fit-viewport :as fit-viewport]
