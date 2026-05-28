@@ -43,7 +43,6 @@
             [game.impl.grid]
             [game.impl.raycaster]
             [game.impl.textures]
-            [game.impl.db]
 
             game.ui.data-viewer-window
             game.ui.error-window
@@ -1094,7 +1093,7 @@
   (assoc ctx :ctx/max-speed (/ minimum-size max-delta)))
 
 (defn create-db [ctx]
-  (assoc ctx :ctx/db (game.impl.db/create)))
+  (assoc ctx :ctx/db (db/create)))
 
 (defn create-tiled-map
   [{:keys [ctx/db

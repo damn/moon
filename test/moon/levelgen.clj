@@ -1,7 +1,6 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
             [game.impl.textures]
-            [game.impl.db :as db-impl]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.gdx.fit-viewport :as fit-viewport]
@@ -104,7 +103,7 @@
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage
              :ctx/files files}
-        ctx (assoc ctx :ctx/db (db-impl/create))
+        ctx (assoc ctx :ctx/db (db/create))
         ctx (assoc ctx :ctx/textures (game.impl.textures/create files))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
