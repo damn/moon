@@ -1,5 +1,6 @@
 (ns game.ui.action-bar
-  (:require [clojure.scene2d.actor :as actor]
+  (:require [clojure.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
+            [clojure.scene2d.actor :as actor]
             [clojure.scene2d.group :as group]
             [moon.ui.action-bar :as action-bar])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
@@ -9,9 +10,8 @@
   (actor/create
    {:type :ui/table
     :table/cell-defaults {:pad 2}
-    :table/rows [[{:actor (actor/create
-                           {:type :ui/horizontal-group ; TODO maybe 'horizontal-button-group'
-                            :space 2
+    :table/rows [[{:actor (horizontal-group/create
+                           {:space 2
                             :pad 2
                             :actor/name "moon.ui.action-bar.horizontal-group"
                             :actor/user-object (doto (ButtonGroup.)

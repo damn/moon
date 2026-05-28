@@ -2,7 +2,7 @@
   (:require [clojure.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
-(defmethod actor/create :ui/horizontal-group
+(defn create
   [{:keys [space pad] :as opts}]
   (doto (HorizontalGroup.)
     (.space space)

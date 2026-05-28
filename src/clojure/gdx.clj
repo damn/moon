@@ -4,7 +4,6 @@
             clojure.gdx.scenes.scene2d.event
             clojure.gdx.scenes.scene2d.ui.widget
             clojure.gdx.scenes.scene2d.ui.scroll-pane
-            clojure.gdx.scenes.scene2d.ui.horizontal-group
             clojure.gdx.scenes.scene2d.ui.label
             clojure.gdx.scenes.scene2d.ui.image-button
             clojure.gdx.scenes.scene2d.ui.select-box
