@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require clojure.gdx.scenes.scene2d.ui.scroll-pane
-            clojure.gdx.scenes.scene2d.ui.label
+  (:require clojure.gdx.scenes.scene2d.ui.label
             clojure.gdx.scenes.scene2d.ui.image-button
             clojure.gdx.scenes.scene2d.ui.select-box
             clojure.gdx.scenes.scene2d.ui.stack

@@ -1,5 +1,6 @@
 (ns game.ui.data-viewer-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.scene2d.stage :as stage]))
 
 (defmethod actor/create :ui/data-viewer-window
@@ -57,9 +58,9 @@
         scroll-pane-cell (let [table (actor/create {:type :ui/table
                                                     :table/cell-defaults {:pad 1}
                                                     :table/rows [[scroll-pane-table]]})]
-                           {:actor (actor/create {:type :ui/scroll-pane
-                                                  :actor table
-                                                  :skin skin})
+                           {:actor (scroll-pane/create
+                                    {:actor table
+                                     :skin skin})
                             :width width
                             ; (- (:viewport/world-width viewport) 100)
                             ; (+ 100 (/ (:viewport/world-width viewport) 2))

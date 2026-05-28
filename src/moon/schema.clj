@@ -9,6 +9,7 @@
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
             [clojure.scene2d.ui.check-box :as check-box]
+            [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.scene2d.ui.select-box :as select-box]
             [clojure.scene2d.ui.table :as table]
             [clojure.scene2d.ui.text-field :as text-field]
@@ -482,9 +483,9 @@
                                                                  :actor/listeners {:listener/change (fn [event _actor]
                                                                                                       (txs/handle! (:stage/ctx (event/stage event))
                                                                                                                    [[:tx/sound sound-name]]))}})}])} )]
-                            {:actor (actor/create {:type :ui/scroll-pane
-                                                   :actor table
-                                                   :skin skin})
+                            {:actor (scroll-pane/create
+                                     {:actor table
+                                      :skin skin})
                              :width  (+ (actor/width table) 50)
                              :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
                                           (actor/height table))})]]}))))

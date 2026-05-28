@@ -2,6 +2,7 @@
   (:require [clojure.input.keys :as input.keys]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
+            [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
             [moon.ctx :as ctx]
@@ -70,9 +71,9 @@
                             {:type :ui/table
                              :table/cell-defaults {:pad 5}
                              :table/rows scroll-pane-rows})]
-                 {:actor (actor/create {:type :ui/scroll-pane
-                                        :actor table
-                                        :skin skin})
+                 {:actor (scroll-pane/create
+                          {:actor table
+                           :skin skin})
                   :width  (+ (actor/width table) 50)
                   :height (min (- scroll-pane-height 50)
                                (actor/height table))})]]]
