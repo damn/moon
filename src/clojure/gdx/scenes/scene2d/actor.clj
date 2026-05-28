@@ -8,85 +8,62 @@
 
 (defmulti create :type)
 
-(defprotocol PActor
-  (name [_])
-  (x [_])
-  (y [_])
-  (width [_])
-  (height [_])
-  (user-object [_])
-  (stage [_])
-  (set-name! [_ name])
-  (set-user-object! [_ object])
-  (set-position! [_ x y align]
-                 [_ [x y]])
-  (set-visible! [_ visible?])
-  (set-touchable! [_ touchable])
-  (visible? [_])
-  (hit [_ [x y] touchable?])
-  (remove! [_])
-  (parent [_])
-  (stage->local-coordinates [actor xy])
-  (add-listener! [actor [listener-k listener-params]]))
+(defn name [^Actor actor]
+  (.getName actor))
 
-(extend-type Actor
-  PActor
-  (name [actor]
-    (.getName actor))
+(defn x [^Actor actor]
+  (.getX actor))
 
-  (x [actor]
-    (.getX actor))
+(defn y [^Actor actor]
+  (.getY actor))
 
-  (y [actor]
-    (.getY actor))
+(defn width [^Actor actor]
+  (.getWidth actor))
 
-  (width [actor]
-    (.getWidth actor))
+(defn height [^Actor actor]
+  (.getHeight actor))
 
-  (height [actor]
-    (.getHeight actor))
+(defn user-object [^Actor actor]
+  (.getUserObject actor))
 
-  (user-object [actor]
-    (.getUserObject actor))
+(defn stage [^Actor actor]
+  (.getStage actor))
 
-  (stage [actor]
-    (.getStage actor))
+(defn set-name! [^Actor actor name]
+  (.setName actor name))
 
-  (set-name! [actor name]
-    (.setName actor name))
+(defn set-user-object! [^Actor actor object]
+  (.setUserObject actor object))
 
-  (set-user-object! [actor object]
-    (.setUserObject actor object))
+(defn visible? [^Actor actor]
+  (.isVisible actor))
 
-  (visible? [actor]
-    (.isVisible actor))
+(defn hit [^Actor actor [x y] touchable?]
+  (.hit actor x y touchable?))
 
-  (hit [actor [x y] touchable?]
-    (.hit actor x y touchable?))
+(defn remove! [^Actor actor]
+  (.remove actor))
 
-  (remove! [actor]
-    (.remove actor))
+(defn parent [^Actor actor]
+  (.getParent actor))
 
-  (parent [actor]
-    (.getParent actor))
+(defn set-position!
+  ([^Actor actor [x y]]
+   (.setPosition actor x y))
+  ([^Actor actor x y align]
+   (.setPosition actor x y (align/k->value align))))
 
-  (set-position!
-    ([actor [x y]]
-     (.setPosition actor x y))
-    ([actor x y align]
-     (.setPosition actor x y (align/k->value align))))
+(defn set-visible! [^Actor actor visible?]
+  (.setVisible actor visible?))
 
-  (set-visible! [actor visible?]
-    (.setVisible actor visible?))
+(defn set-touchable! [^Actor actor touchable]
+  (.setTouchable actor (touchable/k->value touchable)))
 
-  (set-touchable! [actor touchable]
-    (.setTouchable actor (touchable/k->value touchable)))
+(defn add-listener! [^Actor actor [listener-k listener-params]]
+  (.addListener actor (listener/create [listener-k listener-params])))
 
-  (add-listener! [actor [listener-k listener-params]]
-    (.addListener actor (listener/create [listener-k listener-params])))
-
-  (stage->local-coordinates [actor xy]
-    (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy)))))
+(defn stage->local-coordinates [^Actor actor xy]
+  (vector2/->clj (.stageToLocalCoordinates actor (vector2/->java xy))))
 
 (defn find-ancestor [actor pred]
   (if-let [p (parent actor)]
