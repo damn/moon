@@ -39,16 +39,18 @@
                   extra-info-text]} row]
       {:actor (actor/create
                {:type :ui/stack
-                :group/actors [{:type :ui/image-button
-                                :drawable {:drawable/texture-region texture-region
-                                           :drawable/scale image-scale}
-                                :actor/listeners {:listener/change (fn [event actor]
-                                                                     (on-clicked actor (:stage/ctx (event/stage event))))
-                                                  :listener/text-tooltip [tooltip skin]}}
-                               {:type :ui/label
-                                :text extra-info-text
-                                :skin skin
-                                :actor/touchable :touchable/disabled}]})})))
+                :group/actors [(actor/create
+                                {:type :ui/image-button
+                                 :drawable {:drawable/texture-region texture-region
+                                            :drawable/scale image-scale}
+                                 :actor/listeners {:listener/change (fn [event actor]
+                                                                      (on-clicked actor (:stage/ctx (event/stage event))))
+                                                   :listener/text-tooltip [tooltip skin]}})
+                               (actor/create
+                                {:type :ui/label
+                                 :text extra-info-text
+                                 :skin skin
+                                 :actor/touchable :touchable/disabled})]})})))
 
 (defn- overview-table-rows
   [db

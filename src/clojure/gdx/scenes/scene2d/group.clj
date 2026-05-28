@@ -24,5 +24,5 @@
 
   (set-opts! [group opts]
     (when-let [actors (:group/actors opts)]
-      (run! #(group/add-actor! group (actor/create %)) actors))
+      (run! #(group/add-actor! group %) actors))
     (actor/set-opts! group opts)))

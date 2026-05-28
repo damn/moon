@@ -1254,7 +1254,7 @@
 (defn create-windows [ctx actor-fns]
   {:type :ui/group
    :group/actors (for [f actor-fns]
-                   (f ctx))
+                   (actor/create (f ctx)))
    :actor/name "moon.ui.windows"})
 
 (defn create-player-state-draw [_ctx]
@@ -1372,25 +1372,27 @@
                                                                          (state/clicked-inventory-cell [state-k (state-k entity)]
                                                                                                        player-eid
                                                                                                        cell))))}
-                      :group/actors [{:type :ui/widget
-                                      :draw! (fn [this _batch _parent-alpha]
-                                               (when-let [stage (actor/stage this)]
-                                                 (let [{:keys [ctx/player-eid
-                                                               ctx/ui-mouse-position]
-                                                        :as ctx} (:stage/ctx stage)]
-                                                   (draws/handle ctx
-                                                                 (draw-cell-rect @player-eid
-                                                                                 (actor/x this)
-                                                                                 (actor/y this)
-                                                                                 (actor/hit this
-                                                                                            (actor/stage->local-coordinates this ui-mouse-position)
-                                                                                            true)
-                                                                                 (actor/user-object (actor/parent this)))))))}
-                                     {:type :ui/image
-                                      :content background-drawable
-                                      :actor/name "image-widget"
-                                      :actor/user-object {:background-drawable background-drawable
-                                                          :cell-size cell-size}}]})}))]
+                      :group/actors [(actor/create
+                                      {:type :ui/widget
+                                       :draw! (fn [this _batch _parent-alpha]
+                                                (when-let [stage (actor/stage this)]
+                                                  (let [{:keys [ctx/player-eid
+                                                                ctx/ui-mouse-position]
+                                                         :as ctx} (:stage/ctx stage)]
+                                                    (draws/handle ctx
+                                                                  (draw-cell-rect @player-eid
+                                                                                  (actor/x this)
+                                                                                  (actor/y this)
+                                                                                  (actor/hit this
+                                                                                             (actor/stage->local-coordinates this ui-mouse-position)
+                                                                                             true)
+                                                                                  (actor/user-object (actor/parent this)))))))})
+                                     (actor/create
+                                      {:type :ui/image
+                                       :content background-drawable
+                                       :actor/name "image-widget"
+                                       :actor/user-object {:background-drawable background-drawable
+                                                           :cell-size cell-size}})]})}))]
     {:type :ui/window
      :title "Inventory"
      :skin skin
