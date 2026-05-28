@@ -1116,94 +1116,96 @@
            ctx/db
            ctx/skin
            ctx/textures]}]
-  {:type :ui/menu
-   :menus [
-           {:label "Ctx Data"
-            :items [{:label "Show data"
-                     :on-click (fn [_actor {:keys [ctx/skin
-                                                   ctx/stage] :as ctx}]
-                                 (stage/add-actor! stage
-                                                   (actor/create
-                                                    {:type :ui/data-viewer-window
-                                                     :title "Data View"
-                                                     :data ctx
-                                                     :width 1000
-                                                     :height 1000
-                                                     :skin skin})))}]}
-           {:label "Editor"
-            :items (for [property-type (sort (db/property-types db))]
-                     {:label (str/capitalize (name property-type))
-                      :on-click (fn [_actor {:keys [ctx/db
-                                                    ctx/skin
-                                                    ctx/stage
-                                                    ctx/textures]
-                                             :as ctx}]
+  (actor/create
+   {:type :ui/menu
+    :menus [
+            {:label "Ctx Data"
+             :items [{:label "Show data"
+                      :on-click (fn [_actor {:keys [ctx/skin
+                                                    ctx/stage] :as ctx}]
                                   (stage/add-actor! stage
                                                     (actor/create
-                                                     {:type :ui/property-overview-window
-                                                      :db db
-                                                      :textures textures
-                                                      :skin skin
-                                                      :property-type property-type
-                                                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                       (stage/add-actor! stage
-                                                                                         (actor/create
-                                                                                          {:type :ui/property-editor-window
-                                                                                           :ctx ctx
-                                                                                           :property (db/get-raw db id)})))})))})}
-           {:label "Help"
-            :items [{:label controls-info}]}
-           {:label "Select World"
-            :items (for [world-fn ["world_fns/vampire.edn"
-                                   "world_fns/uf_caves.edn"
-                                   "world_fns/modules.edn"]]
-                     {:label (str "Start " world-fn)
-                      :on-click (fn [actor {:keys [ctx/stage] :as ctx}]
-                                  #_(let [rebuild-actors! nil
-                                          #_(fn rebuild-actors! [stage ctx]
-                                              (.clear stage)
-                                              ((requiring-resolve 'game.create.add-actors/step) ctx))
-                                          create-world nil
-                                          #_(requiring-resolve 'game.create.world/step)
-                                          ui stage
-                                          stage (Actor/.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
-                                      (rebuild-actors! ui ctx)
-                                      #_(Disposable/.dispose (:ctx/tiled-map ctx))
-                                      (set! (.ctx ^Stage stage) (create-world ctx world-fn))))})}
+                                                     {:type :ui/data-viewer-window
+                                                      :title "Data View"
+                                                      :data ctx
+                                                      :width 1000
+                                                      :height 1000
+                                                      :skin skin})))}]}
+            {:label "Editor"
+             :items (for [property-type (sort (db/property-types db))]
+                      {:label (str/capitalize (name property-type))
+                       :on-click (fn [_actor {:keys [ctx/db
+                                                     ctx/skin
+                                                     ctx/stage
+                                                     ctx/textures]
+                                              :as ctx}]
+                                   (stage/add-actor! stage
+                                                     (actor/create
+                                                      {:type :ui/property-overview-window
+                                                       :db db
+                                                       :textures textures
+                                                       :skin skin
+                                                       :property-type property-type
+                                                       :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                                                        (stage/add-actor! stage
+                                                                                          (actor/create
+                                                                                           {:type :ui/property-editor-window
+                                                                                            :ctx ctx
+                                                                                            :property (db/get-raw db id)})))})))})}
+            {:label "Help"
+             :items [{:label controls-info}]}
+            {:label "Select World"
+             :items (for [world-fn ["world_fns/vampire.edn"
+                                    "world_fns/uf_caves.edn"
+                                    "world_fns/modules.edn"]]
+                      {:label (str "Start " world-fn)
+                       :on-click (fn [actor {:keys [ctx/stage] :as ctx}]
+                                   #_(let [rebuild-actors! nil
+                                           #_(fn rebuild-actors! [stage ctx]
+                                               (.clear stage)
+                                               ((requiring-resolve 'game.create.add-actors/step) ctx))
+                                           create-world nil
+                                           #_(requiring-resolve 'game.create.world/step)
+                                           ui stage
+                                           stage (Actor/.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
+                                       (rebuild-actors! ui ctx)
+                                       #_(Disposable/.dispose (:ctx/tiled-map ctx))
+                                       (set! (.ctx ^Stage stage) (create-world ctx world-fn))))})}
 
-           ]
-   :update-labels (for [item [
-                              {:label "elapsed-time"
-                               :update-fn (fn [{:keys [ctx/elapsed-time]}]
-                                            (str (number/readable elapsed-time) " seconds"))
-                               :icon "images/clock.png"}
-                              {:label "FPS"
-                               :update-fn frames-per-second
-                               :icon "images/fps.png"}
-                              {:label "Mouseover-entity id"
-                               :update-fn (fn [{:keys [ctx/mouseover-eid]}]
-                                            (when-let [entity (and mouseover-eid @mouseover-eid)]
-                                              (:entity/id entity)))
-                               :icon "images/mouseover.png"}
-                              {:label "paused?"
-                               :update-fn :ctx/paused?}
-                              {:label "GUI"
-                               :update-fn (fn [{:keys [ctx/ui-mouse-position]}]
-                                            (mapv int ui-mouse-position))}
-                              {:label "World"
-                               :update-fn (fn [{:keys [ctx/world-mouse-position]}]
-                                            (mapv int world-mouse-position))}
-                              {:label "Zoom"
-                               :update-fn camera-zoom
-                               :icon "images/zoom.png"}
-                              ]]
-                    (if (:icon item)
-                      (update item :icon #(get textures %))
-                      item))
-   :skin skin})
+            ]
+    :update-labels (for [item [
+                               {:label "elapsed-time"
+                                :update-fn (fn [{:keys [ctx/elapsed-time]}]
+                                             (str (number/readable elapsed-time) " seconds"))
+                                :icon "images/clock.png"}
+                               {:label "FPS"
+                                :update-fn frames-per-second
+                                :icon "images/fps.png"}
+                               {:label "Mouseover-entity id"
+                                :update-fn (fn [{:keys [ctx/mouseover-eid]}]
+                                             (when-let [entity (and mouseover-eid @mouseover-eid)]
+                                               (:entity/id entity)))
+                                :icon "images/mouseover.png"}
+                               {:label "paused?"
+                                :update-fn :ctx/paused?}
+                               {:label "GUI"
+                                :update-fn (fn [{:keys [ctx/ui-mouse-position]}]
+                                             (mapv int ui-mouse-position))}
+                               {:label "World"
+                                :update-fn (fn [{:keys [ctx/world-mouse-position]}]
+                                             (mapv int world-mouse-position))}
+                               {:label "Zoom"
+                                :update-fn camera-zoom
+                                :icon "images/zoom.png"}
+                               ]]
+                     (if (:icon item)
+                       (update item :icon #(get textures %))
+                       item))
+    :skin skin}))
 
 (defn create-action-bar [_ctx]
-  {:type :ui/action-bar})
+  (actor/create
+   {:type :ui/action-bar}))
 
 (defn create-hp-mana-bar
   [{:keys [ctx/textures
@@ -1244,49 +1246,53 @@
                          (concat
                           (render-hpmana-bar x y-hp   hpcontent-file   (stats/get-hitpoints stats) "HP")
                           (render-hpmana-bar x y-mana manacontent-file (stats/get-mana      stats) "MP"))))]
-    {:type :ui/actor
-     :draw! (fn [this _batch _parent-alpha]
-              (when-let [stage (actor/stage this)]
-                (draws/handle (:stage/ctx stage)
-                              (create-draws (:stage/ctx stage)))))}))
+    (actor/create
+     {:type :ui/actor
+      :draw! (fn [this _batch _parent-alpha]
+               (when-let [stage (actor/stage this)]
+                 (draws/handle (:stage/ctx stage)
+                               (create-draws (:stage/ctx stage)))))})))
 
 (defn create-windows [ctx actor-fns]
-  {:type :ui/group
-   :group/actors (for [f actor-fns]
-                   (f ctx))
-   :actor/name "moon.ui.windows"})
+  (actor/create
+   {:type :ui/group
+    :group/actors (for [f actor-fns]
+                    (f ctx))
+    :actor/name "moon.ui.windows"}))
 
 (defn create-player-state-draw [_ctx]
-  {:type :ui/actor
-   :draw! (fn [this _batch _parent-alpha]
-            (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/stage this))
-                  entity @player-eid
-                  state-k (:state (:entity/fsm entity))]
-              (draws/handle ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))})
+  (actor/create
+   {:type :ui/actor
+    :draw! (fn [this _batch _parent-alpha]
+             (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/stage this))
+                   entity @player-eid
+                   state-k (:state (:entity/fsm entity))]
+               (draws/handle ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))
 
 (defn create-player-message-actor [_ctx]
   (let [message-duration-seconds 0.5]
-    {:type :ui/actor
-     :actor/name "player-message"
-     :actor/user-object (atom nil)
-     :draw! (fn [this _batch _parent-alpha]
-              (when-let [stage (actor/stage this)]
-                (draws/handle (:stage/ctx stage)
-                              [(let [state (actor/user-object this)
-                                     vp-width (:viewport/world-width (:stage/viewport stage))
-                                     vp-height (:viewport/world-height (:stage/viewport stage))]
-                                 (when-let [text (:text @state)]
-                                   [:draw/text {:x (/ vp-width 2)
-                                                :y (+ (/ vp-height 2) 200)
-                                                :text text
-                                                :scale 2.5
-                                                :up? true}]))])))
-     :act! (fn [this delta]
-             (let [state (actor/user-object this)]
-               (when (:text @state)
-                 (swap! state update :counter + delta)
-                 (when (>= (:counter @state) message-duration-seconds)
-                   (reset! state nil)))))}))
+    (actor/create
+     {:type :ui/actor
+      :actor/name "player-message"
+      :actor/user-object (atom nil)
+      :draw! (fn [this _batch _parent-alpha]
+               (when-let [stage (actor/stage this)]
+                 (draws/handle (:stage/ctx stage)
+                               [(let [state (actor/user-object this)
+                                      vp-width (:viewport/world-width (:stage/viewport stage))
+                                      vp-height (:viewport/world-height (:stage/viewport stage))]
+                                  (when-let [text (:text @state)]
+                                    [:draw/text {:x (/ vp-width 2)
+                                                 :y (+ (/ vp-height 2) 200)
+                                                 :text text
+                                                 :scale 2.5
+                                                 :up? true}]))])))
+      :act! (fn [this delta]
+              (let [state (actor/user-object this)]
+                (when (:text @state)
+                  (swap! state update :counter + delta)
+                  (when (>= (:counter @state) message-duration-seconds)
+                    (reset! state nil)))))})))
 
 (defn create-info-window
   [{:keys [ctx/skin
@@ -1464,7 +1470,7 @@
                                                 create-inventory-window]]
                                [create-player-state-draw]
                                [create-player-message-actor]]]
-    (stage/add-actor! stage (actor/create (apply actor-fn ctx params))))
+    (stage/add-actor! stage (apply actor-fn ctx params)))
   ctx)
 
 (defn create-grid
