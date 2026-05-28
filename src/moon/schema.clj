@@ -8,6 +8,7 @@
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
+            [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.scene2d.ui.select-box :as select-box]
@@ -30,9 +31,8 @@
 
 (defmethod create :default
   [_ v {:keys [ctx/skin]}]
-  (actor/create
-   {:type :ui/label
-    :text (truncate (->edn-str v) 60)
+  (label/create
+   {:text (truncate (->edn-str v) 60)
     :skin skin}))
 
 (defmethod value :default
@@ -146,9 +146,8 @@
                                                                                          (group/children table))))
                                                            (rebuild! (:stage/ctx (event/stage event))))}}))
                             :left? true}
-                           {:actor (actor/create
-                                    {:type :ui/label
-                                     :text label-text
+                           {:actor (label/create
+                                    {:text label-text
                                      :skin skin})}]]})
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")

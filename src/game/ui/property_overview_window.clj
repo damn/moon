@@ -2,6 +2,7 @@
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scenes.scene2d.ui.label :as label]
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]))
@@ -46,9 +47,8 @@
                                  :actor/listeners {:listener/change (fn [event actor]
                                                                       (on-clicked actor (:stage/ctx (event/stage event))))
                                                    :listener/text-tooltip [tooltip skin]}})
-                               (actor/create
-                                {:type :ui/label
-                                 :text extra-info-text
+                               (label/create
+                                {:text extra-info-text
                                  :skin skin
                                  :actor/touchable :touchable/disabled})]})})))
 

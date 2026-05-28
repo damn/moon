@@ -1,15 +1,12 @@
 (ns clojure.gdx.scenes.scene2d.ui.label
-  (:require [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.scene2d.ui.label :as label])
+  (:require [clojure.gdx.scenes.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
 
-(defmethod actor/create :ui/label
+(defn create
   [{:keys [text skin] :as opts}]
   (doto (Label. ^String text ^Skin skin)
     (actor/set-opts! opts)))
 
-(extend-type Label
-  label/Label
-  (set-text! [label text]
-    (.setText label ^String text)))
+(defn set-text! [^Label label text]
+  (.setText label ^String text))

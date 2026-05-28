@@ -26,6 +26,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.widget :as widget]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
@@ -547,9 +548,8 @@
                                                       :title title
                                                       :skin skin
                                                       :window/modal? true
-                                                      :table/rows [[{:actor (actor/create
-                                                                             {:type :ui/label
-                                                                              :text text
+                                                      :table/rows [[{:actor (label/create
+                                                                             {:text text
                                                                               :skin skin})}]
                                                                    [{:actor (actor/create
                                                                              {:type :ui/text-button

@@ -3,7 +3,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
-            [clojure.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.scene2d.ui.table :as table]))
 
 (defn- set-label-text-actor [label text-fn]
@@ -15,9 +15,9 @@
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
-   (let [label (actor/create {:type :ui/label
-                              :text ""
-                              :skin skin})
+   (let [label (label/create
+                {:text ""
+                 :skin skin})
          sub-table (actor/create
                     {:type :ui/table
                      :table/rows [[{:actor (actor/create
@@ -29,9 +29,9 @@
                         :right? true
                         :expand-x? true})))
   ([skin table text-fn]
-   (let [label (actor/create {:type :ui/label
-                              :text ""
-                              :skin skin})]
+   (let [label (label/create
+                {:text ""
+                 :skin skin})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (table/add! table {:actor label
                         :right? true
@@ -78,9 +78,8 @@
                    :expand-x? true
                    :fill-x? true
                    :colspan 1}]
-                 [{:actor (actor/create
-                           {:type :ui/label
-                            :text ""
+                 [{:actor (label/create
+                           {:text ""
                             :skin skin
                             :actor/touchable :touchable/disabled})
                    :expand? true
