@@ -1,5 +1,6 @@
 (ns clojure.gdx.scenes.scene2d.ui.image
-  (:require [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable])
+  (:require [clojure.gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Image)
