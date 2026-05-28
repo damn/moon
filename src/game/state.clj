@@ -2,10 +2,64 @@
   (:require [clojure.input.buttons :as input.buttons]
             [game.ctx :as ctx]
             [moon.inventory :as inventory]
+            [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.stage :as stage]
             [moon.textures :as textures]
             [moon.stats :as stats]
             [moon.timer :as timer]))
+
+(defn- interaction-state->txs [[k params] stage player-eid]
+  (case k
+    :interaction-state/mouseover-actor nil
+
+    :interaction-state/clickable-mouseover-eid
+    (let [{:keys [clicked-eid
+                  in-click-range?]} params]
+      (if in-click-range?
+        (case (:type (:entity/clickable @clicked-eid))
+          :clickable/player
+          [[:tx/toggle-inventory-visible]]
+
+          :clickable/item
+          (let [item (:entity/item @clicked-eid)]
+            (cond
+             (-> stage
+                 (stage/find-actor "moon.ui.windows.inventory")
+                 actor/visible?)
+             [[:tx/sound "bfxr_takeit"]
+              [:tx/mark-destroyed clicked-eid]
+              [:tx/event player-eid :pickup-item item]]
+
+             (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
+             [[:tx/sound "bfxr_pickup"]
+              [:tx/mark-destroyed clicked-eid]
+              [:tx/pickup-item player-eid item]]
+
+             :else
+             [[:tx/sound "bfxr_denied"]
+              [:tx/show-message "Your Inventory is full"]])))
+        [[:tx/sound "bfxr_denied"]
+         [:tx/show-message "Too far away"]]))
+
+    :interaction-state.skill/usable
+    (let [[skill effect-ctx] params]
+      [[:tx/event player-eid :start-action [skill effect-ctx]]])
+
+    :interaction-state.skill/not-usable
+    (let [state params]
+      [[:tx/sound "bfxr_denied"]
+       [:tx/show-message (case state
+                           :cooldown "Skill is still on cooldown"
+                           :not-enough-mana "Not enough mana"
+                           :invalid-params "Cannot use this here")]])
+
+    :interaction-state/no-skill-selected
+    [[:tx/sound "bfxr_denied"]
+     [:tx/show-message "No selected skill"]]))
+
+(defn- creature-speed [{:keys [entity/stats]}]
+  (or (stats/get-stat-value stats :stats/movement-speed)
+      0))
 
 (def reaction-time-multiplier 0.016)
 
@@ -135,9 +189,88 @@
   [_ _eid _ctx]
   :cursors/hand-grab)
 
+(defmethod cursor :player-dead
+  [_ _eid _ctx]
+  :cursors/black-x)
+
+(defmethod cursor :active-skill
+  [_ _eid _ctx]
+  :cursors/sandclock)
+
+(defmethod cursor :stunned
+  [_ _eid _ctx]
+  :cursors/denied)
+
+(defmethod cursor :player-moving
+  [_ _eid _ctx]
+  :cursors/walking)
+
+(defmethod cursor :player-idle
+  [_ eid {:keys [ctx/interaction-state]}]
+  (let [[k params] interaction-state]
+    (case k
+      :interaction-state/mouseover-actor
+      (let [[actor-type params] params
+            inventory-cell-with-item? (and (= actor-type :mouseover-actor/inventory-cell)
+                                           (let [inventory-slot params]
+                                             (get-in (:entity/inventory @eid) inventory-slot)))]
+        (cond
+         inventory-cell-with-item?
+         :cursors/hand-before-grab
+
+         (= actor-type :mouseover-actor/window-title-bar)
+         :cursors/move-window
+
+         (= actor-type :mouseover-actor/button)
+         :cursors/over-button
+
+         (= actor-type :mouseover-actor/unspecified)
+         :cursors/default
+
+         :else
+         :cursors/default))
+
+      :interaction-state/clickable-mouseover-eid
+      (let [{:keys [clicked-eid
+                    in-click-range?]} params]
+        (case (:type (:entity/clickable @clicked-eid))
+          :clickable/item (if in-click-range?
+                            :cursors/hand-before-grab
+                            :cursors/hand-before-grab-gray)
+          :clickable/player :cursors/bag))
+
+      :interaction-state.skill/usable
+      :cursors/use-skill
+
+      :interaction-state.skill/not-usable
+      :cursors/skill-not-usable
+
+      :interaction-state/no-skill-selected
+      :cursors/no-skill-selected)))
+
 (defmulti pause-game?
   (fn [k]
     k))
+
+(defmethod pause-game? :active-skill
+  [_]
+  false)
+
+(defmethod pause-game? :stunned
+  [_]
+  false)
+
+(defmethod pause-game? :player-moving
+  [_]
+  false)
+
+(defmethod pause-game? :player-idle
+  [_]
+  true)
+
+(defmethod pause-game? :player-dead
+  [_]
+  true)
 
 (defmethod pause-game? :player-item-on-cursor
   [_]
@@ -150,6 +283,13 @@
 (defmethod clicked-inventory-cell :default
   [_ _eid _cell]
   nil)
+
+(defmethod clicked-inventory-cell :player-idle
+  [_ eid cell]
+  (when-let [item (get-in (:entity/inventory @eid) cell)]
+    [[:tx/sound "bfxr_takeit"]
+     [:tx/event eid :pickup-item item]
+     [:tx/remove-item eid cell]]))
 
 (defmethod clicked-inventory-cell :player-item-on-cursor
   [_ eid cell]
@@ -223,3 +363,20 @@
     (when (and (ctx/button-just-pressed? ctx input.buttons/left)
                (not mouseover-actor))
       [[:tx/event eid :drop-item]])))
+
+(defmethod handle-input :player-moving
+  [_ eid ctx]
+  (if-let [movement-vector (ctx/player-movement-vector ctx)]
+    [[:tx/assoc eid :entity/movement {:direction movement-vector
+                                      :speed (creature-speed @eid)}]]
+    [[:tx/event eid :no-movement-input]]))
+
+(defmethod handle-input :player-idle
+  [_ player-eid {:keys [ctx/interaction-state
+                        ctx/stage] :as ctx}]
+  (if-let [movement-vector (ctx/player-movement-vector ctx)]
+    [[:tx/event player-eid :movement-input movement-vector]]
+    (when (ctx/button-just-pressed? ctx input.buttons/left)
+      (interaction-state->txs interaction-state
+                              stage
+                              player-eid))))

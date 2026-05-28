@@ -8,4 +8,5 @@
   (item-place-position [_ player-entity])
   (sound-names [_])
   (draw! [_ draws])
-  (do! [_ txs]))
+  (do! [_ txs])
+  (player-movement-vector [_]))
