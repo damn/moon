@@ -6,13 +6,12 @@
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [clojure.gdx.fit-viewport :as fit-viewport]
             [clojure.gdx.orthographic-camera :as camera]
-            [clojure.gdx.stage]
             [clojure.input.keys :as input.keys]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.gdx.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
@@ -99,7 +98,7 @@
         skin (Skin. (.internal files "uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (SpriteBatch.)
-        stage (clojure.gdx.stage/create ui-viewport sprite-batch)
+        stage (stage/create ui-viewport sprite-batch)
         _  (.setInputProcessor input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))

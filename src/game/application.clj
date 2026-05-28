@@ -17,9 +17,6 @@
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer] ; good library ✅, externalised
             [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager] ; good library ✅, externalised
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.stage]
-
-
             [clojure.gdx.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
@@ -32,7 +29,7 @@
             [clojure.gdx.scenes.scene2d.ui.widget :as widget]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
 
             [clojure.input.buttons :as input.buttons]
@@ -962,7 +959,7 @@
                                          cursor (.newCursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
                                      (.dispose pixmap)
                                      cursor))))
-     :ctx/stage (let [stage (clojure.gdx.stage/create (fit-viewport/create 1440 900) batch)]
+     :ctx/stage (let [stage (stage/create (fit-viewport/create 1440 900) batch)]
                   (.setInputProcessor (Application/.getInput app) stage)
                   stage)
      :ctx/skin (let [skin (Skin. (.internal (Application/.getFiles app) "uiskin.json"))]

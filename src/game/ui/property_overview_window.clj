@@ -1,7 +1,7 @@
 (ns game.ui.property-overview-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.stack :as stack]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]

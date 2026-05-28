@@ -2,7 +2,7 @@
   (:require [clojure.input.buttons :as input.buttons]
             [moon.ctx :as ctx]
             [moon.inventory :as inventory]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [moon.textures :as textures]
             [moon.stats :as stats]
             [moon.timer :as timer]))

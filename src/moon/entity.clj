@@ -3,7 +3,7 @@
             [clojure.math :as math]
             [clojure.math.rectangle :as rectangle]
             [clojure.math.vector2 :as v]
-            [clojure.scene2d.stage :as stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.ctx :as ctx]
