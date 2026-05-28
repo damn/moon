@@ -1811,12 +1811,6 @@
         update-potential-fields!
         tick-entities!)))
 
-(defmethod entity/destroy :entity/destroy-audiovisual
-  [[_ audiovisuals-id] eid]
-  [[:tx/audiovisual
-    (:body/position (:entity/body @eid))
-    audiovisuals-id]])
-
 (defn remove-destroyed-entities!
   [ctx]
   (ctx/do! ctx (mapcat
