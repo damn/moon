@@ -8,7 +8,6 @@
             [clojure.gdx.fit-viewport :as fit-viewport]
             [clojure.gdx.orthographic-camera :as camera]
             [clojure.gdx.stage]
-            [clojure.input :as input]
             [clojure.input.keys :as input.keys]
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
@@ -106,7 +105,7 @@
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (SpriteBatch.)
         stage (clojure.gdx.stage/create ui-viewport sprite-batch)
-        _  (input/set-processor! input stage)
+        _  (.setInputProcessor input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage
@@ -162,16 +161,16 @@
                                                (update (camera/position camera)
                                                        idx
                                                        #(f % camera-movement-speed))))]
-    (if (input/key-pressed? input input.keys/left)  (apply-position 0 -))
-    (if (input/key-pressed? input input.keys/right) (apply-position 0 +))
-    (if (input/key-pressed? input input.keys/up)    (apply-position 1 +))
-    (if (input/key-pressed? input input.keys/down)  (apply-position 1 -))))
+    (if (.isKeyPressed input input.keys/left)  (apply-position 0 -))
+    (if (.isKeyPressed input input.keys/right) (apply-position 0 +))
+    (if (.isKeyPressed input input.keys/up)    (apply-position 1 +))
+    (if (.isKeyPressed input input.keys/down)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (input/key-pressed? input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
-  (when (input/key-pressed? input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (.isKeyPressed input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
+  (when (.isKeyPressed input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
 
 (defn render!
   [{:keys [ctx/stage]

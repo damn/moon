@@ -25,7 +25,6 @@
             [clojure.scene2d.ui :as ui]
             [clojure.scene2d.ui.image :as image]
 
-            [clojure.input :as input]
             [clojure.input.buttons :as input.buttons]
             [clojure.input.keys :as input.keys]
 
@@ -603,10 +602,11 @@
     (:ctx/world-unit-scale ctx))
 
   (mouse-position [{:keys [ctx/app]}]
-    (input/mouse-position (Application/.getInput app)))
+    [(.getX (Application/.getInput app))
+     (.getY (Application/.getInput app))])
 
   (button-just-pressed? [{:keys [ctx/app]} input-button]
-    (input/button-just-pressed? (Application/.getInput app) input-button))
+    (.isButtonJustPressed (Application/.getInput app) input-button))
 
   ; It is possible to put items out of sight, losing them.
   ; Because line of sight checks center of entity only, not corners
@@ -624,7 +624,7 @@
     (map first audio))
 
   (key-just-pressed? [{:keys [ctx/app]} input-key]
-    (input/key-just-pressed? (Application/.getInput app) input-key))
+    (.isKeyJustPressed (Application/.getInput app) input-key))
 
   txs/Txs
   (handle! [ctx txs]
@@ -739,7 +739,7 @@
 
 (defn key-pressed?
   [{:keys [ctx/app]} input-key]
-  (input/key-pressed? (Application/.getInput app) input-key))
+  (.isKeyPressed (Application/.getInput app) input-key))
 
 (defn dispose!
   [{:keys [ctx/audio
@@ -955,7 +955,7 @@
                                      (.dispose pixmap)
                                      cursor))))
      :ctx/stage (let [stage (clojure.gdx.stage/create (fit-viewport/create 1440 900) batch)]
-                  (input/set-processor! (Application/.getInput app) stage)
+                  (.setInputProcessor (Application/.getInput app) stage)
                   stage)
      :ctx/skin (let [skin (Skin. (.internal (Application/.getFiles app) "uiskin.json"))]
                  (set! (.markupEnabled (-> skin

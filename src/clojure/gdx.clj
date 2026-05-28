@@ -1,5 +1,6 @@
 (ns clojure.gdx
-  (:require clojure.gdx.input
+  (:require ; all indirect 'actor/create'
+            ; how do I know what I am using ? ....
             clojure.gdx.scenes.scene2d.actor
             clojure.gdx.scenes.scene2d.group
             clojure.gdx.scenes.scene2d.event
