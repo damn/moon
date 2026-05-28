@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require clojure.gdx.scenes.scene2d.ui.select-box
-            clojure.gdx.scenes.scene2d.ui.stack
+  (:require clojure.gdx.scenes.scene2d.ui.stack
             clojure.gdx.scenes.scene2d.ui.image
             clojure.gdx.scenes.scene2d.ui.text-button
             clojure.gdx.scenes.scene2d.ui.text-field

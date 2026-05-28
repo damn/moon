@@ -12,7 +12,7 @@
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [clojure.scene2d.ui.select-box :as select-box]
+            [clojure.gdx.scenes.scene2d.ui.select-box :as select-box]
             [clojure.scene2d.ui.table :as table]
             [clojure.scene2d.ui.text-field :as text-field]
             [clojure.scene2d.ui.widget-group :as widget-group]
@@ -62,9 +62,8 @@
   (check-box/checked? widget))
 
 (defmethod create :s/enum [schema v {:keys [ctx/skin]}]
-  (actor/create
-   {:type :ui/select-box
-    :skin skin
+  (select-box/create
+   {:skin skin
     :items (map ->edn-str (rest schema))
     :selected (->edn-str v)}))
 
