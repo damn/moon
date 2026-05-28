@@ -13,7 +13,6 @@
             [clojure.scene2d.event :as event]
             [clojure.scene2d.stage :as stage]
             [clojure.maps.tiled.tiled-map :as tiled-map]
-            [clojure.maps.tiled.tiled-map-tile-layer :as layer]
             [clojure.maps.map-layers :as layers]
             [clojure.maps.map-properties :as props]
             [clojure.gdx.viewport :as viewport]
@@ -76,7 +75,7 @@
     (-> tiled-map
         tiled-map/layers
         (layers/get "creatures")
-        (layer/set-visible! true))
+        (.setVisible true))
     (show-whole-map! ctx)
     ctx))
 

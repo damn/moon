@@ -2,7 +2,6 @@
   (:require moon.tiled-map
             [clojure.maps.tiled.tiled-map :as tiled-map]
             [clojure.maps.map-properties :as props]
-            [clojure.maps.tiled.tiled-map-tile-layer :as layer]
             [clojure.maps.map-layers :as layers]
             [moon.grid2d :as g2d])
   (:import (java.util Random)
@@ -151,14 +150,14 @@
                       {"width" (g2d/width grid)
                        "height" (g2d/height grid)})
    :layers (for [layer (tiled-map/layers schema-tiled-map)]
-             {:name (layer/name layer)
-              :visible? (layer/visible? layer)
-              :properties (props/->clj (layer/properties layer))
+             {:name (.getName layer)
+              :visible? (.isVisible layer)
+              :properties (props/->clj (.getProperties layer))
               :tiles (for [position (g2d/posis grid)
                            :let [local-position (get grid position)]
                            :when local-position]
                        (when (vector? local-position)
-                         (when-let [cell (layer/cell layer local-position)]
+                         (when-let [cell (.getCell layer (local-position 0) (local-position 1))]
                            [position (copy-tile (.getTile cell))])))})})
 
 (defn- convert-to-tiled-map
@@ -219,8 +218,8 @@
           {:steps steps
            :area-level-grid grid})))))
 
-(defn- property-value [layer pos property-key]
-  (if-let [cell (layer/cell layer pos)]
+(defn- property-value [layer [x y] property-key]
+  (if-let [cell (.getCell layer x y)]
     (if-let [value (props/get (.getProperties (.getTile cell)) property-key)]
       value
       :undefined)
