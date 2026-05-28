@@ -1,8 +1,5 @@
 (ns game.world-fns.modules
   (:require moon.tiled-map
-            [clojure.maps.tiled.tiled-map :as tiled-map]
-            [clojure.maps.map-properties :as props]
-            [clojure.maps.map-layers :as layers]
             [moon.grid2d :as g2d])
   (:import (java.util Random)
            (com.badlogic.gdx.maps.tiled TmxMapLoader)
@@ -70,9 +67,9 @@
    unscaled-floor-positions
    unscaled-transition-positions]
   (let [[modules-width modules-height] modules-scale
-        _ (assert (and (= (props/get (tiled-map/properties modules-tiled-map) "width")
+        _ (assert (and (= (.get (.getProperties modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (props/get (tiled-map/properties modules-tiled-map) "height")
+                       (= (.get (.getProperties modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* modules-scale
@@ -144,15 +141,19 @@
      (assert tile)
      (StaticTiledMapTile. tile))))
 
+(defn props->clj [props]
+  (zipmap (.getKeys props)
+          (.getValues props)))
+
 (defn- grid->tiled-map
   [schema-tiled-map grid]
-  {:properties (merge (props/->clj (tiled-map/properties schema-tiled-map))
+  {:properties (merge (props->clj (.getProperties schema-tiled-map))
                       {"width" (g2d/width grid)
                        "height" (g2d/height grid)})
-   :layers (for [layer (tiled-map/layers schema-tiled-map)]
+   :layers (for [layer (.getLayers schema-tiled-map)]
              {:name (.getName layer)
               :visible? (.isVisible layer)
-              :properties (props/->clj (.getProperties layer))
+              :properties (props->clj (.getProperties layer))
               :tiles (for [position (g2d/posis grid)
                            :let [local-position (get grid position)]
                            :when local-position]
@@ -220,7 +221,7 @@
 
 (defn- property-value [layer [x y] property-key]
   (if-let [cell (.getCell layer x y)]
-    (if-let [value (props/get (.getProperties (.getTile cell)) property-key)]
+    (if-let [value (.get (.getProperties (.getTile cell)) property-key)]
       value
       :undefined)
     :no-cell))
@@ -269,7 +270,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (layers/get (tiled-map/layers tiled-map) "creatures")
+                                                    (property-value (.get (.getLayers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

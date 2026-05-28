@@ -1,7 +1,5 @@
 (ns game.impl.content-grid
-  (:require [clojure.maps.tiled.tiled-map :as tiled-map]
-            [clojure.maps.map-properties :as props]
-            [moon.content-grid :as content-grid]
+  (:require [moon.content-grid :as content-grid]
             [moon.grid2d :as g2d]))
 
 (defn- update-entity! [{:keys [grid cell-w cell-h]} eid]
@@ -51,6 +49,6 @@
 
 (defn create
   [tiled-map]
-  (create* (props/get (tiled-map/properties tiled-map) "width")
-           (props/get (tiled-map/properties tiled-map) "height")
+  (create* (.get (.getProperties tiled-map) "width")
+           (.get (.getProperties tiled-map) "height")
            16))

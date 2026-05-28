@@ -12,9 +12,6 @@
             [clojure.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
             [clojure.scene2d.stage :as stage]
-            [clojure.maps.tiled.tiled-map :as tiled-map]
-            [clojure.maps.map-layers :as layers]
-            [clojure.maps.map-properties :as props]
             [clojure.gdx.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
@@ -39,13 +36,13 @@
 (defn- show-whole-map! [{:keys [ctx/camera
                                 ctx/tiled-map]}]
   (camera/set-position! camera
-                        [(/ (props/get (tiled-map/properties tiled-map) "width") 2)
-                         (/ (props/get (tiled-map/properties tiled-map) "height") 2)])
+                        [(/ (.get (.getProperties tiled-map) "width") 2)
+                         (/ (.get (.getProperties tiled-map) "height") 2)])
   (camera/set-zoom! camera
                     (camera/calculate-zoom camera
                                            {:left [0 0]
-                                            :top [0 (props/get (tiled-map/properties tiled-map) "height")]
-                                            :right [(props/get (tiled-map/properties tiled-map) "width") 0]
+                                            :top [0 (.get (.getProperties tiled-map) "height")]
+                                            :right [(.get (.getProperties tiled-map) "width") 0]
                                             :bottom [0 0]})))
 
 (def tile-size 48)
@@ -55,7 +52,7 @@
            ctx/textures
            ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
-    (tiled-map/dispose! tiled-map))
+    (.dispose tiled-map))
   (let [level (let [[f params] (edn-resource level-fn)]
                 (f
                  (assoc params
@@ -73,8 +70,8 @@
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
     (-> tiled-map
-        tiled-map/layers
-        (layers/get "creatures")
+        .getLayers
+        (.get "creatures")
         (.setVisible true))
     (show-whole-map! ctx)
     ctx))
