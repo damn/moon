@@ -535,7 +535,7 @@
                                                                  :skin skin
                                                                  :actor/listeners {:listener/change (fn [event _actor]
                                                                                                       (ctx/do! (:stage/ctx (event/stage event))
-                                                                                                                   [[:tx/sound sound-name]]))}})}])} )]
+                                                                                                               [[:tx/sound sound-name]]))}})}])} )]
                             {:actor (scroll-pane/create
                                      {:actor table
                                       :skin skin})
@@ -554,7 +554,7 @@
              :skin skin
              :actor/listeners {:listener/change (fn [event _actor]
                                                   (ctx/do! (:stage/ctx (event/stage event))
-                                                               [[:tx/sound sound-name]]))}})}])
+                                                           [[:tx/sound sound-name]]))}})}])
 
 (defmethod create :s/sound [_  sound-name {:keys [ctx/skin]}]
   (let [table (table/create

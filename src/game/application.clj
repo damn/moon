@@ -1171,7 +1171,7 @@
      {:draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]
                  (ctx/draw! (:stage/ctx stage)
-                               (create-draws (:stage/ctx stage)))))})))
+                            (create-draws (:stage/ctx stage)))))})))
 
 (defn create-player-state-draw []
   (actor/create
@@ -1189,15 +1189,15 @@
       :draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]
                  (ctx/draw! (:stage/ctx stage)
-                               [(let [state (actor/user-object this)
-                                      vp-width (:viewport/world-width (:stage/viewport stage))
-                                      vp-height (:viewport/world-height (:stage/viewport stage))]
-                                  (when-let [text (:text @state)]
-                                    [:draw/text {:x (/ vp-width 2)
-                                                 :y (+ (/ vp-height 2) 200)
-                                                 :text text
-                                                 :scale 2.5
-                                                 :up? true}]))])))
+                            [(let [state (actor/user-object this)
+                                   vp-width (:viewport/world-width (:stage/viewport stage))
+                                   vp-height (:viewport/world-height (:stage/viewport stage))]
+                               (when-let [text (:text @state)]
+                                 [:draw/text {:x (/ vp-width 2)
+                                              :y (+ (/ vp-height 2) 200)
+                                              :text text
+                                              :scale 2.5
+                                              :up? true}]))])))
       :act! (fn [this delta]
               (let [state (actor/user-object this)]
                 (when (:text @state)
@@ -1278,9 +1278,9 @@
                                                                 entity @player-eid
                                                                 state-k (:state (:entity/fsm entity))]
                                                             (ctx/do! ctx
-                                                                         (state/clicked-inventory-cell [state-k (state-k entity)]
-                                                                                                       player-eid
-                                                                                                       cell))))}
+                                                                     (state/clicked-inventory-cell [state-k (state-k entity)]
+                                                                                                   player-eid
+                                                                                                   cell))))}
                       :group/actors [(widget/create
                                       {:draw! (fn [this _batch _parent-alpha]
                                                 (when-let [stage (actor/stage this)]
@@ -1288,13 +1288,13 @@
                                                                 ctx/ui-mouse-position]
                                                          :as ctx} (:stage/ctx stage)]
                                                     (ctx/draw! ctx
-                                                                  (draw-cell-rect @player-eid
-                                                                                  (actor/x this)
-                                                                                  (actor/y this)
-                                                                                  (actor/hit this
-                                                                                             (actor/stage->local-coordinates this ui-mouse-position)
-                                                                                             true)
-                                                                                  (actor/user-object (actor/parent this)))))))})
+                                                               (draw-cell-rect @player-eid
+                                                                               (actor/x this)
+                                                                               (actor/y this)
+                                                                               (actor/hit this
+                                                                                          (actor/stage->local-coordinates this ui-mouse-position)
+                                                                                          true)
+                                                                               (actor/user-object (actor/parent this)))))))})
                                      (image/create
                                       {:content background-drawable
                                        :actor/name "image-widget"
@@ -1628,14 +1628,14 @@
 (defn remove-destroyed-entities!
   [ctx]
   (ctx/do! ctx (mapcat
-                    (fn [eid]
-                      (cons
-                       [:tx/unregister-eid eid]
-                       (mapcat (fn [[k v]]
-                                 (entity/destroy [k v] eid))
-                               @eid)))
-                    (filter (comp :entity/destroyed? deref)
-                            (vals @(:ctx/entity-ids ctx)))))
+                (fn [eid]
+                  (cons
+                   [:tx/unregister-eid eid]
+                   (mapcat (fn [[k v]]
+                             (entity/destroy [k v] eid))
+                           @eid)))
+                (filter (comp :entity/destroyed? deref)
+                        (vals @(:ctx/entity-ids ctx)))))
   ctx)
 
 (defn update-draw-stage
@@ -1707,9 +1707,9 @@
   (try (do
         (when show-body-bounds?
           (ctx/draw! ctx (draw-body-rect (:entity/body entity)
-                                             (if (:body/collides? (:entity/body entity))
-                                               (:colors/debug-body-outline-collides colors)
-                                               (:colors/debug-body-outline colors)))))
+                                         (if (:body/collides? (:entity/body entity))
+                                           (:colors/debug-body-outline-collides colors)
+                                           (:colors/debug-body-outline colors)))))
         (doseq [[k v] entity
                 :when (get render-layer k)]
           (ctx/draw! ctx (entity/render [k v] entity ctx))))
