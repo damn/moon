@@ -1,4 +1,4 @@
-(ns game.impl.textures
+(ns clojure.gdx.textures
   (:require [clojure.string :as str])
   (:import (com.badlogic.gdx Files)
            (com.badlogic.gdx.files FileHandle)

@@ -52,7 +52,7 @@
             [clojure.string :as str]
             [clojure.gdx.viewport :as viewport]
             [moon.grid2d :as g2d]
-            [game.impl.textures]
+            [clojure.gdx.textures]
 
             [game.ui.data-viewer-window :as data-viewer-window]
             game.ui.error-window
@@ -974,7 +974,7 @@
 
 (defn create-textures
   [ctx]
-  (assoc ctx :ctx/textures (game.impl.textures/create (Application/.getFiles (:ctx/app ctx)))))
+  (assoc ctx :ctx/textures (clojure.gdx.textures/create (Application/.getFiles (:ctx/app ctx)))))
 
 (defn unorganised [ctx]
   (assoc ctx
