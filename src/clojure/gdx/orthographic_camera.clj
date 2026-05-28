@@ -9,50 +9,38 @@
   (doto (OrthographicCamera.)
     (.setToOrtho y-down? world-width world-height)))
 
-(defprotocol POrthographicCamera
-  (viewport-width [_])
-  (viewport-height [_])
-  (combined [_])
-  (frustum [_])
-  (position [_])
-  (zoom [_])
-  (set-position! [_ [x y]])
-  (set-zoom! [_ amount]))
+(defn viewport-width [^OrthographicCamera camera]
+  (.viewportWidth camera))
 
-(extend-type OrthographicCamera
-  POrthographicCamera
-  (viewport-width [camera]
-    (.viewportWidth camera))
+(defn viewport-height [^OrthographicCamera camera]
+  (.viewportHeight camera))
 
-  (viewport-height [camera]
-    (.viewportHeight camera))
+(defn combined [^OrthographicCamera camera]
+  (.combined camera))
 
-  (combined [camera]
-    (.combined camera))
+(defn zoom [^OrthographicCamera camera]
+  (.zoom camera))
 
-  (zoom [camera]
-    (.zoom camera))
+(defn frustum [^OrthographicCamera camera]
+  (let [plane-points (mapv vector3/->clj (.planePoints (.frustum camera)))
+        frustum-points (take 4 plane-points)
+        left-x   (apply min (map first  frustum-points))
+        right-x  (apply max (map first  frustum-points))
+        bottom-y (apply min (map second frustum-points))
+        top-y    (apply max (map second frustum-points))]
+    [left-x right-x bottom-y top-y]))
 
-  (frustum [camera]
-    (let [plane-points (mapv vector3/->clj (.planePoints (.frustum camera)))
-          frustum-points (take 4 plane-points)
-          left-x   (apply min (map first  frustum-points))
-          right-x  (apply max (map first  frustum-points))
-          bottom-y (apply min (map second frustum-points))
-          top-y    (apply max (map second frustum-points))]
-      [left-x right-x bottom-y top-y]))
+(defn position [^OrthographicCamera camera]
+  (vector3/->clj (.position camera)))
 
-  (position [camera]
-    (vector3/->clj (.position camera)))
+(defn set-position! [^OrthographicCamera camera [x y]]
+  (set! (.x (.position camera)) x)
+  (set! (.y (.position camera)) y)
+  (.update camera))
 
-  (set-position! [camera [x y]]
-    (set! (.x (.position camera)) x)
-    (set! (.y (.position camera)) y)
-    (.update camera))
-
-  (set-zoom! [camera amount]
-    (set! (.zoom camera) amount)
-    (.update camera)))
+(defn set-zoom! [^OrthographicCamera camera amount]
+  (set! (.zoom camera) amount)
+  (.update camera))
 
 (defn inc-zoom! [cam by]
   (set-zoom! cam (max 0.1 (+ (zoom cam) by))))

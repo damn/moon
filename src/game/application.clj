@@ -9,9 +9,9 @@
                                       define-order
                                       sort-by-order
                                       actions!
-                                      reduce-actions!]]
-            [clojure.edn :as edn]
-            [clojure.gdx]
+                                      reduce-actions!]] ; good library ✅, externalised
+            [clojure.edn :as edn] ; good library ✅, externalised
+            [clojure.gdx] ; TODO
             [clojure.gdx.fit-viewport :as fit-viewport]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.graphics.colors :as colors]
