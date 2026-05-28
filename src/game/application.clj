@@ -34,8 +34,7 @@
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [clojure.gdx.viewport :as viewport]
-
-            [game.impl.explored-tile-corners]
+            [moon.grid2d :as g2d]
             [game.impl.raycaster]
             [game.impl.textures]
 
@@ -1471,7 +1470,10 @@
 (defn create-explored-tile-corners
   [{:keys [ctx/tiled-map]
     :as ctx}]
-  (assoc ctx :ctx/explored-tile-corners (game.impl.explored-tile-corners/create tiled-map)))
+  (assoc ctx :ctx/explored-tile-corners
+         (atom (g2d/create-grid (.get (.getProperties tiled-map) "width")
+                                (.get (.getProperties tiled-map) "height")
+                                (constantly false)))))
 
 (defn create-raycaster
   [{:keys [ctx/grid] :as ctx}]
