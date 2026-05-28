@@ -27,6 +27,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.stack :as stack]
             [clojure.gdx.scenes.scene2d.ui.widget :as widget]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
@@ -1365,9 +1366,8 @@
                  (let [cell [slot (or position [0 0])]
                        background-drawable (slot->drawable slot)]
                    {:actor
-                    (actor/create
-                     {:type :ui/stack
-                      :actor/name "inventory-cell"
+                    (stack/create
+                     {:actor/name "inventory-cell"
                       :actor/user-object cell
                       :actor/listeners {:listener/click (fn [event _x _y]
                                                           (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
