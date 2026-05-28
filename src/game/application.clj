@@ -1128,9 +1128,6 @@
                        item))
     :skin skin}))
 
-(defn create-action-bar [_ctx]
-  (action-bar/create))
-
 (defn create-hp-mana-bar
   [{:keys [ctx/textures
            ctx/stage]}]
@@ -1176,13 +1173,7 @@
                  (ctx/draw! (:stage/ctx stage)
                                (create-draws (:stage/ctx stage)))))})))
 
-(defn create-windows [ctx actor-fns]
-  (group/create
-   {:group/actors (for [f actor-fns]
-                    (f ctx))
-    :actor/name "moon.ui.windows"}))
-
-(defn create-player-state-draw [_ctx]
+(defn create-player-state-draw []
   (actor/create
    {:draw! (fn [this _batch _parent-alpha]
              (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/stage this))
@@ -1190,7 +1181,7 @@
                    state-k (:state (:entity/fsm entity))]
                (ctx/draw! ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))
 
-(defn create-player-message-actor [_ctx]
+(defn create-player-message-actor []
   (let [message-duration-seconds 0.5]
     (actor/create
      {:actor/name "player-message"
@@ -1344,15 +1335,15 @@
            ctx/start-position]
     :as ctx}]
   (ctx/do! ctx
-               [[:tx/spawn-creature {:position (mapv (partial + 0.5) start-position)
-                                     :creature-property (db/build db :creatures/vampire)
-                                     :components {:entity/fsm {:fsm :fsms/player
-                                                               :initial-state :player-idle}
-                                                  :entity/faction :good
-                                                  :entity/player? true
-                                                  :entity/free-skill-points 3
-                                                  :entity/clickable {:type :clickable/player}
-                                                  :entity/click-distance-tiles 1.5}}]])
+           [[:tx/spawn-creature {:position (mapv (partial + 0.5) start-position)
+                                 :creature-property (db/build db :creatures/vampire)
+                                 :components {:entity/fsm {:fsm :fsms/player
+                                                           :initial-state :player-idle}
+                                              :entity/faction :good
+                                              :entity/player? true
+                                              :entity/free-skill-points 3
+                                              :entity/clickable {:type :clickable/player}
+                                              :entity/click-distance-tiles 1.5}}]])
   (let [eid (get @entity-ids 1)]
     (assert (:entity/player? @eid))
     (assoc ctx :ctx/player-eid eid)))
@@ -1374,14 +1365,16 @@
 (defn add-stage-actors
   [{:keys [ctx/stage]
     :as ctx}]
-  (doseq [[actor-fn & params] [[create-dev-menu]
-                               [create-action-bar]
-                               [create-hp-mana-bar]
-                               [create-windows [create-info-window
-                                                create-inventory-window]]
-                               [create-player-state-draw]
-                               [create-player-message-actor]]]
-    (stage/add-actor! stage (apply actor-fn ctx params)))
+  (doseq [actor [(create-dev-menu ctx)
+                 (action-bar/create)
+                 (create-hp-mana-bar ctx)
+                 (group/create
+                  {:group/actors [(create-info-window ctx)
+                                  (create-inventory-window ctx)]
+                   :actor/name "moon.ui.windows"})
+                 (create-player-state-draw)
+                 (create-player-message-actor)]]
+    (stage/add-actor! stage actor))
   ctx)
 
 (defn create-grid
