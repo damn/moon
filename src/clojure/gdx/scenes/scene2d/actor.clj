@@ -98,7 +98,7 @@
     (doseq [listener listeners]
       (add-listener! actor listener))))
 
-(defmethod create :ui/actor
+(defn create
   [{:keys [act! draw!] :as opts}]
   (doto (proxy [Actor] []
           (act [delta]

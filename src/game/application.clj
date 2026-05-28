@@ -1247,8 +1247,7 @@
                           (render-hpmana-bar x y-hp   hpcontent-file   (stats/get-hitpoints stats) "HP")
                           (render-hpmana-bar x y-mana manacontent-file (stats/get-mana      stats) "MP"))))]
     (actor/create
-     {:type :ui/actor
-      :draw! (fn [this _batch _parent-alpha]
+     {:draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]
                  (draws/handle (:stage/ctx stage)
                                (create-draws (:stage/ctx stage)))))})))
@@ -1262,8 +1261,7 @@
 
 (defn create-player-state-draw [_ctx]
   (actor/create
-   {:type :ui/actor
-    :draw! (fn [this _batch _parent-alpha]
+   {:draw! (fn [this _batch _parent-alpha]
              (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/stage this))
                    entity @player-eid
                    state-k (:state (:entity/fsm entity))]
@@ -1272,8 +1270,7 @@
 (defn create-player-message-actor [_ctx]
   (let [message-duration-seconds 0.5]
     (actor/create
-     {:type :ui/actor
-      :actor/name "player-message"
+     {:actor/name "player-message"
       :actor/user-object (atom nil)
       :draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]

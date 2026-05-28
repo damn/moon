@@ -25,8 +25,7 @@
                  :actor/visible? visible?
                  :actor/position position})]
     (group/add-actor! window (actor/create
-                              {:type :ui/actor
-                               :act! (fn [this delta]
+                              {:act! (fn [this delta]
                                        (when-let [stage (actor/stage this)]
                                          (label/set-text! label (set-label-text! (:stage/ctx stage))))
                                        (widget-group/pack! window))}))

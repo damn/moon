@@ -48,8 +48,7 @@
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
         actors [(actor/create
-                 {:type :ui/actor
-                  :act! (fn [this delta]
+                 {:act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
                             (let [ctx (:stage/ctx stage)]
                               (when (ctx/key-just-pressed? ctx input.keys/enter)

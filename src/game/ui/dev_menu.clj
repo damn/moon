@@ -11,8 +11,7 @@
 
 (defn- set-label-text-actor [label text-fn]
   (actor/create
-   {:type :ui/actor
-    :act! (fn [this _delta]
+   {:act! (fn [this _delta]
             (when-let [stage (actor/stage this)]
               (label/set-text! label (text-fn (:stage/ctx stage)))))}))
 
