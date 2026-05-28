@@ -16,7 +16,7 @@
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.gdx.scenes.scene2d.ui.select-box :as select-box]
             [clojure.scene2d.ui.table :as table]
-            [clojure.scene2d.ui.text-field :as text-field]
+            [clojure.gdx.scenes.scene2d.ui.text-field :as text-field]
             [clojure.scene2d.ui.widget-group :as widget-group]
             [clojure.set :as set]
             [moon.ctx :as ctx]
@@ -303,9 +303,8 @@
 
 (defmethod create :s/number
   [schema v {:keys [ctx/skin]}]
-  (actor/create
-   {:type :ui/text-field
-    :text (->edn-str v)
+  (text-field/create
+   {:text (->edn-str v)
     :skin skin
     :actor/listeners {:listener/text-tooltip [(str schema) skin]}}))
 
@@ -507,9 +506,8 @@
     table))
 
 (defmethod create :s/string [schema v {:keys [ctx/skin]}]
-  (actor/create
-   {:type :ui/text-field
-    :text (str v)
+  (text-field/create
+   {:text (str v)
     :skin skin
     :actor/listeners {:listener/text-tooltip [(str schema) skin]}}))
 
@@ -518,9 +516,8 @@
 
 (defmethod create :s/val-max
   [schema v {:keys [ctx/skin]}]
-  (actor/create
-   {:type :ui/text-field
-    :text (->edn-str v)
+  (text-field/create
+   {:text (->edn-str v)
     :skin skin
     :actor/listeners {:listener/text-tooltip [(str schema) skin]}}))
 
