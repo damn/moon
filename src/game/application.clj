@@ -1,4 +1,21 @@
 (ns game.application
+  "This namespace is for handling the `ctx` data structure
+  which is the whole application state `context`.
+
+  It should not be passed outside this file or knowledge about its keys given
+
+  A grep for `ctx` shows:
+
+  * moon.schema - the editor - make a separate app?
+  * moon.entity
+  * moon.state
+  * moon.info
+  * draws/txs/raycaster/etc protocols
+
+  => entity in here move ???
+  effect/state/info too ?
+  editor schema not?
+  "
   (:require [clojure.core-ext :refer [edn-resource
                                       safe-merge
                                       define-order
@@ -155,10 +172,10 @@
     [:ctx/raycaster :some]
     [:ctx/start-position :some]
     [:ctx/tiled-map :some]
-    [:ctx/db :some]
-    [:ctx/elapsed-time :some]
-    [:ctx/paused? :some]
-    [:ctx/player-eid :some]
+    [:ctx/db :some] ; used here & @ schema....
+    [:ctx/elapsed-time :some] ; effect, info, entity, state
+    [:ctx/paused? :some] ; only here ✅
+    [:ctx/player-eid :some] ; used @ info & entity ⚠️
     ]))
 
 (def world-fn-file
