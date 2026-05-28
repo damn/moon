@@ -1,4 +1,4 @@
-(ns game.ui.dev-menu
+(ns moon.ui.dev-menu
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]

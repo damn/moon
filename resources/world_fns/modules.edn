@@ -1,4 +1,4 @@
-[game.world-fns.modules/create
+[world-fns.modules/create
  {:initial-grid-fn moon.caves/create
   :grid2d-fix-nads-fn moon.nads/fix-nads
   :world/map-size 5,

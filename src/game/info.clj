@@ -1,4 +1,4 @@
-(ns moon.info
+(ns game.info
   (:require [clojure.core-ext :refer [sort-by-k-order]]
             [clojure.math :as math]
             [clojure.string :as str]

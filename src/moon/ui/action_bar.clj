@@ -1,4 +1,4 @@
-(ns game.ui.action-bar
+(ns moon.ui.action-bar
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]

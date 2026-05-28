@@ -1,4 +1,4 @@
-(ns moon.ctx)
+(ns game.ctx)
 
 (defprotocol Context
   (world-unit-scale [_])

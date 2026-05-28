@@ -1,4 +1,4 @@
-(ns moon.effect
+(ns game.effect
   (:require [clojure.math.vector2 :as v]
             [clojure.rand :refer [rand-int-between]]
             [moon.faction :as faction]

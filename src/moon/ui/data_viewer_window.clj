@@ -1,4 +1,4 @@
-(ns game.ui.data-viewer-window
+(ns moon.ui.data-viewer-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]

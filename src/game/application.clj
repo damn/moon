@@ -60,39 +60,39 @@
             [moon.grid2d :as g2d]
             [clojure.gdx.textures]
 
-            [game.ui.data-viewer-window :as data-viewer-window]
-            game.ui.error-window
+            [moon.ui.data-viewer-window :as data-viewer-window]
+            moon.ui.error-window
 
             ; separate application ? better ! ?
-            [moon.schema]
-            game.ui.property-overview-window
+            [game.schema]
+            moon.ui.property-overview-window
 
-            game.ui.dev-menu
-            game.ui.info-window
+            moon.ui.dev-menu
+            moon.ui.info-window
 
             [malli.core :as m]
             [malli.utils :as mu]
 
-            [moon.ctx :as ctx]
+            [game.ctx :as ctx]
             [moon.body :as body]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.creature-tiles]
-            [moon.effect :as effect]
-            [moon.entity :as entity]
+            [game.effect :as effect]
+            [game.entity :as entity]
             [moon.grid :as grid]
-            [moon.info :as info]
+            [game.info :as info]
             [moon.inventory :as inventory]
             [moon.number :as number]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]
-            [moon.state :as state]
+            [game.state :as state]
             [moon.stats :as stats]
-            [moon.skill :as skill]
+            [game.skill :as skill]
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
             [moon.textures :as textures]
-            [game.ui.action-bar :as action-bar]
+            [moon.ui.action-bar :as action-bar]
             [moon.ui.inventory-window :as inventory-window]
             [moon.val-max :as val-max]
             [qrecord.core :as q]
@@ -1127,7 +1127,7 @@
            ctx/db
            ctx/skin
            ctx/textures]}]
-  (game.ui.dev-menu/create
+  (moon.ui.dev-menu/create
    {:menus [
             {:label "Ctx Data"
              :items [{:label "Show data"
@@ -1149,14 +1149,14 @@
                                                      ctx/textures]
                                               :as ctx}]
                                    (stage/add-actor! stage
-                                                     (game.ui.property-overview-window/create
+                                                     (moon.ui.property-overview-window/create
                                                       {:db db
                                                        :textures textures
                                                        :skin skin
                                                        :property-type property-type
                                                        :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
                                                                         (stage/add-actor! stage
-                                                                                          (moon.schema/property-editor-window
+                                                                                          (game.schema/property-editor-window
                                                                                            {:ctx ctx
                                                                                             :property (db/get-raw db id)})))})))})}
             {:label "Help"
@@ -1299,7 +1299,7 @@
 (defn create-info-window
   [{:keys [ctx/skin
            ctx/stage]}]
-  (game.ui.info-window/create
+  (moon.ui.info-window/create
    {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
     :visible? false
@@ -1796,7 +1796,7 @@
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage
-                       (game.ui.error-window/create
+                       (moon.ui.error-window/create
                         {:skin skin
                          :throwable t}))))
   ctx)

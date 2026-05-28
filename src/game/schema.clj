@@ -1,8 +1,8 @@
-(ns moon.schema
+(ns game.schema
   (:require [clojure.core-ext :refer [sort-by-k-order
                                       ->edn-str
                                       truncate]]
-            game.ui.property-overview-window
+            moon.ui.property-overview-window
             [clojure.edn :as edn]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
@@ -15,7 +15,7 @@
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.scenes.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [game.ui.error-window]
+            [moon.ui.error-window]
             [clojure.gdx.scenes.scene2d.ui.select-box :as select-box]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.text-field :as text-field]
@@ -24,7 +24,7 @@
             [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.input.keys :as input.keys]
             [clojure.set :as set]
-            [moon.ctx :as ctx]
+            [game.ctx :as ctx]
             [moon.db :as db]
             [moon.schemas :as schemas]
             [moon.property :as property]
@@ -64,7 +64,7 @@
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage
-                                                   (game.ui.error-window/create
+                                                   (moon.ui.error-window/create
                                                     {:type :ui/error-window
                                                      :skin skin
                                                      :throwable t}))))))
@@ -408,7 +408,7 @@
                                                              :as ctx} (:stage/ctx (event/stage event))]
                                                         (stage/add-actor!
                                                          stage
-                                                         (game.ui.property-overview-window/create
+                                                         (moon.ui.property-overview-window/create
                                                           {:db db
                                                            :textures textures
                                                            :skin skin
@@ -466,7 +466,7 @@
                                                                :as ctx} (:stage/ctx (event/stage event))]
                                                           (stage/add-actor!
                                                            stage
-                                                           (game.ui.property-overview-window/create
+                                                           (moon.ui.property-overview-window/create
                                                             {:db db
                                                              :textures textures
                                                              :skin skin

@@ -1,4 +1,4 @@
-(ns game.ui.info-window
+(ns moon.ui.info-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.stage :as stage]

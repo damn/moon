@@ -1,6 +1,6 @@
-(ns moon.state
+(ns game.state
   (:require [clojure.input.buttons :as input.buttons]
-            [moon.ctx :as ctx]
+            [game.ctx :as ctx]
             [moon.inventory :as inventory]
             [clojure.gdx.scenes.scene2d.stage :as stage]
             [moon.textures :as textures]

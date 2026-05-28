@@ -1,4 +1,4 @@
-(ns game.ui.property-overview-window
+(ns moon.ui.property-overview-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.stage :as stage]

@@ -1,4 +1,4 @@
-(ns game.world-fns.modules
+(ns world-fns.modules
   (:require moon.tiled-map
             [moon.grid2d :as g2d])
   (:import (java.util Random)

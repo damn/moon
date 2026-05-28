@@ -1,5 +1,5 @@
-(ns moon.skill
-  (:require [moon.effect :as effect]
+(ns game.skill
+  (:require [game.effect :as effect]
             [moon.stats :as stats]))
 
 (defn usable-state

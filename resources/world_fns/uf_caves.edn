@@ -1,4 +1,4 @@
-[game.world-fns.uf-caves/create
+[world-fns.uf-caves/create
  {:initial-grid-create-fn moon.caves/create
   :grid2d-fix-nads-fn moon.nads/fix-nads
   :tile-size 48

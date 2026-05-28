@@ -1,4 +1,4 @@
-(ns game.world-fns.tmx
+(ns world-fns.tmx
   (:import (com.badlogic.gdx.maps.tiled TmxMapLoader)))
 
 (defn create

@@ -1,4 +1,4 @@
-(ns game.world-fns.uf-caves
+(ns world-fns.uf-caves
   (:require [clojure.rand :as rand]
             [moon.tiled-map]
             [moon.grid2d :as g2d])

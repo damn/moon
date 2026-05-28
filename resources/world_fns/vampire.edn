@@ -1,4 +1,4 @@
-[game.world-fns.tmx/create
+[world-fns.tmx/create
  {
   :tmx-file "maps/vampire.tmx"
   :start-position [32 71]
