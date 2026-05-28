@@ -24,7 +24,7 @@
             [space.earlygrey.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.scene2d.event :as event]
+            [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
