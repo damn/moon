@@ -26,5 +26,4 @@
             clojure.gdx.maps.map-layers
             clojure.gdx.maps.map-properties
             clojure.gdx.maps.tiled.tiled-map
-            clojure.gdx.maps.tiled.tiled-map-tile-layer
-            clojure.gdx.utils.disposable))
+            clojure.gdx.maps.tiled.tiled-map-tile-layer))

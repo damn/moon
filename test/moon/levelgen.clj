@@ -16,7 +16,6 @@
             [clojure.maps.tiled.tiled-map-tile-layer :as layer]
             [clojure.maps.map-layers :as layers]
             [clojure.maps.map-properties :as props]
-            [clojure.utils.disposable :as disposable]
             [clojure.gdx.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
@@ -28,7 +27,8 @@
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
-           (com.badlogic.gdx.utils ScreenUtils)))
+           (com.badlogic.gdx.utils Disposable
+                                   ScreenUtils)))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -138,9 +138,9 @@
   [{:keys [ctx/skin
            ctx/sprite-batch
            ctx/tiled-map]}]
-  (disposable/dispose! skin)
-  (disposable/dispose! sprite-batch)
-  (disposable/dispose! tiled-map))
+  (Disposable/.dispose skin)
+  (Disposable/.dispose sprite-batch)
+  (Disposable/.dispose tiled-map))
 
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
                                 ctx/color-setter

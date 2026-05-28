@@ -30,7 +30,6 @@
 
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [clojure.utils.disposable :as disposable]
             [clojure.gdx.viewport :as viewport]
 
             [game.impl.content-grid]
@@ -98,7 +97,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
-           (com.badlogic.gdx.utils Align))
+           (com.badlogic.gdx.utils Align
+                                   Disposable))
   (:gen-class))
 
 ; Try only to be used here
@@ -750,14 +750,14 @@
            ctx/skin
            ctx/textures
            ctx/tiled-map]}]
-  (run! disposable/dispose! (vals audio))
-  (disposable/dispose! batch)
-  (run! disposable/dispose! (vals cursors))
-  (disposable/dispose! default-font)
-  (disposable/dispose! shape-drawer-texture)
-  (disposable/dispose! skin)
-  (run! disposable/dispose! (vals textures))
-  (disposable/dispose! tiled-map))
+  (run! Disposable/.dispose (vals audio))
+  (Disposable/.dispose batch)
+  (run! Disposable/.dispose (vals cursors))
+  (Disposable/.dispose default-font)
+  (Disposable/.dispose shape-drawer-texture)
+  (Disposable/.dispose skin)
+  (run! Disposable/.dispose (vals textures))
+  (Disposable/.dispose tiled-map))
 
 (defn- tile-color-setter*
   [{:keys [ray-blocked?
