@@ -26,6 +26,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.ui.widget :as widget]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
 
@@ -1376,9 +1377,8 @@
                                                                          (state/clicked-inventory-cell [state-k (state-k entity)]
                                                                                                        player-eid
                                                                                                        cell))))}
-                      :group/actors [(actor/create
-                                      {:type :ui/widget
-                                       :draw! (fn [this _batch _parent-alpha]
+                      :group/actors [(widget/create
+                                      {:draw! (fn [this _batch _parent-alpha]
                                                 (when-let [stage (actor/stage this)]
                                                   (let [{:keys [ctx/player-eid
                                                                 ctx/ui-mouse-position]
