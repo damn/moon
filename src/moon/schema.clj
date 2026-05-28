@@ -2,6 +2,7 @@
   (:require [clojure.core-ext :refer [sort-by-k-order
                                       ->edn-str
                                       truncate]]
+            game.ui.property-overview-window
             [clojure.edn :as edn]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
@@ -14,18 +15,21 @@
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.scenes.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [game.ui.error-window]
             [clojure.gdx.scenes.scene2d.ui.select-box :as select-box]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.text-field :as text-field]
             [clojure.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [clojure.input.keys :as input.keys]
             [clojure.set :as set]
             [moon.ctx :as ctx]
             [moon.db :as db]
             [moon.schemas :as schemas]
             [moon.property :as property]
             [moon.textures :as textures]
+            [moon.throwable :as throwable]
             [moon.txs :as txs]))
 
 (defmulti create (fn [[schema-k :as _schema] v ctx]
@@ -33,6 +37,79 @@
 
 (defmulti value (fn [[schema-k :as _schema] widget schemas]
                   schema-k))
+
+(defn property-editor-window
+  [{:keys [ctx
+           property]}]
+  (let [{:keys [ctx/db
+                ctx/skin
+                ctx/stage]} ctx
+        schemas (:db/schemas db)
+        schema (get schemas (property/type property))
+        ; build for get-widget-value
+        ; or find a way to find the widget from the context @ save button
+        ; should be possible
+        widget (create schema property ctx) ; FIXME here no set user object k v ?
+        scroll-pane-height (:viewport/world-height (:stage/viewport stage))
+        get-widget-value #(value schema widget schemas)
+        property-id (:property/id property)
+        with-window-close (fn [f]
+                            (fn [actor {:keys [ctx/skin
+                                               ctx/stage]
+                                        :as ctx}]
+                              (try
+                               (let [new-ctx (update ctx :ctx/db f)
+                                     stage (actor/stage actor)]
+                                 (stage/set-ctx! stage new-ctx))
+                               (actor/remove! (actor/find-ancestor actor ui/window?))
+                               (catch Throwable t
+                                 (throwable/pretty-pst t)
+                                 (stage/add-actor! stage
+                                                   (game.ui.error-window/create
+                                                    {:type :ui/error-window
+                                                     :skin skin
+                                                     :throwable t}))))))
+        clicked-delete-fn (with-window-close (fn [db]
+                                               (db/delete! db property-id)))
+        clicked-save-fn (with-window-close (fn [db]
+                                             (db/update! db (get-widget-value))))
+        actors [(actor/create
+                 {:act! (fn [this delta]
+                          (when-let [stage (actor/stage this)]
+                            (let [ctx (:stage/ctx stage)]
+                              (when (ctx/key-just-pressed? ctx input.keys/enter)
+                                (clicked-save-fn this ctx)))))})]
+        save-button {:text "Save [LIGHT_GRAY](ENTER)[]"
+                     :skin skin
+                     :actor/listeners [[:listener/change
+                                        (fn [event actor]
+                                          (clicked-save-fn actor (:stage/ctx (event/stage event))))]]}
+        delete-button {:text "Delete"
+                       :skin skin
+                       :actor/listeners [[:listener/change
+                                          (fn [event actor]
+                                            (clicked-delete-fn actor (:stage/ctx (event/stage event))))]]}
+        scroll-pane-rows [[{:actor widget :colspan 2}]
+                          [{:actor (text-button/create save-button) :center? true}
+                           {:actor (text-button/create delete-button) :center? true}]]
+        rows [[(let [table (table/create
+                            {:table/cell-defaults {:pad 5}
+                             :table/rows scroll-pane-rows})]
+                 {:actor (scroll-pane/create
+                          {:actor table
+                           :skin skin})
+                  :width  (+ (actor/width table) 50)
+                  :height (min (- scroll-pane-height 50)
+                               (actor/height table))})]]]
+    (window/create
+     {:title "[SKY]Property[]"
+      :skin skin
+      :window/close-button? skin
+      :window/modal? true
+      :table/cell-defaults {:pad 5}
+      :table/rows rows
+      :group/actors actors
+      :actor/name "moon.ui.editor.window"})))
 
 (defmethod create :default
   [_ v {:keys [ctx/skin]}]
@@ -46,9 +123,8 @@
 
 (defmethod create :s/animation
   [_ animation {:keys [ctx/textures]}]
-  (actor/create
-   {:type :ui/table
-    :table/cell-defaults {:pad 1}
+  (table/create
+   {:table/cell-defaults {:pad 1}
     :table/rows [(for [image (:animation/frames animation)]
                    {:actor (image-button/create
                             {:drawable (texture-region-drawable/create*
@@ -116,9 +192,8 @@
         property (map-widget-table-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
     (stage/add-actor! stage
-                      (actor/create
-                       {:type :ui/property-editor-window
-                        :ctx ctx
+                      (property-editor-window
+                       {:ctx ctx
                         :property property}))))
 
 (defn- k->label-text [k]
@@ -132,9 +207,8 @@
            k
            table
            label-text]}]
-  [{:actor (actor/create
-            {:type :ui/table
-             :table/cell-defaults {:pad 2}
+  [{:actor (table/create
+            {:table/cell-defaults {:pad 2}
              :table/rows [[{:actor (when display-remove-component-button?
                                      (text-button/create
                                       {:text "-"
@@ -168,7 +242,7 @@
     :table table
     :label-text (k->label-text k)}))
 
-(defmethod actor/create :ui/add-component-window
+(defn add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (window/create
                 {:title "Choose"
@@ -219,9 +293,8 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (actor/create
-               {:type :ui/table
-                :table/cell-defaults {:pad 5}
+  (let [table (table/create
+               {:table/cell-defaults {:pad 5}
                 :actor/name "moon.db.schema.map.ui.widget"})
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
@@ -245,9 +318,8 @@
                                                              ctx/skin]} (:stage/ctx (event/stage event))]
                                                  (stage/add-actor!
                                                   stage
-                                                  (actor/create
-                                                   {:type :ui/add-component-window
-                                                    :skin skin
+                                                  (add-component-window
+                                                   {:skin skin
                                                     :schemas (:db/schemas db)
                                                     :schema schema
                                                     :map-widget-table table}))))}})
@@ -337,9 +409,8 @@
                                                              :as ctx} (:stage/ctx (event/stage event))]
                                                         (stage/add-actor!
                                                          stage
-                                                         (actor/create
-                                                          {:type :ui/property-overview-window
-                                                           :db db
+                                                         (game.ui.property-overview-window/create
+                                                          {:db db
                                                            :textures textures
                                                            :skin skin
                                                            :property-type property-type
@@ -361,9 +432,8 @@
                                                                   (disj property-ids id)))}})})])))
 
 (defmethod create :s/one-to-many [[_ property-type] property-ids ctx]
-  (let [table (actor/create
-               {:type :ui/table
-                :table/cell-defaults {:pad 5}})]
+  (let [table (table/create
+               {:table/cell-defaults {:pad 5}})]
     (add-one-to-many-rows ctx table property-type property-ids)
     table))
 
@@ -397,9 +467,8 @@
                                                                :as ctx} (:stage/ctx (event/stage event))]
                                                           (stage/add-actor!
                                                            stage
-                                                           (actor/create
-                                                            {:type :ui/property-overview-window
-                                                             :db db
+                                                           (game.ui.property-overview-window/create
+                                                            {:db db
                                                              :textures textures
                                                              :skin skin
                                                              :property-type property-type
@@ -421,9 +490,8 @@
                                                                    nil))}})})]])))
 
 (defmethod create :s/one-to-one [[_ property-type] property-id ctx]
-  (let [table (actor/create
-               {:type :ui/table
-                :table/cell-defaults {:pad 5}})]
+  (let [table (table/create
+               {:table/cell-defaults {:pad 5}})]
     (add-one-to-one-rows ctx table property-type property-id)
     table))
 
@@ -454,9 +522,8 @@
                         :window/close-button? skin
                         :window/modal? true
                         :table/rows
-                        [[(let [table (actor/create
-                                       {:type :ui/table
-                                        :table/cell-defaults {:pad 5}
+                        [[(let [table (table/create
+                                       {:table/cell-defaults {:pad 5}
                                         :table/rows (for [sound-name (ctx/sound-names ctx)]
                                                       [{:actor (text-button/create
                                                                 {:text sound-name
@@ -491,9 +558,8 @@
                                                                [[:tx/sound sound-name]]))}})}])
 
 (defmethod create :s/sound [_  sound-name {:keys [ctx/skin]}]
-  (let [table (actor/create
-               {:type :ui/table
-                :table/cell-defaults {:pad 5}})]
+  (let [table (table/create
+               {:table/cell-defaults {:pad 5}})]
     (table/add-rows! table [(if sound-name
                               (sound-columns skin table sound-name)
                               [{:actor

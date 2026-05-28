@@ -26,6 +26,7 @@
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.stack :as stack]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.widget :as widget]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
@@ -44,11 +45,11 @@
             [game.impl.raycaster]
             [game.impl.textures]
 
-            game.ui.data-viewer-window
+            [game.ui.data-viewer-window :as data-viewer-window]
             game.ui.error-window
 
             ; separate application ? better ! ?
-            game.ui.property-editor-window
+            [moon.schema]
             game.ui.property-overview-window
 
             game.ui.dev-menu
@@ -1116,17 +1117,15 @@
            ctx/db
            ctx/skin
            ctx/textures]}]
-  (actor/create
-   {:type :ui/menu
-    :menus [
+  (game.ui.dev-menu/create
+   {:menus [
             {:label "Ctx Data"
              :items [{:label "Show data"
                       :on-click (fn [_actor {:keys [ctx/skin
                                                     ctx/stage] :as ctx}]
                                   (stage/add-actor! stage
-                                                    (actor/create
-                                                     {:type :ui/data-viewer-window
-                                                      :title "Data View"
+                                                    (data-viewer-window/create
+                                                     {:title "Data View"
                                                       :data ctx
                                                       :width 1000
                                                       :height 1000
@@ -1140,17 +1139,15 @@
                                                      ctx/textures]
                                               :as ctx}]
                                    (stage/add-actor! stage
-                                                     (actor/create
-                                                      {:type :ui/property-overview-window
-                                                       :db db
+                                                     (game.ui.property-overview-window/create
+                                                      {:db db
                                                        :textures textures
                                                        :skin skin
                                                        :property-type property-type
                                                        :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
                                                                         (stage/add-actor! stage
-                                                                                          (actor/create
-                                                                                           {:type :ui/property-editor-window
-                                                                                            :ctx ctx
+                                                                                          (moon.schema/property-editor-window
+                                                                                           {:ctx ctx
                                                                                             :property (db/get-raw db id)})))})))})}
             {:label "Help"
              :items [{:label controls-info}]}
@@ -1204,8 +1201,7 @@
     :skin skin}))
 
 (defn create-action-bar [_ctx]
-  (actor/create
-   {:type :ui/action-bar}))
+  (game.ui.action-bar/create))
 
 (defn create-hp-mana-bar
   [{:keys [ctx/textures
@@ -1253,9 +1249,8 @@
                                (create-draws (:stage/ctx stage)))))})))
 
 (defn create-windows [ctx actor-fns]
-  (actor/create
-   {:type :ui/group
-    :group/actors (for [f actor-fns]
+  (group/create
+   {:group/actors (for [f actor-fns]
                     (f ctx))
     :actor/name "moon.ui.windows"}))
 
@@ -1294,9 +1289,8 @@
 (defn create-info-window
   [{:keys [ctx/skin
            ctx/stage]}]
-  (actor/create
-   {:type :ui/info-window
-    :title "Entity Info"
+  (game.ui.info-window/create
+   {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
     :visible? false
     :position [(:viewport/world-width (:stage/viewport stage)) 0]
@@ -1397,9 +1391,8 @@
     (window/create
      {:title "Inventory"
       :skin skin
-      :table/rows [[{:actor (actor/create
-                             {:type :ui/table
-                              :actor/name "inventory-cell-table"
+      :table/rows [[{:actor (table/create
+                             {:actor/name "inventory-cell-table"
                               :table/rows (concat [[nil nil
                                                     (->cell :inventory.slot/helm)
                                                     (->cell :inventory.slot/necklace)]
@@ -1556,9 +1549,8 @@
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage
-                        (actor/create
-                         {:type :ui/data-viewer-window
-                          :title "Data View"
+                        (data-viewer-window/create
+                         {:title "Data View"
                           :data data
                           :width 500
                           :height 500
@@ -1802,9 +1794,8 @@
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage
-                       (actor/create
-                        {:type :ui/error-window
-                         :skin skin
+                       (game.ui.error-window/create
+                        {:skin skin
                          :throwable t}))))
   ctx)
 

@@ -6,8 +6,6 @@
             [clojure.scene2d.listener :as listener])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defmulti create :type)
-
 (defn name [^Actor actor]
   (.getName actor))
 

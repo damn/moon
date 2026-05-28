@@ -2,11 +2,12 @@
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.stage :as stage]))
 
-(defmethod actor/create :ui/data-viewer-window
+(defn create
   [{:keys [title
            data
            width
@@ -37,9 +38,8 @@
                        :actor/listeners [[:listener/change
                                           (fn [_event actor]
                                             (stage/add-actor! (actor/stage actor)
-                                                              (actor/create
-                                                               {:type :ui/data-viewer-window
-                                                                :title "title"
+                                                              (create
+                                                               {:title "title"
                                                                 :data v
                                                                 :width 500
                                                                 :height 500
@@ -50,15 +50,14 @@
         rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
                 :actor (v->actor v skin)})
-        scroll-pane-table (actor/create {:type :ui/table
-                                         :table/rows (for [{:keys [label actor]} rows]
-                                                       [{:actor (label/create {:text label
-                                                                               :skin skin})}
-                                                        {:actor actor}])})
+        scroll-pane-table (table/create
+                           {:table/rows (for [{:keys [label actor]} rows]
+                                          [{:actor (label/create {:text label
+                                                                  :skin skin})}
+                                           {:actor actor}])})
 
         ; TODO use moon.scroll-pane-cell
-        scroll-pane-cell (let [table (actor/create {:type :ui/table
-                                                    :table/cell-defaults {:pad 1}
+        scroll-pane-cell (let [table (table/create {:table/cell-defaults {:pad 1}
                                                     :table/rows [[scroll-pane-table]]})]
                            {:actor (scroll-pane/create
                                     {:actor table

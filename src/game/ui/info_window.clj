@@ -7,7 +7,7 @@
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.ui.widget-group :as widget-group]))
 
-(defmethod actor/create :ui/info-window
+(defn create
   [{:keys [title
            actor-name
            visible?

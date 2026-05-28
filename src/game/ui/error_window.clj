@@ -1,6 +1,5 @@
 (ns game.ui.error-window
-  (:require [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.ui.label :as label]
+  (:require [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.repl :as repl]))
 
@@ -10,7 +9,7 @@
        ~@body
        (str s#))))
 
-(defmethod actor/create :ui/error-window
+(defn create
   [{:keys [skin throwable]}]
   (let [label-text (binding [*print-level* 3]
                      (with-err-str

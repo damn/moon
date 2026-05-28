@@ -31,6 +31,6 @@
     (cell/set-opts! (.defaults table) defaults))
   (widget-group/set-opts! table opts))
 
-(defmethod actor/create :ui/table [opts]
+(defn create [opts]
   (doto (Table.)
     (set-opts! opts)))

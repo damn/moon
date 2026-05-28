@@ -20,9 +20,8 @@
    (let [label (label/create
                 {:text ""
                  :skin skin})
-         sub-table (actor/create
-                    {:type :ui/table
-                     :table/rows [[{:actor (image/create {:content icon})}
+         sub-table (table/create
+                    {:table/rows [[{:actor (image/create {:content icon})}
                                    label]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (table/add! table {:actor sub-table
@@ -50,9 +49,8 @@
                                                           (on-click actor (:stage/ctx (event/stage event))))}})})]})
 
 (defn- main-table [skin menus update-labels]
-  (let [table (actor/create
-               {:type :ui/table
-                :table/rows [(for [{:keys [label items]} menus]
+  (let [table (table/create
+               {:table/rows [(for [{:keys [label items]} menus]
                                {:actor
                                 (text-button/create
                                  {:text label
@@ -67,11 +65,10 @@
           (add-upd-label! skin table update-fn))))
     table))
 
-(defmethod actor/create :ui/menu
+(defn create
   [{:keys [menus update-labels skin]}]
-  (actor/create
-   {:type :ui/table
-    :table/rows [[{:actor (main-table skin menus update-labels)
+  (table/create
+   {:table/rows [[{:actor (main-table skin menus update-labels)
                    :expand-x? true
                    :fill-x? true
                    :colspan 1}]

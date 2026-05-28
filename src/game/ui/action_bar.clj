@@ -3,15 +3,15 @@
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.ui.action-bar :as action-bar])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup)))
 
-(defmethod actor/create :ui/action-bar [_]
-  (actor/create
-   {:type :ui/table
-    :table/cell-defaults {:pad 2}
+(defn create []
+  (table/create
+   {:table/cell-defaults {:pad 2}
     :table/rows [[{:actor (horizontal-group/create
                            {:space 2
                             :pad 2
