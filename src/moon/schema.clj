@@ -17,7 +17,7 @@
             [clojure.gdx.scenes.scene2d.ui.select-box :as select-box]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.text-field :as text-field]
-            [clojure.scene2d.ui.widget-group :as widget-group]
+            [clojure.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.set :as set]
             [moon.ctx :as ctx]

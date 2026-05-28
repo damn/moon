@@ -5,7 +5,7 @@
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
-            [clojure.scene2d.ui.widget-group :as widget-group]))
+            [clojure.gdx.scenes.scene2d.ui.widget-group :as widget-group]))
 
 (defmethod actor/create :ui/info-window
   [{:keys [title
