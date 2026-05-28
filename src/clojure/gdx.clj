@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require clojure.gdx.scenes.scene2d.ui.image
-            clojure.gdx.scenes.scene2d.ui.text-button
+  (:require clojure.gdx.scenes.scene2d.ui.text-button
             clojure.gdx.scenes.scene2d.ui.text-field
             clojure.gdx.scenes.scene2d.ui.text-tooltip
             clojure.gdx.scenes.scene2d.ui.table

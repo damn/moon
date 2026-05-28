@@ -9,6 +9,7 @@
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
@@ -350,9 +351,8 @@
                                                                             (redo-rows ctx (conj property-ids id)))}))))}})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
-          {:actor (actor/create
-                   {:type :ui/image
-                    :content (textures/texture-region textures (property/image property))
+          {:actor (image/create
+                   {:content (textures/texture-region textures (property/image property))
                     :actor/user-object property-id
                     :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))
       (for [id property-ids]
@@ -413,9 +413,8 @@
                                                                               (redo-rows ctx id))}))))}})})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
-           {:actor (actor/create
-                    {:type :ui/image
-                     :content (textures/texture-region textures (property/image property))
+           {:actor (image/create
+                    {:content (textures/texture-region textures (property/image property))
                      :actor/user-object property-id
                      :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))]
       [(when property-id

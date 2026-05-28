@@ -1,7 +1,7 @@
 (ns moon.ui.inventory-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.group :as group]
-            [clojure.scene2d.ui.image :as image]))
+            [clojure.gdx.scenes.scene2d.ui.image :as image]))
 
 (defn- find-inventory-window-cell [group cell]
   (first (filter #(= (actor/user-object %) cell)

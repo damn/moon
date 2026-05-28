@@ -27,6 +27,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.stack :as stack]
             [clojure.gdx.scenes.scene2d.ui.widget :as widget]
             [clojure.scene2d.stage :as stage]
@@ -1391,9 +1392,8 @@
                                                                                              (actor/stage->local-coordinates this ui-mouse-position)
                                                                                              true)
                                                                                   (actor/user-object (actor/parent this)))))))})
-                                     (actor/create
-                                      {:type :ui/image
-                                       :content background-drawable
+                                     (image/create
+                                      {:content background-drawable
                                        :actor/name "image-widget"
                                        :actor/user-object {:background-drawable background-drawable
                                                            :cell-size cell-size}})]})}))]
