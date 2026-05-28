@@ -36,7 +36,6 @@
             [clojure.gdx.viewport :as viewport]
 
             [game.impl.explored-tile-corners]
-            [game.impl.grid]
             [game.impl.raycaster]
             [game.impl.textures]
 
@@ -1460,7 +1459,7 @@
 (defn create-grid
   [{:keys [ctx/tiled-map]
     :as ctx}]
-  (assoc ctx :ctx/grid (game.impl.grid/create tiled-map)))
+  (assoc ctx :ctx/grid (grid/create tiled-map)))
 
 (defn create-content-grid
   [{:keys [ctx/tiled-map]
