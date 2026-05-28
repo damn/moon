@@ -1,3 +1,8 @@
+; Remove:
+; * bind-root
+; * protocols
+; * extend-type
+; * (multimethods)   - just function maps ?
 (ns game.application
   (:require [clojure.core-ext :refer [edn-resource
                                       safe-merge

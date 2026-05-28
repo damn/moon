@@ -1,10 +1,7 @@
 (ns clojure.scene2d.actor
   (:refer-clojure :exclude [name]))
 
-; ** TODO this contains '2' things !!!
 (defmulti create :type)
-; 91 use cases !!
-; mostly w. table
 
 (defprotocol Actor
   (name [_])
