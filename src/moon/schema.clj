@@ -19,6 +19,7 @@
             [clojure.gdx.scenes.scene2d.ui.text-field :as text-field]
             [clojure.gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.set :as set]
             [moon.ctx :as ctx]
             [moon.db :as db]
@@ -50,8 +51,9 @@
     :table/cell-defaults {:pad 1}
     :table/rows [(for [image (:animation/frames animation)]
                    {:actor (image-button/create
-                            {:drawable {:drawable/texture-region (textures/texture-region textures image)
-                                        :drawable/scale 2}})})]}))
+                            {:drawable (texture-region-drawable/create*
+                                        {:drawable/texture-region (textures/texture-region textures image)
+                                         :drawable/scale 2})})})]}))
 
 (defmethod create :s/boolean
   [_ checked? {:keys [ctx/skin]}]

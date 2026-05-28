@@ -32,6 +32,7 @@
             [clojure.gdx.scenes.scene2d.ui.stack :as stack]
             [clojure.gdx.scenes.scene2d.ui.widget :as widget]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
 
@@ -1352,9 +1353,10 @@
                                                            :image/bounds bounds})))
         cell-size 48
         slot->drawable (fn [slot]
-                         {:drawable/texture-region (slot->texture-region slot)
-                          :drawable/size cell-size
-                          :drawable/tint [1 1 1 0.4]})
+                         (texture-region-drawable/create
+                          {:drawable/texture-region (slot->texture-region slot)
+                           :drawable/size cell-size
+                           :drawable/tint [1 1 1 0.4]}))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size (:colors/item-rect colors)]
                           (when (and mouseover?

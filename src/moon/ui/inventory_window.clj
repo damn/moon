@@ -1,7 +1,8 @@
 (ns moon.ui.inventory-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.group :as group]
-            [clojure.gdx.scenes.scene2d.ui.image :as image]))
+            [clojure.gdx.scenes.scene2d.ui.image :as image]
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn- find-inventory-window-cell [group cell]
   (first (filter #(= (actor/user-object %) cell)
@@ -16,8 +17,9 @@
   (let [cell-widget (window->cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")
         cell-size (:cell-size (actor/user-object image-widget))]
-    (image/set-drawable! image-widget {:drawable/texture-region texture-region
-                                       :drawable/size cell-size})
+    (image/set-drawable! image-widget (texture-region-drawable/create
+                                       {:drawable/texture-region texture-region
+                                        :drawable/size cell-size}))
     (actor/add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
     nil))
 

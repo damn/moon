@@ -3,6 +3,7 @@
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.ui.action-bar :as action-bar])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup)))
@@ -44,8 +45,9 @@
      skin]
     (let [{:keys [horizontal-group button-group]} (get-data action-bar)
           button (image-button/create
-                  {:drawable {:drawable/texture-region texture-region
-                              :drawable/scale 2}
+                  {:drawable (texture-region-drawable/create*
+                              {:drawable/texture-region texture-region
+                               :drawable/scale 2})
                    :actor/listeners {:listener/text-tooltip [tooltip-text skin]}
                    :actor/user-object skill-id})]
       (group/add-actor! horizontal-group button)

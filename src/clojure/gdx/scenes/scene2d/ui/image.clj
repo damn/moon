@@ -1,6 +1,5 @@
 (ns clojure.gdx.scenes.scene2d.ui.image
-  (:require [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable])
+  (:require [clojure.gdx.scenes.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Image)
@@ -19,10 +18,8 @@
 
 (defn create
   [{:keys [content] :as opts}]
-  (doto (create* (if (map? content)
-                   (texture-region-drawable/create content)
-                   content))
+  (doto (create* content)
     (actor/set-opts! opts)))
 
 (defn set-drawable! [^Image image drawable]
-  (.setDrawable image (texture-region-drawable/create drawable)))
+  (.setDrawable image drawable))
