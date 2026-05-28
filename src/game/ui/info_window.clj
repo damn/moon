@@ -1,6 +1,6 @@
 (ns game.ui.info-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui.label :as label]
             [clojure.scene2d.ui.table :as table]

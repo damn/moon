@@ -1,6 +1,5 @@
 (ns clojure.gdx
-  (:require clojure.gdx.scenes.scene2d.group
-            clojure.gdx.scenes.scene2d.event
+  (:require clojure.gdx.scenes.scene2d.event
             clojure.gdx.scenes.scene2d.ui.widget
             clojure.gdx.scenes.scene2d.ui.scroll-pane
             clojure.gdx.scenes.scene2d.ui.label

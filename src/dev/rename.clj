@@ -63,7 +63,7 @@
 
 (comment
  (move-and-rename! "moon.scene2d.group"
-                   "clojure.scene2d.group")
+                   "clojure.gdx.scenes.scene2d.group")
 
 
 

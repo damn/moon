@@ -1,7 +1,7 @@
 (ns game.ui.action-bar
   (:require [clojure.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.group :as group]
             [moon.ui.action-bar :as action-bar])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup)))

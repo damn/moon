@@ -1,5 +1,5 @@
 (ns clojure.gdx.stage
-  (:require [clojure.scene2d.group :as group]
+  (:require [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.viewport :as viewport])
   (:import (clojure.gdx Stage)
