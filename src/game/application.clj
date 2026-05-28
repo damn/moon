@@ -1,3 +1,9 @@
+; Everything here should be _only_ related to managing 'ctx' .....
+; then find out sub-contexts (how?) - by looking at fns ... which destructure ?
+; e.g. access 'ctx/grid' only through ctx protocol at first
+; => also keep defmethod functions together in one line so I can see what is used
+; e.g. entity/ tick / render/ create etc.
+; so I know what keys are passed ....
 (ns game.application
   "This namespace is for handling the `ctx` data structure
   which is the whole application state `context`.
@@ -1780,24 +1786,13 @@
            ctx/stage]
     :as ctx}]
   (try
-   ; TODO should not have effects which interfere in eid order (remove?)
-   ; convert attacks self!?
    (ctx/do! ctx (mapcat (fn [eid]
-                              (mapcat (fn [[k v]]
-                                        (comment
-                                         :ctx/delta-time
-                                         :ctx/grid
-                                         :ctx/raycaster
-                                         :ctx/max-speed
-                                         :ctx/elapsed-time
-                                         :ctx/raycaster
-                                         ; effect/useful? what is used
-                                         )
-                                        (try (entity/tick [k v] eid ctx)
-                                             (catch Throwable t
-                                               (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
-                                      @eid))
-                            active-entities))
+                          (mapcat (fn [[k v]]
+                                    (try (entity/tick [k v] eid ctx)
+                                         (catch Throwable t
+                                           (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
+                                  @eid))
+                        active-entities))
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage
