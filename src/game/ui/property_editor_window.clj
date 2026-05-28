@@ -1,6 +1,6 @@
 (ns game.ui.property-editor-window
   (:require [clojure.input.keys :as input.keys]
-            [clojure.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.scene2d.event :as event]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
