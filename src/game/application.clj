@@ -1,27 +1,4 @@
-; Everything here should be _only_ related to managing 'ctx' .....
-; then find out sub-contexts (how?) - by looking at fns ... which destructure ?
-; e.g. access 'ctx/grid' only through ctx protocol at first
-; => also keep defmethod functions together in one line so I can see what is used
-; e.g. entity/ tick / render/ create etc.
-; so I know what keys are passed ....
 (ns game.application
-  "This namespace is for handling the `ctx` data structure
-  which is the whole application state `context`.
-
-  It should not be passed outside this file or knowledge about its keys given
-
-  A grep for `ctx` shows:
-
-  * moon.schema - the editor - make a separate app?
-  * moon.entity
-  * moon.state
-  * moon.info
-  * raycaster/etc protocols
-
-  => entity in here move ???
-  effect/state/info too ?
-  editor schema not?
-  "
   (:require [clojure.core-ext :refer [edn-resource
                                       safe-merge
                                       define-order
