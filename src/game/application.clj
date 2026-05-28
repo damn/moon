@@ -73,7 +73,6 @@
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.creature-tiles]
-            [moon.draws :as draws]
             [moon.effect :as effect]
             [moon.entity :as entity]
             [moon.grid :as grid]
@@ -210,11 +209,11 @@
                                   rightx (+ (float leftx) (float w))]
                               (doseq [idx (range (inc (float gridw)))
                                       :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-                                (draws/handle ctx
+                                (ctx/draw! ctx
                                               [[:draw/line [linex topy] [linex bottomy] color-float-bits]]))
                               (doseq [idx (range (inc (float gridh)))
                                       :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-                                (draws/handle ctx
+                                (ctx/draw! ctx
                                               [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))
    :draw/line             (fn
                             [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
@@ -287,7 +286,7 @@
                              draws]
                             (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
                               (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
-                              (draws/handle ctx draws)
+                              (ctx/draw! ctx draws)
                               (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
    })
 
@@ -638,6 +637,11 @@
   (key-just-pressed? [{:keys [ctx/app]} input-key]
     (.isKeyJustPressed (Application/.getInput app) input-key))
 
+  (draw! [ctx draws]
+    (doseq [{k 0 :as component} draws
+            :when component]
+      (apply (get draw-fns k) ctx (rest component))))
+
   txs/Txs
   (handle! [ctx txs]
     (let [handled-txs (try (actions! txs-fn-map ctx txs)
@@ -648,11 +652,7 @@
                        ctx
                        handled-txs)))
 
-  draws/Draws
-  (handle [ctx draws]
-    (doseq [{k 0 :as component} draws
-            :when component]
-      (apply (get draw-fns k) ctx (rest component))))
+
   )
 
 (defn create-record [ctx]
@@ -1254,7 +1254,7 @@
     (actor/create
      {:draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]
-                 (draws/handle (:stage/ctx stage)
+                 (ctx/draw! (:stage/ctx stage)
                                (create-draws (:stage/ctx stage)))))})))
 
 (defn create-windows [ctx actor-fns]
@@ -1269,7 +1269,7 @@
              (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/stage this))
                    entity @player-eid
                    state-k (:state (:entity/fsm entity))]
-               (draws/handle ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))
+               (ctx/draw! ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))
 
 (defn create-player-message-actor [_ctx]
   (let [message-duration-seconds 0.5]
@@ -1278,7 +1278,7 @@
       :actor/user-object (atom nil)
       :draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]
-                 (draws/handle (:stage/ctx stage)
+                 (ctx/draw! (:stage/ctx stage)
                                [(let [state (actor/user-object this)
                                       vp-width (:viewport/world-width (:stage/viewport stage))
                                       vp-height (:viewport/world-height (:stage/viewport stage))]
@@ -1384,7 +1384,7 @@
                                                   (let [{:keys [ctx/player-eid
                                                                 ctx/ui-mouse-position]
                                                          :as ctx} (:stage/ctx stage)]
-                                                    (draws/handle ctx
+                                                    (ctx/draw! ctx
                                                                   (draw-cell-rect @player-eid
                                                                                   (actor/x this)
                                                                                   (actor/y this)
@@ -1908,15 +1908,15 @@
   [{:keys [ctx/colors] :as ctx} entity render-layer]
   (try (do
         (when show-body-bounds?
-          (draws/handle ctx (draw-body-rect (:entity/body entity)
+          (ctx/draw! ctx (draw-body-rect (:entity/body entity)
                                              (if (:body/collides? (:entity/body entity))
                                                (:colors/debug-body-outline-collides colors)
                                                (:colors/debug-body-outline colors)))))
         (doseq [[k v] entity
                 :when (get render-layer k)]
-          (draws/handle ctx (entity/render [k v] entity ctx))))
+          (ctx/draw! ctx (entity/render [k v] entity ctx))))
        (catch Throwable t
-         (draws/handle ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
+         (ctx/draw! ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
          (throwable/pretty-pst t))))
 
 (defn draw-entities!
@@ -1974,7 +1974,7 @@
                #_moon.geom-test
                highlight-mouseover-tile
                ]]
-      (draws/handle ctx (f ctx)))
+      (ctx/draw! ctx (f ctx)))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
   (.end batch)

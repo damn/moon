@@ -6,4 +6,5 @@
   (button-just-pressed? [_ button])
   (key-just-pressed? [_ key])
   (item-place-position [_ player-entity])
-  (sound-names [_]))
+  (sound-names [_])
+  (draw! [_ draws]))
