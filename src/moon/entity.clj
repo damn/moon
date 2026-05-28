@@ -364,23 +364,6 @@
         (for [skill skills]
           [:tx/add-skill eid skill])))
 
-(.bindRoot #'moon.skill/usable-state
-           (fn [{:keys [skill/cooling-down? skill/effects] :as skill}
-                entity
-                effect-ctx]
-             (cond
-              cooling-down?
-              :cooldown
-
-              (stats/not-enough-mana? (:entity/stats entity) skill)
-              :not-enough-mana
-
-              (not (seq (filter #(effect/applicable? % effect-ctx) effects)))
-              :invalid-params
-
-              :else
-              :usable)))
-
 (defmethod create :entity/stats
   [[_ v] _ctx]
   (stats/create v))
