@@ -5,7 +5,7 @@
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)))
 
-(defmethod actor/create :ui/window
+(defn create
   [{:keys [title skin] :as opts}]
   (let [window (Window. ^String title ^Skin skin)]
     (when (:window/modal? opts)

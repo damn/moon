@@ -4,6 +4,7 @@
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.table :as table]))
@@ -38,8 +39,7 @@
                         :expand-x? true}))))
 
 (defn- create-window [skin label items]
-  {:type :ui/window
-   :title label
+  {:title label
    :skin skin
    :window/close-button? skin
    :table/rows [(for [{:keys [label on-click]} items]
@@ -60,7 +60,7 @@
                                   :skin skin
                                   :actor/listeners {:listener/change (fn [event actor]
                                                                        (stage/add-actor! (event/stage event)
-                                                                                         (actor/create (create-window skin label items))))}})})]})]
+                                                                                         (window/create (create-window skin label items))))}})})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon

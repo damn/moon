@@ -31,6 +31,7 @@
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.stack :as stack]
             [clojure.gdx.scenes.scene2d.ui.widget :as widget]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
 
@@ -546,9 +547,8 @@
                                    {:keys [title text button-text on-click]}]
                                   (assert (not (stage/find-actor stage "moon.ui.modal-window")))
                                   (stage/add-actor! stage
-                                                    (actor/create
-                                                     {:type :ui/window
-                                                      :title title
+                                                    (window/create
+                                                     {:title title
                                                       :skin skin
                                                       :window/modal? true
                                                       :table/rows [[{:actor (label/create
@@ -1261,7 +1261,7 @@
 (defn create-windows [ctx actor-fns]
   {:type :ui/group
    :group/actors (for [f actor-fns]
-                   (actor/create (f ctx)))
+                   (f ctx))
    :actor/name "moon.ui.windows"})
 
 (defn create-player-state-draw [_ctx]
@@ -1299,20 +1299,21 @@
 (defn create-info-window
   [{:keys [ctx/skin
            ctx/stage]}]
-  {:type :ui/info-window
-   :title "Entity Info"
-   :actor-name "moon.ui.windows.entity-info"
-   :visible? false
-   :position [(:viewport/world-width (:stage/viewport stage)) 0]
-   :set-label-text! (fn [{:keys [ctx/mouseover-eid]
-                          :as ctx}]
-                      (if-let [eid mouseover-eid]
-                        (info/text (apply dissoc @eid [:entity/skills
-                                                       :entity/faction
-                                                       :active-skill])
-                                   ctx)
-                        ""))
-   :skin skin})
+  (actor/create
+   {:type :ui/info-window
+    :title "Entity Info"
+    :actor-name "moon.ui.windows.entity-info"
+    :visible? false
+    :position [(:viewport/world-width (:stage/viewport stage)) 0]
+    :set-label-text! (fn [{:keys [ctx/mouseover-eid]
+                           :as ctx}]
+                       (if-let [eid mouseover-eid]
+                         (info/text (apply dissoc @eid [:entity/skills
+                                                        :entity/faction
+                                                        :active-skill])
+                                    ctx)
+                         ""))
+    :skin skin}))
 
 (defmethod state/clicked-inventory-cell :player-idle
   [_ eid cell]
@@ -1397,35 +1398,35 @@
                                        :actor/name "image-widget"
                                        :actor/user-object {:background-drawable background-drawable
                                                            :cell-size cell-size}})]})}))]
-    {:type :ui/window
-     :title "Inventory"
-     :skin skin
-     :table/rows [[{:actor (actor/create
-                            {:type :ui/table
-                             :actor/name "inventory-cell-table"
-                             :table/rows (concat [[nil nil
-                                                   (->cell :inventory.slot/helm)
-                                                   (->cell :inventory.slot/necklace)]
-                                                  [nil
-                                                   (->cell :inventory.slot/weapon)
-                                                   (->cell :inventory.slot/chest)
-                                                   (->cell :inventory.slot/cloak)
-                                                   (->cell :inventory.slot/shield)]
-                                                  [nil nil
-                                                   (->cell :inventory.slot/leg)]
-                                                  [nil
-                                                   (->cell :inventory.slot/glove)
-                                                   (->cell :inventory.slot/rings :position [0 0])
-                                                   (->cell :inventory.slot/rings :position [1 0])
-                                                   (->cell :inventory.slot/boot)]]
-                                                 (for [y (range 4)]
-                                                   (for [x (range 6)]
-                                                     (->cell :inventory.slot/bag :position [x y]))))})
-                    :pad 4}]]
-     :actor/name "moon.ui.windows.inventory"
-     :actor/visible? false
-     :actor/position [(:viewport/world-width (:stage/viewport stage))
-                      (:viewport/world-height (:stage/viewport stage))]}))
+    (window/create
+     {:title "Inventory"
+      :skin skin
+      :table/rows [[{:actor (actor/create
+                             {:type :ui/table
+                              :actor/name "inventory-cell-table"
+                              :table/rows (concat [[nil nil
+                                                    (->cell :inventory.slot/helm)
+                                                    (->cell :inventory.slot/necklace)]
+                                                   [nil
+                                                    (->cell :inventory.slot/weapon)
+                                                    (->cell :inventory.slot/chest)
+                                                    (->cell :inventory.slot/cloak)
+                                                    (->cell :inventory.slot/shield)]
+                                                   [nil nil
+                                                    (->cell :inventory.slot/leg)]
+                                                   [nil
+                                                    (->cell :inventory.slot/glove)
+                                                    (->cell :inventory.slot/rings :position [0 0])
+                                                    (->cell :inventory.slot/rings :position [1 0])
+                                                    (->cell :inventory.slot/boot)]]
+                                                  (for [y (range 4)]
+                                                    (for [x (range 6)]
+                                                      (->cell :inventory.slot/bag :position [x y]))))})
+                     :pad 4}]]
+      :actor/name "moon.ui.windows.inventory"
+      :actor/visible? false
+      :actor/position [(:viewport/world-width (:stage/viewport stage))
+                       (:viewport/world-height (:stage/viewport stage))]})))
 
 (defn spawn-player
   [{:keys [ctx/db

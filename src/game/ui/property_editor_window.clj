@@ -4,6 +4,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
             [moon.ctx :as ctx]
@@ -76,9 +77,8 @@
                   :width  (+ (actor/width table) 50)
                   :height (min (- scroll-pane-height 50)
                                (actor/height table))})]]]
-    (actor/create
-     {:type :ui/window
-      :title "[SKY]Property[]"
+    (window/create
+     {:title "[SKY]Property[]"
       :skin skin
       :window/close-button? skin
       :window/modal? true

@@ -4,6 +4,7 @@
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.scene2d.ui.widget-group :as widget-group]))
 
 (defmethod actor/create :ui/info-window
@@ -16,9 +17,8 @@
   (let [label (label/create
                {:text "MY LABEL TEXT"
                 :skin skin})
-        window (actor/create
-                {:type :ui/window
-                 :title title
+        window (window/create
+                {:title title
                  :skin skin
                  :table/rows [[{:actor label :expand? true}]]
                  :actor/name actor-name

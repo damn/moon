@@ -18,6 +18,7 @@
             [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.text-field :as text-field]
             [clojure.scene2d.ui.widget-group :as widget-group]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.set :as set]
             [moon.ctx :as ctx]
             [moon.db :as db]
@@ -167,9 +168,8 @@
 
 (defmethod actor/create :ui/add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (actor/create
-                {:type :ui/window
-                 :title "Choose"
+  (let [window (window/create
+                {:title "Choose"
                  :skin skin
                  :window/close-button? skin
                  :window/modal? true
@@ -446,9 +446,8 @@
                ctx/stage]
         :as ctx}]
     (stage/add-actor! stage
-                      (actor/create
-                       {:type :ui/window
-                        :title "Choose"
+                      (window/create
+                       {:title "Choose"
                         :skin skin
                         :window/close-button? skin
                         :window/modal? true

@@ -5,6 +5,7 @@
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.stack :as stack]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]))
@@ -79,9 +80,8 @@
            skin
            property-type
            clicked-id-fn]}]
-  (actor/create
-   {:type :ui/window
-    :title "Edit"
+  (window/create
+   {:title "Edit"
     :skin skin
     :window/close-button? skin
     :window/modal? true

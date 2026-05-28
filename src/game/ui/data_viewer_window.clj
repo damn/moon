@@ -3,6 +3,7 @@
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.scene2d.stage :as stage]))
 
 (defmethod actor/create :ui/data-viewer-window
@@ -69,8 +70,8 @@
                             ; (- (:viewport/world-height viewport) 200)
                             ; (- (:viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (actor/create {:type :ui/window
-                   :title title
-                   :skin skin
-                   :table/rows [[scroll-pane-cell]]
-                   :window/close-button? skin})))
+    (window/create
+     {:title title
+      :skin skin
+      :table/rows [[scroll-pane-cell]]
+      :window/close-button? skin})))

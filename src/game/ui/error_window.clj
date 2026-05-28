@@ -1,6 +1,7 @@
 (ns game.ui.error-window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.repl :as repl]))
 
 (defmacro ^:private with-err-str [& body]
@@ -14,11 +15,11 @@
   (let [label-text (binding [*print-level* 3]
                      (with-err-str
                        (repl/pst throwable)))]
-    (actor/create {:type :ui/window
-                   :title "Error"
-                   :skin skin
-                   :window/close-button? skin
-                   :table/rows [[{:actor (label/create
-                                          {:text label-text
-                                           :skin skin})}]]
-                   :window/modal? true})))
+    (window/create
+     {:title "Error"
+      :skin skin
+      :window/close-button? skin
+      :table/rows [[{:actor (label/create
+                             {:text label-text
+                              :skin skin})}]]
+      :window/modal? true})))

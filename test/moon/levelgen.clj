@@ -12,6 +12,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.viewport :as viewport]
             [moon.creature-tiles]
@@ -78,8 +79,7 @@
     ctx))
 
 (defn- edit-window [skin]
-  {:type :ui/window
-   :title "Edit"
+  {:title "Edit"
    :skin skin
    :table/rows (for [level-fn level-fns
                      :let [on-clicked (fn [actor ctx]
@@ -127,7 +127,7 @@
                    :ctx/sprite-batch sprite-batch
                    :ctx/world-unit-scale world-unit-scale)
         ctx (generate-level ctx initial-level-fn)]
-    (stage/add-actor! (:ctx/stage ctx) (actor/create (edit-window skin)))
+    (stage/add-actor! (:ctx/stage ctx) (window/create (edit-window skin)))
     ctx))
 
 (defn dispose!
