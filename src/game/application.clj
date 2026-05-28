@@ -48,7 +48,6 @@
             game.ui.property-overview-window
 
             game.ui.dev-menu
-            game.ui.action-bar
             game.ui.info-window
 
             [malli.core :as m]
@@ -75,7 +74,7 @@
             [moon.timer :as timer]
             [moon.textures :as textures]
             [moon.txs :as txs]
-            [moon.ui.action-bar :as action-bar]
+            [game.ui.action-bar :as action-bar]
             [moon.ui.inventory-window :as inventory-window]
             [moon.val-max :as val-max]
             [qrecord.core :as q]
@@ -1196,7 +1195,7 @@
     :skin skin}))
 
 (defn create-action-bar [_ctx]
-  (game.ui.action-bar/create))
+  (action-bar/create))
 
 (defn create-hp-mana-bar
   [{:keys [ctx/textures

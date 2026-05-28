@@ -4,8 +4,7 @@
             [clojure.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [moon.ui.action-bar :as action-bar])
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup)))
 
@@ -31,32 +30,30 @@
     {:horizontal-group group
      :button-group (actor/user-object group)}))
 
-(extend-type com.badlogic.gdx.scenes.scene2d.ui.Table
-  action-bar/ActionBar
-  (selected-skill [action-bar]
-    (when-let [skill-button (ButtonGroup/.getChecked (:button-group (get-data action-bar)))]
-      (actor/user-object skill-button)))
+(defn selected-skill [action-bar]
+  (when-let [skill-button (ButtonGroup/.getChecked (:button-group (get-data action-bar)))]
+    (actor/user-object skill-button)))
 
-  (add-skill!
-    [action-bar
-     {:keys [skill-id
-             texture-region
-             tooltip-text]}
-     skin]
-    (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-          button (image-button/create
-                  {:drawable (texture-region-drawable/create*
-                              {:drawable/texture-region texture-region
-                               :drawable/scale 2})
-                   :actor/listeners {:listener/text-tooltip [tooltip-text skin]}
-                   :actor/user-object skill-id})]
-      (group/add-actor! horizontal-group button)
-      (ButtonGroup/.add button-group ^Button button)
-      nil))
+(defn add-skill!
+  [action-bar
+   {:keys [skill-id
+           texture-region
+           tooltip-text]}
+   skin]
+  (let [{:keys [horizontal-group button-group]} (get-data action-bar)
+        button (image-button/create
+                {:drawable (texture-region-drawable/create*
+                            {:drawable/texture-region texture-region
+                             :drawable/scale 2})
+                 :actor/listeners {:listener/text-tooltip [tooltip-text skin]}
+                 :actor/user-object skill-id})]
+    (group/add-actor! horizontal-group button)
+    (ButtonGroup/.add button-group ^Button button)
+    nil))
 
-  (remove-skill! [action-bar skill-id]
-    (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-          button (get horizontal-group skill-id)]
-      (actor/remove! button)
-      (ButtonGroup/.remove button-group ^Button button)
-      nil)))
+(defn remove-skill! [action-bar skill-id]
+  (let [{:keys [horizontal-group button-group]} (get-data action-bar)
+        button (get horizontal-group skill-id)]
+    (actor/remove! button)
+    (ButtonGroup/.remove button-group ^Button button)
+    nil))
