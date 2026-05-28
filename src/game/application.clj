@@ -52,7 +52,6 @@
             [clojure.string :as str]
             [clojure.gdx.viewport :as viewport]
             [moon.grid2d :as g2d]
-            [game.impl.raycaster]
             [game.impl.textures]
 
             [game.ui.data-viewer-window :as data-viewer-window]
@@ -1490,7 +1489,7 @@
 
 (defn create-raycaster
   [{:keys [ctx/grid] :as ctx}]
-  (assoc ctx :ctx/raycaster (game.impl.raycaster/create grid)))
+  (assoc ctx :ctx/raycaster (raycaster/create grid)))
 
 (defn create! [app]
   (-> app
