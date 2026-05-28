@@ -1,6 +1,5 @@
 (ns clojure.gdx.stage
-  (:require [clojure.scene2d.actor :as actor]
-            [clojure.scene2d.group :as group]
+  (:require [clojure.scene2d.group :as group]
             [clojure.scene2d.stage :as stage]
             [clojure.gdx.viewport :as viewport])
   (:import (clojure.gdx Stage)
@@ -20,7 +19,7 @@
     (set! (.ctx stage) ctx))
 
   (add-actor! [stage actor]
-    (.addActor stage (actor/create actor)))
+    (.addActor stage actor))
 
   (act! [stage]
     (.act stage))

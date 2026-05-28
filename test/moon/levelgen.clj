@@ -127,7 +127,7 @@
                    :ctx/sprite-batch sprite-batch
                    :ctx/world-unit-scale world-unit-scale)
         ctx (generate-level ctx initial-level-fn)]
-    (stage/add-actor! (:ctx/stage ctx) (edit-window skin))
+    (stage/add-actor! (:ctx/stage ctx) (actor/create (edit-window skin)))
     ctx))
 
 (defn dispose!

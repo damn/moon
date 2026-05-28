@@ -541,25 +541,26 @@
                                    {:keys [title text button-text on-click]}]
                                   (assert (not (stage/find-actor stage "moon.ui.modal-window")))
                                   (stage/add-actor! stage
-                                                    {:type :ui/window
-                                                     :title title
-                                                     :skin skin
-                                                     :window/modal? true
-                                                     :table/rows [[{:actor (actor/create
-                                                                            {:type :ui/label
-                                                                             :text text
-                                                                             :skin skin})}]
-                                                                  [{:actor (actor/create
-                                                                            {:type :ui/text-button
-                                                                             :text button-text
-                                                                             :skin skin
-                                                                             :actor/listeners {:listener/change (fn [_event _actor]
-                                                                                                                  (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
-                                                                                                                  (on-click))}})}]]
-                                                     :actor/name "moon.ui.modal-window"
-                                                     :actor/position [(/ (:viewport/world-width (:stage/viewport stage)) 2)
-                                                                      (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))
-                                                                      :align/center]})
+                                                    (actor/create
+                                                     {:type :ui/window
+                                                      :title title
+                                                      :skin skin
+                                                      :window/modal? true
+                                                      :table/rows [[{:actor (actor/create
+                                                                             {:type :ui/label
+                                                                              :text text
+                                                                              :skin skin})}]
+                                                                   [{:actor (actor/create
+                                                                             {:type :ui/text-button
+                                                                              :text button-text
+                                                                              :skin skin
+                                                                              :actor/listeners {:listener/change (fn [_event _actor]
+                                                                                                                   (actor/remove! (stage/find-actor stage "moon.ui.modal-window"))
+                                                                                                                   (on-click))}})}]]
+                                                      :actor/name "moon.ui.modal-window"
+                                                      :actor/position [(/ (:viewport/world-width (:stage/viewport stage)) 2)
+                                                                       (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))
+                                                                       :align/center]}))
                                   ctx)
    :tx/set-item                 (fn
                                   [{:keys [ctx/skin
@@ -1127,12 +1128,13 @@
                      :on-click (fn [_actor {:keys [ctx/skin
                                                    ctx/stage] :as ctx}]
                                  (stage/add-actor! stage
-                                                   {:type :ui/data-viewer-window
-                                                    :title "Data View"
-                                                    :data ctx
-                                                    :width 1000
-                                                    :height 1000
-                                                    :skin skin}))}]}
+                                                   (actor/create
+                                                    {:type :ui/data-viewer-window
+                                                     :title "Data View"
+                                                     :data ctx
+                                                     :width 1000
+                                                     :height 1000
+                                                     :skin skin})))}]}
            {:label "Editor"
             :items (for [property-type (sort (db/property-types db))]
                      {:label (str/capitalize (name property-type))
@@ -1142,16 +1144,18 @@
                                                     ctx/textures]
                                              :as ctx}]
                                   (stage/add-actor! stage
-                                                    {:type :ui/property-overview-window
-                                                     :db db
-                                                     :textures textures
-                                                     :skin skin
-                                                     :property-type property-type
-                                                     :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                      (stage/add-actor! stage
-                                                                                        {:type :ui/property-editor-window
-                                                                                         :ctx ctx
-                                                                                         :property (db/get-raw db id)}))}))})}
+                                                    (actor/create
+                                                     {:type :ui/property-overview-window
+                                                      :db db
+                                                      :textures textures
+                                                      :skin skin
+                                                      :property-type property-type
+                                                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                                                       (stage/add-actor! stage
+                                                                                         (actor/create
+                                                                                          {:type :ui/property-editor-window
+                                                                                           :ctx ctx
+                                                                                           :property (db/get-raw db id)})))})))})}
            {:label "Help"
             :items [{:label controls-info}]}
            {:label "Select World"
@@ -1466,7 +1470,7 @@
                                                 create-inventory-window]]
                                [create-player-state-draw]
                                [create-player-message-actor]]]
-    (stage/add-actor! stage (apply actor-fn ctx params)))
+    (stage/add-actor! stage (actor/create (apply actor-fn ctx params))))
   ctx)
 
 (defn create-grid
@@ -1553,12 +1557,13 @@
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage
-                        {:type :ui/data-viewer-window
-                         :title "Data View"
-                         :data data
-                         :width 500
-                         :height 500
-                         :skin skin})))
+                        (actor/create
+                         {:type :ui/data-viewer-window
+                          :title "Data View"
+                          :data data
+                          :width 500
+                          :height 500
+                          :skin skin}))))
   ctx)
 
 (defn set-active-entities
@@ -1798,9 +1803,10 @@
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage
-                       {:type :ui/error-window
-                        :skin skin
-                        :throwable t})))
+                       (actor/create
+                        {:type :ui/error-window
+                         :skin skin
+                         :throwable t}))))
   ctx)
 
 (defn if-not-paused-steps

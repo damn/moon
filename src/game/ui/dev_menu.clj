@@ -62,7 +62,7 @@
                                   :skin skin
                                   :actor/listeners {:listener/change (fn [event actor]
                                                                        (stage/add-actor! (event/stage event)
-                                                                                         (create-window skin label items)))}})})]})]
+                                                                                         (actor/create (create-window skin label items))))}})})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
