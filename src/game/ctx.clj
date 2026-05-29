@@ -7,7 +7,10 @@
             [clojure.math :as math]
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
+            [gdx.application :as app]
+            [gdx.input :as input]
             [gdx.input.buttons :as input.buttons]
+            [gdx.input.keys :as input.keys]
             [game.effect :as effect]
             ;; TODO accessing 'game.ctx'
             [game.entity :as entity]
@@ -485,15 +488,45 @@
           :when component]
     (apply (get draw-fns k) ctx (rest component))))
 
-(defprotocol Context
-  (world-unit-scale [_])
-  (mouse-position [_])
-  (button-just-pressed? [_ button])
-  (key-pressed? [_ key])
-  (key-just-pressed? [_ key])
-  (item-place-position [_ player-entity])
-  (sound-names [_])
-  (player-movement-vector [_]))
+(defn key-pressed? [{:keys [ctx/app]} input-key]
+  (input/key-pressed? (app/input app) input-key))
+
+(defn world-unit-scale [ctx]
+  (:ctx/world-unit-scale ctx))
+
+(defn mouse-position [{:keys [ctx/app]}]
+  (input/mouse-position (app/input app)))
+
+(defn button-just-pressed? [{:keys [ctx/app]} input-button]
+  (input/button-just-pressed? (app/input app) input-button))
+
+; It is possible to put items out of sight, losing them.
+; Because line of sight checks center of entity only, not corners
+; this is okay, you have thrown the item over a hill, thats possible.
+(defn item-place-position [{:keys [ctx/world-mouse-position]} player-entity]
+  (let [player-position (:body/position (:entity/body player-entity))
+        ; so you cannot put it out of your own reach
+        maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
+    (v/add player-position
+           (v/scale (v/direction player-position world-mouse-position)
+                    (min maxrange
+                         (v/distance player-position world-mouse-position))))))
+
+(defn sound-names [{:keys [ctx/audio]}]
+  (map first audio))
+
+(defn key-just-pressed? [{:keys [ctx/app]} input-key]
+  (input/key-just-pressed? (app/input app) input-key))
+
+(defn player-movement-vector [ctx]
+  (let [r (when (key-pressed? ctx input.keys/d) [1  0])
+        l (when (key-pressed? ctx input.keys/a) [-1 0])
+        u (when (key-pressed? ctx input.keys/w) [0  1])
+        d (when (key-pressed? ctx input.keys/s) [0 -1])]
+    (when (or r l u d)
+      (let [v (v/normalise (reduce v/add [0 0] (remove nil? [r l u d])))]
+        (when (pos? (v/length v))
+          v)))))
 
 (defn- npc-effect-ctx
   [{:keys [ctx/grid

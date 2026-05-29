@@ -1,22 +1,17 @@
 (ns application.create
-  (:require [clojure.core-ext :refer [define-order
+  (:require [create.app]
+            [create.textures]
+            [clojure.core-ext :refer [define-order
                                       edn-resource]]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [game.ctx :as ctx]
             [game.info :as info]
             [game.schema]
             [game.state :as state]
             [gdx.application :as app]
-            [gdx.files :as files]
             [gdx.graphics :as graphics]
             [gdx.graphics.color :as color]
-            [gdx.graphics.colors :as colors]
             [gdx.graphics.orthographic-camera :as camera]
-            [gdx.graphics.shape-drawer :as shape-drawer]
-            [gdx.input :as input]
             [gdx.input.buttons :as input.buttons]
             [gdx.input.keys :as input.keys]
             [gdx.scenes.scene2d.actor :as actor]
@@ -30,12 +25,9 @@
             [gdx.scenes.scene2d.ui.info-window :as info-window]
             [gdx.scenes.scene2d.ui.stack :as stack]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [gdx.scenes.scene2d.ui.widget :as widget]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [gdx.textures]
-            [gdx.utils.viewport.fit-viewport :as fit-viewport]
             [moon.content-grid :as content-grid]
             [moon.creature-tiles]
             [moon.db :as db]
@@ -49,13 +41,7 @@
             [moon.tiled-map :as tiled-map]
             [moon.ui.property-overview-window]
             [moon.val-max :as val-max]
-            [qrecord.core :as q])
-  (:import (com.badlogic.gdx.graphics Pixmap
-                                      Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
-
+            [qrecord.core :as q]))
 
 (def world-fn-file
    "world_fns/modules.edn"
@@ -63,49 +49,7 @@
   ; "world_fns/uf_caves.edn"
   )
 
-(q/defrecord Context []
-  ctx/Context
-  (key-pressed?
-    [{:keys [ctx/app]} input-key]
-    (input/key-pressed? (app/input app) input-key))
-
-  (world-unit-scale [ctx]
-    (:ctx/world-unit-scale ctx))
-
-  (mouse-position [{:keys [ctx/app]}]
-    (input/mouse-position (app/input app)))
-
-  (button-just-pressed? [{:keys [ctx/app]} input-button]
-    (input/button-just-pressed? (app/input app) input-button))
-
-  ; It is possible to put items out of sight, losing them.
-  ; Because line of sight checks center of entity only, not corners
-  ; this is okay, you have thrown the item over a hill, thats possible.
-  (item-place-position [{:keys [ctx/world-mouse-position]} player-entity]
-    (let [player-position (:body/position (:entity/body player-entity))
-          ; so you cannot put it out of your own reach
-          maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
-      (v/add player-position
-             (v/scale (v/direction player-position world-mouse-position)
-                      (min maxrange
-                           (v/distance player-position world-mouse-position))))))
-
-  (sound-names [{:keys [ctx/audio]}]
-    (map first audio))
-
-  (key-just-pressed? [{:keys [ctx/app]} input-key]
-    (input/key-just-pressed? (app/input app) input-key))
-
-  (player-movement-vector [ctx]
-    (let [r (when (ctx/key-pressed? ctx input.keys/d) [1  0])
-          l (when (ctx/key-pressed? ctx input.keys/a) [-1 0])
-          u (when (ctx/key-pressed? ctx input.keys/w) [0  1])
-          d (when (ctx/key-pressed? ctx input.keys/s) [0 -1])]
-      (when (or r l u d)
-        (let [v (v/normalise (reduce v/add [0 0] (remove nil? [r l u d])))]
-          (when (pos? (v/length v))
-            v)))))
-  )
+(q/defrecord Context [])
 
 (defn create-record [ctx]
   (merge (map->Context {}) ctx))
@@ -131,67 +75,9 @@
 
 
 
-(defn create-app [app]
-  (tooltip-manager/set-initial-time! 0)
-  (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-  (let [batch (com.badlogic.gdx.graphics.g2d.SpriteBatch.)
-        white-pixel-texture (graphics/white-pixel-texture)
-        world-unit-scale (float (/ 48))]
-    {:ctx/app app
-     :ctx/audio (into {}
-                      (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
-                        [sound-name
-                         (.newSound (app/audio app)
-                                    (files/internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
-     :ctx/batch batch
-     :ctx/shape-drawer-texture white-pixel-texture
-     :ctx/shape-drawer (shape-drawer/create batch (com.badlogic.gdx.graphics.g2d.TextureRegion. white-pixel-texture 1 0 1 1))
-     :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
-                             size 16
-                             quality-scaling 2
-                             generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
-                             font (.generateFont generator
-                                                 (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                                                   (set! (.size params) (* size quality-scaling))
-                                                   ; texture.filter/linear because scaling to world-units
-                                                   (set! (.minFilter params) Texture$TextureFilter/Linear)
-                                                   (set! (.magFilter params) Texture$TextureFilter/Linear)
-                                                   params))]
-                         (.dispose generator)
-                         (.setScale (.getData font) (/ quality-scaling))
-                         (set! (.markupEnabled (.getData font)) true)
-                         (.setUseIntegerPositions font false)
-                         font)
-     :ctx/world-unit-scale world-unit-scale
-     :ctx/world-viewport (let [world-width  (* 1440 world-unit-scale)
-                               world-height (* 900  world-unit-scale)]
-                           (fit-viewport/create world-width
-                                                world-height
-                                                (camera/create
-                                                 {:y-down? false
-                                                  :world-width world-width
-                                                  :world-height world-height})))
-     :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
-                    (update-vals data
-                                 (fn [[path [hotspot-x hotspot-y]]]
-                                   (let [pixmap (Pixmap. (files/internal (app/files app) (format path-format path)))
-                                         cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
-                                     (.dispose pixmap)
-                                     cursor))))
-     :ctx/stage (let [stage (stage/create (fit-viewport/create 1440 900) batch)]
-                  (input/set-processor! (app/input app) stage)
-                  stage)
-     :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
-                 (set! (.markupEnabled (-> skin
-                                           (.getFont "default-font")
-                                           .getData))
-                       true)
-                 skin)
-     :ctx/unit-scale (atom 1)}))
 
-(defn create-textures
-  [ctx]
-  (assoc ctx :ctx/textures (gdx.textures/create (app/files (:ctx/app ctx)))))
+
+
 
 (defn unorganised [ctx]
   (assoc ctx
@@ -686,8 +572,8 @@
 
 (defn do! [app]
   (-> app
-      create-app
-      create-textures
+      create.app/step
+      create.textures/step
       create-record
       unorganised
       create-controls
@@ -703,12 +589,3 @@
       create-raycaster
       spawn-player
       spawn-enemies))
-
-
-
-
-
-
-
-
-
