@@ -18,6 +18,7 @@
             ;;
             [game.info :as info]
             [gdx.audio.sound :as sound]
+            [gdx.graphics.orthographic-camera :as camera]
             [gdx.graphics.shape-drawer :as shape-drawer]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.stage :as stage]
@@ -47,6 +48,21 @@
                                           SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.utils Align)))
+
+(defn world-viewport-width
+  [{:keys [ctx/world-viewport]}]
+  (:viewport/world-width world-viewport))
+
+(defn world-viewport-height
+  [{:keys [ctx/world-viewport]}]
+  (:viewport/world-height world-viewport))
+
+(def zoom-speed 0.025)
+
+(defn visible-tiles [{:keys [ctx/world-viewport]}]
+  (camera/visible-tiles (:viewport/camera world-viewport)))
+
+(def pausing? true)
 
 (q/defrecord Entity [entity/body])
 
