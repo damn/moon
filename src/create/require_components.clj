@@ -4,6 +4,7 @@
             handle-input.player-idle
             handle-input.player-moving
             handle-input.player-item-on-cursor
+            tx.load
             ))
 
 (defn step [ctx]
