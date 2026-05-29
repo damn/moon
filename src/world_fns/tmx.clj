@@ -1,8 +1,8 @@
 (ns world-fns.tmx
-  (:import (com.badlogic.gdx.maps.tiled TmxMapLoader)))
+  (:require [gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]))
 
 (defn create
   [{:keys [tmx-file
            start-position]}]
-  {:tiled-map (.load (TmxMapLoader.) tmx-file)
+  {:tiled-map (tmx-map-loader/load! tmx-file)
    :start-position start-position})

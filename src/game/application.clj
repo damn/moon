@@ -8,11 +8,15 @@
             [clojure.edn :as edn]
             [gdx.application :as app]
             [gdx.application-listener :as application-listener]
+            [gdx.audio.sound :as sound]
             [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
             [gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [gdx.files :as files]
+            [gdx.graphics :as graphics]
             [gdx.graphics.color :as color]
             [gdx.graphics.colors :as colors]
+            [gdx.input :as input]
             [gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
@@ -34,6 +38,8 @@
 
             [gdx.input.buttons :as input.buttons]
             [gdx.input.keys :as input.keys]
+
+            [gdx.utils.disposable :as disposable]
 
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
@@ -78,10 +84,7 @@
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx.audio Sound)
-           (com.badlogic.gdx.graphics GL20
-                                      Pixmap
-                                      Pixmap$Format
+  (:import (com.badlogic.gdx.graphics Pixmap
                                       Texture
                                       Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d BitmapFont
@@ -90,8 +93,7 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
-           (com.badlogic.gdx.utils Align
-                                   Disposable))
+           (com.badlogic.gdx.utils Align))
   (:gen-class))
 
 ; Try only to be used here
@@ -508,7 +510,7 @@
                                   [{:keys [ctx/audio] :as ctx} sound-name]
                                   (let [sounds audio]
                                     (assert (contains? sounds sound-name) (str sound-name))
-                                    (Sound/.play (get sounds sound-name)))
+                                    (sound/play! (get sounds sound-name)))
                                   ctx)
    :tx/toggle-inventory-visible (fn
                                   [{:keys [ctx/stage] :as ctx}]
@@ -589,7 +591,7 @@
 
 (defn key-pressed?
   [{:keys [ctx/app]} input-key]
-  (.isKeyPressed (app/input app) input-key))
+  (input/key-pressed? (app/input app) input-key))
 
 (q/defrecord Context []
   ctx/Context
@@ -597,11 +599,10 @@
     (:ctx/world-unit-scale ctx))
 
   (mouse-position [{:keys [ctx/app]}]
-    [(.getX (app/input app))
-     (.getY (app/input app))])
+    (input/mouse-position (app/input app)))
 
   (button-just-pressed? [{:keys [ctx/app]} input-button]
-    (.isButtonJustPressed (app/input app) input-button))
+    (input/button-just-pressed? (app/input app) input-button))
 
   ; It is possible to put items out of sight, losing them.
   ; Because line of sight checks center of entity only, not corners
@@ -619,7 +620,7 @@
     (map first audio))
 
   (key-just-pressed? [{:keys [ctx/app]} input-key]
-    (.isKeyJustPressed (app/input app) input-key))
+    (input/key-just-pressed? (app/input app) input-key))
 
   (draw! [ctx draws]
     (doseq [{k 0 :as component} draws
@@ -655,17 +656,15 @@
 
 (defn delta-time
   [{:keys [ctx/app]}]
-  (.getDeltaTime (app/graphics app)))
+  (graphics/delta-time (app/graphics app)))
 
 (defn frames-per-second
   [{:keys [ctx/app]}]
-  (.getFramesPerSecond (app/graphics app)))
+  (graphics/frames-per-second (app/graphics app)))
 
 (defn clear-screen!
   [{:keys [ctx/app] :as ctx}]
-  (let [gl (.getGL20 (app/graphics app))]
-    (.glClearColor gl 0 0 0 0)
-    (.glClear gl GL20/GL_COLOR_BUFFER_BIT))
+  (graphics/clear! (app/graphics app) 0 0 0 0)
   ctx)
 
 (defn set-cursor!
@@ -678,7 +677,7 @@
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (.setCursor (app/graphics app) (get cursors cursor-key)))
+    (graphics/set-cursor! (app/graphics app) (get cursors cursor-key)))
   ctx)
 
 (defn dispose!
@@ -690,14 +689,14 @@
            ctx/skin
            ctx/textures
            ctx/tiled-map]}]
-  (run! Disposable/.dispose (vals audio))
-  (Disposable/.dispose batch)
-  (run! Disposable/.dispose (vals cursors))
-  (Disposable/.dispose default-font)
-  (Disposable/.dispose shape-drawer-texture)
-  (Disposable/.dispose skin)
-  (run! Disposable/.dispose (vals textures))
-  (Disposable/.dispose tiled-map))
+  (run! disposable/dispose! (vals audio))
+  (disposable/dispose! batch)
+  (run! disposable/dispose! (vals cursors))
+  (disposable/dispose! default-font)
+  (disposable/dispose! shape-drawer-texture)
+  (disposable/dispose! skin)
+  (run! disposable/dispose! (vals textures))
+  (disposable/dispose! tiled-map))
 
 (defn- tile-color-setter*
   [{:keys [ray-blocked?
@@ -846,26 +845,21 @@
   (tooltip-manager/set-initial-time! 0)
   (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (let [batch (SpriteBatch.)
-        white-pixel-texture (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
-                                           (.setColor 1 1 1 1)
-                                           (.drawPixel 0 0))
-                                  texture (Texture. pixmap)]
-                              (.dispose pixmap)
-                              texture)
+        white-pixel-texture (graphics/white-pixel-texture)
         world-unit-scale (float (/ 48))]
     {:ctx/app app
      :ctx/audio (into {}
                       (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                         [sound-name
                          (.newSound (app/audio app)
-                                    (.internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
+                                    (files/internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
      :ctx/batch batch
      :ctx/shape-drawer-texture white-pixel-texture
      :ctx/shape-drawer (shape-drawer/create batch (TextureRegion. white-pixel-texture 1 0 1 1))
      :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                              size 16
                              quality-scaling 2
-                             generator (FreeTypeFontGenerator. (.internal (app/files app) path))
+                             generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
                              font (.generateFont generator
                                                  (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                                                    (set! (.size params) (* size quality-scaling))
@@ -890,14 +884,14 @@
      :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                     (update-vals data
                                  (fn [[path [hotspot-x hotspot-y]]]
-                                   (let [pixmap (Pixmap. (.internal (app/files app) (format path-format path)))
-                                         cursor (.newCursor (app/graphics app) pixmap hotspot-x hotspot-y)]
+                                   (let [pixmap (Pixmap. (files/internal (app/files app) (format path-format path)))
+                                         cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                      (.dispose pixmap)
                                      cursor))))
      :ctx/stage (let [stage (stage/create (fit-viewport/create 1440 900) batch)]
-                  (.setInputProcessor (app/input app) stage)
+                  (input/set-processor! (app/input app) stage)
                   stage)
-     :ctx/skin (let [skin (Skin. (.internal (app/files app) "uiskin.json"))]
+     :ctx/skin (let [skin (Skin. (files/internal (app/files app) "uiskin.json"))]
                  (set! (.markupEnabled (-> skin
                                            (.getFont "default-font")
                                            .getData))
@@ -1093,7 +1087,7 @@
                                            ui stage
                                            stage (Actor/.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                        (rebuild-actors! ui ctx)
-                                       #_(Disposable/.dispose (:ctx/tiled-map ctx))
+                                       #_(disposable/dispose! (:ctx/tiled-map ctx))
                                        (set! (.ctx ^Stage stage) (create-world ctx world-fn))))})}
 
             ]

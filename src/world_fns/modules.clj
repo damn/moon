@@ -1,9 +1,8 @@
 (ns world-fns.modules
-  (:require moon.tiled-map
+  (:require [gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+            moon.tiled-map
             [moon.grid2d :as g2d])
-  (:import (java.util Random)
-           (com.badlogic.gdx.maps.tiled TmxMapLoader)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
+  (:import (java.util Random)))
 
 (def ^:private number-modules-x 8)
 (def ^:private number-modules-y 4)
@@ -133,13 +132,13 @@
   (assoc w :scaled-grid (g2d/scale-grid (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (tmx-map-loader/load! "maps/modules.tmx")))
 
 (def copy-tile
   (memoize
    (fn [tile]
      (assert tile)
-     (StaticTiledMapTile. tile))))
+     (com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile. tile))))
 
 (defn props->clj [props]
   (zipmap (.getKeys props)
