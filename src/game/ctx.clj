@@ -654,55 +654,7 @@
      :dropped-item -> :player-idle]
     [:player-dead]]))
 
-(q/defrecord Body [body/position
-                   body/width
-                   body/height
-                   body/collides?
-                   body/z-order
-                   body/rotation-angle])
 
-
-(defmethod entity/create :entity/body
-  [[_k
-    {[x y] :position
-     :keys [position
-            width
-            height
-            collides?
-            z-order
-            rotation-angle]}]
-   {:keys [ctx/minimum-size
-           ctx/z-orders]}]
-  (assert position)
-  (assert width)
-  (assert height)
-  (assert (>= width  (if collides? minimum-size 0)))
-  (assert (>= height (if collides? minimum-size 0)))
-  (assert (or (boolean? collides?) (nil? collides?)))
-  (assert ((set z-orders) z-order))
-  (assert (or (nil? rotation-angle)
-              (<= 0 rotation-angle 360)))
-  (map->Body
-   {:position (mapv float position)
-    :width  (float width)
-    :height (float height)
-    :collides? collides?
-    :z-order z-order
-    :rotation-angle (or rotation-angle 0)}))
-
-(defmethod entity/create :entity/animation
-  [[_k {:keys [animation/frames
-               animation/frame-duration
-               animation/looping?
-               delete-after-stopped?]}]
-   _ctx]
-  (assert (not (and looping? delete-after-stopped?)))
-  {:frames (vec frames)
-   :frame-duration frame-duration
-   :looping? looping?
-   :cnt 0
-   :maxcnt (* (count frames) (float frame-duration))
-   :delete-after-stopped? delete-after-stopped?})
 
 (defmethod entity/create :entity/delete-after-duration
   [[_ duration] {:keys [ctx/elapsed-time]}]
@@ -748,7 +700,6 @@
   [[:tx/audiovisual
     (:body/position (:entity/body @eid))
     audiovisuals-id]])
-
 
 (defmethod entity/tick :entity/animation
   [[_k animation] eid {:keys [ctx/delta-time]}]
