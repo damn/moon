@@ -55,7 +55,7 @@
             moon.ui.property-overview-window
 
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
-            [moon.ui.info-window :as info-window]
+            [gdx.scenes.scene2d.ui.info-window :as info-window]
 
             [malli.core :as m]
             [malli.utils :as mu]
