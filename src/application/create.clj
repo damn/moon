@@ -1,6 +1,14 @@
 (ns application.create
   (:require [create.app]
+            [create.audio]
+            [create.stage]
+            [create.batch]
+            [create.shape-drawer-texture]
+            [create.default-font]
+            [create.shape-drawer]
             [create.textures]
+            [create.cursors]
+            [create.skin]
             [create.record]
             [create.unorganised]
             [create.controls]
@@ -13,6 +21,7 @@
             [create.grid]
             [create.content-grid]
             [create.explored-tile-corners]
+            [create.world-viewport]
             [create.raycaster]
             [create.spawn-player]
             [create.spawn-enemies]))
@@ -20,9 +29,18 @@
 (defn do! [app]
   (-> app
       create.app/step
+      create.batch/step
+      create.audio/step
+      create.shape-drawer-texture/step
+      create.shape-drawer/step
+      create.skin/step
+      create.stage/step
+      create.cursors/step
       create.textures/step
-      create.record/step
       create.unorganised/step
+      create.world-viewport/step
+      create.default-font/step
+      create.record/step
       create.controls/step
       create.colors/step
       create.render-z-order/step

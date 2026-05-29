@@ -1,7 +1,13 @@
-(ns create.unorganised)
+(ns create.unorganised
+  (:require [gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+            [gdx.graphics.colors :as colors]))
 
 (defn step [ctx]
+  (tooltip-manager/set-initial-time! 0)
+  (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
   (assoc ctx
+         :ctx/world-unit-scale (float (/ 48))
+         :ctx/unit-scale (atom 1)
 
          ;frame
          :ctx/active-entities nil
