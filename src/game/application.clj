@@ -21,7 +21,7 @@
             [gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.graphics.orthographic-camera :as camera]
-            [space.earlygrey.shape-drawer :as shape-drawer]
+            [gdx.graphics.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.event :as event]
@@ -47,15 +47,15 @@
             [moon.grid2d :as g2d]
             [gdx.textures]
 
-            [moon.ui.data-viewer-window :as data-viewer-window]
+            [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
             moon.ui.error-window
 
             ; separate application ? better ! ?
             [game.schema]
             moon.ui.property-overview-window
 
-            moon.ui.dev-menu
-            moon.ui.info-window
+            [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
+            [moon.ui.info-window :as info-window]
 
             [malli.core :as m]
             [malli.utils :as mu]
@@ -79,7 +79,7 @@
             [moon.tiled-map :as tiled-map]
             [moon.timer :as timer]
             [moon.textures :as textures]
-            [moon.ui.action-bar :as action-bar]
+            [gdx.scenes.scene2d.ui.action-bar :as action-bar]
             [moon.ui.inventory-window :as inventory-window]
             [moon.val-max :as val-max]
             [qrecord.core :as q]
@@ -1038,7 +1038,7 @@
            ctx/db
            ctx/skin
            ctx/textures]}]
-  (moon.ui.dev-menu/create
+  (dev-menu/create
    {:menus [
             {:label "Ctx Data"
              :items [{:label "Show data"
@@ -1201,7 +1201,7 @@
 (defn create-info-window
   [{:keys [ctx/skin
            ctx/stage]}]
-  (moon.ui.info-window/create
+  (info-window/create
    {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
     :visible? false

@@ -1,7 +1,7 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 [gdx "-SNAPSHOT"]
+                 [gdx "1"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [malli.utils "-SNAPSHOT"]
                  [fr.reuz/qrecord "0.1.0"]
