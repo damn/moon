@@ -1,14 +1,17 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 [gdx "1"]
-                 [com.github.cdorrat/reduce-fsm "fe1c914d68"]
+                 ;; my libs
+                 [clojure.core-ext "0.1"]
+                 [clojure.math "-SNAPSHOT"]
+                 [gdx "-SNAPSHOT"]
                  [malli.utils "-SNAPSHOT"]
+                 ;;
+                 [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
                  [org.clj-commons/pretty "3.2.0"]
                  [org.clojure/clojure "1.12.0"]
-                 [clojure.core-ext "0.1"]
-                 [clojure.math "-SNAPSHOT"]
+                 ;;
 
                  ; DEV:
                  [nrepl "0.9.0"]
