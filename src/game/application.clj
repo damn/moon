@@ -6,6 +6,7 @@
                                       actions!
                                       reduce-actions!]]
             [clojure.edn :as edn]
+            [gdx.application :as app]
             [gdx.application-listener :as application-listener]
             [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
@@ -77,8 +78,7 @@
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx Application)
-           (com.badlogic.gdx.audio Sound)
+  (:import (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics GL20
                                       Pixmap
                                       Pixmap$Format
@@ -589,7 +589,7 @@
 
 (defn key-pressed?
   [{:keys [ctx/app]} input-key]
-  (.isKeyPressed (Application/.getInput app) input-key))
+  (.isKeyPressed (app/input app) input-key))
 
 (q/defrecord Context []
   ctx/Context
@@ -597,11 +597,11 @@
     (:ctx/world-unit-scale ctx))
 
   (mouse-position [{:keys [ctx/app]}]
-    [(.getX (Application/.getInput app))
-     (.getY (Application/.getInput app))])
+    [(.getX (app/input app))
+     (.getY (app/input app))])
 
   (button-just-pressed? [{:keys [ctx/app]} input-button]
-    (.isButtonJustPressed (Application/.getInput app) input-button))
+    (.isButtonJustPressed (app/input app) input-button))
 
   ; It is possible to put items out of sight, losing them.
   ; Because line of sight checks center of entity only, not corners
@@ -619,7 +619,7 @@
     (map first audio))
 
   (key-just-pressed? [{:keys [ctx/app]} input-key]
-    (.isKeyJustPressed (Application/.getInput app) input-key))
+    (.isKeyJustPressed (app/input app) input-key))
 
   (draw! [ctx draws]
     (doseq [{k 0 :as component} draws
@@ -655,15 +655,15 @@
 
 (defn delta-time
   [{:keys [ctx/app]}]
-  (.getDeltaTime (Application/.getGraphics app)))
+  (.getDeltaTime (app/graphics app)))
 
 (defn frames-per-second
   [{:keys [ctx/app]}]
-  (.getFramesPerSecond (Application/.getGraphics app)))
+  (.getFramesPerSecond (app/graphics app)))
 
 (defn clear-screen!
   [{:keys [ctx/app] :as ctx}]
-  (let [gl (.getGL20 (Application/.getGraphics app))]
+  (let [gl (.getGL20 (app/graphics app))]
     (.glClearColor gl 0 0 0 0)
     (.glClear gl GL20/GL_COLOR_BUFFER_BIT))
   ctx)
@@ -678,7 +678,7 @@
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (.setCursor (Application/.getGraphics app) (get cursors cursor-key)))
+    (.setCursor (app/graphics app) (get cursors cursor-key)))
   ctx)
 
 (defn dispose!
@@ -857,15 +857,15 @@
      :ctx/audio (into {}
                       (for [sound-name (-> "sounds.edn" io/resource slurp edn/read-string)]
                         [sound-name
-                         (.newSound (Application/.getAudio app)
-                                    (.internal (Application/.getFiles app) (format "sounds/%s.wav" sound-name)))]))
+                         (.newSound (app/audio app)
+                                    (.internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
      :ctx/batch batch
      :ctx/shape-drawer-texture white-pixel-texture
      :ctx/shape-drawer (shape-drawer/create batch (TextureRegion. white-pixel-texture 1 0 1 1))
      :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                              size 16
                              quality-scaling 2
-                             generator (FreeTypeFontGenerator. (.internal (Application/.getFiles app) path))
+                             generator (FreeTypeFontGenerator. (.internal (app/files app) path))
                              font (.generateFont generator
                                                  (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                                                    (set! (.size params) (* size quality-scaling))
@@ -890,14 +890,14 @@
      :ctx/cursors (let [{:keys [data path-format]} (-> "cursors.edn" io/resource slurp edn/read-string)]
                     (update-vals data
                                  (fn [[path [hotspot-x hotspot-y]]]
-                                   (let [pixmap (Pixmap. (.internal (Application/.getFiles app) (format path-format path)))
-                                         cursor (.newCursor (Application/.getGraphics app) pixmap hotspot-x hotspot-y)]
+                                   (let [pixmap (Pixmap. (.internal (app/files app) (format path-format path)))
+                                         cursor (.newCursor (app/graphics app) pixmap hotspot-x hotspot-y)]
                                      (.dispose pixmap)
                                      cursor))))
      :ctx/stage (let [stage (stage/create (fit-viewport/create 1440 900) batch)]
-                  (.setInputProcessor (Application/.getInput app) stage)
+                  (.setInputProcessor (app/input app) stage)
                   stage)
-     :ctx/skin (let [skin (Skin. (.internal (Application/.getFiles app) "uiskin.json"))]
+     :ctx/skin (let [skin (Skin. (.internal (app/files app) "uiskin.json"))]
                  (set! (.markupEnabled (-> skin
                                            (.getFont "default-font")
                                            .getData))
@@ -907,7 +907,7 @@
 
 (defn create-textures
   [ctx]
-  (assoc ctx :ctx/textures (gdx.textures/create (Application/.getFiles (:ctx/app ctx)))))
+  (assoc ctx :ctx/textures (gdx.textures/create (app/files (:ctx/app ctx)))))
 
 (defn unorganised [ctx]
   (assoc ctx

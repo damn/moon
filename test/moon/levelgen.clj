@@ -1,6 +1,7 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
             [gdx.textures]
+            [gdx.application :as app]
             [gdx.application-listener :as application-listener]
             [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
@@ -17,8 +18,7 @@
             [gdx.utils.viewport.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
-  (:import (com.badlogic.gdx Application)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch
+  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
            (com.badlogic.gdx.utils Disposable
@@ -89,10 +89,10 @@
                                                                  (on-clicked actor (:stage/ctx (event/stage event))))}})}])})
 
 (defn create!
-  [^Application app]
-  (let [files (.getFiles app)
-        graphics (.getGraphics app)
-        input (.getInput app)
+  [app]
+  (let [files (app/files app)
+        graphics (app/graphics app)
+        input (app/input app)
         skin (Skin. (.internal files "uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (SpriteBatch.)
