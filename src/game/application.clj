@@ -1,5 +1,7 @@
 (ns game.application
-  (:require [clojure.core-ext :refer [edn-resource
+  (:require [application.dispose :as dispose]
+            [application.resize :as resize]
+            [clojure.core-ext :refer [edn-resource
                                       safe-merge
                                       define-order
                                       sort-by-order
@@ -35,31 +37,21 @@
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdx.scenes.scene2d.stage :as stage]
             [gdx.scenes.scene2d.ui :as ui]
-
             [gdx.input.buttons :as input.buttons]
             [gdx.input.keys :as input.keys]
-
-            [gdx.utils.disposable :as disposable]
-
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
             [gdx.utils.viewport.viewport :as viewport]
             [moon.grid2d :as g2d]
             [gdx.textures]
-
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
             moon.ui.error-window
-
-            ; separate application ? better ! ?
             [game.schema]
             moon.ui.property-overview-window
-
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
             [gdx.scenes.scene2d.ui.info-window :as info-window]
-
             [malli.core :as m]
             [malli.utils :as mu]
-
             [game.ctx :as ctx]
             [moon.body :as body]
             [moon.content-grid :as content-grid]
@@ -680,24 +672,6 @@
     (graphics/set-cursor! (app/graphics app) (get cursors cursor-key)))
   ctx)
 
-(defn dispose!
-  [{:keys [ctx/audio
-           ctx/batch
-           ctx/cursors
-           ctx/default-font
-           ctx/shape-drawer-texture
-           ctx/skin
-           ctx/textures
-           ctx/tiled-map]}]
-  (run! disposable/dispose! (vals audio))
-  (disposable/dispose! batch)
-  (run! disposable/dispose! (vals cursors))
-  (disposable/dispose! default-font)
-  (disposable/dispose! shape-drawer-texture)
-  (disposable/dispose! skin)
-  (run! disposable/dispose! (vals textures))
-  (disposable/dispose! tiled-map))
-
 (defn- tile-color-setter*
   [{:keys [ray-blocked?
            explored-tile-corners
@@ -825,13 +799,6 @@
         (stage/find-actor "moon.ui.windows.entity-info")
         actor/toggle-visible!))
   ctx)
-
-(defn resize!
-  [{:keys [ctx/stage
-           ctx/world-viewport]}
-   width height]
-  (viewport/update! (:stage/viewport stage) width height true)
-  (viewport/update! world-viewport width height false))
 
 (defn world-viewport-width
   [{:keys [ctx/world-viewport]}]
@@ -1802,11 +1769,11 @@
                               {:create! (fn [application]
                                           (reset! state (create! application)))
                                :dispose! (fn []
-                                           (dispose! @state))
+                                           (dispose/do! @state))
                                :render! (fn []
                                           (swap! state render!))
                                :resize! (fn [width height]
-                                          (resize! @state width height))
+                                          (resize/do! @state width height))
                                :pause! (fn [])
                                :resume! (fn [])})
                              (lwjgl3-application-configuration/create
