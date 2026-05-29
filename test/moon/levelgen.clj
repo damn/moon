@@ -1,28 +1,34 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
-            [gdx.textures]
             [gdx.application :as app]
             [gdx.application-listener :as application-listener]
             [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
+            [gdx.files :as files]
             [gdx.graphics.color :as color]
-            [gdx.tiled-map-renderer :as tiled-map-renderer]
-            [gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [gdx.graphics.orthographic-camera :as camera]
+            [gdx.graphics.texture :as texture]
+            [gdx.input :as input]
             [gdx.input.keys :as input.keys]
+            [gdx.maps.layers :as layers]
+            [gdx.maps.props :as props]
+            [gdx.maps.tiled.tiled-map :as tiled-map]
+            [gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.event :as event]
+            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.scenes.scene2d.ui.skin :as skin]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.textures]
+            [gdx.tiled-map-renderer :as tiled-map-renderer]
+            [gdx.utils.disposable :as disposable]
+            [gdx.utils.screen-utils :as screen-utils]
+            [gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.utils.viewport.viewport :as viewport]
             [moon.creature-tiles]
-            [moon.db :as db])
-  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch
-                                          TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)
-           (com.badlogic.gdx.utils Disposable
-                                   ScreenUtils)))
+            [moon.db :as db]))
 
 (def initial-level-fn "world_fns/uf_caves.edn")
 
@@ -34,13 +40,13 @@
 (defn- show-whole-map! [{:keys [ctx/camera
                                 ctx/tiled-map]}]
   (camera/set-position! camera
-                        [(/ (.get (.getProperties tiled-map) "width") 2)
-                         (/ (.get (.getProperties tiled-map) "height") 2)])
+                        [(/ (props/get (tiled-map/props tiled-map) "width") 2)
+                         (/ (props/get (tiled-map/props tiled-map) "height") 2)])
   (camera/set-zoom! camera
                     (camera/calculate-zoom camera
                                            {:left [0 0]
-                                            :top [0 (.get (.getProperties tiled-map) "height")]
-                                            :right [(.get (.getProperties tiled-map) "width") 0]
+                                            :top [0 (props/get (tiled-map/props tiled-map) "height")]
+                                            :right [(props/get (tiled-map/props tiled-map) "width") 0]
                                             :bottom [0 0]})))
 
 (def tile-size 48)
@@ -50,7 +56,7 @@
            ctx/textures
            ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
-    (.dispose tiled-map))
+    (disposable/dispose! tiled-map))
   (let [level (let [[f params] (edn-resource level-fn)]
                 (f
                  (assoc params
@@ -61,16 +67,16 @@
                                                       (assert (contains? textures file))
                                                       (let [texture (get textures file)]
                                                         (if-let [[x y w h] bounds]
-                                                          (TextureRegion. texture x y w h)
-                                                          (TextureRegion. texture)))))
+                                                          (texture/region texture x y w h)
+                                                          (texture/region texture)))))
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
     (-> tiled-map
-        .getLayers
-        (.get "creatures")
-        (.setVisible true))
+        tiled-map/layers
+        (layers/get "creatures")
+        (layer/set-visible! true))
     (show-whole-map! ctx)
     ctx))
 
@@ -93,11 +99,11 @@
   (let [files (app/files app)
         graphics (app/graphics app)
         input (app/input app)
-        skin (Skin. (.internal files "uiskin.json"))
+        skin (skin/create (files/internal files "uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
-        sprite-batch (SpriteBatch.)
+        sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch)
-        _  (.setInputProcessor input stage)
+        _  (input/set-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage
@@ -130,9 +136,9 @@
   [{:keys [ctx/skin
            ctx/sprite-batch
            ctx/tiled-map]}]
-  (Disposable/.dispose skin)
-  (Disposable/.dispose sprite-batch)
-  (Disposable/.dispose tiled-map))
+  (disposable/dispose! skin)
+  (disposable/dispose! sprite-batch)
+  (disposable/dispose! tiled-map))
 
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
                                 ctx/color-setter
@@ -153,16 +159,16 @@
                                                (update (camera/position camera)
                                                        idx
                                                        #(f % camera-movement-speed))))]
-    (if (.isKeyPressed input input.keys/left)  (apply-position 0 -))
-    (if (.isKeyPressed input input.keys/right) (apply-position 0 +))
-    (if (.isKeyPressed input input.keys/up)    (apply-position 1 +))
-    (if (.isKeyPressed input input.keys/down)  (apply-position 1 -))))
+    (if (input/key-pressed? input input.keys/left)  (apply-position 0 -))
+    (if (input/key-pressed? input input.keys/right) (apply-position 0 +))
+    (if (input/key-pressed? input input.keys/up)    (apply-position 1 +))
+    (if (input/key-pressed? input input.keys/down)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (.isKeyPressed input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
-  (when (.isKeyPressed input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (input/key-pressed? input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
+  (when (input/key-pressed? input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
 
 (defn render!
   [{:keys [ctx/stage]
@@ -170,7 +176,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (ScreenUtils/clear 0 0 0 0)
+    (screen-utils/clear! 0 0 0 0)
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)
