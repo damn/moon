@@ -1,7 +1,7 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
             [clojure.gdx.textures]
-            [clojure.gdx.graphics.color :as color]
+            [gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.gdx.orthographic-camera :as camera]
