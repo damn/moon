@@ -4,14 +4,14 @@
             [gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [clojure.gdx.orthographic-camera :as camera]
+            [gdx.graphics.orthographic-camera :as camera]
             [clojure.input.keys :as input.keys]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.event :as event]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.stage :as stage]
-            [clojure.gdx.viewport :as viewport]
+            [gdx.utils.viewport.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
   (:import (com.badlogic.gdx Application

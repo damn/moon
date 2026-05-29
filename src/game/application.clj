@@ -12,7 +12,7 @@
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.orthographic-camera :as camera]
+            [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
             [clojure.java.io :as io]
             [gdx.scenes.scene2d.actor :as actor]
@@ -33,7 +33,7 @@
 
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [clojure.gdx.viewport :as viewport]
+            [gdx.utils.viewport.viewport :as viewport]
             [moon.grid2d :as g2d]
             [clojure.gdx.textures]
 
