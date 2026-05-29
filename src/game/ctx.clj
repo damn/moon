@@ -1051,10 +1051,6 @@
       (item-place-position ctx entity)
       {:center? true}]]))
 
-(defn- creature-speed [{:keys [entity/stats]}]
-  (or (stats/get-stat-value stats :stats/movement-speed)
-      0))
-
 (def reaction-time-multiplier 0.016)
 
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
@@ -1290,7 +1286,6 @@
       [:tx/event eid :dropped-item]
       [:tx/event eid :pickup-item item-in-cell]])))
 
-
 (defmethod state/draw-ui-view :player-item-on-cursor
   [_ eid {:keys [ctx/stage
                  ctx/textures
@@ -1304,19 +1299,3 @@
       (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
       ui-mouse-position
       {:center? true}]]))
-
-
-(defmethod state/handle-input :player-item-on-cursor
-  [_ eid {:keys [ctx/stage]
-          :as ctx}]
-  (let [mouseover-actor (stage/mouseover-actor stage (mouse-position ctx))]
-    (when (and (button-just-pressed? ctx input.buttons/left)
-               (not mouseover-actor))
-      [[:tx/event eid :drop-item]])))
-
-(defmethod state/handle-input :player-moving
-  [_ eid ctx]
-  (if-let [movement-vector (player-movement-vector ctx)]
-    [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                      :speed (creature-speed @eid)}]]
-    [[:tx/event eid :no-movement-input]]))
