@@ -8,6 +8,7 @@
                  [org.clj-commons/pretty "3.2.0"]
                  [org.clojure/clojure "1.12.0"]
                  [clojure.core-ext "0.1"]
+                 [clojure.math "-SNAPSHOT"]
 
                  ; DEV:
                  [nrepl "0.9.0"]
@@ -17,7 +18,6 @@
                  [lein-hiera "2.0.0"]
                  ]
   :source-paths ["src"]
-  :java-source-paths ["java-src"]
   :resource-paths ["resources/"]
   :aliases {"dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'game.application/-main))"]
             "levelgen" ["run" "-m" "dev.loop" "((requiring-resolve 'moon.levelgen/-main))"]
