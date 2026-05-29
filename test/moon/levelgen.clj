@@ -1,6 +1,8 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
             [clojure.gdx.textures]
+            [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
+            [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
             [gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.utils.viewport.fit-viewport :as fit-viewport]
@@ -17,8 +19,6 @@
   (:import (com.badlogic.gdx Application
                              ApplicationListener
                              Gdx)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
@@ -190,24 +190,24 @@
 (def state (atom nil))
 
 (defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (reify ApplicationListener
-                        (create [_]
-                          (reset! state (create! Gdx/app)))
+  (lwjgl3-application-configuration/use-glfw-async!)
+  (lwjgl3-application/create (reify ApplicationListener
+                               (create [_]
+                                 (reset! state (create! Gdx/app)))
 
-                        (dispose [_]
-                          (dispose! @state))
+                               (dispose [_]
+                                 (dispose! @state))
 
-                        (render [_]
-                          (swap! state render!))
+                               (render [_]
+                                 (swap! state render!))
 
-                        (resize [_ width height]
-                          (resize! @state width height))
+                               (resize [_ width height]
+                                 (resize! @state width height))
 
-                        (pause [_])
+                               (pause [_])
 
-                        (resume [_]))
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle "Levelgen Test")
-                        (.setWindowedMode 1440 900)
-                        (.setForegroundFPS 60))))
+                               (resume [_]))
+                             (lwjgl3-application-configuration/create
+                              {:title "Levelgen Test"
+                               :windowed-mode {:width 1440 :height 900}
+                               :foreground-fps 60})))
