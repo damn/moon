@@ -3,7 +3,6 @@
             [clojure.math.vector2 :as v]
             [game.ctx :as ctx]
             [game.entity :as entity]
-            [game.schema]
             [game.skill :as skill]
             [game.state :as state]
             [gdx.application :as app]
@@ -17,19 +16,16 @@
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
-            [gdx.textures]
             [gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.utils.viewport.viewport :as viewport]
             [malli.core :as m]
             [malli.utils :as mu]
             [moon.body :as body]
             [moon.content-grid :as content-grid]
-            [moon.creature-tiles]
             [moon.grid :as grid]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]
-            [moon.ui.error-window]
-            [moon.ui.property-overview-window])
+            [moon.ui.error-window :as error-window])
   (:import (com.badlogic.gdx.graphics.g2d SpriteBatch)))
 
 (defn- tile-color-setter*
@@ -272,7 +268,7 @@
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage
-                       (moon.ui.error-window/create
+                       (error-window/create
                         {:skin skin
                          :throwable t}))))
   ctx)
