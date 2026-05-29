@@ -21,7 +21,6 @@
             [gdx.scenes.scene2d.ui.widget :as widget]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [moon.creature-tiles]
             [moon.db :as db]
             [moon.inventory :as inventory]
             [moon.number :as number]
