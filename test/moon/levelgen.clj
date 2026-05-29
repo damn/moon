@@ -3,7 +3,7 @@
             [clojure.gdx.textures]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
-            [clojure.gdx.fit-viewport :as fit-viewport]
+            [gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.gdx.orthographic-camera :as camera]
             [clojure.input.keys :as input.keys]
             [clojure.gdx.scenes.scene2d.actor :as actor]
