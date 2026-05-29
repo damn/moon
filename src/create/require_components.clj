@@ -1,5 +1,6 @@
 (ns create.require-components
-  (:require entity.create.animation
+  (:require entity.load
+            entity.create.animation
             entity.create.body
             handle-input.player-idle
             handle-input.player-moving
