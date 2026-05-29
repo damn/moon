@@ -28,8 +28,8 @@
             [gdx.scenes.scene2d.stage :as stage]
             [clojure.scene2d.ui :as ui]
 
-            [clojure.input.buttons :as input.buttons]
-            [clojure.input.keys :as input.keys]
+            [gdx.input.buttons :as input.buttons]
+            [gdx.input.keys :as input.keys]
 
             [clojure.math.vector2 :as v]
             [clojure.string :as str]

@@ -1,5 +1,5 @@
 (ns game.state
-  (:require [clojure.input.buttons :as input.buttons]
+  (:require [gdx.input.buttons :as input.buttons]
             [game.ctx :as ctx]
             [moon.inventory :as inventory]
             [gdx.scenes.scene2d.actor :as actor]

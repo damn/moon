@@ -22,7 +22,7 @@
             [gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [clojure.input.keys :as input.keys]
+            [gdx.input.keys :as input.keys]
             [clojure.set :as set]
             [game.ctx :as ctx]
             [moon.db :as db]

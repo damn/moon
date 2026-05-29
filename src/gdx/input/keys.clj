@@ -1,4 +1,4 @@
-(ns clojure.input.keys
+(ns gdx.input.keys
   (:import (com.badlogic.gdx Input$Keys)))
 
 (def d Input$Keys/D)

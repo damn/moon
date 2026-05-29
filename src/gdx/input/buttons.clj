@@ -1,4 +1,4 @@
-(ns clojure.input.buttons
+(ns gdx.input.buttons
   (:import (com.badlogic.gdx Input$Buttons)))
 
 (def left  Input$Buttons/LEFT)
