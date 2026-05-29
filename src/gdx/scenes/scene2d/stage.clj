@@ -1,5 +1,5 @@
-(ns clojure.gdx.scenes.scene2d.stage
-  (:require [clojure.gdx.scenes.scene2d.group :as group]
+(ns gdx.scenes.scene2d.stage
+  (:require [gdx.scenes.scene2d.group :as group]
             [clojure.gdx.viewport :as viewport])
   (:import (clojure.gdx Stage)
            (clojure.lang ILookup)))

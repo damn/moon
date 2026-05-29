@@ -1,11 +1,11 @@
 (ns moon.ui.data-viewer-window
-  (:require [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [clojure.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.scenes.scene2d.ui.window :as window]
-            [clojure.gdx.scenes.scene2d.stage :as stage]))
+  (:require [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.ui.label :as label]
+            [gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scenes.scene2d.stage :as stage]))
 
 (defn create
   [{:keys [title

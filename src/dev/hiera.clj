@@ -28,7 +28,7 @@
      dev,
      moon.throwable
      clojure.math
-     clojure.gdx.scenes.scene2d.actor,
+     gdx.scenes.scene2d.actor,
      }
   )
 

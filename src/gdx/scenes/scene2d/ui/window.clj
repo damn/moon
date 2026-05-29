@@ -1,7 +1,7 @@
-(ns clojure.gdx.scenes.scene2d.ui.window
-  (:require [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button])
+(ns gdx.scenes.scene2d.ui.window
+  (:require [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.ui.text-button :as text-button])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)))
 

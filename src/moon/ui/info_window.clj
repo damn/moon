@@ -1,11 +1,11 @@
 (ns moon.ui.info-window
-  (:require [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.group :as group]
-            [clojure.gdx.scenes.scene2d.stage :as stage]
-            [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [clojure.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scenes.scene2d.ui.window :as window]
-            [clojure.gdx.scenes.scene2d.ui.widget-group :as widget-group]))
+  (:require [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.group :as group]
+            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.scenes.scene2d.ui.label :as label]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scenes.scene2d.ui.widget-group :as widget-group]))
 
 (defn create
   [{:keys [title

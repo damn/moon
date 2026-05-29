@@ -2,7 +2,7 @@
   (:require [clojure.animation :as animation]
             [clojure.math :as math]
             [clojure.math.vector2 :as v]
-            [clojure.gdx.scenes.scene2d.stage :as stage]
+            [gdx.scenes.scene2d.stage :as stage]
             [moon.body :as body]
             [moon.cell :as cell]
             [game.ctx :as ctx]

@@ -1,6 +1,6 @@
 (ns moon.ui.error-window
-  (:require [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [clojure.gdx.scenes.scene2d.ui.window :as window]
+  (:require [gdx.scenes.scene2d.ui.label :as label]
+            [gdx.scenes.scene2d.ui.window :as window]
             [clojure.repl :as repl]))
 
 (defmacro ^:private with-err-str [& body]

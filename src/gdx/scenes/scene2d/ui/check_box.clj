@@ -1,4 +1,4 @@
-(ns clojure.gdx.scenes.scene2d.ui.check-box
+(ns gdx.scenes.scene2d.ui.check-box
   (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox
                                                Skin)))
 

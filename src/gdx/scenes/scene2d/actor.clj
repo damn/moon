@@ -1,7 +1,7 @@
-(ns clojure.gdx.scenes.scene2d.actor
+(ns gdx.scenes.scene2d.actor
   (:refer-clojure :exclude [name])
   (:require [gdx.math.vector2 :as vector2]
-            [clojure.gdx.scenes.scene2d.touchable :as touchable]
+            [gdx.scenes.scene2d.touchable :as touchable]
             [gdx.utils.align :as align]
             [clojure.scene2d.listener :as listener])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))

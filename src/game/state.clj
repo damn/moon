@@ -2,8 +2,8 @@
   (:require [clojure.input.buttons :as input.buttons]
             [game.ctx :as ctx]
             [moon.inventory :as inventory]
-            [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.stage :as stage]
+            [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.stage :as stage]
             [moon.textures :as textures]
             [moon.stats :as stats]
             [moon.timer :as timer]))

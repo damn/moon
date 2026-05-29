@@ -1,5 +1,5 @@
-(ns clojure.gdx.scenes.scene2d.ui.label
-  (:require [clojure.gdx.scenes.scene2d.actor :as actor])
+(ns gdx.scenes.scene2d.ui.label
+  (:require [gdx.scenes.scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))
 

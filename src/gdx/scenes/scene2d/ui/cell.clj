@@ -1,4 +1,4 @@
-(ns clojure.gdx.scenes.scene2d.ui.cell
+(ns gdx.scenes.scene2d.ui.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 ; TODO order is important, reduce?
