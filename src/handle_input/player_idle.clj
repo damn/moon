@@ -1,0 +1,66 @@
+(ns handle-input.player-idle
+  (:require [gdx.input.buttons :as input.buttons]
+            [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.stage :as stage]
+            [game.ctx :as ctx]
+            [game.state :as state]
+            [moon.inventory :as inventory]))
+
+(defn- interaction-state->txs [[k params] stage player-eid]
+  (case k
+    :interaction-state/mouseover-actor nil
+
+    :interaction-state/clickable-mouseover-eid
+    (let [{:keys [clicked-eid
+                  in-click-range?]} params]
+      (if in-click-range?
+        (case (:type (:entity/clickable @clicked-eid))
+          :clickable/player
+          [[:tx/toggle-inventory-visible]]
+
+          :clickable/item
+          (let [item (:entity/item @clicked-eid)]
+            (cond
+             (-> stage
+                 (stage/find-actor "moon.ui.windows.inventory")
+                 actor/visible?)
+             [[:tx/sound "bfxr_takeit"]
+              [:tx/mark-destroyed clicked-eid]
+              [:tx/event player-eid :pickup-item item]]
+
+             (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
+             [[:tx/sound "bfxr_pickup"]
+              [:tx/mark-destroyed clicked-eid]
+              [:tx/pickup-item player-eid item]]
+
+             :else
+             [[:tx/sound "bfxr_denied"]
+              [:tx/show-message "Your Inventory is full"]])))
+        [[:tx/sound "bfxr_denied"]
+         [:tx/show-message "Too far away"]]))
+
+    :interaction-state.skill/usable
+    (let [[skill effect-ctx] params]
+      [[:tx/event player-eid :start-action [skill effect-ctx]]])
+
+    :interaction-state.skill/not-usable
+    (let [state params]
+      [[:tx/sound "bfxr_denied"]
+       [:tx/show-message (case state
+                           :cooldown "Skill is still on cooldown"
+                           :not-enough-mana "Not enough mana"
+                           :invalid-params "Cannot use this here")]])
+
+    :interaction-state/no-skill-selected
+    [[:tx/sound "bfxr_denied"]
+     [:tx/show-message "No selected skill"]]))
+
+(defmethod state/handle-input :player-idle
+  [_ player-eid {:keys [ctx/interaction-state
+                        ctx/stage] :as ctx}]
+  (if-let [movement-vector (ctx/player-movement-vector ctx)]
+    [[:tx/event player-eid :movement-input movement-vector]]
+    (when (ctx/button-just-pressed? ctx input.buttons/left)
+      (interaction-state->txs interaction-state
+                              stage
+                              player-eid))))

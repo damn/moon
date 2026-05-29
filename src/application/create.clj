@@ -1,6 +1,7 @@
 (ns application.create
   (:require [create.app]
             [create.audio]
+            [create.require-components]
             [create.stage]
             [create.batch]
             [create.shape-drawer-texture]
@@ -28,6 +29,7 @@
 
 (defn do! [app]
   (-> app
+      create.require-components/step
       create.app/step
       create.batch/step
       create.audio/step
