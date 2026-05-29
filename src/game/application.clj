@@ -6,6 +6,7 @@
                                       actions!
                                       reduce-actions!]]
             [clojure.edn :as edn]
+            [gdx.application-listener :as application-listener]
             [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
             [gdx.utils.viewport.fit-viewport :as fit-viewport]
@@ -76,9 +77,7 @@
             [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx Application
-                             ApplicationListener
-                             Gdx)
+  (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.audio Sound)
            (com.badlogic.gdx.graphics GL20
                                       Pixmap
@@ -1805,22 +1804,17 @@
 
 (defn -main []
   (lwjgl3-application-configuration/use-glfw-async!)
-  (lwjgl3-application/create (reify ApplicationListener
-                              (create [_]
-                                (reset! state (create! Gdx/app)))
-
-                              (dispose [_]
-                                (dispose! @state))
-
-                              (render [_]
-                                (swap! state render!))
-
-                              (resize [_ width height]
-                                (resize! @state width height))
-
-                              (pause [_])
-
-                              (resume [_]))
+  (lwjgl3-application/create (application-listener/create
+                              {:create! (fn [application]
+                                          (reset! state (create! application)))
+                               :dispose! (fn []
+                                           (dispose! @state))
+                               :render! (fn []
+                                          (swap! state render!))
+                               :resize! (fn [width height]
+                                          (resize! @state width height))
+                               :pause! (fn [])
+                               :resume! (fn [])})
                              (lwjgl3-application-configuration/create
                               {:title "Moon"
                                :windowed-mode {:width 1440 :height 900}

@@ -1,6 +1,7 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
             [gdx.textures]
+            [gdx.application-listener :as application-listener]
             [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
             [gdx.graphics.color :as color]
@@ -16,9 +17,7 @@
             [gdx.utils.viewport.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db])
-  (:import (com.badlogic.gdx Application
-                             ApplicationListener
-                             Gdx)
+  (:import (com.badlogic.gdx Application)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
@@ -191,22 +190,17 @@
 
 (defn -main []
   (lwjgl3-application-configuration/use-glfw-async!)
-  (lwjgl3-application/create (reify ApplicationListener
-                               (create [_]
-                                 (reset! state (create! Gdx/app)))
-
-                               (dispose [_]
-                                 (dispose! @state))
-
-                               (render [_]
-                                 (swap! state render!))
-
-                               (resize [_ width height]
-                                 (resize! @state width height))
-
-                               (pause [_])
-
-                               (resume [_]))
+  (lwjgl3-application/create (application-listener/create
+                              {:create! (fn [application]
+                                          (reset! state (create! application)))
+                               :dispose! (fn []
+                                           (dispose! @state))
+                               :render! (fn []
+                                          (swap! state render!))
+                               :resize! (fn [width height]
+                                          (resize! @state width height))
+                               :pause! (fn [])
+                               :resume! (fn [])})
                              (lwjgl3-application-configuration/create
                               {:title "Levelgen Test"
                                :windowed-mode {:width 1440 :height 900}
