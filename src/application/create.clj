@@ -66,13 +66,9 @@
             [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx.graphics Pixmap
                                       Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d BitmapFont
-                                          SpriteBatch
-                                          TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)
-           (com.badlogic.gdx.utils Align)))
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
 
 (def world-fn-file
@@ -80,113 +76,6 @@
   ; "world_fns/vampire.edn"
   ; "world_fns/uf_caves.edn"
   )
-
-(def draw-fns
-  {
-   :draw/circle           (fn
-                            [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-                            (shape-drawer/set-color! shape-drawer color-float-bits)
-                            (shape-drawer/circle! shape-drawer x y radius))
-   :draw/ellipse          (fn
-                            [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
-                            (shape-drawer/set-color! shape-drawer color-float-bits)
-                            (shape-drawer/ellipse! shape-drawer x y radius-x radius-y))
-   :draw/filled-circle    (fn
-                            [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-                            (shape-drawer/set-color! shape-drawer color-float-bits)
-                            (shape-drawer/filled-circle! shape-drawer x y radius))
-   :draw/filled-rectangle (fn
-                            [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-                            (shape-drawer/set-color! shape-drawer color-float-bits)
-                            (shape-drawer/filled-rectangle! shape-drawer x y w h))
-   :draw/grid             (fn
-                            [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
-                            (let [w (* (float gridw) (float cellw))
-                                  h (* (float gridh) (float cellh))
-                                  topy (+ (float bottomy) (float h))
-                                  rightx (+ (float leftx) (float w))]
-                              (doseq [idx (range (inc (float gridw)))
-                                      :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-                                (ctx/draw! ctx
-                                              [[:draw/line [linex topy] [linex bottomy] color-float-bits]]))
-                              (doseq [idx (range (inc (float gridh)))
-                                      :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-                                (ctx/draw! ctx
-                                              [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))
-   :draw/line             (fn
-                            [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
-                            (shape-drawer/set-color! shape-drawer color-float-bits)
-                            (shape-drawer/line! shape-drawer sx sy ex ey))
-   :draw/rectangle        (fn
-                            [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-                            (shape-drawer/set-color! shape-drawer color-float-bits)
-                            (shape-drawer/rectangle! shape-drawer x y w h))
-   :draw/sector           (fn
-                            [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
-                            (shape-drawer/set-color! shape-drawer color-float-bits)
-                            (shape-drawer/sector! shape-drawer center-x center-y radius start-radians radians))
-   :draw/text             (fn
-                            [{:keys [ctx/batch
-                                     ctx/unit-scale
-                                     ctx/default-font]}
-                             {:keys [font scale x y text h-align up?]}]
-                            (let [^BitmapFont font (or font default-font)
-                                  old-scale (.scaleX (.getData font))
-                                  target-width 0
-                                  wrap? false
-                                  scale (* (float @unit-scale)
-                                           (float (or scale 1)))]
-                              (.setScale (.getData font) (* old-scale scale))
-                              (.draw font
-                                     batch
-                                     text
-                                     (float x)
-                                     (float (+ y (if up?
-                                                   (-> text
-                                                       (str/split #"\n")
-                                                       count
-                                                       (* (.getLineHeight font)))
-                                                   0)))
-                                     (float target-width)
-                                     Align/center
-                                     wrap?)
-                              (.setScale (.getData font) old-scale)))
-   :draw/texture-region   (fn
-                            [{:keys [^SpriteBatch ctx/batch
-                                     ctx/unit-scale
-                                     ctx/world-unit-scale]}
-                             ^TextureRegion texture-region
-                             [x y]
-                             & {:keys [center? rotation]}]
-                            (let [[w h] (let [dimensions [(.getRegionWidth  texture-region)
-                                                          (.getRegionHeight texture-region)]]
-                                          (if (= @unit-scale 1)
-                                            dimensions
-                                            (mapv (comp float (partial * world-unit-scale))
-                                                  dimensions)))]
-                              (if center?
-                                (.draw batch
-                                       texture-region
-                                       (- (float x) (/ (float w) 2))
-                                       (- (float y) (/ (float h) 2))
-                                       (/ (float w) 2)
-                                       (/ (float h) 2)
-                                       w
-                                       h
-                                       1
-                                       1
-                                       (or rotation 0))
-                                (.draw batch texture-region (float x) (float y) (float w) (float h)))))
-   :draw/with-line-width  (fn
-                            [{:keys [ctx/shape-drawer]
-                              :as ctx}
-                             width
-                             draws]
-                            (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
-                              (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
-                              (ctx/draw! ctx draws)
-                              (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
-   })
 
 (q/defrecord Entity [entity/body])
 
@@ -540,11 +429,6 @@
   (key-just-pressed? [{:keys [ctx/app]} input-key]
     (input/key-just-pressed? (app/input app) input-key))
 
-  (draw! [ctx draws]
-    (doseq [{k 0 :as component} draws
-            :when component]
-      (apply (get draw-fns k) ctx (rest component))))
-
   (do! [ctx txs]
     (let [handled-txs (try (actions! txs-fn-map ctx txs)
                            (catch Throwable t
@@ -592,7 +476,7 @@
 (defn create-app [app]
   (tooltip-manager/set-initial-time! 0)
   (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
-  (let [batch (SpriteBatch.)
+  (let [batch (com.badlogic.gdx.graphics.g2d.SpriteBatch.)
         white-pixel-texture (graphics/white-pixel-texture)
         world-unit-scale (float (/ 48))]
     {:ctx/app app
@@ -603,7 +487,7 @@
                                     (files/internal (app/files app) (format "sounds/%s.wav" sound-name)))]))
      :ctx/batch batch
      :ctx/shape-drawer-texture white-pixel-texture
-     :ctx/shape-drawer (shape-drawer/create batch (TextureRegion. white-pixel-texture 1 0 1 1))
+     :ctx/shape-drawer (shape-drawer/create batch (com.badlogic.gdx.graphics.g2d.TextureRegion. white-pixel-texture 1 0 1 1))
      :ctx/default-font (let [path "exocet/films.EXL_____.ttf"
                              size 16
                              quality-scaling 2
