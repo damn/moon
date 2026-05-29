@@ -1,9 +1,7 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
             [gdx.application :as app]
-            [gdx.application-listener :as application-listener]
-            [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
-            [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
+            [gdx.backends.lwjgl :as lwjgl]
             [gdx.files :as files]
             [gdx.graphics.color :as color]
             [gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -195,19 +193,17 @@
 (def state (atom nil))
 
 (defn -main []
-  (lwjgl3-application-configuration/use-glfw-async!)
-  (lwjgl3-application/create (application-listener/create
-                              {:create! (fn [application]
-                                          (reset! state (create! application)))
-                               :dispose! (fn []
-                                           (dispose! @state))
-                               :render! (fn []
-                                          (swap! state render!))
-                               :resize! (fn [width height]
-                                          (resize! @state width height))
-                               :pause! (fn [])
-                               :resume! (fn [])})
-                             (lwjgl3-application-configuration/create
-                              {:title "Levelgen Test"
-                               :windowed-mode {:width 1440 :height 900}
-                               :foreground-fps 60})))
+  (lwjgl/application!
+   {:create! (fn [application]
+               (reset! state (create! application)))
+    :dispose! (fn []
+                (dispose! @state))
+    :render! (fn []
+               (swap! state render!))
+    :resize! (fn [width height]
+               (resize! @state width height))
+    :pause! (fn [])
+    :resume! (fn [])
+    :title "Levelgen Test"
+    :windowed-mode {:width 1440 :height 900}
+    :foreground-fps 60}))

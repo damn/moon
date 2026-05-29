@@ -22,7 +22,7 @@
                  ]
   :source-paths ["src"]
   :resource-paths ["resources/"]
-  :aliases {"dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'game.application/-main))"]
+  :aliases {"dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'start/-main))"]
             "levelgen" ["run" "-m" "dev.loop" "((requiring-resolve 'moon.levelgen/-main))"]
             "nsgraph"  ["run" "-m" "dev.loop" "((requiring-resolve 'ns-graph.core/-main))"]
             "app-test" ["run" "-m" "dev.loop" "((requiring-resolve 'moon.backends.lwjgl-test/-main))"]
@@ -41,6 +41,6 @@
                 ;*unchecked-math* :warn-on-boxed
                 ;*assert* false
                 *print-level* 3}
-  :profiles {:uberjar {:aot [game.application]}}
+  :profiles {:uberjar {:aot [start]}}
   :uberjar-name "moon.jar"
-  :main game.application)
+  :main start)
