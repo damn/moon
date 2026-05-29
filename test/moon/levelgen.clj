@@ -1,10 +1,10 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
-            [clojure.gdx.textures]
+            [gdx.textures]
             [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]
             [gdx.graphics.color :as color]
-            [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
+            [gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.input.keys :as input.keys]
@@ -104,7 +104,7 @@
         ctx {:ctx/stage stage
              :ctx/files files}
         ctx (assoc ctx :ctx/db (db/create))
-        ctx (assoc ctx :ctx/textures (clojure.gdx.textures/create files))
+        ctx (assoc ctx :ctx/textures (gdx.textures/create files))
         world-viewport (let [world-width  (* 1440 world-unit-scale)
                              world-height (* 900  world-unit-scale)]
                          (fit-viewport/create world-width

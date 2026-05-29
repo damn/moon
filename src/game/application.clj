@@ -11,7 +11,7 @@
             [gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.graphics.color :as color]
             [gdx.graphics.colors :as colors]
-            [clojure.gdx.tiled-map-renderer :as tiled-map-renderer]
+            [gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.graphics.orthographic-camera :as camera]
@@ -28,7 +28,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdx.scenes.scene2d.stage :as stage]
-            [clojure.scene2d.ui :as ui]
+            [gdx.scenes.scene2d.ui :as ui]
 
             [gdx.input.buttons :as input.buttons]
             [gdx.input.keys :as input.keys]
@@ -37,7 +37,7 @@
             [clojure.string :as str]
             [gdx.utils.viewport.viewport :as viewport]
             [moon.grid2d :as g2d]
-            [clojure.gdx.textures]
+            [gdx.textures]
 
             [moon.ui.data-viewer-window :as data-viewer-window]
             moon.ui.error-window
@@ -908,7 +908,7 @@
 
 (defn create-textures
   [ctx]
-  (assoc ctx :ctx/textures (clojure.gdx.textures/create (Application/.getFiles (:ctx/app ctx)))))
+  (assoc ctx :ctx/textures (gdx.textures/create (Application/.getFiles (:ctx/app ctx)))))
 
 (defn unorganised [ctx]
   (assoc ctx
