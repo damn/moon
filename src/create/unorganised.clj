@@ -1,7 +1,9 @@
 (ns create.unorganised
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+  (:require [clojure.core-ext :refer [edn-resource]]
+            [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.graphics.colors :as colors]))
+            [com.badlogic.gdx.graphics.colors :as colors]
+            [malli.core :as m]))
 
 (defn step [ctx]
   (tooltip-manager/set-initial-time! 0)
@@ -26,6 +28,7 @@
          :ctx/entity-ids (atom {})
 
          ; constants (config & not state?)
+         :ctx/schema (m/schema (edn-resource "app-schema.edn"))
          :ctx/factions-iterations {:good 15 :evil 5}
          :ctx/max-delta 0.04
          :ctx/minimum-size 0.39

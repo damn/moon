@@ -5,7 +5,9 @@
             entity.create.animation
             entity.create.body
             entity.state.load
+            entity.state.draw-ui-view.player-item-on-cursor
             effect.load
+            effect.target.damage
             effect.target-all
             handle-input.player-idle
             handle-input.player-moving

@@ -2,10 +2,8 @@
   (:require [game.ctx :as ctx]
             [game.entity :as entity]
             [game.state :as state]
-            [gdx.stage :as stage]
             [moon.inventory :as inventory]
             [moon.stats :as stats]
-            [moon.textures :as textures]
             [moon.timer :as timer]))
 
 (def reaction-time-multiplier 0.016)
@@ -14,7 +12,6 @@
   (/ action-time
      (or (stats/get-stat-value stats (:skill/action-time-modifier-key skill))
          1)))
-
 
 (defmethod state/create :active-skill
   [[_k [skill effect-ctx]] eid {:keys [ctx/elapsed-time]}]
@@ -43,7 +40,6 @@
 (defmethod state/create :player-item-on-cursor
   [[_k item] _eid _ctx]
   {:item item})
-
 
 (defmethod state/enter :player-item-on-cursor
   [[_k {:keys [item]}] eid]
@@ -78,7 +74,6 @@
   [[:tx/assoc eid :entity/movement {:direction movement-vector
                                     :speed (or (stats/get-stat-value (:entity/stats @eid) :stats/movement-speed)
                                                0)}]])
-
 
 (defmethod state/exit :player-item-on-cursor
   [_ eid ctx]
@@ -196,7 +191,6 @@
   [_]
   true)
 
-
 (defmethod state/clicked-inventory-cell :default
   [_ _eid _cell]
   nil)
@@ -242,17 +236,3 @@
       [:tx/set-item eid cell item-on-cursor]
       [:tx/event eid :dropped-item]
       [:tx/event eid :pickup-item item-in-cell]])))
-
-(defmethod state/draw-ui-view :player-item-on-cursor
-  [_ eid {:keys [ctx/stage
-                 ctx/textures
-                 ctx/ui-mouse-position]
-          :as ctx}]
-  ; TODO see player-item-on-cursor at render layers
-  ; always draw it here at right position, then render layers does not need input/stage
-  ; can pass world to graphics, not handle here at application
-  (when (stage/mouseover-actor stage (ctx/mouse-position ctx))
-    [[:draw/texture-region
-      (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
-      ui-mouse-position
-      {:center? true}]]))
