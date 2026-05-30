@@ -1,6 +1,5 @@
 (ns application.create
-  (:require [com.badlogic.gdx.gdx :as gdx]
-            [create.audio]
+  (:require [create.audio]
             [create.require-components]
             [create.stage]
             [create.batch]
@@ -27,8 +26,8 @@
             [create.spawn-player]
             [create.spawn-enemies]))
 
-(defn do! []
-  (-> {:ctx/app (gdx/app)}
+(defn do! [app]
+  (-> {:ctx/app app}
       create.require-components/step
       create.batch/step
       create.audio/step

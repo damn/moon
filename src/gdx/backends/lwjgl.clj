@@ -1,5 +1,6 @@
 (ns gdx.backends.lwjgl
-  (:require [com.badlogic.gdx.application-listener :as application-listener]
+  (:require [com.badlogic.gdx.gdx :as gdx]
+            [com.badlogic.gdx.application-listener :as application-listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]))
 
@@ -9,7 +10,7 @@
   (lwjgl3-application-configuration/use-glfw-async!)
   (lwjgl3-application/create (application-listener/create
                               {:create!  (fn []
-                                           (reset! state ((:create! config))))
+                                           (reset! state ((:create! config) (gdx/app))))
                                :dispose! (fn []
                                            ((:dispose! config) @state))
                                :render!  (fn []
