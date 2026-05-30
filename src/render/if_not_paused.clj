@@ -1,6 +1,5 @@
 (ns render.if-not-paused
-  (:require [gdx.application :as app]
-            [gdx.graphics :as graphics]
+  (:require [game.app :as app]
             [gdx.scenes.scene2d.stage :as stage]
             [game.ctx :as ctx]
             [moon.ui.error-window :as error-window]
@@ -8,9 +7,8 @@
             [game.entity :as entity]
             [moon.throwable :as throwable]))
 
-(defn delta-time
-  [{:keys [ctx/app]}]
-  (graphics/delta-time (app/graphics app)))
+(defn delta-time [{:keys [ctx/app]}]
+  (app/delta-time app))
 
 (defn tick-entities!
   [{:keys [ctx/active-entities

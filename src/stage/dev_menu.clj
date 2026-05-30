@@ -1,9 +1,8 @@
 (ns stage.dev-menu
   (:require [clojure.string :as str]
+            [game.app :as app]
             [game.ctx :as ctx]
             [game.schema]
-            [gdx.application :as app]
-            [gdx.graphics :as graphics]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.stage :as stage]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
@@ -12,9 +11,8 @@
             [moon.number :as number]
             [moon.ui.property-overview-window]))
 
-(defn frames-per-second
-  [{:keys [ctx/app]}]
-  (graphics/frames-per-second (app/graphics app)))
+(defn frames-per-second [{:keys [ctx/app]}]
+  (app/frames-per-second app))
 
 (defn camera-zoom [{:keys [ctx/world-viewport]}]
   (camera/zoom (:viewport/camera world-viewport)))

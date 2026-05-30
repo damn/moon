@@ -3,12 +3,11 @@
                                       reduce-actions!]]
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
+            [game.app :as app]
             [game.info :as info]
-            [gdx.application :as app]
             [gdx.audio.sound :as sound]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.graphics.shape-drawer :as shape-drawer]
-            [gdx.input :as input]
             [gdx.input.keys :as input.keys]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.stage :as stage]
@@ -299,16 +298,16 @@
     (apply (get draw-fns k) ctx (rest component))))
 
 (defn key-pressed? [{:keys [ctx/app]} input-key]
-  (input/key-pressed? (app/input app) input-key))
+  (app/key-pressed? app input-key))
 
 (defn world-unit-scale [ctx]
   (:ctx/world-unit-scale ctx))
 
 (defn mouse-position [{:keys [ctx/app]}]
-  (input/mouse-position (app/input app)))
+  (app/mouse-position app))
 
 (defn button-just-pressed? [{:keys [ctx/app]} input-button]
-  (input/button-just-pressed? (app/input app) input-button))
+  (app/button-just-pressed? app input-button))
 
 ; It is possible to put items out of sight, losing them.
 ; Because line of sight checks center of entity only, not corners
@@ -326,7 +325,7 @@
   (map first audio))
 
 (defn key-just-pressed? [{:keys [ctx/app]} input-key]
-  (input/key-just-pressed? (app/input app) input-key))
+  (app/key-just-pressed? app input-key))
 
 (defn player-movement-vector [ctx]
   (let [r (when (key-pressed? ctx input.keys/d) [1  0])
