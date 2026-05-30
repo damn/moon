@@ -1,28 +1,18 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 ;; my libs
-                 [clojure.core-ext "0.1"]
-                 [clojure.math "-SNAPSHOT"]
-
-                 [com.badlogic.gdx "1.14.0"]
-
-                 ;[com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]
-                 ;[com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
-                 [com.badlogic.gdx.backends.lwjgl3 "-SNAPSHOT"]
-
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.0" :classifier "natives-desktop"]
-
-                 [space.earlygrey.shape-drawer "-SNAPSHOT"]
-
-                 [malli.utils "-SNAPSHOT"]
-                 ;;
+                 [com.github.damn/clojure.core-ext "55983eb35e"]
+                 [com.github.damn/clojure.math "8c8d074607"]
+                 [com.github.damn/gdx "a3a7a93439"]
+                 [com.github.damn/com.badlogic.gdx.backends.lwjgl3 "01329de8e4"]
+                 [com.github.damn/space.earlygrey.shape-drawer "82d772e482"]
+                 [com.github.damn/malli.utils "081a715935"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
                  [org.clj-commons/pretty "3.2.0"]
                  [org.clojure/clojure "1.12.0"]
-                 ;;
 
                  ; DEV:
                  [nrepl "0.9.0"]
