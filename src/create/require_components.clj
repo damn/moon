@@ -4,6 +4,7 @@
             entity.create.animation
             entity.create.body
             entity.state.load
+            effect.load
             handle-input.player-idle
             handle-input.player-moving
             handle-input.player-item-on-cursor
