@@ -10,6 +10,7 @@
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.grid :as grid]
+            [moon.grid.npc-pathing :as npc-pathing]
             [moon.grid2d :as g2d]
             [moon.inventory :as inventory]
             [moon.number :as number]
@@ -298,7 +299,7 @@
   (let [effect-ctx (npc-effect-ctx ctx eid)]
     (if-let [skill (npc-choose-skill ctx @eid effect-ctx)]
       [[:tx/event eid :start-action [skill effect-ctx]]]
-      [[:tx/event eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
+      [[:tx/event eid :movement-direction (or (npc-pathing/find-direction (:ctx/grid ctx) eid)
                                               [0 0])]])))
 
 (defmethod entity/tick :npc-sleeping
