@@ -4,8 +4,14 @@
                  ;; my libs
                  [clojure.core-ext "0.1"]
                  [clojure.math "-SNAPSHOT"]
-                 [gdx "-SNAPSHOT"]
+                 [gdx "-SNAPSHOT"] ; FIXME WE ARE HERE
+
+                 ;[com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]
+                 ;[com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.0"]
+                 [com.badlogic.gdx.backends.lwjgl3 "-SNAPSHOT"]
+
                  [space.earlygrey.shape-drawer "-SNAPSHOT"]
+
                  [malli.utils "-SNAPSHOT"]
                  ;;
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
