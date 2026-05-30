@@ -24,7 +24,7 @@
             [gdx.tiled-map-renderer :as tiled-map-renderer]
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
-            [gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.viewport :as viewport]
             [moon.creature-tiles]
             [moon.db :as db]))
