@@ -12,6 +12,8 @@
             handle-input.player-item-on-cursor
             tx.load
             editor-widget.load
+            editor-widget.one-to-one
+            editor-widget.one-to-many
             editor-widget.map
             ))
 

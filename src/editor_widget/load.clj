@@ -2,27 +2,24 @@
   (:require [clojure.core-ext :refer [->edn-str
                                       truncate]]
             [clojure.edn :as edn]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
+            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
             [game.ctx :as ctx]
             [game.schema :as schema]
             [gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [gdx.scenes.scene2d.group :as group]
-            [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui :as ui]
-            [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
-            [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.text-field :as text-field]
             [gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [moon.db :as db]
-            [moon.property :as property]
+            [gdx.stage :as stage]
             [moon.textures :as textures]
             [moon.ui.error-window]
             [moon.ui.property-overview-window]))
@@ -79,8 +76,8 @@
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
   (image-button/create
-   {:drawable {:drawable/texture-region (textures/texture-region textures image)
-               :drawable/scale 2}})
+   {:drawable (texture-region-drawable/create* {:drawable/texture-region (textures/texture-region textures image)
+                                                :drawable/scale 2})})
   #_(ui/image-button image
                      (fn [_actor ctx]
                        (c/add-actor! ctx (scroll-pane/choose-window (texture-rows ctx))))
@@ -96,121 +93,6 @@
 (defmethod schema/value :s/number
   [_  widget _schemas]
   (edn/read-string (text-field/text widget)))
-
-(defn- add-one-to-many-rows
-  [{:keys [ctx/db
-           ctx/skin
-           ctx/textures]}
-   table
-   property-type
-   property-ids]
-  (let [redo-rows (fn [ctx property-ids]
-                    (group/clear-children! table)
-                    (add-one-to-many-rows ctx table property-type property-ids)
-                    (widget-group/pack! (actor/find-ancestor table ui/window?)))]
-    (table/add-rows!
-     table
-     [[{:actor (text-button/create
-                {:text "+"
-                 :skin skin
-                 :actor/listeners {:listener/change (fn [event _actor]
-                                                      (let [{:keys [ctx/db
-                                                                    ctx/skin
-                                                                    ctx/stage
-                                                                    ctx/textures]
-                                                             :as ctx} (:stage/ctx (event/stage event))]
-                                                        (stage/add-actor!
-                                                         stage
-                                                         (moon.ui.property-overview-window/create
-                                                          {:db db
-                                                           :textures textures
-                                                           :skin skin
-                                                           :property-type property-type
-                                                           :clicked-id-fn (fn [actor id ctx]
-                                                                            (actor/remove! (actor/find-ancestor actor ui/window?))
-                                                                            (redo-rows ctx (conj property-ids id)))}))))}})}]
-      (for [property-id property-ids]
-        (let [property (db/get-raw db property-id)]
-          {:actor (image/create
-                   {:content (textures/texture-region textures (property/image property))
-                    :actor/user-object property-id
-                    :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))
-      (for [id property-ids]
-        {:actor (text-button/create
-                 {:text "-"
-                  :skin skin
-                  :actor/listeners {:listener/change (fn [event _actor]
-                                                       (redo-rows (:stage/ctx (event/stage event))
-                                                                  (disj property-ids id)))}})})])))
-
-(defmethod schema/create :s/one-to-many [[_ property-type] property-ids ctx]
-  (let [table (table/create
-               {:table/cell-defaults {:pad 5}})]
-    (add-one-to-many-rows ctx table property-type property-ids)
-    table))
-
-(defmethod schema/value :s/one-to-many [_  widget _schemas]
-  (->> (group/children widget)
-       (keep actor/user-object)
-       set))
-
-(defn- add-one-to-one-rows
-  [{:keys [ctx/db
-           ctx/skin
-           ctx/textures]}
-   table
-   property-type
-   property-id]
-  (let [redo-rows (fn [ctx id]
-                    (group/clear-children! table)
-                    (add-one-to-one-rows ctx table property-type id)
-                    (widget-group/pack! (actor/find-ancestor table ui/window?)))]
-    (table/add-rows!
-     table
-     [[(when-not property-id
-         {:actor (text-button/create
-                  {:text "+"
-                   :skin skin
-                   :actor/listeners {:listener/change (fn [event _actor]
-                                                        (let [{:keys [ctx/db
-                                                                      ctx/skin
-                                                                      ctx/stage
-                                                                      ctx/textures]
-                                                               :as ctx} (:stage/ctx (event/stage event))]
-                                                          (stage/add-actor!
-                                                           stage
-                                                           (moon.ui.property-overview-window/create
-                                                            {:db db
-                                                             :textures textures
-                                                             :skin skin
-                                                             :property-type property-type
-                                                             :clicked-id-fn (fn [actor id ctx]
-                                                                              (actor/remove! (actor/find-ancestor actor ui/window?))
-                                                                              (redo-rows ctx id))}))))}})})]
-      [(when property-id
-         (let [property (db/get-raw db property-id)]
-           {:actor (image/create
-                    {:content (textures/texture-region textures (property/image property))
-                     :actor/user-object property-id
-                     :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))]
-      [(when property-id
-         {:actor (text-button/create
-                  {:text "-"
-                   :skin skin
-                   :actor/listeners {:listener/change (fn [event _actor]
-                                                        (redo-rows (:stage/ctx (event/stage event))
-                                                                   nil))}})})]])))
-
-(defmethod schema/create :s/one-to-one [[_ property-type] property-id ctx]
-  (let [table (table/create
-               {:table/cell-defaults {:pad 5}})]
-    (add-one-to-one-rows ctx table property-type property-id)
-    table))
-
-(defmethod schema/value :s/one-to-one [_  widget _schemas]
-  (->> (group/children widget)
-       (keep actor/user-object)
-       first))
 
 (declare sound-columns)
 
