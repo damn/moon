@@ -27,8 +27,10 @@
 (def schema
   (m/schema
    [:map {:closed true}
-    [:ctx/app :some]
-    [:ctx/audio :some]
+    [:ctx/app :some] ; audio, files, graphics, input
+    [:ctx/audio :some] ; sounds
+
+    ; graphics?
     [:ctx/batch :some]
     [:ctx/cursors :some]
     [:ctx/default-font :some]
@@ -38,13 +40,19 @@
     [:ctx/shape-drawer :some]
     [:ctx/shape-drawer-texture :some]
     [:ctx/textures :some]
+
+    ; user interface
     [:ctx/skin :some]
     [:ctx/stage :some]
+
+    ; generated each frame from other keys
     [:ctx/active-entities :any]
     [:ctx/delta-time :any]
     [:ctx/mouseover-eid :any]
     [:ctx/ui-mouse-position :any]
     [:ctx/world-mouse-position :any]
+
+    ;; constants
     [:ctx/colors :some]
     [:ctx/controls :some]
     [:ctx/controls-info :some]
@@ -53,20 +61,22 @@
     [:ctx/minimum-size :some]
     [:ctx/render-z-order :some]
     [:ctx/z-orders :some]
+
+    ;; game world
     [:ctx/content-grid :some]
     [:ctx/entity-ids :some]
     [:ctx/explored-tile-corners :some]
-    [:ctx/factions-iterations :some]
+    [:ctx/factions-iterations :some] ; constant?
     [:ctx/grid :some]
     [:ctx/id-counter :some]
     [:ctx/potential-field-cache :some]
     [:ctx/raycaster :some]
     [:ctx/start-position :some]
     [:ctx/tiled-map :some]
-    [:ctx/db :some]
+    [:ctx/db :some] ; also used @ editor
     [:ctx/elapsed-time :some]
-    [:ctx/paused? :some]
-    [:ctx/player-eid :some]
+    [:ctx/paused? :some] ; outside of game world ...
+    [:ctx/player-eid :some] ; just a 'link'
     ]))
 
 (defn validate [ctx]
