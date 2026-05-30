@@ -5,6 +5,7 @@
             entity.create.body
             entity.state.load
             effect.load
+            effect.target-all
             handle-input.player-idle
             handle-input.player-moving
             handle-input.player-item-on-cursor
