@@ -1,7 +1,7 @@
 (ns render.update-mouseover-eid
   (:require [clojure.core-ext :refer [sort-by-order]]
             [game.ctx :as ctx]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [moon.grid :as grid]
             [moon.raycaster :as raycaster]))
 

@@ -1,7 +1,7 @@
 (ns render.window-camera-controls
   (:require [game.ctx :as ctx]
             [gdx.graphics.orthographic-camera :as camera]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             )

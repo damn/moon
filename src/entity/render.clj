@@ -5,7 +5,7 @@
             [game.effect :as effect]
             [game.entity :as entity]
             [game.skill :as skill]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [moon.body :as body]
             [moon.faction :as faction]
             [moon.stats :as stats]

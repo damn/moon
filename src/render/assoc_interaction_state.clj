@@ -6,7 +6,7 @@
 
     [game.skill :as skill]
     [gdx.scenes.scene2d.actor :as actor]
-    [gdx.scenes.scene2d.stage :as stage]
+    [gdx.stage :as stage]
     [gdx.scenes.scene2d.ui :as ui]
     [gdx.scenes.scene2d.ui.action-bar :as action-bar]
     [moon.body :as body])

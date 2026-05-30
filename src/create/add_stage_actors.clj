@@ -1,5 +1,5 @@
 (ns create.add-stage-actors
-  (:require [gdx.scenes.scene2d.stage :as stage]
+  (:require [gdx.stage :as stage]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
             [stage.dev-menu :as dev-menu]

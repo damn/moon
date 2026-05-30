@@ -1,7 +1,7 @@
 (ns moon.ui.property-overview-window
   (:require [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.stack :as stack]
             [gdx.scenes.scene2d.ui.image-button :as image-button]

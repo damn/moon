@@ -1,6 +1,6 @@
 (ns render.if-not-paused
   (:require [gdx.app :as app]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [game.ctx :as ctx]
             [moon.ui.error-window :as error-window]
             [moon.grid.update-potential-fields :as update-potential-fields]

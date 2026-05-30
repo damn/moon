@@ -7,7 +7,7 @@
             [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [gdx.scenes.scene2d.group :as group]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui :as ui]
             [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
             [gdx.scenes.scene2d.ui.image :as image]

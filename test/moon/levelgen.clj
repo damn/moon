@@ -16,7 +16,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]

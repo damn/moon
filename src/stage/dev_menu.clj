@@ -4,7 +4,7 @@
             [game.ctx :as ctx]
             [game.schema]
             [gdx.graphics.orthographic-camera :as camera]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
             [moon.db :as db]

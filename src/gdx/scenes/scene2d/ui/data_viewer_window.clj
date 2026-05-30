@@ -5,7 +5,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scenes.scene2d.stage :as stage]))
+            [gdx.stage :as stage]))
 
 (defn create
   [{:keys [title

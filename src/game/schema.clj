@@ -3,7 +3,7 @@
             [com.badlogic.gdx.input.keys :as input.keys]
             [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui :as ui]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scenes.scene2d.ui.table :as table]

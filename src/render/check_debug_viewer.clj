@@ -1,5 +1,5 @@
 (ns render.check-debug-viewer
-  (:require [gdx.scenes.scene2d.stage :as stage]
+  (:require [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
             [game.ctx :as ctx]))
 

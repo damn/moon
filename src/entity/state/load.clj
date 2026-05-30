@@ -2,7 +2,7 @@
   (:require [game.ctx :as ctx]
             [game.entity :as entity]
             [game.state :as state]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [moon.inventory :as inventory]
             [moon.stats :as stats]
             [moon.textures :as textures]

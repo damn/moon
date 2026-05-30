@@ -1,6 +1,4 @@
 (ns gdx.scenes.scene2d.stage
-  (:require [gdx.scenes.scene2d.group :as group]
-            [gdx.viewport :as viewport])
   (:import (clojure.lang ILookup)
            (gdx.scenes.scene2d Stage)))
 
@@ -24,11 +22,8 @@
 (defn draw! [^Stage stage]
   (.draw stage))
 
-(defn find-actor [^Stage stage name]
-  (-> stage
-      .getRoot
-      (group/find-actor name)))
+(defn root [^Stage stage]
+  (.getRoot stage))
 
-(defn mouseover-actor [^Stage stage position]
-  (let [[x y] (-> stage :stage/viewport (viewport/unproject position))]
-    (.hit stage x y true)))
+(defn hit [^Stage stage [x y]]
+  (.hit stage x y true))

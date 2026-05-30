@@ -14,7 +14,7 @@
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
             [gdx.scenes.scene2d.actor :as actor]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.text-button :as text-button]

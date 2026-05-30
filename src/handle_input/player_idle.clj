@@ -1,7 +1,7 @@
 (ns handle-input.player-idle
   (:require [com.badlogic.gdx.input.buttons :as input.buttons]
             [gdx.scenes.scene2d.actor :as actor]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [game.ctx :as ctx]
             [game.state :as state]
             [moon.inventory :as inventory]))

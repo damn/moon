@@ -1,6 +1,6 @@
 (ns handle-input.player-item-on-cursor
   (:require [com.badlogic.gdx.input.buttons :as input.buttons]
-            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.stage :as stage]
             [game.ctx :as ctx]
             [game.state :as state]))
 
