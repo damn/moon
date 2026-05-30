@@ -8,7 +8,7 @@
             [gdx.application :as app]
             [gdx.files :as files]
             [gdx.graphics :as graphics]
-            [gdx.input :as input])
+            [com.badlogic.gdx.input :as input])
   (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)
@@ -58,7 +58,8 @@
   (input/key-pressed? (app/input app) input-key))
 
 (defn mouse-position [app]
-  (input/mouse-position (app/input app)))
+  [(input/x (app/input app))
+   (input/y (app/input app))])
 
 (defn button-just-pressed? [app input-button]
   (input/button-just-pressed? (app/input app) input-button))

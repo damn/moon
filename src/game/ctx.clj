@@ -8,7 +8,7 @@
             [com.badlogic.gdx.audio.sound :as sound]
             [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
-            [gdx.input.keys :as input.keys]
+            [com.badlogic.gdx.input.keys :as input.keys]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.stage :as stage]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]

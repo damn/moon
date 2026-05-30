@@ -1,5 +1,5 @@
 (ns world-fns.modules
-  (:require [gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+  (:require [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             moon.tiled-map
             [moon.grid2d :as g2d])
   (:import (java.util Random)))

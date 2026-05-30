@@ -1,6 +1,6 @@
 (ns game.schema
   (:require [game.ctx :as ctx]
-            [gdx.input.keys :as input.keys]
+            [com.badlogic.gdx.input.keys :as input.keys]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.event :as event]
             [gdx.scenes.scene2d.stage :as stage]

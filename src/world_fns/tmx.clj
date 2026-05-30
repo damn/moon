@@ -1,5 +1,5 @@
 (ns world-fns.tmx
-  (:require [gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]))
+  (:require [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]))
 
 (defn create
   [{:keys [tmx-file

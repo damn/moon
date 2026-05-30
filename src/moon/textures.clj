@@ -1,5 +1,5 @@
 (ns moon.textures
-  (:require [gdx.graphics.texture :as texture]))
+  (:require [com.badlogic.gdx.graphics.texture :as texture]))
 
 (defn texture-region [textures {:keys [image/file image/bounds]}]
   (assert file)

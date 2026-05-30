@@ -1,7 +1,7 @@
 (ns create.controls
   (:require [clojure.string :as str]
-            [gdx.input.buttons :as input.buttons]
-            [gdx.input.keys :as input.keys]))
+            [com.badlogic.gdx.input.buttons :as input.buttons]
+            [com.badlogic.gdx.input.keys :as input.keys]))
 
 (defn step [ctx]
   (assoc ctx
