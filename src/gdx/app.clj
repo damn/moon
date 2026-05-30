@@ -5,8 +5,8 @@
 (ns gdx.app
   (:require [com.badlogic.gdx.audio :as audio]
             [com.badlogic.gdx.graphics.pixmap :as pixmap]
-            [gdx.application :as app]
-            [gdx.files :as files]
+            [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.files :as files]
             [gdx.graphics :as graphics]
             [com.badlogic.gdx.input :as input])
   (:import (com.badlogic.gdx.graphics Texture$TextureFilter)

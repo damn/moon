@@ -30,6 +30,7 @@
                  ; Unused:
                  [lein-hiera "2.0.0"]
                  ]
+  :java-source-paths ["java-src"]
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {"dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'start/-main))"]

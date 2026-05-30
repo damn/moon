@@ -1,8 +1,8 @@
 (ns moon.levelgen
   (:require [clojure.core-ext :refer [edn-resource]]
-            [gdx.application :as app]
+            [com.badlogic.gdx.application :as app]
             [gdx.backends.lwjgl :as lwjgl]
-            [gdx.files :as files]
+            [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.gdx :as gdx]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]

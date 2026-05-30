@@ -1,5 +1,5 @@
 (ns create.textures
-  (:require [gdx.application :as app]
+  (:require [com.badlogic.gdx.application :as app]
             [gdx.textures]))
 
 (defn step
