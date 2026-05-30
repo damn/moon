@@ -1,5 +1,5 @@
 (ns create.skin
-  (:require [game.app :as app]))
+  (:require [gdx.app :as app]))
 
 (defn step
   [{:keys [ctx/app]

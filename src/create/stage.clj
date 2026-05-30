@@ -1,5 +1,5 @@
 (ns create.stage
-  (:require [game.app :as app]
+  (:require [gdx.app :as app]
             [gdx.scenes.scene2d.stage :as stage]
             [gdx.utils.viewport.fit-viewport :as fit-viewport]))
 

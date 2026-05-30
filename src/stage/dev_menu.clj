@@ -1,6 +1,6 @@
 (ns stage.dev-menu
   (:require [clojure.string :as str]
-            [game.app :as app]
+            [gdx.app :as app]
             [game.ctx :as ctx]
             [game.schema]
             [gdx.graphics.orthographic-camera :as camera]

@@ -1,7 +1,7 @@
 (ns create.audio
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [game.app :as app]))
+            [gdx.app :as app]))
 
 (defn step [{:keys [ctx/app] :as ctx}]
   (assoc ctx :ctx/audio (into {}

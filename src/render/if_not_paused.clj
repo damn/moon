@@ -1,5 +1,5 @@
 (ns render.if-not-paused
-  (:require [game.app :as app]
+  (:require [gdx.app :as app]
             [gdx.scenes.scene2d.stage :as stage]
             [game.ctx :as ctx]
             [moon.ui.error-window :as error-window]

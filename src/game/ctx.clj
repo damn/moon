@@ -3,7 +3,7 @@
                                       reduce-actions!]]
             [clojure.math.vector2 :as v]
             [clojure.string :as str]
-            [game.app :as app]
+            [gdx.app :as app]
             [game.info :as info]
             [gdx.audio.sound :as sound]
             [gdx.graphics.orthographic-camera :as camera]

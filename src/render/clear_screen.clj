@@ -1,5 +1,5 @@
 (ns render.clear-screen
-  (:require [game.app :as app]))
+  (:require [gdx.app :as app]))
 
 (defn step
   [{:keys [ctx/app] :as ctx}]

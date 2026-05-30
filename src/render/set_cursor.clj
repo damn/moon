@@ -1,5 +1,5 @@
 (ns render.set-cursor
-  (:require [game.app :as app]
+  (:require [gdx.app :as app]
             [game.state :as state]))
 
 (defn step
