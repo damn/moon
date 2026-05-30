@@ -1,6 +1,6 @@
 (ns tx.load
-  (:require [clojure.core-ext :refer [safe-merge]]
-            [clojure.math.vector2 :as v]
+  (:require tx.spawn-projectile
+            [clojure.core-ext :refer [safe-merge]]
             [game.ctx]
             [game.effect :as effect]
             [game.entity :as entity]
@@ -174,29 +174,7 @@
                                              (grid/remove-from-occupied-cells! grid eid)
                                              (grid/set-occupied-cells! grid eid))
                                            nil)
-            :tx/spawn-projectile         (fn
-                                           [_ctx
-                                            {:keys [position direction faction]}
-                                            {:keys [entity/image
-                                                    projectile/max-range
-                                                    projectile/speed
-                                                    entity-effects
-                                                    projectile/size
-                                                    projectile/piercing?] :as projectile}]
-                                           [[:tx/spawn-entity
-                                             {:entity/body {:position position
-                                                            :width size
-                                                            :height size
-                                                            :z-order :z-order/flying
-                                                            :rotation-angle (v/angle-from-vector direction)}
-                                              :entity/movement {:direction direction
-                                                                :speed speed}
-                                              :entity/image image
-                                              :entity/faction faction
-                                              :entity/delete-after-duration (/ max-range speed)
-                                              :entity/destroy-audiovisual :audiovisuals/hit-wall
-                                              :entity/projectile-collision {:entity-effects entity-effects
-                                                                            :piercing? piercing?}}]])
+            :tx/spawn-projectile         tx.spawn-projectile/do!
             :tx/spawn-effect             (fn [_ctx position components]
                                            [[:tx/spawn-entity
                                              (assoc components

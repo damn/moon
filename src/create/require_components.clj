@@ -4,6 +4,8 @@
             entity.render
             entity.create.animation
             entity.create.body
+            entity.state.create.active-skill
+            entity.state.create.stunned
             entity.state.load
             entity.state.draw-ui-view.player-item-on-cursor
             effect.load
