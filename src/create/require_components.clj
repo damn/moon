@@ -11,6 +11,7 @@
             effect.load
             effect.target.damage
             effect.target-all
+            effect.target-entity
             handle-input.player-idle
             handle-input.player-moving
             handle-input.player-item-on-cursor
