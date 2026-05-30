@@ -4,6 +4,7 @@
                  ;; my libs
                  [clojure.core-ext "0.1"]
                  [clojure.math "-SNAPSHOT"]
+
                  [com.badlogic.gdx "1.14.0"]
 
                  ;[com.badlogicgames.gdx/gdx-platform          "1.14.0" :classifier "natives-desktop"]

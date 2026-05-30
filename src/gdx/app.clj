@@ -1,18 +1,14 @@
-; TODO combinationof gdx -> new name -> new abstraction layer !?
-; => First layer: one class - one namespace - same class namespace name ... 'badlogic' again !
-; maybe not 'com.badlogic.gdx' because needs to be greppable / replaceable
-; 'goodlogic'
 (ns gdx.app
   (:require [com.badlogic.gdx.audio :as audio]
             [com.badlogic.gdx.graphics.pixmap :as pixmap]
             [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.files :as files]
             [gdx.graphics :as graphics]
-            [com.badlogic.gdx.input :as input])
-  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
+            [com.badlogic.gdx.input :as input]
+            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator :as font-generator]
+            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
+            [com.badlogic.gdx.graphics.texture.texture-filter :as texture-filter]
+            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
 (defn new-sound [app path]
   (audio/new-sound (app/audio app)
@@ -29,22 +25,21 @@
    {:keys [path
            size
            quality-scaling]}]
-  (let [generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
-        font (.generateFont generator
-                            (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                              (set! (.size params) (* size quality-scaling))
-                              ; texture.filter/linear because scaling to world-units
-                              (set! (.minFilter params) Texture$TextureFilter/Linear)
-                              (set! (.magFilter params) Texture$TextureFilter/Linear)
-                              params))]
-    (.dispose generator)
+  (let [generator (font-generator/create (files/internal (app/files app) path))
+        font (font-generator/generate-font generator
+                                           (parameter/create
+                                            {:size (* size quality-scaling)
+                                             ; texture.filter/linear because scaling to world-units
+                                             :min-filter texture-filter/linear
+                                             :mag-filter texture-filter/linear}))]
+    (font-generator/dispose! generator)
     (.setScale (.getData font) (/ quality-scaling))
     (set! (.markupEnabled (.getData font)) true)
     (.setUseIntegerPositions font false)
     font))
 
 (defn skin [app path]
-  (let [skin (Skin. (files/internal (app/files app) path))]
+  (let [skin (skin/create (files/internal (app/files app) path))]
     (set! (.markupEnabled (-> skin
                               (.getFont "default-font")
                               .getData))

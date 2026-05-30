@@ -9,6 +9,7 @@
             [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
             [com.badlogic.gdx.input.keys :as input.keys]
+            [com.badlogic.gdx.utils.align :as align]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.stage :as stage]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
@@ -21,8 +22,7 @@
             [moon.ui.inventory-window :as inventory-window])
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont
                                           SpriteBatch
-                                          TextureRegion)
-           (com.badlogic.gdx.utils Align)))
+                                          TextureRegion)))
 
 (def schema
   (m/schema
@@ -262,7 +262,7 @@
                                                        (* (.getLineHeight font)))
                                                    0)))
                                      (float target-width)
-                                     Align/center
+                                     (align/k->value :align/center)
                                      wrap?)
                               (.setScale (.getData font) old-scale)))
    :draw/texture-region   (fn
