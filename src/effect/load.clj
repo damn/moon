@@ -1,7 +1,7 @@
 (ns effect.load
   (:require [clojure.math.vector2 :as v]
             [clojure.rand :refer [rand-int-between]]
-            [moon.effect :as effect]
+            [game.effect :as effect]
             [moon.faction :as faction]
             [moon.stats :as stats]
             [moon.raycaster :as raycaster]
