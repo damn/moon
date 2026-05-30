@@ -3,7 +3,19 @@
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]))
 
+(def state (atom nil))
+
 (defn application! [config]
   (lwjgl3-application-configuration/use-glfw-async!)
-  (lwjgl3-application/create (application-listener/create config)
+  (lwjgl3-application/create (application-listener/create
+                              {:create!  (fn []
+                                           (reset! state ((:create! config))))
+                               :dispose! (fn []
+                                           ((:dispose! config) @state))
+                               :render!  (fn []
+                                           (swap! state (:render! config)))
+                               :resize!  (fn [width height]
+                                           ((:resize! config) @state width height))
+                               :pause!   (fn [])
+                               :resume!  (fn [])})
                              (lwjgl3-application-configuration/create config)))

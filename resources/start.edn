@@ -1,9 +1,8 @@
-{:create!  application/create!
- :dispose! application/dispose!
- :render!  application/render!
- :resize!  application/resize!
- :pause!   application/pause!
- :resume!  application/resume!
+{
+ :create!  application.create/do!
+ :dispose! application.dispose/do!
+ :render!  application.render/do!
+ :resize!  application.resize/do!
  :title "Moon"
  :windowed-mode {:width 1440
                  :height 900}

@@ -192,20 +192,12 @@
   (viewport/update! ui-viewport    width height true)
   (viewport/update! world-viewport width height false))
 
-(def state (atom nil))
-
 (defn -main []
   (lwjgl/application!
-   {:create! (fn []
-               (reset! state (create!)))
-    :dispose! (fn []
-                (dispose! @state))
-    :render! (fn []
-               (swap! state render!))
-    :resize! (fn [width height]
-               (resize! @state width height))
-    :pause! (fn [])
-    :resume! (fn [])
+   {:create! create!
+    :dispose! dispose!
+    :render! render!
+    :resize! resize!
     :title "Levelgen Test"
     :windowed-mode {:width 1440 :height 900}
     :foreground-fps 60}))
