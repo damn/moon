@@ -1,7 +1,5 @@
 (ns entity.tick
   (:require [clojure.animation :as animation]
-            [clojure.math :as math]
-            [clojure.math.vector2 :as v]
             [game.ctx :as ctx]
             [game.effect :as effect]
             [game.entity :as entity]
@@ -11,7 +9,6 @@
             [moon.grid :as grid]
             [moon.grid.npc-pathing :as npc-pathing]
             [moon.grid2d :as g2d]
-            [moon.number :as number]
             [moon.raycaster :as raycaster]
             [moon.stats :as stats]
             [moon.timer :as timer]))
@@ -23,24 +20,6 @@
            (raycaster/line-of-sight? raycaster @source @target))
     effect-ctx
     (dissoc effect-ctx :effect/target)))
-
-(defn- move-position [position {:keys [direction speed delta-time]}]
-  (mapv #(+ %1 (* %2 speed delta-time)) position direction))
-
-(defn- move-body [body movement]
-  (update body :body/position move-position movement))
-
-(defn- try-move [grid body entity-id movement]
-  (let [new-body (move-body body movement)]
-    (when (grid/valid-position? grid new-body entity-id)
-      new-body)))
-
-(defn- try-move-solid-body [grid body entity-id {[vx vy] :direction :as movement}]
-  (let [xdir (math/signum (float vx))
-        ydir (math/signum (float vy))]
-    (or (try-move grid body entity-id movement)
-        (try-move grid body entity-id (assoc movement :direction [xdir 0]))
-        (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
 
 (defn- npc-choose-skill [ctx entity effect-ctx]
   (->> entity
@@ -93,35 +72,6 @@
   [[_k counter] eid {:keys [ctx/elapsed-time]}]
   (when (timer/stopped? elapsed-time counter)
     [[:tx/mark-destroyed eid]]))
-
-(defmethod entity/tick :entity/movement
-  [[_k
-    {:keys [direction
-            speed
-            rotate-in-movement-direction?]
-     :as movement}]
-   eid
-   {:keys [ctx/delta-time
-           ctx/grid
-           ctx/max-speed]}]
-  (assert (<= 0 speed max-speed)
-          (pr-str speed))
-  (assert (vector? direction))
-  (assert (or (zero? (v/length direction))
-              (number/nearly-equal? 1 (v/length direction)))
-          (str "cannot understand direction: " (pr-str direction)))
-  (when-not (or (zero? (v/length direction))
-                (nil? speed)
-                (zero? speed))
-    (let [movement (assoc movement :delta-time delta-time)
-          body (:entity/body @eid)]
-      (when-let [body (if (:body/collides? body)
-                        (try-move-solid-body grid body (:entity/id @eid) movement)
-                        (move-body body movement))]
-        [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
-         (when rotate-in-movement-direction?
-           [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v/angle-from-vector direction)])
-         [:tx/move-entity eid]]))))
 
 (defmethod entity/tick :entity/skills
   [[_k skills] eid {:keys [ctx/elapsed-time]}]

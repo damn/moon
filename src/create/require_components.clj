@@ -1,6 +1,7 @@
 (ns create.require-components
   (:require entity.load
             entity.tick
+            entity.tick.movement
             entity.render
             entity.create.animation
             entity.create.body
