@@ -4,7 +4,7 @@
             [game.ctx :as ctx]
             [game.schema :as schema]
             [gdx.scenes.scene2d.actor :as actor]
-            [gdx.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]

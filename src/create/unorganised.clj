@@ -1,5 +1,5 @@
 (ns create.unorganised
-  (:require [gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.colors :as colors]))
 
