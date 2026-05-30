@@ -6,8 +6,8 @@
 
 (def state (atom nil))
 
-(defn create! [application]
-  (reset! state (create/do! application)))
+(defn create! []
+  (reset! state (create/do!)))
 
 (defn dispose! []
   (dispose/do! @state))

@@ -3,6 +3,7 @@
             [gdx.application :as app]
             [gdx.backends.lwjgl :as lwjgl]
             [gdx.files :as files]
+            [com.badlogic.gdx.gdx :as gdx]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [gdx.graphics.orthographic-camera :as camera]
@@ -93,8 +94,9 @@
                                                                  (on-clicked actor (:stage/ctx (event/stage event))))}})}])})
 
 (defn create!
-  [app]
-  (let [files (app/files app)
+  []
+  (let [app (gdx/app)
+        files (app/files app)
         graphics (app/graphics app)
         input (app/input app)
         skin (skin/create (files/internal files "uiskin.json"))
@@ -194,8 +196,8 @@
 
 (defn -main []
   (lwjgl/application!
-   {:create! (fn [application]
-               (reset! state (create! application)))
+   {:create! (fn []
+               (reset! state (create!)))
     :dispose! (fn []
                 (dispose! @state))
     :render! (fn []
