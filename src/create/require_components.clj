@@ -1,5 +1,6 @@
 (ns create.require-components
   (:require entity.load
+            entity.render
             entity.create.animation
             entity.create.body
             entity.state.load
