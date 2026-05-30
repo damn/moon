@@ -1,14 +1,14 @@
 (ns moon.grid
   (:require [clojure.math.circle :as circle]
             [clojure.math.rectangle :as rectangle]
+            [com.badlogic.gdx.math.circle :as gdx-circle]
+            [com.badlogic.gdx.math.intersector :as intersector]
+            [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid2d :as g2d]
-            [moon.position :as position])
-  (:import (com.badlogic.gdx.math Circle
-                                  Intersector
-                                  Rectangle)))
+            [moon.position :as position]))
 
 (defn cells->entities [cells]
   (into #{} (mapcat :entities) cells))
@@ -34,10 +34,8 @@
   (->> (circle->cells g2d circle)
        (map deref)
        cells->entities
-       (filter #(Intersector/overlaps
-                 (let [[x y] position]
-                   (Circle. x y radius))
-                 ^Rectangle (body/rectangle (:entity/body @%))))))
+       (filter #(intersector/overlaps? (let [[x y] position] (gdx-circle/create x y radius))
+                                       (body/rectangle (:entity/body @%))))))
 
 (defn cached-adjacent-cells [g2d cell]
   (if-let [result (:adjacent-cells @cell)]
@@ -51,8 +49,7 @@
 
 (defn point->entities [g2d pos]
   (when-let [cell (g2d (mapv int pos))]
-    (filter #(let [[x y] pos]
-               (.contains ^Rectangle (body/rectangle (:entity/body @%)) x y))
+    (filter #(gdx-rectangle/contains? (body/rectangle (:entity/body @%)) pos)
             (:entities @cell))))
 
 (defn set-touched-cells! [grid eid]

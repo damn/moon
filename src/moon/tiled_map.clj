@@ -1,9 +1,8 @@
 (ns moon.tiled-map
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps.tiled TiledMap
-                                        TiledMapTileLayer
-                                        TiledMapTileLayer$Cell)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn- props-add! [props m]
   (doseq [[k v] m]
@@ -21,17 +20,13 @@
            tiles]}]
   {:pre [(string? name)
          (boolean? visible?)]}
-  (let [layer (doto (TiledMapTileLayer. width height tilewidth tileheight)
+  (let [layer (doto (layer/create width height tilewidth tileheight)
                 (.setName name)
                 (.setVisible visible?))]
     (props-add! (.getProperties layer) map-properties)
     (doseq [[pos tile] tiles
             :when tile]
-      (.setCell layer
-                (pos 0)
-                (pos 1)
-                (doto (TiledMapTileLayer$Cell.)
-                  (.setTile tile))))
+      (.setCell layer (pos 0) (pos 1) (cell/create tile)))
     layer))
 
 (defn- create-layer*
@@ -103,8 +98,8 @@
   [texture-region property-name property-value]
   {:pre [texture-region
          (string? property-name)]}
-  (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
-    (props-add! (.getProperties tile) {property-name property-value})
+  (let [tile (static-tiled-map-tile/create texture-region)]
+    (props-add! (static-tiled-map-tile/properties tile) {property-name property-value})
     tile))
 
 ; out of memory error -> each texture region is a new object
@@ -128,7 +123,7 @@
 (defn create-map
   [{:keys [properties
            layers]}]
-  (let [tiled-map (TiledMap.)]
+  (let [tiled-map (tiled-map/create)]
     (props-add! (.getProperties tiled-map) properties)
     (doseq [layer layers]
       (.add (.getLayers tiled-map) (create-layer* tiled-map layer)))
