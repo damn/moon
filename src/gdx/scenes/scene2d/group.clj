@@ -19,4 +19,6 @@
     (run! #(add-actor! group %) actors))
   (actor/set-opts! group opts))
 
- defn create
+(defn create [opts]
+  (doto (group/create)
+    (set-opts! opts)))
