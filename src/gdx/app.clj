@@ -5,6 +5,8 @@
             [com.badlogic.gdx.files :as files]
             [gdx.graphics :as graphics]
             [com.badlogic.gdx.input :as input]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
             [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator :as font-generator]
             [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
             [com.badlogic.gdx.graphics.texture.texture-filter :as texture-filter]
@@ -33,17 +35,17 @@
                                              :min-filter texture-filter/linear
                                              :mag-filter texture-filter/linear}))]
     (font-generator/dispose! generator)
-    (.setScale (.getData font) (/ quality-scaling))
-    (set! (.markupEnabled (.getData font)) true)
-    (.setUseIntegerPositions font false)
+    (font.data/set-scale! (font/data font) (/ quality-scaling))
+    (font.data/enable-markup! (font/data font))
+    (font/set-use-integer-positions! font false)
     font))
 
 (defn skin [app path]
   (let [skin (skin/create (files/internal (app/files app) path))]
-    (set! (.markupEnabled (-> skin
-                              (.getFont "default-font")
-                              .getData))
-          true)
+    (-> skin
+        (skin/font "default-font")
+        font/data
+        font.data/enable-markup!)
     skin))
 
 (defn set-input-processor! [app input-processor]

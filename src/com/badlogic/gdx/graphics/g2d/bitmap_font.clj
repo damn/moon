@@ -16,3 +16,6 @@
          (float target-width)
          align
          wrap?))
+
+(defn set-use-integer-positions! [^BitmapFont font bool]
+  (.setUseIntegerPositions font bool))

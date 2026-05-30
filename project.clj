@@ -5,7 +5,10 @@
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.0" :classifier "natives-desktop"]
                  [com.github.damn/clojure.core-ext "55983eb35e"]
                  [com.github.damn/clojure.math "8c8d074607"]
-                 [com.github.damn/gdx "a3a7a93439"]
+
+                 ;[com.github.damn/gdx "a3a7a93439"]
+                 [com.badlogic.gdx "1.14.0"]
+
                  [com.github.damn/com.badlogic.gdx.backends.lwjgl3 "01329de8e4"]
                  [com.github.damn/space.earlygrey.shape-drawer "82d772e482"]
                  [com.github.damn/malli.utils "081a715935"]
