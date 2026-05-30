@@ -1,4 +1,4 @@
-(ns game.application
+(ns application
   (:require [application.create :as create]
             [application.dispose :as dispose]
             [application.resize :as resize]

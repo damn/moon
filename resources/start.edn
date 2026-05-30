@@ -1,0 +1,10 @@
+{:create!  application/create!
+ :dispose! application/dispose!
+ :render!  application/render!
+ :resize!  application/resize!
+ :pause!   application/pause!
+ :resume!  application/resume!
+ :title "Moon"
+ :windowed-mode {:width 1440
+                 :height 900}
+ :foreground-fps 60}
