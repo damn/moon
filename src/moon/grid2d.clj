@@ -4,27 +4,13 @@
 ; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj
 
 (defprotocol Grid2D
-  (transform [this f])
   (posis [this])
   (cells [this])
   (width [this])
   (height [this]))
 
-(defn- transform-values [data width height f]
-  (mapv
-    (fn [x] (loop [v (transient (get data x))
-                   y 0]
-              (if (not= y height)
-                (recur (assoc! v y (f [x y] (get v y)))
-                       (inc y))
-                (persistent! v))))
-    (range width)))
-
 (deftype VectorGrid [data]
-
   Grid2D
-  (transform [this f]
-    (VectorGrid. (transform-values data (width this) (height this) f)))
   (posis [this]
     (for [x (range (width this))
           y (range (height this))]
