@@ -4,11 +4,9 @@
             [gdx.scenes.scene2d.stage :as stage]
             [game.ctx :as ctx]
             [moon.ui.error-window :as error-window]
-            [moon.grid :as grid]
+            [moon.grid.update-potential-fields :as update-potential-fields]
             [game.entity :as entity]
-            [moon.throwable :as throwable]
-            )
-  )
+            [moon.throwable :as throwable]))
 
 (defn delta-time
   [{:keys [ctx/app]}]
@@ -50,11 +48,11 @@
            ctx/potential-field-cache]
     :as ctx}]
   (doseq [[faction max-iterations] factions-iterations]
-    (grid/tick! grid
-                potential-field-cache
-                faction
-                active-entities
-                max-iterations))
+    (update-potential-fields/tick! grid
+                                   potential-field-cache
+                                   faction
+                                   active-entities
+                                   max-iterations))
   ctx)
 
 (defn step
