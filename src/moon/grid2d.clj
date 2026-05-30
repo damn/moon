@@ -1,18 +1,10 @@
-
-; This is the biggest problem
-; our game needs performance and all kind of caches and swaps and atoms and (content-grid)
-; and lightning etc.
-; -> make it turn/tile-based/multiplayer ala chess
-; the game is too complicated...
-
-
 (ns moon.grid2d)
 ; 2dimvector is 7x faster than a hashmap of [x y] to values
 ; like in rich hickey ant demo vectors of vectors:
 ; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj
 
 (defprotocol Grid2D
-  (transform [this f] "f should be a function of [posi old-value] that returns new-value.")
+  (transform [this f])
   (posis [this])
   (cells [this])
   (width [this])
@@ -28,7 +20,6 @@
                 (persistent! v))))
     (range width)))
 
-; TODO could add as fields: posis,cells,seq (maybe delays?)
 (deftype VectorGrid [data]
 
   Grid2D
@@ -62,11 +53,10 @@
 
   clojure.lang.Associative
   (assoc [this p v]
-    (VectorGrid. (assoc-in data p v))) ; TODO assoc-in recursion expensive?
+    (VectorGrid. (assoc-in data p v)))
   (containsKey [this [x y]]
     (and (contains? data x)
          (contains? (data 0) y)))
-  ;(entryAt [this k]) returns IMapEntry, used in find
 
   Object
   (hashCode [this] (.hashCode data))
@@ -82,13 +72,9 @@
         (range w)))
 
 (defn create-grid
-  "Creates a 2 dimensional grid.
-  xyfn is a function is applied for every [x y] to get value."
   [w h xyfn]
   {:pre [(>= w 1) (>= h 1)]}
   (VectorGrid. (vector2d w h xyfn)))
-
-;;
 
 (defn print-grid [grid & {print-cell :print-cell
                           :or {print-cell
@@ -97,8 +83,6 @@
     (doseq [x (range (width grid))]
       (print-cell (grid [x y])))
     (println)))
-
-;;
 
 (defn mapgrid->vectorgrid
   "Transforms a grid of {position value} to a grid2d.
@@ -123,8 +107,6 @@
                                                    (+ y min-y -1)]))))
      convert]))
 
-;;
-
 (defn get-4-neighbour-positions [[x y]]
   [[(inc x) y]
    [(dec x) y]
@@ -137,9 +119,7 @@
         :when (not= [x y] [tx ty])]
     [tx ty]))
 
-;;
 
-; Could put width and height as deftype arguments instead of protocol functions
 (comment (let [g (create-grid 5 5 identity)]
            (compare-times 100000
                           (.width ^VectorGrid g) ; 1.575   ms
