@@ -1,8 +1,6 @@
 (ns tx.load
-  (:require tx.spawn-projectile
-            tx.register-eid
-            [clojure.core-ext :refer [safe-merge]]
-            [game.ctx]
+  (:require [clojure.core-ext :refer [safe-merge]]
+            [game.ctx :as ctx]
             [game.effect :as effect]
             [game.entity :as entity]
             [game.state :as state]
@@ -13,12 +11,14 @@
             [moon.inventory :as inventory]
             [moon.stats :as stats]
             [moon.timer :as timer]
-            [reduce-fsm :as fsm]
-            [qrecord.core :as q]))
+            [qrecord.core :as q]
+            [tx.event]
+            [tx.register-eid]
+            [tx.spawn-projectile]))
 
 (q/defrecord Entity [entity/body])
 
-(.bindRoot #'game.ctx/txs-fn-map
+(.bindRoot #'ctx/txs-fn-map
            {
             :tx/state-exit               (fn [ctx eid [state-k state-v]]
                                            (state/exit [state-k state-v] eid ctx))
@@ -94,24 +94,7 @@
                                                (do
                                                 #_(tx/stack-item ctx eid cell item))
                                                [[:tx/set-item eid cell item]])))
-            :tx/event                    (fn send-event!
-                                           ([ctx eid event]
-                                            (send-event! ctx eid event nil))
-                                           ([ctx eid event params]
-                                            (let [fsm (:entity/fsm @eid)
-                                                  _ (assert fsm)
-                                                  old-state-k (:state fsm)
-                                                  new-fsm (fsm/fsm-event fsm event)
-                                                  new-state-k (:state new-fsm)]
-                                              (when-not (= old-state-k new-state-k)
-                                                (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
-                                                                      [k (k @eid)])
-                                                      new-state-obj [new-state-k (state/create [new-state-k params] eid ctx)]]
-                                                  [[:tx/assoc       eid :entity/fsm new-fsm]
-                                                   [:tx/assoc       eid new-state-k (new-state-obj 1)]
-                                                   [:tx/dissoc      eid old-state-k]
-                                                   [:tx/state-exit  eid old-state-obj]
-                                                   [:tx/state-enter eid new-state-obj]])))))
+            :tx/event                    tx.event/do!
             :tx/register-eid             tx.register-eid/do!
             :tx/unregister-eid           (fn
                                            [{:keys [ctx/content-grid
