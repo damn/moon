@@ -4,7 +4,7 @@
             [gdx.backends.lwjgl :as lwjgl]
             [gdx.files :as files]
             [gdx.graphics.color :as color]
-            [gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.graphics.texture :as texture]
             [gdx.input :as input]

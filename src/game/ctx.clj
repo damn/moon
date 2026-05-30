@@ -5,7 +5,7 @@
             [clojure.string :as str]
             [gdx.app :as app]
             [game.info :as info]
-            [gdx.audio.sound :as sound]
+            [com.badlogic.gdx.audio.sound :as sound]
             [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
             [gdx.input.keys :as input.keys]
