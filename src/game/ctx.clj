@@ -16,12 +16,62 @@
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
+            [malli.core :as m]
+            [malli.utils :as mu]
             [moon.textures :as textures]
             [moon.ui.inventory-window :as inventory-window])
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont
                                           SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.utils Align)))
+
+(def schema
+  (m/schema
+   [:map {:closed true}
+    [:ctx/app :some]
+    [:ctx/audio :some]
+    [:ctx/batch :some]
+    [:ctx/cursors :some]
+    [:ctx/default-font :some]
+    [:ctx/unit-scale :some]
+    [:ctx/world-unit-scale :some]
+    [:ctx/world-viewport :some]
+    [:ctx/shape-drawer :some]
+    [:ctx/shape-drawer-texture :some]
+    [:ctx/textures :some]
+    [:ctx/skin :some]
+    [:ctx/stage :some]
+    [:ctx/active-entities :any]
+    [:ctx/delta-time :any]
+    [:ctx/mouseover-eid :any]
+    [:ctx/ui-mouse-position :any]
+    [:ctx/world-mouse-position :any]
+    [:ctx/colors :some]
+    [:ctx/controls :some]
+    [:ctx/controls-info :some]
+    [:ctx/max-delta :some]
+    [:ctx/max-speed :some]
+    [:ctx/minimum-size :some]
+    [:ctx/render-z-order :some]
+    [:ctx/z-orders :some]
+    [:ctx/content-grid :some]
+    [:ctx/entity-ids :some]
+    [:ctx/explored-tile-corners :some]
+    [:ctx/factions-iterations :some]
+    [:ctx/grid :some]
+    [:ctx/id-counter :some]
+    [:ctx/potential-field-cache :some]
+    [:ctx/raycaster :some]
+    [:ctx/start-position :some]
+    [:ctx/tiled-map :some]
+    [:ctx/db :some]
+    [:ctx/elapsed-time :some]
+    [:ctx/paused? :some]
+    [:ctx/player-eid :some]
+    ]))
+
+(defn validate [ctx]
+  (mu/validate-humanize schema ctx))
 
 (defn world-viewport-width
   [{:keys [ctx/world-viewport]}]
