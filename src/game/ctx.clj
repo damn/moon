@@ -8,8 +8,11 @@
             [com.badlogic.gdx.audio.sound :as sound]
             [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
+            [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.input.keys :as input.keys]
             [com.badlogic.gdx.utils.align :as align]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.stage :as stage]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
@@ -19,10 +22,7 @@
             [malli.core :as m]
             [malli.utils :as mu]
             [moon.textures :as textures]
-            [moon.ui.inventory-window :as inventory-window])
-  (:import (com.badlogic.gdx.graphics.g2d BitmapFont
-                                          SpriteBatch
-                                          TextureRegion)))
+            [moon.ui.inventory-window :as inventory-window]))
 
 (def schema
   (m/schema
@@ -244,32 +244,32 @@
                                      ctx/unit-scale
                                      ctx/default-font]}
                              {:keys [font scale x y text h-align up?]}]
-                            (let [^BitmapFont font (or font default-font)
-                                  old-scale (.scaleX (.getData font))
+                            (let [font (or font default-font)
+                                  old-scale (font.data/scale-x (font/data font))
                                   target-width 0
                                   wrap? false
                                   scale (* (float @unit-scale)
                                            (float (or scale 1)))]
-                              (.setScale (.getData font) (* old-scale scale))
-                              (.draw font
-                                     batch
-                                     text
-                                     (float x)
-                                     (float (+ y (if up?
-                                                   (-> text
-                                                       (str/split #"\n")
-                                                       count
-                                                       (* (.getLineHeight font)))
-                                                   0)))
-                                     (float target-width)
-                                     (align/k->value :align/center)
-                                     wrap?)
-                              (.setScale (.getData font) old-scale)))
+                              (font.data/set-scale! (font/data font) (* old-scale scale))
+                              (font/draw! font
+                                          batch
+                                          text
+                                          x
+                                          (+ y (if up?
+                                                 (-> text
+                                                     (str/split #"\n")
+                                                     count
+                                                     (* (font/line-height font)))
+                                                 0))
+                                          target-width
+                                          (align/k->value :align/center)
+                                          wrap?)
+                              (font.data/set-scale! (font/data font) old-scale)))
    :draw/texture-region   (fn
-                            [{:keys [^SpriteBatch ctx/batch
+                            [{:keys [ctx/batch
                                      ctx/unit-scale
                                      ctx/world-unit-scale]}
-                             ^TextureRegion texture-region
+                             texture-region
                              [x y]
                              & {:keys [center? rotation]}]
                             (let [[w h] (let [dimensions [(.getRegionWidth  texture-region)
@@ -279,18 +279,18 @@
                                             (mapv (comp float (partial * world-unit-scale))
                                                   dimensions)))]
                               (if center?
-                                (.draw batch
-                                       texture-region
-                                       (- (float x) (/ (float w) 2))
-                                       (- (float y) (/ (float h) 2))
-                                       (/ (float w) 2)
-                                       (/ (float h) 2)
-                                       w
-                                       h
-                                       1
-                                       1
-                                       (or rotation 0))
-                                (.draw batch texture-region (float x) (float y) (float w) (float h)))))
+                                (batch/draw! batch
+                                             texture-region
+                                             (- (float x) (/ (float w) 2))
+                                             (- (float y) (/ (float h) 2))
+                                             (/ (float w) 2)
+                                             (/ (float h) 2)
+                                             w
+                                             h
+                                             1
+                                             1
+                                             (or rotation 0))
+                                (batch/draw! batch texture-region x y w h))))
    :draw/with-line-width  (fn
                             [{:keys [ctx/shape-drawer]
                               :as ctx}
