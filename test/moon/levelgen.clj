@@ -3,7 +3,7 @@
             [gdx.application :as app]
             [gdx.backends.lwjgl :as lwjgl]
             [gdx.files :as files]
-            [gdx.graphics.color :as color]
+            [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.graphics.texture :as texture]

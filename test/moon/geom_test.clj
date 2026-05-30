@@ -1,6 +1,6 @@
 (ns moon.geom-test)
 ;(ns game.render.draw-on-world-viewport.geom-test)
-;(:require [gdx.graphics.color :as color])
+;(:require [com.badlogic.gdx.graphics.color :as color])
 ;
 ;(comment
 ; (require '[moon.grid :as grid])

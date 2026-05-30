@@ -1,10 +1,12 @@
 (ns create.unorganised
   (:require [gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
-            [gdx.graphics.colors :as colors]))
+            [com.badlogic.gdx.graphics.color :as color]
+            [com.badlogic.gdx.graphics.colors :as colors]))
 
 (defn step [ctx]
   (tooltip-manager/set-initial-time! 0)
-  (colors/put! {"PRETTY_NAME" [0.84 0.8 0.52 1]})
+  (doseq [[name rgba] {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
+    (colors/put! name (color/create rgba)))
   (assoc ctx
          :ctx/world-unit-scale (float (/ 48))
          :ctx/unit-scale (atom 1)

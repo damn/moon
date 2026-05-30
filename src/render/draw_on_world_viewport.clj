@@ -2,7 +2,7 @@
   (:require [clojure.core-ext :refer [sort-by-order]]
             [game.ctx :as ctx]
             [game.entity :as entity]
-            [gdx.graphics.color :as color]
+            [com.badlogic.gdx.graphics.color :as color]
             [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]
             [moon.body :as body]
