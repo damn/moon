@@ -1,5 +1,5 @@
 (ns render.update-mouse-positions
-  (:require [gdx.utils.viewport.viewport :as viewport]
+  (:require [gdx.viewport :as viewport]
             [game.ctx :as ctx]))
 
 (defn step

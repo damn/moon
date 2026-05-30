@@ -1,7 +1,7 @@
 (ns create.stage
   (:require [gdx.app :as app]
             [gdx.scenes.scene2d.stage :as stage]
-            [gdx.utils.viewport.fit-viewport :as fit-viewport]))
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]))
 
 (defn step
   [{:keys [ctx/app

@@ -1,5 +1,5 @@
 (ns application.resize
-  (:require [gdx.utils.viewport.viewport :as viewport]))
+  (:require [gdx.viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/stage
