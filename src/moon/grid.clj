@@ -6,7 +6,6 @@
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid2d :as g2d]
-            [moon.tiled-map]
             [moon.position :as position])
   (:import (com.badlogic.gdx.math Circle
                                   Intersector
@@ -14,16 +13,6 @@
 
 (defn cells->entities [cells]
   (into #{} (mapcat :entities) cells))
-
-(defn create [tiled-map]
-  (g2d/create-grid (.get (.getProperties tiled-map) "width")
-                   (.get (.getProperties tiled-map) "height")
-                   (fn [position]
-                     (atom (cell/create position
-                                        (case (moon.tiled-map/movement-property tiled-map position)
-                                          "none" :none
-                                          "air"  :air
-                                          "all"  :all))))))
 
 ; (g2d/get-cells grid (body/occupied-tiles body))
 (defn- body->occupied-cells
