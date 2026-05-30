@@ -8,6 +8,7 @@
             entity.state.create.stunned
             entity.state.load
             entity.state.draw-ui-view.player-item-on-cursor
+            entity.state.cursor.player-idle
             effect.load
             effect.target.damage
             effect.target-all
