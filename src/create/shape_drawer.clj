@@ -1,5 +1,5 @@
 (ns create.shape-drawer
-  (:require [gdx.graphics.shape-drawer :as shape-drawer]))
+  (:require [space.earlygrey.shape-drawer :as shape-drawer]))
 
 (defn step
   [{:keys [ctx/batch

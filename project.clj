@@ -5,6 +5,7 @@
                  [clojure.core-ext "0.1"]
                  [clojure.math "-SNAPSHOT"]
                  [gdx "-SNAPSHOT"]
+                 [space.earlygrey.shape-drawer "-SNAPSHOT"]
                  [malli.utils "-SNAPSHOT"]
                  ;;
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]

@@ -4,7 +4,7 @@
             [game.entity :as entity]
             [gdx.graphics.color :as color]
             [gdx.graphics.orthographic-camera :as camera]
-            [gdx.graphics.shape-drawer :as shape-drawer]
+            [space.earlygrey.shape-drawer :as shape-drawer]
             [moon.body :as body]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]))
