@@ -1,2 +1,3 @@
 [[clojure.core-ext/require-namespaces! #edn/resource "config/requires.edn"]
+ [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration/use-glfw-async!]
  [gdx.backends.lwjgl/application! #edn/resource "config/application.edn"]]
