@@ -96,10 +96,13 @@
   [{:keys [ctx/ui-viewport]} width height]
   (viewport/update! ui-viewport width height true))
 
+(def state (atom nil))
 
 (defn -main []
+  (lwjgl/use-glfw-async!)
   (lwjgl/application!
-   {:create! create!
+   {:state-var #'state
+    :create! create!
     :create-params nil
     :dispose! dispose!
     :render! render!
