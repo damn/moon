@@ -77,11 +77,3 @@
 
 (defn get-cells [g2d int-positions]
   (into [] (keep g2d) int-positions))
-
-(defn scale-grid [grid [w h]]
-  (create-grid (* (width grid)  w)
-               (* (height grid) h)
-               (fn [[x y]]
-                 (get grid
-                      [(int (/ x w))
-                       (int (/ y h))]))))

@@ -4,6 +4,7 @@
             [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [gdx.tiled-map.create :as create-tiled-map]
             [moon.grid2d :as g2d]
+            [clojure.grid2d.scale-grid :as scale-grid]
             [world-fns.modules.grid-to-tiled-map :refer [grid->tiled-map]]
             [world-fns.modules.last-steps]
             [world-fns.modules.place :as place-module])
@@ -37,7 +38,7 @@
     (assoc world-fn-ctx :grid grid)))
 
 (defn- create-scaled-grid [w]
-  (assoc w :scaled-grid (g2d/scale-grid (:grid w) (:scale w))))
+  (assoc w :scaled-grid (scale-grid/f (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
   (assoc w :schema-tiled-map (tmx-map-loader/load! "maps/modules.tmx")))

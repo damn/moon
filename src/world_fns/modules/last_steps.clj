@@ -6,6 +6,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [moon.grid2d :as g2d]
+            [clojure.grid2d.scale-grid :as scale-grid]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.flood-fill :as flood-fill]
             [gdx.tiled-map.movement-property :as movement-property]
@@ -55,7 +56,7 @@
                    (= (set (concat [:wall max-area-level] (range max-area-level)))
                       (set (g2d/cells area-level-grid)))))
 
-        scaled-area-level-grid (g2d/scale-grid area-level-grid scale)
+        scaled-area-level-grid (scale-grid/f area-level-grid scale)
 
         get-free-position-in-area-level (fn [area-level]
                                           (rand-nth
