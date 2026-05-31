@@ -6,7 +6,6 @@
 
 (def use-glfw-async! lwjgl3-application-configuration/use-glfw-async!)
 
-; TODO pass listener!
 (defn application! [config]
   (lwjgl3-application/create (application-listener/create
                               (let [state @(:state-var config)]
