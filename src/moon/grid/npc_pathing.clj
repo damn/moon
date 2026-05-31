@@ -1,56 +1,12 @@
 (ns moon.grid.npc-pathing
   (:require [clojure.math.vector2 :as v]
+            [moon.grid.npc-pathing.filter-viable-cells :as filter-viable-cells]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid :as grid]
             [moon.grid2d :as g2d]
             [moon.position :as position]))
-
-(defn- indexed
-  "Returns a lazy sequence of [index, item] pairs, where items come
-  from 's' and indexes count up from zero.
-
-  (indexed '(a b c d)) => ([0 a] [1 b] [2 c] [3 d])"
-  [s]
-  (map vector (iterate inc 0) s))
-
-(defn- positions
-  "Returns a lazy sequence containing the positions at which pred
-  is true for items in coll."
-  [pred coll]
-  (for [[idx elt] (indexed coll) :when (pred elt)] idx))
-
-(let [order (position/get-8-neighbours [0 0])]
-  (def ^:private diagonal-check-indizes
-    (into {} (for [[x y] (filter v/diagonal-direction? order)]
-               [(first (positions #(= % [x y]) order))
-                (vec (positions #(some #{%} [[x 0] [0 y]])
-                                     order))]))))
-
-(defn- is-not-allowed-diagonal? [at-idx adjacent-cells]
-  (when-let [[a b] (get diagonal-check-indizes at-idx)]
-    (and (nil? (adjacent-cells a))
-         (nil? (adjacent-cells b)))))
-
-(defn- remove-not-allowed-diagonals [adjacent-cells]
-  (remove nil?
-          (map-indexed
-            (fn [idx cell]
-              (when-not (or (nil? cell)
-                            (is-not-allowed-diagonal? idx adjacent-cells))
-                cell))
-            adjacent-cells)))
-
-; not using filter because nil cells considered @ remove-not-allowed-diagonals
-; TODO only non-nil cells check
-; TODO always called with cached-adjacent-cells ...
-(defn- filter-viable-cells [eid adjacent-cells]
-  (remove-not-allowed-diagonals
-    (mapv #(when-not (or (cell/pf-blocked? @%)
-                         (cell/occupied-by-other? @% eid))
-             %)
-          adjacent-cells)))
 
 (defmacro ^:private when-seq [[aseq bind] & body]
   `(let [~aseq ~bind]
@@ -65,7 +21,7 @@
 (defn- viable-cell? [grid distance-to own-dist eid cell]
   (when-let [best-cell (get-min-dist-cell
                         distance-to
-                        (filter-viable-cells eid (grid/cached-adjacent-cells grid cell)))]
+                        (filter-viable-cells/f eid (grid/cached-adjacent-cells grid cell)))]
     (when (< (float (distance-to best-cell)) (float own-dist))
       cell)))
 
@@ -88,7 +44,7 @@
                                                   (zero? (float (distance-to %))))
                                             adjacent-cells))]
         {:target-entity (nearest-entity adjacent-cell)}
-        {:target-cell (let [cells (filter-viable-cells eid adjacent-cells)
+        {:target-cell (let [cells (filter-viable-cells/f eid adjacent-cells)
                             min-key-cell (get-min-dist-cell distance-to cells)]
                         (cond
                          (not min-key-cell)  ; red
