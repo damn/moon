@@ -1,5 +1,7 @@
 (ns world-fns.modules.place
-  (:require [moon.grid2d :as g2d]))
+  (:require [com.badlogic.gdx.maps.map-properties :as props]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [moon.grid2d :as g2d]))
 
 (def ^:private number-modules-x 8)
 (def ^:private number-modules-y 4)
@@ -63,9 +65,9 @@
    unscaled-floor-positions
    unscaled-transition-positions]
   (let [[modules-width modules-height] modules-scale
-        _ (assert (and (= (.get (.getProperties modules-tiled-map) "width")
+        _ (assert (and (= (props/get (tiled-map/props modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (.get (.getProperties modules-tiled-map) "height")
+                       (= (props/get (tiled-map/props modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* modules-scale
