@@ -8,7 +8,8 @@
             [moon.grid2d :as g2d]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.flood-fill :as flood-fill]
-            [moon.tiled-map]
+            [gdx.tiled-map.movement-property :as movement-property]
+            [gdx.tiled-map.add-creatures-layer :as add-creatures-layer]
             [world-fns.modules.area-level-grid :as area-level-grid]))
 
 (defn- property-value [layer xy property-key]
@@ -33,7 +34,7 @@
   (let [
 
 
-        can-spawn? #(= "all" (moon.tiled-map/movement-property tiled-map %))
+        can-spawn? #(= "all" (movement-property/f tiled-map %))
 
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
 
@@ -76,7 +77,7 @@
                                    (<= (rand) spawn-rate)
                                    (seq creatures))]
                     [position (rand-nth creatures)])]
-    (moon.tiled-map/add-creatures-layer! tiled-map creatures)
+    (add-creatures-layer/f tiled-map creatures)
     {:tiled-map tiled-map
      :start-position (get-free-position-in-area-level 0)
      :area-level-grid scaled-area-level-grid}))

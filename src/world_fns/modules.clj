@@ -8,7 +8,7 @@
             [moon.grid2d :as g2d]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
-            [moon.tiled-map]
+            [gdx.tiled-map.create :as create-tiled-map]
             [world-fns.modules.place :as place-module]
             world-fns.modules.last-steps)
   (:import (java.util Random)))
@@ -72,7 +72,7 @@
   [{:keys [scaled-grid
            schema-tiled-map]
     :as w}]
-  (assoc w :tiled-map (moon.tiled-map/create-map (grid->tiled-map schema-tiled-map scaled-grid))))
+  (assoc w :tiled-map (create-tiled-map/f (grid->tiled-map schema-tiled-map scaled-grid))))
 
 (defn- calculate-start-position [{:keys [start scale] :as w}]
   (assoc w :start-position (mapv * start scale)))

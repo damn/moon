@@ -1,7 +1,7 @@
 (ns world-fns.uf-caves
   (:require [com.badlogic.gdx.graphics.texture :as texture]
             [moon.grid2d :as g2d]
-            [moon.tiled-map]
+            [gdx.tiled-map.create-tile :as create-tile]
             [world-fns.uf-caves.last-steps]))
 
 (defn- initial-grid
@@ -45,7 +45,7 @@
                                 (memoize
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
-                                   (moon.tiled-map/create-tile
+                                   (create-tile/f
                                     (texture/region texture
                                                     (* (sprite-idx 0) tile-size)
                                                     (* (sprite-idx 1) tile-size)

@@ -2,9 +2,11 @@
   (:require [clojure.rand :as rand]
             [clojure.grid2d.flood-fill :as flood-fill]
             [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
+            [gdx.tiled-map.movement-property :as movement-property]
             [moon.grid2d :as g2d]
             [clojure.grid2d.printgrid :as printgrid]
-            [moon.tiled-map]))
+            [gdx.tiled-map.create :as create-tiled-map]
+            [gdx.tiled-map.add-creatures-layer :as add-creatures-layer]))
 
 (defn- position->tile-fn [grid]
   (let [uf-grounds (for [x [1 5]
@@ -77,7 +79,7 @@
         grid (assoc-transition-cells grid)
 
         position->tile (position->tile-fn grid)
-        tiled-map (moon.tiled-map/create-map
+        tiled-map (create-tiled-map/f
                    {:properties {"width"  (g2d/width  grid)
                                  "height" (g2d/height grid)
                                  "tilewidth"  tile-size
@@ -88,7 +90,7 @@
                               :tiles (for [position (g2d/posis grid)]
                                        [position (create-tile (position->tile position))])}]})
 
-        can-spawn? #(= "all" (moon.tiled-map/movement-property tiled-map %))
+        can-spawn? #(= "all" (movement-property/f tiled-map %))
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)
@@ -96,6 +98,6 @@
         creatures (for [position spawn-positions
                         :when (<= (rand) spawn-rate)]
                     [position (rand-nth creatures)])]
-    (moon.tiled-map/add-creatures-layer! tiled-map creatures)
+    (add-creatures-layer/f tiled-map creatures)
     {:tiled-map tiled-map
      :start-position start-position}))

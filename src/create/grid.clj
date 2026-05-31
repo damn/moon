@@ -1,9 +1,9 @@
 (ns create.grid
   (:require [com.badlogic.gdx.maps.map-properties :as props]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [gdx.tiled-map.movement-property :as movement-property]
             [moon.cell :as cell]
-            [moon.grid2d :as g2d]
-            [moon.tiled-map]))
+            [moon.grid2d :as g2d]))
 
 (defn step
   [{:keys [ctx/tiled-map]
@@ -12,7 +12,7 @@
                                         (props/get (tiled-map/props tiled-map) "height")
                                         (fn [position]
                                           (atom (cell/create position
-                                                             (case (moon.tiled-map/movement-property tiled-map position)
+                                                             (case (movement-property/f tiled-map position)
                                                                "none" :none
                                                                "air"  :air
                                                                "all"  :all)))))))
