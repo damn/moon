@@ -276,7 +276,7 @@
  </tileset>
  <tileset firstgid="257" source="floor.tsx"/>
  <tileset firstgid="1825" name="cliff" tilewidth="48" tileheight="48" tilecount="56" columns="8">
-  <image source="cliff.png" width="384" height="336"/>
+   <image source="../images/cliff.png" width="384" height="336"/>
   <tile id="0">
    <properties>
     <property name="movement" value="air"/>
