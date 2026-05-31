@@ -1,50 +1,22 @@
 (ns editor.app
-  (:require [clojure.string :as str]
-            [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
-            [gdx.utils.disposable :as disposable]
-            [com.badlogic.gdx.utils.screen-utils :as screen-utils]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            schema.malli-form
-            editor.widget.animation
-            editor.widget.boolean
-            editor.widget.enum
-            editor.widget.image
-            editor.widget.map
-            editor.widget.number
-            editor.widget.one-to-many
-            editor.widget.one-to-one
-            editor.widget.sound
-            editor.widget.string
-            editor.widget.val-max
+  (:require [com.badlogic.gdx.utils.screen-utils :as screen-utils]
+            [editor.app.create :as create]
+            [editor.widget.animation]
+            [editor.widget.boolean]
+            [editor.widget.enum]
+            [editor.widget.image]
+            [editor.widget.map]
+            [editor.widget.number]
+            [editor.widget.one-to-many]
+            [editor.widget.one-to-one]
+            [editor.widget.sound]
+            [editor.widget.string]
+            [editor.widget.val-max]
+            [schema.malli-form]
             [gdx.backends.lwjgl :as lwjgl]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]
-            [gdx.scenes.scene2d.ui.window :as window]
             [gdx.stage :as stage]
-            gdx.textures
-            [gdx.viewport :as viewport]
-            [editor.main-window :as main-window]
-            [moon.db :as db]))
-
-(defn create! [app _params]
-  (let [skin (skin/create (files/internal (app/files app) "skin/uiskin.json"))
-        ui-viewport (fit-viewport/create 1440 900)
-        batch (sprite-batch/create)
-        stage (stage/create ui-viewport batch)
-        db (db/create)]
-    (input/set-processor! (app/input app) stage)
-    (stage/add-actor! stage (main-window/create db skin))
-    {:ctx/app app
-     :ctx/batch batch
-     :ctx/db db
-     :ctx/skin skin
-     :ctx/stage stage
-     :ctx/textures (gdx.textures/create (app/files app))
-     :ctx/ui-viewport ui-viewport}))
+            [gdx.utils.disposable :as disposable]
+            [gdx.viewport :as viewport]))
 
 (defn dispose!
   [{:keys [ctx/skin
@@ -76,7 +48,7 @@
   (lwjgl/use-glfw-async!)
   (lwjgl/application!
    {:state-var #'state
-    :create! create!
+    :create! create/f!
     :create-params nil
     :dispose! dispose!
     :render! render!
