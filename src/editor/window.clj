@@ -1,5 +1,5 @@
-(ns game.schema
-  (:require [game.ctx :as ctx]
+(ns editor.window
+  (:require [gdx.app :as app]
             [com.badlogic.gdx.input.keys :as input.keys]
             [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
@@ -9,17 +9,12 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
+            [editor.widget :as widget]
             [moon.db :as db]
             [moon.property :as property]
             [moon.throwable :as throwable]
             [moon.ui.error-window]
-            [moon.ui.property-overview-window]))
-
-(defmulti create (fn [[schema-k :as _schema] v ctx]
-                   schema-k))
-
-(defmulti value (fn [[schema-k :as _schema] widget schemas]
-                  schema-k))
+            [editor.property-overview-window]))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -32,9 +27,9 @@
         ; build for get-widget-value
         ; or find a way to find the widget from the context @ save button
         ; should be possible
-        widget (create schema property ctx) ; FIXME here no set user object k v ?
+        widget (widget/create schema property ctx) ; FIXME here no set user object k v ?
         scroll-pane-height (:viewport/world-height (:stage/viewport stage))
-        get-widget-value #(value schema widget schemas)
+        get-widget-value #(widget/value schema widget schemas)
         property-id (:property/id property)
         with-window-close (fn [f]
                             (fn [actor {:keys [ctx/skin
@@ -60,7 +55,7 @@
                  {:act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
                             (let [ctx (:stage/ctx stage)]
-                              (when (ctx/key-just-pressed? ctx input.keys/enter)
+                              (when (app/key-just-pressed? (:ctx/app ctx) input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
         save-button {:text "Save [LIGHT_GRAY](ENTER)[]"
                      :skin skin

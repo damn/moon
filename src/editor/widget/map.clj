@@ -1,10 +1,9 @@
-(ns editor-widget.map
+(ns editor.widget.map
   (:require [clojure.core-ext :refer [sort-by-k-order]]
             [clojure.set :as set]
-            [game.ctx :as ctx]
-            [game.schema :as schema]
+            [editor.widget :as widget]
             [moon.schemas :as schemas]
-            [moon.ui.map-widget-table :as map-widget-table]))
+            [editor.map-widget-table :as map-widget-table]))
 
 (def ^:private property-k-sort-order
   [:property/id
@@ -24,7 +23,7 @@
    :skill/cost
    :skill/cooldown])
 
-(defmethod schema/create :s/map
+(defmethod widget/create :s/map
   [schema
    m
    {:keys [ctx/db
@@ -42,6 +41,6 @@
       :opt? (seq (set/difference (schemas/optional-keyset schemas schema)
                                  (set (keys m))))})))
 
-(defmethod schema/value :s/map
+(defmethod widget/value :s/map
   [_ table schemas]
   (map-widget-table/get-value table schemas))

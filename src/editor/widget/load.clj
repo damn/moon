@@ -1,4 +1,4 @@
-(ns editor-widget.load
+(ns editor.widget.load
   (:require [clojure.core-ext :refer [->edn-str
                                       truncate]]
             [clojure.edn :as edn]
@@ -7,7 +7,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
             [game.ctx :as ctx]
-            [game.schema :as schema]
+            [editor.widget :as widget]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui :as ui]
@@ -22,19 +22,19 @@
             [gdx.stage :as stage]
             [moon.textures :as textures]
             [moon.ui.error-window]
-            [moon.ui.property-overview-window]))
+            [editor.property-overview-window]))
 
-(defmethod schema/create :default
+(defmethod widget/create :default
   [_ v {:keys [ctx/skin]}]
   (label/create
    {:text (truncate (->edn-str v) 60)
     :skin skin}))
 
-(defmethod schema/value :default
+(defmethod widget/value :default
   [_  widget _schemas]
   ((actor/user-object widget) 1))
 
-(defmethod schema/create :s/animation
+(defmethod widget/create :s/animation
   [_ animation {:keys [ctx/textures]}]
   (table/create
    {:table/cell-defaults {:pad 1}
@@ -44,23 +44,23 @@
                                         {:drawable/texture-region (textures/texture-region textures image)
                                          :drawable/scale 2})})})]}))
 
-(defmethod schema/create :s/boolean
+(defmethod widget/create :s/boolean
   [_ checked? {:keys [ctx/skin]}]
   (check-box/create
    {:skin skin
     :checked? checked?}))
 
-(defmethod schema/value :s/boolean
+(defmethod widget/value :s/boolean
   [_ widget _schemas]
   (check-box/checked? widget))
 
-(defmethod schema/create :s/enum [schema v {:keys [ctx/skin]}]
+(defmethod widget/create :s/enum [schema v {:keys [ctx/skin]}]
   (select-box/create
    {:skin skin
     :items (map ->edn-str (rest schema))
     :selected (->edn-str v)}))
 
-(defmethod schema/value :s/enum [_  widget _schemas]
+(defmethod widget/value :s/enum [_  widget _schemas]
   (edn/read-string (select-box/selected widget)))
 
 ; too many ! too big ! scroll ... only show files first & preview?
@@ -72,7 +72,7 @@
       #_[(text-button/create file
                              (fn [_actor _ctx]))]))
 
-(defmethod schema/create :s/image
+(defmethod widget/create :s/image
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
   (image-button/create
@@ -83,14 +83,14 @@
                        (c/add-actor! ctx (scroll-pane/choose-window (texture-rows ctx))))
                      {:dimensions [96 96]})) ; x2  , not hardcoded here
 
-(defmethod schema/create :s/number
+(defmethod widget/create :s/number
   [schema v {:keys [ctx/skin]}]
   (text-field/create
    {:text (->edn-str v)
     :skin skin
     :actor/listeners {:listener/text-tooltip [(str schema) skin]}}))
 
-(defmethod schema/value :s/number
+(defmethod widget/value :s/number
   [_  widget _schemas]
   (edn/read-string (text-field/text widget)))
 
@@ -151,7 +151,7 @@
                                                   (ctx/do! (:stage/ctx (event/stage event))
                                                            [[:tx/sound sound-name]]))}})}])
 
-(defmethod schema/create :s/sound [_  sound-name {:keys [ctx/skin]}]
+(defmethod widget/create :s/sound [_  sound-name {:keys [ctx/skin]}]
   (let [table (table/create
                {:table/cell-defaults {:pad 5}})]
     (table/add-rows! table [(if sound-name
@@ -165,22 +165,22 @@
                                                       ((open-select-sounds-handler table) (:stage/ctx (event/stage event))))}})}])])
     table))
 
-(defmethod schema/create :s/string [schema v {:keys [ctx/skin]}]
+(defmethod widget/create :s/string [schema v {:keys [ctx/skin]}]
   (text-field/create
    {:text (str v)
     :skin skin
     :actor/listeners {:listener/text-tooltip [(str schema) skin]}}))
 
-(defmethod schema/value :s/string [_ widget _schemas]
+(defmethod widget/value :s/string [_ widget _schemas]
   (text-field/text widget))
 
-(defmethod schema/create :s/val-max
+(defmethod widget/create :s/val-max
   [schema v {:keys [ctx/skin]}]
   (text-field/create
    {:text (->edn-str v)
     :skin skin
     :actor/listeners {:listener/text-tooltip [(str schema) skin]}}))
 
-(defmethod schema/value :s/val-max
+(defmethod widget/value :s/val-max
   [_  widget _schemas]
   (edn/read-string (text-field/text widget)))

@@ -1,15 +1,11 @@
 (ns stage.dev-menu
-  (:require [clojure.string :as str]
-            [gdx.app :as app]
+  (:require [gdx.app :as app]
             [game.ctx :as ctx]
-            [game.schema]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
-            [moon.db :as db]
-            [moon.number :as number]
-            [moon.ui.property-overview-window]))
+            [moon.number :as number]))
 
 (defn frames-per-second [{:keys [ctx/app]}]
   (app/frames-per-second app))
@@ -35,25 +31,6 @@
                                                       :width 1000
                                                       :height 1000
                                                       :skin skin})))}]}
-            {:label "Editor"
-             :items (for [property-type (sort (db/property-types db))]
-                      {:label (str/capitalize (name property-type))
-                       :on-click (fn [_actor {:keys [ctx/db
-                                                     ctx/skin
-                                                     ctx/stage
-                                                     ctx/textures]
-                                              :as ctx}]
-                                   (stage/add-actor! stage
-                                                     (moon.ui.property-overview-window/create
-                                                      {:db db
-                                                       :textures textures
-                                                       :skin skin
-                                                       :property-type property-type
-                                                       :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                        (stage/add-actor! stage
-                                                                                          (game.schema/property-editor-window
-                                                                                           {:ctx ctx
-                                                                                            :property (db/get-raw db id)})))})))})}
             {:label "Help"
              :items [{:label controls-info}]}
             {:label "Select World"

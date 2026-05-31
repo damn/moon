@@ -1,7 +1,6 @@
-(ns editor-widget.one-to-many
+(ns editor.widget.one-to-many
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [game.ctx :as ctx]
-            [game.schema :as schema]
+            [editor.widget :as widget]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui :as ui]
@@ -14,7 +13,7 @@
             [moon.property :as property]
             [moon.textures :as textures]
             [moon.ui.error-window]
-            [moon.ui.property-overview-window]))
+            [editor.property-overview-window]))
 
 (defn- add-one-to-many-rows
   [{:keys [ctx/db
@@ -40,7 +39,7 @@
                                                              :as ctx} (:stage/ctx (event/stage event))]
                                                         (stage/add-actor!
                                                          stage
-                                                         (moon.ui.property-overview-window/create
+                                                         (editor.property-overview-window/create
                                                           {:db db
                                                            :textures textures
                                                            :skin skin
@@ -62,13 +61,13 @@
                                                        (redo-rows (:stage/ctx (event/stage event))
                                                                   (disj property-ids id)))}})})])))
 
-(defmethod schema/create :s/one-to-many [[_ property-type] property-ids ctx]
+(defmethod widget/create :s/one-to-many [[_ property-type] property-ids ctx]
   (let [table (table/create
                {:table/cell-defaults {:pad 5}})]
     (add-one-to-many-rows ctx table property-type property-ids)
     table))
 
-(defmethod schema/value :s/one-to-many [_  widget _schemas]
+(defmethod widget/value :s/one-to-many [_  widget _schemas]
   (->> (group/children widget)
        (keep actor/user-object)
        set))

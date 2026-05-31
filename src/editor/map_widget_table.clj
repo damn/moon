@@ -1,7 +1,6 @@
-(ns moon.ui.map-widget-table
+(ns editor.map-widget-table
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [game.ctx :as ctx]
-            [game.schema :as schema]
+            [editor.widget :as widget]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui.label :as label]
@@ -10,18 +9,19 @@
             [gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.stage :as stage]
+            editor.window
             [moon.schemas :as schemas]
             [moon.ui.error-window]
-            [moon.ui.property-overview-window]))
+            [editor.property-overview-window]))
 
 (defn get-value [table schemas]
   (into {}
         (for [widget (filter (comp vector? actor/user-object) (group/children table))
               :let [[k _] (actor/user-object widget)]]
-          [k (schema/value (get schemas k) widget schemas)])))
+          [k (widget/value (get schemas k) widget schemas)])))
 
 (defn build-value-widget [ctx schema k v]
-  (let [widget (schema/create schema v ctx)] ; - wait its used also somewhere else w/o this schema/create?
+  (let [widget (widget/create schema v ctx)] ; - wait its used also somewhere else w/o this widget/create?
     ; FIXME assert no user object !
     (actor/set-user-object! widget [k v])
     widget))
@@ -36,7 +36,7 @@
         property (get-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
     (stage/add-actor! stage
-                      (schema/property-editor-window
+                      (editor.window/property-editor-window
                        {:ctx ctx
                         :property property}))))
 
@@ -94,7 +94,7 @@
                  :window/close-button? skin
                  :window/modal? true
                  :table/cell-defaults {:pad 5}})
-        remaining-ks (sort (remove (set (keys (schema/value schema map-widget-table schemas)))
+        remaining-ks (sort (remove (set (keys (widget/value schema map-widget-table schemas)))
                                    (schemas/map-keys schemas schema)))]
     (table/add-rows!
      window

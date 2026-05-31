@@ -1,4 +1,4 @@
-(ns moon.ui.property-overview-window
+(ns editor.property-overview-window
   (:require [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [gdx.stage :as stage]
