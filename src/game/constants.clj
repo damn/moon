@@ -4,6 +4,10 @@
 (ns game.constants
   (:require [game.constants.fsms :as fsms]))
 
+(def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
+(def ^:dbg-flag show-cell-entities? false)
+(def ^:dbg-flag show-cell-occupied? false)
+
 (def npc-fsm fsms/npc)
 (def player-fsm fsms/player)
 

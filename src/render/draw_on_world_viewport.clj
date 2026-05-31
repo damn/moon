@@ -2,15 +2,16 @@
   (:require [com.badlogic.gdx.graphics.color :as color]
             [draw-on-world-viewport.draw-entities]
             [game.ctx :as ctx]
+            [game.constants :refer [show-potential-field-colors?
+                                    show-cell-entities?
+                                    show-cell-occupied?]]
             [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]))
 
-(defn camera-frustum [{:keys [ctx/world-viewport]}]
-  (camera/frustum (:viewport/camera world-viewport)))
-
 (defn draw-tile-grid
-  [ctx]
-  (let [[left-x _right-x bottom-y _top-y] (camera-frustum ctx)]
+  [{:keys [ctx/world-viewport]
+    :as ctx}]
+  (let [[left-x _right-x bottom-y _top-y] (camera/frustum (:viewport/camera world-viewport))]
     [[:draw/grid
       (int left-x)
       (int bottom-y)
@@ -19,10 +20,6 @@
       1
       1
       (color/float-bits [1 1 1 0.8])]]))
-
-(def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
-(def ^:dbg-flag show-cell-entities? false)
-(def ^:dbg-flag show-cell-occupied? false)
 
 (defn draw-cell-debug
   [{:keys [ctx/colors
