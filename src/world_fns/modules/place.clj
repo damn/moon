@@ -1,6 +1,7 @@
 (ns world-fns.modules.place
   (:require [com.badlogic.gdx.maps.map-properties :as props]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [world-fns.utils.transitions :as transitions]
             [moon.grid2d :as g2d]))
 
 (def ^:private number-modules-x 8)
@@ -38,7 +39,7 @@
                                 transition-neighbor?]}]
   (let [[modules-width modules-height] modules-scale
         idxvalue (if transition?
-                   (g2d/transition-idx-value unscaled-position transition-neighbor?)
+                   (transitions/idx-value unscaled-position transition-neighbor?)
                    floor-idxvalue)
         tiled-map-positions (module-index->tiled-map-positions
                              (if transition?

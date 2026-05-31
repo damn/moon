@@ -192,9 +192,13 @@
   (viewport/update! ui-viewport    width height true)
   (viewport/update! world-viewport width height false))
 
+(def state (atom nil))
+
 (defn -main []
+  (lwjgl/use-glfw-async!)
   (lwjgl/application!
-   {:create! create!
+   {:state-var #'state
+    :create! create!
     :create-params nil
     :dispose! dispose!
     :render! render!
