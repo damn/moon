@@ -27,7 +27,7 @@
         ; build for get-widget-value
         ; or find a way to find the widget from the context @ save button
         ; should be possible
-        widget (widget/create schema property ctx) ; FIXME here no set user object k v ?
+        widget (widget/create schema property ctx) ; FIXME here no set user object k v ? (widget/build)
         scroll-pane-height (:viewport/world-height (:stage/viewport stage))
         get-widget-value #(widget/value schema widget schemas)
         property-id (:property/id property)

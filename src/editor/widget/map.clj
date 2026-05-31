@@ -19,7 +19,7 @@
       :schema schema
       :k->widget (into {}
                        (for [[k v] m]
-                         [k (map-widget-table/build-value-widget ctx (get schemas k) k v)]))
+                         [k (widget/build ctx (get schemas k) k v)]))
       :k->optional? #(schemas/optional? schemas schema %)
       :ks-sorted (map first (sort-by-k-order property-k-sort-order m))
       :opt? (seq (set/difference (schemas/optional-keyset schemas schema)

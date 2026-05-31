@@ -1,7 +1,9 @@
 (ns editor.map-widget-table
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [editor.property-overview-window]
+            [editor.rebuild :as rebuild]
             [editor.widget :as widget]
-            [editor.map-widget-table.get-value :as get-value]
+            [editor.window]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui.label :as label]
@@ -10,30 +12,8 @@
             [gdx.scenes.scene2d.ui.widget-group :as widget-group]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.stage :as stage]
-            editor.window
             [moon.schemas :as schemas]
-            [moon.ui.error-window]
-            [editor.property-overview-window]))
-
-(defn build-value-widget [ctx schema k v]
-  (let [widget (widget/create schema v ctx)] ; - wait its used also somewhere else w/o this widget/create?
-    ; FIXME assert no user object !
-    (actor/set-user-object! widget [k v])
-    widget))
-
-(defn- rebuild!
-  [{:keys [ctx/db
-           ctx/stage]
-    :as ctx}]
-  (let [window (-> stage
-                   (stage/find-actor "moon.ui.editor.window"))
-        map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
-        property (get-value/f map-widget-table (:db/schemas db))]
-    (actor/remove! window)
-    (stage/add-actor! stage
-                      (editor.window/property-editor-window
-                       {:ctx ctx
-                        :property property}))))
+            [moon.ui.error-window]))
 
 (defn- k->label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
@@ -58,7 +38,7 @@
                                                                                            (and (actor/user-object actor)
                                                                                                 (= k ((actor/user-object actor) 0))))
                                                                                          (group/children table))))
-                                                           (rebuild! (:stage/ctx (event/stage event))))}}))
+                                                           (rebuild/f! (:stage/ctx (event/stage event))))}}))
                             :left? true}
                            {:actor (label/create
                                     {:text label-text
@@ -102,14 +82,14 @@
                                       (actor/remove! window)
                                       (let [ctx (:stage/ctx (event/stage event))]
                                         (table/add-rows! map-widget-table [(component-row skin
-                                                                                          (build-value-widget ctx
-                                                                                                              (get schemas k)
-                                                                                                              k
-                                                                                                              (schemas/default-value schemas k))
+                                                                                          (widget/build ctx
+                                                                                                        (get schemas k)
+                                                                                                        k
+                                                                                                        (schemas/default-value schemas k))
                                                                                           k
                                                                                           (schemas/optional? schemas schema k)
                                                                                           map-widget-table)])
-                                        (rebuild! ctx)))}})}]))
+                                        (rebuild/f! ctx)))}})}]))
     (widget-group/pack! window)
     window))
 
