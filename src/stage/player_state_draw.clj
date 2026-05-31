@@ -1,5 +1,5 @@
 (ns stage.player-state-draw
-  (:require [game.ctx :as ctx]
+  (:require [game.ctx.draw :refer [draw!]]
             [game.state :as state]
             [gdx.scenes.scene2d.actor :as actor]))
 
@@ -9,4 +9,4 @@
              (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/stage this))
                    entity @player-eid
                    state-k (:state (:entity/fsm entity))]
-               (ctx/draw! ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))
+               (draw! ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))

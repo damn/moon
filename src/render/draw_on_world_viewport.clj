@@ -2,6 +2,7 @@
   (:require [com.badlogic.gdx.graphics.color :as color]
             [draw-on-world-viewport.draw-entities]
             [game.ctx :as ctx]
+            [game.ctx.draw :refer [draw!]]
             [game.constants :refer [show-potential-field-colors?
                                     show-cell-entities?
                                     show-cell-occupied?]]
@@ -77,7 +78,7 @@
                #_moon.geom-test
                highlight-mouseover-tile
                ]]
-      (ctx/draw! ctx (f ctx)))
+      (draw! ctx (f ctx)))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
   (.end batch)

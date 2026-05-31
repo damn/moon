@@ -4,7 +4,7 @@
             [draw.text]
             [draw.texture-region]
             [game.constants :as constants]
-            [game.ctx :as ctx]
+            [game.ctx.draw :refer [draw!]]
             [space.earlygrey.shape-drawer :as shape-drawer]))
 
 (.bindRoot #'constants/draw-fns
@@ -33,12 +33,12 @@
                                            rightx (+ (float leftx) (float w))]
                                        (doseq [idx (range (inc (float gridw)))
                                                :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-                                         (ctx/draw! ctx
-                                                    [[:draw/line [linex topy] [linex bottomy] color-float-bits]]))
+                                         (draw! ctx
+                                                [[:draw/line [linex topy] [linex bottomy] color-float-bits]]))
                                        (doseq [idx (range (inc (float gridh)))
                                                :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-                                         (ctx/draw! ctx
-                                                    [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))
+                                         (draw! ctx
+                                                [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))
             :draw/line             (fn
                                      [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
                                      (shape-drawer/set-color! shape-drawer color-float-bits)
@@ -60,6 +60,6 @@
                                       draws]
                                      (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
                                        (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
-                                       (ctx/draw! ctx draws)
+                                       (draw! ctx draws)
                                        (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
             })

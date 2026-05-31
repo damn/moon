@@ -2,6 +2,7 @@
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
             [game.ctx :as ctx]
+            [game.ctx.draw :refer [draw!]]
             [game.state :as state]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.actor :as actor]
@@ -30,14 +31,14 @@
                                    (let [{:keys [ctx/player-eid
                                                  ctx/ui-mouse-position]
                                           :as ctx} (:stage/ctx stage)]
-                                     (ctx/draw! ctx
-                                                (draw-cell-rect @player-eid
-                                                                (actor/x this)
-                                                                (actor/y this)
-                                                                (actor/hit this
-                                                                           (actor/stage->local-coordinates this ui-mouse-position)
-                                                                           true)
-                                                                (actor/user-object (actor/parent this)))))))})
+                                     (draw! ctx
+                                            (draw-cell-rect @player-eid
+                                                            (actor/x this)
+                                                            (actor/y this)
+                                                            (actor/hit this
+                                                                       (actor/stage->local-coordinates this ui-mouse-position)
+                                                                       true)
+                                                            (actor/user-object (actor/parent this)))))))})
                       (image/create
                        {:content background-drawable
                         :actor/name "image-widget"

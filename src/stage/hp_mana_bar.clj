@@ -1,5 +1,5 @@
 (ns stage.hp-mana-bar
-  (:require [game.ctx :as ctx]
+  (:require [game.ctx.draw :refer [draw!]]
             [gdx.scenes.scene2d.actor :as actor]
             [moon.number :as number]
             [moon.stats :as stats]
@@ -48,5 +48,5 @@
     (actor/create
      {:draw! (fn [this _batch _parent-alpha]
                (when-let [stage (actor/stage this)]
-                 (ctx/draw! (:stage/ctx stage)
-                            (create-draws (:stage/ctx stage)))))})))
+                 (draw! (:stage/ctx stage)
+                        (create-draws (:stage/ctx stage)))))})))

@@ -5,7 +5,7 @@
             [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.keys :as input.keys]
-            [game.constants :refer [txs-fn-map draw-fns]]
+            [game.constants :refer [txs-fn-map]]
             [game.reaction-txs :as reaction-txs]
             [gdx.graphics.orthographic-camera :as camera]
             [malli.utils :as mu]))
@@ -32,11 +32,6 @@
     (reduce-actions! reaction-txs/fn-map
                      ctx
                      handled-txs)))
-
-(defn draw! [ctx draws]
-  (doseq [{k 0 :as component} draws
-          :when component]
-    (apply (get draw-fns k) ctx (rest component))))
 
 (defn key-pressed? [{:keys [ctx/app]} input-key]
   (input/key-pressed? (app/input app) input-key))
