@@ -1,5 +1,5 @@
 (ns tx.load
-  (:require [game.ctx :as ctx]
+  (:require [game.constants :as constants]
             tx.add-text-effect
             tx.set-cooldown
             tx.add-skill
@@ -25,7 +25,7 @@
 
 ; TODO tx-core/* ?
 
-(.bindRoot #'ctx/txs-fn-map
+(.bindRoot #'constants/txs-fn-map
            {
             :tx/state-exit               tx.state-exit/do!
             :tx/audiovisual              tx.audiovisual/do!

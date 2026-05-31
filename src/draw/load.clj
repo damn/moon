@@ -6,9 +6,10 @@
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.utils.align :as align]
             [game.ctx :as ctx]
+            [game.constants :as constants]
             [space.earlygrey.shape-drawer :as shape-drawer]))
 
-(.bindRoot #'ctx/draw-fns
+(.bindRoot #'constants/draw-fns
            {
             :draw/circle           (fn
                                      [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]

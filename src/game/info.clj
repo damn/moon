@@ -1,6 +1,7 @@
 (ns game.info
   (:require [clojure.core-ext :refer [sort-by-k-order]]
             [clojure.string :as str]
+            [game.constants :refer [k->colors k-order]]
             [game.info-fns :as info-fns]))
 
 (defmulti text (fn [object ctx]
@@ -17,38 +18,6 @@
     (if (= (count new-s) (count s))
       s
       (remove-newlines new-s))))
-
-(def ^:private k->colors
-  {:property/pretty-name "PRETTY_NAME"
-   :stats/modifiers "CYAN"
-   :maxrange "LIGHT_GRAY"
-   :creature/level "GRAY"
-   :projectile/piercing? "LIME"
-   :skill/action-time-modifier-key "VIOLET"
-   :skill/action-time "GOLD"
-   :skill/cooldown "SKY"
-   :skill/cost "CYAN"
-   :entity/delete-after-duration "LIGHT_GRAY"
-   :entity/faction "SLATE"
-   :entity/fsm "YELLOW"
-   :entity/species "LIGHT_GRAY"
-   :entity/temp-modifier "LIGHT_GRAY"})
-
-(def ^:private k-order
-  [:property/pretty-name
-   :skill/action-time-modifier-key
-   :skill/action-time
-   :skill/cooldown
-   :skill/cost
-   :skill/effects
-   :entity/species
-   :creature/level
-   :entity/stats
-   :entity/delete-after-duration
-   :projectile/piercing?
-   :entity/projectile-collision
-   :maxrange
-   :entity-effects])
 
 (comment
  (:skills/death-ray (:entity/skills @(:ctx/player-eid @dev.application/state)))

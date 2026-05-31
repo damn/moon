@@ -89,3 +89,39 @@
 (def zoom-speed 0.025)
 
 (def pausing? true)
+
+(declare txs-fn-map)
+
+(declare draw-fns)
+
+(def k->colors
+  {:property/pretty-name "PRETTY_NAME"
+   :stats/modifiers "CYAN"
+   :maxrange "LIGHT_GRAY"
+   :creature/level "GRAY"
+   :projectile/piercing? "LIME"
+   :skill/action-time-modifier-key "VIOLET"
+   :skill/action-time "GOLD"
+   :skill/cooldown "SKY"
+   :skill/cost "CYAN"
+   :entity/delete-after-duration "LIGHT_GRAY"
+   :entity/faction "SLATE"
+   :entity/fsm "YELLOW"
+   :entity/species "LIGHT_GRAY"
+   :entity/temp-modifier "LIGHT_GRAY"})
+
+(def k-order
+  [:property/pretty-name
+   :skill/action-time-modifier-key
+   :skill/action-time
+   :skill/cooldown
+   :skill/cost
+   :skill/effects
+   :entity/species
+   :creature/level
+   :entity/stats
+   :entity/delete-after-duration
+   :projectile/piercing?
+   :entity/projectile-collision
+   :maxrange
+   :entity-effects])
