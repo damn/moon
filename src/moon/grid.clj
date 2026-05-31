@@ -1,22 +1,15 @@
 (ns moon.grid
-  (:require [clojure.math.circle :as circle]
-            [clojure.math.rectangle :as rectangle]
-            [com.badlogic.gdx.math.circle :as gdx-circle]
+  (:require [com.badlogic.gdx.math.circle :as gdx-circle]
             [com.badlogic.gdx.math.intersector :as intersector]
             [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.grid.cells-entities :as cells->entities]
             [moon.grid.body-occupied-cells :refer [body->occupied-cells]]
+            [moon.grid.circle-to-cells :refer [circle->cells]]
             [moon.faction :as faction]
             [moon.grid2d :as g2d]
             [moon.position :as position]))
-
-(defn circle->cells [g2d circle]
-  (->> circle
-       circle/outer-rectangle
-       rectangle/touched-tiles
-       (g2d/get-cells g2d)))
 
 (defn circle->entities [g2d {:keys [position radius] :as circle}]
   (->> (circle->cells g2d circle)
