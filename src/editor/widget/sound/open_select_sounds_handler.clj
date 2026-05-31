@@ -1,0 +1,43 @@
+(ns editor.widget.sound.open-select-sounds-handler
+  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
+            [game.ctx.do :refer [do!]]
+            [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.stage :as stage]))
+
+(defn open-select-sounds-handler [table ->sound-columns]
+  (fn [{:keys [ctx/skin
+               ctx/stage]
+        :as ctx}]
+    (stage/add-actor! stage
+                      (window/create
+                       {:title "Choose"
+                        :skin skin
+                        :window/close-button? skin
+                        :window/modal? true
+                        :table/rows
+                        [[(let [table (table/create
+                                       {:table/cell-defaults {:pad 5}
+                                        :table/rows (for [sound-name (map first (:ctx/audio ctx))]
+                                                      [{:actor (text-button/create
+                                                                {:text sound-name
+                                                                 :skin skin
+                                                                 :actor/listeners {:listener/change
+                                                                                   (fn [event actor]
+                                                                                     ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/stage event))))}})}
+                                                       {:actor (text-button/create
+                                                                {:text "play!"
+                                                                 :skin skin
+                                                                 :actor/listeners {:listener/change (fn [event _actor]
+                                                                                                      (do! (:stage/ctx (event/stage event))
+                                                                                                           [[:tx/sound sound-name]]))}})}])} )]
+                            {:actor (scroll-pane/create
+                                     {:actor table
+                                      :skin skin})
+                             :width  (+ (actor/width table) 50)
+                             :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
+                                          (actor/height table))})]]}))))
