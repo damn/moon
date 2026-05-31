@@ -12,11 +12,6 @@
             [moon.stats :as stats]
             [moon.timer :as timer]))
 
-; TODO separate 4 functions
-; separate ns each
-; But first: remove first arg !!
-; use function map!
-
 (defn- entity->melee-damage [{:keys [entity/stats]}]
   (let [strength (or (stats/get-stat-value stats :stats/strength) 0)]
     {:damage/min-max [strength strength]}))
@@ -45,7 +40,6 @@
 (defmethod effect/handle :effects.target/convert
   [_ {:keys [effect/source effect/target]} _ctx]
   [[:tx/assoc target :entity/faction (:entity/faction @source)]])
-
 
 (defmethod effect/applicable? :effects.target/kill
   [_ {:keys [effect/target]}]
