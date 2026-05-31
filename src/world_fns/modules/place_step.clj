@@ -4,24 +4,24 @@
             [world-fns.utils.transitions :as transitions]
             [world-fns.modules.place-step.module-index-tiled-map-positions :refer [module-index->tiled-map-positions]]))
 
-(def ^:private number-modules-x 8)
-(def ^:private number-modules-y 4)
-(def ^:private module-offset-tiles 1)
-(def ^:private transition-modules-row-width 4)
-(def ^:private transition-modules-row-height 4)
-(def ^:private transition-modules-offset-x 4)
 (def ^:private floor-modules-row-width 4)
 (def ^:private floor-modules-row-height 4)
-(def ^:private floor-idxvalue 0)
 
 (defn- floor->module-index []
   [(rand-int floor-modules-row-width)
    (rand-int floor-modules-row-height)])
 
+(def ^:private transition-modules-row-width 4)
+(def ^:private transition-modules-row-height 4)
+(def ^:private transition-modules-offset-x 4)
+
 (defn- transition-idxvalue->module-index [idxvalue]
   [(+ (rem idxvalue transition-modules-row-width)
       transition-modules-offset-x)
    (int (/ idxvalue transition-modules-row-height))])
+
+(def ^:private module-offset-tiles 1)
+(def ^:private floor-idxvalue 0)
 
 (defn- place-module* [modules-scale
                       scaled-grid
@@ -49,6 +49,9 @@
                      (offset->tiled-map-position offset)))
             scaled-grid
             offsets)))
+
+(def ^:private number-modules-x 8)
+(def ^:private number-modules-y 4)
 
 (defn f
   [modules-tiled-map
