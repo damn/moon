@@ -1,3 +1,6 @@
+; Now we see what we have
+; No we create game w/o ui/audio/cursors/shape-drawer/colors/...
+; just like chess
 {
  :create!  application.create/do!
  :create-params [[create.batch/step]
