@@ -1,6 +1,4 @@
-; 1. - transformation into file-handles
-; - or #file/handle something like that
-{:path-format "cursors/%s.png"
+{:path-format "images/%s.png"
  :data {:cursors/bag                   ["bag001"       [0   0]]
         :cursors/black-x               ["black_x"      [0   0]]
         :cursors/default               ["default"      [0   0]]
