@@ -45,9 +45,6 @@
                     (min maxrange
                          (v/distance player-position world-mouse-position))))))
 
-(defn sound-names [{:keys [ctx/audio]}]
-  (map first audio))
-
 (defn key-just-pressed? [{:keys [ctx/app]} input-key]
   (input/key-just-pressed? (app/input app) input-key))
 

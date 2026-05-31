@@ -3,7 +3,7 @@
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
-  (:require [moon.grid2d :as g2d]
+  (:require [clojure.m.assoc-ks :refer [assoc-ks]]
             [clojure.grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
             [moon.caves.helpers :as h]))
 
@@ -42,7 +42,7 @@
           (if (not-empty new-pos-seq)
             (recur new-pos-seq
                    (if (seq carve-posis)
-                     (g2d/assoc-ks grid carve-posis :ground)
+                     (assoc-ks grid carve-posis :ground)
                      grid)
                    (+ cell-cnt (count carve-posis)))
             ; TODO here min-cells check ?

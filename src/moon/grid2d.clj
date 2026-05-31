@@ -52,20 +52,12 @@
   (toString [this]
     (str "width " (width this) ", height " (height this))))
 
-(defn- vector2d [w h f]
-  (mapv (fn [x] (mapv (fn [y] (f [x y]))
-                      (range h)))
-        (range w)))
-
 (defn create-grid
   [w h xyfn]
   {:pre [(>= w 1) (>= h 1)]}
-  (VectorGrid. (vector2d w h xyfn)))
-
-(defn assoc-ks [m ks v]
-  (if (empty? ks)
-    m
-    (apply assoc m (interleave ks (repeat v)))))
+  (VectorGrid. (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                                   (range h)))
+                     (range w))))
 
 (defn get-cells [g2d int-positions]
   (into [] (keep g2d) int-positions))

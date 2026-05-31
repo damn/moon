@@ -1,6 +1,6 @@
 (ns clojure.grid2d.flood-fill
   (:require [moon.position :as position]
-            [moon.grid2d :as g2d]))
+            [clojure.m.assoc-ks :refer [assoc-ks]]))
 
 (defn f [grid start walk-on-position?]
   (loop [next-positions [start]
@@ -13,5 +13,5 @@
                       (mapcat position/get-8-neighbours
                               next-positions)))
              (concat filled next-positions)
-             (g2d/assoc-ks grid next-positions nil))
+             (assoc-ks grid next-positions nil))
       filled)))

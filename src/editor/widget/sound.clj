@@ -36,7 +36,7 @@
                         :table/rows
                         [[(let [table (table/create
                                        {:table/cell-defaults {:pad 5}
-                                        :table/rows (for [sound-name (ctx/sound-names ctx)]
+                                        :table/rows (for [sound-name (map first (:ctx/audio ctx))]
                                                       [{:actor (text-button/create
                                                                 {:text sound-name
                                                                  :skin skin

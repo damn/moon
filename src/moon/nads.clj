@@ -1,5 +1,6 @@
 (ns moon.nads
-  (:require [moon.grid2d :as g2d]))
+  (:require [clojure.m.assoc-ks :refer [assoc-ks]]
+            [moon.grid2d :as g2d]))
 
 (comment
   (def found (atom false))
@@ -76,7 +77,7 @@
         [cell1 cell2 cell3]))))
 
 (defn- mark-nads [grid nads label]
-  (g2d/assoc-ks grid (mapcat #(get-tiles-needing-fix-for-nad grid %) nads) label))
+  (assoc-ks grid (mapcat #(get-tiles-needing-fix-for-nad grid %) nads) label))
 
 (defn fix-nads [grid]
   {:pre [(= #{:wall :ground} (set (g2d/cells grid)))]
