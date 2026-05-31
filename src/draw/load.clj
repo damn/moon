@@ -1,12 +1,9 @@
 (ns draw.load
-  (:require [clojure.string :as str]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
+  (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.utils.align :as align]
-            [game.ctx :as ctx]
+            [draw.text]
             [game.constants :as constants]
+            [game.ctx :as ctx]
             [space.earlygrey.shape-drawer :as shape-drawer]))
 
 (.bindRoot #'constants/draw-fns
@@ -53,32 +50,7 @@
                                      [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
                                      (shape-drawer/set-color! shape-drawer color-float-bits)
                                      (shape-drawer/sector! shape-drawer center-x center-y radius start-radians radians))
-            :draw/text             (fn
-                                     [{:keys [ctx/batch
-                                              ctx/unit-scale
-                                              ctx/default-font]}
-                                      {:keys [font scale x y text h-align up?]}]
-                                     (let [font (or font default-font)
-                                           old-scale (font.data/scale-x (font/data font))
-                                           target-width 0
-                                           wrap? false
-                                           scale (* (float @unit-scale)
-                                                    (float (or scale 1)))]
-                                       (font.data/set-scale! (font/data font) (* old-scale scale))
-                                       (font/draw! font
-                                                   batch
-                                                   text
-                                                   x
-                                                   (+ y (if up?
-                                                          (-> text
-                                                              (str/split #"\n")
-                                                              count
-                                                              (* (font/line-height font)))
-                                                          0))
-                                                   target-width
-                                                   (align/k->value :align/center)
-                                                   wrap?)
-                                       (font.data/set-scale! (font/data font) old-scale)))
+            :draw/text             draw.text/f
             :draw/texture-region   (fn
                                      [{:keys [ctx/batch
                                               ctx/unit-scale

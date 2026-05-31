@@ -1,6 +1,7 @@
 (ns moon.caves
   (:require [moon.grid2d :as g2d]
             [clojure.rand :as rand]
+            [clojure.grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
             [moon.position :as position]))
 
 ;Cave Algorithmus.
@@ -79,7 +80,7 @@
                    ; TODO already called there down ... make mincells check there
                    (if (< cell-cnt min-cells)
                      (create random min-cells max-cells adjnum-type) ; recur?
-                     (let [[grid convert] (g2d/mapgrid->vectorgrid grid #(if (nil? %) :wall :ground))]
+                     (let [[grid convert] (mapgrid->vectorgrid/f grid #(if (nil? %) :wall :ground))]
                        {:grid  grid
                         :start (convert start)
                         :end   (convert end)})))]
