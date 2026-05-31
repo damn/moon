@@ -1,0 +1,16 @@
+(ns editor.widget.animation
+  (:require [editor.widget :as widget]
+            [gdx.scenes.scene2d.ui.image-button :as image-button]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [moon.textures :as textures]))
+
+(defmethod widget/create :s/animation
+  [_ animation {:keys [ctx/textures]}]
+  (table/create
+   {:table/cell-defaults {:pad 1}
+    :table/rows [(for [image (:animation/frames animation)]
+                   {:actor (image-button/create
+                            {:drawable (texture-region-drawable/create*
+                                        {:drawable/texture-region (textures/texture-region textures image)
+                                         :drawable/scale 2})})})]}))

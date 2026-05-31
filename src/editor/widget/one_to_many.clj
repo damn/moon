@@ -12,8 +12,7 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui.error-window]
-            [editor.property-overview-window]))
+            [moon.ui.error-window]))
 
 (defn- add-one-to-many-rows
   [{:keys [ctx/db

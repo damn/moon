@@ -13,8 +13,7 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.throwable :as throwable]
-            [moon.ui.error-window]
-            [editor.property-overview-window]))
+            [moon.ui.error-window :as error-window]))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -43,7 +42,7 @@
                                (catch Throwable t
                                  (throwable/pretty-pst t)
                                  (stage/add-actor! stage
-                                                   (moon.ui.error-window/create
+                                                   (error-window/create
                                                     {:type :ui/error-window
                                                      :skin skin
                                                      :throwable t}))))))

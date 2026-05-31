@@ -1,6 +1,3 @@
-; TODO don't depend on 'moon'
-; no vars, defs
-; `moonproperty`
 (ns editor.app
   (:require [clojure.string :as str]
             [com.badlogic.gdx.application :as app]
@@ -12,10 +9,17 @@
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            editor.widget.load ; game.ctx, game.schema, moon.textures
-            editor.widget.one-to-one
-            editor.widget.one-to-many
+            editor.widget.animation
+            editor.widget.boolean
+            editor.widget.enum
+            editor.widget.image
             editor.widget.map
+            editor.widget.number
+            editor.widget.one-to-many
+            editor.widget.one-to-one
+            editor.widget.sound
+            editor.widget.string
+            editor.widget.val-max
             [gdx.backends.lwjgl :as lwjgl]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -23,11 +27,8 @@
             gdx.textures
             [gdx.viewport :as viewport]
             [moon.db :as db]
-            editor.property-overview-window ; moon.textures
-            editor.window
-            ))
-
-; TODO sound snot working/ not loaded/ referencing game
+            editor.property-overview-window
+            editor.window))
 
 (defn- main-window [db skin]
   (window/create

@@ -1,5 +1,6 @@
 (ns editor.widget.one-to-one
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [editor.property-overview-window]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
@@ -12,8 +13,7 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui.error-window]
-            [editor.property-overview-window]))
+            [moon.ui.error-window]))
 
 (defn- add-one-to-one-rows
   [{:keys [ctx/db

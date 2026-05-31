@@ -1,9 +1,9 @@
 (ns editor.widget.map
   (:require [clojure.core-ext :refer [sort-by-k-order]]
             [clojure.set :as set]
+            [editor.map-widget-table :as map-widget-table]
             [editor.widget :as widget]
-            [moon.schemas :as schemas]
-            [editor.map-widget-table :as map-widget-table]))
+            [moon.schemas :as schemas]))
 
 (def ^:private property-k-sort-order
   [:property/id
