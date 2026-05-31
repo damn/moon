@@ -2,19 +2,16 @@
   (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.keys :as input.keys]
-            [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [gdx.stage :as stage]
-            [gdx.scenes.scene2d.ui :as ui]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [editor.widget :as widget]
+            [editor.window.with-window-close :as with-window-close]
+            [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [editor.widget :as widget]
             [moon.db :as db]
-            [moon.property :as property]
-            [moon.throwable :as throwable]
-            [moon.ui.error-window :as error-window]))
+            [moon.property :as property]))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -31,26 +28,10 @@
         scroll-pane-height (:viewport/world-height (:stage/viewport stage))
         get-widget-value #(widget/value schema widget schemas)
         property-id (:property/id property)
-        with-window-close (fn [f]
-                            (fn [actor {:keys [ctx/skin
-                                               ctx/stage]
-                                        :as ctx}]
-                              (try
-                               (let [new-ctx (update ctx :ctx/db f)
-                                     stage (actor/stage actor)]
-                                 (stage/set-ctx! stage new-ctx))
-                               (actor/remove! (actor/find-ancestor actor ui/window?))
-                               (catch Throwable t
-                                 (throwable/pretty-pst t)
-                                 (stage/add-actor! stage
-                                                   (error-window/create
-                                                    {:type :ui/error-window
-                                                     :skin skin
-                                                     :throwable t}))))))
-        clicked-delete-fn (with-window-close (fn [db]
-                                               (db/delete! db property-id)))
-        clicked-save-fn (with-window-close (fn [db]
-                                             (db/update! db (get-widget-value))))
+        clicked-delete-fn (with-window-close/f (fn [db]
+                                                 (db/delete! db property-id)))
+        clicked-save-fn (with-window-close/f (fn [db]
+                                               (db/update! db (get-widget-value))))
         actors [(actor/create
                  {:act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
