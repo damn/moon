@@ -1,6 +1,6 @@
 (ns gdx.stage
-  (:require [gdx.scenes.scene2d.group :as group]
-            [gdx.scenes.scene2d.stage :as stage]
+  (:require [com.badlogic.gdx.scenes.scene2d.ctx-stage :as stage]
+            [gdx.scenes.scene2d.group :as group]
             [gdx.viewport :as viewport]))
 
 (defn create [viewport batch]

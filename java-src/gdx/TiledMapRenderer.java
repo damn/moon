@@ -18,10 +18,6 @@ import com.badlogic.gdx.math.Rectangle;
 
 import static com.badlogic.gdx.graphics.g2d.Batch.*;
 
-// Same like OrthogonalTiledMapRenderer w. ColorSetter added.
-// Chess has 6 types of pieces and 8x8 grid and almost infinite strategy
-// => create a simpler game
-// => but finish this code
 public class TiledMapRenderer {
 
   public interface ColorSetter {

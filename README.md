@@ -31,6 +31,10 @@ defs -> ctx? constants?
         => OBVIOUSLY FIRST CLUSTER DEPTH 1
             => functions stats/inventory/etc. separate lib -> amazing!
 
+                => GDX
+                    => `moon` project API layer to all libgdx ecosystem (with my additions )
+                        => mostly just names collided
+
 ( target/ ) HIDDEN
 [?] test/
 
