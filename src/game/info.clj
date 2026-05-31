@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [game.constants :refer [k->colors k-order]]
             [game.info-fns :as info-fns]
-            [game.skill :as skill]
             info.stats.modifiers))
 
 (defmulti text (fn [object ctx]
@@ -20,12 +19,6 @@
     (if (= (count new-s) (count s))
       s
       (remove-newlines new-s))))
-
-(comment
- (:skills/death-ray (:entity/skills @(:ctx/player-eid @dev.application/state)))
- ; cooling-down? is not set in the action-bar ....
- ; so not showing as ui not updated
- )
 
 (defmethod text :info/entity [entity ctx]
   (let [component-info (fn [[k v]]
@@ -67,55 +60,3 @@
                      ; seq because they can be empty map ?
                      (when (seq (:stats/modifiers item))
                        (str "[CYAN]" (info.stats.modifiers/info (:stats/modifiers item) _ctx) "[]"))])))
-
-(comment
- (let [item (get (:inventory.slot/shield (:entity/inventory @(:ctx/player-eid @dev.application/state)))
-                 [0 0])]
-   (item-info item)
-   )
-
- {:entity/image #:image{:bounds [912 240 48 48], :file "images/items.png"},
-  :stats/modifiers {},
-  :item/slot :inventory.slot/shield,
-  :property/id :items/shield-mystic-great,
-  :property/pretty-name "Great Mystic Shield"}
- )
-
-(comment
- (binding [*print-level* nil]
-   (clojure.pprint/pprint (:skill/effects
-                           (:skills/spawn (:entity/skills @(:ctx/player-eid @dev.application/state))))))
- )
-
-(defn skill-info [skill]
-  {:pre [(skill/valid? skill)]}
-  ; The core problem is that you’re eagerly unrolling your graph into nested maps (tree form). That guarantees infinite recursion if there are cycles.
-
-  ; skill/effects is unrolled
-  ; and then effects/spawn again a creature w. again skills unrolled ... ?
-  ; and stats/e.g. not built
-  ; unlike world entities ...
-  ; what if a creature has spawn effect for its own type
-  ; which again has spawn effect
-  ; endless recursion ?
-  ; ... relationships ... ? really unroll always?
-  ; => buggy
-
-
-  :effects/spawn ; -> full creature resolveed again with skills/effects/etc.
-  ; why not every skill/action just 1 effect and the name etc inside the skill?
-
-  )
-
-(defn entity-info [entity ctx]
-  ; dispatch entity type
-  ; assert valid? projectile/creature/item/etc?
-
-  ;  Now it gets interesting!
-  ; We are not sure about the possible shape of our entities and which 'types' of shapes are there!!!
-  ; => game data state space schema
-  ; => game is a play with a state space
-  ; e.g. change level
-  ; spawn somethinbg
-  ; ?
-  )
