@@ -7,13 +7,8 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
-            [gdx.scenes.scene2d.ui.table :as table]))
-
-(defn- set-label-text-actor [label text-fn]
-  (actor/create
-   {:act! (fn [this _delta]
-            (when-let [stage (actor/stage this)]
-              (label/set-text! label (text-fn (:stage/ctx stage)))))}))
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]

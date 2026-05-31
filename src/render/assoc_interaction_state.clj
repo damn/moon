@@ -1,16 +1,12 @@
 (ns render.assoc-interaction-state
-  (:require
-
-    [clojure.math.vector2 :as v]
-    [game.ctx :as ctx]
-
-    [game.skill :as skill]
-    [gdx.scenes.scene2d.actor :as actor]
-    [gdx.stage :as stage]
-    [gdx.scenes.scene2d.ui :as ui]
-    [gdx.scenes.scene2d.ui.action-bar :as action-bar]
-    [moon.body :as body])
-  )
+  (:require [clojure.math.vector2 :as v]
+            [game.ctx :as ctx]
+            [game.skill :as skill]
+            [gdx.scenes.scene2d.actor :as actor]
+            [gdx.stage :as stage]
+            [gdx.scenes.scene2d.ui :as ui]
+            [gdx.scenes.scene2d.ui.action-bar :as action-bar]
+            [moon.body :as body]))
 
 (defn- mouseover-actor-info [actor]
   (let [inventory-slot (and (actor/parent actor)
