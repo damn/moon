@@ -1,10 +1,6 @@
 (ns start
-  (:require [clojure.core-ext :refer [edn-resource]]
-            [gdx.backends.lwjgl :as lwjgl])
+  (:require [clojure.core-ext :as core])
   (:gen-class))
 
 (defn -main []
-  (run! require (edn-resource "config/requires.edn"))
-  (-> "config/start.edn"
-      edn-resource
-      lwjgl/application!))
+  (core/run-executions-from-edn! "config/start.edn"))

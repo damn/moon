@@ -1,7 +1,7 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 [com.github.damn/clojure.core-ext "55983eb35e"]
+                 [com.github.damn/clojure.core-ext "3f69ce01ca"]
                  [com.github.damn/clojure.math "8c8d074607"]
                  [com.github.damn/clojure.rand "8b08b1e70d"]
                  [com.github.damn/com.badlogic.gdx "e75c53c521"]
