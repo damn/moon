@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-down" width="264" height="84" tilewidth="48" tileheight="48" infinite="0" nextlayerid="38" nextobjectid="20">
  <tileset firstgid="1" name="Fantasy_Outside_D" tilewidth="48" tileheight="48" tilecount="256" columns="16">
-  <image source="Winlu Fantasy Exterior/tilesets/Fantasy_Outside_D.png" width="768" height="768"/>
+   <image source="../images/Fantasy_Outside_D.png" width="768" height="768"/>
   <tile id="4">
    <properties>
     <property name="movement" value="air"/>

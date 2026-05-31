@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="16" height="14" tilewidth="24" tileheight="24" infinite="0" nextlayerid="5" nextobjectid="1">
  <tileset firstgid="1" name="Fantasy_Outside_A5" tilewidth="24" tileheight="24" tilecount="512" columns="16">
-  <image source="Winlu Fantasy Exterior/tilesets/Fantasy_Outside_A5.png" width="384" height="768"/>
+  <image source="../images/Fantasy_Outside_A5.png" width="384" height="768"/>
  </tileset>
  <tileset firstgid="513" name="Fantasy_Outside_D" tilewidth="24" tileheight="24" tilecount="1024" columns="32">
-  <image source="Winlu Fantasy Exterior/tilesets/Fantasy_Outside_D.png" width="768" height="768"/>
+   <image source="../images/Fantasy_Outside_D.png" width="768" height="768"/>
  </tileset>
  <tileset firstgid="1537" name="Fantasy_Outside_A2" tilewidth="24" tileheight="24" tilecount="768" columns="32">
-  <image source="Winlu Fantasy Exterior/tilesets/Fantasy_Outside_A2.png" width="768" height="576"/>
+   <image source="../images/Fantasy_Outside_A2.png" width="768" height="576"/>
  </tileset>
  <layer id="4" name="grass" width="16" height="14">
   <data encoding="csv">
