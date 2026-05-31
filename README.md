@@ -1,3 +1,43 @@
+# Idea:
+
+Explain till crate/render/dispose/resize steps
+and ctx schema somehow ...
+
+defs -> ctx? constants?
+    => functional ...
+
+    ~~~ 3 LEVELS ~!!
+
+# This is the gesamtueberblick (write to moon wiki? )
+
+
+[⚠️ ] java-src/ => should be external library, not relevant to the game itself
+[⚠️ ] resources/
+[⚠️ ] src/
+( target/ ) HIDDEN
+[?] test/
+
+check_uberjar.sh
+( moon.iml ) HIDDEN
+project.clj
+README.md
+
+=> EXPLAIN EACH FOLDER (IN THE RIGHT ?? )
+
+=> resources/ --> all 'png' files in one folder???
+
+=> DEPLOY & ASK FOR DONATIONS
+=> NEXT LVL FIND PORTER RANDOM
+
+=> CONTROLS ISMPLER
+=> UI CAN REMOVE NOT NECESSARY
+=> JUST TILEDMAP OTENFIAL FIELD MOVEMENT
+NO STATS
+
+=> PASS VALUES - LIBS - superduper
+
+=> remove comments/dead code/add tests (interessting ... ? )
+
 
 ```
 lein dev
@@ -25,4 +65,8 @@ lein hiera :layout :horizontal :cluster-depth 1
 
 ```
 tasks lc?
+```
+
+```
+lein editor
 ```
