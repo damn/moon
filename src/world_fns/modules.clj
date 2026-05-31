@@ -1,16 +1,14 @@
 (ns world-fns.modules
-  (:require [com.badlogic.gdx.maps.map-layers :as layers]
-            [com.badlogic.gdx.maps.map-properties :as props]
+  (:require [com.badlogic.gdx.maps.map-properties :as props]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            moon.tiled-map
+            [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [moon.grid2d :as g2d]
+            [moon.tiled-map]
             [world-fns.modules.place :as place-module]
-            [world-fns.modules.area-level-grid :as area-level-grid])
+            world-fns.modules.last-steps)
   (:import (java.util Random)))
 
 (defn- print-grid [{:keys [grid] :as world-fn-ctx}]
@@ -77,76 +75,6 @@
 (defn- calculate-start-position [{:keys [start scale] :as w}]
   (assoc w :start-position (mapv * start scale)))
 
-(defn- property-value [layer xy property-key]
-  (if-let [cell (layer/cell layer xy)]
-    (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
-      value
-      :undefined)
-    :no-cell))
-
-(defn- last-steps
-  [{:keys [
-           world/max-area-level
-           world/spawn-rate
-           level/creature-properties
-           grid
-           start
-           scale
-           scaled-grid
-           tiled-map
-           start-position
-           ]}]
-  (let [
-
-
-        can-spawn? #(= "all" (moon.tiled-map/movement-property tiled-map %))
-
-        _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
-
-        spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
-        ;_ (println "scaled grid with filled nil: '?' \n")
-        ;_ (printgrid (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
-        ;_ (println "\n")
-
-        {:keys [_steps area-level-grid]} (area-level-grid/create
-                                          :grid grid
-                                          :start start
-                                          :max-level max-area-level
-                                          :walk-on #{:ground :transition})
-        ;_ (printgrid area-level-grid)
-        _ (assert (or
-                   (= (set (concat [max-area-level] (range max-area-level)))
-                      (set (g2d/cells area-level-grid)))
-                   (= (set (concat [:wall max-area-level] (range max-area-level)))
-                      (set (g2d/cells area-level-grid)))))
-
-        scaled-area-level-grid (g2d/scale-grid area-level-grid scale)
-
-        get-free-position-in-area-level (fn [area-level]
-                                          (rand-nth
-                                           (filter
-                                            (fn [p]
-                                              (and (= area-level (get scaled-area-level-grid p))
-                                                   (#{:no-cell :undefined}
-                                                    (property-value (layers/get (tiled-map/layers tiled-map) "creatures")
-                                                                    p
-                                                                    "id"))))
-                                            spawn-positions)))
-
-
-        creatures (for [position spawn-positions
-                        :let [area-level (get scaled-area-level-grid position)
-                              creatures (filter #(= area-level (:creature/level %))
-                                                creature-properties)]
-                        :when (and (number? area-level)
-                                   (<= (rand) spawn-rate)
-                                   (seq creatures))]
-                    [position (rand-nth creatures)])]
-    (moon.tiled-map/add-creatures-layer! tiled-map creatures)
-    {:tiled-map tiled-map
-     :start-position (get-free-position-in-area-level 0)
-     :area-level-grid scaled-area-level-grid}))
-
 (defn create
   [{:keys [world/map-size
            world/max-area-level
@@ -164,4 +92,4 @@
       place-module/step
       convert-to-tiled-map
       calculate-start-position
-      last-steps))
+      world-fns.modules.last-steps/step))
