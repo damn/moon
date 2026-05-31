@@ -24,6 +24,11 @@
   [[_k _v] _eid]
   nil)
 
+; TODO:
+; no [k v] first arg, just v !
+#_(defn tick [[k v] eid ctx]
+  ((get tick-fns k) v eid ctx))
+
 (defmulti tick
   (fn [[k _v] _eid _ctx]
     k))

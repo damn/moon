@@ -1,6 +1,9 @@
 [
  entity.load
 
+ entity.create.animation
+ entity.create.body
+
  entity.tick.animation
  entity.tick.alert-friendlies-after-duration
  entity.tick.string-effect
@@ -28,20 +31,25 @@
  entity.render.npc-sleeping
  entity.render.stunned
 
- entity.create.animation
- entity.create.body
+ entity.state.load
+
  entity.state.create.active-skill
  entity.state.create.stunned
- entity.state.load
+
  entity.state.draw-ui-view.player-item-on-cursor
  entity.state.cursor.player-idle
+
  effect.load
+
  effect.target.damage
+
  effect.target-all
  effect.target-entity
+
  handle-input.player-idle
  handle-input.player-moving
  handle-input.player-item-on-cursor
+
  tx.load
  draw.load
  ]
