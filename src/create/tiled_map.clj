@@ -1,14 +1,9 @@
 (ns create.tiled-map
   (:require [clojure.core-ext :refer [edn-resource]]
+            [game.constants :refer [world-fn-file]]
             [moon.creature-tiles]
             [moon.db :as db]
             [moon.textures :as textures]))
-
-(def world-fn-file
-   "config/world_fns/modules.edn"
-  ; "config/world_fns/vampire.edn"
-  ; "config/world_fns/uf_caves.edn"
-  )
 
 (defn step
   [{:keys [ctx/db

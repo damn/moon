@@ -3,12 +3,8 @@
             [game.entity :as entity]
             [game.effect :as effect]
             [moon.timer :as timer]
+            [game.constants :refer [skill-image-radius-world-units]]
             [moon.textures :as textures]))
-
-(def ^:private skill-image-radius-world-units
-  (let [tile-size 48
-        image-width 32]
-    (/ (/ image-width tile-size) 2)))
 
 (defmethod entity/render :active-skill
   [[_k {:keys [skill effect-ctx counter]}]

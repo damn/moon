@@ -20,12 +20,8 @@
   [{:keys [ctx/world-viewport]}]
   (:viewport/world-height world-viewport))
 
-(def zoom-speed 0.025)
-
 (defn visible-tiles [{:keys [ctx/world-viewport]}]
   (camera/visible-tiles (:viewport/camera world-viewport)))
-
-(def pausing? true)
 
 (declare txs-fn-map)
 

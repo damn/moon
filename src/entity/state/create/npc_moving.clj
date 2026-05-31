@@ -1,9 +1,8 @@
 (ns entity.state.create.npc-moving
   (:require [game.state :as state]
+            [game.constants :refer [reaction-time-multiplier]]
             [moon.stats :as stats]
             [moon.timer :as timer]))
-
-(def reaction-time-multiplier 0.016)
 
 (defmethod state/create :npc-moving
   [[_k movement-vector] eid {:keys [ctx/elapsed-time]}]

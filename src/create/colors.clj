@@ -1,12 +1,6 @@
 (ns create.colors
-  (:require [com.badlogic.gdx.graphics.color :as color]))
-
-(def black [0 0 0 1])
-(def white [1 1 1 1])
-(def gray  [0.5 0.5 0.5 1])
-(def red   [1 0 0 1])
-
-(def outline-alpha 0.4)
+  (:require [game.constants :refer [black white gray red outline-alpha]]
+            [com.badlogic.gdx.graphics.color :as color]))
 
 (defn step [ctx]
   (assoc ctx :ctx/colors

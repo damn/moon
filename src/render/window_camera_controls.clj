@@ -1,11 +1,10 @@
 (ns render.window-camera-controls
   (:require [game.ctx :as ctx]
             [gdx.graphics.orthographic-camera :as camera]
+            [game.constants :refer [zoom-speed]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.actor :as actor]
-            [gdx.scenes.scene2d.group :as group]
-            )
-  )
+            [gdx.scenes.scene2d.group :as group]))
 
 (defn step
   [{:keys [ctx/controls
@@ -13,10 +12,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (ctx/key-pressed? ctx (:zoom-in controls))
-    (camera/inc-zoom! (:viewport/camera world-viewport) ctx/zoom-speed))
+    (camera/inc-zoom! (:viewport/camera world-viewport) zoom-speed))
 
   (when (ctx/key-pressed? ctx (:zoom-out controls))
-    (camera/inc-zoom! (:viewport/camera world-viewport) (- ctx/zoom-speed)))
+    (camera/inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
 
   (when (ctx/key-just-pressed? ctx (:close-windows-key controls))
     (->> (stage/find-actor stage "moon.ui.windows")

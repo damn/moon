@@ -1,6 +1,7 @@
 (ns editor.property-overview-window
   (:require [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [editor.constants :refer [property-type->overview-table-props]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.stack :as stack]
@@ -10,31 +11,6 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]))
-
-(def ^:private property-type->overview-table-props
-  {:properties/audiovisuals {:columns 10
-                             :image-scale 2
-                             :sort-by-fn (comp name :property/id)
-                             :extra-info-text (constantly "")}
-   :properties/creatures    {:columns 15
-                             :image-scale 1.5
-                             :sort-by-fn #(vector (:creature/level %)
-                                                  (name (:entity/species %))
-                                                  (name (:property/id %)))
-                             :extra-info-text #(str (:creature/level %))}
-   :properties/items        {:columns 20
-                             :image-scale 1.1
-                             :sort-by-fn #(vector (name (:item/slot %))
-                                                  (name (:property/id %)))
-                             :extra-info-text (constantly "")}
-   :properties/projectiles  {:columns 16
-                             :image-scale 2
-                             :sort-by-fn (comp name :property/id)
-                             :extra-info-text (constantly "")}
-   :properties/skills       {:columns 16
-                             :image-scale 2
-                             :sort-by-fn (comp name :property/id)
-                             :extra-info-text (constantly "")}})
 
 (defn- overview-table-rows* [skin image-scale rows]
   (for [row rows]

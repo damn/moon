@@ -2,6 +2,7 @@
   (:require [clojure.math.vector2 :as v]
             [game.effect :as effect]
             [moon.faction :as faction]
+            [game.constants :refer [spiderweb-modifiers spiderweb-duration]]
             [moon.raycaster :as raycaster]
             [moon.stats :as stats]
             [moon.timer :as timer]))
@@ -52,9 +53,6 @@
 (defmethod effect/handle :effects.target/melee-damage
   [_ {:keys [effect/source] :as effect-ctx} ctx]
   (effect/handle (melee-damage-effect @source) effect-ctx ctx))
-
-(def ^:private spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
-(def ^:private spiderweb-duration 5)
 
 (defmethod effect/applicable? :effects.target/spiderweb
   [_ {:keys [effect/target]}]
