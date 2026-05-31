@@ -3,7 +3,7 @@
             [game.entity :as entity]
             [moon.body :as body]
             [moon.cell :as cell]
-            [moon.grid :as grid]
+            [moon.grid.cells-entities :as cells->entities]
             [moon.grid2d :as g2d]))
 
 (defmethod entity/tick :entity/projectile-collision
@@ -18,7 +18,7 @@
                                         (:body/collides? (:entity/body @%))
                                         (body/overlaps? (:entity/body entity)
                                                         (:entity/body @%)))
-                                  (grid/cells->entities cells*)))
+                                  (cells->entities/f cells*)))
         destroy? (or (and hit-entity (not piercing?))
                      (some #(cell/blocked? % (:body/z-order (:entity/body entity))) cells*))]
     [(when destroy?

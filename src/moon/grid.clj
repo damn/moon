@@ -6,12 +6,10 @@
             [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.cell :as cell]
+            [moon.grid.cells-entities :as cells->entities]
             [moon.faction :as faction]
             [moon.grid2d :as g2d]
             [moon.position :as position]))
-
-(defn cells->entities [cells]
-  (into #{} (mapcat :entities) cells))
 
 ; (g2d/get-cells grid (body/occupied-tiles body))
 (defn- body->occupied-cells
@@ -33,7 +31,7 @@
 (defn circle->entities [g2d {:keys [position radius] :as circle}]
   (->> (circle->cells g2d circle)
        (map deref)
-       cells->entities
+       cells->entities/f
        (filter #(intersector/overlaps? (let [[x y] position] (gdx-circle/create x y radius))
                                        (body/rectangle (:entity/body @%))))))
 
@@ -83,7 +81,7 @@
   (let [cells* (into [] (map deref) (g2d/get-cells g2d (body/touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
          (->> cells*
-              cells->entities
+              cells->entities/f
               (not-any? (fn [other-entity]
                           (let [other-entity @other-entity]
                             (and (not= (:entity/id other-entity) entity-id)
