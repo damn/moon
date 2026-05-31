@@ -1,135 +1,14 @@
 (ns levelgen-test.app
-  (:require [clojure.core-ext :refer [edn-resource]]
-            [com.badlogic.gdx.application :as app]
-            [gdx.backends.lwjgl :as lwjgl]
-            [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [gdx.graphics.orthographic-camera :as camera]
-            [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.input :as input]
+  (:require [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.keys :as input.keys]
-            [com.badlogic.gdx.maps.map-layers :as layers]
-            [com.badlogic.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.utils.screen-utils :as screen-utils]
+            [gdx.backends.lwjgl :as lwjgl]
+            [gdx.graphics.orthographic-camera :as camera]
             [gdx.stage :as stage]
-            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]
-            [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.textures]
             [gdx.tiled-map-renderer :as tiled-map-renderer]
             [gdx.utils.disposable :as disposable]
-            [com.badlogic.gdx.utils.screen-utils :as screen-utils]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.viewport :as viewport]
-            [moon.creature-tiles]
-            schema.malli-form
-            [moon.db :as db]))
-
-(def initial-level-fn "config/world_fns/uf_caves.edn")
-
-(def level-fns
-  ["config/world_fns/vampire.edn"
-   "config/world_fns/uf_caves.edn"
-   "config/world_fns/modules.edn"])
-
-(defn- show-whole-map! [{:keys [ctx/camera
-                                ctx/tiled-map]}]
-  (camera/set-position! camera
-                        [(/ (props/get (tiled-map/props tiled-map) "width") 2)
-                         (/ (props/get (tiled-map/props tiled-map) "height") 2)])
-  (camera/set-zoom! camera
-                    (camera/calculate-zoom camera
-                                           {:left [0 0]
-                                            :top [0 (props/get (tiled-map/props tiled-map) "height")]
-                                            :right [(props/get (tiled-map/props tiled-map) "width") 0]
-                                            :bottom [0 0]})))
-
-(def tile-size 48)
-
-(defn- generate-level
-  [{:keys [ctx/db
-           ctx/textures
-           ctx/tiled-map] :as ctx} level-fn]
-  (when tiled-map
-    (disposable/dispose! tiled-map))
-  (let [level (let [[f params] (edn-resource level-fn)]
-                (f
-                 (assoc params
-                        :level/creature-properties (moon.creature-tiles/prepare
-                                                    (db/all-raw db :properties/creatures)
-                                                    (fn [{:keys [image/file image/bounds]}]
-                                                      (assert file)
-                                                      (assert (contains? textures file))
-                                                      (let [texture (get textures file)]
-                                                        (if-let [[x y w h] bounds]
-                                                          (texture/region texture x y w h)
-                                                          (texture/region texture)))))
-                        :textures textures)))
-        tiled-map (:tiled-map level)
-        ctx (assoc ctx :ctx/tiled-map tiled-map)]
-    (assert tiled-map)
-    (-> tiled-map
-        tiled-map/layers
-        (layers/get "creatures")
-        (layer/set-visible! true))
-    (show-whole-map! ctx)
-    ctx))
-
-(defn- edit-window [skin]
-  {:title "Edit"
-   :skin skin
-   :table/rows (for [level-fn level-fns
-                     :let [on-clicked (fn [actor ctx]
-                                        (let [stage (actor/stage actor)
-                                              new-ctx (generate-level ctx level-fn)]
-                                          (stage/set-ctx! stage new-ctx)))]]
-                 [{:actor (text-button/create
-                           {:text (str "Generate " level-fn)
-                            :skin skin
-                            :actor/listeners {:listener/change (fn [event actor]
-                                                                 (on-clicked actor (:stage/ctx (event/stage event))))}})}])})
-
-(defn create!
-  [app _params]
-  (let [files (app/files app)
-        graphics (app/graphics app)
-        input (app/input app)
-        skin (skin/create (files/internal files "skin/uiskin.json"))
-        ui-viewport (fit-viewport/create 1440 900)
-        sprite-batch (sprite-batch/create)
-        stage (stage/create ui-viewport sprite-batch)
-        _  (input/set-processor! input stage)
-        tile-size 48
-        world-unit-scale (float (/ tile-size))
-        ctx {:ctx/stage stage
-             :ctx/files files}
-        ctx (assoc ctx :ctx/db (db/create))
-        ctx (assoc ctx :ctx/textures (gdx.textures/create files))
-        world-viewport (let [world-width  (* 1440 world-unit-scale)
-                             world-height (* 900  world-unit-scale)]
-                         (fit-viewport/create world-width
-                                              world-height
-                                              (camera/create
-                                               {:y-down? false
-                                                :world-width world-width
-                                                :world-height world-height})))
-        ctx (assoc ctx
-                   :ctx/input input
-                   :ctx/world-viewport world-viewport
-                   :ctx/ui-viewport ui-viewport
-                   :ctx/camera (:viewport/camera world-viewport)
-                   :ctx/color-setter (constantly (color/float-bits [1 1 1 1]))
-                   :ctx/zoom-speed 0.1
-                   :ctx/camera-movement-speed 1
-                   :ctx/sprite-batch sprite-batch
-                   :ctx/world-unit-scale world-unit-scale)
-        ctx (generate-level ctx initial-level-fn)]
-    (stage/add-actor! (:ctx/stage ctx) (window/create (edit-window skin)))
-    ctx))
+            [levelgen-test.create :as create]))
 
 (defn dispose!
   [{:keys [ctx/skin
@@ -199,7 +78,7 @@
   (lwjgl/use-glfw-async!)
   (lwjgl/application!
    {:state-var #'state
-    :create! create!
+    :create! create/f!
     :create-params nil
     :dispose! dispose!
     :render! render!
