@@ -1,5 +1,6 @@
 (ns moon.content-grid
-  (:require [moon.grid2d :as g2d]))
+  (:require [moon.grid2d :as g2d]
+            [moon.position :as position]))
 
 (defn create [width height cell-size]
   {:grid (g2d/create-grid
@@ -39,6 +40,6 @@
                      :moon.content-grid/content-cell
                      deref
                      :idx)]
-         (cons idx (g2d/get-8-neighbour-positions idx)))
+         (cons idx (position/get-8-neighbours idx)))
        (keep grid)
        (mapcat (comp :entities deref))))

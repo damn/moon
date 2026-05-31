@@ -1,6 +1,7 @@
 (ns moon.caves
   (:require [moon.grid2d :as g2d]
-            [clojure.rand :as rand]))
+            [clojure.rand :as rand]
+            [moon.position :as position]))
 
 ;Cave Algorithmus.
 ;http://properundead.com/2009/03/cave-generator.html
@@ -21,7 +22,7 @@
   (when (< (rand/srand random) turn-ratio)
     (reset! current-order (create-order random)))
   (take n
-        (get-in-order (g2d/get-4-neighbour-positions posi)
+        (get-in-order (position/get-4-neighbours posi)
                       @current-order)))
 
 (defn- get-default-adj-num [open-paths random]

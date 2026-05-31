@@ -1,4 +1,5 @@
-(ns moon.grid2d)
+(ns moon.grid2d
+  (:require [moon.position :as position]))
 ; 2dimvector is 7x faster than a hashmap of [x y] to values
 ; like in rich hickey ant demo vectors of vectors:
 ; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj
@@ -93,18 +94,6 @@
                                                    (+ y min-y -1)]))))
      convert]))
 
-(defn get-4-neighbour-positions [[x y]]
-  [[(inc x) y]
-   [(dec x) y]
-   [x (inc y)]
-   [x (dec y)]])
-
-(defn get-8-neighbour-positions [[x y]]
-  (for [tx (range (dec x) (+ x 2))
-        ty (range (dec y) (+ y 2))
-        :when (not= [x y] [tx ty])]
-    [tx ty]))
-
 (defn assoc-ks [m ks v]
   (if (empty? ks)
     m
@@ -149,7 +138,7 @@
     (println)))
 
 (let [idxvalues-order [[1 0] [-1 0] [0 1] [0 -1]]]
-  (assert (= (get-4-neighbour-positions [0 0])
+  (assert (= (position/get-4-neighbours [0 0])
              idxvalues-order)))
 
 (comment
@@ -168,7 +157,7 @@
 
 (defn transition-idx-value [position position->transition?]
   (->> position
-       get-4-neighbour-positions
+       position/get-4-neighbours
        (map-indexed (partial calculate-index-value
                              position->transition?))
        (apply +)))
@@ -176,7 +165,7 @@
 (defn adjacent-wall-positions [grid]
   (filter (fn [p] (and (= :wall (get grid p))
                        (some #(= :ground (get grid %))
-                             (get-8-neighbour-positions p))))
+                             (position/get-8-neighbours p))))
           (posis grid)))
 
 ; TODO moon.grid2d.flood-fill - 1 transformation function ... ?
@@ -188,7 +177,7 @@
       (recur (filter #(and (get grid %)
                            (walk-on-position? %))
                      (distinct
-                      (mapcat get-8-neighbour-positions
+                      (mapcat position/get-8-neighbours
                               next-positions)))
              (concat filled next-positions)
              (assoc-ks grid next-positions nil))

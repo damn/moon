@@ -1,5 +1,6 @@
 (ns world-fns.modules.area-level-grid
-  (:require [moon.grid2d :as g2d]))
+  (:require [moon.grid2d :as g2d]
+            [moon.position :as position]))
 
 ; can adjust:
 ; * split percentage , for higher level areas may scale faster (need to be more careful)
@@ -29,7 +30,7 @@
         step->level #(int (Math/ceil (/ % level-step)))
         walkable-neighbours (fn [grid position]
                               (filter #(walk-on (get grid %))
-                                      (g2d/get-4-neighbour-positions position)))]
+                                      (position/get-4-neighbours position)))]
     (loop [next-positions #{start}
            steps          [[0 start]]
            grid           (assoc grid start 0)]
