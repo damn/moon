@@ -1,22 +1,12 @@
 (ns moon.grid
-  (:require [com.badlogic.gdx.math.circle :as gdx-circle]
-            [com.badlogic.gdx.math.intersector :as intersector]
-            [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
+  (:require [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.grid.cells-entities :as cells->entities]
             [moon.grid.body-occupied-cells :refer [body->occupied-cells]]
-            [moon.grid.circle-to-cells :refer [circle->cells]]
             [moon.faction :as faction]
             [moon.grid2d :as g2d]
             [moon.position :as position]))
-
-(defn circle->entities [g2d {:keys [position radius] :as circle}]
-  (->> (circle->cells g2d circle)
-       (map deref)
-       cells->entities/f
-       (filter #(intersector/overlaps? (let [[x y] position] (gdx-circle/create x y radius))
-                                       (body/rectangle (:entity/body @%))))))
 
 (defn cached-adjacent-cells [g2d cell]
   (if-let [result (:adjacent-cells @cell)]
