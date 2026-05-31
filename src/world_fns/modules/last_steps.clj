@@ -1,10 +1,7 @@
 (ns world-fns.modules.last-steps
   (:require [com.badlogic.gdx.maps.map-layers :as layers]
-            [com.badlogic.gdx.maps.map-properties :as props]
+            [gdx.tiled-map.property-value :refer [property-value]]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [moon.grid2d :as g2d]
             [clojure.grid2d.scale-grid :as scale-grid]
             [clojure.grid2d.printgrid :as printgrid]
@@ -12,13 +9,6 @@
             [gdx.tiled-map.movement-property :as movement-property]
             [gdx.tiled-map.add-creatures-layer :as add-creatures-layer]
             [world-fns.modules.area-level-grid :as area-level-grid]))
-
-(defn- property-value [layer xy property-key]
-  (if-let [cell (layer/cell layer xy)]
-    (if-let [value (props/get (tile/properties (cell/tile cell)) property-key)]
-      value
-      :undefined)
-    :no-cell))
 
 (defn step
   [{:keys [
