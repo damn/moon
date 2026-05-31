@@ -3,29 +3,8 @@
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
-            [com.badlogic.gdx.utils.align :as align]))
-
-(defmulti ^:private create-listener
-  (fn [[listener-k listener-params]]
-    listener-k))
-
-(defmethod create-listener
-  :listener/text-tooltip
-  [[_ [tooltip skin]]]
-  (text-tooltip/create tooltip skin))
-
-(defmethod create-listener
-  :listener/change
-  [[_ f]]
-  (change-listener/create f))
-
-(defmethod create-listener
-  :listener/click
-  [[_ f]]
-  (click-listener/create f))
+            [com.badlogic.gdx.utils.align :as align]
+            [gdx.scenes.scene2d.listener :as listener]))
 
 (def name actor/name)
 (def x actor/x)
@@ -52,7 +31,7 @@
   (actor/set-touchable! actor (touchable/k->value touchable)))
 
 (defn add-listener! [actor [listener-k listener-params]]
-  (actor/add-listener! actor (create-listener [listener-k listener-params])))
+  (actor/add-listener! actor (listener/create [listener-k listener-params])))
 
 (defn stage->local-coordinates [actor xy]
   (vector2/->clj (actor/stage->local-coordinates actor (vector2/->java xy))))
