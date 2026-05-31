@@ -49,6 +49,8 @@
  entity.state.enter.player-dead
  entity.state.enter.npc-moving
 
+ entity.state.exit.player-item-on-cursor
+
  entity.state.draw-ui-view.player-item-on-cursor
  entity.state.cursor.player-idle
 
