@@ -2,9 +2,10 @@
   (:require [clojure.core-ext :refer [actions!
                                       reduce-actions!]]
             [clojure.math.vector2 :as v]
+            [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.keys :as input.keys]
             [game.reaction-txs :as reaction-txs]
-            [gdx.app :as app]
             [gdx.graphics.orthographic-camera :as camera]
             [malli.utils :as mu]))
 
@@ -45,16 +46,17 @@
     (apply (get draw-fns k) ctx (rest component))))
 
 (defn key-pressed? [{:keys [ctx/app]} input-key]
-  (app/key-pressed? app input-key))
+  (input/key-pressed? (app/input app) input-key))
 
 (defn world-unit-scale [ctx]
   (:ctx/world-unit-scale ctx))
 
 (defn mouse-position [{:keys [ctx/app]}]
-  (app/mouse-position app))
+  [(input/x (app/input app))
+   (input/y (app/input app))])
 
 (defn button-just-pressed? [{:keys [ctx/app]} input-button]
-  (app/button-just-pressed? app input-button))
+  (input/button-just-pressed? (app/input app) input-button))
 
 ; It is possible to put items out of sight, losing them.
 ; Because line of sight checks center of entity only, not corners
@@ -72,7 +74,7 @@
   (map first audio))
 
 (defn key-just-pressed? [{:keys [ctx/app]} input-key]
-  (app/key-just-pressed? app input-key))
+  (input/key-just-pressed? (app/input app) input-key))
 
 (defn player-movement-vector [ctx]
   (let [r (when (key-pressed? ctx input.keys/d) [1  0])

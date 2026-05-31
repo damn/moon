@@ -1,5 +1,6 @@
 (ns editor.window
-  (:require [gdx.app :as app]
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.keys :as input.keys]
             [gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
@@ -54,7 +55,7 @@
                  {:act! (fn [this delta]
                           (when-let [stage (actor/stage this)]
                             (let [ctx (:stage/ctx stage)]
-                              (when (app/key-just-pressed? (:ctx/app ctx) input.keys/enter)
+                              (when (input/key-just-pressed? (app/input (:ctx/app ctx)) input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
         save-button {:text "Save [LIGHT_GRAY](ENTER)[]"
                      :skin skin

@@ -1,5 +1,6 @@
 (ns stage.dev-menu
-  (:require [gdx.app :as app]
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.graphics :as graphics]
             [game.ctx :as ctx]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.stage :as stage]
@@ -8,7 +9,7 @@
             [moon.number :as number]))
 
 (defn frames-per-second [{:keys [ctx/app]}]
-  (app/frames-per-second app))
+  (graphics/frames-per-second (app/graphics app)))
 
 (defn camera-zoom [{:keys [ctx/world-viewport]}]
   (camera/zoom (:viewport/camera world-viewport)))

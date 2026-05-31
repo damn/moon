@@ -1,5 +1,6 @@
 (ns render.set-cursor
-  (:require [gdx.app :as app]
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.graphics :as graphics]
             [game.state :as state]))
 
 (defn step
@@ -12,5 +13,5 @@
         state-k (:state (:entity/fsm entity))
         cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
     (assert (contains? cursors cursor-key))
-    (app/set-cursor! app (get cursors cursor-key)))
+    (graphics/set-cursor! (app/graphics app) (get cursors cursor-key)))
   ctx)
