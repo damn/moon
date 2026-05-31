@@ -1,12 +1,10 @@
 (ns editor.map-widget-table
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [editor.property-overview-window]
+            [editor.map-widget-table.component-row :as component-row]
+            [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
             [editor.widget :as widget]
-            [editor.window]
             [gdx.scenes.scene2d.actor :as actor]
-            [gdx.scenes.scene2d.group :as group]
-            [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.widget-group :as widget-group]
@@ -15,51 +13,14 @@
             [moon.schemas :as schemas]
             [moon.ui.error-window]))
 
-(defn- k->label-text [k]
-  (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
-  )
-
-(defn- component-row*
-  [{:keys [skin
-           editor-widget
-           display-remove-component-button?
-           k
-           table
-           label-text]}]
-  [{:actor (table/create
-            {:table/cell-defaults {:pad 2}
-             :table/rows [[{:actor (when display-remove-component-button?
-                                     (text-button/create
-                                      {:text "-"
-                                       :skin skin
-                                       :actor/listeners {:listener/change
-                                                         (fn [event _actor]
-                                                           (actor/remove! (first (filter (fn [actor]
-                                                                                           (and (actor/user-object actor)
-                                                                                                (= k ((actor/user-object actor) 0))))
-                                                                                         (group/children table))))
-                                                           (rebuild/f! (:stage/ctx (event/stage event))))}}))
-                            :left? true}
-                           {:actor (label/create
-                                    {:text label-text
-                                     :skin skin})}]]})
-    :right? true}
-   {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
-    :pad-top 2
-    :pad-bottom 2
-    :fill-y? true
-    :expand-y? true}
-   {:actor editor-widget
-    :left? true}])
-
 (defn- component-row [skin editor-widget k optional-key? table]
-  (component-row*
+  (component-row/create
    {:skin skin
     :editor-widget editor-widget
     :display-remove-component-button? optional-key?
     :k k
     :table table
-    :label-text (k->label-text k)}))
+    :label-text (k-label-text/f k)}))
 
 (defn add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
