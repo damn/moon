@@ -3,6 +3,7 @@
   :dependencies [
                  [com.github.damn/clojure.core-ext "55983eb35e"]
                  [com.github.damn/clojure.math "8c8d074607"]
+                 [com.github.damn/clojure.rand "8b08b1e70d"]
                  [com.github.damn/com.badlogic.gdx "e75c53c521"]
                  [com.github.damn/com.badlogic.gdx.backends.lwjgl3 "01329de8e4"]
                  [com.github.damn/com.badlogic.gdx.graphics.g2d.freetype "29d1626eca"]
