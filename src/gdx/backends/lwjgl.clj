@@ -4,6 +4,8 @@
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]))
 
+(def use-glfw-async! lwjgl3-application-configuration/use-glfw-async!)
+
 (def state (atom nil))
 
 ; TODO pass listener!

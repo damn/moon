@@ -24,6 +24,8 @@
             ))
 
 ; TODO tx-core/* ?
+; just (def txs-fn-map (edn-resource "config/txs-fn-map.edn"))
+; possible?
 
 (.bindRoot #'constants/txs-fn-map
            {
