@@ -14,7 +14,7 @@
                                :dispose! (fn []
                                            ((:dispose! config) @state))
                                :render!  (fn []
-                                           (swap! state (:render! config)))
+                                           (swap! state (:render! config) (:render-params config)))
                                :resize!  (fn [width height]
                                            ((:resize! config) @state width height))
                                :pause!   (fn [])

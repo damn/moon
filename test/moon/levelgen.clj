@@ -170,7 +170,8 @@
 
 (defn render!
   [{:keys [ctx/stage]
-    :as ctx}]
+    :as ctx}
+   _params]
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
@@ -196,6 +197,7 @@
     :create-params nil
     :dispose! dispose!
     :render! render!
+    :render-params nil
     :resize! resize!
     :title "Levelgen Test"
     :windowed-mode {:width 1440 :height 900}
