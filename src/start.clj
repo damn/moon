@@ -4,6 +4,7 @@
   (:gen-class))
 
 (defn -main []
+  (run! require (edn-resource "requires.edn"))
   (-> "start.edn"
       edn-resource
       lwjgl/application!))

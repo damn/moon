@@ -1,7 +1,6 @@
 {
  :create!  application.create/do!
- :create-params [create.require-components/step
-                 create.batch/step
+ :create-params [create.batch/step
                  create.audio/step
                  create.shape-drawer-texture/step
                  create.shape-drawer/step
