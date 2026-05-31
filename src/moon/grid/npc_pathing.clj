@@ -8,14 +8,10 @@
             [moon.grid2d :as g2d]
             [moon.position :as position]))
 
-(defmacro ^:private when-seq [[aseq bind] & body]
-  `(let [~aseq ~bind]
-     (when (seq ~aseq)
-       ~@body)))
-
 (defn- get-min-dist-cell [distance-to cells]
-  (when-seq [cells (filter distance-to cells)]
-    (apply min-key distance-to cells)))
+  (let [cells (filter distance-to cells)]
+    (when (seq cells)
+      (apply min-key distance-to cells))))
 
 ; rarely called -> no performance bottleneck
 (defn- viable-cell? [grid distance-to own-dist eid cell]
