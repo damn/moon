@@ -1,10 +1,17 @@
 (ns entity.tick.animation
-  (:require [clojure.animation :as animation]
-            [game.entity :as entity]))
+  (:require [game.entity :as entity]))
 
 (defmethod entity/tick :entity/animation
-  [[_k animation] eid {:keys [ctx/delta-time]}]
-  [[:tx/assoc eid :entity/animation (animation/tick animation delta-time)]
-   (when (and (:delete-after-stopped? animation)
-              (animation/stopped? animation))
+  [[_k {:keys [delete-after-stopped?
+               looping?
+               cnt
+               maxcnt]
+        :as animation}] eid {:keys [ctx/delta-time]}]
+  [[:tx/assoc eid :entity/animation (let [maxcnt (float maxcnt)
+                                          newcnt (+ (float cnt) (float delta-time))]
+                                      (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
+                                                                  looping? (min maxcnt (- newcnt maxcnt))
+                                                                  :else maxcnt)))]
+   (when (and delete-after-stopped?
+              (and (not looping?) (>= cnt maxcnt)))
      [:tx/mark-destroyed eid])])

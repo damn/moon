@@ -1,9 +1,11 @@
 (ns entity.render.animation
-  (:require [clojure.animation :as animation]
-            [game.entity :as entity]))
+  (:require [game.entity :as entity]))
 
 (defmethod entity/render :entity/animation
-  [[_k animation] entity ctx]
-  (entity/render [:entity/image (animation/current-frame animation)]
+  [[_k {:keys [frames
+               cnt
+               frame-duration]}] entity ctx]
+  (entity/render [:entity/image (frames (min (int (/ (float cnt) (float frame-duration)))
+                                             (dec (count frames))))]
                  entity
                  ctx))
