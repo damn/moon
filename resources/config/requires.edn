@@ -50,6 +50,8 @@
  entity.state.draw-ui-view.player-item-on-cursor
  entity.state.cursor.player-idle
 
+ entity.state.clicked-inventory-cell.player-item-on-cursor
+
  effect.load
 
  effect.target.damage
