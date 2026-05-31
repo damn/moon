@@ -2,7 +2,8 @@
   (:require [clojure.core-ext :refer [sort-by-k-order]]
             [clojure.string :as str]
             [game.constants :refer [k->colors k-order]]
-            [game.info-fns :as info-fns]))
+            [game.info-fns :as info-fns]
+            info.stats.modifiers))
 
 (defmulti text (fn [object ctx]
                  (cond (:item/slot object)
@@ -64,7 +65,7 @@
                      (str "[LIME]" (str/capitalize (name (:item/slot item))) "[]")
                      ; seq because they can be empty map ?
                      (when (seq (:stats/modifiers item))
-                       (str "[CYAN]" (info-fns/stats-modifiers-info (:stats/modifiers item)) "[]"))])))
+                       (str "[CYAN]" (info.stats.modifiers/info (:stats/modifiers item) _ctx) "[]"))])))
 
 (comment
  (let [item (get (:inventory.slot/shield (:entity/inventory @(:ctx/player-eid @dev.application/state)))
