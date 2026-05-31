@@ -1,6 +1,7 @@
 (ns editor.map-widget-table
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
             [editor.widget :as widget]
+            [editor.map-widget-table.get-value :as get-value]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui.label :as label]
@@ -13,12 +14,6 @@
             [moon.schemas :as schemas]
             [moon.ui.error-window]
             [editor.property-overview-window]))
-
-(defn get-value [table schemas]
-  (into {}
-        (for [widget (filter (comp vector? actor/user-object) (group/children table))
-              :let [[k _] (actor/user-object widget)]]
-          [k (widget/value (get schemas k) widget schemas)])))
 
 (defn build-value-widget [ctx schema k v]
   (let [widget (widget/create schema v ctx)] ; - wait its used also somewhere else w/o this widget/create?
@@ -33,7 +28,7 @@
   (let [window (-> stage
                    (stage/find-actor "moon.ui.editor.window"))
         map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
-        property (get-value map-widget-table (:db/schemas db))]
+        property (get-value/f map-widget-table (:db/schemas db))]
     (actor/remove! window)
     (stage/add-actor! stage
                       (editor.window/property-editor-window

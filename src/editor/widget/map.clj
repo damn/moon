@@ -3,6 +3,7 @@
             [clojure.set :as set]
             [editor.constants :refer [property-k-sort-order]]
             [editor.map-widget-table :as map-widget-table]
+            [editor.map-widget-table.get-value :as get-value]
             [editor.widget :as widget]
             [moon.schemas :as schemas]))
 
@@ -26,4 +27,4 @@
 
 (defmethod widget/value :s/map
   [_ table schemas]
-  (map-widget-table/get-value table schemas))
+  (get-value/f table schemas))
