@@ -29,7 +29,7 @@
   (let [component-info (fn [[k v]]
                          (let [s (if-let [info-fn (info-fns/mapping k)]
                                    (do
-                                    (str k " - " (info-fn [k v] ctx))))]
+                                    (str #_k #_" - " (info-fn v ctx))))]
                            (if-let [color (k->colors k)]
                              (str "[" color "]" s "[]")
                              s)))]

@@ -61,10 +61,10 @@
    :stats/armor-pierce])
 
 (def mapping
-  {:creature/level (fn [[_ v] _ctx]
+  {:creature/level (fn [v _ctx]
                      (str "Level: " v))
 
-   :entity/stats (fn [[_ stats] _ctx]
+   :entity/stats (fn [stats _ctx]
                    (str/join "\n" (concat
                                    ["*STATS*"
                                     (str "Mana: " (stats/get-mana stats))
@@ -76,7 +76,7 @@
    :effects.target/convert (fn [_ _ctx]
                              "Converts target to your side.")
 
-   :effects.target/damage (fn [[_ {[min max] :damage/min-max}] _ctx]
+   :effects.target/damage (fn [{[min max] :damage/min-max} _ctx]
                             (str min "-" max " damage")
                             #_(if source
                                 (let [modified (stats/damage @source damage)]
@@ -96,60 +96,60 @@
    :effects.target/spiderweb (fn [_ _ctx]
                                "Spiderweb slows 50% for 5 seconds.")
 
-   :effects.target/stun (fn [[_ duration] _ctx]
+   :effects.target/stun (fn [duration _ctx]
                           (str "Stuns for " (number/readable duration) " seconds"))
 
-   :effects/spawn (fn [[_ {:keys [property/pretty-name]}] _ctx]
+   :effects/spawn (fn [{:keys [property/pretty-name]} _ctx]
                     (str "Spawns a " pretty-name))
 
    :effects/target-all (fn [_ _ctx]
                          "All visible targets")
 
-   :entity/delete-after-duration (fn [[_ counter] {:keys [ctx/elapsed-time]}]
+   :entity/delete-after-duration (fn [counter {:keys [ctx/elapsed-time]}]
                                    (str "Remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
 
-   :entity/faction (fn [[_ faction] _ctx]
+   :entity/faction (fn [faction _ctx]
                      (str "Faction: " (name faction)))
 
-   :entity/fsm (fn [[_ fsm] _ctx]
+   :entity/fsm (fn [fsm _ctx]
                  (str "State: " (name (:state fsm))))
 
-   :stats/modifiers (fn [[_ mods] _ctx]
+   :stats/modifiers (fn [mods _ctx]
                       (stats-modifiers-info mods))
 
-   :entity/skills (fn [[_ skills] _ctx]
+   :entity/skills (fn [skills _ctx]
                     ; => recursive info-text leads to endless text wall
                     (when (seq skills)
                       (str "Skills: " (str/join "," (map name (keys skills))))))
 
-   :entity/species (fn [[_ species] _ctx]
+   :entity/species (fn [species _ctx]
                      (str "Creature - " (str/capitalize (name species))))
 
-   :entity/temp-modifier (fn [[_ {:keys [counter]}] {:keys [ctx/elapsed-time]}]
+   :entity/temp-modifier (fn [{:keys [counter]} {:keys [ctx/elapsed-time]}]
                            (str "Spiderweb - remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
 
    :projectile/piercing? (fn [_ _ctx]
                            "Piercing")
 
-   :property/pretty-name (fn [[_ v] _ctx]
+   :property/pretty-name (fn [v _ctx]
                            v)
 
-   :skill/cooling-down? (fn [[_ counter] {:keys [ctx/elapsed-time]}]
+   :skill/cooling-down? (fn [counter {:keys [ctx/elapsed-time]}]
                           (str "Cooldown: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
 
-   :skill/action-time (fn [[_ v] _ctx]
+   :skill/action-time (fn [v _ctx]
                         (str "Action-Time: " (number/readable v) " seconds"))
 
-   :skill/action-time-modifier-key (fn [[_ v] _ctx]
+   :skill/action-time-modifier-key (fn [v _ctx]
                                      (case v
                                        :stats/cast-speed "Spell"
                                        :stats/attack-speed "Attack"))
 
-   :skill/cooldown (fn [[_ v] _ctx]
+   :skill/cooldown (fn [v _ctx]
                      (str "Cooldown: " (number/readable v) " seconds"))
 
-   :skill/cost (fn [[_ v] _ctx]
+   :skill/cost (fn [v _ctx]
                  (str "Cost: " v " Mana"))
 
-   :maxrange (fn [[_ v] _ctx]
+   :maxrange (fn [v _ctx]
                (str "Range: " v " Meters."))})
