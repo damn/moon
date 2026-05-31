@@ -8,7 +8,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.utils.align :as align]))
 
-(defmulti create-listener
+(defmulti ^:private create-listener
   (fn [[listener-k listener-params]]
     listener-k))
 
