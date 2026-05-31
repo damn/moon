@@ -6,6 +6,7 @@
 
 (def state (atom nil))
 
+; TODO pass listener!
 (defn application! [config]
   (lwjgl3-application-configuration/use-glfw-async!)
   (lwjgl3-application/create (application-listener/create

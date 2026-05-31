@@ -1,7 +1,5 @@
 (ns gdx.app
-  (:require [com.badlogic.gdx.audio :as audio]
-            [com.badlogic.gdx.graphics.pixmap :as pixmap]
-            [com.badlogic.gdx.application :as app]
+  (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.files :as files]
             [gdx.graphics :as graphics]
             [com.badlogic.gdx.input :as input]
@@ -11,16 +9,6 @@
             [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
             [com.badlogic.gdx.graphics.texture.texture-filter :as texture-filter]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
-
-(defn new-sound [app path]
-  (audio/new-sound (app/audio app)
-                   (files/internal (app/files app) path)))
-
-(defn new-cursor [app path [hotspot-x hotspot-y]]
-  (let [pixmap (pixmap/create (files/internal (app/files app) path))
-        cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
-    (pixmap/dispose! pixmap)
-    cursor))
 
 (defn new-font
   [app
