@@ -1,5 +1,5 @@
 (ns tx.load
-  (:require [game.constants :as constants]
+  (:require [game.ctx.do]
             tx.add-text-effect
             tx.set-cooldown
             tx.add-skill
@@ -27,7 +27,7 @@
 ; just (def txs-fn-map (edn-resource "config/txs-fn-map.edn"))
 ; possible?
 
-(.bindRoot #'constants/txs-fn-map
+(.bindRoot #'game.ctx.do/txs-fn-map
            {
             :tx/state-exit               tx.state-exit/do!
             :tx/audiovisual              tx.audiovisual/do!

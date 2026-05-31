@@ -1,7 +1,6 @@
 [
  schema.malli-form
 
- ;;; ooooh we can explain stuff here (fns of ...)
  entity.load
 
  entity.create.animation

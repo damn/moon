@@ -40,8 +40,6 @@
 
 (def pausing? true)
 
-(declare txs-fn-map)
-
 (declare draw-fns)
 
 (def k->colors
