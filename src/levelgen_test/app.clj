@@ -1,4 +1,4 @@
-(ns moon.levelgen
+(ns levelgen-test.app
   (:require [clojure.core-ext :refer [edn-resource]]
             [com.badlogic.gdx.application :as app]
             [gdx.backends.lwjgl :as lwjgl]
@@ -26,6 +26,7 @@
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.viewport :as viewport]
             [moon.creature-tiles]
+            schema.malli-form
             [moon.db :as db]))
 
 (def initial-level-fn "config/world_fns/uf_caves.edn")
