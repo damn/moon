@@ -3,6 +3,7 @@
  entity.tick
  entity.tick.movement
  entity.render
+ entity.render.clickable
  entity.create.animation
  entity.create.body
  entity.state.create.active-skill

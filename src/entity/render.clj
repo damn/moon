@@ -13,18 +13,6 @@
             [moon.timer :as timer]
             [moon.val-max :as val-max]))
 
-(defmethod entity/render :entity/clickable
-  [[_k {:keys [text]}]
-   {:keys [entity/body
-           entity/mouseover?]}
-   _ctx]
-  (when (and mouseover? text)
-    (let [[x y] (:body/position body)]
-      [[:draw/text {:text text
-                    :x x
-                    :y (+ y (/ (:body/height body) 2))
-                    :up? true}]])))
-
 (defmethod entity/render :entity/image
   [[_k image] {:keys [entity/body]} {:keys [ctx/textures]}]
   [[:draw/texture-region
