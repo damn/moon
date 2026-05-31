@@ -26,35 +26,8 @@
             [gdx.stage :as stage]
             gdx.textures
             [gdx.viewport :as viewport]
-            [moon.db :as db]
-            editor.property-overview-window
-            editor.window))
-
-(defn- main-window [db skin]
-  (window/create
-   {:title "Edit"
-    :skin skin
-    :table/rows (for [property-type (sort (db/property-types db))]
-                  [{:actor (text-button/create
-                            {:text (str/capitalize (name property-type))
-                             :skin skin
-                             :actor/listeners {:listener/change (fn [event actor]
-                                                                  (let [{:keys [ctx/db
-                                                                                ctx/skin
-                                                                                ctx/stage
-                                                                                ctx/textures]
-                                                                         :as ctx} (:stage/ctx (event/stage event))]
-                                                                    (stage/add-actor! stage
-                                                                                      (editor.property-overview-window/create
-                                                                                       {:db db
-                                                                                        :textures textures
-                                                                                        :skin skin
-                                                                                        :property-type property-type
-                                                                                        :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                                                         (stage/add-actor! stage
-                                                                                                                           (editor.window/property-editor-window
-                                                                                                                            {:ctx ctx
-                                                                                                                             :property (db/get-raw db id)})))}))))}})}])}))
+            [editor.main-window :as main-window]
+            [moon.db :as db]))
 
 (defn create! [app _params]
   (let [skin (skin/create (files/internal (app/files app) "skin/uiskin.json"))
@@ -63,7 +36,7 @@
         stage (stage/create ui-viewport batch)
         db (db/create)]
     (input/set-processor! (app/input app) stage)
-    (stage/add-actor! stage (main-window db skin))
+    (stage/add-actor! stage (main-window/create db skin))
     {:ctx/app app
      :ctx/batch batch
      :ctx/db db
