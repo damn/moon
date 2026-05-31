@@ -17,12 +17,13 @@
                  [create.render-z-order/step]
                  [create.max-speed/step]
                  [create.db/step]
-                 [create.add-stage-actors/step [stage.dev-menu/create
-                                                stage.action-bar/create
-                                                stage.hp-mana-bar/create
-                                                stage.windows/create
-                                                stage.player-state-draw/create
-                                                stage.player-message-actor/create]]
+                 [create.add-stage-actors/step [[stage.dev-menu/create]
+                                                [stage.action-bar/create]
+                                                [stage.hp-mana-bar/create]
+                                                [stage.windows/create [stage.info-window/create
+                                                                       stage.inventory-window/create]]
+                                                [stage.player-state-draw/create]
+                                                [stage.player-message-actor/create]]]
                  [create.tiled-map/step]
                  [create.grid/step]
                  [create.content-grid/step]

@@ -1,10 +1,8 @@
 (ns stage.windows
-  (:require [gdx.scenes.scene2d.group :as group]
-            [stage.info-window :as info-window]
-            [stage.inventory-window :as inventory-window]))
+  (:require [gdx.scenes.scene2d.group :as group]))
 
-(defn create [ctx]
+(defn create [ctx actor-fns]
   (group/create
-   {:group/actors [(info-window/create ctx)
-                   (inventory-window/create ctx)]
+   {:group/actors (for [f actor-fns]
+                    (f ctx))
     :actor/name "moon.ui.windows"}))
