@@ -1,7 +1,8 @@
 (ns world-fns.modules.place-step
   (:require [com.badlogic.gdx.maps.map-properties :as props]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [world-fns.utils.transitions :as transitions]))
+            [world-fns.utils.transitions :as transitions]
+            [world-fns.modules.place-step.module-index-tiled-map-positions :refer [module-index->tiled-map-positions]]))
 
 (def ^:private number-modules-x 8)
 (def ^:private number-modules-y 4)
@@ -12,15 +13,6 @@
 (def ^:private floor-modules-row-width 4)
 (def ^:private floor-modules-row-height 4)
 (def ^:private floor-idxvalue 0)
-
-(defn- module-index->tiled-map-positions
-  [[module-x module-y]
-   [modules-width modules-height]]
-  (let [start-x (* module-x (+ modules-width  module-offset-tiles))
-        start-y (* module-y (+ modules-height module-offset-tiles))]
-    (for [x (range start-x (+ start-x modules-width))
-          y (range start-y (+ start-y modules-height))]
-      [x y])))
 
 (defn- floor->module-index []
   [(rand-int floor-modules-row-width)
@@ -44,7 +36,8 @@
                              (if transition?
                                (transition-idxvalue->module-index idxvalue)
                                (floor->module-index))
-                             modules-scale)
+                             modules-scale
+                             module-offset-tiles)
         offsets (for [x (range modules-width)
                       y (range modules-height)]
                   [x y])
