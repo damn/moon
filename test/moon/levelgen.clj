@@ -21,7 +21,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.textures]
             [gdx.tiled-map-renderer :as tiled-map-renderer]
-            [com.badlogic.gdx.utils.disposable :as disposable]
+            [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.viewport :as viewport]

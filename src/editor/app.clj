@@ -6,7 +6,7 @@
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
-            [com.badlogic.gdx.utils.disposable :as disposable]
+            [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             editor.widget.animation

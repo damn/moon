@@ -1,7 +1,7 @@
 (ns create.audio
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [com.badlogic.gdx.audio :as audio]
+            [gdx.audio :as audio]
             [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.files :as files]))
 
