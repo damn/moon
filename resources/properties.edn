@@ -71,10 +71,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/toad-horned-1.png"}
-    {:image/file "images/animations/toad-horned-2.png"}
-    {:image/file "images/animations/toad-horned-3.png"}
-    {:image/file "images/animations/toad-horned-4.png"}),
+   ({:image/file "images/toad-horned-1.png"}
+    {:image/file "images/toad-horned-2.png"}
+    {:image/file "images/toad-horned-3.png"}
+    {:image/file "images/toad-horned-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/24, :body/width 2/3},
@@ -93,10 +93,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/goblin-warrior-1.png"}
-    {:image/file "images/animations/goblin-warrior-2.png"}
-    {:image/file "images/animations/goblin-warrior-3.png"}
-    {:image/file "images/animations/goblin-warrior-4.png"}),
+   ({:image/file "images/goblin-warrior-1.png"}
+    {:image/file "images/goblin-warrior-2.png"}
+    {:image/file "images/goblin-warrior-3.png"}
+    {:image/file "images/goblin-warrior-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 29/48, :body/width 2/3},
@@ -119,10 +119,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lizardman-blue-shaman-1.png"}
-    {:image/file "images/animations/lizardman-blue-shaman-2.png"}
-    {:image/file "images/animations/lizardman-blue-shaman-3.png"}
-    {:image/file "images/animations/lizardman-blue-shaman-4.png"}),
+   ({:image/file "images/lizardman-blue-shaman-1.png"}
+    {:image/file "images/lizardman-blue-shaman-2.png"}
+    {:image/file "images/lizardman-blue-shaman-3.png"}
+    {:image/file "images/lizardman-blue-shaman-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 37/48, :body/width 11/16},
@@ -141,10 +141,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/barbarian-f-1.png"}
-    {:image/file "images/animations/barbarian-f-2.png"}
-    {:image/file "images/animations/barbarian-f-3.png"}
-    {:image/file "images/animations/barbarian-f-4.png"}),
+   ({:image/file "images/barbarian-f-1.png"}
+    {:image/file "images/barbarian-f-2.png"}
+    {:image/file "images/barbarian-f-3.png"}
+    {:image/file "images/barbarian-f-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 11/16},
@@ -163,10 +163,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/mummy-1.png"}
-    {:image/file "images/animations/mummy-2.png"}
-    {:image/file "images/animations/mummy-3.png"}
-    {:image/file "images/animations/mummy-4.png"}),
+   ({:image/file "images/mummy-1.png"}
+    {:image/file "images/mummy-2.png"}
+    {:image/file "images/mummy-3.png"}
+    {:image/file "images/mummy-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 31/48, :body/width 2/3},
@@ -185,10 +185,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/helion-1.png"}
-    {:image/file "images/animations/helion-2.png"}
-    {:image/file "images/animations/helion-3.png"}
-    {:image/file "images/animations/helion-4.png"}),
+   ({:image/file "images/helion-1.png"}
+    {:image/file "images/helion-2.png"}
+    {:image/file "images/helion-3.png"}
+    {:image/file "images/helion-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 2/3},
@@ -208,10 +208,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/priest-1.png"}
-    {:image/file "images/animations/priest-2.png"}
-    {:image/file "images/animations/priest-3.png"}
-    {:image/file "images/animations/priest-4.png"}),
+   ({:image/file "images/priest-1.png"}
+    {:image/file "images/priest-2.png"}
+    {:image/file "images/priest-3.png"}
+    {:image/file "images/priest-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 17/24, :body/width 2/3},
@@ -230,10 +230,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lizardman-green-spear-1.png"}
-    {:image/file "images/animations/lizardman-green-spear-2.png"}
-    {:image/file "images/animations/lizardman-green-spear-3.png"}
-    {:image/file "images/animations/lizardman-green-spear-4.png"}),
+   ({:image/file "images/lizardman-green-spear-1.png"}
+    {:image/file "images/lizardman-green-spear-2.png"}
+    {:image/file "images/lizardman-green-spear-3.png"}
+    {:image/file "images/lizardman-green-spear-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 13/16, :body/width 11/16},
@@ -252,10 +252,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/dwarf-cleric-1.png"}
-    {:image/file "images/animations/dwarf-cleric-2.png"}
-    {:image/file "images/animations/dwarf-cleric-3.png"}
-    {:image/file "images/animations/dwarf-cleric-4.png"}),
+   ({:image/file "images/dwarf-cleric-1.png"}
+    {:image/file "images/dwarf-cleric-2.png"}
+    {:image/file "images/dwarf-cleric-3.png"}
+    {:image/file "images/dwarf-cleric-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 9/16, :body/width 35/48},
@@ -274,10 +274,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/thief-1.png"}
-    {:image/file "images/animations/thief-2.png"}
-    {:image/file "images/animations/thief-3.png"}
-    {:image/file "images/animations/thief-4.png"}),
+   ({:image/file "images/thief-1.png"}
+    {:image/file "images/thief-2.png"}
+    {:image/file "images/thief-3.png"}
+    {:image/file "images/thief-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 2/3},
@@ -296,10 +296,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lizardman-green-shaman-1.png"}
-    {:image/file "images/animations/lizardman-green-shaman-2.png"}
-    {:image/file "images/animations/lizardman-green-shaman-3.png"}
-    {:image/file "images/animations/lizardman-green-shaman-4.png"}),
+   ({:image/file "images/lizardman-green-shaman-1.png"}
+    {:image/file "images/lizardman-green-shaman-2.png"}
+    {:image/file "images/lizardman-green-shaman-3.png"}
+    {:image/file "images/lizardman-green-shaman-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 37/48, :body/width 11/16},
@@ -318,10 +318,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/beholder-1.png"}
-    {:image/file "images/animations/beholder-2.png"}
-    {:image/file "images/animations/beholder-3.png"}
-    {:image/file "images/animations/beholder-4.png"}),
+   ({:image/file "images/beholder-1.png"}
+    {:image/file "images/beholder-2.png"}
+    {:image/file "images/beholder-3.png"}
+    {:image/file "images/beholder-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 19/24, :body/width 5/6},
@@ -340,10 +340,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/spider-brown-1.png"}
-    {:image/file "images/animations/spider-brown-2.png"}
-    {:image/file "images/animations/spider-brown-3.png"}
-    {:image/file "images/animations/spider-brown-4.png"}),
+   ({:image/file "images/spider-brown-1.png"}
+    {:image/file "images/spider-brown-2.png"}
+    {:image/file "images/spider-brown-3.png"}
+    {:image/file "images/spider-brown-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/48, :body/width 13/24},
@@ -362,10 +362,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/vampire-lord-1.png"}
-    {:image/file "images/animations/vampire-lord-2.png"}
-    {:image/file "images/animations/vampire-lord-3.png"}
-    {:image/file "images/animations/vampire-lord-4.png"}),
+   ({:image/file "images/vampire-lord-1.png"}
+    {:image/file "images/vampire-lord-2.png"}
+    {:image/file "images/vampire-lord-3.png"}
+    {:image/file "images/vampire-lord-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 17/24},
@@ -385,10 +385,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/witch-1.png"}
-    {:image/file "images/animations/witch-2.png"}
-    {:image/file "images/animations/witch-3.png"}
-    {:image/file "images/animations/witch-4.png"}),
+   ({:image/file "images/witch-1.png"}
+    {:image/file "images/witch-2.png"}
+    {:image/file "images/witch-3.png"}
+    {:image/file "images/witch-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 2/3},
@@ -407,10 +407,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/minstrel-f-1.png"}
-    {:image/file "images/animations/minstrel-f-2.png"}
-    {:image/file "images/animations/minstrel-f-3.png"}
-    {:image/file "images/animations/minstrel-f-4.png"}),
+   ({:image/file "images/minstrel-f-1.png"}
+    {:image/file "images/minstrel-f-2.png"}
+    {:image/file "images/minstrel-f-3.png"}
+    {:image/file "images/minstrel-f-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 2/3},
@@ -429,10 +429,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lady-b-1.png"}
-    {:image/file "images/animations/lady-b-2.png"}
-    {:image/file "images/animations/lady-b-3.png"}
-    {:image/file "images/animations/lady-b-4.png"}),
+   ({:image/file "images/lady-b-1.png"}
+    {:image/file "images/lady-b-2.png"}
+    {:image/file "images/lady-b-3.png"}
+    {:image/file "images/lady-b-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 2/3},
@@ -451,10 +451,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/dwarf-1.png"}
-    {:image/file "images/animations/dwarf-2.png"}
-    {:image/file "images/animations/dwarf-3.png"}
-    {:image/file "images/animations/dwarf-4.png"}),
+   ({:image/file "images/dwarf-1.png"}
+    {:image/file "images/dwarf-2.png"}
+    {:image/file "images/dwarf-3.png"}
+    {:image/file "images/dwarf-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 9/16, :body/width 35/48},
@@ -473,10 +473,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/elemental-air-1.png"}
-    {:image/file "images/animations/elemental-air-2.png"}
-    {:image/file "images/animations/elemental-air-3.png"}
-    {:image/file "images/animations/elemental-air-4.png"}),
+   ({:image/file "images/elemental-air-1.png"}
+    {:image/file "images/elemental-air-2.png"}
+    {:image/file "images/elemental-air-3.png"}
+    {:image/file "images/elemental-air-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 13/16, :body/width 7/12},
@@ -495,10 +495,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/beetle-fire-1.png"}
-    {:image/file "images/animations/beetle-fire-2.png"}
-    {:image/file "images/animations/beetle-fire-3.png"}
-    {:image/file "images/animations/beetle-fire-4.png"}),
+   ({:image/file "images/beetle-fire-1.png"}
+    {:image/file "images/beetle-fire-2.png"}
+    {:image/file "images/beetle-fire-3.png"}
+    {:image/file "images/beetle-fire-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/12, :body/width 1/2},
@@ -517,10 +517,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/warrior-f-1.png"}
-    {:image/file "images/animations/warrior-f-2.png"}
-    {:image/file "images/animations/warrior-f-3.png"}
-    {:image/file "images/animations/warrior-f-4.png"}),
+   ({:image/file "images/warrior-f-1.png"}
+    {:image/file "images/warrior-f-2.png"}
+    {:image/file "images/warrior-f-3.png"}
+    {:image/file "images/warrior-f-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 2/3},
@@ -539,10 +539,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/golem-mud-1.png"}
-    {:image/file "images/animations/golem-mud-2.png"}
-    {:image/file "images/animations/golem-mud-3.png"}
-    {:image/file "images/animations/golem-mud-4.png"}),
+   ({:image/file "images/golem-mud-1.png"}
+    {:image/file "images/golem-mud-2.png"}
+    {:image/file "images/golem-mud-3.png"}
+    {:image/file "images/golem-mud-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 17/24},
@@ -561,10 +561,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/merchant-f-1.png"}
-    {:image/file "images/animations/merchant-f-2.png"}
-    {:image/file "images/animations/merchant-f-3.png"}
-    {:image/file "images/animations/merchant-f-4.png"}),
+   ({:image/file "images/merchant-f-1.png"}
+    {:image/file "images/merchant-f-2.png"}
+    {:image/file "images/merchant-f-3.png"}
+    {:image/file "images/merchant-f-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 29/48, :body/width 2/3},
@@ -583,10 +583,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/minstrel-m-1.png"}
-    {:image/file "images/animations/minstrel-m-2.png"}
-    {:image/file "images/animations/minstrel-m-3.png"}
-    {:image/file "images/animations/minstrel-m-4.png"}),
+   ({:image/file "images/minstrel-m-1.png"}
+    {:image/file "images/minstrel-m-2.png"}
+    {:image/file "images/minstrel-m-3.png"}
+    {:image/file "images/minstrel-m-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 2/3},
@@ -605,10 +605,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/spirit-greater-1.png"}
-    {:image/file "images/animations/spirit-greater-2.png"}
-    {:image/file "images/animations/spirit-greater-3.png"}
-    {:image/file "images/animations/spirit-greater-4.png"}),
+   ({:image/file "images/spirit-greater-1.png"}
+    {:image/file "images/spirit-greater-2.png"}
+    {:image/file "images/spirit-greater-3.png"}
+    {:image/file "images/spirit-greater-4.png"}),
    :animation/looping? true},
   :entity/body {:body/flying? true, :body/height 5/6, :body/width 3/4},
   :entity/skills #{:skills/melee-attack},
@@ -626,10 +626,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/knight-1.png"}
-    {:image/file "images/animations/knight-2.png"}
-    {:image/file "images/animations/knight-3.png"}
-    {:image/file "images/animations/knight-4.png"}),
+   ({:image/file "images/knight-1.png"}
+    {:image/file "images/knight-2.png"}
+    {:image/file "images/knight-3.png"}
+    {:image/file "images/knight-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/24, :body/width 2/3},
@@ -652,10 +652,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/zombie-b-1.png"}
-    {:image/file "images/animations/zombie-b-2.png"}
-    {:image/file "images/animations/zombie-b-3.png"}
-    {:image/file "images/animations/zombie-b-4.png"}),
+   ({:image/file "images/zombie-b-1.png"}
+    {:image/file "images/zombie-b-2.png"}
+    {:image/file "images/zombie-b-3.png"}
+    {:image/file "images/zombie-b-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 17/24},
@@ -674,10 +674,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/demon-green-1.png"}
-    {:image/file "images/animations/demon-green-2.png"}
-    {:image/file "images/animations/demon-green-3.png"}
-    {:image/file "images/animations/demon-green-4.png"}),
+   ({:image/file "images/demon-green-1.png"}
+    {:image/file "images/demon-green-2.png"}
+    {:image/file "images/demon-green-3.png"}
+    {:image/file "images/demon-green-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/24, :body/width 19/24},
@@ -696,10 +696,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/drow-wizard-1.png"}
-    {:image/file "images/animations/drow-wizard-2.png"}
-    {:image/file "images/animations/drow-wizard-3.png"}
-    {:image/file "images/animations/drow-wizard-4.png"}),
+   ({:image/file "images/drow-wizard-1.png"}
+    {:image/file "images/drow-wizard-2.png"}
+    {:image/file "images/drow-wizard-3.png"}
+    {:image/file "images/drow-wizard-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 2/3},
@@ -718,10 +718,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/goblin-shaman-1.png"}
-    {:image/file "images/animations/goblin-shaman-2.png"}
-    {:image/file "images/animations/goblin-shaman-3.png"}
-    {:image/file "images/animations/goblin-shaman-4.png"}),
+   ({:image/file "images/goblin-shaman-1.png"}
+    {:image/file "images/goblin-shaman-2.png"}
+    {:image/file "images/goblin-shaman-3.png"}
+    {:image/file "images/goblin-shaman-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 35/48},
@@ -740,10 +740,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/beetle-giant-1.png"}
-    {:image/file "images/animations/beetle-giant-2.png"}
-    {:image/file "images/animations/beetle-giant-3.png"}
-    {:image/file "images/animations/beetle-giant-4.png"}),
+   ({:image/file "images/beetle-giant-1.png"}
+    {:image/file "images/beetle-giant-2.png"}
+    {:image/file "images/beetle-giant-3.png"}
+    {:image/file "images/beetle-giant-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 13/24, :body/width 7/12},
@@ -762,10 +762,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/prisoner-b-1.png"}
-    {:image/file "images/animations/prisoner-b-2.png"}
-    {:image/file "images/animations/prisoner-b-3.png"}
-    {:image/file "images/animations/prisoner-b-4.png"}),
+   ({:image/file "images/prisoner-b-1.png"}
+    {:image/file "images/prisoner-b-2.png"}
+    {:image/file "images/prisoner-b-3.png"}
+    {:image/file "images/prisoner-b-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 2/3},
@@ -784,10 +784,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/dwarf-mage-1.png"}
-    {:image/file "images/animations/dwarf-mage-2.png"}
-    {:image/file "images/animations/dwarf-mage-3.png"}
-    {:image/file "images/animations/dwarf-mage-4.png"}),
+   ({:image/file "images/dwarf-mage-1.png"}
+    {:image/file "images/dwarf-mage-2.png"}
+    {:image/file "images/dwarf-mage-3.png"}
+    {:image/file "images/dwarf-mage-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 7/12, :body/width 17/24},
@@ -806,10 +806,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/bird-hawk-1.png"}
-    {:image/file "images/animations/bird-hawk-2.png"}
-    {:image/file "images/animations/bird-hawk-3.png"}
-    {:image/file "images/animations/bird-hawk-4.png"}),
+   ({:image/file "images/bird-hawk-1.png"}
+    {:image/file "images/bird-hawk-2.png"}
+    {:image/file "images/bird-hawk-3.png"}
+    {:image/file "images/bird-hawk-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 35/48, :body/width 13/24},
@@ -828,10 +828,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/pixie-b-1.png"}
-    {:image/file "images/animations/pixie-b-2.png"}
-    {:image/file "images/animations/pixie-b-3.png"}
-    {:image/file "images/animations/pixie-b-4.png"}),
+   ({:image/file "images/pixie-b-1.png"}
+    {:image/file "images/pixie-b-2.png"}
+    {:image/file "images/pixie-b-3.png"}
+    {:image/file "images/pixie-b-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 3/4, :body/width 13/24},
@@ -850,10 +850,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lady-a-1.png"}
-    {:image/file "images/animations/lady-a-2.png"}
-    {:image/file "images/animations/lady-a-3.png"}
-    {:image/file "images/animations/lady-a-4.png"}),
+   ({:image/file "images/lady-a-1.png"}
+    {:image/file "images/lady-a-2.png"}
+    {:image/file "images/lady-a-3.png"}
+    {:image/file "images/lady-a-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 2/3},
@@ -872,10 +872,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/drow-1.png"}
-    {:image/file "images/animations/drow-2.png"}
-    {:image/file "images/animations/drow-3.png"}
-    {:image/file "images/animations/drow-4.png"}),
+   ({:image/file "images/drow-1.png"}
+    {:image/file "images/drow-2.png"}
+    {:image/file "images/drow-3.png"}
+    {:image/file "images/drow-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 11/16},
@@ -894,10 +894,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/goblin-1.png"}
-    {:image/file "images/animations/goblin-2.png"}
-    {:image/file "images/animations/goblin-3.png"}
-    {:image/file "images/animations/goblin-4.png"}),
+   ({:image/file "images/goblin-1.png"}
+    {:image/file "images/goblin-2.png"}
+    {:image/file "images/goblin-3.png"}
+    {:image/file "images/goblin-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 29/48, :body/width 2/3},
@@ -916,10 +916,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/wolf-black-1.png"}
-    {:image/file "images/animations/wolf-black-2.png"}
-    {:image/file "images/animations/wolf-black-3.png"}
-    {:image/file "images/animations/wolf-black-4.png"}),
+   ({:image/file "images/wolf-black-1.png"}
+    {:image/file "images/wolf-black-2.png"}
+    {:image/file "images/wolf-black-3.png"}
+    {:image/file "images/wolf-black-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/8, :body/width 2/3},
@@ -938,10 +938,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/bird-crow-1.png"}
-    {:image/file "images/animations/bird-crow-2.png"}
-    {:image/file "images/animations/bird-crow-3.png"}
-    {:image/file "images/animations/bird-crow-4.png"}),
+   ({:image/file "images/bird-crow-1.png"}
+    {:image/file "images/bird-crow-2.png"}
+    {:image/file "images/bird-crow-3.png"}
+    {:image/file "images/bird-crow-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 35/48, :body/width 13/24},
@@ -960,10 +960,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/demon-red-1.png"}
-    {:image/file "images/animations/demon-red-2.png"}
-    {:image/file "images/animations/demon-red-3.png"}
-    {:image/file "images/animations/demon-red-4.png"}),
+   ({:image/file "images/demon-red-1.png"}
+    {:image/file "images/demon-red-2.png"}
+    {:image/file "images/demon-red-3.png"}
+    {:image/file "images/demon-red-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/24, :body/width 19/24},
@@ -982,10 +982,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/pixie-a-1.png"}
-    {:image/file "images/animations/pixie-a-2.png"}
-    {:image/file "images/animations/pixie-a-3.png"}
-    {:image/file "images/animations/pixie-a-4.png"}),
+   ({:image/file "images/pixie-a-1.png"}
+    {:image/file "images/pixie-a-2.png"}
+    {:image/file "images/pixie-a-3.png"}
+    {:image/file "images/pixie-a-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 3/4, :body/width 13/24},
@@ -1004,10 +1004,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/archer-1.png"}
-    {:image/file "images/animations/archer-2.png"}
-    {:image/file "images/animations/archer-3.png"}
-    {:image/file "images/animations/archer-4.png"}),
+   ({:image/file "images/archer-1.png"}
+    {:image/file "images/archer-2.png"}
+    {:image/file "images/archer-3.png"}
+    {:image/file "images/archer-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/24, :body/width 2/3},
@@ -1026,10 +1026,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/rat-giant-1.png"}
-    {:image/file "images/animations/rat-giant-2.png"}
-    {:image/file "images/animations/rat-giant-3.png"}
-    {:image/file "images/animations/rat-giant-4.png"}),
+   ({:image/file "images/rat-giant-1.png"}
+    {:image/file "images/rat-giant-2.png"}
+    {:image/file "images/rat-giant-3.png"}
+    {:image/file "images/rat-giant-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 41/48},
@@ -1048,10 +1048,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lord-a-1.png"}
-    {:image/file "images/animations/lord-a-2.png"}
-    {:image/file "images/animations/lord-a-3.png"}
-    {:image/file "images/animations/lord-a-4.png"}),
+   ({:image/file "images/lord-a-1.png"}
+    {:image/file "images/lord-a-2.png"}
+    {:image/file "images/lord-a-3.png"}
+    {:image/file "images/lord-a-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 17/24, :body/width 2/3},
@@ -1070,10 +1070,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/wraith-black-1.png"}
-    {:image/file "images/animations/wraith-black-2.png"}
-    {:image/file "images/animations/wraith-black-3.png"}
-    {:image/file "images/animations/wraith-black-4.png"}),
+   ({:image/file "images/wraith-black-1.png"}
+    {:image/file "images/wraith-black-2.png"}
+    {:image/file "images/wraith-black-3.png"}
+    {:image/file "images/wraith-black-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 2/3},
@@ -1092,10 +1092,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/wraith-red-1.png"}
-    {:image/file "images/animations/wraith-red-2.png"}
-    {:image/file "images/animations/wraith-red-3.png"}
-    {:image/file "images/animations/wraith-red-4.png"}),
+   ({:image/file "images/wraith-red-1.png"}
+    {:image/file "images/wraith-red-2.png"}
+    {:image/file "images/wraith-red-3.png"}
+    {:image/file "images/wraith-red-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 2/3},
@@ -1114,10 +1114,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/golem-fire-1.png"}
-    {:image/file "images/animations/golem-fire-2.png"}
-    {:image/file "images/animations/golem-fire-3.png"}
-    {:image/file "images/animations/golem-fire-4.png"}),
+   ({:image/file "images/golem-fire-1.png"}
+    {:image/file "images/golem-fire-2.png"}
+    {:image/file "images/golem-fire-3.png"}
+    {:image/file "images/golem-fire-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/6, :body/width 17/24},
@@ -1136,10 +1136,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/wisp-ancient-1.png"}
-    {:image/file "images/animations/wisp-ancient-2.png"}
-    {:image/file "images/animations/wisp-ancient-3.png"}
-    {:image/file "images/animations/wisp-ancient-4.png"}),
+   ({:image/file "images/wisp-ancient-1.png"}
+    {:image/file "images/wisp-ancient-2.png"}
+    {:image/file "images/wisp-ancient-3.png"}
+    {:image/file "images/wisp-ancient-4.png"}),
    :animation/looping? true},
   :entity/body {:body/flying? true, :body/height 3/4, :body/width 5/8},
   :entity/skills #{:skills/melee-attack},
@@ -1157,10 +1157,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/troll-1.png"}
-    {:image/file "images/animations/troll-2.png"}
-    {:image/file "images/animations/troll-3.png"}
-    {:image/file "images/animations/troll-4.png"}),
+   ({:image/file "images/troll-1.png"}
+    {:image/file "images/troll-2.png"}
+    {:image/file "images/troll-3.png"}
+    {:image/file "images/troll-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 35/48},
@@ -1179,10 +1179,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/wraith-blue-1.png"}
-    {:image/file "images/animations/wraith-blue-2.png"}
-    {:image/file "images/animations/wraith-blue-3.png"}
-    {:image/file "images/animations/wraith-blue-4.png"}),
+   ({:image/file "images/wraith-blue-1.png"}
+    {:image/file "images/wraith-blue-2.png"}
+    {:image/file "images/wraith-blue-3.png"}
+    {:image/file "images/wraith-blue-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 2/3},
@@ -1201,10 +1201,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/beetle-fire-giant-1.png"}
-    {:image/file "images/animations/beetle-fire-giant-2.png"}
-    {:image/file "images/animations/beetle-fire-giant-3.png"}
-    {:image/file "images/animations/beetle-fire-giant-4.png"}),
+   ({:image/file "images/beetle-fire-giant-1.png"}
+    {:image/file "images/beetle-fire-giant-2.png"}
+    {:image/file "images/beetle-fire-giant-3.png"}
+    {:image/file "images/beetle-fire-giant-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 13/24, :body/width 7/12},
@@ -1223,10 +1223,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lizardman-blue-spear-1.png"}
-    {:image/file "images/animations/lizardman-blue-spear-2.png"}
-    {:image/file "images/animations/lizardman-blue-spear-3.png"}
-    {:image/file "images/animations/lizardman-blue-spear-4.png"}),
+   ({:image/file "images/lizardman-blue-spear-1.png"}
+    {:image/file "images/lizardman-blue-spear-2.png"}
+    {:image/file "images/lizardman-blue-spear-3.png"}
+    {:image/file "images/lizardman-blue-spear-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 13/16, :body/width 11/16},
@@ -1245,10 +1245,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/dark-knight-1.png"}
-    {:image/file "images/animations/dark-knight-2.png"}
-    {:image/file "images/animations/dark-knight-3.png"}
-    {:image/file "images/animations/dark-knight-4.png"}),
+   ({:image/file "images/dark-knight-1.png"}
+    {:image/file "images/dark-knight-2.png"}
+    {:image/file "images/dark-knight-3.png"}
+    {:image/file "images/dark-knight-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/24, :body/width 2/3},
@@ -1267,10 +1267,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/wolf-brown-1.png"}
-    {:image/file "images/animations/wolf-brown-2.png"}
-    {:image/file "images/animations/wolf-brown-3.png"}
-    {:image/file "images/animations/wolf-brown-4.png"}),
+   ({:image/file "images/wolf-brown-1.png"}
+    {:image/file "images/wolf-brown-2.png"}
+    {:image/file "images/wolf-brown-3.png"}
+    {:image/file "images/wolf-brown-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 7/12, :body/width 2/3},
@@ -1289,10 +1289,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/demon-blue-1.png"}
-    {:image/file "images/animations/demon-blue-2.png"}
-    {:image/file "images/animations/demon-blue-3.png"}
-    {:image/file "images/animations/demon-blue-4.png"}),
+   ({:image/file "images/demon-blue-1.png"}
+    {:image/file "images/demon-blue-2.png"}
+    {:image/file "images/demon-blue-3.png"}
+    {:image/file "images/demon-blue-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/24, :body/width 19/24},
@@ -1311,10 +1311,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/moth-red-1.png"}
-    {:image/file "images/animations/moth-red-2.png"}
-    {:image/file "images/animations/moth-red-3.png"}
-    {:image/file "images/animations/moth-red-4.png"}),
+   ({:image/file "images/moth-red-1.png"}
+    {:image/file "images/moth-red-2.png"}
+    {:image/file "images/moth-red-3.png"}
+    {:image/file "images/moth-red-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 31/48, :body/width 1/2},
@@ -1333,10 +1333,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/prisoner-c-1.png"}
-    {:image/file "images/animations/prisoner-c-2.png"}
-    {:image/file "images/animations/prisoner-c-3.png"}
-    {:image/file "images/animations/prisoner-c-4.png"}),
+   ({:image/file "images/prisoner-c-1.png"}
+    {:image/file "images/prisoner-c-2.png"}
+    {:image/file "images/prisoner-c-3.png"}
+    {:image/file "images/prisoner-c-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 2/3},
@@ -1355,10 +1355,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/mimic-1.png"}
-    {:image/file "images/animations/mimic-2.png"}
-    {:image/file "images/animations/mimic-3.png"}
-    {:image/file "images/animations/mimic-4.png"}),
+   ({:image/file "images/mimic-1.png"}
+    {:image/file "images/mimic-2.png"}
+    {:image/file "images/mimic-3.png"}
+    {:image/file "images/mimic-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 9/16, :body/width 1/2},
@@ -1377,10 +1377,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lizardman-green-1.png"}
-    {:image/file "images/animations/lizardman-green-2.png"}
-    {:image/file "images/animations/lizardman-green-3.png"}
-    {:image/file "images/animations/lizardman-green-4.png"}),
+   ({:image/file "images/lizardman-green-1.png"}
+    {:image/file "images/lizardman-green-2.png"}
+    {:image/file "images/lizardman-green-3.png"}
+    {:image/file "images/lizardman-green-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 11/16},
@@ -1399,10 +1399,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/paladin-1.png"}
-    {:image/file "images/animations/paladin-2.png"}
-    {:image/file "images/animations/paladin-3.png"}
-    {:image/file "images/animations/paladin-4.png"}),
+   ({:image/file "images/paladin-1.png"}
+    {:image/file "images/paladin-2.png"}
+    {:image/file "images/paladin-3.png"}
+    {:image/file "images/paladin-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 11/16},
@@ -1421,10 +1421,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/dragon-green-1.png"}
-    {:image/file "images/animations/dragon-green-2.png"}
-    {:image/file "images/animations/dragon-green-3.png"}
-    {:image/file "images/animations/dragon-green-4.png"}),
+   ({:image/file "images/dragon-green-1.png"}
+    {:image/file "images/dragon-green-2.png"}
+    {:image/file "images/dragon-green-3.png"}
+    {:image/file "images/dragon-green-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/6, :body/width 23/24},
@@ -1443,10 +1443,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/rat-1.png"}
-    {:image/file "images/animations/rat-2.png"}
-    {:image/file "images/animations/rat-3.png"}
-    {:image/file "images/animations/rat-4.png"}),
+   ({:image/file "images/rat-1.png"}
+    {:image/file "images/rat-2.png"}
+    {:image/file "images/rat-3.png"}
+    {:image/file "images/rat-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 23/48, :body/width 31/48},
@@ -1465,10 +1465,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/elemental-vorpal-1.png"}
-    {:image/file "images/animations/elemental-vorpal-2.png"}
-    {:image/file "images/animations/elemental-vorpal-3.png"}
-    {:image/file "images/animations/elemental-vorpal-4.png"}),
+   ({:image/file "images/elemental-vorpal-1.png"}
+    {:image/file "images/elemental-vorpal-2.png"}
+    {:image/file "images/elemental-vorpal-3.png"}
+    {:image/file "images/elemental-vorpal-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 13/16, :body/width 7/12},
@@ -1487,10 +1487,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/zombie-a-1.png"}
-    {:image/file "images/animations/zombie-a-2.png"}
-    {:image/file "images/animations/zombie-a-3.png"}
-    {:image/file "images/animations/zombie-a-4.png"}),
+   ({:image/file "images/zombie-a-1.png"}
+    {:image/file "images/zombie-a-2.png"}
+    {:image/file "images/zombie-a-3.png"}
+    {:image/file "images/zombie-a-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 17/24},
@@ -1509,10 +1509,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/dragon-blue-1.png"}
-    {:image/file "images/animations/dragon-blue-2.png"}
-    {:image/file "images/animations/dragon-blue-3.png"}
-    {:image/file "images/animations/dragon-blue-4.png"}),
+   ({:image/file "images/dragon-blue-1.png"}
+    {:image/file "images/dragon-blue-2.png"}
+    {:image/file "images/dragon-blue-3.png"}
+    {:image/file "images/dragon-blue-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/6, :body/width 23/24},
@@ -1531,10 +1531,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/spider-black-1.png"}
-    {:image/file "images/animations/spider-black-2.png"}
-    {:image/file "images/animations/spider-black-3.png"}
-    {:image/file "images/animations/spider-black-4.png"}),
+   ({:image/file "images/spider-black-1.png"}
+    {:image/file "images/spider-black-2.png"}
+    {:image/file "images/spider-black-3.png"}
+    {:image/file "images/spider-black-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/48, :body/width 13/24},
@@ -1553,10 +1553,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/ogre-1.png"}
-    {:image/file "images/animations/ogre-2.png"}
-    {:image/file "images/animations/ogre-3.png"}
-    {:image/file "images/animations/ogre-4.png"}),
+   ({:image/file "images/ogre-1.png"}
+    {:image/file "images/ogre-2.png"}
+    {:image/file "images/ogre-3.png"}
+    {:image/file "images/ogre-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 35/48},
@@ -1575,10 +1575,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/wizard-1.png"}
-    {:image/file "images/animations/wizard-2.png"}
-    {:image/file "images/animations/wizard-3.png"}
-    {:image/file "images/animations/wizard-4.png"}),
+   ({:image/file "images/wizard-1.png"}
+    {:image/file "images/wizard-2.png"}
+    {:image/file "images/wizard-3.png"}
+    {:image/file "images/wizard-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 2/3},
@@ -1598,10 +1598,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/elemental-earth-1.png"}
-    {:image/file "images/animations/elemental-earth-2.png"}
-    {:image/file "images/animations/elemental-earth-3.png"}
-    {:image/file "images/animations/elemental-earth-4.png"}),
+   ({:image/file "images/elemental-earth-1.png"}
+    {:image/file "images/elemental-earth-2.png"}
+    {:image/file "images/elemental-earth-3.png"}
+    {:image/file "images/elemental-earth-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 13/16, :body/width 7/12},
@@ -1620,10 +1620,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/dragon-shadow-1.png"}
-    {:image/file "images/animations/dragon-shadow-2.png"}
-    {:image/file "images/animations/dragon-shadow-3.png"}
-    {:image/file "images/animations/dragon-shadow-4.png"}),
+   ({:image/file "images/dragon-shadow-1.png"}
+    {:image/file "images/dragon-shadow-2.png"}
+    {:image/file "images/dragon-shadow-3.png"}
+    {:image/file "images/dragon-shadow-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/6, :body/width 23/24},
@@ -1642,10 +1642,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/banshee-1.png"}
-    {:image/file "images/animations/banshee-2.png"}
-    {:image/file "images/animations/banshee-3.png"}
-    {:image/file "images/animations/banshee-4.png"}),
+   ({:image/file "images/banshee-1.png"}
+    {:image/file "images/banshee-2.png"}
+    {:image/file "images/banshee-3.png"}
+    {:image/file "images/banshee-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 13/16, :body/width 2/3},
@@ -1664,10 +1664,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/warrior-m-1.png"}
-    {:image/file "images/animations/warrior-m-2.png"}
-    {:image/file "images/animations/warrior-m-3.png"}
-    {:image/file "images/animations/warrior-m-4.png"}),
+   ({:image/file "images/warrior-m-1.png"}
+    {:image/file "images/warrior-m-2.png"}
+    {:image/file "images/warrior-m-3.png"}
+    {:image/file "images/warrior-m-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 2/3},
@@ -1686,10 +1686,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/moth-white-1.png"}
-    {:image/file "images/animations/moth-white-2.png"}
-    {:image/file "images/animations/moth-white-3.png"}
-    {:image/file "images/animations/moth-white-4.png"}),
+   ({:image/file "images/moth-white-1.png"}
+    {:image/file "images/moth-white-2.png"}
+    {:image/file "images/moth-white-3.png"}
+    {:image/file "images/moth-white-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 31/48, :body/width 1/2},
@@ -1708,10 +1708,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/bird-dove-1.png"}
-    {:image/file "images/animations/bird-dove-2.png"}
-    {:image/file "images/animations/bird-dove-3.png"}
-    {:image/file "images/animations/bird-dove-4.png"}),
+   ({:image/file "images/bird-dove-1.png"}
+    {:image/file "images/bird-dove-2.png"}
+    {:image/file "images/bird-dove-3.png"}
+    {:image/file "images/bird-dove-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 35/48, :body/width 13/24},
@@ -1730,10 +1730,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lizardman-blue-1.png"}
-    {:image/file "images/animations/lizardman-blue-2.png"}
-    {:image/file "images/animations/lizardman-blue-3.png"}
-    {:image/file "images/animations/lizardman-blue-4.png"}),
+   ({:image/file "images/lizardman-blue-1.png"}
+    {:image/file "images/lizardman-blue-2.png"}
+    {:image/file "images/lizardman-blue-3.png"}
+    {:image/file "images/lizardman-blue-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 11/16},
@@ -1752,10 +1752,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/dragon-red-1.png"}
-    {:image/file "images/animations/dragon-red-2.png"}
-    {:image/file "images/animations/dragon-red-3.png"}
-    {:image/file "images/animations/dragon-red-4.png"}),
+   ({:image/file "images/dragon-red-1.png"}
+    {:image/file "images/dragon-red-2.png"}
+    {:image/file "images/dragon-red-3.png"}
+    {:image/file "images/dragon-red-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/6, :body/width 23/24},
@@ -1774,10 +1774,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/spider-brown-giant-1.png"}
-    {:image/file "images/animations/spider-brown-giant-2.png"}
-    {:image/file "images/animations/spider-brown-giant-3.png"}
-    {:image/file "images/animations/spider-brown-giant-4.png"}),
+   ({:image/file "images/spider-brown-giant-1.png"}
+    {:image/file "images/spider-brown-giant-2.png"}
+    {:image/file "images/spider-brown-giant-3.png"}
+    {:image/file "images/spider-brown-giant-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 31/48, :body/width 5/6},
@@ -1796,10 +1796,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/spirit-1.png"}
-    {:image/file "images/animations/spirit-2.png"}
-    {:image/file "images/animations/spirit-3.png"}
-    {:image/file "images/animations/spirit-4.png"}),
+   ({:image/file "images/spirit-1.png"}
+    {:image/file "images/spirit-2.png"}
+    {:image/file "images/spirit-3.png"}
+    {:image/file "images/spirit-4.png"}),
    :animation/looping? true},
   :entity/body {:body/flying? true, :body/height 3/4, :body/width 1/2},
   :entity/skills #{:skills/melee-attack},
@@ -1817,10 +1817,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lich-1.png"}
-    {:image/file "images/animations/lich-2.png"}
-    {:image/file "images/animations/lich-3.png"}
-    {:image/file "images/animations/lich-4.png"}),
+   ({:image/file "images/lich-1.png"}
+    {:image/file "images/lich-2.png"}
+    {:image/file "images/lich-3.png"}
+    {:image/file "images/lich-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 2/3},
@@ -1839,10 +1839,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/skeleton-archer-1.png"}
-    {:image/file "images/animations/skeleton-archer-2.png"}
-    {:image/file "images/animations/skeleton-archer-3.png"}
-    {:image/file "images/animations/skeleton-archer-4.png"}),
+   ({:image/file "images/skeleton-archer-1.png"}
+    {:image/file "images/skeleton-archer-2.png"}
+    {:image/file "images/skeleton-archer-3.png"}
+    {:image/file "images/skeleton-archer-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 37/48, :body/width 11/16},
@@ -1861,10 +1861,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/ogre-mystic-1.png"}
-    {:image/file "images/animations/ogre-mystic-2.png"}
-    {:image/file "images/animations/ogre-mystic-3.png"}
-    {:image/file "images/animations/ogre-mystic-4.png"}),
+   ({:image/file "images/ogre-mystic-1.png"}
+    {:image/file "images/ogre-mystic-2.png"}
+    {:image/file "images/ogre-mystic-3.png"}
+    {:image/file "images/ogre-mystic-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 35/48},
@@ -1883,10 +1883,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/bone-dragon-1.png"}
-    {:image/file "images/animations/bone-dragon-2.png"}
-    {:image/file "images/animations/bone-dragon-3.png"}
-    {:image/file "images/animations/bone-dragon-4.png"}),
+   ({:image/file "images/bone-dragon-1.png"}
+    {:image/file "images/bone-dragon-2.png"}
+    {:image/file "images/bone-dragon-3.png"}
+    {:image/file "images/bone-dragon-4.png"}),
    :animation/looping? true},
   :entity/body {:body/flying? false, :body/height 1, :body/width 1},
   :entity/skills #{:skills/melee-attack},
@@ -1904,10 +1904,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/golem-metal-1.png"}
-    {:image/file "images/animations/golem-metal-2.png"}
-    {:image/file "images/animations/golem-metal-3.png"}
-    {:image/file "images/animations/golem-metal-4.png"}),
+   ({:image/file "images/golem-metal-1.png"}
+    {:image/file "images/golem-metal-2.png"}
+    {:image/file "images/golem-metal-3.png"}
+    {:image/file "images/golem-metal-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 17/24},
@@ -1926,10 +1926,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/elemental-fire-1.png"}
-    {:image/file "images/animations/elemental-fire-2.png"}
-    {:image/file "images/animations/elemental-fire-3.png"}
-    {:image/file "images/animations/elemental-fire-4.png"}),
+   ({:image/file "images/elemental-fire-1.png"}
+    {:image/file "images/elemental-fire-2.png"}
+    {:image/file "images/elemental-fire-3.png"}
+    {:image/file "images/elemental-fire-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 13/16, :body/width 7/12},
@@ -1948,10 +1948,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/templar-1.png"}
-    {:image/file "images/animations/templar-2.png"}
-    {:image/file "images/animations/templar-3.png"}
-    {:image/file "images/animations/templar-4.png"}),
+   ({:image/file "images/templar-1.png"}
+    {:image/file "images/templar-2.png"}
+    {:image/file "images/templar-3.png"}
+    {:image/file "images/templar-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 41/48, :body/width 2/3},
@@ -1970,10 +1970,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/wisp-1.png"}
-    {:image/file "images/animations/wisp-2.png"}
-    {:image/file "images/animations/wisp-3.png"}
-    {:image/file "images/animations/wisp-4.png"}),
+   ({:image/file "images/wisp-1.png"}
+    {:image/file "images/wisp-2.png"}
+    {:image/file "images/wisp-3.png"}
+    {:image/file "images/wisp-4.png"}),
    :animation/looping? true},
   :entity/body {:body/flying? true, :body/height 5/8, :body/width 1/2},
   :entity/skills #{:skills/melee-attack},
@@ -1991,10 +1991,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/snake-giant-1.png"}
-    {:image/file "images/animations/snake-giant-2.png"}
-    {:image/file "images/animations/snake-giant-3.png"}
-    {:image/file "images/animations/snake-giant-4.png"}),
+   ({:image/file "images/snake-giant-1.png"}
+    {:image/file "images/snake-giant-2.png"}
+    {:image/file "images/snake-giant-3.png"}
+    {:image/file "images/snake-giant-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 5/6},
@@ -2013,10 +2013,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/minotaur-1.png"}
-    {:image/file "images/animations/minotaur-2.png"}
-    {:image/file "images/animations/minotaur-3.png"}
-    {:image/file "images/animations/minotaur-4.png"}),
+   ({:image/file "images/minotaur-1.png"}
+    {:image/file "images/minotaur-2.png"}
+    {:image/file "images/minotaur-3.png"}
+    {:image/file "images/minotaur-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 35/48},
@@ -2035,10 +2035,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/valkyrie-a-1.png"}
-    {:image/file "images/animations/valkyrie-a-2.png"}
-    {:image/file "images/animations/valkyrie-a-3.png"}
-    {:image/file "images/animations/valkyrie-a-4.png"}),
+   ({:image/file "images/valkyrie-a-1.png"}
+    {:image/file "images/valkyrie-a-2.png"}
+    {:image/file "images/valkyrie-a-3.png"}
+    {:image/file "images/valkyrie-a-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 13/16, :body/width 17/24},
@@ -2057,10 +2057,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/toad-green-1.png"}
-    {:image/file "images/animations/toad-green-2.png"}
-    {:image/file "images/animations/toad-green-3.png"}
-    {:image/file "images/animations/toad-green-4.png"}),
+   ({:image/file "images/toad-green-1.png"}
+    {:image/file "images/toad-green-2.png"}
+    {:image/file "images/toad-green-3.png"}
+    {:image/file "images/toad-green-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/12, :body/width 2/3},
@@ -2079,10 +2079,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/vampire-1.png"}
-    {:image/file "images/animations/vampire-2.png"}
-    {:image/file "images/animations/vampire-3.png"}
-    {:image/file "images/animations/vampire-4.png"}),
+   ({:image/file "images/vampire-1.png"}
+    {:image/file "images/vampire-2.png"}
+    {:image/file "images/vampire-3.png"}
+    {:image/file "images/vampire-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 17/24},
@@ -2127,10 +2127,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/moth-black-1.png"}
-    {:image/file "images/animations/moth-black-2.png"}
-    {:image/file "images/animations/moth-black-3.png"}
-    {:image/file "images/animations/moth-black-4.png"}),
+   ({:image/file "images/moth-black-1.png"}
+    {:image/file "images/moth-black-2.png"}
+    {:image/file "images/moth-black-3.png"}
+    {:image/file "images/moth-black-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 31/48, :body/width 1/2},
@@ -2149,10 +2149,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/monk-1.png"}
-    {:image/file "images/animations/monk-2.png"}
-    {:image/file "images/animations/monk-3.png"}
-    {:image/file "images/animations/monk-4.png"}),
+   ({:image/file "images/monk-1.png"}
+    {:image/file "images/monk-2.png"}
+    {:image/file "images/monk-3.png"}
+    {:image/file "images/monk-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 35/48},
@@ -2171,10 +2171,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/lord-b-1.png"}
-    {:image/file "images/animations/lord-b-2.png"}
-    {:image/file "images/animations/lord-b-3.png"}
-    {:image/file "images/animations/lord-b-4.png"}),
+   ({:image/file "images/lord-b-1.png"}
+    {:image/file "images/lord-b-2.png"}
+    {:image/file "images/lord-b-3.png"}
+    {:image/file "images/lord-b-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 17/24, :body/width 2/3},
@@ -2193,10 +2193,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/warden-1.png"}
-    {:image/file "images/animations/warden-2.png"}
-    {:image/file "images/animations/warden-3.png"}
-    {:image/file "images/animations/warden-4.png"}),
+   ({:image/file "images/warden-1.png"}
+    {:image/file "images/warden-2.png"}
+    {:image/file "images/warden-3.png"}
+    {:image/file "images/warden-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 11/16},
@@ -2215,10 +2215,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/druid-1.png"}
-    {:image/file "images/animations/druid-2.png"}
-    {:image/file "images/animations/druid-3.png"}
-    {:image/file "images/animations/druid-4.png"}),
+   ({:image/file "images/druid-1.png"}
+    {:image/file "images/druid-2.png"}
+    {:image/file "images/druid-3.png"}
+    {:image/file "images/druid-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 11/16},
@@ -2237,10 +2237,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/elf-wizard-1.png"}
-    {:image/file "images/animations/elf-wizard-2.png"}
-    {:image/file "images/animations/elf-wizard-3.png"}
-    {:image/file "images/animations/elf-wizard-4.png"}),
+   ({:image/file "images/elf-wizard-1.png"}
+    {:image/file "images/elf-wizard-2.png"}
+    {:image/file "images/elf-wizard-3.png"}
+    {:image/file "images/elf-wizard-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 31/48, :body/width 2/3},
@@ -2259,10 +2259,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/skeleton-mage-1.png"}
-    {:image/file "images/animations/skeleton-mage-2.png"}
-    {:image/file "images/animations/skeleton-mage-3.png"}
-    {:image/file "images/animations/skeleton-mage-4.png"}),
+   ({:image/file "images/skeleton-mage-1.png"}
+    {:image/file "images/skeleton-mage-2.png"}
+    {:image/file "images/skeleton-mage-3.png"}
+    {:image/file "images/skeleton-mage-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 2/3},
@@ -2281,10 +2281,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/halfling-fighter-1.png"}
-    {:image/file "images/animations/halfling-fighter-2.png"}
-    {:image/file "images/animations/halfling-fighter-3.png"}
-    {:image/file "images/animations/halfling-fighter-4.png"}),
+   ({:image/file "images/halfling-fighter-1.png"}
+    {:image/file "images/halfling-fighter-2.png"}
+    {:image/file "images/halfling-fighter-3.png"}
+    {:image/file "images/halfling-fighter-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 7/12, :body/width 17/24},
@@ -2303,10 +2303,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/skeleton-warrior-1.png"}
-    {:image/file "images/animations/skeleton-warrior-2.png"}
-    {:image/file "images/animations/skeleton-warrior-3.png"}
-    {:image/file "images/animations/skeleton-warrior-4.png"}),
+   ({:image/file "images/skeleton-warrior-1.png"}
+    {:image/file "images/skeleton-warrior-2.png"}
+    {:image/file "images/skeleton-warrior-3.png"}
+    {:image/file "images/skeleton-warrior-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 2/3},
@@ -2325,10 +2325,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/halfling-thief-1.png"}
-    {:image/file "images/animations/halfling-thief-2.png"}
-    {:image/file "images/animations/halfling-thief-3.png"}
-    {:image/file "images/animations/halfling-thief-4.png"}),
+   ({:image/file "images/halfling-thief-1.png"}
+    {:image/file "images/halfling-thief-2.png"}
+    {:image/file "images/halfling-thief-3.png"}
+    {:image/file "images/halfling-thief-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/8, :body/width 17/24},
@@ -2347,10 +2347,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/barbarian-m-1.png"}
-    {:image/file "images/animations/barbarian-m-2.png"}
-    {:image/file "images/animations/barbarian-m-3.png"}
-    {:image/file "images/animations/barbarian-m-4.png"}),
+   ({:image/file "images/barbarian-m-1.png"}
+    {:image/file "images/barbarian-m-2.png"}
+    {:image/file "images/barbarian-m-3.png"}
+    {:image/file "images/barbarian-m-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 17/24, :body/width 11/16},
@@ -2369,10 +2369,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/elf-bowman-1.png"}
-    {:image/file "images/animations/elf-bowman-2.png"}
-    {:image/file "images/animations/elf-bowman-3.png"}
-    {:image/file "images/animations/elf-bowman-4.png"}),
+   ({:image/file "images/elf-bowman-1.png"}
+    {:image/file "images/elf-bowman-2.png"}
+    {:image/file "images/elf-bowman-3.png"}
+    {:image/file "images/elf-bowman-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 37/48, :body/width 2/3},
@@ -2391,10 +2391,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/beetle-1.png"}
-    {:image/file "images/animations/beetle-2.png"}
-    {:image/file "images/animations/beetle-3.png"}
-    {:image/file "images/animations/beetle-4.png"}),
+   ({:image/file "images/beetle-1.png"}
+    {:image/file "images/beetle-2.png"}
+    {:image/file "images/beetle-3.png"}
+    {:image/file "images/beetle-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/12, :body/width 1/2},
@@ -2413,10 +2413,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/bat-giant-1.png"}
-    {:image/file "images/animations/bat-giant-2.png"}
-    {:image/file "images/animations/bat-giant-3.png"}
-    {:image/file "images/animations/bat-giant-4.png"}),
+   ({:image/file "images/bat-giant-1.png"}
+    {:image/file "images/bat-giant-2.png"}
+    {:image/file "images/bat-giant-3.png"}
+    {:image/file "images/bat-giant-4.png"}),
    :animation/looping? true},
   :entity/body {:body/flying? true, :body/height 3/4, :body/width 5/6},
   :entity/skills #{:skills/melee-attack},
@@ -2434,10 +2434,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/toad-blue-1.png"}
-    {:image/file "images/animations/toad-blue-2.png"}
-    {:image/file "images/animations/toad-blue-3.png"}
-    {:image/file "images/animations/toad-blue-4.png"}),
+   ({:image/file "images/toad-blue-1.png"}
+    {:image/file "images/toad-blue-2.png"}
+    {:image/file "images/toad-blue-3.png"}
+    {:image/file "images/toad-blue-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/12, :body/width 2/3},
@@ -2456,10 +2456,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/golem-stone-1.png"}
-    {:image/file "images/animations/golem-stone-2.png"}
-    {:image/file "images/animations/golem-stone-3.png"}
-    {:image/file "images/animations/golem-stone-4.png"}),
+   ({:image/file "images/golem-stone-1.png"}
+    {:image/file "images/golem-stone-2.png"}
+    {:image/file "images/golem-stone-3.png"}
+    {:image/file "images/golem-stone-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 35/48, :body/width 17/24},
@@ -2479,10 +2479,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/necromancer-1.png"}
-    {:image/file "images/animations/necromancer-2.png"}
-    {:image/file "images/animations/necromancer-3.png"}
-    {:image/file "images/animations/necromancer-4.png"}),
+   ({:image/file "images/necromancer-1.png"}
+    {:image/file "images/necromancer-2.png"}
+    {:image/file "images/necromancer-3.png"}
+    {:image/file "images/necromancer-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 2/3},
@@ -2501,10 +2501,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/spider-black-giant-1.png"}
-    {:image/file "images/animations/spider-black-giant-2.png"}
-    {:image/file "images/animations/spider-black-giant-3.png"}
-    {:image/file "images/animations/spider-black-giant-4.png"}),
+   ({:image/file "images/spider-black-giant-1.png"}
+    {:image/file "images/spider-black-giant-2.png"}
+    {:image/file "images/spider-black-giant-3.png"}
+    {:image/file "images/spider-black-giant-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/8, :body/width 5/6},
@@ -2523,10 +2523,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/valkyrie-b-1.png"}
-    {:image/file "images/animations/valkyrie-b-2.png"}
-    {:image/file "images/animations/valkyrie-b-3.png"}
-    {:image/file "images/animations/valkyrie-b-4.png"}),
+   ({:image/file "images/valkyrie-b-1.png"}
+    {:image/file "images/valkyrie-b-2.png"}
+    {:image/file "images/valkyrie-b-3.png"}
+    {:image/file "images/valkyrie-b-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 3/4, :body/width 17/24},
@@ -2545,10 +2545,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/bat-1.png"}
-    {:image/file "images/animations/bat-2.png"}
-    {:image/file "images/animations/bat-3.png"}
-    {:image/file "images/animations/bat-4.png"}),
+   ({:image/file "images/bat-1.png"}
+    {:image/file "images/bat-2.png"}
+    {:image/file "images/bat-3.png"}
+    {:image/file "images/bat-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 31/48, :body/width 13/24},
@@ -2567,10 +2567,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/snake-1.png"}
-    {:image/file "images/animations/snake-2.png"}
-    {:image/file "images/animations/snake-3.png"}
-    {:image/file "images/animations/snake-4.png"}),
+   ({:image/file "images/snake-1.png"}
+    {:image/file "images/snake-2.png"}
+    {:image/file "images/snake-3.png"}
+    {:image/file "images/snake-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 25/48, :body/width 31/48},
@@ -2593,10 +2593,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/flies-1.png"}
-    {:image/file "images/animations/flies-2.png"}
-    {:image/file "images/animations/flies-3.png"}
-    {:image/file "images/animations/flies-4.png"}),
+   ({:image/file "images/flies-1.png"}
+    {:image/file "images/flies-2.png"}
+    {:image/file "images/flies-3.png"}
+    {:image/file "images/flies-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 5/8, :body/width 25/48},
@@ -2615,10 +2615,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/prisoner-a-1.png"}
-    {:image/file "images/animations/prisoner-a-2.png"}
-    {:image/file "images/animations/prisoner-a-3.png"}
-    {:image/file "images/animations/prisoner-a-4.png"}),
+   ({:image/file "images/prisoner-a-1.png"}
+    {:image/file "images/prisoner-a-2.png"}
+    {:image/file "images/prisoner-a-3.png"}
+    {:image/file "images/prisoner-a-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 2/3},
@@ -2637,10 +2637,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/beholder-deep-1.png"}
-    {:image/file "images/animations/beholder-deep-2.png"}
-    {:image/file "images/animations/beholder-deep-3.png"}
-    {:image/file "images/animations/beholder-deep-4.png"}),
+   ({:image/file "images/beholder-deep-1.png"}
+    {:image/file "images/beholder-deep-2.png"}
+    {:image/file "images/beholder-deep-3.png"}
+    {:image/file "images/beholder-deep-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 19/24, :body/width 5/6},
@@ -2659,10 +2659,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/skeleton-1.png"}
-    {:image/file "images/animations/skeleton-2.png"}
-    {:image/file "images/animations/skeleton-3.png"}
-    {:image/file "images/animations/skeleton-4.png"}),
+   ({:image/file "images/skeleton-1.png"}
+    {:image/file "images/skeleton-2.png"}
+    {:image/file "images/skeleton-3.png"}
+    {:image/file "images/skeleton-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/8, :body/width 2/3},
@@ -2681,10 +2681,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/elemental-water-1.png"}
-    {:image/file "images/animations/elemental-water-2.png"}
-    {:image/file "images/animations/elemental-water-3.png"}
-    {:image/file "images/animations/elemental-water-4.png"}),
+   ({:image/file "images/elemental-water-1.png"}
+    {:image/file "images/elemental-water-2.png"}
+    {:image/file "images/elemental-water-3.png"}
+    {:image/file "images/elemental-water-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? true, :body/height 13/16, :body/width 7/12},
@@ -2703,10 +2703,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/cultist-1.png"}
-    {:image/file "images/animations/cultist-2.png"}
-    {:image/file "images/animations/cultist-3.png"}
-    {:image/file "images/animations/cultist-4.png"}),
+   ({:image/file "images/cultist-1.png"}
+    {:image/file "images/cultist-2.png"}
+    {:image/file "images/cultist-3.png"}
+    {:image/file "images/cultist-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 2/3},
@@ -2725,10 +2725,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/mummy-pharao-1.png"}
-    {:image/file "images/animations/mummy-pharao-2.png"}
-    {:image/file "images/animations/mummy-pharao-3.png"}
-    {:image/file "images/animations/mummy-pharao-4.png"}),
+   ({:image/file "images/mummy-pharao-1.png"}
+    {:image/file "images/mummy-pharao-2.png"}
+    {:image/file "images/mummy-pharao-3.png"}
+    {:image/file "images/mummy-pharao-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 11/16, :body/width 2/3},
@@ -2747,10 +2747,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/halfling-wizard-1.png"}
-    {:image/file "images/animations/halfling-wizard-2.png"}
-    {:image/file "images/animations/halfling-wizard-3.png"}
-    {:image/file "images/animations/halfling-wizard-4.png"}),
+   ({:image/file "images/halfling-wizard-1.png"}
+    {:image/file "images/halfling-wizard-2.png"}
+    {:image/file "images/halfling-wizard-3.png"}
+    {:image/file "images/halfling-wizard-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 2/3, :body/width 17/24},
@@ -2769,10 +2769,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/drow-bowman-1.png"}
-    {:image/file "images/animations/drow-bowman-2.png"}
-    {:image/file "images/animations/drow-bowman-3.png"}
-    {:image/file "images/animations/drow-bowman-4.png"}),
+   ({:image/file "images/drow-bowman-1.png"}
+    {:image/file "images/drow-bowman-2.png"}
+    {:image/file "images/drow-bowman-3.png"}
+    {:image/file "images/drow-bowman-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 19/24, :body/width 2/3},
@@ -2791,10 +2791,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/worm-giant-1.png"}
-    {:image/file "images/animations/worm-giant-2.png"}
-    {:image/file "images/animations/worm-giant-3.png"}
-    {:image/file "images/animations/worm-giant-4.png"}),
+   ({:image/file "images/worm-giant-1.png"}
+    {:image/file "images/worm-giant-2.png"}
+    {:image/file "images/worm-giant-3.png"}
+    {:image/file "images/worm-giant-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 17/24, :body/width 5/6},
@@ -2813,10 +2813,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/merchant-m-1.png"}
-    {:image/file "images/animations/merchant-m-2.png"}
-    {:image/file "images/animations/merchant-m-3.png"}
-    {:image/file "images/animations/merchant-m-4.png"}),
+   ({:image/file "images/merchant-m-1.png"}
+    {:image/file "images/merchant-m-2.png"}
+    {:image/file "images/merchant-m-3.png"}
+    {:image/file "images/merchant-m-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 5/8, :body/width 2/3},
@@ -2835,10 +2835,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/elf-1.png"}
-    {:image/file "images/animations/elf-2.png"}
-    {:image/file "images/animations/elf-3.png"}
-    {:image/file "images/animations/elf-4.png"}),
+   ({:image/file "images/elf-1.png"}
+    {:image/file "images/elf-2.png"}
+    {:image/file "images/elf-3.png"}
+    {:image/file "images/elf-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 17/24, :body/width 11/16},
@@ -2857,10 +2857,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/worm-1.png"}
-    {:image/file "images/animations/worm-2.png"}
-    {:image/file "images/animations/worm-3.png"}
-    {:image/file "images/animations/worm-4.png"}),
+   ({:image/file "images/worm-1.png"}
+    {:image/file "images/worm-2.png"}
+    {:image/file "images/worm-3.png"}
+    {:image/file "images/worm-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 1/2, :body/width 7/12},
@@ -2879,10 +2879,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/halfling-sling-1.png"}
-    {:image/file "images/animations/halfling-sling-2.png"}
-    {:image/file "images/animations/halfling-sling-3.png"}
-    {:image/file "images/animations/halfling-sling-4.png"}),
+   ({:image/file "images/halfling-sling-1.png"}
+    {:image/file "images/halfling-sling-2.png"}
+    {:image/file "images/halfling-sling-3.png"}
+    {:image/file "images/halfling-sling-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 7/12, :body/width 17/24},
@@ -2901,10 +2901,10 @@
   :entity/animation
   {:animation/frame-duration 0.1,
    :animation/frames
-   ({:image/file "images/animations/golem-ice-1.png"}
-    {:image/file "images/animations/golem-ice-2.png"}
-    {:image/file "images/animations/golem-ice-3.png"}
-    {:image/file "images/animations/golem-ice-4.png"}),
+   ({:image/file "images/golem-ice-1.png"}
+    {:image/file "images/golem-ice-2.png"}
+    {:image/file "images/golem-ice-3.png"}
+    {:image/file "images/golem-ice-4.png"}),
    :animation/looping? true},
   :entity/body
   {:body/flying? false, :body/height 3/4, :body/width 17/24},
