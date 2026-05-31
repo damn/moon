@@ -2,20 +2,18 @@
   (:require [com.badlogic.gdx.graphics.color :as color]
             [draw-on-world-viewport.draw-entities]
             [draw-on-world-viewport.draw-cell-debug]
-            [game.ctx :as ctx]
             [game.ctx.draw :refer [draw!]]
             [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]))
 
 (defn draw-tile-grid
-  [{:keys [ctx/world-viewport]
-    :as ctx}]
+  [{:keys [ctx/world-viewport]}]
   (let [[left-x _right-x bottom-y _top-y] (camera/frustum (:viewport/camera world-viewport))]
     [[:draw/grid
       (int left-x)
       (int bottom-y)
-      (inc (int (ctx/world-viewport-width ctx)))
-      (+ 2 (int (ctx/world-viewport-height ctx)))
+      (inc (int (:viewport/world-width world-viewport)))
+      (+ 2 (int (:viewport/world-height world-viewport)))
       1
       1
       (color/float-bits [1 1 1 0.8])]]))

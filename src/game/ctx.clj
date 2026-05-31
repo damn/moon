@@ -2,29 +2,7 @@
   (:require [clojure.math.vector2 :as v]
             [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.input.keys :as input.keys]
-            [gdx.graphics.orthographic-camera :as camera]
-            [malli.utils :as mu]))
-
-(defn validate [ctx]
-  (mu/validate-humanize (:ctx/schema ctx) ctx))
-
-(defn world-viewport-width
-  [{:keys [ctx/world-viewport]}]
-  (:viewport/world-width world-viewport))
-
-(defn world-viewport-height
-  [{:keys [ctx/world-viewport]}]
-  (:viewport/world-height world-viewport))
-
-(defn visible-tiles [{:keys [ctx/world-viewport]}]
-  (camera/visible-tiles (:viewport/camera world-viewport)))
-
-(defn key-pressed? [{:keys [ctx/app]} input-key]
-  (input/key-pressed? (app/input app) input-key))
-
-(defn world-unit-scale [ctx]
-  (:ctx/world-unit-scale ctx))
+            [com.badlogic.gdx.input.keys :as input.keys]))
 
 (defn mouse-position [{:keys [ctx/app]}]
   [(input/x (app/input app))
@@ -45,14 +23,12 @@
                     (min maxrange
                          (v/distance player-position world-mouse-position))))))
 
-(defn key-just-pressed? [{:keys [ctx/app]} input-key]
-  (input/key-just-pressed? (app/input app) input-key))
-
-(defn player-movement-vector [ctx]
-  (let [r (when (key-pressed? ctx input.keys/d) [1  0])
-        l (when (key-pressed? ctx input.keys/a) [-1 0])
-        u (when (key-pressed? ctx input.keys/w) [0  1])
-        d (when (key-pressed? ctx input.keys/s) [0 -1])]
+(defn player-movement-vector [{:keys [ctx/app]}]
+  (let [input (app/input app)
+        r (when (input/key-pressed? input input.keys/d) [1  0])
+        l (when (input/key-pressed? input input.keys/a) [-1 0])
+        u (when (input/key-pressed? input input.keys/w) [0  1])
+        d (when (input/key-pressed? input input.keys/s) [0 -1])]
     (when (or r l u d)
       (let [v (v/normalise (reduce v/add [0 0] (remove nil? [r l u d])))]
         (when (pos? (v/length v))

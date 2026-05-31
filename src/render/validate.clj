@@ -1,6 +1,6 @@
 (ns render.validate
-  (:require [game.ctx :as ctx]))
+  (:require [malli.utils :as mu]))
 
 (defn step [ctx]
-  (ctx/validate ctx)
+  (mu/validate-humanize (:ctx/schema ctx) ctx)
   ctx)

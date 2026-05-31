@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-cell-debug
-  (:require [game.ctx :as ctx]
+  (:require [gdx.graphics.orthographic-camera :as camera]
             [game.constants :refer [show-potential-field-colors?
                                     show-cell-entities?
                                     show-cell-occupied?]]))
@@ -7,10 +7,10 @@
 (defn f
   [{:keys [ctx/colors
            ctx/grid
-           ctx/factions-iterations]
-    :as ctx}]
+           ctx/factions-iterations
+           ctx/world-viewport]}]
   (apply concat
-         (for [[x y] (ctx/visible-tiles ctx)
+         (for [[x y] (camera/visible-tiles (:viewport/camera world-viewport))
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]

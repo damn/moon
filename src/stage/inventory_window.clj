@@ -1,6 +1,5 @@
 (ns stage.inventory-window
-  (:require [game.ctx :as ctx]
-            [moon.textures :as textures]
+  (:require [moon.textures :as textures]
             [moon.ui.inventory-window.create :as create-inventory-window]))
 
 (defn create
