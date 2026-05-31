@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.graphics :as graphics]
             [gdx.stage :as stage]
-            [game.ctx :as ctx]
+            [game.ctx.do :refer [do!]]
             [moon.ui.error-window :as error-window]
             [moon.grid.update-potential-fields :as update-potential-fields]
             [game.entity :as entity]
@@ -17,13 +17,14 @@
            ctx/stage]
     :as ctx}]
   (try
-   (ctx/do! ctx (mapcat (fn [eid]
-                          (mapcat (fn [[k v]]
-                                    (try (entity/tick [k v] eid ctx)
-                                         (catch Throwable t
-                                           (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
-                                  @eid))
-                        active-entities))
+   (do! ctx
+        (mapcat (fn [eid]
+                  (mapcat (fn [[k v]]
+                            (try (entity/tick [k v] eid ctx)
+                                 (catch Throwable t
+                                   (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
+                          @eid))
+                active-entities))
    (catch Throwable t
      (throwable/pretty-pst t)
      (stage/add-actor! stage

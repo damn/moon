@@ -1,5 +1,5 @@
 (ns render.handle-player-input
-  (:require [game.ctx :as ctx]
+  (:require [game.ctx.do :refer [do!]]
             [game.state :as state]))
 
 (defn step
@@ -9,5 +9,5 @@
         entity @eid
         state-k (:state (:entity/fsm entity))
         txs (state/handle-input [state-k (state-k entity)] eid ctx)]
-    (ctx/do! ctx txs))
+    (do! ctx txs))
   ctx)

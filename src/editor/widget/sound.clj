@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
-            [game.ctx :as ctx]
+            [game.ctx.do :refer [do!]]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui :as ui]
@@ -47,8 +47,8 @@
                                                                 {:text "play!"
                                                                  :skin skin
                                                                  :actor/listeners {:listener/change (fn [event _actor]
-                                                                                                      (ctx/do! (:stage/ctx (event/stage event))
-                                                                                                               [[:tx/sound sound-name]]))}})}])} )]
+                                                                                                      (do! (:stage/ctx (event/stage event))
+                                                                                                           [[:tx/sound sound-name]]))}})}])} )]
                             {:actor (scroll-pane/create
                                      {:actor table
                                       :skin skin})
@@ -66,8 +66,8 @@
             {:text "play!"
              :skin skin
              :actor/listeners {:listener/change (fn [event _actor]
-                                                  (ctx/do! (:stage/ctx (event/stage event))
-                                                           [[:tx/sound sound-name]]))}})}])
+                                                  (do! (:stage/ctx (event/stage event))
+                                                       [[:tx/sound sound-name]]))}})}])
 
 (defmethod widget/create :s/sound [_  sound-name {:keys [ctx/skin]}]
   (let [table (table/create

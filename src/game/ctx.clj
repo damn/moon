@@ -1,12 +1,8 @@
 (ns game.ctx
-  (:require [clojure.core-ext :refer [actions!
-                                      reduce-actions!]]
-            [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2 :as v]
             [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.keys :as input.keys]
-            [game.constants :refer [txs-fn-map]]
-            [game.reaction-txs :as reaction-txs]
             [gdx.graphics.orthographic-camera :as camera]
             [malli.utils :as mu]))
 
@@ -23,15 +19,6 @@
 
 (defn visible-tiles [{:keys [ctx/world-viewport]}]
   (camera/visible-tiles (:viewport/camera world-viewport)))
-
-(defn do! [ctx txs]
-  (let [handled-txs (try (actions! txs-fn-map ctx txs)
-                         (catch Throwable t
-                           (throw (ex-info "Error handling txs"
-                                           {:txs txs} t))))]
-    (reduce-actions! reaction-txs/fn-map
-                     ctx
-                     handled-txs)))
 
 (defn key-pressed? [{:keys [ctx/app]} input-key]
   (input/key-pressed? (app/input app) input-key))

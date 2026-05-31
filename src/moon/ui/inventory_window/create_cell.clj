@@ -1,7 +1,7 @@
 (ns moon.ui.inventory-window.create-cell
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
-            [game.ctx :as ctx]
+            [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]
             [gdx.scenes.scene2d.actor :as actor]
@@ -21,10 +21,10 @@
                                            (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
                                                  entity @player-eid
                                                  state-k (:state (:entity/fsm entity))]
-                                             (ctx/do! ctx
-                                                      (state/clicked-inventory-cell [state-k (state-k entity)]
-                                                                                    player-eid
-                                                                                    cell))))}
+                                             (do! ctx
+                                                  (state/clicked-inventory-cell [state-k (state-k entity)]
+                                                                                player-eid
+                                                                                cell))))}
        :group/actors [(widget/create
                        {:draw! (fn [this _batch _parent-alpha]
                                  (when-let [stage (actor/stage this)]
