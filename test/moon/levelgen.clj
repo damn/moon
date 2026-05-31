@@ -97,7 +97,7 @@
   (let [files (app/files app)
         graphics (app/graphics app)
         input (app/input app)
-        skin (skin/create (files/internal files "uiskin.json"))
+        skin (skin/create (files/internal files "skin/uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch)

@@ -57,7 +57,7 @@
                                                                                                                              :property (db/get-raw db id)})))}))))}})}])}))
 
 (defn create! [app _params]
-  (let [skin (skin/create (files/internal (app/files app) "uiskin.json"))
+  (let [skin (skin/create (files/internal (app/files app) "skin/uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         batch (sprite-batch/create)
         stage (stage/create ui-viewport batch)

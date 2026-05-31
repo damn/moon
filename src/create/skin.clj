@@ -4,4 +4,4 @@
 (defn step
   [{:keys [ctx/app]
     :as ctx}]
-  (assoc ctx :ctx/skin (app/skin app "uiskin.json")))
+  (assoc ctx :ctx/skin (app/skin app "skin/uiskin.json")))
