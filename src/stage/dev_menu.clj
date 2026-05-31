@@ -8,12 +8,6 @@
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
             [moon.number :as number]))
 
-(defn frames-per-second [{:keys [ctx/app]}]
-  (graphics/frames-per-second (app/graphics app)))
-
-(defn camera-zoom [{:keys [ctx/world-viewport]}]
-  (camera/zoom (:viewport/camera world-viewport)))
-
 (defn create
   [{:keys [ctx/controls-info
            ctx/db
@@ -59,7 +53,8 @@
                                              (str (number/readable elapsed-time) " seconds"))
                                 :icon "images/clock.png"}
                                {:label "FPS"
-                                :update-fn frames-per-second
+                                :update-fn (fn [{:keys [ctx/app]}]
+                                             (graphics/frames-per-second (app/graphics app)))
                                 :icon "images/fps.png"}
                                {:label "Mouseover-entity id"
                                 :update-fn (fn [{:keys [ctx/mouseover-eid]}]
@@ -75,7 +70,8 @@
                                 :update-fn (fn [{:keys [ctx/world-mouse-position]}]
                                              (mapv int world-mouse-position))}
                                {:label "Zoom"
-                                :update-fn camera-zoom
+                                :update-fn (fn [{:keys [ctx/world-viewport]}]
+                                             (camera/zoom (:viewport/camera world-viewport)))
                                 :icon "images/zoom.png"}
                                ]]
                      (if (:icon item)
