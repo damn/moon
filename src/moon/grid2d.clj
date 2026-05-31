@@ -62,14 +62,6 @@
   {:pre [(>= w 1) (>= h 1)]}
   (VectorGrid. (vector2d w h xyfn)))
 
-(defn print-grid [grid & {print-cell :print-cell
-                          :or {print-cell
-                               #(print (case % :wall "#" :ground "_" "?"))}}]
-  (doseq [y (range (height grid))]
-    (doseq [x (range (width grid))]
-      (print-cell (grid [x y])))
-    (println)))
-
 (defn assoc-ks [m ks v]
   (if (empty? ks)
     m
