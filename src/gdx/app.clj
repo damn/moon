@@ -1,7 +1,7 @@
 (ns gdx.app
   (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
-            [gdx.graphics :as graphics]))
+            [com.badlogic.gdx.graphics :as graphics]))
 
 (defn set-input-processor! [app input-processor]
   (input/set-processor! (app/input app) input-processor))
@@ -18,9 +18,6 @@
 
 (defn key-just-pressed? [app input-key]
   (input/key-just-pressed? (app/input app) input-key))
-
-(defn clear-screen! [app r g b a]
-  (graphics/clear! (app/graphics app) r g b a))
 
 (defn delta-time [app]
   (graphics/delta-time (app/graphics app)))
