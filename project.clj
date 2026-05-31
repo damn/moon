@@ -1,17 +1,14 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 [com.badlogicgames.gdx/gdx-freetype          "1.14.0"]
-                 [com.badlogicgames.gdx/gdx-freetype-platform "1.14.0" :classifier "natives-desktop"]
-
                  [com.github.damn/clojure.core-ext "55983eb35e"]
                  [com.github.damn/clojure.math "8c8d074607"]
-
                  [com.github.damn/com.badlogic.gdx "e75c53c521"]
                  [com.github.damn/com.badlogic.gdx.backends.lwjgl3 "01329de8e4"]
+                 [com.github.damn/com.badlogic.gdx.graphics.g2d.freetype "29d1626eca"]
                  [com.github.damn/space.earlygrey.shape-drawer "82d772e482"]
-
                  [com.github.damn/malli.utils "081a715935"]
+
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
                  [org.clj-commons/pretty "3.2.0"]

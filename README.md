@@ -27,6 +27,10 @@ defs -> ctx? constants?
         => all edn is config
 [⚠️ ] src/
     => SHOW LOCS, CLUSTER 1,2 and HIERARCHY AND EXTERNAL h
+
+        => OBVIOUSLY FIRST CLUSTER DEPTH 1
+            => functions stats/inventory/etc. separate lib -> amazing!
+
 ( target/ ) HIDDEN
 [?] test/
 
