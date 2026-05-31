@@ -22,6 +22,7 @@
             editor-widget.one-to-one
             editor-widget.one-to-many
             editor-widget.map
+            draw.load
             ))
 
 (defn step [ctx]
