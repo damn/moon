@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [game.constants :refer [k->colors k-order]]
             [game.info-fns :as info-fns]
+            [game.skill :as skill]
             info.stats.modifiers))
 
 (defmulti text (fn [object ctx]
@@ -80,18 +81,6 @@
   :property/pretty-name "Great Mystic Shield"}
  )
 
-(defn- valid-skill? [skill]
-  (= #{:property/id
-       :property/pretty-name
-       :entity/image
-       :skill/action-time-modifier-key
-       :skill/action-time
-       :skill/start-action-sound
-       :skill/effects
-       :skill/cooldown
-       :skill/cost}
-     (set (keys skill))))
-
 (comment
  (binding [*print-level* nil]
    (clojure.pprint/pprint (:skill/effects
@@ -99,6 +88,7 @@
  )
 
 (defn skill-info [skill]
+  {:pre [(skill/valid? skill)]}
   ; The core problem is that you’re eagerly unrolling your graph into nested maps (tree form). That guarantees infinite recursion if there are cycles.
 
   ; skill/effects is unrolled

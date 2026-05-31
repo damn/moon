@@ -2,6 +2,18 @@
   (:require [game.effect :as effect]
             [moon.stats :as stats]))
 
+(defn valid? [skill]
+  (= #{:property/id
+       :property/pretty-name
+       :entity/image
+       :skill/action-time-modifier-key
+       :skill/action-time
+       :skill/start-action-sound
+       :skill/effects
+       :skill/cooldown
+       :skill/cost}
+     (set (keys skill))))
+
 (defn usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
    entity
