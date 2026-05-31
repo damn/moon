@@ -1,6 +1,9 @@
 (ns world-fns.uf-caves.last-steps
   (:require [clojure.rand :as rand]
+            [clojure.grid2d.flood-fill :as flood-fill]
+            [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
             [moon.grid2d :as g2d]
+            [clojure.grid2d.printgrid :as printgrid]
             [moon.tiled-map]))
 
 (defn- position->tile-fn [grid]
@@ -39,19 +42,19 @@
 
 (defn- scale-grid [grid start scale]
   (let [grid (g2d/scalegrid grid scale)]
-    ;_ (printgrid grid)
+    ;_ (printgrid/f grid)
     ;_ (println)
     {:start-position (mapv #(* % scale) start)
      :grid grid}))
 
 (defn- assoc-transition-cells [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid
-                     (g2d/adjacent-wall-positions grid))]
+                     (adjacent-wall-positions/f grid))]
     (assert (or
              (= #{:wall :ground :transition} (set (g2d/cells grid)))
              (= #{:ground :transition}       (set (g2d/cells grid))))
             (str "(set (g2d/cells grid)): " (set (g2d/cells grid))))
-    ;_ (printgrid grid)
+    ;_ (printgrid/f grid)
     ;_ (println)
     grid))
 
@@ -89,7 +92,7 @@
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)
-        spawn-positions (g2d/flood-fill grid start-position can-spawn?)
+        spawn-positions (flood-fill/f grid start-position can-spawn?)
         creatures (for [position spawn-positions
                         :when (<= (rand) spawn-rate)]
                     [position (rand-nth creatures)])]

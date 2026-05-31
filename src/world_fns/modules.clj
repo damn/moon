@@ -6,13 +6,15 @@
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [moon.grid2d :as g2d]
+            [clojure.grid2d.printgrid :as printgrid]
+            [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
             [moon.tiled-map]
             [world-fns.modules.place :as place-module]
             world-fns.modules.last-steps)
   (:import (java.util Random)))
 
 (defn- print-grid [{:keys [grid] :as world-fn-ctx}]
-  (g2d/printgrid grid)
+  (printgrid/f grid)
   (println " - ")
   world-fn-ctx)
 
@@ -31,7 +33,7 @@
   [{:keys [grid] :as world-fn-ctx}]
   (let [grid (reduce #(assoc %1 %2 :transition)
                      grid
-                     (g2d/adjacent-wall-positions grid))]
+                     (adjacent-wall-positions/f grid))]
     (assert (or
              (= #{:wall :ground :transition} (set (g2d/cells grid)))
              (= #{:ground :transition} (set (g2d/cells grid))))

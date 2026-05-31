@@ -1,5 +1,4 @@
-(ns moon.grid2d
-  (:require [moon.position :as position]))
+(ns moon.grid2d)
 ; 2dimvector is 7x faster than a hashmap of [x y] to values
 ; like in rich hickey ant demo vectors of vectors:
 ; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj
@@ -115,45 +114,3 @@
                (* (height grid) factor)
                (fn [posi]
                  (get grid (mapv #(int (/ % factor)) posi)))))
-
-(defn- print-cell [celltype]
-  (print (if (number? celltype)
-           celltype
-           (case celltype
-             nil               "?"
-             :undefined        " "
-             :ground           "_"
-             :wall             "#"
-             :airwalkable      "."
-             :module-placement "X"
-             :start-module     "@"
-             :transition       "+"))))
-
-(defn printgrid ; print-grid in data.grid2d is y-down
-  "Prints with y-up coordinates."
-  [grid]
-  (doseq [y (range (dec (height grid)) -1 -1)]
-    (doseq [x (range (width grid))]
-      (print-cell (grid [x y])))
-    (println)))
-
-(defn adjacent-wall-positions [grid]
-  (filter (fn [p] (and (= :wall (get grid p))
-                       (some #(= :ground (get grid %))
-                             (position/get-8-neighbours p))))
-          (posis grid)))
-
-; TODO moon.grid2d.flood-fill - 1 transformation function ... ?
-(defn flood-fill [grid start walk-on-position?]
-  (loop [next-positions [start]
-         filled []
-         grid grid]
-    (if (seq next-positions)
-      (recur (filter #(and (get grid %)
-                           (walk-on-position? %))
-                     (distinct
-                      (mapcat position/get-8-neighbours
-                              next-positions)))
-             (concat filled next-positions)
-             (assoc-ks grid next-positions nil))
-      filled)))

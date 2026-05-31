@@ -6,6 +6,8 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [moon.grid2d :as g2d]
+            [clojure.grid2d.printgrid :as printgrid]
+            [clojure.grid2d.flood-fill :as flood-fill]
             [moon.tiled-map]
             [world-fns.modules.area-level-grid :as area-level-grid]))
 
@@ -35,9 +37,9 @@
 
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
 
-        spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
+        spawn-positions (flood-fill/f scaled-grid start-position can-spawn?)
         ;_ (println "scaled grid with filled nil: '?' \n")
-        ;_ (printgrid (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
+        ;_ (printgrid/f (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
         ;_ (println "\n")
 
         {:keys [_steps area-level-grid]} (area-level-grid/create
@@ -45,7 +47,7 @@
                                           :start start
                                           :max-level max-area-level
                                           :walk-on #{:ground :transition})
-        ;_ (printgrid area-level-grid)
+        ;_ (printgrid/f area-level-grid)
         _ (assert (or
                    (= (set (concat [max-area-level] (range max-area-level)))
                       (set (g2d/cells area-level-grid)))
