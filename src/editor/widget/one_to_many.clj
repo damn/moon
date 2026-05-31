@@ -1,5 +1,6 @@
 (ns editor.widget.one-to-many
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [editor.property-overview-window]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]

@@ -1,61 +1,7 @@
 (ns entity.state.load
   (:require [game.ctx :as ctx]
-            [game.entity :as entity]
             [game.state :as state]
-            [moon.inventory :as inventory]
-            [moon.stats :as stats]
-            [moon.timer :as timer]))
-
-(def reaction-time-multiplier 0.016)
-
-(defmethod state/create :player-moving
-  [[_k movement-vector] eid _ctx]
-  {:movement-vector movement-vector})
-
-(defmethod state/create :npc-moving
-  [[_k movement-vector] eid {:keys [ctx/elapsed-time]}]
-  {:movement-vector movement-vector
-   :timer (timer/create elapsed-time
-                        (* (stats/get-stat-value (:entity/stats @eid) :stats/reaction-time)
-                           reaction-time-multiplier))})
-
-(defmethod state/create :player-item-on-cursor
-  [[_k item] _eid _ctx]
-  {:item item})
-
-(defmethod state/enter :player-item-on-cursor
-  [[_k {:keys [item]}] eid]
-  [[:tx/assoc eid :entity/item-on-cursor item]])
-
-(defmethod state/enter :active-skill
-  [[_k {:keys [skill]}] eid]
-  [[:tx/sound (:skill/start-action-sound skill)]
-   [:tx/set-cooldown eid skill]
-   [:tx/update eid :entity/stats stats/pay-mana-cost (:skill/cost skill)]])
-
-(defmethod state/enter :npc-dead
-  [_ eid]
-  [[:tx/mark-destroyed eid]])
-
-(defmethod state/enter :player-moving
-  [[_k {:keys [movement-vector]}] eid]
-  [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                    :speed (or (stats/get-stat-value (:entity/stats @eid) :stats/movement-speed)
-                                               0)}]])
-
-(defmethod state/enter :player-dead
-  [_ _eid]
-  [[:tx/sound "bfxr_playerdeath"]
-   [:tx/show-modal {:title "YOU DIED - again!"
-                    :text "Good luck next time!"
-                    :button-text "OK"
-                    :on-click (fn [])}]])
-
-(defmethod state/enter :npc-moving
-  [[_k {:keys [movement-vector]}] eid]
-  [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                    :speed (or (stats/get-stat-value (:entity/stats @eid) :stats/movement-speed)
-                                               0)}]])
+            [moon.inventory :as inventory]))
 
 (defmethod state/exit :player-item-on-cursor
   [_ eid ctx]
@@ -83,7 +29,6 @@
 (defmethod state/exit :npc-moving
   [_ eid _ctx]
   [[:tx/dissoc eid :entity/movement]])
-
 
 (defmethod state/cursor :player-item-on-cursor
   [_ _eid _ctx]
