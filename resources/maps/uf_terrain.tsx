@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.10.2" name="uf_terrain" tilewidth="48" tileheight="48" tilecount="760" columns="20">
- <image source="uf_terrain.png" width="960" height="1824"/>
+ <image source="../images/uf_terrain.png" width="960" height="1824"/>
  <tile id="21">
   <properties>
    <property name="movement" value="all"/>

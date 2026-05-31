@@ -2,7 +2,7 @@
  {:initial-grid-create-fn moon.caves/create
   :grid2d-fix-nads-fn moon.nads/fix-nads
   :tile-size 48
-  :texture-path "maps/uf_terrain.png"
+  :texture-path "images/uf_terrain.png"
   :spawn-rate 0.02
   :scaling 3
   :cave-size 200
