@@ -12,7 +12,7 @@
 
 (comment
 
- (spit "edn/sounds.edn"
+ (spit "config/sounds.edn"
        (vec (list-files "wav/" ".wav")))
 
 

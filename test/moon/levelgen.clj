@@ -28,12 +28,12 @@
             [moon.creature-tiles]
             [moon.db :as db]))
 
-(def initial-level-fn "world_fns/uf_caves.edn")
+(def initial-level-fn "config/world_fns/uf_caves.edn")
 
 (def level-fns
-  ["world_fns/vampire.edn"
-   "world_fns/uf_caves.edn"
-   "world_fns/modules.edn"])
+  ["config/world_fns/vampire.edn"
+   "config/world_fns/uf_caves.edn"
+   "config/world_fns/modules.edn"])
 
 (defn- show-whole-map! [{:keys [ctx/camera
                                 ctx/tiled-map]}]

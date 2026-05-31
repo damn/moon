@@ -34,9 +34,9 @@
             {:label "Help"
              :items [{:label controls-info}]}
             {:label "Select World"
-             :items (for [world-fn ["world_fns/vampire.edn"
-                                    "world_fns/uf_caves.edn"
-                                    "world_fns/modules.edn"]]
+             :items (for [world-fn ["config/world_fns/vampire.edn"
+                                    "config/world_fns/uf_caves.edn"
+                                    "config/world_fns/modules.edn"]]
                       {:label (str "Start " world-fn)
                        :on-click (fn [actor {:keys [ctx/stage] :as ctx}]
                                    #_(let [rebuild-actors! nil

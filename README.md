@@ -1,3 +1,9 @@
+Fantasy Outside:
+cliff.tmx
+modules.tmx
+
+
+
 # Idea:
 
 Explain till crate/render/dispose/resize steps
@@ -13,7 +19,14 @@ defs -> ctx? constants?
 
 [⚠️ ] java-src/ => should be external library, not relevant to the game itself
 [⚠️ ] resources/
+    => maps/
+        => tiled/
+            => TMX LINK APP
+
+    world-fns/   => config/edn
+        => all edn is config
 [⚠️ ] src/
+    => SHOW LOCS, CLUSTER 1,2 and HIERARCHY AND EXTERNAL h
 ( target/ ) HIDDEN
 [?] test/
 

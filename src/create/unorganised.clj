@@ -28,7 +28,7 @@
          :ctx/entity-ids (atom {})
 
          ; constants (config & not state?)
-         :ctx/schema (m/schema (edn-resource "app-schema.edn"))
+         :ctx/schema (m/schema (edn-resource "config/app-schema.edn"))
          :ctx/factions-iterations {:good 15 :evil 5}
          :ctx/max-delta 0.04
          :ctx/minimum-size 0.39

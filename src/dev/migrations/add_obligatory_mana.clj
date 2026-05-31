@@ -4,7 +4,7 @@
 
 (comment
 
- (def file "properties.edn")
+ (def file "config/properties.edn")
 
  (defn read-properties [file]
    (-> file io/resource slurp edn/read-string))

@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]))
 
-(def file "properties.edn")
+(def file "config/properties.edn")
 
 (defn read-properties []
   (-> file io/resource slurp edn/read-string))
@@ -38,8 +38,8 @@
  (count (filter creature? (read-properties)))
  (clojure.pprint/pprint (first (filter creature? (read-properties))))
 
- (db/do! {} {:schemas "schema.edn"
-             :properties "properties.edn"})
+ (db/do! {} {:schemas "config/schema.edn"
+             :properties "config/properties.edn"})
 
  (def example-creature {:stats/aggro-range 6,
                         :entity/animation

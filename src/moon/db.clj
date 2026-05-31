@@ -56,8 +56,8 @@
        (all-raw this property-type)))
 
 (defn create []
-  (let [schemas (-> "schema.edn" io/resource slurp edn/read-string)
-        properties-file (io/resource "properties.edn")
+  (let [schemas (-> "config/schema.edn" io/resource slurp edn/read-string)
+        properties-file (io/resource "config/properties.edn")
         properties (-> properties-file slurp edn/read-string)]
     (assert (or (empty? properties)
                 (apply distinct? (map :property/id properties))))
