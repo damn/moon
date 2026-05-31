@@ -9,6 +9,7 @@
             [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.screen-utils :as screen-utils]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            schema.malli-form
             editor.widget.animation
             editor.widget.boolean
             editor.widget.enum
