@@ -1,50 +1,10 @@
 (ns editor.map-widget-table
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [editor.map-widget-table.add-component-window :as add-component-window]
             [editor.map-widget-table.component-row :as component-row]
-            [editor.map-widget-table.k-label-text :as k-label-text]
-            [editor.rebuild :as rebuild]
-            [editor.widget :as widget]
-            [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
-            [gdx.scenes.scene2d.ui.widget-group :as widget-group]
-            [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.stage :as stage]
-            [moon.schemas :as schemas]
-            [moon.ui.error-window]))
-
-(defn add-component-window
-  [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (window/create
-                {:title "Choose"
-                 :skin skin
-                 :window/close-button? skin
-                 :window/modal? true
-                 :table/cell-defaults {:pad 5}})
-        remaining-ks (sort (remove (set (keys (widget/value schema map-widget-table schemas)))
-                                   (schemas/map-keys schemas schema)))]
-    (table/add-rows!
-     window
-     (for [k remaining-ks]
-       [{:actor (text-button/create
-                 {:skin skin
-                  :text (name k)
-                  :actor/listeners {:listener/change
-                                    (fn [event _actor]
-                                      (actor/remove! window)
-                                      (let [ctx (:stage/ctx (event/stage event))]
-                                        (table/add-rows! map-widget-table [(component-row/create
-                                                                            {:skin skin
-                                                                             :editor-widget (widget/build ctx
-                                                                                                          (get schemas k)
-                                                                                                          k
-                                                                                                          (schemas/default-value schemas k))
-                                                                             :k k
-                                                                             :display-remove-component-button? (schemas/optional? schemas schema k)
-                                                                             :table map-widget-table})])
-                                        (rebuild/f! ctx)))}})}]))
-    (widget-group/pack! window)
-    window))
+            [gdx.stage :as stage]))
 
 (defn- horiz-sep [colspan]
   (fn []
@@ -91,7 +51,7 @@
                                                              ctx/skin]} (:stage/ctx (event/stage event))]
                                                  (stage/add-actor!
                                                   stage
-                                                  (add-component-window
+                                                  (add-component-window/f
                                                    {:skin skin
                                                     :schemas (:db/schemas db)
                                                     :schema schema
