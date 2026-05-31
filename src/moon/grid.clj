@@ -7,20 +7,10 @@
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.grid.cells-entities :as cells->entities]
+            [moon.grid.body-occupied-cells :refer [body->occupied-cells]]
             [moon.faction :as faction]
             [moon.grid2d :as g2d]
             [moon.position :as position]))
-
-; (g2d/get-cells grid (body/occupied-tiles body))
-(defn- body->occupied-cells
-  [grid
-   {:keys [body/position
-           body/width
-           body/height]
-    :as body}]
-  (if (or (> (float width) 1) (> (float height) 1))
-    (g2d/get-cells grid (body/touched-tiles body))
-    [(grid (mapv int position))]))
 
 (defn circle->cells [g2d circle]
   (->> circle
