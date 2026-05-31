@@ -99,7 +99,7 @@
     (set-user-object! actor user-object))
 
   (when (:actor/position opts)
-    (let [[x y align] (:actor/position opts)]
+    (let [[x y align] (:actor/position opts)] ; FIXME [x y] now ?!
       (if align
         (set-position! actor x y align)
         (set-position! actor [x y]))))

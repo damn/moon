@@ -2,8 +2,17 @@
  entity.load
  entity.tick
  entity.tick.movement
- entity.render
  entity.render.clickable
+ entity.render.player-item-on-cursor
+ entity.render.animation
+ entity.render.image
+ entity.render.line-render
+ entity.render.mouseover
+ entity.render.stats
+ entity.render.string-effect
+ entity.render.temp-modifier
+ entity.render.active-skill
+ entity.render.npc-sleeping
  entity.create.animation
  entity.create.body
  entity.state.create.active-skill
