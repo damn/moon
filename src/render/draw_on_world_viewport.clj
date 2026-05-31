@@ -1,11 +1,9 @@
 (ns render.draw-on-world-viewport
   (:require [com.badlogic.gdx.graphics.color :as color]
             [draw-on-world-viewport.draw-entities]
+            [draw-on-world-viewport.draw-cell-debug]
             [game.ctx :as ctx]
             [game.ctx.draw :refer [draw!]]
-            [game.constants :refer [show-potential-field-colors?
-                                    show-cell-entities?
-                                    show-cell-occupied?]]
             [gdx.graphics.orthographic-camera :as camera]
             [space.earlygrey.shape-drawer :as shape-drawer]))
 
@@ -21,26 +19,6 @@
       1
       1
       (color/float-bits [1 1 1 0.8])]]))
-
-(defn draw-cell-debug
-  [{:keys [ctx/colors
-           ctx/grid
-           ctx/factions-iterations]
-    :as ctx}]
-  (apply concat
-         (for [[x y] (ctx/visible-tiles ctx)
-               :let [cell (grid [x y])]
-               :when cell
-               :let [cell* @cell]]
-           [(when (and show-cell-entities? (seq (:entities cell*)))
-              [:draw/filled-rectangle x y 1 1 (:colors/debug-cell-entities colors)])
-            (when (and show-cell-occupied? (seq (:occupied cell*)))
-              [:draw/filled-rectangle x y 1 1 (:colors/debug-cell-occupied colors)])
-            (when-let [faction show-potential-field-colors?]
-              (let [{:keys [distance]} (faction cell*)]
-                (when distance
-                  (let [ratio (/ distance (factions-iterations faction))]
-                    [:draw/filled-rectangle x y 1 1 ((:colors/debug-potential-field colors) ratio)]))))])))
 
 (defn highlight-mouseover-tile
   [{:keys [ctx/colors
@@ -73,7 +51,7 @@
     (reset! unit-scale world-unit-scale)
     (doseq [f [
                #_draw-tile-grid
-               draw-cell-debug
+               draw-on-world-viewport.draw-cell-debug/f
                draw-on-world-viewport.draw-entities/do!
                #_moon.geom-test
                highlight-mouseover-tile
