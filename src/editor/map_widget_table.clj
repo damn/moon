@@ -127,7 +127,7 @@
       :fill-x? true
       :expand-x? true}]))
 
-(defn- interpose-f [f coll]
+(defn- interpose-f [f coll] ; TODO use interpose?
   (drop 1 (interleave (repeatedly f) coll)))
 
 (defn create
@@ -169,7 +169,7 @@
                                                     :map-widget-table table}))))}})
                   :colspan colspan}])]
              [(when opt?
-                [{:actor  nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
+                [{:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
                   :pad-top 2
                   :pad-bottom 2
                   :colspan colspan
