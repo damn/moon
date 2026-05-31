@@ -85,9 +85,3 @@
                  (get grid
                       [(int (/ x w))
                        (int (/ y h))]))))
-
-(defn scalegrid [grid factor]
-  (create-grid (* (width grid) factor)
-               (* (height grid) factor)
-               (fn [posi]
-                 (get grid (mapv #(int (/ % factor)) posi)))))
