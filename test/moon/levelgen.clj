@@ -93,7 +93,7 @@
                                                                  (on-clicked actor (:stage/ctx (event/stage event))))}})}])})
 
 (defn create!
-  [app]
+  [app _params]
   (let [files (app/files app)
         graphics (app/graphics app)
         input (app/input app)
@@ -193,6 +193,7 @@
 (defn -main []
   (lwjgl/application!
    {:create! create!
+    :create-params nil
     :dispose! dispose!
     :render! render!
     :resize! resize!

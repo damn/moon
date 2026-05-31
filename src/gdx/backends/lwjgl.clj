@@ -10,7 +10,7 @@
   (lwjgl3-application-configuration/use-glfw-async!)
   (lwjgl3-application/create (application-listener/create
                               {:create!  (fn []
-                                           (reset! state ((:create! config) (gdx/app))))
+                                           (reset! state ((:create! config) (gdx/app) (:create-params config))))
                                :dispose! (fn []
                                            ((:dispose! config) @state))
                                :render!  (fn []
