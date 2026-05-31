@@ -1,37 +1,34 @@
 (ns tx.load
-  (:require [clojure.core-ext :refer [safe-merge]]
-            [game.ctx :as ctx]
-            [game.effect :as effect]
-            [game.entity :as entity]
-            [game.state :as state]
-            [moon.body :as body]
-            [moon.content-grid :as content-grid]
-            [moon.db :as db]
-            [moon.grid :as grid]
-            [moon.inventory :as inventory]
-            [moon.stats :as stats]
-            [moon.timer :as timer]
-            [qrecord.core :as q]
-            [tx.event]
-            [tx.register-eid]
-            [tx.spawn-projectile]))
+  (:require [game.ctx :as ctx]
+            tx.add-text-effect
+            tx.set-cooldown
+            tx.add-skill
+            tx.pickup-item
+            tx.remove-item
+            tx.spawn-line
+            tx.state-enter
+            tx.effect
+            tx.spawn-item
+            tx.spawn-alert
+            tx.move-entity
+            tx.spawn-effect
+            tx.spawn-creature
+            tx.state-exit
+            tx.audiovisual
+            tx.unregister-eid
+            tx.spawn-entity
+            tx.event
+            tx.register-eid
+            tx.spawn-projectile
+            tx.set-item
+            ))
 
-(q/defrecord Entity [entity/body])
+; TODO tx-core/* ?
 
 (.bindRoot #'ctx/txs-fn-map
            {
-            :tx/state-exit               (fn [ctx eid [state-k state-v]]
-                                           (state/exit [state-k state-v] eid ctx))
-            :tx/audiovisual              (fn
-                                           [{:keys [ctx/db]} position audiovisual]
-                                           (let [{:keys [tx/sound
-                                                         entity/animation]} (if (keyword? audiovisual)
-                                                                              (db/build db audiovisual)
-                                                                              audiovisual)]
-                                             [[:tx/sound sound]
-                                              [:tx/spawn-effect
-                                               position
-                                               {:entity/animation (assoc animation :delete-after-stopped? true)}]]))
+            :tx/state-exit               tx.state-exit/do!
+            :tx/audiovisual              tx.audiovisual/do!
             :tx/assoc                    (fn [_ctx eid k value]
                                            (swap! eid assoc k value)
                                            nil)
@@ -47,142 +44,25 @@
             :tx/mark-destroyed           (fn [_ctx eid]
                                            (swap! eid assoc :entity/destroyed? true)
                                            nil)
-            :tx/set-cooldown             (fn [{:keys [ctx/elapsed-time]} eid skill]
-                                           (swap! eid assoc-in [:entity/skills
-                                                                (:property/id skill)
-                                                                :skill/cooling-down?]
-                                                  (timer/create elapsed-time (:skill/cooldown skill)))
-                                           nil)
-            :tx/add-text-effect          (fn [{:keys [ctx/elapsed-time]} eid text duration]
-                                           [[:tx/assoc
-                                             eid
-                                             :entity/string-effect
-                                             (if-let [existing (:entity/string-effect @eid)]
-                                               (-> existing
-                                                   (update :text str "\n" text)
-                                                   (update :counter timer/increment duration))
-                                               {:text text
-                                                :counter (timer/create elapsed-time duration)})]])
-            :tx/add-skill                (fn [_ctx eid {:keys [property/id] :as skill}]
-                                           {:pre [(not (contains? (:entity/skills @eid) id))]}
-                                           (swap! eid update :entity/skills assoc id skill)
-                                           nil)
-            :tx/set-item                 (fn [_ctx eid cell item]
-                                           (let [entity @eid
-                                                 inventory (:entity/inventory entity)]
-                                             (assert (and (nil? (get-in inventory cell))
-                                                          (inventory/valid-slot? cell item)))
-                                             (swap! eid assoc-in (cons :entity/inventory cell) item)
-                                             (when (inventory/applies-modifiers? cell)
-                                               (swap! eid update :entity/stats stats/add (:stats/modifiers item)))
-                                             nil))
-            :tx/remove-item              (fn [_ctx eid cell]
-                                           (let [entity @eid
-                                                 item (get-in (:entity/inventory entity) cell)]
-                                             (assert item)
-                                             (swap! eid assoc-in (cons :entity/inventory cell) nil)
-                                             (when (inventory/applies-modifiers? cell)
-                                               (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
-                                             nil))
-            :tx/pickup-item              (fn [_ctx eid item]
-                                           (inventory/assert-valid-item? item)
-                                           (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
-                                             (assert cell)
-                                             (assert (or (inventory/stackable? item cell-item)
-                                                         (nil? cell-item)))
-                                             (if (inventory/stackable? item cell-item)
-                                               (do
-                                                #_(tx/stack-item ctx eid cell item))
-                                               [[:tx/set-item eid cell item]])))
+            :tx/set-cooldown             tx.set-cooldown/do!
+            :tx/add-text-effect          tx.add-text-effect/do!
+            :tx/add-skill                tx.add-skill/do!
+            :tx/set-item                 tx.set-item/do!
+            :tx/remove-item              tx.remove-item/do!
+            :tx/pickup-item              tx.pickup-item/do!
             :tx/event                    tx.event/do!
             :tx/register-eid             tx.register-eid/do!
-            :tx/unregister-eid           (fn
-                                           [{:keys [ctx/content-grid
-                                                    ctx/entity-ids
-                                                    ctx/grid]
-                                             :as ctx}
-                                            eid]
-                                           (let [id (:entity/id @eid)]
-                                             (assert (contains? @entity-ids id))
-                                             (swap! entity-ids dissoc id))
-                                           (content-grid/remove-entity! content-grid eid)
-                                           (grid/remove-from-touched-cells! grid eid)
-                                           (when (:body/collides? (:entity/body @eid))
-                                             (grid/remove-from-occupied-cells! grid eid))
-                                           nil)
-            :tx/state-enter              (fn [_ctx eid [state-k state-v]]
-                                           (state/enter [state-k state-v] eid))
-            :tx/effect                   (fn [ctx effect-ctx effects]
-                                           (mapcat #(effect/handle % effect-ctx ctx)
-                                                   (filter #(effect/applicable? % effect-ctx) effects)))
-            :tx/spawn-alert              (fn
-                                           [{:keys [ctx/elapsed-time]} position faction duration]
-                                           [[:tx/spawn-effect
-                                             position
-                                             {:entity/alert-friendlies-after-duration
-                                              {:counter (timer/create elapsed-time duration)
-                                               :faction faction}}]])
-            :tx/spawn-line               (fn
-                                           [_ctx {:keys [start end duration color thick?]}]
-                                           [[:tx/spawn-effect
-                                             start
-                                             {:entity/line-render {:thick? thick? :end end :color color}
-                                              :entity/delete-after-duration duration}]])
-            :tx/move-entity              (fn
-                                           [{:keys [ctx/content-grid
-                                                    ctx/grid]}
-                                            eid]
-                                           (content-grid/position-changed! content-grid eid)
-                                           (grid/remove-from-touched-cells! grid eid)
-                                           (grid/set-touched-cells! grid eid)
-                                           (when (:body/collides? (:entity/body @eid))
-                                             (grid/remove-from-occupied-cells! grid eid)
-                                             (grid/set-occupied-cells! grid eid))
-                                           nil)
+            :tx/unregister-eid           tx.unregister-eid/do!
+            :tx/state-enter              tx.state-enter/do!
+            :tx/effect                   tx.effect/do!
+            :tx/spawn-alert              tx.spawn-alert/do!
+            :tx/spawn-line               tx.spawn-line/do!
+            :tx/move-entity              tx.move-entity/do!
             :tx/spawn-projectile         tx.spawn-projectile/do!
-            :tx/spawn-effect             (fn [_ctx position components]
-                                           [[:tx/spawn-entity
-                                             (assoc components
-                                                    :entity/body {:width 0.5
-                                                                  :height 0.5
-                                                                  :z-order :z-order/effect
-                                                                  :position position})]])
-            :tx/spawn-item               (fn [_ctx position item]
-                                           [[:tx/spawn-entity
-                                             {:entity/body {:position position
-                                                            :width 0.75
-                                                            :height 0.75
-                                                            :z-order :z-order/on-ground}
-                                              :entity/image (:entity/image item)
-                                              :entity/item item
-                                              :entity/clickable {:type :clickable/item
-                                                                 :text (:property/pretty-name item)}}]])
-            :tx/spawn-creature           (fn
-                                           [_ctx
-                                            {:keys [position
-                                                    creature-property
-                                                    components]}]
-                                           (assert creature-property)
-                                           [[:tx/spawn-entity
-                                             (-> creature-property
-                                                 (assoc :entity/body (let [{:keys [body/width body/height #_body/flying?]} (:entity/body creature-property)]
-                                                                       {:position position
-                                                                        :width  width
-                                                                        :height height
-                                                                        :collides? true
-                                                                        :z-order :z-order/ground #_(if flying? :z-order/flying :z-order/ground)}))
-                                                 (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-                                                 (safe-merge components))]])
-            :tx/spawn-entity             (fn [ctx entity]
-                                           (let [entity (reduce (fn [m [k v]]
-                                                                  (assoc m k (entity/create [k v] ctx)))
-                                                                {}
-                                                                entity)
-                                                 entity (merge (map->Entity {}) entity)
-                                                 eid (atom entity)]
-                                             (cons
-                                              [:tx/register-eid eid]
-                                              (mapcat #(entity/after-create % eid ctx) @eid))))
+            :tx/spawn-effect             tx.spawn-effect/do!
+            :tx/spawn-item               tx.spawn-item/do!
+            :tx/spawn-creature           tx.spawn-creature/do!
+            :tx/spawn-entity             tx.spawn-entity/do!
             :tx/sound                    (fn [& params] nil)
             :tx/toggle-inventory-visible (fn [& params] nil)
             :tx/show-message             (fn [& params] nil)
