@@ -13,15 +13,6 @@
             [moon.schemas :as schemas]
             [moon.ui.error-window]))
 
-(defn- component-row [skin editor-widget k optional-key? table]
-  (component-row/create
-   {:skin skin
-    :editor-widget editor-widget
-    :display-remove-component-button? optional-key?
-    :k k
-    :table table
-    :label-text (k-label-text/f k)}))
-
 (defn add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (window/create
@@ -42,14 +33,15 @@
                                     (fn [event _actor]
                                       (actor/remove! window)
                                       (let [ctx (:stage/ctx (event/stage event))]
-                                        (table/add-rows! map-widget-table [(component-row skin
-                                                                                          (widget/build ctx
-                                                                                                        (get schemas k)
-                                                                                                        k
-                                                                                                        (schemas/default-value schemas k))
-                                                                                          k
-                                                                                          (schemas/optional? schemas schema k)
-                                                                                          map-widget-table)])
+                                        (table/add-rows! map-widget-table [(component-row/create
+                                                                            {:skin skin
+                                                                             :editor-widget (widget/build ctx
+                                                                                                          (get schemas k)
+                                                                                                          k
+                                                                                                          (schemas/default-value schemas k))
+                                                                             :k k
+                                                                             :display-remove-component-button? (schemas/optional? schemas schema k)
+                                                                             :table map-widget-table})])
                                         (rebuild/f! ctx)))}})}]))
     (widget-group/pack! window)
     window))
@@ -79,11 +71,12 @@
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
                                     (map (fn [k]
-                                           (component-row skin
-                                                          (k->widget k)
-                                                          k
-                                                          (k->optional? k)
-                                                          table))
+                                           (component-row/create
+                                            {:skin skin
+                                             :editor-widget (k->widget k)
+                                             :k k
+                                             :display-remove-component-button? (k->optional? k)
+                                             :table table}))
                                          ks-sorted))]
     (table/add-rows!
      table

@@ -1,5 +1,6 @@
 (ns editor.map-widget-table.component-row
   (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
@@ -12,8 +13,7 @@
            editor-widget
            display-remove-component-button?
            k
-           table
-           label-text]}]
+           table]}]
   [{:actor (table/create
             {:table/cell-defaults {:pad 2}
              :table/rows [[{:actor (when display-remove-component-button?
@@ -29,7 +29,7 @@
                                                            (rebuild/f! (:stage/ctx (event/stage event))))}}))
                             :left? true}
                            {:actor (label/create
-                                    {:text label-text
+                                    {:text (k-label-text/f k)
                                      :skin skin})}]]})
     :right? true}
    {:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "vertical")
