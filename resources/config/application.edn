@@ -1,4 +1,5 @@
 {
+ :state-var game.app/state
  :create!  application.create/do!
  :create-params [[create.batch/step]
                  [create.audio/step]

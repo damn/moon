@@ -5,6 +5,8 @@
  ; search your codebase
  ; constants
 
+ ; requiring for side -effects means
+ ; we rather load the functions instead of defmethod
  (clojure.core-ext/require-namespaces! #edn/resource "config/requires.edn")
 
  (gdx.backends.lwjgl/use-glfw-async!)

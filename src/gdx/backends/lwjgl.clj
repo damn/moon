@@ -6,19 +6,18 @@
 
 (def use-glfw-async! lwjgl3-application-configuration/use-glfw-async!)
 
-(def state (atom nil))
-
-; TODO pass state, listener!
+; TODO pass listener!
 (defn application! [config]
   (lwjgl3-application/create (application-listener/create
-                              {:create!  (fn []
-                                           (reset! state ((:create! config) (gdx/app) (:create-params config))))
-                               :dispose! (fn []
-                                           ((:dispose! config) @state))
-                               :render!  (fn []
-                                           (swap! state (:render! config) (:render-params config)))
-                               :resize!  (fn [width height]
-                                           ((:resize! config) @state width height))
-                               :pause!   (fn [])
-                               :resume!  (fn [])})
+                              (let [state @(:state-var config)]
+                                {:create!  (fn []
+                                             (reset! state ((:create! config) (gdx/app) (:create-params config))))
+                                 :dispose! (fn []
+                                             ((:dispose! config) @state))
+                                 :render!  (fn []
+                                             (swap! state (:render! config) (:render-params config)))
+                                 :resize!  (fn [width height]
+                                             ((:resize! config) @state width height))
+                                 :pause!   (fn [])
+                                 :resume!  (fn [])}))
                              (lwjgl3-application-configuration/create config)))
