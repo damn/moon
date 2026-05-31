@@ -8,7 +8,7 @@
 
 (def state (atom nil))
 
-; TODO pass listener!
+; TODO pass state, listener!
 (defn application! [config]
   (lwjgl3-application/create (application-listener/create
                               {:create!  (fn []

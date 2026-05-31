@@ -1,5 +1,10 @@
 [
 
+ ; wait - its all about state !
+ ; nummbern, strings, etc.
+ ; search your codebase
+ ; constants
+
  (clojure.core-ext/require-namespaces! #edn/resource "config/requires.edn")
 
  (gdx.backends.lwjgl/use-glfw-async!)
