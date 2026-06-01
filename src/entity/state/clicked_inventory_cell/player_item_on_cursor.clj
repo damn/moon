@@ -1,9 +1,8 @@
 (ns entity.state.clicked-inventory-cell.player-item-on-cursor
-  (:require [moon.inventory :as inventory]
-            [game.state :as state]))
+  (:require [moon.inventory :as inventory]))
 
-(defmethod state/clicked-inventory-cell :player-item-on-cursor
-  [_ eid cell]
+(defn f
+  [eid cell]
   (let [entity @eid
         inventory (:entity/inventory entity)
         item-in-cell (get-in inventory cell)

@@ -16,10 +16,6 @@
   [[_k _v] _eid]
   nil)
 
-(defmulti clicked-inventory-cell
-  (fn [[k _v] _eid _cell]
-    k))
-
 (defmulti draw-ui-view
   (fn [[k _v] _eid _ctx]
     k))

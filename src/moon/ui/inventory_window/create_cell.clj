@@ -8,7 +8,17 @@
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.image :as image]
-            [gdx.scenes.scene2d.ui.stack :as stack]))
+            [gdx.scenes.scene2d.ui.stack :as stack]
+            entity.state.clicked-inventory-cell.player-item-on-cursor
+            entity.state.clicked-inventory-cell.player-idle
+            ))
+
+(def k->fn
+  {
+   :player-item-on-cursor entity.state.clicked-inventory-cell.player-item-on-cursor/f
+   :player-idle entity.state.clicked-inventory-cell.player-idle/f
+   }
+  )
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -22,9 +32,9 @@
                                                  entity @player-eid
                                                  state-k (:state (:entity/fsm entity))]
                                              (do! ctx
-                                                  (state/clicked-inventory-cell [state-k (state-k entity)]
-                                                                                player-eid
-                                                                                cell))))}
+                                                  (if-let [f (k->fn state-k)]
+                                                    (f player-eid cell)
+                                                    nil))))}
        :group/actors [(widget/create
                        {:draw! (fn [this _batch _parent-alpha]
                                  (when-let [stage (actor/stage this)]
