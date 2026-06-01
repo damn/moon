@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.horizontal-group
   (:require [clojure.gdx.scene2d.ui.horizontal-group :as horizontal-group]
-            [gdx.scenes.scene2d.actor :as actor]))
+            [clojure.gdx.scene2d.actor.set-opts :as actor]))
 
 (defn create
   [opts]

@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.label
   (:require [clojure.gdx.scene2d.ui.label :as label]
-            [gdx.scenes.scene2d.actor :as actor]))
+            [clojure.gdx.scene2d.actor.set-opts :as actor]))
 
 (defn create
   [opts]

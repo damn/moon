@@ -1,6 +1,5 @@
 (ns editor.property-overview-window
-  (:require [gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.event :as event]
             [editor.constants :refer [property-type->overview-table-props]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]

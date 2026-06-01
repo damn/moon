@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.text-field
   (:require [clojure.gdx.scene2d.ui.text-field :as text-field]
-            [gdx.scenes.scene2d.actor :as actor]))
+            [clojure.gdx.scene2d.actor.set-opts :as actor]))
 
 (defn create
   [{:keys [text skin] :as opts}]

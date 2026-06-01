@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.image
-  (:require [gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.gdx.scene2d.actor.set-opts :as actor]
             [clojure.gdx.scene2d.ui.image :as image]))
 
 (defn create

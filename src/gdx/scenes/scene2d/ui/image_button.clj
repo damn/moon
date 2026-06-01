@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.image-button
   (:require [clojure.gdx.scene2d.ui.image-button :as image-button]
-            [gdx.scenes.scene2d.actor :as actor]))
+            [clojure.gdx.scene2d.actor.set-opts :as actor]))
 
 (defn create
   [{:keys [drawable] :as opts}]

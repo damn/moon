@@ -3,7 +3,6 @@
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [editor.property-overview-window]
             [editor.widget :as widget]
-            [gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [gdx.scenes.scene2d.group :as group]
