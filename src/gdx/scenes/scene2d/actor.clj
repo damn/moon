@@ -2,9 +2,9 @@
   (:refer-clojure :exclude [name])
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.scenes.scene2d.listener :as listener]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
-            [com.badlogic.gdx.utils.align :as align]
-            [gdx.scenes.scene2d.listener :as listener]))
+            [com.badlogic.gdx.utils.align :as align]))
 
 (def name actor/name)
 (def x actor/x)
@@ -31,7 +31,7 @@
   (actor/set-touchable! actor (touchable/k->value touchable)))
 
 (defn add-listener! [actor [listener-k listener-params]]
-  (actor/add-listener! actor (listener/create [listener-k listener-params])))
+  (actor/add-listener! actor (listener/create [listener-k listener-params]))) ; 30 places ...
 
 (defn stage->local-coordinates [actor xy]
   (vector2/->clj (actor/stage->local-coordinates actor (vector2/->java xy))))

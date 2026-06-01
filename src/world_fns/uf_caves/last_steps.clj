@@ -6,7 +6,7 @@
             [moon.grid2d :as g2d]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.scalegrid :as scalegrid]
-            [gdx.tiled-map.create :as create-tiled-map]
+            [com.badlogic.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
             [gdx.tiled-map.add-creatures-layer :as add-creatures-layer]))
 
 (defn- scale-grid [grid start scale]

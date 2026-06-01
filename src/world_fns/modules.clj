@@ -2,7 +2,7 @@
   (:require [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
             [clojure.grid2d.printgrid :as printgrid]
             [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
-            [gdx.tiled-map.create :as create-tiled-map]
+            [com.badlogic.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
             [moon.grid2d :as g2d]
             [clojure.grid2d.scale-grid :as scale-grid]
             [world-fns.modules.grid-to-tiled-map :refer [grid->tiled-map]]

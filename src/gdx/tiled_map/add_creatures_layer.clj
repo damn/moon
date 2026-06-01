@@ -1,6 +1,6 @@
 (ns gdx.tiled-map.add-creatures-layer
-  (:require [gdx.tiled-map.add-layer :as add-layer]
-            [gdx.tiled-map.create-tile :as create-tile]))
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map.add-layer :as add-layer]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]))
 
 ; out of memory error -> each texture region is a new object
 ; so either memoize on id or property/image already calculated !? idk
