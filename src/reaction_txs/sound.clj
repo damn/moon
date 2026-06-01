@@ -1,5 +1,5 @@
 (ns reaction-txs.sound
-  (:require [clojure.audio.sound :as sound]))
+  (:require [clojure.gdx.audio.sound :as sound]))
 
 (defn f
   [{:keys [ctx/audio] :as ctx} sound-name]
