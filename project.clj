@@ -1,6 +1,14 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
+                 ; Now project is more split up
+                 ; but cahnges become difficult
+                 ; project should be more integrated
+                 ; => integrate backend lwjgl3
+                 ; => try it
+                 ; go deeper also sounds nice
+                 ; and the window is the main thing!!
+                 ; what always interested me
                  [com.github.damn/clojure.core-ext "3f69ce01ca"]
                  [com.github.damn/clojure.math "8c8d074607"]
                  [com.github.damn/clojure.rand "8b08b1e70d"]
