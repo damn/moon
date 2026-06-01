@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.input
+(ns clojure.gdx.input
   (:import (com.badlogic.gdx Input)))
 
 (defn set-processor! [^Input input processor]

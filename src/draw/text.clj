@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.gdx.graphics.g2d.bitmap-font :as font]
             [clojure.gdx.graphics.g2d.bitmap-font.data :as font.data]
-            [com.badlogic.gdx.utils.align :as align]))
+            [clojure.gdx.utils.align :as align]))
 
 (defn f
   [{:keys [ctx/batch

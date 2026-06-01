@@ -1,7 +1,7 @@
 (ns handle-input.player-item-on-cursor
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.input.buttons :as input.buttons]
+            [clojure.gdx.input :as input]
+            [clojure.gdx.input.buttons :as input.buttons]
             [game.ctx.mouse-position :refer [mouse-position]]
             [gdx.stage :as stage]))
 

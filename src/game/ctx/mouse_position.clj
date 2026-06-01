@@ -1,6 +1,6 @@
 (ns game.ctx.mouse-position
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]))
+            [clojure.gdx.input :as input]))
 
 (defn mouse-position [{:keys [ctx/app]}]
   [(input/x (app/input app))

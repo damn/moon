@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.gdx.application :as app]
-            [com.badlogic.gdx.files :as files]
+            [clojure.gdx.files :as files]
             [clojure.gdx.graphics :as graphics]
             [clojure.gdx.graphics.pixmap :as pixmap]))
 

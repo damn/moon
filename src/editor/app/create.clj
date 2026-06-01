@@ -1,10 +1,10 @@
 (ns editor.app.create
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.files :as files]
+            [clojure.gdx.files :as files]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [com.badlogic.gdx.input :as input]
+            [clojure.gdx.input :as input]
             [clojure.gdx.scene2d.ui.skin :as skin]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [editor.main-window :as main-window]
             [gdx.stage :as stage]
             [gdx.textures]

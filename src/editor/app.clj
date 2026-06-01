@@ -1,5 +1,5 @@
 (ns editor.app
-  (:require [com.badlogic.gdx.utils.screen-utils :as screen-utils]
+  (:require [clojure.gdx.utils.screen-utils :as screen-utils]
             [editor.app.create :as create]
             [editor.widget.animation]
             [editor.widget.boolean]

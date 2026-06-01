@@ -1,6 +1,6 @@
 (ns create.default-font
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.files :as files]
+            [clojure.gdx.files :as files]
             [clojure.gdx.graphics.g2d.bitmap-font :as font]
             [clojure.gdx.graphics.g2d.bitmap-font.data :as font.data]
             [clojure.gdx.graphics.g2d.freetype.freetype-font-generator :as font-generator]

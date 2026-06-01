@@ -4,7 +4,7 @@
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.listener :as listener]
             [clojure.gdx.scene2d.touchable :as touchable]
-            [com.badlogic.gdx.utils.align :as align]))
+            [clojure.gdx.utils.align :as align]))
 
 (def name actor/name)
 (def x actor/x)

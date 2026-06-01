@@ -1,7 +1,7 @@
 (ns levelgen-test.render
-  (:require [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.input.keys :as input.keys]
-            [com.badlogic.gdx.utils.screen-utils :as screen-utils]
+  (:require [clojure.gdx.input :as input]
+            [clojure.gdx.input.keys :as input.keys]
+            [clojure.gdx.utils.screen-utils :as screen-utils]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.stage :as stage]
             [gdx.tiled-map-renderer :as tiled-map-renderer]))

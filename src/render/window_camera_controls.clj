@@ -1,6 +1,6 @@
 (ns render.window-camera-controls
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]
+            [clojure.gdx.input :as input]
             [gdx.graphics.orthographic-camera :as camera]
             [game.constants :refer [zoom-speed]]
             [gdx.stage :as stage]

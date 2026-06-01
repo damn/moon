@@ -1,7 +1,7 @@
 (ns handle-input.player-idle
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.input.buttons :as input.buttons]
+            [clojure.gdx.input :as input]
+            [clojure.gdx.input.buttons :as input.buttons]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.stage :as stage]
             [game.ctx.player-movement-vector :refer [player-movement-vector]]

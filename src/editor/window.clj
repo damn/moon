@@ -1,7 +1,7 @@
 (ns editor.window
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.input.keys :as input.keys]
+            [clojure.gdx.input :as input]
+            [clojure.gdx.input.keys :as input.keys]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]

@@ -1,7 +1,7 @@
 (ns create.stage
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [clojure.gdx.input :as input]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.stage :as stage]))
 
 (defn step

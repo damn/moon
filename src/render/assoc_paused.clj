@@ -1,6 +1,6 @@
 (ns render.assoc-paused
   (:require [clojure.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]
+            [clojure.gdx.input :as input]
             [game.constants :refer [pausing?]]))
 
 (def state->pause-game?
