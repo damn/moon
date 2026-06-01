@@ -3,9 +3,3 @@
 
 (defn create []
   (Group.))
-
-(defn find-actor [^Group group name]
-  (.findActor group name))
-
-(defn clear-children! [^Group group]
-  (.clearChildren group))

@@ -12,7 +12,6 @@
    eid cell item]
   (when (:entity/player? @eid)
     (-> stage
-        ;(group/find-actor "moon.ui.windows")
         (stage/find-actor "moon.ui.windows.inventory")
         (inventory-window/set-item! cell {:texture-region (textures/texture-region textures (:entity/image item))
                                           :tooltip-text (info/text item ctx)}

@@ -1,8 +1,8 @@
 (ns editor.rebuild
   (:require [editor.map-widget-table.get-value :as get-value]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
+            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [editor.window]
-            [gdx.scenes.scene2d.group :as group]
             [gdx.stage :as stage]))
 
 (defn f!
@@ -11,7 +11,7 @@
     :as ctx}]
   (let [window (-> stage
                    (stage/find-actor "moon.ui.editor.window"))
-        map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
+        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
         property (get-value/f map-widget-table (:db/schemas db))]
     (remove! window)
     (stage/add-actor! stage

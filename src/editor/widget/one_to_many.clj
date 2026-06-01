@@ -6,7 +6,7 @@
             [editor.property-overview-window]
             [editor.widget :as widget]
             [clojure.gdx.scene2d.group.children :refer [children]]
-            [gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scene2d.group.clear-children :refer [clear-children!]]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -26,7 +26,7 @@
    property-type
    property-ids]
   (let [redo-rows (fn [ctx property-ids]
-                    (group/clear-children! table)
+                    (clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
                     (widget-group/pack! (find-ancestor table ui/window?)))]
     (table/add-rows!
