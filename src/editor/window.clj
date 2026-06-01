@@ -7,6 +7,8 @@
             [editor.widget :as widget]
             [editor.window.with-window-close :as with-window-close]
             [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.width :refer [actor-width]]
+            [clojure.gdx.scene2d.actor.height :refer [actor-height]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -59,7 +61,7 @@
                            :skin skin})
                   :width  (+ (actor/width table) 50)
                   :height (min (- scroll-pane-height 50)
-                               (actor/height table))})]]]
+                               (actor-height table))})]]]
     (window/create
      {:title "[SKY]Property[]"
       :skin skin

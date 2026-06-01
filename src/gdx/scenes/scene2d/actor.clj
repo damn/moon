@@ -1,16 +1,10 @@
 (ns gdx.scenes.scene2d.actor
-  (:refer-clojure :exclude [name])
   (:require [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.touchable :as touchable]
             [clojure.gdx.utils.align :as align]))
 
-(def name actor/name)
-(def x actor/x)
-(def y actor/y)
-(def width actor/width)
-(def height actor/height)
 (def user-object actor/user-object)
 (def stage actor/stage)
 

@@ -3,6 +3,7 @@
             [game.ctx.mouse-position :refer [mouse-position]]
             [game.skill :as skill]
             [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.name :refer [actor-name]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
@@ -10,7 +11,7 @@
 
 (defn- mouseover-actor-info [actor]
   (let [inventory-slot (and (actor/parent actor)
-                            (= "inventory-cell" (actor/name (actor/parent actor)))
+                            (= "inventory-cell" (actor-name (actor/parent actor)))
                             (actor/user-object (actor/parent actor)))]
     (cond
      inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]

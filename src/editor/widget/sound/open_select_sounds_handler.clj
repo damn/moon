@@ -3,7 +3,8 @@
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [game.ctx.do :refer [do!]]
-            [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.width :refer [actor-width]]
+            [clojure.gdx.scene2d.actor.height :refer [actor-height]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -38,6 +39,6 @@
                             {:actor (scroll-pane/create
                                      {:actor table
                                       :skin skin})
-                             :width  (+ (actor/width table) 50)
+                             :width  (+ (actor-width table) 50)
                              :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
-                                          (actor/height table))})]]}))))
+                                          (actor-height table))})]]}))))

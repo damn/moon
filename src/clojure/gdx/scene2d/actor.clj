@@ -1,5 +1,4 @@
 (ns clojure.gdx.scene2d.actor
-  (:refer-clojure :exclude [name])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn create
@@ -13,21 +12,6 @@
     (draw [batch parent-alpha]
       (when draw!
         (draw! this batch parent-alpha)))))
-
-(defn name [^Actor actor]
-  (.getName actor))
-
-(defn x [^Actor actor]
-  (.getX actor))
-
-(defn y [^Actor actor]
-  (.getY actor))
-
-(defn width [^Actor actor]
-  (.getWidth actor))
-
-(defn height [^Actor actor]
-  (.getHeight actor))
 
 (defn user-object [^Actor actor]
   (.getUserObject actor))
