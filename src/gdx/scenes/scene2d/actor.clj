@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.actor
   (:refer-clojure :exclude [name])
-  (:require [com.badlogic.gdx.math.vector2 :as vector2]
+  (:require [clojure.gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.listener :as listener]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
@@ -34,7 +34,7 @@
   (actor/add-listener! actor (listener/create [listener-k listener-params]))) ; 30 places ...
 
 (defn stage->local-coordinates [actor xy]
-  (vector2/->clj (actor/stage->local-coordinates actor (vector2/->java xy))))
+  (vector2/->clj (actor/stage->local-coordinates actor (vector2/create xy))))
 
 (defn find-ancestor [actor pred]
   (if-let [p (parent actor)]

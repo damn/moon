@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.math.vector2
+(ns clojure.gdx.math.vector2
   (:import (com.badlogic.gdx.math Vector2)))
 
 (defn create [[x y]]
