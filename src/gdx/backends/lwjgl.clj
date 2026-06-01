@@ -1,5 +1,5 @@
 (ns gdx.backends.lwjgl
-  (:require [com.badlogic.gdx.gdx :as gdx]
+  (:require [clojure.gdx :as gdx]
             [com.badlogic.gdx.application-listener :as application-listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]))
