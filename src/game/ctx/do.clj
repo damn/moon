@@ -25,6 +25,12 @@
             tx.state-exit
             tx.audiovisual
             tx.unregister-eid
+            tx.assoc
+            tx.assoc-in
+            tx.dissoc
+            tx.update
+            tx.mark-destroyed
+            tx.nothing
             tx.spawn-entity
             tx.event
             tx.register-eid
@@ -39,21 +45,11 @@
   {
    :tx/state-exit               tx.state-exit/do!
    :tx/audiovisual              tx.audiovisual/do!
-   :tx/assoc                    (fn [_ctx eid k value]
-                                  (swap! eid assoc k value)
-                                  nil)
-   :tx/assoc-in                 (fn [_ctx eid ks value]
-                                  (swap! eid assoc-in ks value)
-                                  nil)
-   :tx/dissoc                   (fn [_ctx eid k]
-                                  (swap! eid dissoc k)
-                                  nil)
-   :tx/update                   (fn [_ctx eid & params]
-                                  (apply swap! eid update params)
-                                  nil)
-   :tx/mark-destroyed           (fn [_ctx eid]
-                                  (swap! eid assoc :entity/destroyed? true)
-                                  nil)
+   :tx/assoc                    tx.assoc/f
+   :tx/assoc-in                 tx.assoc-in/f
+   :tx/dissoc                   tx.dissoc/f
+   :tx/update                   tx.update/f
+   :tx/mark-destroyed           tx.mark-destroyed/f
    :tx/set-cooldown             tx.set-cooldown/do!
    :tx/add-text-effect          tx.add-text-effect/do!
    :tx/add-skill                tx.add-skill/do!
@@ -73,10 +69,10 @@
    :tx/spawn-item               tx.spawn-item/do!
    :tx/spawn-creature           tx.spawn-creature/do!
    :tx/spawn-entity             tx.spawn-entity/do!
-   :tx/sound                    (fn [& params] nil)
-   :tx/toggle-inventory-visible (fn [& params] nil)
-   :tx/show-message             (fn [& params] nil)
-   :tx/show-modal               (fn [& params] nil)
+   :tx/sound                    tx.nothing/f
+   :tx/toggle-inventory-visible tx.nothing/f
+   :tx/show-message             tx.nothing/f
+   :tx/show-modal               tx.nothing/f
    }
   )
 
