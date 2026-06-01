@@ -1,6 +1,5 @@
-(ns entity.create.projectile-collision
-  (:require [game.entity :as entity]))
+(ns entity.create.projectile-collision)
 
-(defmethod entity/create :entity/projectile-collision
-  [[_ v] _ctx]
+(defn f
+  [v _ctx]
   (assoc v :already-hit-bodies #{}))

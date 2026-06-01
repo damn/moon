@@ -1,6 +1,5 @@
 (ns entity.create.body
-  (:require [game.entity :as entity]
-            [qrecord.core :as q]))
+  (:require [qrecord.core :as q]))
 
 (q/defrecord Body [body/position
                    body/width
@@ -9,15 +8,14 @@
                    body/z-order
                    body/rotation-angle])
 
-(defmethod entity/create :entity/body
-  [[_k
-    {[x y] :position
-     :keys [position
-            width
-            height
-            collides?
-            z-order
-            rotation-angle]}]
+(defn f
+  [{[x y] :position
+    :keys [position
+           width
+           height
+           collides?
+           z-order
+           rotation-angle]}
    {:keys [ctx/minimum-size
            ctx/z-orders]}]
   (assert position)

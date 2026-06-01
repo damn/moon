@@ -1,13 +1,5 @@
 (ns game.entity)
 
-(defmulti create
-  (fn [[k _v] _ctx]
-    k))
-
-(defmethod create :default
-  [[_ v] _ctx]
-  v)
-
 (defmulti after-create
   (fn [[k _v] _eid _ctx]
     k))

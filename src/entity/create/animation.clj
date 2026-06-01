@@ -1,11 +1,10 @@
-(ns entity.create.animation
-  (:require [game.entity :as entity]))
+(ns entity.create.animation)
 
-(defmethod entity/create :entity/animation
-  [[_k {:keys [animation/frames
-               animation/frame-duration
-               animation/looping?
-               delete-after-stopped?]}]
+(defn f
+  [{:keys [animation/frames
+           animation/frame-duration
+           animation/looping?
+           delete-after-stopped?]}
    _ctx]
   (assert (not (and looping? delete-after-stopped?)))
   {:frames (vec frames)
