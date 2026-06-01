@@ -24,15 +24,6 @@
   (fn [[k _v] _eid _ctx]
     k))
 
-(defmulti handle-input
-  (fn [[k _v] _eid _ctx]
-    k))
-
-(defmethod handle-input :default
-  [_ _eid _ctx]
-  nil)
-
 (defmethod draw-ui-view :default
   [_ _eid _ctx]
   nil)
-

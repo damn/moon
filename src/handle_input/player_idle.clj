@@ -3,7 +3,6 @@
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.stage :as stage]
             [game.ctx :as ctx]
-            [game.state :as state]
             [moon.inventory :as inventory]))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
@@ -55,9 +54,9 @@
     [[:tx/sound "bfxr_denied"]
      [:tx/show-message "No selected skill"]]))
 
-(defmethod state/handle-input :player-idle
-  [_ player-eid {:keys [ctx/interaction-state
-                        ctx/stage] :as ctx}]
+(defn f
+  [player-eid {:keys [ctx/interaction-state
+                      ctx/stage] :as ctx}]
   (if-let [movement-vector (ctx/player-movement-vector ctx)]
     [[:tx/event player-eid :movement-input movement-vector]]
     (when (ctx/button-just-pressed? ctx input.buttons/left)

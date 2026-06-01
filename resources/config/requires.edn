@@ -29,9 +29,5 @@
  effect.target-all
  effect.target-entity
 
- handle-input.player-idle
- handle-input.player-moving
- handle-input.player-item-on-cursor
-
  draw.load ; draws need to use 'actions!' and recursively do things? works with set line width?
  ]
