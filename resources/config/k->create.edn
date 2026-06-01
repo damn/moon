@@ -1,0 +1,7 @@
+{
+ :entity/animation entity.create.animation/f
+ :entity/body entity.create.body/f
+ :entity/delete-after-duration entity.create.delete-after-duration/f
+ :entity/projectile-collision entity.create.projectile-collision/f
+ :entity/stats entity.create.stats/f
+ }

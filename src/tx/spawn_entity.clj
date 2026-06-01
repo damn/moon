@@ -1,35 +1,13 @@
 (ns tx.spawn-entity
-  (:require entity.create.animation
-            entity.create.body
-            entity.create.delete-after-duration
-            entity.create.projectile-collision
-            entity.create.stats
-            entity.after-create.fsm
-            entity.after-create.inventory
-            entity.after-create.skills
-            [qrecord.core :as q]))
-
-(def k->create
-  {
-   :entity/animation entity.create.animation/f
-   :entity/body entity.create.body/f
-   :entity/delete-after-duration entity.create.delete-after-duration/f
-   :entity/projectile-collision entity.create.projectile-collision/f
-   :entity/stats entity.create.stats/f
-   }
-  )
-
-(def k->after-create
-  {
-   :entity/fsm entity.after-create.fsm/f
-   :entity/inventory entity.after-create.inventory/f
-   :entity/skills entity.after-create.skills/f
-   }
-  )
+  (:require [qrecord.core :as q]))
 
 (q/defrecord Entity [entity/body])
 
-(defn do! [ctx entity]
+(defn do!
+  [{:keys [ctx/k->create
+           ctx/k->after-create]
+    :as ctx}
+   entity]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (if-let [f (k->create k)]
                                       (f v ctx)
