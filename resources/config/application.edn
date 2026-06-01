@@ -50,7 +50,11 @@
                  [render.handle-player-input/step]
                  [render.dissoc-interaction-state/step]
                  [render.assoc-paused/step]
-                 [render.if-not-paused/step]
+                 [render.if-not-paused/step [
+                                             render.if-not-paused.update-time/f
+                                             render.if-not-paused.update-potential-fields/f
+                                             render.if-not-paused.tick-entities/f
+                                             ]]
                  [render.remove-destroyed-entities/step]
                  [render.window-camera-controls/step]
                  [render.update-draw-stage/step]
