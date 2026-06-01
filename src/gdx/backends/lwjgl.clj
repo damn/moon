@@ -11,16 +11,6 @@
                               (let [state @(:state-var config)]
                                 {:create!  (fn []
                                              (let [app (gdx/app)]
-                                               ; (set! Gdx/app nil)
-                                               ; (set! Gdx/audio nil)
-                                               ; (set! Gdx/files nil)
-                                               ; (set! Gdx/graphics nil)
-                                               ; (set! Gdx/input nil)
-                                               ; (set! Gdx/net nil)
-                                               ; ; TODO and set according to needs
-                                               ; ; -> know what needs what
-                                               ; ; and unset again
-                                               ; ; with-gdx-state
                                                (reset! state ((:create! config) app (:create-params config)))))
                                  :dispose! (fn []
                                              ((:dispose! config) @state))
