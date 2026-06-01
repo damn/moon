@@ -50,10 +50,10 @@
   (when-let [user-object (:actor/user-object opts)]
     (set-user-object! actor user-object))
   (when (:actor/position opts)
-    (let [[x y align] (:actor/position opts)] ; FIXME [x y] now ?!
+    (let [[xy align] (:actor/position opts)]
       (if align
-        (set-position! actor x y align)
-        (set-position! actor [x y]))))
+        (set-position! actor xy align)
+        (set-position! actor xy))))
   (when (contains? opts :actor/visible?)
     (set-visible! actor (:actor/visible? opts)))
   (when-let [touchable (:actor/touchable opts)]
