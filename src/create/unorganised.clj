@@ -10,6 +10,7 @@
   (doseq [[name rgba] {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
     (colors/put! name (color/create rgba)))
   (assoc ctx
+         :ctx/txs-fn-map (edn-resource "config/txs-fn-map.edn")
          :ctx/world-unit-scale (float (/ 48))
          :ctx/unit-scale (atom 1)
 
