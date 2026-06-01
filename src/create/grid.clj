@@ -1,6 +1,6 @@
 (ns create.grid
-  (:require [com.badlogic.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [clojure.gdx.maps.map-properties :as props]
+            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [gdx.tiled-map.movement-property :as movement-property]
             [moon.cell :as cell]
             [moon.grid2d :as g2d]))

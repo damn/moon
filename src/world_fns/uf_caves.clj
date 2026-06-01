@@ -1,7 +1,7 @@
 (ns world-fns.uf-caves
   (:require [clojure.gdx.graphics.texture :as texture]
             [moon.grid2d :as g2d]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]
             [world-fns.uf-caves.last-steps]))
 
 (defn- initial-grid

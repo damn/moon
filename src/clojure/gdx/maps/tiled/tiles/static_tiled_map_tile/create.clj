@@ -1,6 +1,6 @@
-(ns com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile.create
-  (:require [com.badlogic.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+(ns clojure.gdx.maps.tiled.tiles.static-tiled-map-tile.create
+  (:require [clojure.gdx.maps.map-properties :as props]
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f
   [texture-region property-name property-value]

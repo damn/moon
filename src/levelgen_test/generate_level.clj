@@ -1,9 +1,9 @@
 (ns levelgen-test.generate-level
   (:require [clojure.core-ext :refer [edn-resource]]
             [clojure.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.maps.map-layers :as layers]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [clojure.gdx.maps.map-layers :as layers]
+            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [gdx.utils.disposable :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]

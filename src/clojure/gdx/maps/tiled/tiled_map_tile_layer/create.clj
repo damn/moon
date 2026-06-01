@@ -1,7 +1,7 @@
-(ns com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.create
-  (:require [com.badlogic.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+(ns clojure.gdx.maps.tiled.tiled-map-tile-layer.create
+  (:require [clojure.gdx.maps.map-properties :as props]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 
 (defn f
   [{:keys [width

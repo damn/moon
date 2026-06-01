@@ -1,6 +1,6 @@
 (ns world-fns.modules.place-step
-  (:require [com.badlogic.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [clojure.gdx.maps.map-properties :as props]
+            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [world-fns.utils.transitions :as transitions]
             [world-fns.modules.place-step.module-index-tiled-map-positions :refer [module-index->tiled-map-positions]]))
 

@@ -1,4 +1,4 @@
-; this to 'com.badlogic.gdx.maps.tiled.renderer.orthogonal-tiled-map-render-with-color-setter
+; this to 'clojure.gdx.maps.tiled.renderer.orthogonal-tiled-map-render-with-color-setter
 ; java same name
 ; and the function is exposed in 'gdx.graphics/batch' ?
 ; shape-drawer also batch/shape-drawer ??

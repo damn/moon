@@ -1,9 +1,9 @@
 (ns world-fns.modules.grid-to-tiled-map
-  (:require [com.badlogic.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+  (:require [clojure.gdx.maps.map-properties :as props]
+            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.grid2d :as g2d]))
 
 (def copy-tile

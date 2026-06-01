@@ -1,8 +1,8 @@
 (ns world-fns.modules
   (:require [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
             [clojure.grid2d.printgrid :as printgrid]
-            [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
-            [com.badlogic.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
+            [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+            [clojure.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
             [moon.grid2d :as g2d]
             [clojure.grid2d.scale-grid :as scale-grid]
             [world-fns.modules.grid-to-tiled-map :refer [grid->tiled-map]]

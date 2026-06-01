@@ -1,10 +1,10 @@
 (ns gdx.tiled-map.spawn-positions
-  (:require [com.badlogic.gdx.maps.map-layers :as layers]
-            [com.badlogic.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+  (:require [clojure.gdx.maps.map-layers :as layers]
+            [clojure.gdx.maps.map-properties :as props]
+            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map-tile :as tile]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 
 (defn f [tiled-map]
   (let [layer-name "creatures"

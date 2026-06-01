@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.maps.tiled.tiled-map
+(ns clojure.gdx.maps.tiled.tiled-map
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn create []

@@ -1,6 +1,6 @@
 (ns create.explored-tile-corners
-  (:require [com.badlogic.gdx.maps.map-properties :as props]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [clojure.gdx.maps.map-properties :as props]
+            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [moon.grid2d :as g2d]))
 
 (defn step
