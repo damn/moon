@@ -1,7 +1,7 @@
 (ns gdx.textures
   (:require [clojure.string :as str]
             [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.files.file-handle :as file]
+            [clojure.gdx.files.file-handle :as file]
             [com.badlogic.gdx.graphics.texture :as texture]))
 
 (def folder "resources/")
