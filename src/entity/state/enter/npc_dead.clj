@@ -1,6 +1,5 @@
-(ns entity.state.enter.npc-dead
-  (:require [game.state :as state]))
+(ns entity.state.enter.npc-dead)
 
-(defmethod state/enter :npc-dead
+(defn f
   [_ eid]
   [[:tx/mark-destroyed eid]])

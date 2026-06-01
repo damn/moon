@@ -6,12 +6,6 @@
  entity.state.create.player-moving
  entity.state.create.npc-moving
  entity.state.create.player-item-on-cursor
- entity.state.enter.player-item-on-cursor
- entity.state.enter.active-skill
- entity.state.enter.npc-dead
- entity.state.enter.player-moving
- entity.state.enter.player-dead
- entity.state.enter.npc-moving
  entity.state.draw-ui-view.player-item-on-cursor
  effect.load
  effect.target.damage

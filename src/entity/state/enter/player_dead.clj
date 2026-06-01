@@ -1,7 +1,6 @@
-(ns entity.state.enter.player-dead
-  (:require [game.state :as state]))
+(ns entity.state.enter.player-dead)
 
-(defmethod state/enter :player-dead
+(defn f
   [_ _eid]
   [[:tx/sound "bfxr_playerdeath"]
    [:tx/show-modal {:title "YOU DIED - again!"
