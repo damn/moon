@@ -1,8 +1,7 @@
-(ns entity.render.line-render
-  (:require [game.entity :as entity]))
+(ns entity.render.line-render)
 
-(defmethod entity/render :entity/line-render
-  [[_k {:keys [thick? end color]}]
+(defn f
+  [{:keys [thick? end color]}
    {:keys [entity/body]}
    _ctx]
   (let [position (:body/position body)]

@@ -1,13 +1,12 @@
 (ns entity.render.active-skill
   (:require [clojure.math :as math]
-            [game.entity :as entity]
             [game.effect :as effect]
             [moon.timer :as timer]
             [game.constants :refer [skill-image-radius-world-units]]
             [moon.textures :as textures]))
 
-(defmethod entity/render :active-skill
-  [[_k {:keys [skill effect-ctx counter]}]
+(defn f
+  [{:keys [skill effect-ctx counter]}
    entity
    {:keys [ctx/colors
            ctx/elapsed-time

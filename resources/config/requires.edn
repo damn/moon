@@ -3,19 +3,6 @@
 
  schema.malli-form ;  confusing malli/schema=forms .... self referencing ?
 
- entity.render.clickable
- entity.render.player-item-on-cursor
- entity.render.animation
- entity.render.image
- entity.render.line-render
- entity.render.mouseover
- entity.render.stats
- entity.render.string-effect
- entity.render.temp-modifier
- entity.render.active-skill
- entity.render.npc-sleeping
- entity.render.stunned
-
  entity.state.load
 
  entity.state.create.active-skill

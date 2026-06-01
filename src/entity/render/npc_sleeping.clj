@@ -1,7 +1,6 @@
-(ns entity.render.npc-sleeping
-  (:require [game.entity :as entity]))
+(ns entity.render.npc-sleeping)
 
-(defmethod entity/render :npc-sleeping
+(defn f
   [_ {:keys [entity/body]} _ctx]
   (let [[x y] (:body/position body)]
     [[:draw/text {:text "zzz"

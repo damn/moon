@@ -1,7 +1,6 @@
-(ns entity.render.stunned
-  (:require [game.entity :as entity]))
+(ns entity.render.stunned)
 
-(defmethod entity/render :stunned
+(defn f
   [_ {:keys [entity/body]} {:keys [ctx/colors]}]
   [[:draw/circle
     (:body/position body)

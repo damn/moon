@@ -1,9 +1,8 @@
 (ns entity.render.stats
-  (:require [game.entity :as entity]
-            [moon.stats :as stats]
+  (:require [moon.stats :as stats]
             [moon.val-max :as val-max]))
 
-(defmethod entity/render :entity/stats
+(defn f
   [_ entity {:keys [ctx/colors
                     ctx/world-unit-scale]}]
   (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]

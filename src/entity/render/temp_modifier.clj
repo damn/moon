@@ -1,7 +1,6 @@
-(ns entity.render.temp-modifier
-  (:require [game.entity :as entity]))
+(ns entity.render.temp-modifier)
 
-(defmethod entity/render :entity/temp-modifier
+(defn f
   [_ entity {:keys [ctx/colors]}]
   [[:draw/filled-circle
     (:body/position (:entity/body entity))

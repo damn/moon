@@ -1,11 +1,10 @@
 (ns entity.render.player-item-on-cursor
   (:require [game.ctx :as ctx]
-            [game.entity :as entity]
             [gdx.stage :as stage]
             [moon.textures :as textures]))
 
-(defmethod entity/render :player-item-on-cursor
-  [[_k {:keys [item]}]
+(defn f
+  [{:keys [item]}
    entity
    {:keys [ctx/stage
            ctx/textures]

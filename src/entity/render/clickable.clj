@@ -1,8 +1,7 @@
-(ns entity.render.clickable
-  (:require [game.entity :as entity]))
+(ns entity.render.clickable)
 
-(defmethod entity/render :entity/clickable
-  [[_k {:keys [text]}]
+(defn f
+  [{:keys [text]}
    {:keys [entity/body
            entity/mouseover?]}
    _ctx]

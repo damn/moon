@@ -1,8 +1,7 @@
-(ns entity.render.string-effect
-  (:require [game.entity :as entity]))
+(ns entity.render.string-effect)
 
-(defmethod entity/render :entity/string-effect
-  [[_k {:keys [text]}] entity {:keys [ctx/world-unit-scale]}]
+(defn f
+  [{:keys [text]} entity {:keys [ctx/world-unit-scale]}]
   (let [[x y] (:body/position (:entity/body entity))]
     [[:draw/text {:text text
                   :x x

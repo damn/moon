@@ -1,10 +1,37 @@
 (ns draw-on-world-viewport.draw-entities
   (:require [clojure.core-ext :refer [sort-by-order]]
             [game.ctx.draw :refer [draw!]]
-            [game.entity :as entity]
             [moon.body :as body]
             [moon.raycaster :as raycaster]
-            [moon.throwable :as throwable]))
+            [moon.throwable :as throwable]
+            entity.render.clickable
+            entity.render.player-item-on-cursor
+            entity.render.animation
+            entity.render.image
+            entity.render.line-render
+            entity.render.mouseover
+            entity.render.stats
+            entity.render.string-effect
+            entity.render.temp-modifier
+            entity.render.active-skill
+            entity.render.npc-sleeping
+            entity.render.stunned))
+
+(def k->render-fn
+  {
+   :entity/clickable entity.render.clickable/f
+   :player-item-on-cursor entity.render.player-item-on-cursor/f
+   :entity/animation entity.render.animation/f
+   :entity/image entity.render.image/f
+   :entity/line-render entity.render.line-render/f
+   :entity/mouseover? entity.render.mouseover/f
+   :entity/stats entity.render.stats/f
+   :entity/string-effect entity.render.string-effect/f
+   :entity/temp-modifier entity.render.temp-modifier/f
+   :active-skill entity.render.active-skill/f
+   :npc-sleeping entity.render.npc-sleeping/f
+   :stunned entity.render.stunned/f}
+  )
 
 (def ^:private render-layers
   [#{:entity/mouseover?
@@ -37,7 +64,7 @@
                                        (:colors/debug-body-outline colors)))))
         (doseq [[k v] entity
                 :when (get render-layer k)]
-          (draw! ctx (entity/render [k v] entity ctx))))
+          (draw! ctx ((k->render-fn k) v entity ctx))))
        (catch Throwable t
          (draw! ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
          (throwable/pretty-pst t))))

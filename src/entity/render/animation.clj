@@ -1,11 +1,13 @@
 (ns entity.render.animation
-  (:require [game.entity :as entity]))
+  (:require [entity.render.image :as render-image]))
 
-(defmethod entity/render :entity/animation
-  [[_k {:keys [frames
-               cnt
-               frame-duration]}] entity ctx]
-  (entity/render [:entity/image (frames (min (int (/ (float cnt) (float frame-duration)))
-                                             (dec (count frames))))]
-                 entity
-                 ctx))
+(defn f
+  [{:keys [frames
+           cnt
+           frame-duration]}
+   entity
+   ctx]
+  (render-image/f (frames (min (int (/ (float cnt) (float frame-duration)))
+                               (dec (count frames))))
+                  entity
+                  ctx))

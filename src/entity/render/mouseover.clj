@@ -1,9 +1,8 @@
 (ns entity.render.mouseover
   (:require [moon.faction :as faction]
-            [game.entity :as entity]
             [game.constants :refer [mouseover-ellipse-width]]))
 
-(defmethod entity/render :entity/mouseover?
+(defn f
   [_
    {:keys [entity/body
            entity/faction]}
