@@ -4,7 +4,7 @@
             [gdx.graphics.orthographic-camera :as camera]
             [game.constants :refer [zoom-speed]]
             [gdx.stage :as stage]
-            [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]
             [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
             [gdx.scenes.scene2d.group :as group]))
 
@@ -29,10 +29,10 @@
     (when (input/key-just-pressed? input (:toggle-inventory controls))
       (-> stage
           (stage/find-actor "moon.ui.windows.inventory")
-          actor/toggle-visible!))
+          toggle-visible!))
 
     (when (input/key-just-pressed? input (:toggle-entity-info controls))
       (-> stage
           (stage/find-actor "moon.ui.windows.entity-info")
-          actor/toggle-visible!)))
+          toggle-visible!)))
   ctx)

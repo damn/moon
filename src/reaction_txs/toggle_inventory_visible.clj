@@ -1,10 +1,10 @@
 (ns reaction-txs.toggle-inventory-visible
   (:require [gdx.stage :as stage]
-            [gdx.scenes.scene2d.actor :as actor]))
+            [clojure.gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]))
 
 (defn f
   [{:keys [ctx/stage] :as ctx}]
   (-> stage
       (stage/find-actor "moon.ui.windows.inventory")
-      actor/toggle-visible!)
+      toggle-visible!)
   ctx)

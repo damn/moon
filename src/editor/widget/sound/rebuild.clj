@@ -1,5 +1,5 @@
 (ns editor.widget.sound.rebuild
-  (:require [gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
@@ -12,7 +12,7 @@
   (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
     (table/add-rows! table [(->sound-columns skin table sound-name)])
-    (remove! (actor/find-ancestor actor ui/window?))
-    (widget-group/pack! (actor/find-ancestor table ui/window?))
+    (remove! (find-ancestor actor ui/window?))
+    (widget-group/pack! (find-ancestor table ui/window?))
     (let [[k _] (actor-user-object table)]
       (set-user-object! table [k sound-name]))))

@@ -1,10 +1,10 @@
 (ns editor.widget.one-to-many
   (:require [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
+            [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [editor.property-overview-window]
             [editor.widget :as widget]
-            [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.image :as image]
@@ -27,7 +27,7 @@
   (let [redo-rows (fn [ctx property-ids]
                     (group/clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (widget-group/pack! (actor/find-ancestor table ui/window?)))]
+                    (widget-group/pack! (find-ancestor table ui/window?)))]
     (table/add-rows!
      table
      [[{:actor (text-button/create
@@ -47,7 +47,7 @@
                                                            :skin skin
                                                            :property-type property-type
                                                            :clicked-id-fn (fn [actor id ctx]
-                                                                            (remove! (actor/find-ancestor actor ui/window?))
+                                                                            (remove! (find-ancestor actor ui/window?))
                                                                             (redo-rows ctx (conj property-ids id)))}))))}})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
