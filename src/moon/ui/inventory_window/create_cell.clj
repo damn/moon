@@ -1,6 +1,7 @@
 (ns moon.ui.inventory-window.create-cell
   (:require [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.widget :as widget]
+            [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]
@@ -48,7 +49,7 @@
                                                             (actor/hit this
                                                                        (actor/stage->local-coordinates this ui-mouse-position)
                                                                        true)
-                                                            (actor/user-object (actor/parent this)))))))})
+                                                            (actor-user-object (actor/parent this)))))))})
                       (image/create
                        {:content background-drawable
                         :actor/name "image-widget"

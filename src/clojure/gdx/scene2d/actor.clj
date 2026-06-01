@@ -13,9 +13,6 @@
       (when draw!
         (draw! this batch parent-alpha)))))
 
-(defn user-object [^Actor actor]
-  (.getUserObject actor))
-
 (defn stage [^Actor actor]
   (.getStage actor))
 

@@ -2,6 +2,7 @@
   (:require [clojure.core-ext :refer [->edn-str
                                       truncate]]
             [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [gdx.scenes.scene2d.ui.label :as label]))
 
 (defmulti create (fn [[schema-k :as _schema] v ctx]
@@ -24,4 +25,4 @@
 
 (defmethod value :default
   [_  widget _schemas]
-  ((actor/user-object widget) 1))
+  ((actor-user-object widget) 1))

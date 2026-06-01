@@ -5,7 +5,6 @@
             [clojure.gdx.scene2d.touchable :as touchable]
             [clojure.gdx.utils.align :as align]))
 
-(def user-object actor/user-object)
 (def stage actor/stage)
 
 (def set-name! actor/set-name!)

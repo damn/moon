@@ -1,6 +1,7 @@
 (ns editor.widget.one-to-many
   (:require [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
+            [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [editor.property-overview-window]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.actor :as actor]
@@ -70,5 +71,5 @@
 
 (defmethod widget/value :s/one-to-many [_  widget _schemas]
   (->> (group/children widget)
-       (keep actor/user-object)
+       (keep actor-user-object)
        set))
