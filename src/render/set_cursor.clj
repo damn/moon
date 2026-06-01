@@ -1,7 +1,18 @@
 (ns render.set-cursor
   (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.graphics :as graphics]
-            [game.state :as state]))
+            entity.state.cursor.player-idle))
+
+(def k->cursor
+  {
+   :player-item-on-cursor :cursors/hand-grab
+   :player-dead :cursors/black-x
+   :active-skill :cursors/sandclock
+   :stunned :cursors/denied
+   :player-moving :cursors/walking
+   :player-idle entity.state.cursor.player-idle/f
+   }
+  )
 
 (defn step
   [{:keys [ctx/app
@@ -11,7 +22,10 @@
   (let [eid player-eid
         entity @eid
         state-k (:state (:entity/fsm entity))
-        cursor-key (state/cursor [state-k (state-k entity)] eid ctx)]
+        f (k->cursor state-k)
+        cursor-key (if (keyword? f)
+                     f
+                     (f eid ctx))]
     (assert (contains? cursors cursor-key))
     (graphics/set-cursor! (app/graphics app) (get cursors cursor-key)))
   ctx)

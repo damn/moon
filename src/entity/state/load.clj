@@ -1,26 +1,6 @@
 (ns entity.state.load
   (:require [game.state :as state]))
 
-(defmethod state/cursor :player-item-on-cursor
-  [_ _eid _ctx]
-  :cursors/hand-grab)
-
-(defmethod state/cursor :player-dead
-  [_ _eid _ctx]
-  :cursors/black-x)
-
-(defmethod state/cursor :active-skill
-  [_ _eid _ctx]
-  :cursors/sandclock)
-
-(defmethod state/cursor :stunned
-  [_ _eid _ctx]
-  :cursors/denied)
-
-(defmethod state/cursor :player-moving
-  [_ _eid _ctx]
-  :cursors/walking)
-
 (defmethod state/pause-game? :active-skill
   [_]
   false)

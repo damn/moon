@@ -1,8 +1,7 @@
-(ns entity.state.cursor.player-idle
-  (:require [game.state :as state]))
+(ns entity.state.cursor.player-idle)
 
-(defmethod state/cursor :player-idle
-  [_ eid {:keys [ctx/interaction-state]}]
+(defn f
+  [eid {:keys [ctx/interaction-state]}]
   (let [[k params] interaction-state]
     (case k
       :interaction-state/mouseover-actor
