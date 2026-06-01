@@ -18,8 +18,6 @@
  entity.state.enter.player-dead
  entity.state.enter.npc-moving
 
- entity.state.exit.player-item-on-cursor
-
  entity.state.draw-ui-view.player-item-on-cursor
  entity.state.cursor.player-idle
 
@@ -36,5 +34,5 @@
  handle-input.player-moving
  handle-input.player-item-on-cursor
 
- draw.load
+ draw.load ; draws need to use 'actions!' and recursively do things? works with set line width?
  ]

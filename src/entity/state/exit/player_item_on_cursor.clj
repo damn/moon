@@ -1,8 +1,7 @@
 (ns entity.state.exit.player-item-on-cursor
-  (:require [game.ctx :as ctx]
-            [game.state :as state]))
+  (:require [game.ctx :as ctx]))
 
-(defmethod state/exit :player-item-on-cursor
+(defn f
   [_ eid ctx]
   ; at clicked-cell when we put it into a inventory-cell
   ; we do not want to drop it on the ground too additonally,

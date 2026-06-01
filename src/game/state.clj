@@ -16,14 +16,6 @@
   [[_k _v] _eid]
   nil)
 
-(defmulti exit
-  (fn [[k _v] _eid _ctx]
-    k))
-
-(defmethod exit :default
-  [[_k _v] _eid _ctx]
-  nil)
-
 (defmulti cursor
   (fn [[k _v] _eid _ctx]
     k))
