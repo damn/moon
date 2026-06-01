@@ -12,6 +12,8 @@
   (assoc ctx
          :ctx/txs-fn-map (edn-resource "config/txs-fn-map.edn")
          :ctx/k->tick (edn-resource "config/k-tick.edn")
+         :ctx/k->render (edn-resource "config/k->render.edn")
+         :ctx/reaction-txs-fn-map (edn-resource "config/reaction-txs-fn-map.edn")
          :ctx/world-unit-scale (float (/ 48))
          :ctx/unit-scale (atom 1)
 

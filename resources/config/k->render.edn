@@ -1,0 +1,14 @@
+{
+ :entity/clickable entity.render.clickable/f
+ :player-item-on-cursor entity.render.player-item-on-cursor/f
+ :entity/animation entity.render.animation/f
+ :entity/image entity.render.image/f
+ :entity/line-render entity.render.line-render/f
+ :entity/mouseover? entity.render.mouseover/f
+ :entity/stats entity.render.stats/f
+ :entity/string-effect entity.render.string-effect/f
+ :entity/temp-modifier entity.render.temp-modifier/f
+ :active-skill entity.render.active-skill/f
+ :npc-sleeping entity.render.npc-sleeping/f
+ :stunned entity.render.stunned/f
+ }
