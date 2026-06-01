@@ -3,8 +3,8 @@
             [clojure.java.io :as io]
             [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics :as graphics]
-            [com.badlogic.gdx.graphics.pixmap :as pixmap]))
+            [clojure.gdx.graphics :as graphics]
+            [clojure.gdx.graphics.pixmap :as pixmap]))
 
 (defn step
   [{:keys [ctx/app]

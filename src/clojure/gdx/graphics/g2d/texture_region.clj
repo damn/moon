@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.graphics.g2d.texture-region
+(ns clojure.gdx.graphics.g2d.texture-region
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 (defn width [^TextureRegion texture-region]

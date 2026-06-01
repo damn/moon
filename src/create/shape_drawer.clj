@@ -1,5 +1,5 @@
 (ns create.shape-drawer
-  (:require [com.badlogic.gdx.graphics.texture :as texture]
+  (:require [clojure.gdx.graphics.texture :as texture]
             [space.earlygrey.shape-drawer :as shape-drawer]))
 
 (defn step

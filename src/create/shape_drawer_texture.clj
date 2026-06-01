@@ -1,5 +1,5 @@
 (ns create.shape-drawer-texture
-  (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]))
+  (:require [clojure.gdx.graphics.pixmap :as pixmap]))
 
 (defn step [ctx]
   (assoc ctx :ctx/shape-drawer-texture

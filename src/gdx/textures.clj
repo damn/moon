@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [com.badlogic.gdx.files :as files]
             [clojure.gdx.files.file-handle :as file]
-            [com.badlogic.gdx.graphics.texture :as texture]))
+            [clojure.gdx.graphics.texture :as texture]))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})

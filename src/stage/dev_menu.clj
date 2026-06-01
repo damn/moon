@@ -1,6 +1,6 @@
 (ns stage.dev-menu
   (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.graphics :as graphics]
+            [clojure.gdx.graphics :as graphics]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]

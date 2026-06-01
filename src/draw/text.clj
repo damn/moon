@@ -1,7 +1,7 @@
 (ns draw.text
   (:require [clojure.string :as str]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
+            [clojure.gdx.graphics.g2d.bitmap-font :as font]
+            [clojure.gdx.graphics.g2d.bitmap-font.data :as font.data]
             [com.badlogic.gdx.utils.align :as align]))
 
 (defn f

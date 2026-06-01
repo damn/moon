@@ -1,6 +1,6 @@
 (ns draw.load
-  (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+  (:require [clojure.gdx.graphics.g2d.batch :as batch]
+            [clojure.gdx.graphics.g2d.texture-region :as texture-region]
             [draw.text]
             [draw.texture-region]
             [game.constants :as constants]

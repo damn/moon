@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.graphics.pixmap
+(ns clojure.gdx.graphics.pixmap
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format

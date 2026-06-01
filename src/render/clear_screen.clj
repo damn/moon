@@ -1,7 +1,7 @@
 (ns render.clear-screen
   (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.graphics :as graphics]
-            [com.badlogic.gdx.graphics.gl20 :as gl20]))
+            [clojure.gdx.graphics :as graphics]
+            [clojure.gdx.graphics.gl20 :as gl20]))
 
 (defn step
   [{:keys [ctx/app] :as ctx}]

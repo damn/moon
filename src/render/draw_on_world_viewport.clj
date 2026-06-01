@@ -1,5 +1,5 @@
 (ns render.draw-on-world-viewport
-  (:require [com.badlogic.gdx.graphics.color :as color]
+  (:require [clojure.gdx.graphics.color :as color]
             [draw-on-world-viewport.draw-entities]
             [draw-on-world-viewport.draw-cell-debug]
             [game.ctx.draw :refer [draw!]]

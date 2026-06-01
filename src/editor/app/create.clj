@@ -1,7 +1,7 @@
 (ns editor.app.create
   (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]

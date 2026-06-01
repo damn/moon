@@ -1,6 +1,6 @@
 (ns render.set-cursor
   (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.graphics :as graphics]
+            [clojure.gdx.graphics :as graphics]
             entity.state.cursor.player-idle))
 
 (def k->cursor

@@ -1,8 +1,8 @@
 (ns create.unorganised
   (:require [clojure.core-ext :refer [edn-resource]]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
-            [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.graphics.colors :as colors]
+            [clojure.gdx.graphics.color :as color]
+            [clojure.gdx.graphics.colors :as colors]
             [malli.core :as m]))
 
 (defn step [ctx]

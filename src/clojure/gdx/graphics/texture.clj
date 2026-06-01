@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.graphics.texture
+(ns clojure.gdx.graphics.texture
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))

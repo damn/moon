@@ -1,6 +1,6 @@
 (ns render.if-not-paused.update-time
   (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.graphics :as graphics]))
+            [clojure.gdx.graphics :as graphics]))
 
 (defn f
   [{:keys [ctx/app

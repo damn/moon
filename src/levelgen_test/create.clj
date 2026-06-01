@@ -1,8 +1,8 @@
   (ns levelgen-test.create
     (:require [com.badlogic.gdx.application :as app]
               [com.badlogic.gdx.files :as files]
-              [com.badlogic.gdx.graphics.color :as color]
-              [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+              [clojure.gdx.graphics.color :as color]
+              [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
               [com.badlogic.gdx.input :as input]
               [com.badlogic.gdx.scenes.scene2d.event :as event]
               [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]

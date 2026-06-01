@@ -1,11 +1,11 @@
 (ns create.default-font
   (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.data :as font.data]
-            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator :as font-generator]
-            [com.badlogic.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
-            [com.badlogic.gdx.graphics.texture.texture-filter :as texture-filter]))
+            [clojure.gdx.graphics.g2d.bitmap-font :as font]
+            [clojure.gdx.graphics.g2d.bitmap-font.data :as font.data]
+            [clojure.gdx.graphics.g2d.freetype.freetype-font-generator :as font-generator]
+            [clojure.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
+            [clojure.gdx.graphics.texture.texture-filter :as texture-filter]))
 
 (defn step
   [{:keys [ctx/app] :as ctx}]

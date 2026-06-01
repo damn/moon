@@ -1,6 +1,6 @@
 (ns moon.geom-test)
 ;(ns game.render.draw-on-world-viewport.geom-test)
-;(:require [com.badlogic.gdx.graphics.color :as color])
+;(:require [clojure.gdx.graphics.color :as color])
 ; [moon.grid.circle-to-cells :refer [circle->cells]]
 ;
 ;(comment

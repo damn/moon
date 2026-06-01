@@ -1,6 +1,6 @@
 (ns levelgen-test.generate-level
   (:require [clojure.core-ext :refer [edn-resource]]
-            [com.badlogic.gdx.graphics.texture :as texture]
+            [clojure.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.maps.map-layers :as layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
