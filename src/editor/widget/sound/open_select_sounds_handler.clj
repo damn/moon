@@ -1,6 +1,6 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+  (:require [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [game.ctx.do :refer [do!]]
             [gdx.scenes.scene2d.actor :as actor]

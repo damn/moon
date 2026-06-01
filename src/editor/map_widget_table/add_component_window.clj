@@ -1,5 +1,5 @@
 (ns editor.map-widget-table.add-component-window
-  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.event :as event]
             [editor.map-widget-table.component-row :as component-row]
             [editor.rebuild :as rebuild]
             [editor.widget :as widget]

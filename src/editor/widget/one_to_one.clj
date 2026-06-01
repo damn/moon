@@ -1,5 +1,5 @@
 (ns editor.widget.one-to-one
-  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.event :as event]
             [editor.property-overview-window]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.actor :as actor]

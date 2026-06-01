@@ -1,8 +1,8 @@
 (ns gdx.scenes.scene2d.ui
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.ui.button :as button]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]))
+  (:require [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.ui.button :as button]
+            [clojure.gdx.scene2d.ui.label :as label]
+            [clojure.gdx.scene2d.ui.window :as window]))
 
 (defn window? [actor]
   (instance? window/class actor))

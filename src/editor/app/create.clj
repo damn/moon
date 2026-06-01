@@ -3,7 +3,7 @@
             [com.badlogic.gdx.files :as files]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+            [clojure.gdx.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [editor.main-window :as main-window]
             [gdx.stage :as stage]

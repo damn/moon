@@ -1,5 +1,5 @@
 (ns editor.widget.image
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+  (:require [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.image-button :as image-button]

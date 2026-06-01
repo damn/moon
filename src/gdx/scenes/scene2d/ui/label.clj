@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.label
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+  (:require [clojure.gdx.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.actor :as actor]))
 
 (defn create

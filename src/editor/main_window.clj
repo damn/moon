@@ -1,6 +1,6 @@
 (ns editor.main-window
   (:require [clojure.string :as str]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clojure.gdx.scene2d.event :as event]
             [editor.property-overview-window]
             [editor.window]
             [gdx.scenes.scene2d.ui.text-button :as text-button]

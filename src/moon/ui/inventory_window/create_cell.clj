@@ -1,6 +1,6 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
+  (:require [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]

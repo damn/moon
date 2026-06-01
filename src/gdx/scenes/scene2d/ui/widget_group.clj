@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.widget-group
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.widget-group :as widget-group]
+  (:require [clojure.gdx.scene2d.ui.widget-group :as widget-group]
             [gdx.scenes.scene2d.group :as group]))
 
 (defn pack! [widget-group]

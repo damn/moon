@@ -1,5 +1,5 @@
 (ns editor.widget.sound
-  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.event :as event]
             [editor.widget :as widget]
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]

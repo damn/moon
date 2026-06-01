@@ -1,9 +1,9 @@
 (ns gdx.scenes.scene2d.actor
   (:refer-clojure :exclude [name])
   (:require [clojure.gdx.math.vector2 :as vector2]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.listener :as listener]
-            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+            [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.listener :as listener]
+            [clojure.gdx.scene2d.touchable :as touchable]
             [com.badlogic.gdx.utils.align :as align]))
 
 (def name actor/name)

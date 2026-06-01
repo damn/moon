@@ -3,7 +3,7 @@
             [com.badlogic.gdx.files :as files]
             [clojure.gdx.graphics.g2d.bitmap-font :as font]
             [clojure.gdx.graphics.g2d.bitmap-font.data :as font.data]
-            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
+            [clojure.gdx.scene2d.ui.skin :as skin]))
 
 (defn step
   [{:keys [ctx/app]

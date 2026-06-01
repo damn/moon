@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.group
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [clojure.gdx.scene2d.group :as group]
             [gdx.scenes.scene2d.actor :as actor]))
 
 (defn add-actor! [group actor]

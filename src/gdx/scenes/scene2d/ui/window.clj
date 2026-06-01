@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.window
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+  (:require [clojure.gdx.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]))

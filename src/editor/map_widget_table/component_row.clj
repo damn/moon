@@ -1,5 +1,5 @@
 (ns editor.map-widget-table.component-row
-  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.event :as event]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
             [gdx.scenes.scene2d.actor :as actor]

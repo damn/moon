@@ -1,5 +1,5 @@
 (ns gdx.stage
-  (:require [com.badlogic.gdx.scenes.scene2d.ctx-stage :as stage]
+  (:require [clojure.gdx.scene2d.stage :as stage]
             [gdx.scenes.scene2d.group :as group]
             [gdx.viewport :as viewport]))
 

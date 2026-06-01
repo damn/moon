@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
   (:require [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]

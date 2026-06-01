@@ -1,7 +1,7 @@
 (ns editor.widget.enum
   (:require [clojure.core-ext :refer [->edn-str]]
             [clojure.edn :as edn]
-            [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
+            [clojure.gdx.scene2d.ui.select-box :as select-box]
             [editor.widget :as widget]))
 
 (defmethod widget/create :s/enum [schema v {:keys [ctx/skin]}]

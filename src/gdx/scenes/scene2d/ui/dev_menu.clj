@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
   (:require [gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clojure.gdx.scene2d.event :as event]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.text-button :as text-button]

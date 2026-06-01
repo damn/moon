@@ -1,5 +1,5 @@
 (ns editor.map-widget-table
-  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.event :as event]
             [editor.map-widget-table.add-component-window :as add-component-window]
             [editor.map-widget-table.component-row :as component-row]
             [gdx.scenes.scene2d.ui.table :as table]

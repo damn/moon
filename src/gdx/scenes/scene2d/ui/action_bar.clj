@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.action-bar
   (:require [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+            [clojure.gdx.scene2d.ui.button-group :as button-group]
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]

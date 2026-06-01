@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.utils.texture-region-drawable
   (:require [clojure.gdx.graphics.color :as color]
             [clojure.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as drawable]))
+            [clojure.gdx.scene2d.utils.texture-region-drawable :as drawable]))
 
 (defn create
   [{:keys [drawable/texture-region
