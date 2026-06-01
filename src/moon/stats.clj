@@ -32,11 +32,6 @@
 (defn- add*    [mods other-mods] (merge-with ops/add    mods other-mods))
 (defn- remove* [mods other-mods] (merge-with ops/remove mods other-mods))
 
-(defn create [v]
-  (-> v
-      (update :stats/mana (fn [v] [v v]))
-      (update :stats/hp   (fn [v] [v v]))))
-
 (defn get-stat-value [stats stat-k]
   (when-let [base-value (stat-k stats)]
     (get-value base-value

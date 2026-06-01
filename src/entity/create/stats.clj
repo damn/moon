@@ -1,6 +1,7 @@
-(ns entity.create.stats
-  (:require [moon.stats :as stats]))
+(ns entity.create.stats)
 
 (defn f
   [v _ctx]
-  (stats/create v))
+  (-> v
+      (update :stats/mana (fn [v] [v v]))
+      (update :stats/hp   (fn [v] [v v]))))
