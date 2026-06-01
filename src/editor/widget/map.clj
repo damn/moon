@@ -1,5 +1,5 @@
 (ns editor.widget.map
-  (:require [clojure.core-ext :refer [sort-by-k-order]]
+  (:require [clojure.core.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.set :as set]
             [editor.constants :refer [property-k-sort-order]]
             [editor.map-widget-table :as map-widget-table]

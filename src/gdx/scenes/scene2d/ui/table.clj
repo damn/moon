@@ -2,6 +2,7 @@
   (:require [clojure.gdx.scene2d.ui.cell :as cell]
             [clojure.gdx.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.actor.create :as actor]
+            [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [gdx.scenes.scene2d.ui.widget-group :as widget-group]))
 
 (defn add! [table cell-declaration]
@@ -25,7 +26,7 @@
 (defn set-opts! [table opts]
   (when-let [rows (:table/rows opts)]
     (add-rows! table rows)
-    (widget-group/pack! table))
+    (pack! table))
   (when-let [defaults (:table/cell-defaults opts)]
     (cell/set-opts! (table/defaults table) defaults))
   (widget-group/set-opts! table opts))

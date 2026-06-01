@@ -11,7 +11,7 @@
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
-            [gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [gdx.stage :as stage]
             [moon.db :as db]
             [moon.property :as property]
@@ -28,7 +28,7 @@
   (let [redo-rows (fn [ctx property-ids]
                     (clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (widget-group/pack! (find-ancestor table ui/window?)))]
+                    (pack! (find-ancestor table ui/window?)))]
     (table/add-rows!
      table
      [[{:actor (text-button/create

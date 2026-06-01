@@ -1,8 +1,8 @@
 (ns stage.windows
-  (:require [gdx.scenes.scene2d.group :as group]))
+  (:require [clojure.gdx.scene2d.group.create :refer [create-group]]))
 
 (defn create [ctx actor-fns]
-  (group/create
+  (create-group
    {:group/actors (for [f actor-fns]
                     (f ctx))
     :actor/name "moon.ui.windows"}))

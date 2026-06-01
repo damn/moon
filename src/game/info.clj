@@ -1,5 +1,5 @@
 (ns game.info
-  (:require [clojure.core-ext :refer [sort-by-k-order]]
+  (:require [clojure.core.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.string :as str]
             [game.constants :refer [k->colors k-order]]
             [game.info-fns :as info-fns]

@@ -1,9 +1,6 @@
 (ns gdx.scenes.scene2d.ui.widget-group
   (:require [clojure.gdx.scene2d.ui.widget-group :as widget-group]
-            [gdx.scenes.scene2d.group :as group]))
-
-(defn pack! [widget-group]
-  (widget-group/pack! widget-group))
+            [clojure.gdx.scene2d.group.set-opts :as group]))
 
 (defn set-opts! [widget-group opts]
   (when (contains? opts :widget-group/fill-parent?)

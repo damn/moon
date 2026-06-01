@@ -6,7 +6,7 @@
             [editor.widget :as widget]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
-            [gdx.scenes.scene2d.ui.widget-group :as widget-group]
+            [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas :as schemas]))
 
@@ -40,5 +40,5 @@
                                                                              :display-remove-component-button? (schemas/optional? schemas schema k)
                                                                              :table map-widget-table})])
                                         (rebuild/f! ctx)))}})}]))
-    (widget-group/pack! window)
+    (pack! window)
     window))

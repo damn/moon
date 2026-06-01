@@ -6,7 +6,7 @@
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scenes.scene2d.ui.widget-group :as widget-group]))
+            [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]))
 
 (defn create
   [{:keys [title
@@ -29,5 +29,5 @@
                         {:act! (fn [this delta]
                                  (when-let [stage (actor-stage this)]
                                    (label/set-text! label (set-label-text! (:stage/ctx stage))))
-                                 (widget-group/pack! window))}))
+                                 (pack! window))}))
     window))
