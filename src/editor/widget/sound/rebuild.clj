@@ -2,6 +2,7 @@
   (:require [gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
+            [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -14,4 +15,4 @@
     (remove! (actor/find-ancestor actor ui/window?))
     (widget-group/pack! (actor/find-ancestor table ui/window?))
     (let [[k _] (actor-user-object table)]
-      (actor/set-user-object! table [k sound-name]))))
+      (set-user-object! table [k sound-name]))))

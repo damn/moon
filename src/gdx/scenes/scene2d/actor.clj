@@ -1,29 +1,13 @@
 (ns gdx.scenes.scene2d.actor
-  (:require [clojure.gdx.math.vector2 :as vector2]
-            [clojure.gdx.scene2d.actor :as actor]
+  (:require [clojure.gdx.scene2d.actor :as actor]
             [clojure.gdx.scene2d.actor.create :refer [create-actor]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.actor.parent :refer [actor-parent]]
             [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
-            [clojure.gdx.scene2d.touchable :as touchable]
-            [clojure.gdx.utils.align :as align]))
-
-(def set-name! actor/set-name!)
-(def set-user-object! actor/set-user-object!)
-(def visible? actor/visible?)
-(def hit actor/hit)
-
-(defn set-position!
-  ([actor xy]
-   (actor/set-position! actor xy))
-  ([actor xy align]
-   (actor/set-position! actor xy (align/k->value align))))
-
-(defn set-touchable! [actor touchable]
-  (actor/set-touchable! actor (touchable/k->value touchable)))
-
-(defn stage->local-coordinates [actor xy]
-  (vector2/->clj (actor/stage->local-coordinates actor (vector2/create xy))))
+            [clojure.gdx.scene2d.actor.visible :refer [visible?]]
+            [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
+            [clojure.gdx.scene2d.actor.set-touchable :refer [set-touchable!]]
+            [clojure.gdx.scene2d.actor.set-position :refer [set-position!]]))
 
 (defn find-ancestor [actor pred]
   (if-let [p (actor-parent actor)]
@@ -48,7 +32,7 @@
   (when-let [touchable (:actor/touchable opts)]
     (set-touchable! actor touchable))
   (when-let [name (:actor/name opts)]
-    (set-name! actor name))
+    (actor/set-name! actor name))
   (when-let [listeners (:actor/listeners opts)]
     (doseq [listener listeners]
       (add-listener! actor listener))))

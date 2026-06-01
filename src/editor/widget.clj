@@ -1,7 +1,7 @@
 (ns editor.widget
   (:require [clojure.core-ext :refer [->edn-str
                                       truncate]]
-            [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [gdx.scenes.scene2d.ui.label :as label]))
 
@@ -11,7 +11,7 @@
 (defn build [ctx schema k v]
   (let [widget (create schema v ctx)] ; - wait its used also somewhere else w/o this widget/create?
     ; FIXME assert no user object !
-    (actor/set-user-object! widget [k v])
+    (set-user-object! widget [k v])
     widget))
 
 (defmulti value (fn [[schema-k :as _schema] widget schemas]

@@ -5,11 +5,12 @@
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]
-            [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.stage-local-coordinates :refer [stage->local-coordinates]]
             [clojure.gdx.scene2d.actor.parent :refer [actor-parent]]
             [clojure.gdx.scene2d.actor.x :refer [actor-x]]
             [clojure.gdx.scene2d.actor.y :refer [actor-y]]
             [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
+            [clojure.gdx.scene2d.actor.hit :refer [actor-hit]]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.stack :as stack]
             entity.state.clicked-inventory-cell.player-item-on-cursor
@@ -48,8 +49,8 @@
                                             (draw-cell-rect @player-eid
                                                             (actor-x this)
                                                             (actor-y this)
-                                                            (actor/hit this
-                                                                       (actor/stage->local-coordinates this ui-mouse-position)
+                                                            (actor-hit this
+                                                                       (stage->local-coordinates this ui-mouse-position)
                                                                        true)
                                                             (actor-user-object (actor-parent this)))))))})
                       (image/create
