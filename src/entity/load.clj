@@ -4,21 +4,7 @@
             [game.entity :as entity]
             [game.state :as state]
             [moon.grid2d :as g2d]
-            [moon.inventory :as inventory]
-            [moon.stats :as stats]
-            [moon.timer :as timer]))
-
-(defmethod entity/create :entity/delete-after-duration
-  [[_ duration] {:keys [ctx/elapsed-time]}]
-  (timer/create elapsed-time duration))
-
-(defmethod entity/create :entity/stats
-  [[_ v] _ctx]
-  (stats/create v))
-
-(defmethod entity/create :entity/projectile-collision
-  [[_ v] _ctx]
-  (assoc v :already-hit-bodies #{}))
+            [moon.inventory :as inventory]))
 
 (defmethod entity/after-create :entity/fsm ; TODO do @ creature?
   [[_k {:keys [fsm initial-state]}] eid ctx]

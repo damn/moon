@@ -5,6 +5,9 @@
 
  entity.create.animation
  entity.create.body
+ entity.create.delete-after-duration
+ entity.create.projectile-collision
+ entity.create.stats
 
  entity.tick.animation
  entity.tick.alert-friendlies-after-duration
