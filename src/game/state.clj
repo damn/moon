@@ -16,10 +16,6 @@
   [[_k _v] _eid]
   nil)
 
-(defmulti pause-game?
-  (fn [k]
-    k))
-
 (defmulti clicked-inventory-cell
   (fn [[k _v] _eid _cell]
     k))
