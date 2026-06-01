@@ -1,8 +1,7 @@
 [
  ; TODO use simple function maps
- schema.malli-form
 
- entity.load
+ schema.malli-form ;  confusing malli/schema=forms .... self referencing ?
 
  entity.tick.animation
  entity.tick.alert-friendlies-after-duration

@@ -1,6 +1,12 @@
 (ns render.remove-destroyed-entities
-  (:require [game.ctx.do :refer [do!]]
-            [game.entity :as entity]))
+  (:require render.remove-destroyed-entities.destroy-audiovisual
+            [game.ctx.do :refer [do!]]))
+
+(def k->destroy
+  {
+   :entity/destroy-audiovisual render.remove-destroyed-entities.destroy-audiovisual/f
+   }
+  )
 
 (defn step
   [ctx]
@@ -10,7 +16,9 @@
           (cons
            [:tx/unregister-eid eid]
            (mapcat (fn [[k v]]
-                     (entity/destroy [k v] eid))
+                     (if-let [f (k->destroy k)]
+                       (f v eid)
+                       nil))
                    @eid)))
         (filter (comp :entity/destroyed? deref)
                 (vals @(:ctx/entity-ids ctx)))))
