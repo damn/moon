@@ -1,0 +1,15 @@
+{
+ :entity/animation entity.tick.animation/f
+ :entity/alert-friendlies-after-duration entity.tick.alert-friendlies-after-duration/f
+ :entity/string-effect entity.tick.string-effect/f
+ :entity/skills entity.tick.skills/f
+ :entity/temp-modifier entity.tick.temp-modifier/f
+ :entity/projectile-collision entity.tick.projectile-collision/f
+ :active-skill entity.tick.active-skill/f
+ :entity/delete-after-duration entity.tick.delete-after-duration/f
+ :stunned entity.tick.stunned/f
+ :npc-moving entity.tick.npc-moving/f
+ :npc-sleeping entity.tick.npc-sleeping/f
+ :npc-idle entity.tick.npc-idle/f
+ :entity/movement entity.tick.movement/f
+ }

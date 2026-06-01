@@ -11,6 +11,7 @@
     (colors/put! name (color/create rgba)))
   (assoc ctx
          :ctx/txs-fn-map (edn-resource "config/txs-fn-map.edn")
+         :ctx/k->tick (edn-resource "config/k-tick.edn")
          :ctx/world-unit-scale (float (/ 48))
          :ctx/unit-scale (atom 1)
 

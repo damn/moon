@@ -1,6 +1,7 @@
 [:map {:closed true}
 
  [:ctx/txs-fn-map :some]
+ [:ctx/k->tick :some]
 
  [:ctx/app :some] ; audio, files, graphics, input
  [:ctx/audio :some] ; sounds
