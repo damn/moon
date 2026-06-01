@@ -3,6 +3,7 @@
             [editor.map-widget-table.add-component-window :as add-component-window]
             [editor.map-widget-table.component-row :as component-row]
             [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.stage :as stage]))
 
@@ -38,7 +39,7 @@
                                              :display-remove-component-button? (k->optional? k)
                                              :table table}))
                                          ks-sorted))]
-    (table/add-rows!
+    (add-rows!
      table
      (concat [(when opt?
                 [{:actor (text-button/create

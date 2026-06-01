@@ -10,6 +10,7 @@
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [gdx.stage :as stage]
@@ -29,7 +30,7 @@
                     (clear-children! table)
                     (add-one-to-one-rows ctx table property-type id)
                     (pack! (find-ancestor table ui/window?)))]
-    (table/add-rows!
+    (add-rows!
      table
      [[(when-not property-id
          {:actor (text-button/create

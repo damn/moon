@@ -6,12 +6,12 @@
             [clojure.gdx.scene2d.group.clear-children :refer [clear-children!]]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [gdx.scenes.scene2d.ui :as ui]
-            [gdx.scenes.scene2d.ui.table :as table]))
+            [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]
     (clear-children! table)
-    (table/add-rows! table [(->sound-columns skin table sound-name)])
+    (add-rows! table [(->sound-columns skin table sound-name)])
     (remove! (find-ancestor actor ui/window?))
     (pack! (find-ancestor table ui/window?))
     (let [[k _] (actor-user-object table)]

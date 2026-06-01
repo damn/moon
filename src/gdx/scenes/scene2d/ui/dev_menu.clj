@@ -8,6 +8,7 @@
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.ui.table.add :refer [add!]]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
 
 (defn- add-upd-label!
@@ -19,17 +20,17 @@
                     {:table/rows [[{:actor (image/create {:content icon})}
                                    label]]})]
      (add-actor! table (set-label-text-actor label text-fn))
-     (table/add! table {:actor sub-table
-                        :right? true
-                        :expand-x? true})))
+     (add! table {:actor sub-table
+                  :right? true
+                  :expand-x? true})))
   ([skin table text-fn]
    (let [label (label/create
                 {:text ""
                  :skin skin})]
      (add-actor! table (set-label-text-actor label text-fn))
-     (table/add! table {:actor label
-                        :right? true
-                        :expand-x? true}))))
+     (add! table {:actor label
+                  :right? true
+                  :expand-x? true}))))
 
 (defn- create-window [skin label items]
   {:title label

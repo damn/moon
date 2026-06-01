@@ -1,7 +1,8 @@
 (ns gdx.scenes.scene2d.ui.window
   (:require [clojure.gdx.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
-            [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.ui.table.add :refer [add!]]
+            [clojure.gdx.scene2d.ui.table.set-opts :refer [set-opts!]]
             [gdx.scenes.scene2d.ui.text-button :as text-button]))
 
 (defn create
@@ -11,12 +12,12 @@
       (window/set-modal! window))
 
     (when-let [skin (:window/close-button? opts)]
-      (table/add! (window/title-table window)
-                  {:actor (text-button/create
-                           {:text "X"
-                            :skin skin
-                            :actor/listeners {:listener/change (fn [_event _actor]
-                                                                 (remove! window))}})}))
+      (add! (window/title-table window)
+            {:actor (text-button/create
+                     {:text "X"
+                      :skin skin
+                      :actor/listeners {:listener/change (fn [_event _actor]
+                                                           (remove! window))}})}))
 
-    (table/set-opts! window opts)
+    (set-opts! window opts)
     window))

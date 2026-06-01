@@ -4,7 +4,7 @@
             [editor.map-widget-table.component-row :as component-row]
             [editor.rebuild :as rebuild]
             [editor.widget :as widget]
-            [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -20,7 +20,7 @@
                  :table/cell-defaults {:pad 5}})
         remaining-ks (sort (remove (set (keys (widget/value schema map-widget-table schemas)))
                                    (schemas/map-keys schemas schema)))]
-    (table/add-rows!
+    (add-rows!
      window
      (for [k remaining-ks]
        [{:actor (text-button/create
@@ -30,15 +30,15 @@
                                     (fn [event _actor]
                                       (remove! window)
                                       (let [ctx (:stage/ctx (event/stage event))]
-                                        (table/add-rows! map-widget-table [(component-row/create
-                                                                            {:skin skin
-                                                                             :editor-widget (widget/build ctx
-                                                                                                          (get schemas k)
-                                                                                                          k
-                                                                                                          (schemas/default-value schemas k))
-                                                                             :k k
-                                                                             :display-remove-component-button? (schemas/optional? schemas schema k)
-                                                                             :table map-widget-table})])
+                                        (add-rows! map-widget-table [(component-row/create
+                                                                      {:skin skin
+                                                                       :editor-widget (widget/build ctx
+                                                                                                    (get schemas k)
+                                                                                                    k
+                                                                                                    (schemas/default-value schemas k))
+                                                                       :k k
+                                                                       :display-remove-component-button? (schemas/optional? schemas schema k)
+                                                                       :table map-widget-table})])
                                         (rebuild/f! ctx)))}})}]))
     (pack! window)
     window))
