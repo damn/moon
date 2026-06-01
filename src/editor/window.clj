@@ -7,6 +7,7 @@
             [editor.widget :as widget]
             [editor.window.with-window-close :as with-window-close]
             [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
             [clojure.gdx.scene2d.actor.width :refer [actor-width]]
             [clojure.gdx.scene2d.actor.height :refer [actor-height]]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -36,7 +37,7 @@
                                                (db/update! db (get-widget-value))))
         actors [(actor/create
                  {:act! (fn [this delta]
-                          (when-let [stage (actor/stage this)]
+                          (when-let [stage (actor-stage this)]
                             (let [ctx (:stage/ctx stage)]
                               (when (input/key-just-pressed? (app/input (:ctx/app ctx)) input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
@@ -59,7 +60,7 @@
                  {:actor (scroll-pane/create
                           {:actor table
                            :skin skin})
-                  :width  (+ (actor/width table) 50)
+                  :width  (+ (actor-width table) 50)
                   :height (min (- scroll-pane-height 50)
                                (actor-height table))})]]]
     (window/create

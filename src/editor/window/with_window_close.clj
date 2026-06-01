@@ -1,5 +1,6 @@
 (ns editor.window.with-window-close
   (:require [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [gdx.stage :as stage]
             [moon.throwable :as throwable]
@@ -12,7 +13,7 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (actor/stage actor)]
+           stage (actor-stage actor)]
        (stage/set-ctx! stage new-ctx))
      (remove! (actor/find-ancestor actor ui/window?))
      (catch Throwable t

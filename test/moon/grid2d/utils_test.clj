@@ -1,6 +1,6 @@
 (ns moon.grid2d.utils-test
   (:require [moon.caves :as caves]
-            [moon.grid2d :as g2d]
+            [clojure.grid2d :as g2d]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.flood-fill :as flood-fill]))
 

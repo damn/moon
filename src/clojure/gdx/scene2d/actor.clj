@@ -13,9 +13,6 @@
       (when draw!
         (draw! this batch parent-alpha)))))
 
-(defn stage [^Actor actor]
-  (.getStage actor))
-
 (defn set-name! [^Actor actor name]
   (.setName actor name))
 

@@ -8,7 +8,7 @@
               [clojure.gdx.scene2d.ui.skin :as skin]
               [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
               [gdx.graphics.orthographic-camera :as camera]
-              [gdx.scenes.scene2d.actor :as actor]
+              [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
               [gdx.scenes.scene2d.ui.text-button :as text-button]
               [gdx.scenes.scene2d.ui.window :as window]
               [gdx.stage :as stage]
@@ -31,7 +31,7 @@
    :skin skin
    :table/rows (for [level-fn level-fns
                      :let [on-clicked (fn [actor ctx]
-                                        (let [stage (actor/stage actor)
+                                        (let [stage (actor-stage actor)
                                               new-ctx (generate-level/f ctx level-fn)]
                                           (stage/set-ctx! stage new-ctx)))]]
                  [{:actor (text-button/create

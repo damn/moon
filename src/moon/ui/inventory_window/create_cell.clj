@@ -8,6 +8,7 @@
             [gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scene2d.actor.x :refer [actor-x]]
             [clojure.gdx.scene2d.actor.y :refer [actor-y]]
+            [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.stack :as stack]
             entity.state.clicked-inventory-cell.player-item-on-cursor
@@ -38,7 +39,7 @@
                                                     nil))))}
        :group/actors [(widget/create
                        {:draw! (fn [this _batch _parent-alpha]
-                                 (when-let [stage (actor/stage this)]
+                                 (when-let [stage (actor-stage this)]
                                    (let [{:keys [ctx/player-eid
                                                  ctx/ui-mouse-position]
                                           :as ctx} (:stage/ctx stage)]
