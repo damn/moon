@@ -1,13 +1,11 @@
 (ns entity.tick.projectile-collision
-  (:require [game.ctx :as ctx]
-            [game.entity :as entity]
-            [moon.body :as body]
+  (:require [moon.body :as body]
             [moon.cell :as cell]
             [moon.grid.cells-entities :as cells->entities]
             [moon.grid2d :as g2d]))
 
-(defmethod entity/tick :entity/projectile-collision
-  [[_k {:keys [entity-effects already-hit-bodies piercing?]}]
+(defn f
+  [{:keys [entity-effects already-hit-bodies piercing?]}
    eid
    {:keys [ctx/grid]}]
   (let [entity @eid

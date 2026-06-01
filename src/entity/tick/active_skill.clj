@@ -1,7 +1,5 @@
 (ns entity.tick.active-skill
-  (:require [game.ctx :as ctx]
-            [game.effect :as effect]
-            [game.entity :as entity]
+  (:require [game.effect :as effect]
             [moon.raycaster :as raycaster]
             [moon.timer :as timer]))
 
@@ -13,8 +11,8 @@
     effect-ctx
     (dissoc effect-ctx :effect/target)))
 
-(defmethod entity/tick :active-skill
-  [[_k {:keys [skill effect-ctx counter]}]
+(defn f
+  [{:keys [skill effect-ctx counter]}
    eid
    {:keys [ctx/elapsed-time
            ctx/raycaster]}]

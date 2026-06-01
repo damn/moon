@@ -1,37 +1,11 @@
 (ns render.if-not-paused
   (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.graphics :as graphics]
-            [gdx.stage :as stage]
-            [game.ctx.do :refer [do!]]
-            [moon.ui.error-window :as error-window]
             [moon.grid.update-potential-fields :as update-potential-fields]
-            [game.entity :as entity]
-            [moon.throwable :as throwable]))
+            render.if-not-paused.tick-entities))
 
 (defn delta-time [{:keys [ctx/app]}]
   (graphics/delta-time (app/graphics app)))
-
-(defn tick-entities!
-  [{:keys [ctx/active-entities
-           ctx/skin
-           ctx/stage]
-    :as ctx}]
-  (try
-   (do! ctx
-        (mapcat (fn [eid]
-                  (mapcat (fn [[k v]]
-                            (try (entity/tick [k v] eid ctx)
-                                 (catch Throwable t
-                                   (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
-                          @eid))
-                active-entities))
-   (catch Throwable t
-     (throwable/pretty-pst t)
-     (stage/add-actor! stage
-                       (error-window/create
-                        {:skin skin
-                         :throwable t}))))
-  ctx)
 
 (defn update-time
   [{:keys [ctx/max-delta]
@@ -63,4 +37,4 @@
     (-> ctx
         update-time
         update-potential-fields!
-        tick-entities!)))
+        render.if-not-paused.tick-entities/f)))

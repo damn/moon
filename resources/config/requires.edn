@@ -3,20 +3,6 @@
 
  schema.malli-form ;  confusing malli/schema=forms .... self referencing ?
 
- entity.tick.animation
- entity.tick.alert-friendlies-after-duration
- entity.tick.string-effect
- entity.tick.skills
- entity.tick.temp-modifier
- entity.tick.projectile-collision
- entity.tick.active-skill
- entity.tick.delete-after-duration
- entity.tick.stunned
- entity.tick.npc-moving
- entity.tick.npc-sleeping
- entity.tick.npc-idle
- entity.tick.movement
-
  entity.render.clickable
  entity.render.player-item-on-cursor
  entity.render.animation

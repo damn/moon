@@ -1,8 +1,6 @@
 (ns entity.tick.movement
   (:require [clojure.math :as math]
             [clojure.math.vector2 :as v]
-            [game.ctx :as ctx]
-            [game.entity :as entity]
             [moon.grid :as grid]
             [moon.number :as number]))
 
@@ -24,12 +22,11 @@
         (try-move grid body entity-id (assoc movement :direction [xdir 0]))
         (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
 
-(defmethod entity/tick :entity/movement
-  [[_k
-    {:keys [direction
-            speed
-            rotate-in-movement-direction?]
-     :as movement}]
+(defn f
+  [{:keys [direction
+           speed
+           rotate-in-movement-direction?]
+    :as movement}
    eid
    {:keys [ctx/delta-time
            ctx/grid

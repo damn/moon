@@ -1,7 +1,5 @@
 (ns entity.tick.npc-idle
-  (:require [game.ctx :as ctx]
-            [game.effect :as effect]
-            [game.entity :as entity]
+  (:require [game.effect :as effect]
             [game.skill :as skill]
             [moon.body :as body]
             [moon.grid :as grid]
@@ -35,7 +33,7 @@
                                 (body/direction (:entity/body entity)
                                                 (:entity/body @target)))}))
 
-(defmethod entity/tick :npc-idle
+(defn f
   [_ eid ctx]
   (let [effect-ctx (npc-effect-ctx ctx eid)]
     (if-let [skill (npc-choose-skill ctx @eid effect-ctx)]

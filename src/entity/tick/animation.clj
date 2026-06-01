@@ -1,12 +1,13 @@
-(ns entity.tick.animation
-  (:require [game.entity :as entity]))
+(ns entity.tick.animation)
 
-(defmethod entity/tick :entity/animation
-  [[_k {:keys [delete-after-stopped?
-               looping?
-               cnt
-               maxcnt]
-        :as animation}] eid {:keys [ctx/delta-time]}]
+(defn f
+  [{:keys [delete-after-stopped?
+           looping?
+           cnt
+           maxcnt]
+    :as animation}
+   eid
+   {:keys [ctx/delta-time]}]
   [[:tx/assoc eid :entity/animation (let [maxcnt (float maxcnt)
                                           newcnt (+ (float cnt) (float delta-time))]
                                       (assoc animation :cnt (cond (< newcnt maxcnt) newcnt

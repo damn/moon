@@ -1,10 +1,9 @@
 (ns entity.tick.temp-modifier
-  (:require [game.entity :as entity]
-            [moon.timer :as timer]
+  (:require [moon.timer :as timer]
             [moon.stats :as stats]))
 
-(defmethod entity/tick :entity/temp-modifier
-  [[_k {:keys [modifiers counter]}]
+(defn f
+  [{:keys [modifiers counter]}
    eid
    {:keys [ctx/elapsed-time]}]
   (when (timer/stopped? elapsed-time counter)

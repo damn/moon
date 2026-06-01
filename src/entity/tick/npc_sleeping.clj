@@ -1,9 +1,8 @@
 (ns entity.tick.npc-sleeping
-  (:require [game.entity :as entity]
-            [moon.grid :as grid]
+  (:require [moon.grid :as grid]
             [moon.stats :as stats]))
 
-(defmethod entity/tick :npc-sleeping
+(defn f
   [_ eid {:keys [ctx/grid]}]
   (let [entity @eid]
     (when-let [distance (grid/nearest-enemy-distance grid entity)]
