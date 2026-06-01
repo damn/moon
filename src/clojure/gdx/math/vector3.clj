@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.math.vector3
+(ns clojure.gdx.math.vector3
   (:import (com.badlogic.gdx.math Vector3)))
 
 (defn ->clj [^Vector3 v3]

@@ -1,5 +1,5 @@
 (ns moon.grid
-  (:require [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
+  (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.grid.cells-entities :as cells->entities]
