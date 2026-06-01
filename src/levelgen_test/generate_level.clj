@@ -4,7 +4,7 @@
             [clojure.gdx.maps.map-layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [gdx.utils.disposable :as disposable]
+            [clojure.gdx.utils.disposable :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
             [moon.db :as db]))

@@ -15,7 +15,7 @@
             [schema.malli-form]
             [gdx.backends.lwjgl :as lwjgl]
             [gdx.stage :as stage]
-            [gdx.utils.disposable :as disposable]
+            [clojure.gdx.utils.disposable :as disposable]
             [gdx.viewport :as viewport]))
 
 (defn dispose!
