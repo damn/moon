@@ -1,5 +1,5 @@
 (ns handle-input.player-moving
-  (:require [game.ctx :as ctx]
+  (:require [game.ctx.player-movement-vector :refer [player-movement-vector]]
             [moon.stats :as stats]))
 
 (defn- creature-speed [{:keys [entity/stats]}]
@@ -8,7 +8,7 @@
 
 (defn f
   [eid ctx]
-  (if-let [movement-vector (ctx/player-movement-vector ctx)]
+  (if-let [movement-vector (player-movement-vector ctx)]
     [[:tx/assoc eid :entity/movement {:direction movement-vector
                                       :speed (creature-speed @eid)}]]
     [[:tx/event eid :no-movement-input]]))

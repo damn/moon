@@ -1,17 +1,19 @@
 (ns render.check-debug-viewer
-  (:require [gdx.stage :as stage]
-            [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
-            [game.ctx :as ctx]))
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.input :as input]
+            [gdx.stage :as stage]
+            [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]))
 
 (defn step
-  [{:keys [ctx/controls
+  [{:keys [ctx/app
+           ctx/controls
            ctx/mouseover-eid
            ctx/skin
            ctx/stage
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
-  (when (ctx/button-just-pressed? ctx (:open-debug-button controls))
+  (when (input/button-just-pressed? (app/input app) (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage

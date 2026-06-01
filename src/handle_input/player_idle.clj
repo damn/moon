@@ -1,8 +1,10 @@
 (ns handle-input.player-idle
-  (:require [com.badlogic.gdx.input.buttons :as input.buttons]
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.input :as input]
+            [com.badlogic.gdx.input.buttons :as input.buttons]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.stage :as stage]
-            [game.ctx :as ctx]
+            [game.ctx.player-movement-vector :refer [player-movement-vector]]
             [moon.inventory :as inventory]))
 
 (defn- interaction-state->txs [[k params] stage player-eid]
@@ -55,11 +57,13 @@
      [:tx/show-message "No selected skill"]]))
 
 (defn f
-  [player-eid {:keys [ctx/interaction-state
-                      ctx/stage] :as ctx}]
-  (if-let [movement-vector (ctx/player-movement-vector ctx)]
+  [player-eid {:keys [ctx/app
+                      ctx/interaction-state
+                      ctx/stage]
+               :as ctx}]
+  (if-let [movement-vector (player-movement-vector ctx)]
     [[:tx/event player-eid :movement-input movement-vector]]
-    (when (ctx/button-just-pressed? ctx input.buttons/left)
+    (when (input/button-just-pressed? (app/input app) input.buttons/left)
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))

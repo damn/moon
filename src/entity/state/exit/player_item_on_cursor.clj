@@ -1,5 +1,5 @@
 (ns entity.state.exit.player-item-on-cursor
-  (:require [game.ctx :as ctx]))
+  (:require [game.ctx.item-place-position :refer [item-place-position]]))
 
 (defn f
   [_ eid ctx]
@@ -12,5 +12,5 @@
       [[:tx/sound "bfxr_itemputground"]
        [:tx/dissoc eid :entity/item-on-cursor]
        [:tx/spawn-item
-        (ctx/item-place-position ctx entity)
+        (item-place-position ctx entity)
         (:entity/item-on-cursor entity)]])))

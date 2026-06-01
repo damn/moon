@@ -1,6 +1,6 @@
 (ns render.update-mouseover-eid
   (:require [clojure.core-ext :refer [sort-by-order]]
-            [game.ctx :as ctx]
+            [game.ctx.mouse-position :refer [mouse-position]]
             [gdx.stage :as stage]
             [moon.grid :as grid]
             [moon.raycaster :as raycaster]))
@@ -14,7 +14,7 @@
            ctx/render-z-order
            ctx/world-mouse-position]
     :as ctx}]
-  (let [mouseover-actor (stage/mouseover-actor stage (ctx/mouse-position ctx))
+  (let [mouseover-actor (stage/mouseover-actor stage (mouse-position ctx))
         position world-mouse-position
         new-eid (if mouseover-actor
                   nil

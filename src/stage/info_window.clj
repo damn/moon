@@ -1,6 +1,5 @@
 (ns stage.info-window
-  (:require [game.ctx :as ctx]
-            [game.info :as info]
+  (:require [game.info :as info]
             [gdx.scenes.scene2d.ui.info-window :as info-window]))
 
 (defn create

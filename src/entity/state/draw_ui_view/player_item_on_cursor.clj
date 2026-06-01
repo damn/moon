@@ -1,5 +1,5 @@
 (ns entity.state.draw-ui-view.player-item-on-cursor
-  (:require [game.ctx :as ctx]
+  (:require [game.ctx.mouse-position :refer [mouse-position]]
             [game.state :as state]
             [gdx.stage :as stage]
             [moon.textures :as textures]))
@@ -12,7 +12,7 @@
   ; TODO see player-item-on-cursor at render layers
   ; always draw it here at right position, then render layers does not need input/stage
   ; can pass world to graphics, not handle here at application
-  (when (stage/mouseover-actor stage (ctx/mouse-position ctx))
+  (when (stage/mouseover-actor stage (mouse-position ctx))
     [[:draw/texture-region
       (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
       ui-mouse-position

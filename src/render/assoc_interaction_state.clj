@@ -1,6 +1,6 @@
 (ns render.assoc-interaction-state
   (:require [clojure.math.vector2 :as v]
-            [game.ctx :as ctx]
+            [game.ctx.mouse-position :refer [mouse-position]]
             [game.skill :as skill]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.stage :as stage]
@@ -60,10 +60,6 @@
          [:interaction-state.skill/not-usable state]))
      [:interaction-state/no-skill-selected])))
 
-
-
-
-
 (defn step
   [{:keys [ctx/mouseover-eid
            ctx/stage
@@ -74,4 +70,4 @@
                                                        world-mouse-position
                                                        mouseover-eid
                                                        player-eid
-                                                       (stage/mouseover-actor stage (ctx/mouse-position ctx)))))
+                                                       (stage/mouseover-actor stage (mouse-position ctx)))))
