@@ -1,5 +1,6 @@
 (ns editor.widget.one-to-many
   (:require [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [editor.property-overview-window]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.actor :as actor]
@@ -45,7 +46,7 @@
                                                            :skin skin
                                                            :property-type property-type
                                                            :clicked-id-fn (fn [actor id ctx]
-                                                                            (actor/remove! (actor/find-ancestor actor ui/window?))
+                                                                            (remove! (actor/find-ancestor actor ui/window?))
                                                                             (redo-rows ctx (conj property-ids id)))}))))}})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]

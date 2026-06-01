@@ -47,9 +47,6 @@
 (defn hit [^Actor actor [x y] touchable?]
   (.hit actor x y touchable?))
 
-(defn remove! [^Actor actor]
-  (.remove actor))
-
 (defn parent [^Actor actor]
   (.getParent actor))
 
@@ -64,9 +61,6 @@
 
 (defn set-touchable! [^Actor actor touchable]
   (.setTouchable actor touchable))
-
-(defn add-listener! [^Actor actor listener]
-  (.addListener actor listener))
 
 (defn stage->local-coordinates [^Actor actor vector2]
   (.stageToLocalCoordinates actor vector2))

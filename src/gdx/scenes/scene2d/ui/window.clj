@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.window
   (:require [clojure.gdx.scene2d.ui.window :as window]
-            [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]))
 
@@ -16,7 +16,7 @@
                            {:text "X"
                             :skin skin
                             :actor/listeners {:listener/change (fn [_event _actor]
-                                                                 (actor/remove! window))}})}))
+                                                                 (remove! window))}})}))
 
     (table/set-opts! window opts)
     window))

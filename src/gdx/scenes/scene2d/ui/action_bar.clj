@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.action-bar
   (:require [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
@@ -53,6 +54,6 @@
 (defn remove-skill! [action-bar skill-id]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
         button (get horizontal-group skill-id)]
-    (actor/remove! button)
+    (remove! button)
     (button-group/remove! button-group button)
     nil))
