@@ -1,10 +1,12 @@
 (ns tx.spawn-entity
-  (:require [game.entity :as entity]
-            entity.create.animation
+  (:require entity.create.animation
             entity.create.body
             entity.create.delete-after-duration
             entity.create.projectile-collision
             entity.create.stats
+            entity.after-create.fsm
+            entity.after-create.inventory
+            entity.after-create.skills
             [qrecord.core :as q]))
 
 (def k->create
@@ -14,6 +16,14 @@
    :entity/delete-after-duration entity.create.delete-after-duration/f
    :entity/projectile-collision entity.create.projectile-collision/f
    :entity/stats entity.create.stats/f
+   }
+  )
+
+(def k->after-create
+  {
+   :entity/fsm entity.after-create.fsm/f
+   :entity/inventory entity.after-create.inventory/f
+   :entity/skills entity.after-create.skills/f
    }
   )
 
@@ -30,4 +40,8 @@
         eid (atom entity)]
     (cons
      [:tx/register-eid eid]
-     (mapcat #(entity/after-create % eid ctx) @eid))))
+     (mapcat (fn [[k v]]
+               (if-let [f (k->after-create k)]
+                 (f v eid ctx)
+                 nil))
+             @eid))))
