@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [gdx.audio :as audio]
-            [com.badlogic.gdx.application :as app]
+            [clojure.gdx.application :as app]
             [com.badlogic.gdx.files :as files]))
 
 (defn step [{:keys [ctx/app] :as ctx}]

@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.application
+(ns clojure.gdx.application
   (:import (com.badlogic.gdx Application)))
 
 (defn audio [^Application app]

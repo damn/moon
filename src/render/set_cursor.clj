@@ -1,5 +1,5 @@
 (ns render.set-cursor
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [clojure.gdx.graphics :as graphics]
             entity.state.cursor.player-idle))
 

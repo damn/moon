@@ -1,5 +1,5 @@
 (ns render.check-debug-viewer
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]))

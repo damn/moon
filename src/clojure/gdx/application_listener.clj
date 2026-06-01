@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.application-listener
+(ns clojure.gdx.application-listener
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn create

@@ -1,5 +1,5 @@
 (ns editor.window
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.keys :as input.keys]
             [com.badlogic.gdx.scenes.scene2d.event :as event]

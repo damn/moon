@@ -1,5 +1,5 @@
 (ns render.assoc-paused
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
             [game.constants :refer [pausing?]]))
 

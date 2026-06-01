@@ -1,5 +1,5 @@
 (ns create.stage
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.stage :as stage]))

@@ -1,5 +1,5 @@
 (ns editor.app.create
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [com.badlogic.gdx.files :as files]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.input :as input]

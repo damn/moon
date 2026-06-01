@@ -1,5 +1,5 @@
 (ns stage.dev-menu
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [clojure.gdx.graphics :as graphics]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.stage :as stage]

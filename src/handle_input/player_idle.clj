@@ -1,5 +1,5 @@
 (ns handle-input.player-idle
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input.buttons :as input.buttons]
             [gdx.scenes.scene2d.actor :as actor]

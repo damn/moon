@@ -1,5 +1,5 @@
 (ns render.clear-screen
-  (:require [com.badlogic.gdx.application :as app]
+  (:require [clojure.gdx.application :as app]
             [clojure.gdx.graphics :as graphics]
             [clojure.gdx.graphics.gl20 :as gl20]))
 

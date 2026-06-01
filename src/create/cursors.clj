@@ -1,7 +1,7 @@
 (ns create.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [com.badlogic.gdx.application :as app]
+            [clojure.gdx.application :as app]
             [com.badlogic.gdx.files :as files]
             [clojure.gdx.graphics :as graphics]
             [clojure.gdx.graphics.pixmap :as pixmap]))
