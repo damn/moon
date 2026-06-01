@@ -1,5 +1,5 @@
 (ns entity.after-create.inventory
-  (:require [moon.grid2d :as g2d]
+  (:require [clojure.grid2d :as g2d]
             [moon.inventory :as inventory]))
 
 (defn f

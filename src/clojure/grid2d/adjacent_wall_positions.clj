@@ -1,6 +1,6 @@
 (ns clojure.grid2d.adjacent-wall-positions
-  (:require [moon.position :as position]
-            [moon.grid2d :as g2d]))
+  (:require [clojure.math.position :as position]
+            [clojure.grid2d :as g2d]))
 
 (defn f [grid]
   (filter (fn [p] (and (= :wall (get grid p))

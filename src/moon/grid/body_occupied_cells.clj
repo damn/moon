@@ -1,6 +1,6 @@
 (ns moon.grid.body-occupied-cells
   (:require [moon.body :as body]
-            [moon.grid2d :as g2d]))
+            [clojure.grid2d :as g2d]))
 
 ; (g2d/get-cells grid (body/occupied-tiles body))
 (defn body->occupied-cells

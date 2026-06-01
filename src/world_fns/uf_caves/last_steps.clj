@@ -3,7 +3,7 @@
             [world-fns.uf-caves.position-tile-fn :as position-tile-fn]
             [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
             [gdx.tiled-map.movement-property :as movement-property]
-            [moon.grid2d :as g2d]
+            [clojure.grid2d :as g2d]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.scalegrid :as scalegrid]
             [clojure.gdx.maps.tiled.tiled-map.create :as create-tiled-map]

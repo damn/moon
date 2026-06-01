@@ -1,5 +1,5 @@
 (ns clojure.grid2d.flood-fill
-  (:require [moon.position :as position]
+  (:require [clojure.math.position :as position]
             [clojure.m.assoc-ks :refer [assoc-ks]]))
 
 (defn f [grid start walk-on-position?]

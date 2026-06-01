@@ -1,6 +1,6 @@
 (ns world-fns.modules.area-level-grid
-  (:require [moon.grid2d :as g2d]
-            [moon.position :as position]))
+  (:require [clojure.grid2d :as g2d]
+            [clojure.math.position :as position]))
 
 ; can adjust:
 ; * split percentage , for higher level areas may scale faster (need to be more careful)

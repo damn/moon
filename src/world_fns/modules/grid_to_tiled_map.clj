@@ -4,7 +4,7 @@
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [moon.grid2d :as g2d]))
+            [clojure.grid2d :as g2d]))
 
 (def copy-tile
   (memoize

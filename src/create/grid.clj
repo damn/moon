@@ -3,7 +3,7 @@
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [gdx.tiled-map.movement-property :as movement-property]
             [moon.cell :as cell]
-            [moon.grid2d :as g2d]))
+            [clojure.grid2d :as g2d]))
 
 (defn step
   [{:keys [ctx/tiled-map]

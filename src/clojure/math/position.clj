@@ -1,4 +1,4 @@
-(ns moon.position)
+(ns clojure.math.position)
 
 ; not using `for` because creates a lazy seq (slow)
 (let [offsets [[-1 -1] [-1 0] [-1 1] [0 -1] [0 1] [1 -1] [1 0] [1 1]]]

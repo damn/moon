@@ -2,7 +2,7 @@
   (:require [moon.body :as body]
             [moon.cell :as cell]
             [moon.grid.cells-entities :as cells->entities]
-            [moon.grid2d :as g2d]))
+            [clojure.grid2d :as g2d]))
 
 (defn f
   [{:keys [entity-effects already-hit-bodies piercing?]}

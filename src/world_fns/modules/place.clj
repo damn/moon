@@ -1,5 +1,5 @@
 (ns world-fns.modules.place
-  (:require [moon.grid2d :as g2d]
+  (:require [clojure.grid2d :as g2d]
             [world-fns.modules.place-step :as place-step]))
 
 (defn step

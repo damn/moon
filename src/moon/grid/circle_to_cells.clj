@@ -1,7 +1,7 @@
 (ns moon.grid.circle-to-cells
   (:require [clojure.math.circle :as circle]
             [clojure.math.rectangle :as rectangle]
-            [moon.grid2d :as g2d]))
+            [clojure.grid2d :as g2d]))
 
 (defn circle->cells [g2d circle]
   (->> circle

@@ -1,7 +1,7 @@
 (ns moon.grid.update-potential-fields.step
   (:require [moon.cell :as cell]
             [moon.grid :as grid]
-            [moon.position :as position]))
+            [clojure.math.position :as position]))
 
 ; TODO performance
 ; * cached-adjacent-non-blocked-cells ? -> no need for cell blocked check?

@@ -1,6 +1,6 @@
 (ns moon.nads
   (:require [clojure.m.assoc-ks :refer [assoc-ks]]
-            [moon.grid2d :as g2d]))
+            [clojure.grid2d :as g2d]))
 
 (defn- wall-at? [grid posi]
   (= :wall (get grid posi)))

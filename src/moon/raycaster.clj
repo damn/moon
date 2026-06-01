@@ -1,6 +1,6 @@
 (ns moon.raycaster
   (:require [clojure.math.raycaster :as raycaster]
-            [moon.grid2d :as g2d]
+            [clojure.grid2d :as g2d]
             [moon.cell :as cell]))
 
 (defn create [grid]

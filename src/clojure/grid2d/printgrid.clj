@@ -1,5 +1,5 @@
 (ns clojure.grid2d.printgrid
-  (:require [moon.grid2d :as g2d]))
+  (:require [clojure.grid2d :as g2d]))
 
 (defn- print-cell [celltype]
   (print (if (number? celltype)

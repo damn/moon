@@ -1,6 +1,6 @@
 (ns moon.caves.helpers
   (:require [clojure.rand :as rand]
-            [moon.position :as position]))
+            [clojure.math.position :as position]))
 
 (defn create-order [random]
   (rand/sshuffle (range 4) random))

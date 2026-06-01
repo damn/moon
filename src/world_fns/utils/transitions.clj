@@ -1,5 +1,5 @@
 (ns world-fns.utils.transitions
-  (:require [moon.position :as position]))
+  (:require [clojure.math.position :as position]))
 
 (let [idxvalues-order [[1 0] [-1 0] [0 1] [0 -1]]]
   (assert (= (position/get-4-neighbours [0 0])

@@ -1,7 +1,7 @@
 (ns create.explored-tile-corners
   (:require [clojure.gdx.maps.map-properties :as props]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
-            [moon.grid2d :as g2d]))
+            [clojure.grid2d :as g2d]))
 
 (defn step
   [{:keys [ctx/tiled-map]

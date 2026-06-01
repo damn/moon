@@ -2,7 +2,7 @@
   (:require [clojure.gdx.maps.map-layers :as layers]
             [gdx.tiled-map.property-value :refer [property-value]]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
-            [moon.grid2d :as g2d]
+            [clojure.grid2d :as g2d]
             [clojure.grid2d.scale-grid :as scale-grid]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.flood-fill :as flood-fill]

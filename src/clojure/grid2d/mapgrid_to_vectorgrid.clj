@@ -1,5 +1,5 @@
 (ns clojure.grid2d.mapgrid-to-vectorgrid
-  (:require [moon.grid2d :as grid2d]))
+  (:require [clojure.grid2d :as grid2d]))
 
 (defn f
   "Transforms a grid of {position value} to a grid2d.

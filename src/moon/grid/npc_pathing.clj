@@ -5,8 +5,8 @@
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid :as grid]
-            [moon.grid2d :as g2d]
-            [moon.position :as position]))
+            [clojure.grid2d :as g2d]
+            [clojure.math.position :as position]))
 
 (defn- get-min-dist-cell [distance-to cells]
   (let [cells (filter distance-to cells)]

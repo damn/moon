@@ -5,8 +5,8 @@
             [moon.grid.cells-entities :as cells->entities]
             [moon.grid.body-occupied-cells :refer [body->occupied-cells]]
             [moon.faction :as faction]
-            [moon.grid2d :as g2d]
-            [moon.position :as position]))
+            [clojure.grid2d :as g2d]
+            [clojure.math.position :as position]))
 
 (defn cached-adjacent-cells [g2d cell]
   (if-let [result (:adjacent-cells @cell)]

@@ -3,7 +3,7 @@
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [clojure.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
-            [moon.grid2d :as g2d]
+            [clojure.grid2d :as g2d]
             [clojure.grid2d.scale-grid :as scale-grid]
             [world-fns.modules.grid-to-tiled-map :refer [grid->tiled-map]]
             [world-fns.modules.last-steps]
