@@ -1,6 +1,6 @@
 (ns stage.hp-mana-bar
   (:require [game.ctx.draw :refer [draw!]]
-            [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
             [moon.number :as number]
             [moon.stats :as stats]

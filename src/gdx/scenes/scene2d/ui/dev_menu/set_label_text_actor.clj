@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor
-  (:require [gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
             [gdx.scenes.scene2d.ui.label :as label]))
 

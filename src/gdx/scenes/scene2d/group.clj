@@ -1,12 +1,7 @@
 (ns gdx.scenes.scene2d.group
   (:require [clojure.gdx.scene2d.group :as group]
+            [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.actor.set-opts :as actor]))
-
-(defn add-actor! [group actor]
-  (group/add-actor! group actor))
-
-(defn children [group]
-  (group/children group))
 
 (defn find-actor [group name]
   (group/find-actor group name))

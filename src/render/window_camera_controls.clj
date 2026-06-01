@@ -6,7 +6,7 @@
             [gdx.stage :as stage]
             [clojure.gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]
             [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
-            [gdx.scenes.scene2d.group :as group]))
+            [clojure.gdx.scene2d.group.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/app
@@ -23,7 +23,7 @@
 
     (when (input/key-just-pressed? input (:close-windows-key controls))
       (->> (stage/find-actor stage "moon.ui.windows")
-           group/children
+           children
            (run! #(set-visible! % false))))
 
     (when (input/key-just-pressed? input (:toggle-inventory controls))

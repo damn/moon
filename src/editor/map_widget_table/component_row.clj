@@ -4,7 +4,7 @@
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
-            [gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scene2d.group.children :refer [children]]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]))
@@ -26,7 +26,7 @@
                                                            (remove! (first (filter (fn [actor]
                                                                                      (and (actor-user-object actor)
                                                                                           (= k ((actor-user-object actor) 0))))
-                                                                                   (group/children table))))
+                                                                                   (children table))))
                                                            (rebuild/f! (:stage/ctx (event/stage event))))}}))
                             :left? true}
                            {:actor (label/create

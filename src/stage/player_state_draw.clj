@@ -2,7 +2,7 @@
   (:require [game.ctx.draw :refer [draw!]]
             [game.state :as state]
             [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
-            [gdx.scenes.scene2d.actor :as actor]))
+            [clojure.gdx.scene2d.actor.create :as actor]))
 
 (defn create [_ctx]
   (actor/create

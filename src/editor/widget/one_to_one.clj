@@ -2,6 +2,7 @@
   (:require [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [editor.property-overview-window]
+            [clojure.gdx.scene2d.group.children :refer [children]]
             [editor.widget :as widget]
             [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
@@ -71,6 +72,6 @@
     table))
 
 (defmethod widget/value :s/one-to-one [_  widget _schemas]
-  (->> (group/children widget)
+  (->> (children widget)
        (keep actor-user-object)
        first))

@@ -2,6 +2,7 @@
   (:require [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
@@ -47,7 +48,7 @@
                              :drawable/scale 2})
                  :actor/listeners {:listener/text-tooltip [tooltip-text skin]}
                  :actor/user-object skill-id})]
-    (group/add-actor! horizontal-group button)
+    (add-actor! horizontal-group button)
     (button-group/add! button-group button)
     nil))
 

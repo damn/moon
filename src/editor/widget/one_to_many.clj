@@ -5,6 +5,7 @@
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [editor.property-overview-window]
             [editor.widget :as widget]
+            [clojure.gdx.scene2d.group.children :refer [children]]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.image :as image]
@@ -70,6 +71,6 @@
     table))
 
 (defmethod widget/value :s/one-to-many [_  widget _schemas]
-  (->> (group/children widget)
+  (->> (children widget)
        (keep actor-user-object)
        set))

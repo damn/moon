@@ -6,7 +6,7 @@
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
             [editor.window.with-window-close :as with-window-close]
-            [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
             [clojure.gdx.scene2d.actor.width :refer [actor-width]]
             [clojure.gdx.scene2d.actor.height :refer [actor-height]]
