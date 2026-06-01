@@ -6,6 +6,7 @@
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]
             [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.parent :refer [actor-parent]]
             [clojure.gdx.scene2d.actor.x :refer [actor-x]]
             [clojure.gdx.scene2d.actor.y :refer [actor-y]]
             [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
@@ -50,7 +51,7 @@
                                                             (actor/hit this
                                                                        (actor/stage->local-coordinates this ui-mouse-position)
                                                                        true)
-                                                            (actor-user-object (actor/parent this)))))))})
+                                                            (actor-user-object (actor-parent this)))))))})
                       (image/create
                        {:content background-drawable
                         :actor/name "image-widget"

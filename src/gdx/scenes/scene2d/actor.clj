@@ -1,7 +1,10 @@
 (ns gdx.scenes.scene2d.actor
   (:require [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.create :refer [create-actor]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.gdx.scene2d.actor.parent :refer [actor-parent]]
+            [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
             [clojure.gdx.scene2d.touchable :as touchable]
             [clojure.gdx.utils.align :as align]))
 
@@ -9,8 +12,6 @@
 (def set-user-object! actor/set-user-object!)
 (def visible? actor/visible?)
 (def hit actor/hit)
-(def parent actor/parent)
-(def set-visible! actor/set-visible!)
 
 (defn set-position!
   ([actor xy]
@@ -25,7 +26,7 @@
   (vector2/->clj (actor/stage->local-coordinates actor (vector2/create xy))))
 
 (defn find-ancestor [actor pred]
-  (if-let [p (parent actor)]
+  (if-let [p (actor-parent actor)]
     (if (pred p)
       p
       (find-ancestor p pred))
@@ -53,5 +54,5 @@
       (add-listener! actor listener))))
 
 (defn create [opts]
-  (doto (actor/create opts)
+  (doto (create-actor opts)
     (set-opts! opts)))

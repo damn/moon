@@ -5,6 +5,7 @@
             [game.constants :refer [zoom-speed]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
             [gdx.scenes.scene2d.group :as group]))
 
 (defn step
@@ -23,7 +24,7 @@
     (when (input/key-just-pressed? input (:close-windows-key controls))
       (->> (stage/find-actor stage "moon.ui.windows")
            group/children
-           (run! #(actor/set-visible! % false))))
+           (run! #(set-visible! % false))))
 
     (when (input/key-just-pressed? input (:toggle-inventory controls))
       (-> stage
