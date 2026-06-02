@@ -1,5 +1,5 @@
 (ns render.draw-on-world-viewport
-  (:require [clojure.gdx.graphics.color :as color]
+  (:require [clojure.gdx.graphics.color.float-bits :refer [float-bits]]
             [draw-on-world-viewport.draw-entities]
             [draw-on-world-viewport.draw-cell-debug]
             [game.ctx.draw :refer [draw!]]
@@ -16,7 +16,7 @@
       (+ 2 (int (:viewport/world-height world-viewport)))
       1
       1
-      (color/float-bits [1 1 1 0.8])]]))
+      (float-bits [1 1 1 0.8])]]))
 
 (defn highlight-mouseover-tile
   [{:keys [ctx/colors

@@ -1,7 +1,6 @@
 (ns clojure.gdx.scene2d.ui.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
-; TODO order is important, reduce?
 (defn set-opts! [^Cell cell opts]
   (doseq [[option arg] opts]
     (case option

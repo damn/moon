@@ -1,5 +1,5 @@
 (ns schema.malli-form
-  (:require [moon.property :as property]
+  (:require [moon.property.type-id-namespace :refer [type->id-namespace]]
             [moon.schemas :refer [malli-form create-map-schema]]
             [moon.val-max :as val-max]))
 
@@ -32,10 +32,10 @@
     :pos-int pos-int?))
 
 (defmethod malli-form :s/one-to-many [[_ property-type] _schemas]
-  [:set [:qualified-keyword {:namespace (property/type->id-namespace property-type)}]])
+  [:set [:qualified-keyword {:namespace (type->id-namespace property-type)}]])
 
 (defmethod malli-form :s/one-to-one [[_ property-type] _schemas]
-  [:qualified-keyword {:namespace (property/type->id-namespace property-type)}])
+  [:qualified-keyword {:namespace (type->id-namespace property-type)}])
 
 (defmethod malli-form :s/qualified-keyword [[_ & params] _schemas]
   (apply vector :qualified-keyword params))

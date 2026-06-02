@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.utils.texture-region-drawable
-  (:require [clojure.gdx.graphics.color :as color]
+  (:require [clojure.gdx.graphics.color :refer [Color]]
             [clojure.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.scene2d.utils.texture-region-drawable :as drawable]))
 
@@ -10,7 +10,7 @@
   (let [drawable (doto (drawable/create texture-region)
                    (drawable/set-min-size! size size))]
     (when tint
-      (drawable/tint! drawable (color/create tint)))
+      (drawable/tint! drawable (Color tint)))
     drawable))
 
 (defn create*

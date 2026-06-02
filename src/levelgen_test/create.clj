@@ -1,7 +1,7 @@
   (ns levelgen-test.create
     (:require [clojure.gdx.application :as app]
               [clojure.gdx.files :as files]
-              [clojure.gdx.graphics.color :as color]
+              [clojure.gdx.graphics.color.float-bits :refer [float-bits]]
               [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
               [clojure.gdx.input :as input]
               [clojure.gdx.scene2d.event :as event]
@@ -69,7 +69,7 @@
                    :ctx/world-viewport world-viewport
                    :ctx/ui-viewport ui-viewport
                    :ctx/camera (:viewport/camera world-viewport)
-                   :ctx/color-setter (constantly (color/float-bits [1 1 1 1]))
+                   :ctx/color-setter (constantly (float-bits [1 1 1 1]))
                    :ctx/zoom-speed 0.1
                    :ctx/camera-movement-speed 1
                    :ctx/sprite-batch sprite-batch
