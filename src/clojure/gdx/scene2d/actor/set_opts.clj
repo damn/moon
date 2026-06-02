@@ -6,6 +6,17 @@
             [clojure.gdx.scene2d.actor.set-touchable :refer [set-touchable!]]
             [clojure.gdx.scene2d.actor.set-position :refer [set-position!]]))
 
+#_(def mappings
+  {
+   :actor/user-object
+   :actor/position
+   :actor/visible?
+   :actor/touchable
+   :actor/name
+   :actor/listeners
+   }
+  )
+
 (defn set-opts! [actor opts]
   (when-let [user-object (:actor/user-object opts)]
     (set-user-object! actor user-object))
