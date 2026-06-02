@@ -1,8 +1,8 @@
 (ns clojure.gdx.scene2d.actor.add-listener
-  (:require [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip])
+  (:require [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener
-                                                  ClickListener)))
+           (com.badlogic.gdx.scenes.scene2d.utils ClickListener)))
 
 (defmulti create
   (fn [[listener-k listener-params]]
@@ -16,9 +16,7 @@
 (defmethod create
   :listener/change
   [[_ f]]
-  (proxy [ChangeListener] []
-    (changed [event actor]
-      (f event actor))))
+  (change-listener/create f))
 
 (defmethod create
   :listener/click
