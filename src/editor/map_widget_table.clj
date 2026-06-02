@@ -5,6 +5,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.stage :as stage]))
 
 (defn- horiz-sep [colspan]
@@ -45,18 +46,18 @@
                 [{:actor (text-button/create
                           {:text "Add component"
                            :skin skin
-                           :actor/listeners {:listener/change
-                                             (fn [event actor]
-                                               (let [{:keys [ctx/db
-                                                             ctx/stage
-                                                             ctx/skin]} (:stage/ctx (event/stage event))]
-                                                 (stage/add-actor!
-                                                  stage
-                                                  (add-component-window/f
-                                                   {:skin skin
-                                                    :schemas (:db/schemas db)
-                                                    :schema schema
-                                                    :map-widget-table table}))))}})
+                           :actor/listeners [(change-listener/create
+                                              (fn [event actor]
+                                                (let [{:keys [ctx/db
+                                                              ctx/stage
+                                                              ctx/skin]} (:stage/ctx (event/stage event))]
+                                                  (stage/add-actor!
+                                                   stage
+                                                   (add-component-window/f
+                                                    {:skin skin
+                                                     :schemas (:db/schemas db)
+                                                     :schema schema
+                                                     :map-widget-table table})))))]})
                   :colspan colspan}])]
              [(when opt?
                 [{:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "default")

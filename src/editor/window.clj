@@ -13,6 +13,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [moon.db :as db]
             [moon.property.type :refer [property->type]]))
 
@@ -43,14 +44,14 @@
                                 (clicked-save-fn this ctx)))))})]
         save-button {:text "Save [LIGHT_GRAY](ENTER)[]"
                      :skin skin
-                     :actor/listeners [[:listener/change
+                     :actor/listeners [(change-listener/create
                                         (fn [event actor]
-                                          (clicked-save-fn actor (:stage/ctx (event/stage event))))]]}
+                                          (clicked-save-fn actor (:stage/ctx (event/stage event)))))]}
         delete-button {:text "Delete"
                        :skin skin
-                       :actor/listeners [[:listener/change
+                       :actor/listeners [(change-listener/create
                                           (fn [event actor]
-                                            (clicked-delete-fn actor (:stage/ctx (event/stage event))))]]}
+                                            (clicked-delete-fn actor (:stage/ctx (event/stage event)))))]}
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor (text-button/create save-button) :center? true}
                            {:actor (text-button/create delete-button) :center? true}]]

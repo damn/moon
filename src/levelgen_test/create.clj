@@ -10,6 +10,7 @@
               [gdx.graphics.orthographic-camera :as camera]
               [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
               [clojure.gdx.scene2d.ui.text-button :as text-button]
+              [clojure.gdx.scene2d.utils.change-listener :as change-listener]
               [gdx.scenes.scene2d.ui.window :as window]
               [gdx.stage :as stage]
               [gdx.textures]
@@ -37,8 +38,8 @@
                  [{:actor (text-button/create
                            {:text (str "Generate " level-fn)
                             :skin skin
-                            :actor/listeners {:listener/change (fn [event actor]
-                                                                 (on-clicked actor (:stage/ctx (event/stage event))))}})}])})
+                            :actor/listeners [(change-listener/create (fn [event actor]
+                                                                        (on-clicked actor (:stage/ctx (event/stage event)))))]})}])})
 
 (defn f!
   [app _params]

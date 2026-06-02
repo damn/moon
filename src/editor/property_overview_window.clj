@@ -6,6 +6,8 @@
             [gdx.scenes.scene2d.ui.stack :as stack]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.db :as db]
             [moon.property :as property]
@@ -22,9 +24,10 @@
                                 {:drawable (texture-region-drawable/create*
                                             {:drawable/texture-region texture-region
                                              :drawable/scale image-scale})
-                                 :actor/listeners {:listener/change (fn [event actor]
-                                                                      (on-clicked actor (:stage/ctx (event/stage event))))
-                                                   :listener/text-tooltip [tooltip skin]}})
+                                 :actor/listeners [(change-listener/create
+                                                    (fn [event actor]
+                                                      (on-clicked actor (:stage/ctx (event/stage event)))))
+                                                   (text-tooltip/create tooltip skin)]})
                                (label/create
                                 {:text extra-info-text
                                  :skin skin

@@ -3,6 +3,7 @@
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.ui.table.add :refer [add!]]
             [clojure.gdx.scene2d.ui.table.set-opts :refer [set-opts!]]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.ui.text-button :as text-button]))
 
 (defn create
@@ -16,8 +17,9 @@
             {:actor (text-button/create
                      {:text "X"
                       :skin skin
-                      :actor/listeners {:listener/change (fn [_event _actor]
-                                                           (remove! window))}})}))
+                      :actor/listeners [(change-listener/create
+                                         (fn [_event _actor]
+                                           (remove! window)))]})}))
 
     (set-opts! window opts)
     window))

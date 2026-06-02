@@ -8,6 +8,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.stage :as stage]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
@@ -27,15 +28,16 @@
                                                       [{:actor (text-button/create
                                                                 {:text sound-name
                                                                  :skin skin
-                                                                 :actor/listeners {:listener/change
-                                                                                   (fn [event actor]
-                                                                                     ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/stage event))))}})}
+                                                                 :actor/listeners [(change-listener/create
+                                                                                    (fn [event actor]
+                                                                                      ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/stage event)))))]})}
                                                        {:actor (text-button/create
                                                                 {:text "play!"
                                                                  :skin skin
-                                                                 :actor/listeners {:listener/change (fn [event _actor]
-                                                                                                      (do! (:stage/ctx (event/stage event))
-                                                                                                           [[:tx/sound sound-name]]))}})}])} )]
+                                                                 :actor/listeners [(change-listener/create
+                                                                                    (fn [event _actor]
+                                                                                      (do! (:stage/ctx (event/stage event))
+                                                                                           [[:tx/sound sound-name]])))]})}])} )]
                             {:actor (scroll-pane/create
                                      {:actor table
                                       :skin skin})

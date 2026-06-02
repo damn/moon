@@ -13,6 +13,8 @@
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
+            [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.stage :as stage]
             [moon.db :as db]
             [moon.property :as property]
@@ -36,35 +38,37 @@
          {:actor (text-button/create
                   {:text "+"
                    :skin skin
-                   :actor/listeners {:listener/change (fn [event _actor]
-                                                        (let [{:keys [ctx/db
-                                                                      ctx/skin
-                                                                      ctx/stage
-                                                                      ctx/textures]
-                                                               :as ctx} (:stage/ctx (event/stage event))]
-                                                          (stage/add-actor!
-                                                           stage
-                                                           (editor.property-overview-window/create
-                                                            {:db db
-                                                             :textures textures
-                                                             :skin skin
-                                                             :property-type property-type
-                                                             :clicked-id-fn (fn [actor id ctx]
-                                                                              (remove! (find-ancestor actor ui/window?))
-                                                                              (redo-rows ctx id))}))))}})})]
+                   :actor/listeners [(change-listener/create
+                                      (fn [event _actor]
+                                        (let [{:keys [ctx/db
+                                                      ctx/skin
+                                                      ctx/stage
+                                                      ctx/textures]
+                                               :as ctx} (:stage/ctx (event/stage event))]
+                                          (stage/add-actor!
+                                           stage
+                                           (editor.property-overview-window/create
+                                            {:db db
+                                             :textures textures
+                                             :skin skin
+                                             :property-type property-type
+                                             :clicked-id-fn (fn [actor id ctx]
+                                                              (remove! (find-ancestor actor ui/window?))
+                                                              (redo-rows ctx id))})))))]})})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
            {:actor (image/create
                     {:content (textures/texture-region textures (property/image property))
                      :actor/user-object property-id
-                     :actor/listeners {:listener/text-tooltip [(property/tooltip property) skin]}})}))]
+                     :actor/listeners [(text-tooltip/create (property/tooltip property) skin)]})}))]
       [(when property-id
          {:actor (text-button/create
                   {:text "-"
                    :skin skin
-                   :actor/listeners {:listener/change (fn [event _actor]
-                                                        (redo-rows (:stage/ctx (event/stage event))
-                                                                   nil))}})})]])))
+                   :actor/listeners [(change-listener/create
+                                      (fn [event _actor]
+                                        (redo-rows (:stage/ctx (event/stage event))
+                                                   nil)))]})})]])))
 
 (defmethod widget/create :s/one-to-one [[_ property-type] property-id ctx]
   (let [table (table/create

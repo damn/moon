@@ -7,7 +7,8 @@
             [clojure.gdx.scene2d.group.children :refer [children]]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scene2d.ui.text-button :as text-button]))
+            [clojure.gdx.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin
@@ -21,13 +22,13 @@
                                      (text-button/create
                                       {:text "-"
                                        :skin skin
-                                       :actor/listeners {:listener/change
-                                                         (fn [event _actor]
-                                                           (remove! (first (filter (fn [actor]
-                                                                                     (and (actor-user-object actor)
-                                                                                          (= k ((actor-user-object actor) 0))))
-                                                                                   (children table))))
-                                                           (rebuild/f! (:stage/ctx (event/stage event))))}}))
+                                       :actor/listeners [(change-listener/create
+                                                          (fn [event _actor]
+                                                            (remove! (first (filter (fn [actor]
+                                                                                      (and (actor-user-object actor)
+                                                                                           (= k ((actor-user-object actor) 0))))
+                                                                                    (children table))))
+                                                            (rebuild/f! (:stage/ctx (event/stage event)))))]}))
                             :left? true}
                            {:actor (label/create
                                     {:text (k-label-text/f k)

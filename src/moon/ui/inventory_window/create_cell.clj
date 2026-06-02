@@ -11,6 +11,7 @@
             [clojure.gdx.scene2d.actor.y :refer [actor-y]]
             [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
             [clojure.gdx.scene2d.actor.hit :refer [actor-hit]]
+            [clojure.gdx.scene2d.utils.click-listener :as click-listener]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.stack :as stack]
             entity.state.clicked-inventory-cell.player-item-on-cursor
@@ -31,14 +32,15 @@
      (stack/create
       {:actor/name "inventory-cell"
        :actor/user-object cell
-       :actor/listeners {:listener/click (fn [event _x _y]
-                                           (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
-                                                 entity @player-eid
-                                                 state-k (:state (:entity/fsm entity))]
-                                             (do! ctx
-                                                  (if-let [f (k->fn state-k)]
-                                                    (f player-eid cell)
-                                                    nil))))}
+       :actor/listeners [(click-listener/create
+                          (fn [event _x _y]
+                            (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
+                                  entity @player-eid
+                                  state-k (:state (:entity/fsm entity))]
+                              (do! ctx
+                                   (if-let [f (k->fn state-k)]
+                                     (f player-eid cell)
+                                     nil)))))]
        :group/actors [(widget/create
                        {:draw! (fn [this _batch _parent-alpha]
                                  (when-let [stage (actor-stage this)]

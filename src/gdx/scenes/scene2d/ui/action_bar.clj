@@ -7,6 +7,7 @@
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn create []
@@ -46,7 +47,7 @@
                 {:drawable (texture-region-drawable/create*
                             {:drawable/texture-region texture-region
                              :drawable/scale 2})
-                 :actor/listeners {:listener/text-tooltip [tooltip-text skin]}
+                 :actor/listeners [(text-tooltip/create tooltip-text skin)]
                  :actor/user-object skill-id})]
     (add-actor! horizontal-group button)
     (button-group/add! button-group button)

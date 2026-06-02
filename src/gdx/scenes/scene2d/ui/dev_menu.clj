@@ -9,6 +9,7 @@
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.table.add :refer [add!]]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
 
 (defn- add-upd-label!
@@ -41,8 +42,9 @@
                    (text-button/create
                     {:text label
                      :skin skin
-                     :actor/listeners {:listener/change (fn [event actor]
-                                                          (on-click actor (:stage/ctx (event/stage event))))}})})]})
+                     :actor/listeners [(change-listener/create
+                                        (fn [event actor]
+                                          (on-click actor (:stage/ctx (event/stage event)))))]})})]})
 
 (defn- main-table [skin menus update-labels]
   (let [table (table/create
@@ -51,9 +53,10 @@
                                 (text-button/create
                                  {:text label
                                   :skin skin
-                                  :actor/listeners {:listener/change (fn [event actor]
-                                                                       (stage/add-actor! (event/stage event)
-                                                                                         (window/create (create-window skin label items))))}})})]})]
+                                  :actor/listeners [(change-listener/create
+                                                     (fn [event actor]
+                                                       (stage/add-actor! (event/stage event)
+                                                                         (window/create (create-window skin label items)))))]})})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon

@@ -5,6 +5,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.stage :as stage]))
 
 (defn create
@@ -35,7 +36,7 @@
                      (text-button/create
                       {:text "Map"
                        :skin skin
-                       :actor/listeners [[:listener/change
+                       :actor/listeners [(change-listener/create
                                           (fn [_event actor]
                                             (stage/add-actor! (actor-stage actor)
                                                               (create
@@ -43,7 +44,7 @@
                                                                 :data v
                                                                 :width 500
                                                                 :height 500
-                                                                :skin skin})))]]})
+                                                                :skin skin}))))]})
                      (label/create
                       {:text (v->text v)
                        :skin skin})))
