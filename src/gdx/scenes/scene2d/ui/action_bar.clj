@@ -1,7 +1,5 @@
 (ns gdx.scenes.scene2d.ui.action-bar
-  (:require [clojure.gdx.scene2d.actor.remove :refer [remove!]]
-            [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
-            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
+  (:require [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
@@ -30,11 +28,11 @@
           (:button-group %)]}
   (let [group (find-actor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
-     :button-group (actor-user-object group)}))
+     :button-group (.getUserObject group)}))
 
 (defn selected-skill [action-bar]
   (when-let [skill-button (button-group/checked (:button-group (get-data action-bar)))]
-    (actor-user-object skill-button)))
+    (.getUserObject skill-button)))
 
 (defn add-skill!
   [action-bar
@@ -56,6 +54,6 @@
 (defn remove-skill! [action-bar skill-id]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
         button (get horizontal-group skill-id)]
-    (remove! button)
+    (.remove button)
     (button-group/remove! button-group button)
     nil))

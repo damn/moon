@@ -1,8 +1,6 @@
 (ns editor.widget.one-to-many
   (:require [clojure.gdx.scene2d.event :as event]
-            [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [editor.property-overview-window]
             [editor.widget :as widget]
             [clojure.gdx.scene2d.group.children :refer [children]]
@@ -19,7 +17,8 @@
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]
-            [moon.ui.error-window]))
+            [moon.ui.error-window])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn- add-one-to-many-rows
   [{:keys [ctx/db
@@ -52,7 +51,7 @@
                                            :skin skin
                                            :property-type property-type
                                            :clicked-id-fn (fn [actor id ctx]
-                                                            (remove! (find-ancestor actor ui/window?))
+                                                            (.remove (find-ancestor actor ui/window?))
                                                             (redo-rows ctx (conj property-ids id)))})))))]})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
@@ -77,5 +76,5 @@
 
 (defmethod widget/value :s/one-to-many [_  widget _schemas]
   (->> (children widget)
-       (keep actor-user-object)
+       (keep Actor/.getUserObject)
        set))

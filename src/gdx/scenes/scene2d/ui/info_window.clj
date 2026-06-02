@@ -1,6 +1,5 @@
 (ns gdx.scenes.scene2d.ui.info-window
   (:require [clojure.gdx.scene2d.actor.create :as actor]
-            [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
@@ -27,7 +26,7 @@
                  :actor/position position})]
     (add-actor! window (actor/create
                         {:act! (fn [this delta]
-                                 (when-let [stage (actor-stage this)]
+                                 (when-let [stage (.getStage this)]
                                    (label/set-text! label (set-label-text! (:stage/ctx stage))))
                                  (pack! window))}))
     window))

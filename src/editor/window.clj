@@ -7,9 +7,6 @@
             [editor.widget :as widget]
             [editor.window.with-window-close :as with-window-close]
             [clojure.gdx.scene2d.actor.create :as actor]
-            [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
-            [clojure.gdx.scene2d.actor.width :refer [actor-width]]
-            [clojure.gdx.scene2d.actor.height :refer [actor-height]]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -38,7 +35,7 @@
                                                (db/update! db (get-widget-value))))
         actors [(actor/create
                  {:act! (fn [this delta]
-                          (when-let [stage (actor-stage this)]
+                          (when-let [stage (.getStage this)]
                             (let [ctx (:stage/ctx stage)]
                               (when (input/key-just-pressed? (app/input (:ctx/app ctx)) input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
@@ -61,9 +58,9 @@
                  {:actor (scroll-pane/create
                           {:actor table
                            :skin skin})
-                  :width  (+ (actor-width table) 50)
+                  :width  (+ (.getWidth table) 50)
                   :height (min (- scroll-pane-height 50)
-                               (actor-height table))})]]]
+                               (.getHeight table))})]]]
     (window/create
      {:title "[SKY]Property[]"
       :skin skin

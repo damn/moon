@@ -2,18 +2,15 @@
   (:require [clojure.math.vector2 :as v]
             [game.ctx.mouse-position :refer [mouse-position]]
             [game.skill :as skill]
-            [clojure.gdx.scene2d.actor.parent :refer [actor-parent]]
-            [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
-            [clojure.gdx.scene2d.actor.name :refer [actor-name]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
             [moon.body :as body]))
 
 (defn- mouseover-actor-info [actor]
-  (let [inventory-slot (and (actor-parent actor)
-                            (= "inventory-cell" (actor-name (actor-parent actor)))
-                            (actor-user-object (actor-parent actor)))]
+  (let [inventory-slot (and (.getParent actor)
+                            (= "inventory-cell" (.getName (.getParent actor)))
+                            (.getUserObject (.getParent actor)))]
     (cond
      inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
      (ui/window-title-bar? actor) [:mouseover-actor/window-title-bar]

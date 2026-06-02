@@ -1,6 +1,5 @@
 (ns editor.map-widget-table.add-component-window
   (:require [clojure.gdx.scene2d.event :as event]
-            [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [editor.map-widget-table.component-row :as component-row]
             [editor.rebuild :as rebuild]
             [editor.widget :as widget]
@@ -29,7 +28,7 @@
                   :text (name k)
                   :actor/listeners [(change-listener/create
                                      (fn [event _actor]
-                                       (remove! window)
+                                       (.remove window)
                                        (let [ctx (:stage/ctx (event/stage event))]
                                          (add-rows! map-widget-table [(component-row/create
                                                                        {:skin skin

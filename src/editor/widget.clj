@@ -1,7 +1,6 @@
 (ns editor.widget
   (:require [clojure.string.truncate :refer [truncate]]
             [clojure.core.edn-str :refer [->edn-str]]
-            [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [gdx.scenes.scene2d.ui.label :as label])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
@@ -25,4 +24,4 @@
 
 (defmethod value :default
   [_  widget _schemas]
-  ((actor-user-object widget) 1))
+  ((.getUserObject widget) 1))
