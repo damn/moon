@@ -5,6 +5,7 @@
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
+            [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]
             [gdx.stage :as stage]))
 
 (defn create
@@ -14,13 +15,7 @@
            height
            skin]}]
   {:pre [(map? data)]}
-  (let [k->label-str (fn [k]
-                       (str "[LIGHT_GRAY]:"
-                            (when-let [ns (namespace k)] (str ns "/"))
-                            "[][WHITE]"
-                            (name k)
-                            "[]"))
-        v->text (fn [v]
+  (let [v->text (fn [v]
                   (cond
                    (or (keyword? v)
                        (number? v)
