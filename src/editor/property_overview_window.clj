@@ -9,6 +9,7 @@
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [clojure.gdx.scene2d.touchable :as touchable]
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]))
@@ -31,7 +32,7 @@
                                (label/create
                                 {:text extra-info-text
                                  :skin skin
-                                 :actor/touchable :touchable/disabled})]})})))
+                                 :actor/touchable touchable/disabled})]})})))
 
 (defn- overview-table-rows
   [db

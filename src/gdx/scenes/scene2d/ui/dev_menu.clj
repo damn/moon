@@ -10,6 +10,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.table.add :refer [add!]]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
+            [clojure.gdx.scene2d.touchable :as touchable]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
 
 (defn- add-upd-label!
@@ -74,7 +75,7 @@
                  [{:actor (label/create
                            {:text ""
                             :skin skin
-                            :actor/touchable :touchable/disabled})
+                            :actor/touchable touchable/disabled})
                    :expand? true
                    :fill-x? true
                    :fill-y? true}]]
