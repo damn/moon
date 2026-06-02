@@ -1,5 +1,4 @@
-(ns clojure.gdx.graphics.color
-  (:import (com.badlogic.gdx.graphics Color)))
+(ns clojure.gdx.graphics.color)
 
 (defn Color [[r g b a]]
-  (Color. r g b a))
+  (com.badlogic.gdx.graphics.Color. r g b a))

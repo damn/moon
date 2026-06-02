@@ -3,13 +3,69 @@
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.graphics.color :refer [Color]]
             [clojure.gdx.graphics.colors :as colors]
-            [malli.core :as m]))
+            [malli.core :as m]
+            [reduce-fsm :as fsm]))
+
+(comment
+
+ ; 1. quote the data structur ebecause of arrows
+ ; 2.
+ (eval `(fsm/fsm-inc ~data))
+ )
 
 (defn step [ctx]
   (tooltip-manager/set-initial-time! 0)
   (doseq [[name rgba] {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
     (colors/put! name (Color rgba)))
   (assoc ctx
+         :ctx/fsms {
+                    :npc (fsm/fsm-inc
+                          [[:npc-sleeping
+                            :kill -> :npc-dead
+                            :stun -> :stunned
+                            :alert -> :npc-idle]
+                           [:npc-idle
+                            :kill -> :npc-dead
+                            :stun -> :stunned
+                            :start-action -> :active-skill
+                            :movement-direction -> :npc-moving]
+                           [:npc-moving
+                            :kill -> :npc-dead
+                            :stun -> :stunned
+                            :timer-finished -> :npc-idle]
+                           [:active-skill
+                            :kill -> :npc-dead
+                            :stun -> :stunned
+                            :action-done -> :npc-idle]
+                           [:stunned
+                            :kill -> :npc-dead
+                            :effect-wears-off -> :npc-idle]
+                           [:npc-dead]])
+                    :player (fsm/fsm-inc
+                             [[:player-idle
+                               :kill -> :player-dead
+                               :stun -> :stunned
+                               :start-action -> :active-skill
+                               :pickup-item -> :player-item-on-cursor
+                               :movement-input -> :player-moving]
+                              [:player-moving
+                               :kill -> :player-dead
+                               :stun -> :stunned
+                               :no-movement-input -> :player-idle]
+                              [:active-skill
+                               :kill -> :player-dead
+                               :stun -> :stunned
+                               :action-done -> :player-idle]
+                              [:stunned
+                               :kill -> :player-dead
+                               :effect-wears-off -> :player-idle]
+                              [:player-item-on-cursor
+                               :kill -> :player-dead
+                               :stun -> :stunned
+                               :drop-item -> :player-idle
+                               :dropped-item -> :player-idle]
+                              [:player-dead]])
+                    }
          :ctx/txs-fn-map (edn-resource "config/txs-fn-map.edn")
          :ctx/k->tick (edn-resource "config/k-tick.edn")
          :ctx/k->render (edn-resource "config/k->render.edn")

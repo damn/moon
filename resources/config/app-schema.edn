@@ -1,5 +1,12 @@
 [:map {:closed true}
 
+ ; ?
+ ; :consts/
+ ; :gdx/
+ ; :graphics/
+ ; :frame/
+ ; :world/
+ [:ctx/fsms :some]
  [:ctx/txs-fn-map :some]
  [:ctx/reaction-txs-fn-map :some]
  [:ctx/k->tick :some]

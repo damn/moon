@@ -1,15 +1,11 @@
 ; can be loaded by edn .... through bindRoot
 ; state in defs _is_ advantegeous...
 ; or is it ?
-(ns game.constants
-  (:require [game.constants.fsms :as fsms]))
+(ns game.constants)
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)
 (def ^:dbg-flag show-cell-occupied? false)
-
-(def npc-fsm fsms/npc)
-(def player-fsm fsms/player)
 
 (def black [0 0 0 1])
 (def white [1 1 1 1])
@@ -19,9 +15,9 @@
 (def outline-alpha 0.4)
 
 (def world-fn-file
-  "config/world_fns/modules.edn"
+  ; "config/world_fns/modules.edn"
   ; "config/world_fns/vampire.edn"
-  ; "config/world_fns/uf_caves.edn"
+   "config/world_fns/uf_caves.edn"
   )
 
 (def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
