@@ -1,25 +1,9 @@
 (ns moon.db
-  (:require [clojure.m.recur-sort :refer [recur-sort]]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.pprint :as pprint]
+            [moon.db.save :refer [save!]]
             [moon.property.type :refer [property->type]]
             [moon.schemas :as schemas]))
-
-(defn- save!
-  [{:keys [db/data db/file]}]
-  (let [data (->> (vals data)
-                  (sort-by property->type)
-                  (map recur-sort)
-                  doall)]
-    (.start
-     (Thread.
-      (fn []
-        (binding [*print-level* nil]
-          (->> data
-               pprint/pprint
-               with-out-str
-               (spit file))))))))
 
 (defn property-types [{:keys [db/schemas]}]
   (filter #(= "properties" (namespace %)) (keys schemas)))
