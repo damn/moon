@@ -28,7 +28,7 @@
    (let [label (label/create
                 {:text ""
                  :skin skin})]
-     (add-actor! table (set-label-text-actor label text-fn))
+     (.addActor table (set-label-text-actor label text-fn))
      (add! table {:actor label
                   :right? true
                   :expand-x? true}))))
