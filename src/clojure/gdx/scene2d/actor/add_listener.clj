@@ -30,5 +30,3 @@
 
 (defn add-listener! [actor listener]
   (Actor/.addListener actor (create listener)))
-
-; actor/listeners (31 matches)
