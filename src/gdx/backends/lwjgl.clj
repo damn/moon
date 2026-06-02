@@ -4,9 +4,6 @@
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)))
 
-(defn use-glfw-async! []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync))
-
 (defn application!
   [{:keys [title windowed-mode foreground-fps]
     :as config}]

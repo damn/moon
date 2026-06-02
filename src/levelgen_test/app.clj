@@ -1,5 +1,6 @@
 (ns levelgen-test.app
-  (:require [gdx.backends.lwjgl :as lwjgl]
+  (:require [clojure.gdx.backends.lwjgl.use-glfw-async :as use-glfw-async]
+            [gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.utils.disposable :as disposable]
             [clojure.gdx.utils.viewport :as viewport]
             [levelgen-test.create :as create]
@@ -24,7 +25,7 @@
 (def state (atom nil))
 
 (defn -main []
-  (lwjgl/use-glfw-async!)
+  (use-glfw-async/f!)
   (lwjgl/application!
    {:state-var #'state
     :create! create/f!

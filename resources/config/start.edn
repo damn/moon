@@ -18,7 +18,7 @@
                         draw.load ; draws need to use 'actions!' and recursively do things? works with set line width?
                         )
 
- (gdx.backends.lwjgl/use-glfw-async!)
+ (clojure.gdx.backends.lwjgl.use-glfw-async/f!)
 
  (gdx.backends.lwjgl/application! #edn/resource "config/application.edn")
 
