@@ -14,7 +14,7 @@
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db :as db]
-            [moon.property.type :refer [property-type]]))
+            [moon.property.type :refer [property->type]]))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -23,7 +23,7 @@
                 ctx/skin
                 ctx/stage]} ctx
         schemas (:db/schemas db)
-        schema (get schemas (property-type property))
+        schema (get schemas (property->type property))
         ; build for get-widget-value
         ; or find a way to find the widget from the context @ save button
         ; should be possible
