@@ -1,5 +1,5 @@
 (ns entity.tick.alert-friendlies-after-duration
-  (:require [moon.timer :as timer]
+  (:require [clojure.timer.stopped :refer [stopped?]]
             [moon.grid.circle-entities :refer [circle->entities]]))
 
 (defn f
@@ -7,7 +7,7 @@
    eid
    {:keys [ctx/elapsed-time
            ctx/grid]}]
-  (when (timer/stopped? elapsed-time counter)
+  (when (stopped? elapsed-time counter)
     (cons [:tx/mark-destroyed eid]
           (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
                                    :radius 4}

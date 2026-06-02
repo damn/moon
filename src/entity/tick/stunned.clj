@@ -1,7 +1,7 @@
 (ns entity.tick.stunned
-  (:require [moon.timer :as timer]))
+  (:require [clojure.timer.stopped :refer [stopped?]]))
 
 (defn f
   [{:keys [counter]} eid {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
+  (when (stopped? elapsed-time counter)
     [[:tx/event eid :effect-wears-off]]))

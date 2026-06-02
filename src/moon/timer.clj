@@ -1,7 +1,5 @@
-(ns moon.timer)
-
-(defn stopped? [elapsed-time {:keys [stop-time]}]
-  (>= elapsed-time stop-time))
+(ns moon.timer
+  (:require [clojure.timer.stopped :refer [stopped?]]))
 
 (defn reset [elapsed-time {:keys [duration] :as timer}]
   (assoc timer :stop-time (+ elapsed-time duration)))

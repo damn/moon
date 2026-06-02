@@ -1,7 +1,7 @@
 (ns entity.tick.active-skill
   (:require [game.effect :as effect]
             [moon.raycaster :as raycaster]
-            [moon.timer :as timer]))
+            [clojure.timer.stopped :refer [stopped?]]))
 
 (defn- update-effect-ctx
   [raycaster {:keys [effect/source effect/target] :as effect-ctx}]
@@ -22,6 +22,6 @@
                        (:skill/effects skill))))
      [[:tx/event eid :action-done]]
 
-     (timer/stopped? elapsed-time counter)
+     (stopped? elapsed-time counter)
      [[:tx/effect effect-ctx (:skill/effects skill)]
       [:tx/event eid :action-done]])))
