@@ -1,6 +1,7 @@
 (ns moon.schemas
   (:require [malli.core :as m]
             [malli.utils :as mu]
+            [malli.utils.map-keys :as map-keys]
             [malli.utils.validate-humanize :refer [validate-humanize]]))
 
 (defmulti malli-form (fn [[k] _schemas]
@@ -45,4 +46,4 @@
   (mu/optional? k (malli-form schema schemas)))
 
 (defn map-keys [schemas schema]
-  (mu/map-keys (malli-form schema schemas)))
+  (map-keys/f (malli-form schema schemas)))
