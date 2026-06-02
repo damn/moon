@@ -1,5 +1,5 @@
 (ns editor.app.resize
-  (:require [gdx.viewport :as viewport]))
+  (:require [clojure.gdx.utils.viewport :as viewport]))
 
 (defn resize!
   [{:keys [ctx/ui-viewport]} width height]

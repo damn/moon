@@ -1,7 +1,7 @@
 (ns gdx.stage
   (:require [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.group.find-actor :as group]
-            [gdx.viewport :as viewport]))
+            [clojure.gdx.utils.viewport :as viewport]))
 
 (defn create [viewport batch]
   (stage/create viewport batch))

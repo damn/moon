@@ -1,7 +1,7 @@
 (ns levelgen-test.app
   (:require [gdx.backends.lwjgl :as lwjgl]
             [clojure.gdx.utils.disposable :as disposable]
-            [gdx.viewport :as viewport]
+            [clojure.gdx.utils.viewport :as viewport]
             [levelgen-test.create :as create]
             [levelgen-test.render :as render]))
 
