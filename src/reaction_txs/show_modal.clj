@@ -4,7 +4,8 @@
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.stage :as stage]))
+            [gdx.stage :as stage]
+            [clojure.gdx.utils.align :as align]))
 
 (defn f
   [{:keys [ctx/skin
@@ -30,7 +31,7 @@
                       :actor/name "moon.ui.modal-window"
                       :actor/position [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                        (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))
-                                       :align/center]}))
+                                       align/center]}))
   ctx)
 
 ; no window movable type cursor appears here like in player idle

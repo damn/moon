@@ -27,6 +27,6 @@
                            (* (font/line-height font)))
                        0))
                 target-width
-                (align/k->value :align/center)
+                align/center
                 wrap?)
     (font.data/set-scale! (font/data font) old-scale)))
