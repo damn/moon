@@ -1,5 +1,31 @@
 [
- (clojure.core.require-namespaces/require-namespaces! #edn/resource "config/editor/requires.edn")
+ ; TODO use 'clojure.core/require' with multiple args?
+ (clojure.core.require-namespaces/require-namespaces! [
+                                                       editor.widget.animation
+                                                       editor.widget.boolean
+                                                       editor.widget.enum
+                                                       editor.widget.image
+                                                       editor.widget.map
+                                                       editor.widget.number
+                                                       editor.widget.one-to-many
+                                                       editor.widget.one-to-one
+                                                       editor.widget.sound
+                                                       editor.widget.string
+                                                       editor.widget.val-max
+                                                       schema.malli-form
+                                                       ])
+
+ ; TODO separate file
  (gdx.backends.lwjgl/use-glfw-async!)
- (gdx.backends.lwjgl/application! #edn/resource "config/editor/application.edn")
+
+ (gdx.backends.lwjgl/application! {:state-var editor.app/state
+                                   :create! editor.app.create/f!
+                                   :create-params nil
+                                   :dispose! editor.app.dispose/dispose!
+                                   :render! editor.app.render/render!
+                                   :render-params nil
+                                   :resize! editor.app.resize/resize!
+                                   :title "!Editor!"
+                                   :windowed-mode {:width 1440 :height 900}
+                                   :foreground-fps 60})
  ]
