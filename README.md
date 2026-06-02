@@ -1,9 +1,3 @@
-Fantasy Outside:
-cliff.tmx
-modules.tmx
-
-
-
 # Idea:
 
 Explain till crate/render/dispose/resize steps
