@@ -1,4 +1,7 @@
 [
+ ; wait - this should be in create ?
+ ; because top level is only desktop starter ?
+ ; otherwise our game is 'starter-independent'
  (clojure.core.require-namespaces/require-namespaces! #edn/resource "config/requires.edn")
 
  (gdx.backends.lwjgl/use-glfw-async!)
