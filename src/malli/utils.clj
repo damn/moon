@@ -1,26 +1,6 @@
 (ns malli.utils
-  (:require [malli.utils.map-keys :as map-keys]))
-
-(defn- map-form-k->properties
-  "Given a map schema gives a map of key to key properties (like :optional)."
-  [map-schema]
-  (let [[_m _p & ks] map-schema]
-    (into {} (for [[k m? _schema] ks]
-               [k (if (map? m?) m?)]))))
-
-(comment
- (= (map-form-k->properties
-     [:map {:closed true}
-      [:foo]
-      [:bar]
-      [:baz {:optional true}]
-      [:boz {:optional false}]
-      [:asdf {:optional true}]])
-    {:foo nil,
-     :bar nil,
-     :baz {:optional true},
-     :boz {:optional false},
-     :asdf {:optional true}}))
+  (:require [malli.utils.map-keys :as map-keys]
+            [malli.utils.map-form-k-properties :refer [map-form-k->properties]]))
 
 (defn optional? [k map-schema]
   (:optional (k (map-form-k->properties map-schema))))

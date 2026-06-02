@@ -1,37 +1,14 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
   (:require [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.event :as event]
-            [gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scene2d.ui.table.add :refer [add!]]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.touchable :as touchable]
-            [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
-
-(defn- add-upd-label!
-  ([skin table text-fn icon]
-   (let [label (label/create
-                {:text ""
-                 :skin skin})
-         sub-table (table/create
-                    {:table/rows [[{:actor (image/create {:content icon})}
-                                   label]]})]
-     (.addActor table (set-label-text-actor label text-fn))
-     (add! table {:actor sub-table
-                  :right? true
-                  :expand-x? true})))
-  ([skin table text-fn]
-   (let [label (label/create
-                {:text ""
-                 :skin skin})]
-     (.addActor table (set-label-text-actor label text-fn))
-     (add! table {:actor label
-                  :right? true
-                  :expand-x? true}))))
+            [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]))
 
 (defn- create-window [skin label items]
   {:title label
