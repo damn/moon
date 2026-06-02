@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.event :as event]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [game.ctx.do :refer [do!]]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]))
+            [clojure.gdx.scene2d.ui.text-button :as text-button]))
 
 (defn sound-columns [skin table sound-name]
   [{:actor (text-button/create

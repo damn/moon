@@ -3,7 +3,7 @@
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.ui.table.add :refer [add!]]
             [clojure.gdx.scene2d.ui.table.set-opts :refer [set-opts!]]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]))
+            [clojure.gdx.scene2d.ui.text-button :as text-button]))
 
 (defn create
   [{:keys [title skin] :as opts}]

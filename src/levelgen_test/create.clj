@@ -9,7 +9,7 @@
               [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
               [gdx.graphics.orthographic-camera :as camera]
               [clojure.gdx.scene2d.actor.stage :refer [actor-stage]]
-              [gdx.scenes.scene2d.ui.text-button :as text-button]
+              [clojure.gdx.scene2d.ui.text-button :as text-button]
               [gdx.scenes.scene2d.ui.window :as window]
               [gdx.stage :as stage]
               [gdx.textures]

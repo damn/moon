@@ -3,7 +3,7 @@
             [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.stage :as stage]))
 

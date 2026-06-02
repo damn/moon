@@ -4,7 +4,7 @@
             [editor.map-widget-table.component-row :as component-row]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.stage :as stage]))
 
 (defn- horiz-sep [colspan]

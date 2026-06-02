@@ -7,7 +7,7 @@
             [clojure.gdx.scene2d.group.children :refer [children]]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]))
+            [clojure.gdx.scene2d.ui.text-button :as text-button]))
 
 (defn create
   [{:keys [skin

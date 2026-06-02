@@ -5,7 +5,7 @@
             [editor.rebuild :as rebuild]
             [editor.widget :as widget]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas :as schemas]))

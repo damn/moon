@@ -11,7 +11,7 @@
             [clojure.gdx.scene2d.actor.width :refer [actor-width]]
             [clojure.gdx.scene2d.actor.height :refer [actor-height]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db :as db]
             [moon.property.type :refer [property->type]]))

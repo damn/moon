@@ -5,7 +5,7 @@
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]))
+            [clojure.gdx.scene2d.ui.text-button :as text-button]))
 
 (defmethod widget/create :s/sound [_  sound-name {:keys [ctx/skin]}]
   (let [table (table/create

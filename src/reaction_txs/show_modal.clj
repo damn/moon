@@ -1,7 +1,7 @@
 (ns reaction-txs.show-modal
   (:require [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
-            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.stage :as stage]))
 
