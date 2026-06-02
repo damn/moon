@@ -1,7 +1,7 @@
 (ns editor.widget.one-to-many
   (:require [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [editor.property-overview-window]
+            [editor.property-overview-window :as property-overview-window]
             [editor.widget :as widget]
             [clojure.gdx.scene2d.group.children :refer [children]]
             [clojure.gdx.scene2d.group.clear-children :refer [clear-children!]]
@@ -16,8 +16,7 @@
             [gdx.stage :as stage]
             [moon.db :as db]
             [moon.property :as property]
-            [moon.textures :as textures]
-            [moon.ui.error-window])
+            [moon.textures :as textures])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn- add-one-to-many-rows
@@ -45,7 +44,7 @@
                                              :as ctx} (:stage/ctx (event/stage event))]
                                         (stage/add-actor!
                                          stage
-                                         (editor.property-overview-window/create
+                                         (property-overview-window/create
                                           {:db db
                                            :textures textures
                                            :skin skin
