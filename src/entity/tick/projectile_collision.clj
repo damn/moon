@@ -2,14 +2,14 @@
   (:require [moon.body :as body]
             [moon.cell :as cell]
             [moon.grid.cells-entities :as cells->entities]
-            [clojure.grid2d :as g2d]))
+            [clojure.grid2d.get-cells :refer [get-cells]]))
 
 (defn f
   [{:keys [entity-effects already-hit-bodies piercing?]}
    eid
    {:keys [ctx/grid]}]
   (let [entity @eid
-        cells* (map deref (g2d/get-cells grid (body/touched-tiles (:entity/body entity))))
+        cells* (map deref (get-cells grid (body/touched-tiles (:entity/body entity))))
         hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                         (not= (:entity/faction entity)
                                               (:entity/faction @%))

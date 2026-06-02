@@ -58,6 +58,3 @@
   (VectorGrid. (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
                                    (range h)))
                      (range w))))
-
-(defn get-cells [g2d int-positions]
-  (into [] (keep g2d) int-positions))

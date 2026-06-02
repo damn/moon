@@ -5,7 +5,7 @@
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid :as grid]
-            [clojure.grid2d :as g2d]
+            [clojure.grid2d.get-cells :refer [get-cells]]
             [clojure.math.position :as position]))
 
 (defn- get-min-dist-cell [distance-to cells]
@@ -22,7 +22,7 @@
       cell)))
 
 (defn- inside-cell? [grid entity cell]
-  (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body entity)))]
+  (let [cells (get-cells grid (body/touched-tiles (:entity/body entity)))]
     (and (= 1 (count cells))
          (= cell (first cells)))))
 

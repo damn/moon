@@ -5,7 +5,7 @@
             [moon.grid.cells-entities :as cells->entities]
             [moon.grid.body-occupied-cells :refer [body->occupied-cells]]
             [moon.faction :as faction]
-            [clojure.grid2d :as g2d]
+            [clojure.grid2d.get-cells :refer [get-cells]]
             [clojure.math.position :as position]))
 
 (defn cached-adjacent-cells [g2d cell]
@@ -14,7 +14,7 @@
     (let [result (->> @cell
                       :position
                       position/get-8-neighbours
-                      (g2d/get-cells g2d))]
+                      (get-cells g2d))]
       (swap! cell assoc :adjacent-cells result)
       result)))
 
@@ -24,7 +24,7 @@
             (:entities @cell))))
 
 (defn set-touched-cells! [grid eid]
-  (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body @eid)))]
+  (let [cells (get-cells grid (body/touched-tiles (:entity/body @eid)))]
     (assert (not-any? nil? cells))
     (swap! eid assoc ::touched-cells cells) ; TODO :entity/touched-cells ....
     (doseq [cell cells]
@@ -51,7 +51,7 @@
   ; TODO take entity ! some things not required @ body !?
 (defn valid-position? [g2d {:keys [body/z-order] :as body} entity-id]
   (assert (:body/collides? body))
-  (let [cells* (into [] (map deref) (g2d/get-cells g2d (body/touched-tiles body)))]
+  (let [cells* (into [] (map deref) (get-cells g2d (body/touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
          (->> cells*
               cells->entities/f
