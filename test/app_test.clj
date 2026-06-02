@@ -1,7 +1,7 @@
-(ns app-test
+#_(ns app-test
   (:require [gdx.backends.lwjgl :as lwjgl]))
 
-(defn -main []
+#_(defn -main []
   (lwjgl/application!
    {:create! (fn [app])
     :dispose! (fn [])
