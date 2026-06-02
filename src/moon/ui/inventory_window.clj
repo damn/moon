@@ -3,6 +3,7 @@
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group.children :refer [children]]
+            [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
@@ -22,7 +23,7 @@
     (image/set-drawable! image-widget (texture-region-drawable/create
                                        {:drawable/texture-region texture-region
                                         :drawable/size cell-size}))
-    (add-listener! cell-widget [:listener/text-tooltip [tooltip-text skin]])
+    (add-listener! cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
 (defn remove-item! [inventory-window cell]

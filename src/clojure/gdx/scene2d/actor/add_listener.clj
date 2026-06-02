@@ -1,7 +1,6 @@
 (ns clojure.gdx.scene2d.actor.add-listener
+  (:require [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener
                                                   ClickListener)))
 
@@ -12,7 +11,7 @@
 (defmethod create
   :listener/text-tooltip
   [[_ [tooltip skin]]]
-  (TextTooltip. ^String tooltip ^Skin skin))
+  (text-tooltip/create tooltip skin))
 
 (defmethod create
   :listener/change
@@ -29,4 +28,6 @@
       (f event x y))))
 
 (defn add-listener! [actor listener]
-  (Actor/.addListener actor (create listener)))
+  (Actor/.addListener actor (if (vector? listener)
+                              (create listener)
+                              listener)))
