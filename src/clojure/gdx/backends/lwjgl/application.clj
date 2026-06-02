@@ -1,10 +1,10 @@
-(ns gdx.backends.lwjgl
+(ns clojure.gdx.backends.lwjgl.application
   (:import (com.badlogic.gdx ApplicationListener
                              Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)))
 
-(defn application!
+(defn start!
   [{:keys [title windowed-mode foreground-fps]
     :as config}]
   (Lwjgl3Application. (let [state @(:state-var config)]

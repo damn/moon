@@ -14,14 +14,14 @@
 
  (clojure.gdx.backends.lwjgl.use-glfw-async/f!)
 
- (gdx.backends.lwjgl/application! {:state-var editor.app/state
-                                   :create! editor.app.create/f!
-                                   :create-params nil
-                                   :dispose! editor.app.dispose/dispose!
-                                   :render! editor.app.render/render!
-                                   :render-params nil
-                                   :resize! editor.app.resize/resize!
-                                   :title "!Editor!"
-                                   :windowed-mode {:width 1440 :height 900}
-                                   :foreground-fps 60})
+ (clojure.gdx.backends.lwjgl.application/start! {:state-var editor.app/state
+                                                 :create! editor.app.create/f!
+                                                 :create-params nil
+                                                 :dispose! editor.app.dispose/dispose!
+                                                 :render! editor.app.render/render!
+                                                 :render-params nil
+                                                 :resize! editor.app.resize/resize!
+                                                 :title "!Editor!"
+                                                 :windowed-mode {:width 1440 :height 900}
+                                                 :foreground-fps 60})
  ]

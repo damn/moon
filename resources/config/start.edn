@@ -20,6 +20,6 @@
 
  (clojure.gdx.backends.lwjgl.use-glfw-async/f!)
 
- (gdx.backends.lwjgl/application! #edn/resource "config/application.edn")
+ (clojure.gdx.backends.lwjgl.application/start! #edn/resource "config/application.edn")
 
  ]
