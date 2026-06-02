@@ -1,5 +1,5 @@
 [
- (clojure.core-ext/require-namespaces! #edn/resource "config/requires.edn")
+ (clojure.core.require-namespaces/require-namespaces! #edn/resource "config/requires.edn")
 
  (gdx.backends.lwjgl/use-glfw-async!)
 

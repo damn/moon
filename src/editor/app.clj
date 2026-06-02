@@ -1,7 +1,7 @@
 (ns editor.app
-  (:require [clojure.core-ext :as core]))
+  (:require [clojure.core.run-executions :refer [run-executions!]]))
 
 (def state (atom nil))
 
 (defn -main []
-  (core/run-executions-from-edn! "config/editor.edn"))
+  (run-executions! "config/editor.edn"))

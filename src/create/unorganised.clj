@@ -1,5 +1,5 @@
 (ns create.unorganised
-  (:require [clojure.core-ext :refer [edn-resource]]
+  (:require [clojure.core.edn-resource :refer [edn-resource]]
             [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.graphics.color :as color]
             [clojure.gdx.graphics.colors :as colors]

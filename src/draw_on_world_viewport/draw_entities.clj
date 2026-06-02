@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-entities
-  (:require [clojure.core-ext :refer [sort-by-order]]
+  (:require [clojure.order :refer [sort-by-order]]
             [game.ctx.draw :refer [draw!]]
             [moon.body :as body]
             [moon.raycaster :as raycaster]

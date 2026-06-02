@@ -1,6 +1,6 @@
 (ns start
-  (:require [clojure.core-ext :as core])
+  (:require [clojure.core.run-executions :refer [run-executions!]])
   (:gen-class))
 
 (defn -main []
-  (core/run-executions-from-edn! "config/start.edn"))
+  (run-executions! "config/start.edn"))

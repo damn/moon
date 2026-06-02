@@ -1,5 +1,5 @@
 (ns moon.db
-  (:require [clojure.core-ext :refer [recur-sort]]
+  (:require [clojure.m.recur-sort :refer [recur-sort]]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]

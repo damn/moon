@@ -1,5 +1,5 @@
 (ns levelgen-test.generate-level
-  (:require [clojure.core-ext :refer [edn-resource]]
+  (:require [clojure.core.edn-resource :refer [edn-resource]]
             [clojure.gdx.graphics.texture :as texture]
             [clojure.gdx.maps.map-layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]

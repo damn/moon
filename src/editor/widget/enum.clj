@@ -1,5 +1,5 @@
 (ns editor.widget.enum
-  (:require [clojure.core-ext :refer [->edn-str]]
+  (:require [clojure.core.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
             [clojure.gdx.scene2d.ui.select-box :as select-box]
             [editor.widget :as widget]))

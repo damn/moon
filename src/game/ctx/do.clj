@@ -1,6 +1,6 @@
 (ns game.ctx.do
-  (:require [clojure.core-ext :refer [actions!
-                                      reduce-actions!]]))
+  (:require [clojure.core.actions :refer [actions!]]
+            [clojure.core.reduce-actions :refer [reduce-actions!]]))
 
 (defn do!
   [{:keys [ctx/txs-fn-map

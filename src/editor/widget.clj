@@ -1,6 +1,6 @@
 (ns editor.widget
-  (:require [clojure.core-ext :refer [->edn-str
-                                      truncate]]
+  (:require [clojure.string.truncate :refer [truncate]]
+            [clojure.core.edn-str :refer [->edn-str]]
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.actor.user-object :refer [actor-user-object]]
             [gdx.scenes.scene2d.ui.label :as label]))

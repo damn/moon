@@ -1,5 +1,5 @@
 (ns editor.widget.val-max
-  (:require [clojure.core-ext :refer [->edn-str]]
+  (:require [clojure.core.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.ui.text-field :as text-field]))

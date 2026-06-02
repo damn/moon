@@ -1,5 +1,5 @@
 (ns create.tiled-map
-  (:require [clojure.core-ext :refer [edn-resource]]
+  (:require [clojure.core.edn-resource :refer [edn-resource]]
             [game.constants :refer [world-fn-file]]
             [moon.creature-tiles]
             [moon.db :as db]

@@ -1,5 +1,5 @@
 (ns render.update-mouseover-eid
-  (:require [clojure.core-ext :refer [sort-by-order]]
+  (:require [clojure.order :refer [sort-by-order]]
             [game.ctx.mouse-position :refer [mouse-position]]
             [gdx.stage :as stage]
             [moon.grid :as grid]
