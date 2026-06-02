@@ -1,6 +1,7 @@
 (ns moon.schemas
   (:require [malli.core :as m]
-            [malli.utils :as mu]))
+            [malli.utils :as mu]
+            [malli.utils.validate-humanize :refer [validate-humanize]]))
 
 (defmulti malli-form (fn [[k] _schemas]
                        k))
@@ -19,7 +20,7 @@
   (-> (get schemas k)
       (malli-form schemas)
       m/schema
-      (mu/validate-humanize value)))
+      (validate-humanize value)))
 
 (defn build-values [schemas property db]
   (reduce (fn [m k]

@@ -1,6 +1,6 @@
 (ns render.validate
-  (:require [malli.utils :as mu]))
+  (:require [malli.utils.validate-humanize :refer [validate-humanize]]))
 
 (defn step [ctx]
-  (mu/validate-humanize (:ctx/schema ctx) ctx)
+  (validate-humanize (:ctx/schema ctx) ctx)
   ctx)
