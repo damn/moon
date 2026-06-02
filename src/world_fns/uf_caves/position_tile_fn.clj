@@ -1,5 +1,5 @@
 (ns world-fns.uf-caves.position-tile-fn
-  (:require [clojure.rand :as rand]))
+  (:require [clojure.rand.weighted :refer [get-rand-weighted-item]]))
 
 (defn f [grid]
   (let [uf-grounds (for [x [1 5]
@@ -11,8 +11,8 @@
                    [x y])
         transition? (fn [[x y]]
                       (= :ground (get grid [x (dec y)])))
-        rand-0-3 (fn [] (rand/get-rand-weighted-item {0 60 1 1 2 1 3 1}))
-        rand-0-5 (fn [] (rand/get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
+        rand-0-3 (fn [] (get-rand-weighted-item {0 60 1 1 2 1 3 1}))
+        rand-0-5 (fn [] (get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
         [ground-x ground-y] (rand-nth uf-grounds)
         {wall-x 0 wall-y 1} (rand-nth uf-walls)
         [transition-x transition-y] [wall-x (inc wall-y)]

@@ -1,5 +1,5 @@
 (ns effect.target.damage
-  (:require [clojure.rand :refer [rand-int-between]]
+  (:require [clojure.rand.int-between :refer [rand-int-between]]
             [game.effect :as effect]
             [moon.stats :as stats]))
 
