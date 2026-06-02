@@ -1,11 +1,5 @@
 (ns effect.load
-  (:require effect.target.melee-damage
-            effect.applicable.spawn
-            effect.handle.spawn
-            effect.applicable.projectile
-            effect.handle.projectile
-            effect.useful.projectile
-            [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2 :as v]
             [game.effect :as effect]
             [moon.faction :as faction]
             [game.constants :refer [spiderweb-modifiers spiderweb-duration]]

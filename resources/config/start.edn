@@ -6,6 +6,12 @@
                        entity.state.create.player-item-on-cursor
                        entity.state.draw-ui-view.player-item-on-cursor
                        effect.load
+                       effect.target.melee-damage
+                       effect.applicable.spawn
+                       effect.handle.spawn
+                       effect.applicable.projectile
+                       effect.handle.projectile
+                       effect.useful.projectile
                        effect.target.damage
                        effect.target-all
                        effect.target-entity
