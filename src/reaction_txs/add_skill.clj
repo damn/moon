@@ -18,9 +18,3 @@
                                 :tooltip-text (info/text skill ctx)}
                                skin)))
   ctx)
-
-#_(remove-skill! [stage skill-id]
-                 (-> stage
-                     (stage/find-actor "moon.ui.action-bar")
-                     (action-bar/remove-skill! skill-id)))
-
