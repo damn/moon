@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.ui.cell :as cell]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
-            [gdx.scenes.scene2d.ui.widget-group :as widget-group])
+            [clojure.gdx.scene2d.ui.widget-group.set-opts :as widget-group])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn set-opts! [table opts]

@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.widget-group
+(ns clojure.gdx.scene2d.ui.widget-group.set-opts
   (:require [clojure.gdx.scene2d.ui.widget-group :as widget-group]
             [clojure.gdx.scene2d.group.set-opts :as group]))
 
