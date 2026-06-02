@@ -1,19 +1,16 @@
 [
- ; TODO use 'clojure.core/require' with multiple args?
- (clojure.core.require-namespaces/require-namespaces! [
-                                                       editor.widget.animation
-                                                       editor.widget.boolean
-                                                       editor.widget.enum
-                                                       editor.widget.image
-                                                       editor.widget.map
-                                                       editor.widget.number
-                                                       editor.widget.one-to-many
-                                                       editor.widget.one-to-one
-                                                       editor.widget.sound
-                                                       editor.widget.string
-                                                       editor.widget.val-max
-                                                       schema.malli-form
-                                                       ])
+ (clojure.core/require editor.widget.animation
+                       editor.widget.boolean
+                       editor.widget.enum
+                       editor.widget.image
+                       editor.widget.map
+                       editor.widget.number
+                       editor.widget.one-to-many
+                       editor.widget.one-to-one
+                       editor.widget.sound
+                       editor.widget.string
+                       editor.widget.val-max
+                       schema.malli-form)
 
  ; TODO separate file
  (gdx.backends.lwjgl/use-glfw-async!)
