@@ -11,8 +11,7 @@
             [world-fns.modules.area-level-grid :as area-level-grid]))
 
 (defn step
-  [{:keys [
-           world/max-area-level
+  [{:keys [world/max-area-level
            world/spawn-rate
            level/creature-properties
            grid
@@ -20,20 +19,13 @@
            scale
            scaled-grid
            tiled-map
-           start-position
-           ]}]
-  (let [
-
-
-        can-spawn? #(= "all" (movement-property/f tiled-map %))
-
+           start-position]}]
+  (let [can-spawn? #(= "all" (movement-property/f tiled-map %))
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
-
         spawn-positions (flood-fill/f scaled-grid start-position can-spawn?)
         ;_ (println "scaled grid with filled nil: '?' \n")
         ;_ (printgrid/f (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
         ;_ (println "\n")
-
         {:keys [_steps area-level-grid]} (area-level-grid/create
                                           :grid grid
                                           :start start
@@ -45,9 +37,7 @@
                       (set (g2d/cells area-level-grid)))
                    (= (set (concat [:wall max-area-level] (range max-area-level)))
                       (set (g2d/cells area-level-grid)))))
-
         scaled-area-level-grid (scale-grid/f area-level-grid scale)
-
         get-free-position-in-area-level (fn [area-level]
                                           (rand-nth
                                            (filter
@@ -58,8 +48,6 @@
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))
-
-
         creatures (for [position spawn-positions
                         :let [area-level (get scaled-area-level-grid position)
                               creatures (filter #(= area-level (:creature/level %))

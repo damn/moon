@@ -9,7 +9,6 @@
             [clojure.grid2d.get-cells :refer [get-cells]]
             [clojure.math.position :as position]))
 
-; rarely called -> no performance bottleneck
 (defn- viable-cell? [grid distance-to own-dist eid cell]
   (when-let [best-cell (get-min-dist-cell
                         distance-to
