@@ -1,4 +1,4 @@
-(ns tx.register-eid
+(ns game.ctx.register-eid
   (:require [moon.content-grid :as content-grid]
             [moon.grid :as grid]))
 
@@ -18,7 +18,4 @@
   (grid/set-touched-cells! (:ctx/grid ctx) eid)
   (when (:body/collides? (:entity/body @eid)) ; entity/collides? separate fooziboosh, no 'when' just a callback?
     (grid/set-occupied-cells! (:ctx/grid ctx) eid))
-
-  nil
-  ; TODO what should a tx return? nil? ctx?
-  )
+  nil)

@@ -1,5 +1,6 @@
 (ns tx.spawn-entity
-  (:require [qrecord.core :as q]))
+  (:require [qrecord.core :as q]
+            [game.ctx.register-eid :as register-eid]))
 
 (q/defrecord Entity [entity/body])
 
@@ -16,10 +17,9 @@
                        entity)
         entity (merge (map->Entity {}) entity)
         eid (atom entity)]
-    (cons
-     [:tx/register-eid eid]
-     (mapcat (fn [[k v]]
-               (if-let [f (k->after-create k)]
-                 (f v eid ctx)
-                 nil))
-             @eid))))
+    (register-eid/do! ctx eid)
+    (mapcat (fn [[k v]]
+              (if-let [f (k->after-create k)]
+                (f v eid ctx)
+                nil))
+            @eid)))

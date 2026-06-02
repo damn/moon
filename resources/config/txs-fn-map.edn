@@ -16,7 +16,6 @@
  :tx/remove-item              tx.remove-item/do!
  :tx/pickup-item              tx.pickup-item/do!
  :tx/event                    tx.event/do!
- :tx/register-eid             tx.register-eid/do!
  :tx/unregister-eid           tx.unregister-eid/do!
  :tx/state-enter              tx.state-enter/do!
  :tx/effect                   tx.effect/do!
