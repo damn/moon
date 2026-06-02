@@ -1,17 +1,6 @@
 (ns clojure.gdx.scene2d.actor.set-opts
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-#_(def mappings
-  {
-   :actor/user-object
-   :actor/position
-   :actor/visible?
-   :actor/touchable
-   :actor/name
-   :actor/listeners
-   }
-  )
-
 (defn set-opts! [^Actor actor opts]
   (when-let [user-object (:actor/user-object opts)]
     (.setUserObject actor user-object))
