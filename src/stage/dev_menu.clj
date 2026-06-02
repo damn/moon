@@ -2,10 +2,9 @@
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.graphics :as graphics]
             [gdx.graphics.orthographic-camera :as camera]
-            [gdx.stage :as stage]
-            [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
-            [moon.number :as number]))
+            [moon.number :as number]
+            [stage.dev-menu.ctx-data :as ctx-data]))
 
 (defn create
   [{:keys [ctx/controls-info
@@ -13,18 +12,7 @@
            ctx/skin
            ctx/textures]}]
   (dev-menu/create
-   {:menus [
-            {:label "Ctx Data"
-             :items [{:label "Show data"
-                      :on-click (fn [_actor {:keys [ctx/skin
-                                                    ctx/stage] :as ctx}]
-                                  (stage/add-actor! stage
-                                                    (data-viewer-window/create
-                                                     {:title "Data View"
-                                                      :data ctx
-                                                      :width 1000
-                                                      :height 1000
-                                                      :skin skin})))}]}
+   {:menus [ctx-data/item
             {:label "Help"
              :items [{:label controls-info}]}
             {:label "Select World"

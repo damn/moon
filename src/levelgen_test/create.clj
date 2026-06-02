@@ -1,21 +1,19 @@
-  (ns levelgen-test.create
-    (:require [clojure.gdx.application :as app]
-              [clojure.gdx.files :as files]
-              [clojure.gdx.graphics.color.float-bits :refer [float-bits]]
-              [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-              [clojure.gdx.input :as input]
-              [clojure.gdx.scene2d.event :as event]
-              [clojure.gdx.scene2d.ui.skin :as skin]
-              [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
-              [gdx.graphics.orthographic-camera :as camera]
-              [clojure.gdx.scene2d.ui.text-button :as text-button]
-              [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-              [gdx.scenes.scene2d.ui.window :as window]
-              [gdx.stage :as stage]
-              [gdx.textures]
-              [levelgen-test.generate-level :as generate-level]
-              [moon.db :as db]
-              [schema.malli-form]))
+(ns levelgen-test.create
+  (:require [clojure.gdx.application :as app]
+            [clojure.gdx.files :as files]
+            [clojure.gdx.graphics.color.float-bits :refer [float-bits]]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.input :as input]
+            [clojure.gdx.scene2d.ui.skin :as skin]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [gdx.graphics.orthographic-camera :as camera]
+            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.stage :as stage]
+            [gdx.textures]
+            [levelgen-test.create.edit-window :refer [edit-window]]
+            [levelgen-test.generate-level :as generate-level]
+            [moon.db :as db]
+            [schema.malli-form]))
 
 (def initial-level-fn "config/world_fns/uf_caves.edn")
 
@@ -23,22 +21,6 @@
   ["config/world_fns/vampire.edn"
    "config/world_fns/uf_caves.edn"
    "config/world_fns/modules.edn"])
-
-(def tile-size 48)
-
-(defn- edit-window [skin]
-  {:title "Edit"
-   :skin skin
-   :table/rows (for [level-fn level-fns
-                     :let [on-clicked (fn [actor ctx]
-                                        (let [stage (.getStage actor)
-                                              new-ctx (generate-level/f ctx level-fn)]
-                                          (stage/set-ctx! stage new-ctx)))]]
-                 [{:actor (text-button/create
-                           {:text (str "Generate " level-fn)
-                            :skin skin
-                            :actor/listeners [(change-listener/create (fn [event actor]
-                                                                        (on-clicked actor (:stage/ctx (event/stage event)))))]})}])})
 
 (defn f!
   [app _params]
@@ -75,5 +57,5 @@
                    :ctx/sprite-batch sprite-batch
                    :ctx/world-unit-scale world-unit-scale)
         ctx (generate-level/f ctx initial-level-fn)]
-    (stage/add-actor! (:ctx/stage ctx) (window/create (edit-window skin)))
+    (stage/add-actor! (:ctx/stage ctx) (window/create (edit-window skin level-fns)))
     ctx))
