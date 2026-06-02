@@ -13,8 +13,7 @@
             [gdx.stage :as stage]
             [moon.db :as db]
             [moon.property :as property]
-            [moon.textures :as textures]
-            [moon.ui.error-window]))
+            [moon.textures :as textures]))
 
 (defn add-one-to-one-rows
   [{:keys [ctx/db
