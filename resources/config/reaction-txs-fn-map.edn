@@ -5,5 +5,4 @@
  :tx/show-modal               reaction-txs.show-modal/f
  :tx/set-item                 reaction-txs.set-item/f
  :tx/remove-item              reaction-txs.remove-item/f
- :tx/add-skill                reaction-txs.add-skill/f
  }
