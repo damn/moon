@@ -8,7 +8,6 @@
  ; :world/
  [:ctx/fsms :some]
  [:ctx/txs-fn-map :some]
- [:ctx/reaction-txs-fn-map :some]
  [:ctx/k->tick :some]
  [:ctx/k->render :some]
  [:ctx/k->create :some]

@@ -27,8 +27,8 @@
  :tx/spawn-item               tx.spawn-item/do!
  :tx/spawn-creature           tx.spawn-creature/do!
  :tx/spawn-entity             tx.spawn-entity/do!
- :tx/sound                    tx.nothing/f
- :tx/toggle-inventory-visible tx.nothing/f
- :tx/show-message             tx.nothing/f
- :tx/show-modal               tx.nothing/f
+ :tx/sound                    tx.sound/f
+ :tx/toggle-inventory-visible tx.toggle-inventory-visible/f
+ :tx/show-message             tx.show-message/f
+ :tx/show-modal               tx.show-modal/f
  }

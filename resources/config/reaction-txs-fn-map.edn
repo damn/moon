@@ -1,8 +1,0 @@
-{
- :tx/sound                    reaction-txs.sound/f
- :tx/toggle-inventory-visible reaction-txs.toggle-inventory-visible/f
- :tx/show-message             reaction-txs.show-message/f
- :tx/show-modal               reaction-txs.show-modal/f
- :tx/set-item                 reaction-txs.set-item/f
- :tx/remove-item              reaction-txs.remove-item/f
- }

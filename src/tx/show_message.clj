@@ -1,4 +1,4 @@
-(ns reaction-txs.show-message
+(ns tx.show-message
   (:require [gdx.stage :as stage]))
 
 (defn f
@@ -7,4 +7,4 @@
       (stage/find-actor "player-message")
       (.setUserObject (atom {:text message
                              :counter 0})))
-  ctx)
+  nil)

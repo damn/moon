@@ -1,4 +1,4 @@
-(ns reaction-txs.show-modal
+(ns tx.show-modal
   (:require [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
@@ -31,7 +31,7 @@
                       :actor/position [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                        (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))
                                        align/center]}))
-  ctx)
+  nil)
 
 ; no window movable type cursor appears here like in player idle
 ; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
