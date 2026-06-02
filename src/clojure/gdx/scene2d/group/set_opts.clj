@@ -1,8 +1,8 @@
 (ns clojure.gdx.scene2d.group.set-opts
-  (:require [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
-            [clojure.gdx.scene2d.actor.set-opts :as actor]))
+  (:require [clojure.gdx.scene2d.actor.set-opts :as actor])
+  (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
-(defn set-opts! [group opts]
+(defn set-opts! [^Group group opts]
   (when-let [actors (:group/actors opts)]
-    (run! #(add-actor! group %) actors))
+    (run! #(.addActor group %) actors))
   (actor/set-opts! group opts))

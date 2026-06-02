@@ -1,6 +1,5 @@
 (ns gdx.scenes.scene2d.ui.action-bar
   (:require [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
@@ -47,7 +46,7 @@
                              :drawable/scale 2})
                  :actor/listeners [(text-tooltip/create tooltip-text skin)]
                  :actor/user-object skill-id})]
-    (add-actor! horizontal-group button)
+    (.addActor horizontal-group button)
     (button-group/add! button-group button)
     nil))
 
