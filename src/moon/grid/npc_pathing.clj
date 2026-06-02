@@ -1,17 +1,13 @@
 (ns moon.grid.npc-pathing
   (:require [clojure.math.vector2 :as v]
             [moon.grid.npc-pathing.filter-viable-cells :as filter-viable-cells]
+            [moon.grid.npc-pathing.get-min-dist-cell :refer [get-min-dist-cell]]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid :as grid]
             [clojure.grid2d.get-cells :refer [get-cells]]
             [clojure.math.position :as position]))
-
-(defn- get-min-dist-cell [distance-to cells]
-  (let [cells (filter distance-to cells)]
-    (when (seq cells)
-      (apply min-key distance-to cells))))
 
 ; rarely called -> no performance bottleneck
 (defn- viable-cell? [grid distance-to own-dist eid cell]
