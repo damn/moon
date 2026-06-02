@@ -1,25 +1,14 @@
-[
- ; wait - this should be in create ?
- ; because top level is only desktop starter ?
- ; otherwise our game is 'starter-independent'
-
-  ; TODO use simple function maps
-  (clojure.core/require schema.malli-form ;  confusing malli/schema=forms .... self referencing ?
-                        entity.state.create.active-skill
-                        entity.state.create.stunned
-                        entity.state.create.player-moving
-                        entity.state.create.npc-moving
-                        entity.state.create.player-item-on-cursor
-                        entity.state.draw-ui-view.player-item-on-cursor
-                        effect.load
-                        effect.target.damage
-                        effect.target-all
-                        effect.target-entity
-                        draw.load ; draws need to use 'actions!' and recursively do things? works with set line width?
-                        )
-
+[(clojure.core/require schema.malli-form
+                       entity.state.create.active-skill
+                       entity.state.create.stunned
+                       entity.state.create.player-moving
+                       entity.state.create.npc-moving
+                       entity.state.create.player-item-on-cursor
+                       entity.state.draw-ui-view.player-item-on-cursor
+                       effect.load
+                       effect.target.damage
+                       effect.target-all
+                       effect.target-entity
+                       draw.load)
  (clojure.gdx.backends.lwjgl.use-glfw-async/f!)
-
- (clojure.gdx.backends.lwjgl.application/start! #edn/resource "config/application.edn")
-
- ]
+ (clojure.gdx.backends.lwjgl.application/start! #edn/resource "config/application.edn")]
