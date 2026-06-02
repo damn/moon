@@ -11,7 +11,7 @@
             [game.constants :refer [spiderweb-modifiers spiderweb-duration]]
             [moon.raycaster :as raycaster]
             [moon.stats :as stats]
-            [moon.timer :as timer]))
+            [clojure.timer.create :refer [create-timer]]))
 
 (defmethod effect/applicable? :effects.target/audiovisual
   [_ {:keys [effect/target]}]
@@ -55,7 +55,7 @@
   ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
   (when-not (:entity/temp-modifier @target)
     [[:tx/assoc target :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                              :counter (timer/create elapsed-time spiderweb-duration)}]
+                                              :counter (create-timer elapsed-time spiderweb-duration)}]
      [:tx/update target :entity/stats stats/add spiderweb-modifiers]]))
 
 (defmethod effect/applicable? :effects.target/stun

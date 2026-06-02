@@ -1,10 +1,5 @@
 (ns moon.timer)
 
-(defn create [elapsed-time duration]
-  {:pre [(>= duration 0)]}
-  {:duration duration
-   :stop-time (+ elapsed-time duration)})
-
 (defn stopped? [elapsed-time {:keys [stop-time]}]
   (>= elapsed-time stop-time))
 

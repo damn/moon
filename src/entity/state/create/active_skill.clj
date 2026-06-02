@@ -1,7 +1,7 @@
 (ns entity.state.create.active-skill
   (:require [game.state :as state]
             [moon.stats :as stats]
-            [moon.timer :as timer]))
+            [clojure.timer.create :refer [create-timer]]))
 
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time
@@ -15,4 +15,4 @@
    :counter (->> skill
                  :skill/action-time
                  (apply-action-speed-modifier @eid skill)
-                 (timer/create elapsed-time))})
+                 (create-timer elapsed-time))})

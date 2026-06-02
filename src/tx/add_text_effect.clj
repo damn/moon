@@ -1,5 +1,6 @@
 (ns tx.add-text-effect
-  (:require [moon.timer :as timer]))
+  (:require [moon.timer :as timer]
+            [clojure.timer.create :refer [create-timer]]))
 
 (defn do! [{:keys [ctx/elapsed-time]} eid text duration]
   [[:tx/assoc
@@ -10,4 +11,4 @@
           (update :text str "\n" text)
           (update :counter timer/increment duration))
       {:text text
-       :counter (timer/create elapsed-time duration)})]])
+       :counter (create-timer elapsed-time duration)})]])
