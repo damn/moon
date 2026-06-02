@@ -5,7 +5,7 @@
 (defn update! [^Viewport viewport screen-width screen-height center-camera?]
   (.update viewport screen-width screen-height center-camera?))
 
-(defn unproject [^Viewport viewport vector2]
+(defn unproject [^Viewport viewport xy]
   (-> viewport
-      (.unproject (vector2/create position))
+      (.unproject (vector2/create xy))
       vector2/->clj))
