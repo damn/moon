@@ -1,6 +1,6 @@
 (ns moon.grid.update-potential-fields
   (:require [moon.cell :as cell]
-            [moon.grid.update-potential-fields.step :as step]))
+            [moon.grid.update-potential-fields.generate :refer [generate-potential-field]]))
 
 ; Assumption: The map contains no not-allowed diagonal cells, diagonal wall cells where both
 ; adjacent cells are walls and blocked.
@@ -37,23 +37,6 @@
  (def marked *2)
  (step/f :good *1)
  )
-
-(defn- generate-potential-field
-  [grid faction tiles->entities max-iterations]
-  (let [entity-cell-seq (for [[tile eid] tiles->entities]
-                          [eid (grid tile)])
-        marked (map second entity-cell-seq)]
-    (doseq [[eid cell] entity-cell-seq]
-      (swap! cell cell/add-field-data faction 0 eid))
-    (loop [marked-cells     marked
-           new-marked-cells marked
-           iterations 0]
-      (if (= iterations max-iterations)
-        marked-cells
-        (let [new-marked (step/f grid faction new-marked-cells)]
-          (recur (concat marked-cells new-marked)
-                 new-marked
-                 (inc iterations)))))))
 
 (defn- tiles->entities [entities faction]
   (let [entities (filter #(= (:entity/faction @%) faction)
