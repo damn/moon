@@ -5,6 +5,7 @@
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]
+            [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.scene2d.actor.stage-local-coordinates :refer [stage->local-coordinates]]
             [clojure.gdx.scene2d.actor.parent :refer [actor-parent]]
             [clojure.gdx.scene2d.actor.x :refer [actor-x]]
@@ -52,7 +53,7 @@
                                                             (actor-x this)
                                                             (actor-y this)
                                                             (actor-hit this
-                                                                       (stage->local-coordinates this ui-mouse-position)
+                                                                       (vector2/->clj (stage->local-coordinates this (vector2/create ui-mouse-position)))
                                                                        true)
                                                             (actor-user-object (actor-parent this)))))))})
                       (image/create
