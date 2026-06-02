@@ -1,6 +1,5 @@
 (ns create.unorganised
   (:require [clojure.core.edn-resource :refer [edn-resource]]
-            [clojure.gdx.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.graphics.color :refer [Color]]
             [clojure.gdx.graphics.colors :as colors]
             [malli.core :as m]
@@ -14,7 +13,6 @@
  )
 
 (defn step [ctx]
-  (tooltip-manager/set-initial-time! 0)
   (doseq [[name rgba] {"PRETTY_NAME" [0.84 0.8 0.52 1]}]
     (colors/put! name (Color rgba)))
   (assoc ctx
