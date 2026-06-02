@@ -8,6 +8,7 @@
                  [create.skin/step]
                  [create.stage/step]
                  [create.tooltip-manager-opts/step]
+                 [create.put-colors/step]
                  [create.cursors/step]
                  [create.textures/step]
                  [create.unorganised/step]
