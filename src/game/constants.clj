@@ -1,6 +1,3 @@
-; can be loaded by edn .... through bindRoot
-; state in defs _is_ advantegeous...
-; or is it ?
 (ns game.constants)
 
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
