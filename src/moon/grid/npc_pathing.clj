@@ -3,18 +3,12 @@
             [moon.grid.npc-pathing.filter-viable-cells :as filter-viable-cells]
             [moon.grid.npc-pathing.get-min-dist-cell :refer [get-min-dist-cell]]
             [moon.body.touched-tiles :refer [touched-tiles]]
+            [moon.grid.npc-pathing.viable-cell :refer [viable-cell?]]
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid :as grid]
             [clojure.grid2d.get-cells :refer [get-cells]]
             [clojure.math.position :as position]))
-
-(defn- viable-cell? [grid distance-to own-dist eid cell]
-  (when-let [best-cell (get-min-dist-cell
-                        distance-to
-                        (filter-viable-cells/f eid (grid/cached-adjacent-cells grid cell)))]
-    (when (< (float (distance-to best-cell)) (float own-dist))
-      cell)))
 
 (defn- inside-cell? [grid entity cell]
   (let [cells (get-cells grid (touched-tiles (:entity/body entity)))]
