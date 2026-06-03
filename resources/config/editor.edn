@@ -15,8 +15,7 @@
  (clojure.gdx.backends.lwjgl.use-glfw-async/f!)
 
  (clojure.gdx.backends.lwjgl.application/start! {:state-var editor.app/state
-                                                 :create! editor.app.create/f!
-                                                 :create-params nil
+                                                 :create-pipeline [[editor.app.create/f!]]
                                                  :dispose! editor.app.dispose/dispose!
                                                  :render! editor.app.render/render!
                                                  :render-params nil

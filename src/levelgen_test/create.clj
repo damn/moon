@@ -24,7 +24,7 @@
    "config/world_fns/modules.edn"])
 
 (defn f!
-  [app _params]
+  [{:keys [ctx/app]}]
   (let [files (app/files app)
         graphics (app/graphics app)
         input (app/input app)

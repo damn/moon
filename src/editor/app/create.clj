@@ -12,7 +12,8 @@
             [gdx.textures]
             [moon.db :as db]))
 
-(defn f! [app _params]
+(defn f!
+  [{:keys [ctx/app]}]
   (let [skin (skin/create (files/internal (app/files app) "skin/uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         batch (sprite-batch/create)

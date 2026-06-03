@@ -28,8 +28,7 @@
   (use-glfw-async/f!)
   (application/start!
    {:state-var #'state
-    :create! create/f!
-    :create-params nil
+    :create-pipeline [[create/f!]]
     :dispose! dispose!
     :render! render/f!
     :render-params nil

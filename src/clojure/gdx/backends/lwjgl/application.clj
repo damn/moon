@@ -10,7 +10,10 @@
   (Lwjgl3Application. (let [state @(:state-var config)]
                         (reify ApplicationListener
                           (create [_]
-                            (reset! state ((:create! config) Gdx/app (:create-params config))))
+                            (reset! state (reduce (fn [ctx [f & params]]
+                                                    (apply f ctx params))
+                                                  {:ctx/app Gdx/app}
+                                                  (:create-pipeline config))))
 
                           (dispose [_]
                             ((:dispose! config) @state))
