@@ -4,7 +4,8 @@
             [editor.map-widget-table :as map-widget-table]
             [editor.map-widget-table.get-value :as get-value]
             [editor.widget :as widget]
-            [moon.schemas :as schemas]))
+            [moon.schemas.optional-keyset :refer [optional-keyset]]
+            [moon.schemas.optional :refer [optional?]]))
 
 (defmethod widget/create :s/map
   [schema
@@ -20,9 +21,9 @@
       :k->widget (into {}
                        (for [[k v] m]
                          [k (widget/build ctx (get schemas k) k v)]))
-      :k->optional? #(schemas/optional? schemas schema %)
+      :k->optional? #(optional? schemas schema %)
       :ks-sorted (map first (sort-by-k-order property-k-sort-order m))
-      :opt? (seq (set/difference (schemas/optional-keyset schemas schema)
+      :opt? (seq (set/difference (optional-keyset schemas schema)
                                  (set (keys m))))})))
 
 (defmethod widget/value :s/map

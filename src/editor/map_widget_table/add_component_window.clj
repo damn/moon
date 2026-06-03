@@ -10,7 +10,9 @@
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [moon.schemas :as schemas]))
+            [moon.schemas.default-value :refer [default-value]]
+            [moon.schemas.map-keys :refer [map-keys]]
+            [moon.schemas.optional :refer [optional?]]))
 
 (defn f
   [{:keys [schemas schema map-widget-table skin]}]
@@ -21,7 +23,7 @@
                  :window/modal? true
                  :table/cell-defaults {:pad 5}})
         remaining-ks (sort (remove (set (keys (widget/value schema map-widget-table schemas)))
-                                   (schemas/map-keys schemas schema)))]
+                                   (map-keys schemas schema)))]
     (add-rows!
      window
      (for [k remaining-ks]
@@ -37,9 +39,9 @@
                                                                      :editor-widget (widget/build ctx
                                                                                                   (get schemas k)
                                                                                                   k
-                                                                                                  (schemas/default-value schemas k))
+                                                                                                  (default-value schemas k))
                                                                      :k k
-                                                                     :display-remove-component-button? (schemas/optional? schemas schema k)
+                                                                     :display-remove-component-button? (optional? schemas schema k)
                                                                      :table map-widget-table})])
                                       (rebuild/f! ctx)))))
                   )}]))
