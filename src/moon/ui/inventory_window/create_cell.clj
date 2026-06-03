@@ -9,6 +9,7 @@
                                                set-user-object!
                                                set-name!
                                                add-listener!]]
+            [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
@@ -32,28 +33,28 @@
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
-     (doto (stack/create
-            {:group/actors [(widget/create
-                             {:draw! (fn [this _batch _parent-alpha]
-                                       (when-let [stage (get-stage this)]
-                                         (let [{:keys [ctx/player-eid
-                                                       ctx/ui-mouse-position]
-                                                :as ctx} (:stage/ctx stage)]
-                                           (draw! ctx
-                                                  (draw-cell-rect @player-eid
-                                                                  (get-x this)
-                                                                  (get-y this)
-                                                                  (hit this
-                                                                       (vector2/->clj
-                                                                        (stage->local-coordinates this
-                                                                                                  (vector2/create ui-mouse-position)))
-                                                                       true)
-                                                                  (get-user-object (get-parent this)))))))})
-                            (doto (image/create
-                                   {:content background-drawable})
-                              (set-name! "image-widget")
-                              (set-user-object! {:background-drawable background-drawable
-                                                 :cell-size cell-size}))]})
+     (doto (stack/create)
+       (add-actors! [(widget/create
+                      {:draw! (fn [this _batch _parent-alpha]
+                                (when-let [stage (get-stage this)]
+                                  (let [{:keys [ctx/player-eid
+                                                ctx/ui-mouse-position]
+                                         :as ctx} (:stage/ctx stage)]
+                                    (draw! ctx
+                                           (draw-cell-rect @player-eid
+                                                           (get-x this)
+                                                           (get-y this)
+                                                           (hit this
+                                                                (vector2/->clj
+                                                                 (stage->local-coordinates this
+                                                                                           (vector2/create ui-mouse-position)))
+                                                                true)
+                                                           (get-user-object (get-parent this)))))))})
+                     (doto (image/create
+                            {:content background-drawable})
+                       (set-name! "image-widget")
+                       (set-user-object! {:background-drawable background-drawable
+                                          :cell-size cell-size}))])
        (add-listener! (click-listener/create
                        (fn [event _x _y]
                          (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))

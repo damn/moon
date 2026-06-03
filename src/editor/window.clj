@@ -7,6 +7,7 @@
                                                get-height
                                                set-name!
                                                add-listener!]]
+            [[clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
@@ -74,6 +75,6 @@
             :window/close-button? skin
             :window/modal? true
             :table/cell-defaults {:pad 5}
-            :table/rows rows
-            :group/actors actors})
+            :table/rows rows})
+      (add-actors! actors)
       (set-name! "moon.ui.editor.window"))))

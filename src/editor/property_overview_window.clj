@@ -1,6 +1,7 @@
 (ns editor.property-overview-window
   (:require [clojure.gdx.scene2d.actor :refer [set-touchable!
                                                add-listener!]]
+            [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.event :as event]
             [editor.constants :refer [property-type->overview-table-props]]
             [gdx.stage :as stage]
@@ -22,19 +23,19 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (stack/create
-               {:group/actors [(doto (image-button/create
-                                      {:drawable (texture-region-drawable/create*
-                                                  {:drawable/texture-region texture-region
-                                                   :drawable/scale image-scale})})
-                                 (add-listener! (change-listener/create
-                                                 (fn [event actor]
-                                                   (on-clicked actor (:stage/ctx (event/stage event))))))
-                                 (add-listener! (text-tooltip/create tooltip skin)))
-                               (doto (label/create
-                                      {:text extra-info-text
-                                       :skin skin})
-                                 (set-touchable! touchable/disabled))]})})))
+      {:actor (doto (stack/create)
+                (add-actors! [(doto (image-button/create
+                                     {:drawable (texture-region-drawable/create*
+                                                 {:drawable/texture-region texture-region
+                                                  :drawable/scale image-scale})})
+                                (add-listener! (change-listener/create
+                                                (fn [event actor]
+                                                  (on-clicked actor (:stage/ctx (event/stage event))))))
+                                (add-listener! (text-tooltip/create tooltip skin)))
+                              (doto (label/create
+                                     {:text extra-info-text
+                                      :skin skin})
+                                (set-touchable! touchable/disabled))]))})))
 
 (defn- overview-table-rows
   [db
