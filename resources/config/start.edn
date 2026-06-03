@@ -6,6 +6,7 @@
                        entity.state.create.player-item-on-cursor
                        entity.state.draw-ui-view.player-item-on-cursor
                        effect.load
+                       effect.target.audiovisual
                        effect.target.melee-damage
                        effect.applicable.spawn
                        effect.handle.spawn

@@ -7,18 +7,6 @@
             [moon.stats :as stats]
             [clojure.timer.create :refer [create-timer]]))
 
-(defmethod effect/applicable? :effects.target/audiovisual
-  [_ {:keys [effect/target]}]
-  target)
-
-(defmethod effect/useful? :effects.target/audiovisual
-  [_ _effect-ctx _ctx]
-  false)
-
-(defmethod effect/handle :effects.target/audiovisual
-  [[_ audiovisual] {:keys [effect/target]} _ctx]
-  [[:tx/audiovisual (:body/position (:entity/body @target)) audiovisual]])
-
 (defmethod effect/applicable? :effects.target/convert
   [_ {:keys [effect/source effect/target]}]
   (and target
