@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.actor :refer [remove!
                                                add-listener!]]
             [clojure.gdx.scene2d.ui.window :as window]
-            [clojure.gdx.scene2d.ui.table.add :refer [add!]]
+            [clojure.gdx.scene2d.ui.table.add-cell :refer [add-cell!]]
             [clojure.gdx.scene2d.ui.table.set-opts :refer [set-opts!]]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.ui.text-button :as text-button]))
@@ -14,11 +14,11 @@
       (window/set-modal! window))
 
     (when-let [skin (:window/close-button? opts)]
-      (add! (window/title-table window)
-            {:actor (doto (text-button/create {:text "X" :skin skin})
-                      (add-listener! (change-listener/create
-                                      (fn [_event _actor]
-                                        (remove! window)))))}))
+      (add-cell! (window/title-table window)
+                 {:actor (doto (text-button/create {:text "X" :skin skin})
+                           (add-listener! (change-listener/create
+                                           (fn [_event _actor]
+                                             (remove! window)))))}))
 
     (set-opts! window opts)
     window))
