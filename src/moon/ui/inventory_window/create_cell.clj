@@ -5,7 +5,9 @@
                                                get-x
                                                get-y
                                                stage->local-coordinates
-                                               hit]]
+                                               hit
+                                               set-user-object!
+                                               ]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
@@ -29,36 +31,36 @@
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
-     (stack/create
-      {:actor/name "inventory-cell"
-       :actor/user-object cell
-       :actor/listeners [(click-listener/create
-                          (fn [event _x _y]
-                            (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
-                                  entity @player-eid
-                                  state-k (:state (:entity/fsm entity))]
-                              (do! ctx
-                                   (if-let [f (k->fn state-k)]
-                                     (f player-eid cell)
-                                     nil)))))]
-       :group/actors [(widget/create
-                       {:draw! (fn [this _batch _parent-alpha]
-                                 (when-let [stage (get-stage this)]
-                                   (let [{:keys [ctx/player-eid
-                                                 ctx/ui-mouse-position]
-                                          :as ctx} (:stage/ctx stage)]
-                                     (draw! ctx
-                                            (draw-cell-rect @player-eid
-                                                            (get-x this)
-                                                            (get-y this)
-                                                            (hit this
-                                                                 (vector2/->clj
-                                                                  (stage->local-coordinates this
-                                                                                            (vector2/create ui-mouse-position)))
-                                                                 true)
-                                                            (get-user-object (get-parent this)))))))})
-                      (image/create
-                       {:content background-drawable
-                        :actor/name "image-widget"
-                        :actor/user-object {:background-drawable background-drawable
-                                            :cell-size cell-size}})]})}))
+     (doto (stack/create
+            {:actor/name "inventory-cell"
+             :actor/listeners [(click-listener/create
+                                (fn [event _x _y]
+                                  (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
+                                        entity @player-eid
+                                        state-k (:state (:entity/fsm entity))]
+                                    (do! ctx
+                                         (if-let [f (k->fn state-k)]
+                                           (f player-eid cell)
+                                           nil)))))]
+             :group/actors [(widget/create
+                             {:draw! (fn [this _batch _parent-alpha]
+                                       (when-let [stage (get-stage this)]
+                                         (let [{:keys [ctx/player-eid
+                                                       ctx/ui-mouse-position]
+                                                :as ctx} (:stage/ctx stage)]
+                                           (draw! ctx
+                                                  (draw-cell-rect @player-eid
+                                                                  (get-x this)
+                                                                  (get-y this)
+                                                                  (hit this
+                                                                       (vector2/->clj
+                                                                        (stage->local-coordinates this
+                                                                                                  (vector2/create ui-mouse-position)))
+                                                                       true)
+                                                                  (get-user-object (get-parent this)))))))})
+                            (doto (image/create
+                                   {:content background-drawable
+                                    :actor/name "image-widget"})
+                              (set-user-object! {:background-drawable background-drawable
+                                                 :cell-size cell-size}))]})
+       (set-user-object! cell))}))

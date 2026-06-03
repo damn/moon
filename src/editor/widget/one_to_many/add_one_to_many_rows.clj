@@ -1,7 +1,8 @@
 (ns editor.widget.one-to-many.add-one-to-many-rows
   (:require [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.gdx.scene2d.event :as event]
-            [clojure.gdx.scene2d.actor :refer [remove!]]
+            [clojure.gdx.scene2d.actor :refer [remove!
+                                               set-user-object!]]
             [clojure.gdx.scene2d.group.clear-children :refer [clear-children!]]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
@@ -51,10 +52,10 @@
                                                             (redo-rows ctx (conj property-ids id)))})))))]})}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
-          {:actor (image/create
-                   {:content (textures/texture-region textures (property/image property))
-                    :actor/user-object property-id
-                    :actor/listeners [(text-tooltip/create (property/tooltip property) skin)]})}))
+          {:actor (doto (image/create
+                         {:content (textures/texture-region textures (property/image property))
+                          :actor/listeners [(text-tooltip/create (property/tooltip property) skin)]})
+                    (set-user-object! property-id))}))
       (for [id property-ids]
         {:actor (text-button/create
                  {:text "-"

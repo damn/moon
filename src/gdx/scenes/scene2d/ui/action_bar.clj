@@ -1,6 +1,7 @@
 (ns gdx.scenes.scene2d.ui.action-bar
   (:require [clojure.gdx.scene2d.actor :refer [remove!
-                                               get-user-object]]
+                                               get-user-object
+                                               set-user-object!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
@@ -13,13 +14,13 @@
 (defn create []
   (table/create
    {:table/cell-defaults {:pad 2}
-    :table/rows [[{:actor (horizontal-group/create
-                           {:space 2
-                            :pad 2
-                            :actor/name "moon.ui.action-bar.horizontal-group"
-                            :actor/user-object (button-group/create
-                                                {:max-check-count 1
-                                                 :min-check-count 0})})
+    :table/rows [[{:actor (doto (horizontal-group/create
+                                 {:space 2
+                                  :pad 2
+                                  :actor/name "moon.ui.action-bar.horizontal-group"})
+                            (set-user-object! (button-group/create
+                                               {:max-check-count 1
+                                                :min-check-count 0})))
                    :expand? true
                    :bottom? true}]]
     :actor/name "moon.ui.action-bar"
@@ -43,12 +44,12 @@
            tooltip-text]}
    skin]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
-        button (image-button/create
-                {:drawable (texture-region-drawable/create*
-                            {:drawable/texture-region texture-region
-                             :drawable/scale 2})
-                 :actor/listeners [(text-tooltip/create tooltip-text skin)]
-                 :actor/user-object skill-id})]
+        button (doto (image-button/create
+                      {:drawable (texture-region-drawable/create*
+                                  {:drawable/texture-region texture-region
+                                   :drawable/scale 2})
+                       :actor/listeners [(text-tooltip/create tooltip-text skin)]})
+                 (set-user-object! skill-id))]
     (add-actor! horizontal-group button)
     (button-group/add! button-group button)
     nil))
