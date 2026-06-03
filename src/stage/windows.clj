@@ -1,5 +1,5 @@
 (ns stage.windows
-  (:require [clojure.gdx.scene2d.actor :refer [set-name!]]
+  (:require [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.group.create :refer [create-group]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]))
 

@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
-            [clojure.gdx.scene2d.actor :refer [remove!]]
+            [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.clear-children :refer [clear-children!]]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]

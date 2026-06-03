@@ -5,8 +5,8 @@
                                                get-x
                                                get-y
                                                stage->local-coordinates
-                                               hit
-                                               set-name!]]
+                                               hit]]
+            [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]

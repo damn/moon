@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.window
-  (:require [clojure.gdx.scene2d.actor :refer [remove!]]
+  (:require [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.ui.table.add-cell :refer [add-cell!]]

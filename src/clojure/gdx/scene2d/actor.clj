@@ -1,15 +1,6 @@
 (ns clojure.gdx.scene2d.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn set-touchable! [^Actor actor touchable]
-  (.setTouchable actor touchable))
-
-(defn set-name! [^Actor actor name]
-  (.setName actor name))
-
-(defn remove! [^Actor actor]
-  (.remove actor))
-
 (defn get-stage [^Actor actor]
   (.getStage actor))
 

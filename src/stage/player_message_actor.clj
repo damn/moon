@@ -1,8 +1,8 @@
 (ns stage.player-message-actor
   (:require [game.ctx.draw :refer [draw!]]
             [clojure.gdx.scene2d.actor :refer [get-stage
-                                               get-user-object
-                                               set-name!]]
+                                               get-user-object]]
+            [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.actor.create :as actor]))
 

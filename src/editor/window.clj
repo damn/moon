@@ -4,8 +4,8 @@
             [clojure.gdx.input.keys :as input.keys]
             [clojure.gdx.scene2d.actor :refer [get-stage
                                                get-width
-                                               get-height
-                                               set-name!]]
+                                               get-height]]
+            [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.event :as event]

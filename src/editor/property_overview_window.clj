@@ -1,5 +1,5 @@
 (ns editor.property-overview-window
-  (:require [clojure.gdx.scene2d.actor :refer [set-touchable!]]
+  (:require [clojure.gdx.scene2d.actor.set-touchable :refer [set-touchable!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.event :as event]

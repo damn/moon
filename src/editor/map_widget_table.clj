@@ -3,7 +3,7 @@
             [editor.map-widget-table.add-component-window :as add-component-window]
             [editor.map-widget-table.component-row :as component-row]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scene2d.actor :refer [set-name!]]
+            [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
