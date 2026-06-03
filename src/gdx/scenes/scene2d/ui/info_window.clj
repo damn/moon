@@ -4,7 +4,7 @@
                                                set-visible!
                                                set-name!]]
             [clojure.gdx.scene2d.actor.create :as actor]
-            [clojure.gdx.scene2d.group :refer [add-actor!]]
+            [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]

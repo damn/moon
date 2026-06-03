@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.add-upd-label
   (:require [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scene2d.group :refer [add-actor!]]
+            [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.table.add :refer [add!]]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))

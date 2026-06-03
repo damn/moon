@@ -5,7 +5,7 @@
                                                set-name!
                                                add-listener!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.gdx.scene2d.group :refer [add-actor!]]
+            [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
