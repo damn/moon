@@ -18,7 +18,7 @@
             [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.scene2d.utils.click-listener :as click-listener]
             [gdx.scenes.scene2d.ui.image :as image]
-            [gdx.scenes.scene2d.ui.stack :as stack]
+            [clojure.gdx.scene2d.ui.stack :as stack]
             entity.state.clicked-inventory-cell.player-item-on-cursor
             entity.state.clicked-inventory-cell.player-idle))
 

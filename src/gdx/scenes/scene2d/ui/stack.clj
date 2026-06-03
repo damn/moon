@@ -1,6 +1,0 @@
-(ns gdx.scenes.scene2d.ui.stack
-  (:require [clojure.gdx.scene2d.ui.stack :as stack]))
-
-(defn create
-  []
-  (stack/create))

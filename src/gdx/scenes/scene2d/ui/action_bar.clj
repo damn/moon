@@ -8,7 +8,7 @@
             [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
             [clojure.gdx.scene2d.ui.widget-group.set-fill-parent :refer [set-fill-parent!]]
-            [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
+            [clojure.gdx.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
