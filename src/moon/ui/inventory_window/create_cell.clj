@@ -1,5 +1,11 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+  (:require [clojure.gdx.scene2d.actor :refer [get-stage
+                                               get-user-object
+                                               get-parent
+                                               get-x
+                                               get-y
+                                               stage->local-coordinates
+                                               hit]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
@@ -43,11 +49,14 @@
                                           :as ctx} (:stage/ctx stage)]
                                      (draw! ctx
                                             (draw-cell-rect @player-eid
-                                                            (.getX this)
-                                                            (.getY this)
-                                                            (let [[x y] (vector2/->clj (.stageToLocalCoordinates this (vector2/create ui-mouse-position)))]
-                                                              (.hit this x y true))
-                                                            (.getUserObject (.getParent this)))))))})
+                                                            (get-x this)
+                                                            (get-y this)
+                                                            (hit this
+                                                                 (vector2/->clj
+                                                                  (stage->local-coordinates this
+                                                                                            (vector2/create ui-mouse-position)))
+                                                                 true)
+                                                            (get-user-object (get-parent this)))))))})
                       (image/create
                        {:content background-drawable
                         :actor/name "image-widget"

@@ -40,7 +40,7 @@
 #_(defn- ->info-window []
     (let [label (label/create {:label/text ""})
         window (window/create {:title "Info" :rows [[label]]})]
-    (.addActor window (proxy [Actor] []
+    (add-actor! window (proxy [Actor] []
                         (act [_delta]
                           (do
                            (.setText label (map-infos %))
@@ -94,7 +94,7 @@
                                  [(text-button "Generate" #(try (generate-screen-ctx c (db/build db level-id))
                                                                 (catch Throwable t
                                                                   (pretty-pst t)
-                                                                  (.addActor stage (error-window/create skin t))
+                                                                  (add-actor! stage (error-window/create skin t))
                                                                   (println t))))]] })
       (.pack)))
 

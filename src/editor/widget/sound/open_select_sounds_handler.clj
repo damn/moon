@@ -1,5 +1,6 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.actor :refer [get-width get-height]]
+            [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [game.ctx.do :refer [do!]]
@@ -39,6 +40,6 @@
                             {:actor (scroll-pane/create
                                      {:actor table
                                       :skin skin})
-                             :width  (+ (.getWidth table) 50)
+                             :width  (+ (get-width table) 50)
                              :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
-                                          (.getHeight table))})]]}))))
+                                          (get-height table))})]]}))))

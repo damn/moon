@@ -2,7 +2,9 @@
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.input :as input]
             [clojure.gdx.input.keys :as input.keys]
-            [clojure.gdx.scene2d.actor :refer [get-stage]]
+            [clojure.gdx.scene2d.actor :refer [get-stage
+                                               get-width
+                                               get-height]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
@@ -59,9 +61,9 @@
                  {:actor (scroll-pane/create
                           {:actor table
                            :skin skin})
-                  :width  (+ (.getWidth table) 50)
+                  :width  (+ (get-width table) 50)
                   :height (min (- scroll-pane-height 50)
-                               (.getHeight table))})]]]
+                               (get-height table))})]]]
     (window/create
      {:title "[SKY]Property[]"
       :skin skin

@@ -1,9 +1,9 @@
 (ns editor.widget
   (:require [clojure.string.truncate :refer [truncate]]
             [clojure.core.edn-str :refer [->edn-str]]
-            [clojure.gdx.scene2d.actor :refer [set-user-object!]]
-            [gdx.scenes.scene2d.ui.label :as label])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+            [clojure.gdx.scene2d.actor :refer [set-user-object!
+                                               get-user-object]]
+            [gdx.scenes.scene2d.ui.label :as label]))
 
 (defmulti create (fn [[schema-k :as _schema] v ctx]
                    schema-k))
@@ -25,4 +25,4 @@
 
 (defmethod value :default
   [_  widget _schemas]
-  ((.getUserObject widget) 1))
+  ((get-user-object widget) 1))

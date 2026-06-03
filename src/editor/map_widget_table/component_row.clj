@@ -1,5 +1,6 @@
 (ns editor.map-widget-table.component-row
-  (:require [clojure.gdx.scene2d.actor :refer [remove!]]
+  (:require [clojure.gdx.scene2d.actor :refer [remove!
+                                               get-user-object]]
             [clojure.gdx.scene2d.event :as event]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
@@ -24,8 +25,8 @@
                                        :actor/listeners [(change-listener/create
                                                           (fn [event _actor]
                                                             (remove! (first (filter (fn [actor]
-                                                                                      (and (.getUserObject actor)
-                                                                                           (= k ((.getUserObject actor) 0))))
+                                                                                      (and (get-user-object actor)
+                                                                                           (= k ((get-user-object actor) 0))))
                                                                                     (children table))))
                                                             (rebuild/f! (:stage/ctx (event/stage event)))))]}))
                             :left? true}

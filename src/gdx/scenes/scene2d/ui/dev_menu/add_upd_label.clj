@@ -1,6 +1,7 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.add-upd-label
   (:require [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.group :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.table.add :refer [add!]]
             [gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
@@ -13,7 +14,7 @@
          sub-table (table/create
                     {:table/rows [[{:actor (image/create {:content icon})}
                                    label]]})]
-     (.addActor table (set-label-text-actor label text-fn))
+     (add-actor! table (set-label-text-actor label text-fn))
      (add! table {:actor sub-table
                   :right? true
                   :expand-x? true})))
@@ -21,7 +22,7 @@
    (let [label (label/create
                 {:text ""
                  :skin skin})]
-     (.addActor table (set-label-text-actor label text-fn))
+     (add-actor! table (set-label-text-actor label text-fn))
      (add! table {:actor label
                   :right? true
                   :expand-x? true}))))

@@ -2,6 +2,7 @@
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.input :as input]
             [clojure.gdx.input.buttons :as input.buttons]
+            [clojure.gdx.scene2d.actor :refer [visible?]]
             [gdx.stage :as stage]
             [game.ctx.player-movement-vector :refer [player-movement-vector]]
             [moon.inventory :as inventory]))
@@ -23,7 +24,7 @@
             (cond
              (-> stage
                  (stage/find-actor "moon.ui.windows.inventory")
-                 .isVisible)
+                 visible?)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]

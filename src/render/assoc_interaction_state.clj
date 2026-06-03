@@ -1,5 +1,8 @@
 (ns render.assoc-interaction-state
   (:require [clojure.math.vector2 :as v]
+            [clojure.gdx.scene2d.actor :refer [get-user-object
+                                               get-parent
+                                               get-name]]
             [game.ctx.mouse-position :refer [mouse-position]]
             [game.skill :as skill]
             [gdx.stage :as stage]
@@ -8,9 +11,9 @@
             [moon.body :as body]))
 
 (defn- mouseover-actor-info [actor]
-  (let [inventory-slot (and (.getParent actor)
-                            (= "inventory-cell" (.getName (.getParent actor)))
-                            (.getUserObject (.getParent actor)))]
+  (let [inventory-slot (and (get-parent actor)
+                            (= "inventory-cell" (get-name (get-parent actor)))
+                            (get-user-object (get-parent actor)))]
     (cond
      inventory-slot            [:mouseover-actor/inventory-cell inventory-slot]
      (ui/window-title-bar? actor) [:mouseover-actor/window-title-bar]
