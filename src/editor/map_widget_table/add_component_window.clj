@@ -3,7 +3,8 @@
             [editor.map-widget-table.component-row :as component-row]
             [editor.rebuild :as rebuild]
             [editor.widget :as widget]
-            [clojure.gdx.scene2d.actor :refer [remove!]]
+            [clojure.gdx.scene2d.actor :refer [remove!
+                                               add-listener!]]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]
@@ -24,22 +25,23 @@
     (add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (text-button/create
-                 {:skin skin
-                  :text (name k)
-                  :actor/listeners [(change-listener/create
-                                     (fn [event _actor]
-                                       (remove! window)
-                                       (let [ctx (:stage/ctx (event/stage event))]
-                                         (add-rows! map-widget-table [(component-row/create
-                                                                       {:skin skin
-                                                                        :editor-widget (widget/build ctx
-                                                                                                     (get schemas k)
-                                                                                                     k
-                                                                                                     (schemas/default-value schemas k))
-                                                                        :k k
-                                                                        :display-remove-component-button? (schemas/optional? schemas schema k)
-                                                                        :table map-widget-table})])
-                                         (rebuild/f! ctx))))]})}]))
+       [{:actor (doto (text-button/create
+                       {:skin skin
+                        :text (name k)})
+                  (add-listener! (change-listener/create
+                                  (fn [event _actor]
+                                    (remove! window)
+                                    (let [ctx (:stage/ctx (event/stage event))]
+                                      (add-rows! map-widget-table [(component-row/create
+                                                                    {:skin skin
+                                                                     :editor-widget (widget/build ctx
+                                                                                                  (get schemas k)
+                                                                                                  k
+                                                                                                  (schemas/default-value schemas k))
+                                                                     :k k
+                                                                     :display-remove-component-button? (schemas/optional? schemas schema k)
+                                                                     :table map-widget-table})])
+                                      (rebuild/f! ctx)))))
+                  )}]))
     (pack! window)
     window))

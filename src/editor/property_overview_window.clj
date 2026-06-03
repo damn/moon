@@ -1,5 +1,6 @@
 (ns editor.property-overview-window
-  (:require [clojure.gdx.scene2d.actor :refer [set-touchable!]]
+  (:require [clojure.gdx.scene2d.actor :refer [set-touchable!
+                                               add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [editor.constants :refer [property-type->overview-table-props]]
             [gdx.stage :as stage]
@@ -22,14 +23,14 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (stack/create
-               {:group/actors [(image-button/create
-                                {:drawable (texture-region-drawable/create*
-                                            {:drawable/texture-region texture-region
-                                             :drawable/scale image-scale})
-                                 :actor/listeners [(change-listener/create
-                                                    (fn [event actor]
-                                                      (on-clicked actor (:stage/ctx (event/stage event)))))
-                                                   (text-tooltip/create tooltip skin)]})
+               {:group/actors [(doto (image-button/create
+                                      {:drawable (texture-region-drawable/create*
+                                                  {:drawable/texture-region texture-region
+                                                   :drawable/scale image-scale})})
+                                 (add-listener! (change-listener/create
+                                                 (fn [event actor]
+                                                   (on-clicked actor (:stage/ctx (event/stage event))))))
+                                 (add-listener! (text-tooltip/create tooltip skin)))
                                (doto (label/create
                                       {:text extra-info-text
                                        :skin skin})

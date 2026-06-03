@@ -1,6 +1,7 @@
 (ns editor.map-widget-table.component-row
   (:require [clojure.gdx.scene2d.actor :refer [remove!
-                                               get-user-object]]
+                                               get-user-object
+                                               add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
@@ -19,16 +20,16 @@
   [{:actor (table/create
             {:table/cell-defaults {:pad 2}
              :table/rows [[{:actor (when display-remove-component-button?
-                                     (text-button/create
-                                      {:text "-"
-                                       :skin skin
-                                       :actor/listeners [(change-listener/create
-                                                          (fn [event _actor]
-                                                            (remove! (first (filter (fn [actor]
-                                                                                      (and (get-user-object actor)
-                                                                                           (= k ((get-user-object actor) 0))))
-                                                                                    (children table))))
-                                                            (rebuild/f! (:stage/ctx (event/stage event)))))]}))
+                                     (doto (text-button/create
+                                            {:text "-"
+                                             :skin skin})
+                                       (add-listener! (change-listener/create
+                                                       (fn [event _actor]
+                                                         (remove! (first (filter (fn [actor]
+                                                                                   (and (get-user-object actor)
+                                                                                        (= k ((get-user-object actor) 0))))
+                                                                                 (children table))))
+                                                         (rebuild/f! (:stage/ctx (event/stage event))))))))
                             :left? true}
                            {:actor (label/create
                                     {:text (k-label-text/f k)
