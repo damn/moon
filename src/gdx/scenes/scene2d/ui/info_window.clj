@@ -1,6 +1,7 @@
 (ns gdx.scenes.scene2d.ui.info-window
   (:require [clojure.gdx.scene2d.actor :refer [get-stage
-                                               set-position!]]
+                                               set-position!
+                                               set-visible!]]
             [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.group :refer [add-actor!]]
             [gdx.stage :as stage]
@@ -23,8 +24,8 @@
                       {:title title
                        :skin skin
                        :table/rows [[{:actor label :expand? true}]]
-                       :actor/name actor-name
-                       :actor/visible? visible?})
+                       :actor/name actor-name})
+                 (set-visible! visible?)
                  (set-position! position))]
     (add-actor! window (actor/create
                         {:act! (fn [this delta]

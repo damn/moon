@@ -1,5 +1,6 @@
 (ns editor.property-overview-window
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.actor :refer [set-touchable!]]
+            [clojure.gdx.scene2d.event :as event]
             [editor.constants :refer [property-type->overview-table-props]]
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
@@ -29,10 +30,10 @@
                                                     (fn [event actor]
                                                       (on-clicked actor (:stage/ctx (event/stage event)))))
                                                    (text-tooltip/create tooltip skin)]})
-                               (label/create
-                                {:text extra-info-text
-                                 :skin skin
-                                 :actor/touchable touchable/disabled})]})})))
+                               (doto (label/create
+                                      {:text extra-info-text
+                                       :skin skin})
+                                 (set-touchable! touchable/disabled))]})})))
 
 (defn- overview-table-rows
   [db

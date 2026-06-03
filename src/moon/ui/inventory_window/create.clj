@@ -1,8 +1,8 @@
 (ns moon.ui.inventory-window.create
-  (:require [clojure.gdx.scene2d.actor :refer [set-position!]]
+  (:require [clojure.gdx.scene2d.actor :refer [set-position!
+                                               set-visible!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.inventory :as inventory]
             [moon.ui.inventory-window.create-cell :refer [->cell]]))
@@ -54,6 +54,6 @@
                                                           (for [x (range 6)]
                                                             (->cell :inventory.slot/bag :position [x y]))))})
                            :pad 4}]]
-            :actor/name "moon.ui.windows.inventory"
-            :actor/visible? false})
+            :actor/name "moon.ui.windows.inventory"})
+      (set-visible! false)
       (set-position! position))))

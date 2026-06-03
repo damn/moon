@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
   (:require [clojure.gdx.scene2d.actor.create :as actor]
+            [clojure.gdx.scene2d.actor :refer [set-touchable!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -48,10 +49,10 @@
                    :expand-x? true
                    :fill-x? true
                    :colspan 1}]
-                 [{:actor (label/create
-                           {:text ""
-                            :skin skin
-                            :actor/touchable touchable/disabled})
+                 [{:actor (doto (label/create
+                                 {:text ""
+                                  :skin skin})
+                            (set-touchable! touchable/disabled))
                    :expand? true
                    :fill-x? true
                    :fill-y? true}]]
