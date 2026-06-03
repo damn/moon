@@ -7,7 +7,7 @@
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [clojure.gdx.utils.align :as align]))
 
@@ -16,7 +16,7 @@
            ctx/stage]
     :as ctx}
    {:keys [title text button-text on-click]}]
-  (assert (not (stage/find-actor stage "moon.ui.modal-window")))
+  (assert (not (find-actor (:stage/root stage) "moon.ui.modal-window")))
   (add-actor! stage
               (doto (window/create
                      {:title title
@@ -28,7 +28,7 @@
                                    [{:actor (doto (text-button/create {:text button-text :skin skin})
                                               (add-listener! (change-listener/create
                                                               (fn [_event _actor]
-                                                                (remove! (stage/find-actor stage "moon.ui.modal-window"))
+                                                                (remove! (find-actor (:stage/root stage) "moon.ui.modal-window"))
                                                                 (on-click)))))}]]})
                 (set-name! "moon.ui.modal-window")
                 (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)

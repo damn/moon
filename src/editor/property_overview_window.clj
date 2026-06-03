@@ -4,7 +4,6 @@
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.event :as event]
             [editor.constants :refer [property-type->overview-table-props]]
-            [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.stack :as stack]
             [gdx.scenes.scene2d.ui.image-button :as image-button]

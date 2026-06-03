@@ -3,7 +3,7 @@
             [clojure.gdx.input :as input]
             [clojure.gdx.input.buttons :as input.buttons]
             [clojure.gdx.scene2d.actor :refer [visible?]]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [game.ctx.player-movement-vector :refer [player-movement-vector]]
             [moon.inventory :as inventory]))
 
@@ -23,7 +23,8 @@
           (let [item (:entity/item @clicked-eid)]
             (cond
              (-> stage
-                 (stage/find-actor "moon.ui.windows.inventory")
+                 :stage/root
+                 (find-actor "moon.ui.windows.inventory")
                  visible?)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]

@@ -6,6 +6,7 @@
             [game.ctx.mouse-position :refer [mouse-position]]
             [game.skill :as skill]
             [gdx.stage :as stage]
+            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
             [moon.body :as body]))
@@ -51,7 +52,8 @@
 
    :else
    (if-let [skill-id (-> stage
-                         (stage/find-actor "moon.ui.action-bar")
+                         :stage/root
+                         (find-actor "moon.ui.action-bar")
                          action-bar/selected-skill)]
      (let [entity @player-eid
            skill (skill-id (:entity/skills entity))

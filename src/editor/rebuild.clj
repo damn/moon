@@ -3,15 +3,15 @@
             [clojure.gdx.scene2d.actor :refer [remove!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [editor.window]
-            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
-            [gdx.stage :as stage]))
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn f!
   [{:keys [ctx/db
            ctx/stage]
     :as ctx}]
   (let [window (-> stage
-                   (stage/find-actor "moon.ui.editor.window"))
+                   :stage/root
+                   (find-actor "moon.ui.editor.window"))
         map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
         property (get-value/f map-widget-table (:db/schemas db))]
     (remove! window)

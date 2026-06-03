@@ -6,12 +6,6 @@
   (proxy [Stage ILookup] [viewport batch]
     (valAt [k]
       (case k
-        ; TODO :stage/root
+        :stage/root     (.getRoot     ^Stage this)
         :stage/ctx      (.ctx         ^Stage this)
         :stage/viewport (.getViewport ^Stage this)))))
-
-(defn root [^Stage stage]
-  (.getRoot stage))
-
-(defn hit [^Stage stage [x y]]
-  (.hit stage x y true))

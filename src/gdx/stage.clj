@@ -1,15 +1,9 @@
 (ns gdx.stage
-  (:require [clojure.gdx.scene2d.stage :as stage]
-            [clojure.gdx.scene2d.group.find-actor :as group]
-            [clojure.gdx.utils.viewport :as viewport]))
-
-(defn find-actor [stage name]
-  (-> stage
-      stage/root
-      (group/find-actor name)))
+  (:require [clojure.gdx.utils.viewport :as viewport]
+            [clojure.gdx.scene2d.stage.hit :refer [hit]]))
 
 (defn mouseover-actor [stage position]
-  (stage/hit stage
-             (-> stage
-                 :stage/viewport
-                 (viewport/unproject position))))
+  (hit stage
+       (-> stage
+           :stage/viewport
+           (viewport/unproject position))))

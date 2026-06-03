@@ -3,7 +3,7 @@
             [clojure.gdx.input :as input]
             [gdx.graphics.orthographic-camera :as camera]
             [game.constants :refer [zoom-speed]]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.actor :refer [set-visible!]]
             [clojure.gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]
             [clojure.gdx.scene2d.group.children :refer [children]])
@@ -23,17 +23,19 @@
       (camera/inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
 
     (when (input/key-just-pressed? input (:close-windows-key controls))
-      (->> (stage/find-actor stage "moon.ui.windows")
+      (->> (find-actor (:stage/root stage) "moon.ui.windows")
            children
            (run! #(set-visible! % false))))
 
     (when (input/key-just-pressed? input (:toggle-inventory controls))
       (-> stage
-          (stage/find-actor "moon.ui.windows.inventory")
+          :stage/root
+          (find-actor "moon.ui.windows.inventory")
           toggle-visible!))
 
     (when (input/key-just-pressed? input (:toggle-entity-info controls))
       (-> stage
-          (stage/find-actor "moon.ui.windows.entity-info")
+          :stage/root
+          (find-actor "moon.ui.windows.entity-info")
           toggle-visible!)))
   ctx)

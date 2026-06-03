@@ -1,5 +1,5 @@
 (ns reaction-txs.set-item
-  (:require [gdx.stage :as stage]
+  (:require [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [moon.ui.inventory-window :as inventory-window]
             [moon.textures :as textures]
             [game.info :as info]))
@@ -12,7 +12,8 @@
    eid cell item]
   (when (:entity/player? @eid)
     (-> stage
-        (stage/find-actor "moon.ui.windows.inventory")
+        :stage/root
+        (find-actor "moon.ui.windows.inventory")
         (inventory-window/set-item! cell {:texture-region (textures/texture-region textures (:entity/image item))
                                           :tooltip-text (info/text item ctx)}
                                     skin)))
