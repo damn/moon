@@ -2,7 +2,8 @@
   (:require [clojure.gdx.scene2d.actor :refer [remove!
                                                get-stage]]
             [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
             [gdx.scenes.scene2d.ui :as ui]))
@@ -14,12 +15,12 @@
     (try
      (let [new-ctx (update ctx :ctx/db f)
            stage (get-stage actor)]
-       (stage/set-ctx! stage new-ctx))
+       (set-ctx! stage new-ctx))
      (remove! (find-ancestor actor ui/window?))
      (catch Throwable t
        (throwable/pretty-pst t)
-       (stage/add-actor! stage
-                         (error-window/create
-                          {:type :ui/error-window
-                           :skin skin
-                           :throwable t}))))))
+       (add-actor! stage
+                   (error-window/create
+                    {:type :ui/error-window
+                     :skin skin
+                     :throwable t}))))))

@@ -4,6 +4,7 @@
             [clojure.gdx.utils.screen-utils :as screen-utils]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
             [gdx.tiled-map-renderer :as tiled-map-renderer]))
 
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
@@ -47,7 +48,7 @@
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)
-    (stage/set-ctx! stage ctx)
+    (set-ctx! stage ctx)
     (stage/act! stage)
     (stage/draw! stage)
     (:stage/ctx stage)))

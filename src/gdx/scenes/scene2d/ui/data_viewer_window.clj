@@ -8,7 +8,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]
-            [gdx.stage :as stage]))
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn create
   [{:keys [title
@@ -32,13 +32,13 @@
                      (doto (text-button/create {:text "Map" :skin skin})
                        (add-listener! (change-listener/create
                                        (fn [_event actor]
-                                         (stage/add-actor! (get-stage actor)
-                                                           (create
-                                                            {:title "title"
-                                                             :data v
-                                                             :width 500
-                                                             :height 500
-                                                             :skin skin}))))))
+                                         (add-actor! (get-stage actor)
+                                                     (create
+                                                      {:title "title"
+                                                       :data v
+                                                       :width 500
+                                                       :height 500
+                                                       :skin skin}))))))
                      (label/create
                       {:text (v->text v)
                        :skin skin})))

@@ -5,7 +5,7 @@
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.widget-group.set-fill-parent :refer [set-fill-parent!]]
@@ -31,8 +31,8 @@
                                 (doto (text-button/create {:text label :skin skin})
                                   (add-listener! (change-listener/create
                                                   (fn [event actor]
-                                                    (stage/add-actor! (event/stage event)
-                                                                      (window/create (create-window skin label items)))))))})]})]
+                                                    (add-actor! (event/stage event)
+                                                                (window/create (create-window skin label items)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon

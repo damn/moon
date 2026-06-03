@@ -7,6 +7,7 @@
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [editor.main-window :as main-window]
             [clojure.gdx.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.textures]
             [moon.db :as db]))
 
@@ -17,7 +18,7 @@
         stage (stage/create ui-viewport batch)
         db (db/create)]
     (input/set-processor! (app/input app) stage)
-    (stage/add-actor! stage (main-window/create db skin))
+    (add-actor! stage (main-window/create db skin))
     {:ctx/app app
      :ctx/batch batch
      :ctx/db db

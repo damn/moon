@@ -7,7 +7,7 @@
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.textures]
             [moon.db :as db]))
 
@@ -26,14 +26,14 @@
                                                              ctx/stage
                                                              ctx/textures]
                                                       :as ctx} (:stage/ctx (event/stage event))]
-                                                 (stage/add-actor! stage
-                                                                   (editor.property-overview-window/create
-                                                                    {:db db
-                                                                     :textures textures
-                                                                     :skin skin
-                                                                     :property-type property-type
-                                                                     :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                                      (stage/add-actor! stage
-                                                                                                        (editor.window/property-editor-window
-                                                                                                         {:ctx ctx
-                                                                                                          :property (db/get-raw db id)})))})))))))}])}))
+                                                 (add-actor! stage
+                                                             (editor.property-overview-window/create
+                                                              {:db db
+                                                               :textures textures
+                                                               :skin skin
+                                                               :property-type property-type
+                                                               :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                                                                (add-actor! stage
+                                                                                            (editor.window/property-editor-window
+                                                                                             {:ctx ctx
+                                                                                              :property (db/get-raw db id)})))})))))))}])}))

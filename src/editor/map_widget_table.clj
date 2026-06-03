@@ -8,7 +8,7 @@
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [gdx.stage :as stage]))
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn- horiz-sep [colspan]
   (fn []
@@ -53,7 +53,7 @@
                                              (let [{:keys [ctx/db
                                                            ctx/stage
                                                            ctx/skin]} (:stage/ctx (event/stage event))]
-                                               (stage/add-actor!
+                                               (add-actor!
                                                 stage
                                                 (add-component-window/f
                                                  {:skin skin

@@ -3,6 +3,7 @@
             [clojure.gdx.scene2d.actor :refer [remove!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [editor.window]
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.stage :as stage]))
 
 (defn f!
@@ -14,7 +15,7 @@
         map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
         property (get-value/f map-widget-table (:db/schemas db))]
     (remove! window)
-    (stage/add-actor! stage
-                      (editor.window/property-editor-window
-                       {:ctx ctx
-                        :property property}))))
+    (add-actor! stage
+                (editor.window/property-editor-window
+                 {:ctx ctx
+                  :property property}))))

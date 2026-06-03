@@ -13,7 +13,7 @@
             [editor.property-overview-window :as property-overview-window]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scenes.scene2d.ui.image :as image]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.db :as db]
             [moon.property :as property]
             [moon.textures :as textures]))
@@ -41,7 +41,7 @@
                                                  ctx/stage
                                                  ctx/textures]
                                           :as ctx} (:stage/ctx (event/stage event))]
-                                     (stage/add-actor!
+                                     (add-actor!
                                       stage
                                       (property-overview-window/create
                                        {:db db

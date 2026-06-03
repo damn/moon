@@ -9,6 +9,7 @@
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.stage :as stage]
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.textures]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]
@@ -57,5 +58,5 @@
                    :ctx/sprite-batch sprite-batch
                    :ctx/world-unit-scale world-unit-scale)
         ctx (generate-level/f ctx initial-level-fn)]
-    (stage/add-actor! (:ctx/stage ctx) (window/create (edit-window skin level-fns)))
+    (add-actor! (:ctx/stage ctx) (window/create (edit-window skin level-fns)))
     ctx))

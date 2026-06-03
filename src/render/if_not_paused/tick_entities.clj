@@ -1,6 +1,6 @@
 (ns render.if-not-paused.tick-entities
   (:require [game.ctx.do :refer [do!]]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]))
 
@@ -23,8 +23,8 @@
                 active-entities))
    (catch Throwable t
      (throwable/pretty-pst t)
-     (stage/add-actor! stage
-                       (error-window/create
-                        {:skin skin
-                         :throwable t}))))
+     (add-actor! stage
+                 (error-window/create
+                  {:skin skin
+                   :throwable t}))))
   ctx)

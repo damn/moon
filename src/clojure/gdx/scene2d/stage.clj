@@ -10,12 +10,6 @@
         :stage/ctx      (.ctx         ^Stage this)
         :stage/viewport (.getViewport ^Stage this)))))
 
-(defn set-ctx! [^Stage stage ctx]
-  (set! (.ctx stage) ctx))
-
-(defn add-actor! [^Stage stage actor]
-  (.addActor stage actor))
-
 (defn act! [^Stage stage]
   (.act stage))
 
