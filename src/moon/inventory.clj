@@ -1,18 +1,5 @@
 (ns moon.inventory)
 
-(def empty-inventory
-  #:inventory.slot{:bag      [6 4]
-                   :weapon   [1 1]
-                   :shield   [1 1]
-                   :helm     [1 1]
-                   :chest    [1 1]
-                   :leg      [1 1]
-                   :glove    [1 1]
-                   :boot     [1 1]
-                   :cloak    [1 1]
-                   :necklace [1 1]
-                   :rings    [2 1]})
-
 (def valid-slots
   #{:inventory.slot/bag
     :inventory.slot/weapon
