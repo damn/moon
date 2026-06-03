@@ -8,7 +8,7 @@
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage :as stage]
             [gdx.textures]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]

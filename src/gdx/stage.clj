@@ -3,9 +3,6 @@
             [clojure.gdx.scene2d.group.find-actor :as group]
             [clojure.gdx.utils.viewport :as viewport]))
 
-(defn create [viewport batch]
-  (stage/create viewport batch))
-
 (defn set-ctx! [stage ctx]
   (stage/set-ctx! stage ctx))
 

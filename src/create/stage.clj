@@ -2,7 +2,7 @@
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.input :as input]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [gdx.stage :as stage]))
+            [clojure.gdx.scene2d.stage :as stage]))
 
 (defn step
   [{:keys [ctx/app

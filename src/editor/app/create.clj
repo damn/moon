@@ -6,7 +6,7 @@
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [editor.main-window :as main-window]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage :as stage]
             [gdx.textures]
             [moon.db :as db]))
 
