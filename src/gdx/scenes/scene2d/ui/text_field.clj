@@ -1,11 +1,9 @@
 (ns gdx.scenes.scene2d.ui.text-field
-  (:require [clojure.gdx.scene2d.ui.text-field :as text-field]
-            [clojure.gdx.scene2d.actor.set-opts :as actor]))
+  (:require [clojure.gdx.scene2d.ui.text-field :as text-field]))
 
 (defn create
-  [{:keys [text skin] :as opts}]
-  (doto (text-field/create text skin)
-    (actor/set-opts! opts)))
+  [{:keys [text skin]}]
+  (text-field/create text skin))
 
 (defn text [text-field]
   (text-field/text text-field))

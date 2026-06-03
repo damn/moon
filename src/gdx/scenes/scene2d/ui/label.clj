@@ -1,11 +1,9 @@
 (ns gdx.scenes.scene2d.ui.label
-  (:require [clojure.gdx.scene2d.ui.label :as label]
-            [clojure.gdx.scene2d.actor.set-opts :as actor]))
+  (:require [clojure.gdx.scene2d.ui.label :as label]))
 
 (defn create
   [opts]
-  (doto (label/create opts)
-    (actor/set-opts! opts)))
+  (label/create opts))
 
 (defn set-text! [label text]
   (label/set-text! label text))
