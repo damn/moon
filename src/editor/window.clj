@@ -7,7 +7,7 @@
                                                get-height
                                                set-name!
                                                add-listener!]]
-            [[clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]]
+            [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
