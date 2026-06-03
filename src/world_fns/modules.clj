@@ -1,7 +1,7 @@
 (ns world-fns.modules
   (:require [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
-            [clojure.grid2d.printgrid :as printgrid]
             [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
+            [world-fns.modules.print-grid :refer [print-grid]]
             [clojure.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
             [clojure.grid2d :as g2d]
             [clojure.grid2d.scale-grid :as scale-grid]
@@ -9,11 +9,6 @@
             [world-fns.modules.last-steps]
             [world-fns.modules.place :as place-module])
   (:import (java.util Random)))
-
-(defn- print-grid [{:keys [grid] :as world-fn-ctx}]
-  (printgrid/f grid)
-  (println " - ")
-  world-fn-ctx)
 
 (defn- initial-grid
   [{:keys [initial-grid-fn
