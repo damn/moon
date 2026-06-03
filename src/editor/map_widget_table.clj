@@ -1,5 +1,6 @@
 (ns editor.map-widget-table
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.core.interpose-f :refer [interpose-f]]
+            [clojure.gdx.scene2d.event :as event]
             [editor.map-widget-table.add-component-window :as add-component-window]
             [editor.map-widget-table.component-row :as component-row]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -18,9 +19,6 @@
       :colspan colspan
       :fill-x? true
       :expand-x? true}]))
-
-(defn- interpose-f [f coll] ; TODO use interpose?
-  (drop 1 (interleave (repeatedly f) coll)))
 
 (defn create
   [{:keys [skin
