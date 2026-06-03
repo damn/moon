@@ -20,10 +20,10 @@
       transition-modules-offset-x)
    (int (/ idxvalue transition-modules-row-height))])
 
-(def ^:private module-offset-tiles 1)
 (def ^:private floor-idxvalue 0)
 
-(defn- place-module* [modules-scale
+(defn- place-module* [module-offset-tiles
+                      modules-scale
                       scaled-grid
                       unscaled-position
                       & {:keys [transition?
@@ -50,6 +50,7 @@
             scaled-grid
             offsets)))
 
+(def ^:private module-offset-tiles 1)
 (def ^:private number-modules-x 8)
 (def ^:private number-modules-y 4)
 
@@ -66,7 +67,8 @@
                        (= (props-get (tiled-map/props modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
-                              (place-module* modules-scale
+                              (place-module* module-offset-tiles
+                                             modules-scale
                                              scaled-grid
                                              unscaled-position
                                              :transition? false))
