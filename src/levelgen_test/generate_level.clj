@@ -3,7 +3,7 @@
             [clojure.gdx.graphics.texture :as texture]
             [clojure.gdx.maps.map-layers :as layers]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [clojure.gdx.utils.disposable :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
@@ -34,6 +34,6 @@
     (-> tiled-map
         tiled-map/layers
         (layers/get "creatures")
-        (layer/set-visible! true))
+        (set-visible! true))
     (show-whole-map/f! ctx)
     ctx))

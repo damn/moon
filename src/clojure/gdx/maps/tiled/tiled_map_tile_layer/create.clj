@@ -1,6 +1,7 @@
 (ns clojure.gdx.maps.tiled.tiled-map-tile-layer.create
   (:require [clojure.gdx.maps.map-properties :as props]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer])
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.properties :refer [get-properties]]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
                                         TiledMapTileLayer$Cell)))
 
@@ -17,12 +18,12 @@
          (boolean? visible?)]}
   (let [layer (doto (TiledMapTileLayer. width height tilewidth tileheight)
                 (.setName name)
-                (layer/set-visible! visible?))]
+                (set-visible! visible?))]
     (doseq [[k v] map-properties]
       (assert (string? k))
-      (props/put! (layer/properties layer) k v))
-    (doseq [[pos tile] tiles
+      (props/put! (get-properties layer) k v))
+    (doseq [[[x y] tile] tiles
             :when tile]
-      (layer/set-cell! layer pos (doto (TiledMapTileLayer$Cell.)
-                                   (.setTile tile))))
+      (.setCell layer x y (doto (TiledMapTileLayer$Cell.)
+                            (.setTile tile))))
     layer))
