@@ -1,8 +1,8 @@
 (ns render.assoc-interaction-state
   (:require [clojure.math.vector2 :as v]
-            [clojure.gdx.scene2d.actor :refer [get-user-object
-                                               get-parent
-                                               get-name]]
+            [clojure.gdx.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.gdx.scene2d.actor.get-name :refer [get-name]]
+            [clojure.gdx.scene2d.actor.get-parent :refer [get-parent]]
             [game.ctx.mouse-position :refer [mouse-position]]
             [game.skill :as skill]
             [gdx.stage :as stage]

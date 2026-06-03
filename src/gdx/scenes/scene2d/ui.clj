@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui
-  (:require [clojure.gdx.scene2d.actor :refer [get-parent]]
+  (:require [clojure.gdx.scene2d.actor.get-parent :refer [get-parent]]
             [clojure.gdx.scene2d.ui.button :as button]
             [clojure.gdx.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.window :as window]))

@@ -1,5 +1,5 @@
 (ns editor.window.with-window-close
-  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+  (:require [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]

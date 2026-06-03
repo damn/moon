@@ -1,11 +1,11 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [clojure.gdx.scene2d.actor :refer [get-stage
-                                               get-user-object
-                                               get-parent
-                                               get-x
-                                               get-y
-                                               stage->local-coordinates
-                                               hit]]
+  (:require [clojure.gdx.scene2d.actor.hit :refer [hit]]
+            [clojure.gdx.scene2d.actor.stage-local-coordinates :refer [stage->local-coordinates]]
+            [clojure.gdx.scene2d.actor.get-x :refer [get-x]]
+            [clojure.gdx.scene2d.actor.get-y :refer [get-y]]
+            [clojure.gdx.scene2d.actor.get-parent :refer [get-parent]]
+            [clojure.gdx.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
             [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]

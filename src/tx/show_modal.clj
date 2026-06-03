@@ -1,5 +1,5 @@
 (ns tx.show-modal
-  (:require [clojure.gdx.scene2d.actor :refer [set-position!]]
+  (:require [clojure.gdx.scene2d.actor.set-position :refer [set-position!]]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]

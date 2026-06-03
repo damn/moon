@@ -1,5 +1,5 @@
 (ns moon.ui.inventory-window
-  (:require [clojure.gdx.scene2d.actor :refer [get-user-object]]
+  (:require [clojure.gdx.scene2d.actor.get-user-object :refer [get-user-object]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group.children :refer [children]]

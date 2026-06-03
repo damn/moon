@@ -2,9 +2,9 @@
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.input :as input]
             [clojure.gdx.input.keys :as input.keys]
-            [clojure.gdx.scene2d.actor :refer [get-stage
-                                               get-width
-                                               get-height]]
+            [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
+            [clojure.gdx.scene2d.actor.get-height :refer [get-height]]
+            [clojure.gdx.scene2d.actor.get-width :refer [get-width]]
             [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]

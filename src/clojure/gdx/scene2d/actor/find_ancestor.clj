@@ -1,5 +1,5 @@
 (ns clojure.gdx.scene2d.actor.find-ancestor
-  (:require [clojure.gdx.scene2d.actor :refer [get-parent]]))
+  (:require [clojure.gdx.scene2d.actor.get-parent :refer [get-parent]]))
 
 (defn find-ancestor [actor pred]
   (if-let [p (get-parent actor)]

@@ -2,7 +2,7 @@
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.input :as input]
             [clojure.gdx.input.buttons :as input.buttons]
-            [clojure.gdx.scene2d.actor :refer [visible?]]
+            [clojure.gdx.scene2d.actor.visible :refer [visible?]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [game.ctx.player-movement-vector :refer [player-movement-vector]]
             [moon.inventory :as inventory]))

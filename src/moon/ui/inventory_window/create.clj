@@ -1,5 +1,5 @@
 (ns moon.ui.inventory-window.create
-  (:require [clojure.gdx.scene2d.actor :refer [set-position!]]
+  (:require [clojure.gdx.scene2d.actor.set-position :refer [set-position!]]
             [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
             [gdx.scenes.scene2d.ui.table :as table]

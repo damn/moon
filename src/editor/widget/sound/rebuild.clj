@@ -1,5 +1,5 @@
 (ns editor.widget.sound.rebuild
-  (:require [clojure.gdx.scene2d.actor :refer [get-user-object]]
+  (:require [clojure.gdx.scene2d.actor.get-user-object :refer [get-user-object]]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
