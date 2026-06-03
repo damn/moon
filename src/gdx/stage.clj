@@ -3,12 +3,6 @@
             [clojure.gdx.scene2d.group.find-actor :as group]
             [clojure.gdx.utils.viewport :as viewport]))
 
-(defn act! [stage]
-  (stage/act! stage))
-
-(defn draw! [stage]
-  (stage/draw! stage))
-
 (defn find-actor [stage name]
   (-> stage
       stage/root

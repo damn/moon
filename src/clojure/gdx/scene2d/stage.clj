@@ -10,12 +10,6 @@
         :stage/ctx      (.ctx         ^Stage this)
         :stage/viewport (.getViewport ^Stage this)))))
 
-(defn act! [^Stage stage]
-  (.act stage))
-
-(defn draw! [^Stage stage]
-  (.draw stage))
-
 (defn root [^Stage stage]
   (.getRoot stage))
 

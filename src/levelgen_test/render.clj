@@ -3,7 +3,8 @@
             [clojure.gdx.input.keys :as input.keys]
             [clojure.gdx.utils.screen-utils :as screen-utils]
             [gdx.graphics.orthographic-camera :as camera]
-            [gdx.stage :as stage]
+            [clojure.gdx.scene2d.stage.draw :refer [draw!]]
+            [clojure.gdx.scene2d.stage.act :refer [act!]]
             [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
             [gdx.tiled-map-renderer :as tiled-map-renderer]))
 
@@ -49,6 +50,6 @@
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)
     (set-ctx! stage ctx)
-    (stage/act! stage)
-    (stage/draw! stage)
+    (act! stage)
+    (draw! stage)
     (:stage/ctx stage)))

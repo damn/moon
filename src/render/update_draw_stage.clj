@@ -1,10 +1,11 @@
 (ns render.update-draw-stage
-  (:require [gdx.stage :as stage]
-            [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]))
+  (:require [clojure.gdx.scene2d.stage.draw :refer [draw!]]
+            [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
+            [clojure.gdx.scene2d.stage.act :refer [act!]]))
 
 (defn step
   [{:keys [ctx/stage] :as ctx}]
   (set-ctx! stage ctx)
-  (stage/act!  stage)
-  (stage/draw! stage)
+  (act! stage)
+  (draw! stage)
   (:stage/ctx stage))
