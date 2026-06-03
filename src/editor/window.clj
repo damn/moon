@@ -3,13 +3,11 @@
             [clojure.gdx.input :as input]
             [clojure.gdx.input.keys :as input.keys]
             [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
-            [clojure.gdx.scene2d.actor.get-height :refer [get-height]]
-            [clojure.gdx.scene2d.actor.get-width :refer [get-width]]
             [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.event :as event]
-            [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.gdx.scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
             [editor.widget :as widget]
             [editor.window.with-window-close :as with-window-close]
             [clojure.gdx.scene2d.actor.create :as actor]
@@ -59,22 +57,18 @@
                                           (clicked-delete-fn actor (:stage/ctx (event/stage event)))))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor save-button :center? true}
-                           {:actor delete-button :center? true}]]
-        rows [[(let [table (table/create
-                            {:table/cell-defaults {:pad 5}
-                             :table/rows scroll-pane-rows})]
-                 {:actor (scroll-pane/create
-                          {:actor table
-                           :skin skin})
-                  :width  (+ (get-width table) 50)
-                  :height (min (- scroll-pane-height 50)
-                               (get-height table))})]]]
+                           {:actor delete-button :center? true}]]]
     (doto (window/create
            {:title "[SKY]Property[]"
             :skin skin
             :window/close-button? skin
             :window/modal? true
             :table/cell-defaults {:pad 5}
-            :table/rows rows})
+            :table/rows [[(scroll-pane-cell/create
+                           (table/create {:table/cell-defaults {:pad 5}
+                                          :table/rows scroll-pane-rows})
+                           skin
+                           scroll-pane-height
+                           50)]]})
       (add-actors! actors)
       (set-name! "moon.ui.editor.window"))))
