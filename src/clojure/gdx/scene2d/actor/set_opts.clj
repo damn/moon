@@ -1,9 +1,14 @@
 (ns clojure.gdx.scene2d.actor.set-opts
+  (:require [clojure.gdx.scene2d.actor :refer [set-user-object!
+                                               add-listener!
+                                               set-visible!
+                                               set-touchable!
+                                               set-name!]])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn set-opts! [^Actor actor opts]
   (when-let [user-object (:actor/user-object opts)]
-    (.setUserObject actor user-object))
+    (set-user-object! actor user-object))
 
   (when (:actor/position opts)
     (let [[x y align] (:actor/position opts)]
@@ -12,15 +17,15 @@
         (.setPosition actor x y))))
 
   (when (contains? opts :actor/visible?)
-    (.setVisible actor (:actor/visible? opts)))
+    (set-visible! actor (:actor/visible? opts)))
 
   (when-let [touchable (:actor/touchable opts)]
-    (.setTouchable actor touchable))
+    (set-touchable! actor touchable))
 
   (when-let [name (:actor/name opts)]
-    (.setName actor name))
+    (set-name! actor name))
 
   (when-let [listeners (:actor/listeners opts)]
     (doseq [listener listeners]
-      (.addListener actor listener)))
+      (add-listener! actor listener)))
   )

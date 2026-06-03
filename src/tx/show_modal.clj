@@ -1,5 +1,6 @@
 (ns tx.show-modal
-  (:require [gdx.scenes.scene2d.ui.label :as label]
+  (:require [clojure.gdx.scene2d.actor :refer [remove!]]
+            [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -25,7 +26,7 @@
                                               :skin skin
                                               :actor/listeners [(change-listener/create
                                                                  (fn [_event _actor]
-                                                                   (.remove (stage/find-actor stage "moon.ui.modal-window"))
+                                                                   (remove! (stage/find-actor stage "moon.ui.modal-window"))
                                                                    (on-click)))]})}]]
                       :actor/name "moon.ui.modal-window"
                       :actor/position [(/ (:viewport/world-width (:stage/viewport stage)) 2)

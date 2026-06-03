@@ -1,5 +1,6 @@
 (ns stage.player-message-actor
   (:require [game.ctx.draw :refer [draw!]]
+            [clojure.gdx.scene2d.actor :refer [get-stage]]
             [clojure.gdx.scene2d.actor.create :as actor]))
 
 (defn create [_ctx]
@@ -8,7 +9,7 @@
      {:actor/name "player-message"
       :actor/user-object (atom nil)
       :draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (.getStage this)]
+               (when-let [stage (get-stage this)]
                  (draw! (:stage/ctx stage)
                         [(let [state (.getUserObject this)
                                vp-width (:viewport/world-width (:stage/viewport stage))

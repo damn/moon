@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.window
-  (:require [clojure.gdx.scene2d.ui.window :as window]
+  (:require [clojure.gdx.scene2d.actor :refer [remove!]]
+            [clojure.gdx.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.ui.table.add :refer [add!]]
             [clojure.gdx.scene2d.ui.table.set-opts :refer [set-opts!]]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
@@ -18,7 +19,7 @@
                       :skin skin
                       :actor/listeners [(change-listener/create
                                          (fn [_event _actor]
-                                           (.remove window)))]})}))
+                                           (remove! window)))]})}))
 
     (set-opts! window opts)
     window))

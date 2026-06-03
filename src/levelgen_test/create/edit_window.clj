@@ -1,5 +1,6 @@
 (ns levelgen-test.create.edit-window
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+            [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.stage :as stage]
@@ -10,7 +11,7 @@
    :skin skin
    :table/rows (for [level-fn level-fns
                      :let [on-clicked (fn [actor ctx]
-                                        (let [stage (.getStage actor)
+                                        (let [stage (get-stage actor)
                                               new-ctx (generate-level/f ctx level-fn)]
                                           (stage/set-ctx! stage new-ctx)))]]
                  [{:actor (text-button/create

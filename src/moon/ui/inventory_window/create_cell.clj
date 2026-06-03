@@ -1,5 +1,6 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+            [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
@@ -36,7 +37,7 @@
                                      nil)))))]
        :group/actors [(widget/create
                        {:draw! (fn [this _batch _parent-alpha]
-                                 (when-let [stage (.getStage this)]
+                                 (when-let [stage (get-stage this)]
                                    (let [{:keys [ctx/player-eid
                                                  ctx/ui-mouse-position]
                                           :as ctx} (:stage/ctx stage)]

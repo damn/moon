@@ -1,5 +1,6 @@
 (ns stage.hp-mana-bar
   (:require [game.ctx.draw :refer [draw!]]
+            [clojure.gdx.scene2d.actor :refer [get-stage]]
             [clojure.gdx.scene2d.actor.create :as actor]
             [moon.number :as number]
             [moon.stats :as stats]
@@ -47,6 +48,6 @@
                           (render-hpmana-bar x y-mana manacontent-file (stats/get-mana      stats) "MP"))))]
     (actor/create
      {:draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (.getStage this)]
+               (when-let [stage (get-stage this)]
                  (draw! (:stage/ctx stage)
                         (create-draws (:stage/ctx stage)))))})))

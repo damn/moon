@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
-  (:require [gdx.scenes.scene2d.ui.label :as label]
+  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+            [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
@@ -32,7 +33,7 @@
                        :skin skin
                        :actor/listeners [(change-listener/create
                                           (fn [_event actor]
-                                            (stage/add-actor! (.getStage actor)
+                                            (stage/add-actor! (get-stage actor)
                                                               (create
                                                                {:title "title"
                                                                 :data v

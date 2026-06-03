@@ -1,5 +1,6 @@
 (ns moon.ui.inventory-window
-  (:require [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
+  (:require [clojure.gdx.scene2d.actor :refer [add-listener!]]
+            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group.children :refer [children]]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [gdx.scenes.scene2d.ui.image :as image]
@@ -21,7 +22,7 @@
     (image/set-drawable! image-widget (texture-region-drawable/create
                                        {:drawable/texture-region texture-region
                                         :drawable/size cell-size}))
-    (.addListener cell-widget (text-tooltip/create tooltip-text skin))
+    (add-listener! cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
 (defn remove-item! [inventory-window cell]

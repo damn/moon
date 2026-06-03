@@ -1,5 +1,6 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
   (:require [clojure.gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [clojure.gdx.scene2d.actor :refer [remove!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.group.clear-children :refer [clear-children!]]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
@@ -47,7 +48,7 @@
                                              :skin skin
                                              :property-type property-type
                                              :clicked-id-fn (fn [actor id ctx]
-                                                              (.remove (find-ancestor actor ui/window?))
+                                                              (remove! (find-ancestor actor ui/window?))
                                                               (redo-rows ctx id))})))))]})})]
       [(when property-id
          (let [property (db/get-raw db property-id)]

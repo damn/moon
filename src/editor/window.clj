@@ -2,6 +2,7 @@
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.input :as input]
             [clojure.gdx.input.keys :as input.keys]
+            [clojure.gdx.scene2d.actor :refer [get-stage]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
@@ -35,7 +36,7 @@
                                                (db/update! db (get-widget-value))))
         actors [(actor/create
                  {:act! (fn [this delta]
-                          (when-let [stage (.getStage this)]
+                          (when-let [stage (get-stage this)]
                             (let [ctx (:stage/ctx stage)]
                               (when (input/key-just-pressed? (app/input (:ctx/app ctx)) input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]

@@ -28,7 +28,7 @@
                                            create-world nil
                                            #_(requiring-resolve 'game.create.world/step)
                                            ui stage
-                                           stage (Actor/.getStage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
+                                           stage (get-stage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                        (rebuild-actors! ui ctx)
                                        #_(disposable/dispose! (:ctx/tiled-map ctx))
                                        (set! (.ctx ^Stage stage) (create-world ctx world-fn))))})}

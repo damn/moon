@@ -1,5 +1,6 @@
 (ns editor.map-widget-table.component-row
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.actor :refer [remove!]]
+            [clojure.gdx.scene2d.event :as event]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
             [clojure.gdx.scene2d.group.children :refer [children]]
@@ -22,7 +23,7 @@
                                        :skin skin
                                        :actor/listeners [(change-listener/create
                                                           (fn [event _actor]
-                                                            (.remove (first (filter (fn [actor]
+                                                            (remove! (first (filter (fn [actor]
                                                                                       (and (.getUserObject actor)
                                                                                            (= k ((.getUserObject actor) 0))))
                                                                                     (children table))))

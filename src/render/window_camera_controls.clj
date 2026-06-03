@@ -4,6 +4,7 @@
             [gdx.graphics.orthographic-camera :as camera]
             [game.constants :refer [zoom-speed]]
             [gdx.stage :as stage]
+            [clojure.gdx.scene2d.actor :refer [set-visible!]]
             [clojure.gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]
             [clojure.gdx.scene2d.group.children :refer [children]])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
@@ -24,7 +25,7 @@
     (when (input/key-just-pressed? input (:close-windows-key controls))
       (->> (stage/find-actor stage "moon.ui.windows")
            children
-           (run! #(Actor/.setVisible % false))))
+           (run! #(set-visible! % false))))
 
     (when (input/key-just-pressed? input (:toggle-inventory controls))
       (-> stage
