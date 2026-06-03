@@ -1,0 +1,49 @@
+(ns world-fns.modules.place-step.place-star
+  (:require [world-fns.modules.place-step.module-index-tiled-map-positions :refer [module-index->tiled-map-positions]]
+            [world-fns.utils.transitions :as transitions]))
+
+(def ^:private floor-modules-row-width 4)
+(def ^:private floor-modules-row-height 4)
+
+(defn- floor->module-index []
+  [(rand-int floor-modules-row-width)
+   (rand-int floor-modules-row-height)])
+
+(def ^:private transition-modules-row-width 4)
+(def ^:private transition-modules-row-height 4)
+(def ^:private transition-modules-offset-x 4)
+
+(defn- transition-idxvalue->module-index [idxvalue]
+  [(+ (rem idxvalue transition-modules-row-width)
+      transition-modules-offset-x)
+   (int (/ idxvalue transition-modules-row-height))])
+
+(def ^:private floor-idxvalue 0)
+
+(defn place-module* [module-offset-tiles
+                      modules-scale
+                      scaled-grid
+                      unscaled-position
+                      & {:keys [transition?
+                                transition-neighbor?]}]
+  (let [[modules-width modules-height] modules-scale
+        idxvalue (if transition?
+                   (transitions/idx-value unscaled-position transition-neighbor?)
+                   floor-idxvalue)
+        tiled-map-positions (module-index->tiled-map-positions
+                             (if transition?
+                               (transition-idxvalue->module-index idxvalue)
+                               (floor->module-index))
+                             modules-scale
+                             module-offset-tiles)
+        offsets (for [x (range modules-width)
+                      y (range modules-height)]
+                  [x y])
+        offset->tiled-map-position (zipmap offsets tiled-map-positions)
+        scaled-position (mapv * unscaled-position modules-scale)]
+    (reduce (fn [grid offset]
+              (assoc grid
+                     (mapv + scaled-position offset)
+                     (offset->tiled-map-position offset)))
+            scaled-grid
+            offsets)))
