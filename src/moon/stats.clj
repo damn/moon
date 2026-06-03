@@ -24,12 +24,6 @@
     (assert (m/validate val-max/schema result) result)
     result))
 
-(defn get-stat-value [stats stat-k]
-  (when-let [base-value (stat-k stats)]
-    (modifiers/get-value base-value
-                         (:stats/modifiers stats)
-                         (keyword "modifier" (name stat-k)))))
-
 (defn add [stats mods]
   (update stats :stats/modifiers modifiers/add mods))
 

@@ -1,13 +1,14 @@
 (ns effect.target.damage
   (:require [clojure.rand.int-between :refer [rand-int-between]]
             [game.effect :as effect]
+            [moon.stats.get-stat-value :refer [get-stat-value]]
             [moon.stats :as stats]))
 
 ; not in stats because projectile as source doesnt have stats
 ; FIXME I don't see it triggering with 10 armor save ... !
 (defn- effective-armor-save [source-stats target-stats]
-  (max (- (or (stats/get-stat-value source-stats :stats/armor-save)   0)
-          (or (stats/get-stat-value target-stats :stats/armor-pierce) 0))
+  (max (- (or (get-stat-value source-stats :stats/armor-save)   0)
+          (or (get-stat-value target-stats :stats/armor-pierce) 0))
        0))
 
 (comment

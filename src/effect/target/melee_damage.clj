@@ -1,9 +1,9 @@
 (ns effect.target.melee-damage
   (:require [game.effect :as effect]
-            [moon.stats :as stats]))
+            [moon.stats.get-stat-value :refer [get-stat-value]]))
 
 (defn- entity->melee-damage [{:keys [entity/stats]}]
-  (let [strength (or (stats/get-stat-value stats :stats/strength) 0)]
+  (let [strength (or (get-stat-value stats :stats/strength) 0)]
     {:damage/min-max [strength strength]}))
 
 (defn- melee-damage-effect [entity]

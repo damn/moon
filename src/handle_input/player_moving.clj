@@ -1,9 +1,9 @@
 (ns handle-input.player-moving
   (:require [game.ctx.player-movement-vector :refer [player-movement-vector]]
-            [moon.stats :as stats]))
+            [moon.stats.get-stat-value :refer [get-stat-value]]))
 
 (defn- creature-speed [{:keys [entity/stats]}]
-  (or (stats/get-stat-value stats :stats/movement-speed)
+  (or (get-stat-value stats :stats/movement-speed)
       0))
 
 (defn f
