@@ -1,6 +1,6 @@
 (ns moon.ui.inventory-window
-  (:require [clojure.gdx.scene2d.actor :refer [add-listener!
-                                               get-user-object]]
+  (:require [clojure.gdx.scene2d.actor :refer [get-user-object]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group.children :refer [children]]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]

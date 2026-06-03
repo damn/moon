@@ -1,7 +1,7 @@
 (ns editor.map-widget-table.component-row
   (:require [clojure.gdx.scene2d.actor :refer [remove!
-                                               get-user-object
-                                               add-listener!]]
+                                               get-user-object]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]

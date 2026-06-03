@@ -1,5 +1,5 @@
 (ns editor.widget.sound.columns
-  (:require [clojure.gdx.scene2d.actor :refer [add-listener!]]
+  (:require [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [game.ctx.do :refer [do!]]

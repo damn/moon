@@ -2,8 +2,8 @@
   (:require [game.ctx.draw :refer [draw!]]
             [clojure.gdx.scene2d.actor :refer [get-stage
                                                get-user-object
-                                               set-user-object!
                                                set-name!]]
+            [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.actor.create :as actor]))
 
 (defn create [_ctx]

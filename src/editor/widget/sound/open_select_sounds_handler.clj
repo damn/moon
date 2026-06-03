@@ -1,5 +1,6 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [clojure.gdx.scene2d.actor :refer [add-listener! get-width get-height]]
+  (:require [clojure.gdx.scene2d.actor :refer [get-width get-height]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]

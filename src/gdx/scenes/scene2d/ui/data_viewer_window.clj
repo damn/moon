@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
-  (:require [clojure.gdx.scene2d.actor :refer [get-stage
-                                               add-listener!]]
+  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scenes.scene2d.ui.table :as table]

@@ -1,6 +1,6 @@
 (ns levelgen-test.create.edit-window
-  (:require [clojure.gdx.scene2d.actor :refer [get-stage
-                                               add-listener!]]
+  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]

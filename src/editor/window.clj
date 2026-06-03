@@ -5,8 +5,8 @@
             [clojure.gdx.scene2d.actor :refer [get-stage
                                                get-width
                                                get-height
-                                               set-name!
-                                               add-listener!]]
+                                               set-name!]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]

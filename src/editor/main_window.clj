@@ -1,6 +1,6 @@
 (ns editor.main-window
   (:require [clojure.string :as str]
-            [clojure.gdx.scene2d.actor :refer [add-listener!]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [editor.property-overview-window]
             [editor.window]

@@ -3,8 +3,8 @@
             [editor.map-widget-table.component-row :as component-row]
             [editor.rebuild :as rebuild]
             [editor.widget :as widget]
-            [clojure.gdx.scene2d.actor :refer [remove!
-                                               add-listener!]]
+            [clojure.gdx.scene2d.actor :refer [remove!]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]

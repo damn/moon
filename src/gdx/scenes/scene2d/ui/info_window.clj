@@ -1,8 +1,8 @@
 (ns gdx.scenes.scene2d.ui.info-window
   (:require [clojure.gdx.scene2d.actor :refer [get-stage
                                                set-position!
-                                               set-visible!
                                                set-name!]]
+            [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
             [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [gdx.scenes.scene2d.ui.label :as label]

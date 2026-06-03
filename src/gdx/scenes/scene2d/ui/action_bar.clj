@@ -1,9 +1,9 @@
 (ns gdx.scenes.scene2d.ui.action-bar
   (:require [clojure.gdx.scene2d.actor :refer [remove!
                                                get-user-object
-                                               set-user-object!
-                                               set-name!
-                                               add-listener!]]
+                                               set-name!]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]

@@ -1,8 +1,8 @@
 (ns tx.show-modal
   (:require [clojure.gdx.scene2d.actor :refer [remove!
                                                set-position!
-                                               set-name!
-                                               add-listener!]]
+                                               set-name!]]
+            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
