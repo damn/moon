@@ -4,7 +4,8 @@
             [clojure.gdx.input.keys :as input.keys]
             [clojure.gdx.scene2d.actor :refer [get-stage
                                                get-width
-                                               get-height]]
+                                               get-height
+                                               set-name!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
@@ -64,12 +65,12 @@
                   :width  (+ (get-width table) 50)
                   :height (min (- scroll-pane-height 50)
                                (get-height table))})]]]
-    (window/create
-     {:title "[SKY]Property[]"
-      :skin skin
-      :window/close-button? skin
-      :window/modal? true
-      :table/cell-defaults {:pad 5}
-      :table/rows rows
-      :group/actors actors
-      :actor/name "moon.ui.editor.window"})))
+    (doto (window/create
+           {:title "[SKY]Property[]"
+            :skin skin
+            :window/close-button? skin
+            :window/modal? true
+            :table/cell-defaults {:pad 5}
+            :table/rows rows
+            :group/actors actors})
+      (set-name! "moon.ui.editor.window"))))

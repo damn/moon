@@ -7,7 +7,7 @@
                                                stage->local-coordinates
                                                hit
                                                set-user-object!
-                                               ]]
+                                               set-name!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
@@ -32,8 +32,7 @@
         background-drawable (slot->drawable slot)]
     {:actor
      (doto (stack/create
-            {:actor/name "inventory-cell"
-             :actor/listeners [(click-listener/create
+            {:actor/listeners [(click-listener/create
                                 (fn [event _x _y]
                                   (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
                                         entity @player-eid
@@ -59,8 +58,9 @@
                                                                        true)
                                                                   (get-user-object (get-parent this)))))))})
                             (doto (image/create
-                                   {:content background-drawable
-                                    :actor/name "image-widget"})
+                                   {:content background-drawable})
+                              (set-name! "image-widget")
                               (set-user-object! {:background-drawable background-drawable
                                                  :cell-size cell-size}))]})
+       (set-name! "inventory-cell")
        (set-user-object! cell))}))

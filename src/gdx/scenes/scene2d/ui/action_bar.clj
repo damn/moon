@@ -1,7 +1,8 @@
 (ns gdx.scenes.scene2d.ui.action-bar
   (:require [clojure.gdx.scene2d.actor :refer [remove!
                                                get-user-object
-                                               set-user-object!]]
+                                               set-user-object!
+                                               set-name!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
@@ -12,19 +13,19 @@
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn create []
-  (table/create
-   {:table/cell-defaults {:pad 2}
-    :table/rows [[{:actor (doto (horizontal-group/create
-                                 {:space 2
-                                  :pad 2
-                                  :actor/name "moon.ui.action-bar.horizontal-group"})
-                            (set-user-object! (button-group/create
-                                               {:max-check-count 1
-                                                :min-check-count 0})))
-                   :expand? true
-                   :bottom? true}]]
-    :actor/name "moon.ui.action-bar"
-    :widget-group/fill-parent? true}))
+  (doto (table/create
+         {:table/cell-defaults {:pad 2}
+          :table/rows [[{:actor (doto (horizontal-group/create
+                                       {:space 2
+                                        :pad 2})
+                                  (set-name! "moon.ui.action-bar.horizontal-group")
+                                  (set-user-object! (button-group/create
+                                                     {:max-check-count 1
+                                                      :min-check-count 0})))
+                         :expand? true
+                         :bottom? true}]]
+          :widget-group/fill-parent? true})
+    (set-name! "moon.ui.action-bar")))
 
 (defn- get-data [action-bar]
   {:post [(:horizontal-group %)

@@ -1,6 +1,7 @@
 (ns moon.ui.inventory-window.create
   (:require [clojure.gdx.scene2d.actor :refer [set-position!
-                                               set-visible!]]
+                                               set-visible!
+                                               set-name!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
@@ -33,27 +34,27 @@
     (doto (window/create
            {:title "Inventory"
             :skin skin
-            :table/rows [[{:actor (table/create
-                                   {:actor/name "inventory-cell-table"
-                                    :table/rows (concat [[nil nil
-                                                          (->cell :inventory.slot/helm)
-                                                          (->cell :inventory.slot/necklace)]
-                                                         [nil
-                                                          (->cell :inventory.slot/weapon)
-                                                          (->cell :inventory.slot/chest)
-                                                          (->cell :inventory.slot/cloak)
-                                                          (->cell :inventory.slot/shield)]
-                                                         [nil nil
-                                                          (->cell :inventory.slot/leg)]
-                                                         [nil
-                                                          (->cell :inventory.slot/glove)
-                                                          (->cell :inventory.slot/rings :position [0 0])
-                                                          (->cell :inventory.slot/rings :position [1 0])
-                                                          (->cell :inventory.slot/boot)]]
-                                                        (for [y (range 4)]
-                                                          (for [x (range 6)]
-                                                            (->cell :inventory.slot/bag :position [x y]))))})
-                           :pad 4}]]
-            :actor/name "moon.ui.windows.inventory"})
+            :table/rows [[{:actor (doto (table/create
+                                         {:table/rows (concat [[nil nil
+                                                                (->cell :inventory.slot/helm)
+                                                                (->cell :inventory.slot/necklace)]
+                                                               [nil
+                                                                (->cell :inventory.slot/weapon)
+                                                                (->cell :inventory.slot/chest)
+                                                                (->cell :inventory.slot/cloak)
+                                                                (->cell :inventory.slot/shield)]
+                                                               [nil nil
+                                                                (->cell :inventory.slot/leg)]
+                                                               [nil
+                                                                (->cell :inventory.slot/glove)
+                                                                (->cell :inventory.slot/rings :position [0 0])
+                                                                (->cell :inventory.slot/rings :position [1 0])
+                                                                (->cell :inventory.slot/boot)]]
+                                                              (for [y (range 4)]
+                                                                (for [x (range 6)]
+                                                                  (->cell :inventory.slot/bag :position [x y]))))})
+                                    (set-name! "inventory-cell-table"))
+                           :pad 4}]]})
+      (set-name! "moon.ui.windows.inventory")
       (set-visible! false)
       (set-position! position))))

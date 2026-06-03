@@ -2,14 +2,14 @@
   (:require [game.ctx.draw :refer [draw!]]
             [clojure.gdx.scene2d.actor :refer [get-stage
                                                get-user-object
-                                               set-user-object!]]
+                                               set-user-object!
+                                               set-name!]]
             [clojure.gdx.scene2d.actor.create :as actor]))
 
 (defn create [_ctx]
   (let [message-duration-seconds 0.5]
     (doto (actor/create
-           {:actor/name "player-message"
-            :draw! (fn [this _batch _parent-alpha]
+           {:draw! (fn [this _batch _parent-alpha]
                      (when-let [stage (get-stage this)]
                        (draw! (:stage/ctx stage)
                               [(let [state (get-user-object this)
@@ -27,4 +27,5 @@
                         (swap! state update :counter + delta)
                         (when (>= (:counter @state) message-duration-seconds)
                           (reset! state nil)))))})
+      (set-name! "player-message")
       (set-user-object! (atom nil)))))

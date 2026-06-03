@@ -3,6 +3,7 @@
             [editor.map-widget-table.add-component-window :as add-component-window]
             [editor.map-widget-table.component-row :as component-row]
             [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.actor :refer [set-name!]]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
@@ -27,9 +28,9 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (table/create
-               {:table/cell-defaults {:pad 5}
-                :actor/name "moon.db.schema.map.ui.widget"})
+  (let [table (doto (table/create
+                     {:table/cell-defaults {:pad 5}})
+                (set-name! "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
                                     (map (fn [k]
