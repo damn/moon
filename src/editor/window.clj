@@ -26,9 +26,6 @@
                 ctx/stage]} ctx
         schemas (:db/schemas db)
         schema (get schemas (property->type property))
-        ; build for get-widget-value
-        ; or find a way to find the widget from the context @ save button
-        ; should be possible
         widget (widget/create schema property ctx) ; FIXME here no set user object k v ? (widget/build)
         scroll-pane-height (:viewport/world-height (:stage/viewport stage))
         get-widget-value #(widget/value schema widget schemas)
@@ -37,27 +34,21 @@
                                                  (db/delete! db property-id)))
         clicked-save-fn (with-window-close/f (fn [db]
                                                (db/update! db (get-widget-value))))
-        actors [(actor/create
-                 {:act! (fn [this delta]
-                          (when-let [stage (get-stage this)]
-                            (let [ctx (:stage/ctx stage)]
-                              (when (input/key-just-pressed? (app/input (:ctx/app ctx)) input.keys/enter)
-                                (clicked-save-fn this ctx)))))})]
-        save-button (doto (text-button/create
-                           {:text "Save [LIGHT_GRAY](ENTER)[]"
-                            :skin skin})
-                      (add-listener! (change-listener/create
-                                      (fn [event actor]
-                                        (clicked-save-fn actor (:stage/ctx (event/stage event)))))))
-        delete-button (doto (text-button/create
-                             {:text "Delete"
-                              :skin skin})
-                        (add-listener! (change-listener/create
-                                        (fn [event actor]
-                                          (clicked-delete-fn actor (:stage/ctx (event/stage event)))))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor save-button :center? true}
-                           {:actor delete-button :center? true}]]]
+                          [{:actor (doto (text-button/create
+                                          {:text "Save [LIGHT_GRAY](ENTER)[]"
+                                           :skin skin})
+                                     (add-listener! (change-listener/create
+                                                     (fn [event actor]
+                                                       (clicked-save-fn actor (:stage/ctx (event/stage event)))))))
+                            :center? true}
+                           {:actor (doto (text-button/create
+                                          {:text "Delete"
+                                           :skin skin})
+                                     (add-listener! (change-listener/create
+                                                     (fn [event actor]
+                                                       (clicked-delete-fn actor (:stage/ctx (event/stage event)))))))
+                            :center? true}]]]
     (doto (window/create
            {:title "[SKY]Property[]"
             :skin skin
@@ -70,5 +61,10 @@
                            skin
                            scroll-pane-height
                            50)]]})
-      (add-actors! actors)
+      (add-actors! [(actor/create
+                     {:act! (fn [this delta]
+                              (when-let [stage (get-stage this)]
+                                (let [ctx (:stage/ctx stage)]
+                                  (when (input/key-just-pressed? (app/input (:ctx/app ctx)) input.keys/enter)
+                                    (clicked-save-fn this ctx)))))})])
       (set-name! "moon.ui.editor.window"))))
