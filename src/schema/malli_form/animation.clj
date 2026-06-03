@@ -1,5 +1,6 @@
 (ns schema.malli-form.animation
-  (:require [moon.schemas :refer [malli-form create-map-schema]]))
+  (:require [moon.schemas.malli-form :refer [malli-form]]
+            [moon.schemas :refer [create-map-schema]]))
 
 (defmethod malli-form :s/animation [_ schemas]
   (create-map-schema schemas

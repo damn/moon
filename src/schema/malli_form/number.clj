@@ -1,5 +1,5 @@
 (ns schema.malli-form.number
-  (:require [moon.schemas :refer [malli-form]]))
+  (:require [moon.schemas.malli-form :refer [malli-form]]))
 
 (defmethod malli-form :s/number [[_ predicate] _schemas]
   (case predicate

@@ -1,11 +1,9 @@
 (ns moon.schemas
-  (:require [malli.core :as m]
+  (:require [moon.schemas.malli-form :refer [malli-form]]
+            [malli.core :as m]
             [malli.utils :as mu]
             [malli.utils.map-keys :as map-keys]
             [malli.utils.validate-humanize :refer [validate-humanize]]))
-
-(defmulti malli-form (fn [[k] _schemas]
-                       k))
 
 (defmulti create-value (fn [[k] _v _db]
                          k))
