@@ -8,6 +8,7 @@
             [gdx.stage :as stage]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scene2d.ui.widget-group.set-fill-parent :refer [set-fill-parent!]]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.touchable :as touchable]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]))
@@ -41,16 +42,16 @@
 
 (defn create
   [{:keys [menus update-labels skin]}]
-  (table/create
-   {:table/rows [[{:actor (main-table skin menus update-labels)
-                   :expand-x? true
-                   :fill-x? true
-                   :colspan 1}]
-                 [{:actor (doto (label/create
-                                 {:text ""
-                                  :skin skin})
-                            (set-touchable! touchable/disabled))
-                   :expand? true
-                   :fill-x? true
-                   :fill-y? true}]]
-    :widget-group/fill-parent? true}))
+  (doto (table/create
+         {:table/rows [[{:actor (main-table skin menus update-labels)
+                         :expand-x? true
+                         :fill-x? true
+                         :colspan 1}]
+                       [{:actor (doto (label/create
+                                       {:text ""
+                                        :skin skin})
+                                  (set-touchable! touchable/disabled))
+                         :expand? true
+                         :fill-x? true
+                         :fill-y? true}]]})
+    (set-fill-parent! true)))

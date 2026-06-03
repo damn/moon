@@ -7,6 +7,7 @@
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
+            [clojure.gdx.scene2d.ui.widget-group.set-fill-parent :refer [set-fill-parent!]]
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -24,8 +25,8 @@
                                                      {:max-check-count 1
                                                       :min-check-count 0})))
                          :expand? true
-                         :bottom? true}]]
-          :widget-group/fill-parent? true})
+                         :bottom? true}]]})
+    (set-fill-parent! true)
     (set-name! "moon.ui.action-bar")))
 
 (defn- get-data [action-bar]
