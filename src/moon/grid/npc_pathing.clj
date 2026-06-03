@@ -2,7 +2,7 @@
   (:require [clojure.math.vector2 :as v]
             [moon.grid.npc-pathing.filter-viable-cells :as filter-viable-cells]
             [moon.grid.npc-pathing.get-min-dist-cell :refer [get-min-dist-cell]]
-            [moon.body :as body]
+            [moon.body.touched-tiles :refer [touched-tiles]]
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid :as grid]
@@ -17,7 +17,7 @@
       cell)))
 
 (defn- inside-cell? [grid entity cell]
-  (let [cells (get-cells grid (body/touched-tiles (:entity/body entity)))]
+  (let [cells (get-cells grid (touched-tiles (:entity/body entity)))]
     (and (= 1 (count cells))
          (= cell (first cells)))))
 
