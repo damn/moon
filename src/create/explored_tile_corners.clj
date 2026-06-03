@@ -1,5 +1,5 @@
 (ns create.explored-tile-corners
-  (:require [clojure.gdx.maps.map-properties :as props]
+  (:require [clojure.gdx.maps.map-properties.get :refer [props-get]]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.grid2d :as g2d]))
 
@@ -7,6 +7,6 @@
   [{:keys [ctx/tiled-map]
     :as ctx}]
   (assoc ctx :ctx/explored-tile-corners
-         (atom (g2d/create-grid (props/get (tiled-map/props tiled-map) "width")
-                                (props/get (tiled-map/props tiled-map) "height")
+         (atom (g2d/create-grid (props-get (tiled-map/props tiled-map) "width")
+                                (props-get (tiled-map/props tiled-map) "height")
                                 (constantly false)))))

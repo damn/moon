@@ -1,6 +1,6 @@
 (ns gdx.tiled-map.spawn-positions
   (:require [clojure.gdx.maps.map-layers :as layers]
-            [clojure.gdx.maps.map-properties :as props]
+            [clojure.gdx.maps.map-properties.get :refer [props-get]]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile :as tile]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as layer]
@@ -18,6 +18,6 @@
           :let [value (-> cell
                           cell/tile
                           tile/properties
-                          (props/get property-key))]
+                          (props-get property-key))]
           :when value]
       [position value])))

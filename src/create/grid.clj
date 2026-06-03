@@ -1,5 +1,5 @@
 (ns create.grid
-  (:require [clojure.gdx.maps.map-properties :as props]
+  (:require [clojure.gdx.maps.map-properties.get :refer [props-get]]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [gdx.tiled-map.movement-property :as movement-property]
             [moon.cell :as cell]
@@ -8,8 +8,8 @@
 (defn step
   [{:keys [ctx/tiled-map]
     :as ctx}]
-  (assoc ctx :ctx/grid (g2d/create-grid (props/get (tiled-map/props tiled-map) "width")
-                                        (props/get (tiled-map/props tiled-map) "height")
+  (assoc ctx :ctx/grid (g2d/create-grid (props-get (tiled-map/props tiled-map) "width")
+                                        (props-get (tiled-map/props tiled-map) "height")
                                         (fn [position]
                                           (atom (cell/create position
                                                              (case (movement-property/f tiled-map position)
