@@ -2,16 +2,9 @@
   (:require [clojure.gdx.scene2d.actor :refer [add-listener!
                                                set-visible!
                                                set-touchable!
-                                               set-name!]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+                                               set-name!]]))
 
-(defn set-opts! [^Actor actor opts]
-  (when (:actor/position opts)
-    (let [[x y align] (:actor/position opts)]
-      (if align
-        (.setPosition actor x y align)
-        (.setPosition actor x y))))
-
+(defn set-opts! [actor opts]
   (when (contains? opts :actor/visible?)
     (set-visible! actor (:actor/visible? opts)))
 

@@ -51,3 +51,9 @@
 
 (defn hit [^Actor actor [x y] touchable?]
   (.hit actor x y touchable?))
+
+(defn set-position!
+  ([^Actor actor [x y]]
+   (.setPosition actor x y))
+  ([^Actor actor [x y] align]
+   (.setPosition actor x y align)))

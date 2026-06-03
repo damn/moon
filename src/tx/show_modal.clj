@@ -1,5 +1,6 @@
 (ns tx.show-modal
-  (:require [clojure.gdx.scene2d.actor :refer [remove!]]
+  (:require [clojure.gdx.scene2d.actor :refer [remove!
+                                               set-position!]]
             [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
@@ -14,24 +15,24 @@
    {:keys [title text button-text on-click]}]
   (assert (not (stage/find-actor stage "moon.ui.modal-window")))
   (stage/add-actor! stage
-                    (window/create
-                     {:title title
-                      :skin skin
-                      :window/modal? true
-                      :table/rows [[{:actor (label/create
-                                             {:text text
-                                              :skin skin})}]
-                                   [{:actor (text-button/create
-                                             {:text button-text
-                                              :skin skin
-                                              :actor/listeners [(change-listener/create
-                                                                 (fn [_event _actor]
-                                                                   (remove! (stage/find-actor stage "moon.ui.modal-window"))
-                                                                   (on-click)))]})}]]
-                      :actor/name "moon.ui.modal-window"
-                      :actor/position [(/ (:viewport/world-width (:stage/viewport stage)) 2)
-                                       (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))
-                                       align/center]}))
+                    (doto (window/create
+                           {:title title
+                            :skin skin
+                            :window/modal? true
+                            :table/rows [[{:actor (label/create
+                                                   {:text text
+                                                    :skin skin})}]
+                                         [{:actor (text-button/create
+                                                   {:text button-text
+                                                    :skin skin
+                                                    :actor/listeners [(change-listener/create
+                                                                       (fn [_event _actor]
+                                                                         (remove! (stage/find-actor stage "moon.ui.modal-window"))
+                                                                         (on-click)))]})}]]
+                            :actor/name "moon.ui.modal-window"})
+                      (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
+                                      (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
+                                     align/center)))
   nil)
 
 ; no window movable type cursor appears here like in player idle

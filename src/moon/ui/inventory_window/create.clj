@@ -1,5 +1,6 @@
 (ns moon.ui.inventory-window.create
-  (:require [gdx.scenes.scene2d.ui.table :as table]
+  (:require [clojure.gdx.scene2d.actor :refer [set-position!]]
+            [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
@@ -29,30 +30,30 @@
                                           not-allowed-drop-item-color)]
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
         ->cell (partial ->cell slot->drawable draw-cell-rect cell-size)]
-    (window/create
-     {:title "Inventory"
-      :skin skin
-      :table/rows [[{:actor (table/create
-                             {:actor/name "inventory-cell-table"
-                              :table/rows (concat [[nil nil
-                                                    (->cell :inventory.slot/helm)
-                                                    (->cell :inventory.slot/necklace)]
-                                                   [nil
-                                                    (->cell :inventory.slot/weapon)
-                                                    (->cell :inventory.slot/chest)
-                                                    (->cell :inventory.slot/cloak)
-                                                    (->cell :inventory.slot/shield)]
-                                                   [nil nil
-                                                    (->cell :inventory.slot/leg)]
-                                                   [nil
-                                                    (->cell :inventory.slot/glove)
-                                                    (->cell :inventory.slot/rings :position [0 0])
-                                                    (->cell :inventory.slot/rings :position [1 0])
-                                                    (->cell :inventory.slot/boot)]]
-                                                  (for [y (range 4)]
-                                                    (for [x (range 6)]
-                                                      (->cell :inventory.slot/bag :position [x y]))))})
-                     :pad 4}]]
-      :actor/name "moon.ui.windows.inventory"
-      :actor/visible? false
-      :actor/position position})))
+    (doto (window/create
+           {:title "Inventory"
+            :skin skin
+            :table/rows [[{:actor (table/create
+                                   {:actor/name "inventory-cell-table"
+                                    :table/rows (concat [[nil nil
+                                                          (->cell :inventory.slot/helm)
+                                                          (->cell :inventory.slot/necklace)]
+                                                         [nil
+                                                          (->cell :inventory.slot/weapon)
+                                                          (->cell :inventory.slot/chest)
+                                                          (->cell :inventory.slot/cloak)
+                                                          (->cell :inventory.slot/shield)]
+                                                         [nil nil
+                                                          (->cell :inventory.slot/leg)]
+                                                         [nil
+                                                          (->cell :inventory.slot/glove)
+                                                          (->cell :inventory.slot/rings :position [0 0])
+                                                          (->cell :inventory.slot/rings :position [1 0])
+                                                          (->cell :inventory.slot/boot)]]
+                                                        (for [y (range 4)]
+                                                          (for [x (range 6)]
+                                                            (->cell :inventory.slot/bag :position [x y]))))})
+                           :pad 4}]]
+            :actor/name "moon.ui.windows.inventory"
+            :actor/visible? false})
+      (set-position! position))))

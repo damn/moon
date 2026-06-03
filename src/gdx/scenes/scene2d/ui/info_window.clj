@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.info-window
-  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+  (:require [clojure.gdx.scene2d.actor :refer [get-stage
+                                               set-position!]]
             [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.group :refer [add-actor!]]
             [gdx.stage :as stage]
@@ -18,13 +19,13 @@
   (let [label (label/create
                {:text "MY LABEL TEXT"
                 :skin skin})
-        window (window/create
-                {:title title
-                 :skin skin
-                 :table/rows [[{:actor label :expand? true}]]
-                 :actor/name actor-name
-                 :actor/visible? visible?
-                 :actor/position position})]
+        window (doto (window/create
+                      {:title title
+                       :skin skin
+                       :table/rows [[{:actor label :expand? true}]]
+                       :actor/name actor-name
+                       :actor/visible? visible?})
+                 (set-position! position))]
     (add-actor! window (actor/create
                         {:act! (fn [this delta]
                                  (when-let [stage (get-stage this)]
