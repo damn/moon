@@ -6,6 +6,7 @@
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [editor.main-window :as main-window]
+            [editor.map-widget-table :as map-widget-table]
             [clojure.gdx.scene2d.stage :as stage]
             [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.textures]
@@ -26,6 +27,7 @@
      :ctx/stage stage
      :ctx/textures (gdx.textures/create (app/files app))
      :ctx/ui-viewport ui-viewport
+     :ctx/create-map-widget-table map-widget-table/create
      :ctx/property-k-sort-order [:property/id
                                  :property/pretty-name
                                  :entity/image
