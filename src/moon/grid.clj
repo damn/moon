@@ -7,18 +7,7 @@
             [moon.grid.cells-entities :as cells->entities]
             [moon.grid.body-occupied-cells :refer [body->occupied-cells]]
             [moon.faction :as faction]
-            [clojure.grid2d.get-cells :refer [get-cells]]
-            [clojure.math.position :as position]))
-
-(defn cached-adjacent-cells [g2d cell]
-  (if-let [result (:adjacent-cells @cell)]
-    result
-    (let [result (->> @cell
-                      :position
-                      position/get-8-neighbours
-                      (get-cells g2d))]
-      (swap! cell assoc :adjacent-cells result)
-      result)))
+            [clojure.grid2d.get-cells :refer [get-cells]]))
 
 (defn point->entities [g2d pos]
   (when-let [cell (g2d (mapv int pos))]

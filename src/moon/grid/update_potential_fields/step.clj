@@ -1,6 +1,6 @@
 (ns moon.grid.update-potential-fields.step
   (:require [moon.cell :as cell]
-            [moon.grid :as grid]
+            [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
             [clojure.math.position :as position]))
 
 ; TODO performance
@@ -15,7 +15,7 @@
         marked? faction]
     ; sorting important because of diagonal-cell values, flow from lower dist first for correct distance
     (doseq [cell (sort-by #(distance @%) last-marked-cells)
-            adjacent-cell (grid/cached-adjacent-cells grid cell)
+            adjacent-cell (cached-adjacent-cells grid cell)
             :let [cell* @cell
                   adjacent-cell* @adjacent-cell]
             :when (not (or (cell/pf-blocked? adjacent-cell*)

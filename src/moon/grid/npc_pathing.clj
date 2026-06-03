@@ -6,7 +6,7 @@
             [moon.grid.npc-pathing.viable-cell :refer [viable-cell?]]
             [moon.cell :as cell]
             [moon.faction :as faction]
-            [moon.grid :as grid]
+            [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
             [clojure.grid2d.get-cells :refer [get-cells]]
             [clojure.math.position :as position]))
 
@@ -22,7 +22,7 @@
         distance-to    #(cell/nearest-entity-distance @% faction)
         nearest-entity #(cell/nearest-entity          @% faction)
         own-dist (distance-to own-cell)
-        adjacent-cells (grid/cached-adjacent-cells grid own-cell)]
+        adjacent-cells (cached-adjacent-cells grid own-cell)]
     (if (and own-dist (zero? (float own-dist)))
       {:target-entity (nearest-entity own-cell)}
       (if-let [adjacent-cell (first (filter #(and (distance-to %)
