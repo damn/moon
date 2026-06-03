@@ -7,7 +7,8 @@
                                                stage->local-coordinates
                                                hit
                                                set-user-object!
-                                               set-name!]]
+                                               set-name!
+                                               add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
@@ -32,16 +33,7 @@
         background-drawable (slot->drawable slot)]
     {:actor
      (doto (stack/create
-            {:actor/listeners [(click-listener/create
-                                (fn [event _x _y]
-                                  (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
-                                        entity @player-eid
-                                        state-k (:state (:entity/fsm entity))]
-                                    (do! ctx
-                                         (if-let [f (k->fn state-k)]
-                                           (f player-eid cell)
-                                           nil)))))]
-             :group/actors [(widget/create
+            {:group/actors [(widget/create
                              {:draw! (fn [this _batch _parent-alpha]
                                        (when-let [stage (get-stage this)]
                                          (let [{:keys [ctx/player-eid
@@ -62,5 +54,14 @@
                               (set-name! "image-widget")
                               (set-user-object! {:background-drawable background-drawable
                                                  :cell-size cell-size}))]})
+       (add-listener! (click-listener/create
+                       (fn [event _x _y]
+                         (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
+                               entity @player-eid
+                               state-k (:state (:entity/fsm entity))]
+                           (do! ctx
+                                (if-let [f (k->fn state-k)]
+                                  (f player-eid cell)
+                                  nil))))))
        (set-name! "inventory-cell")
        (set-user-object! cell))}))

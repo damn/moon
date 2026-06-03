@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
-  (:require [clojure.gdx.scene2d.actor :refer [get-stage]]
+  (:require [clojure.gdx.scene2d.actor :refer [get-stage
+                                               add-listener!]]
             [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -28,18 +29,16 @@
                    (str (class v))))
         v->actor (fn [v skin]
                    (if (map? v)
-                     (text-button/create
-                      {:text "Map"
-                       :skin skin
-                       :actor/listeners [(change-listener/create
-                                          (fn [_event actor]
-                                            (stage/add-actor! (get-stage actor)
-                                                              (create
-                                                               {:title "title"
-                                                                :data v
-                                                                :width 500
-                                                                :height 500
-                                                                :skin skin}))))]})
+                     (doto (text-button/create {:text "Map" :skin skin})
+                       (add-listener! (change-listener/create
+                                       (fn [_event actor]
+                                         (stage/add-actor! (get-stage actor)
+                                                           (create
+                                                            {:title "title"
+                                                             :data v
+                                                             :width 500
+                                                             :height 500
+                                                             :skin skin}))))))
                      (label/create
                       {:text (v->text v)
                        :skin skin})))

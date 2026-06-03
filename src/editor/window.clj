@@ -5,7 +5,8 @@
             [clojure.gdx.scene2d.actor :refer [get-stage
                                                get-width
                                                get-height
-                                               set-name!]]
+                                               set-name!
+                                               add-listener!]]
             [clojure.gdx.scene2d.event :as event]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
@@ -43,19 +44,21 @@
                             (let [ctx (:stage/ctx stage)]
                               (when (input/key-just-pressed? (app/input (:ctx/app ctx)) input.keys/enter)
                                 (clicked-save-fn this ctx)))))})]
-        save-button {:text "Save [LIGHT_GRAY](ENTER)[]"
-                     :skin skin
-                     :actor/listeners [(change-listener/create
+        save-button (doto (text-button/create
+                           {:text "Save [LIGHT_GRAY](ENTER)[]"
+                            :skin skin})
+                      (add-listener! (change-listener/create
+                                      (fn [event actor]
+                                        (clicked-save-fn actor (:stage/ctx (event/stage event)))))))
+        delete-button (doto (text-button/create
+                             {:text "Delete"
+                              :skin skin})
+                        (add-listener! (change-listener/create
                                         (fn [event actor]
-                                          (clicked-save-fn actor (:stage/ctx (event/stage event)))))]}
-        delete-button {:text "Delete"
-                       :skin skin
-                       :actor/listeners [(change-listener/create
-                                          (fn [event actor]
-                                            (clicked-delete-fn actor (:stage/ctx (event/stage event)))))]}
+                                          (clicked-delete-fn actor (:stage/ctx (event/stage event)))))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor (text-button/create save-button) :center? true}
-                           {:actor (text-button/create delete-button) :center? true}]]
+                          [{:actor save-button :center? true}
+                           {:actor delete-button :center? true}]]
         rows [[(let [table (table/create
                             {:table/cell-defaults {:pad 5}
                              :table/rows scroll-pane-rows})]

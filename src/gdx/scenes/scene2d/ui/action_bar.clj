@@ -2,7 +2,8 @@
   (:require [clojure.gdx.scene2d.actor :refer [remove!
                                                get-user-object
                                                set-user-object!
-                                               set-name!]]
+                                               set-name!
+                                               add-listener!]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group :refer [add-actor!]]
             [clojure.gdx.scene2d.ui.button-group :as button-group]
@@ -48,8 +49,8 @@
         button (doto (image-button/create
                       {:drawable (texture-region-drawable/create*
                                   {:drawable/texture-region texture-region
-                                   :drawable/scale 2})
-                       :actor/listeners [(text-tooltip/create tooltip-text skin)]})
+                                   :drawable/scale 2})})
+                 (add-listener! (text-tooltip/create tooltip-text skin))
                  (set-user-object! skill-id))]
     (add-actor! horizontal-group button)
     (button-group/add! button-group button)

@@ -1,5 +1,6 @@
 (ns editor.widget.sound
-  (:require [clojure.gdx.scene2d.event :as event]
+  (:require [clojure.gdx.scene2d.actor :refer [add-listener!]]
+            [clojure.gdx.scene2d.event :as event]
             [editor.widget :as widget]
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
@@ -14,12 +15,10 @@
     (add-rows! table [(if sound-name
                         (sound-columns skin table sound-name)
                         [{:actor
-                          (text-button/create
-                           {:text "No sound"
-                            :skin skin
-                            :actor/listeners [(change-listener/create
-                                               (fn [event _actor]
-                                                 ((open-select-sounds-handler table)
-                                                  (:stage/ctx (event/stage event))
-                                                  sound-columns)))]})}])])
+                          (doto (text-button/create {:text "No sound" :skin skin})
+                            (add-listener! (change-listener/create
+                                            (fn [event _actor]
+                                              ((open-select-sounds-handler table)
+                                               (:stage/ctx (event/stage event))
+                                               sound-columns)))))}])])
     table))
