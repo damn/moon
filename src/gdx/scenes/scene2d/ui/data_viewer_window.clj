@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
-  (:require [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
+  (:require [gdx.scenes.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
+            [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
@@ -17,17 +18,7 @@
            height
            skin]}]
   {:pre [(map? data)]}
-  (let [v->text (fn [v]
-                  (cond
-                   (or (keyword? v)
-                       (number? v)
-                       (boolean? v)
-                       (string? v))
-                   (str "[GOLD]" v "[]")
-
-                   :else
-                   (str (class v))))
-        v->actor (fn [v skin]
+  (let [v->actor (fn [v skin]
                    (if (map? v)
                      (doto (text-button/create {:text "Map" :skin skin})
                        (add-listener! (change-listener/create
