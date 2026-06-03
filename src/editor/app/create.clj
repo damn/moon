@@ -25,4 +25,20 @@
      :ctx/skin skin
      :ctx/stage stage
      :ctx/textures (gdx.textures/create (app/files app))
-     :ctx/ui-viewport ui-viewport}))
+     :ctx/ui-viewport ui-viewport
+     :ctx/property-k-sort-order [:property/id
+                                 :property/pretty-name
+                                 :entity/image
+                                 :entity/animation
+                                 :entity/species
+                                 :creature/level
+                                 :entity/body
+                                 :item/slot
+                                 :projectile/speed
+                                 :projectile/max-range
+                                 :projectile/piercing?
+                                 :skill/action-time-modifier-key
+                                 :skill/action-time
+                                 :skill/start-action-sound
+                                 :skill/cost
+                                 :skill/cooldown]}))

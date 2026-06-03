@@ -1,7 +1,6 @@
 (ns editor.widget.map
   (:require [clojure.core.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.set :as set]
-            [editor.constants :refer [property-k-sort-order]]
             [editor.map-widget-table :as map-widget-table]
             [editor.map-widget-table.get-value :as get-value]
             [editor.widget :as widget]
@@ -11,7 +10,8 @@
   [schema
    m
    {:keys [ctx/db
-           ctx/skin]
+           ctx/skin
+           ctx/property-k-sort-order]
     :as ctx}]
   (let [schemas (:db/schemas db)]
     (map-widget-table/create
