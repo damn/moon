@@ -1,0 +1,8 @@
+{
+ :player-item-on-cursor entity.state.enter.player-item-on-cursor/f
+ :active-skill entity.state.enter.active-skill/f
+ :npc-dead entity.state.enter.npc-dead/f
+ :player-moving entity.state.enter.player-moving/f
+ :player-dead entity.state.enter.player-dead/f
+ :npc-moving entity.state.enter.npc-moving/f
+ }

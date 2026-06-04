@@ -1,22 +1,9 @@
-(ns tx.state-enter
-  (:require entity.state.enter.player-item-on-cursor
-            entity.state.enter.active-skill
-            entity.state.enter.npc-dead
-            entity.state.enter.player-moving
-            entity.state.enter.player-dead
-            entity.state.enter.npc-moving))
+(ns tx.state-enter)
 
-(def k->fn
-  {
-   :player-item-on-cursor entity.state.enter.player-item-on-cursor/f
-   :active-skill entity.state.enter.active-skill/f
-   :npc-dead entity.state.enter.npc-dead/f
-   :player-moving entity.state.enter.player-moving/f
-   :player-dead entity.state.enter.player-dead/f
-   :npc-moving entity.state.enter.npc-moving/f
-   })
-
-(defn do! [_ctx eid [state-k state-v]]
-  (if-let [f (k->fn state-k)]
+(defn do!
+  [{:keys [ctx/k->state-enter :as ctx]}
+   eid
+   [state-k state-v]]
+  (if-let [f (k->state-enter state-k)]
     (f state-v eid)
     nil))

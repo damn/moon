@@ -5,6 +5,8 @@
  [:ctx/k->render :some]
  [:ctx/k->create :some]
  [:ctx/k->after-create :some]
+ [:ctx/k->state-enter :some]
+ [:ctx/k->state-exit :some]
  [:ctx/app :some]
  [:ctx/audio :some]
  [:ctx/batch :some]

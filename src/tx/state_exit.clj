@@ -1,19 +1,9 @@
-(ns tx.state-exit
-  (:require entity.state.exit.player-item-on-cursor
-            entity.state.exit.player-moving
-            entity.state.exit.npc-sleeping
-            entity.state.exit.npc-moving))
+(ns tx.state-exit)
 
-(def k->f
-  {
-   :player-item-on-cursor entity.state.exit.player-item-on-cursor/f
-   :player-moving entity.state.exit.player-moving/f
-   :npc-sleeping entity.state.exit.npc-sleeping/f
-   :npc-moving entity.state.exit.npc-moving/f
-   }
-  )
-
-(defn do! [ctx eid [state-k state-v]]
-  (if-let [f (k->f state-k)]
+(defn do!
+  [{:keys [ctx/k->state-exit :as ctx]}
+   eid
+   [state-k state-v]]
+  (if-let [f (k->state-exit state-k)]
     (f state-v eid ctx)
     nil))

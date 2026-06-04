@@ -1,0 +1,6 @@
+{
+ :player-item-on-cursor entity.state.exit.player-item-on-cursor/f
+ :player-moving entity.state.exit.player-moving/f
+ :npc-sleeping entity.state.exit.npc-sleeping/f
+ :npc-moving entity.state.exit.npc-moving/f
+ }
