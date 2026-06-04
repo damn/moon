@@ -44,7 +44,13 @@
                    [render.set-camera-position/step]
                    [render.clear-screen/step]
                    [render.draw-tiled-map/step]
-                   [render.draw-on-world-viewport/step]
+                   [render.draw-on-world-viewport/step [
+                                                        #_draw-on-world-viewport.draw-tile-grid/f
+                                                        draw-on-world-viewport.draw-cell-debug/f
+                                                        draw-on-world-viewport.draw-entities/do!
+                                                        #_moon.geom-test
+                                                        draw-on-world-viewport.highlight-mouseover-tile/f
+                                                        ]]
                    [render.assoc-interaction-state/step]
                    [render.set-cursor/step]
                    [render.handle-player-input/step]
