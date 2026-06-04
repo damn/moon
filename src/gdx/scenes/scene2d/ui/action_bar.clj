@@ -9,7 +9,7 @@
             [clojure.gdx.scene2d.ui.button-group :as button-group]
             [clojure.gdx.scene2d.ui.widget-group.set-fill-parent :refer [set-fill-parent!]]
             [clojure.gdx.scene2d.ui.horizontal-group :as horizontal-group]
-            [gdx.scenes.scene2d.ui.image-button :as image-button]
+            [clojure.gdx.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
@@ -48,9 +48,9 @@
    skin]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
         button (doto (image-button/create
-                      {:drawable (texture-region-drawable/create*
-                                  {:drawable/texture-region texture-region
-                                   :drawable/scale 2})})
+                      (texture-region-drawable/create*
+                       {:drawable/texture-region texture-region
+                        :drawable/scale 2}))
                  (add-listener! (text-tooltip/create tooltip-text skin))
                  (set-user-object! skill-id))]
     (add-actor! horizontal-group button)

@@ -7,7 +7,7 @@
             [clojure.gdx.scene2d.ui.stack :as stack]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [gdx.scenes.scene2d.ui.image-button :as image-button]
+            [clojure.gdx.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
@@ -18,10 +18,9 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (doto (stack/create)
-                (add-actors! [(doto (image-button/create
-                                     {:drawable (texture-region-drawable/create*
-                                                 {:drawable/texture-region texture-region
-                                                  :drawable/scale image-scale})})
+                (add-actors! [(doto (image-button/create (texture-region-drawable/create*
+                                                          {:drawable/texture-region texture-region
+                                                           :drawable/scale image-scale}))
                                 (add-listener! (change-listener/create
                                                 (fn [event actor]
                                                   (on-clicked actor (:stage/ctx (event/stage event))))))

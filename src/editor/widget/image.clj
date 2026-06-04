@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.ui :as ui]
-            [gdx.scenes.scene2d.ui.image-button :as image-button]
+            [clojure.gdx.scene2d.ui.image-button :as image-button]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
@@ -20,8 +20,8 @@
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
   (image-button/create
-   {:drawable (texture-region-drawable/create* {:drawable/texture-region (textures/texture-region textures image)
-                                                :drawable/scale 2})})
+   (texture-region-drawable/create* {:drawable/texture-region (textures/texture-region textures image)
+                                     :drawable/scale 2}))
   #_(ui/image-button image
                      (fn [_actor ctx]
                        (c/add-actor! ctx (scroll-pane/choose-window (texture-rows ctx))))
