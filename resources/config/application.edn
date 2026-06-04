@@ -33,7 +33,7 @@
                    [create.raycaster/step]
                    [create.spawn-player/step]
                    [create.spawn-enemies/step]]
- :dispose! application.dispose/do!
+ :dispose! game.ctx.dispose/do!
  :render!  application.render/do!
  :render-params [
                  [render.get-stage-ctx/step]

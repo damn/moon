@@ -1,4 +1,4 @@
-(ns application.dispose
+(ns game.ctx.dispose
   (:require [clojure.gdx.utils.disposable :as disposable]))
 
 (defn do!
