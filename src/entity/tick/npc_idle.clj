@@ -2,7 +2,7 @@
   (:require [game.effect :as effect]
             [game.skill :as skill]
             [moon.body :as body]
-            [moon.grid :as grid]
+            [moon.grid.nearest-enemy :refer [nearest-enemy]]
             [moon.grid.npc-pathing :as npc-pathing]
             [moon.raycaster :as raycaster]))
 
@@ -23,7 +23,7 @@
            ctx/raycaster]}
    eid]
   (let [entity @eid
-        target (grid/nearest-enemy grid entity)
+        target (nearest-enemy grid entity)
         target (when (and target
                           (raycaster/line-of-sight? raycaster entity @target))
                  target)]

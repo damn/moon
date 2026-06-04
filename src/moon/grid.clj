@@ -1,8 +1,6 @@
 (ns moon.grid
   (:require [moon.body.touched-tiles :refer [touched-tiles]]
-            [moon.cell :as cell]
             [moon.grid.body-occupied-cells :refer [body->occupied-cells]]
-            [moon.faction :as faction]
             [clojure.grid2d.get-cells :refer [get-cells]]))
 
 (defn set-touched-cells! [grid eid]
@@ -29,11 +27,3 @@
   (doseq [cell (:entity/occupied-cells @eid)]
     (assert (get (:occupied @cell) eid))
     (swap! cell update :occupied disj eid)))
-
-(defn nearest-enemy-distance [grid entity]
-  (cell/nearest-entity-distance @(grid (mapv int (:body/position (:entity/body entity))))
-                                (faction/enemy (:entity/faction entity))))
-
-(defn nearest-enemy [grid entity]
-  (cell/nearest-entity @(grid (mapv int (:body/position (:entity/body entity))))
-                       (faction/enemy (:entity/faction entity))))
