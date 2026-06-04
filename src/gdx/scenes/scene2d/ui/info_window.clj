@@ -5,7 +5,7 @@
             [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
             [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
-            [gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.ui.widget-group.pack :refer [pack!]]))

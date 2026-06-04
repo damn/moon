@@ -1,5 +1,5 @@
 (ns moon.ui.error-window
-  (:require [gdx.scenes.scene2d.ui.label :as label]
+  (:require [clojure.gdx.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.repl :as repl]))
 

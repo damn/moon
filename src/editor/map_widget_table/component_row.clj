@@ -6,7 +6,7 @@
             [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
             [clojure.gdx.scene2d.group.children :refer [children]]
-            [gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]))

@@ -8,7 +8,7 @@
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scene2d.ui.image-button :as image-button]
-            [gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn overview-table-rows* [skin image-scale rows]
