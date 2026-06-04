@@ -6,7 +6,7 @@
             [clojure.gdx.scene2d.stage.draw :refer [draw!]]
             [clojure.gdx.scene2d.stage.act :refer [act!]]
             [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
-            [gdx.tiled-map-renderer :as tiled-map-renderer]))
+            [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]))
 
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
                                 ctx/color-setter

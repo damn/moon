@@ -1,6 +1,6 @@
 (ns render.draw-tiled-map
   (:require [gdx.graphics.orthographic-camera :as camera]
-            [gdx.tiled-map-renderer :as tiled-map-renderer]
+            [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]
             [render.draw-tiled-map.color-setter :refer [tile-color-setter*]]
             [moon.raycaster :as raycaster]))
 

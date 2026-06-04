@@ -1,8 +1,8 @@
-(ns gdx.tiled-map-renderer
+(ns clojure.gdx.maps.tiled.renderer
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)
-           (gdx TiledMapRenderer
-                TiledMapRenderer$ColorSetter)))
+           (clojure.gdx.maps.tiled TiledMapRenderer
+                                   TiledMapRenderer$ColorSetter)))
 
 (defn draw!
   [batch world-unit-scale camera tiled-map color-setter]
