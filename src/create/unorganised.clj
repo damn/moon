@@ -18,6 +18,7 @@
          :ctx/k->after-create (edn-resource "config/k->after-create.edn")
          :ctx/k->state-enter (edn-resource "config/k->state-enter.edn")
          :ctx/k->state-exit (edn-resource "config/k->state-exit.edn")
+         :ctx/k->handle-input (edn-resource "config/k->handle-input.edn")
          :ctx/world-unit-scale (float (/ 48))
          :ctx/unit-scale (atom 1)
          :ctx/active-entities nil

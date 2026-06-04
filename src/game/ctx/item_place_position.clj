@@ -5,6 +5,7 @@
 ; Because line of sight checks center of entity only, not corners
 ; this is okay, you have thrown the item over a hill, thats possible.
 (defn item-place-position [{:keys [ctx/world-mouse-position]} player-entity]
+  (assert world-mouse-position)
   (let [player-position (:body/position (:entity/body player-entity))
         ; so you cannot put it out of your own reach
         maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]

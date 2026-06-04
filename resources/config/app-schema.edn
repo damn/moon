@@ -7,6 +7,7 @@
  [:ctx/k->after-create :some]
  [:ctx/k->state-enter :some]
  [:ctx/k->state-exit :some]
+ [:ctx/k->handle-input :some]
  [:ctx/app :some]
  [:ctx/audio :some]
  [:ctx/batch :some]

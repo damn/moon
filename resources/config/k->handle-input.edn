@@ -1,0 +1,5 @@
+{
+ :player-idle handle-input.player-idle/f
+ :player-moving handle-input.player-moving/f
+ :player-item-on-cursor handle-input.player-item-on-cursor/f
+ }
