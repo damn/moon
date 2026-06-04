@@ -3,4 +3,3 @@
 
 (defn get-properties [^TiledMap tiled-map]
   (.getProperties tiled-map))
-

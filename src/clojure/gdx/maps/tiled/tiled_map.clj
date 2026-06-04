@@ -4,8 +4,5 @@
 (defn create []
   (TiledMap.))
 
-(defn props [^TiledMap tiled-map]
-  (.getProperties tiled-map))
-
 (defn layers [^TiledMap tiled-map]
   (.getLayers tiled-map))
