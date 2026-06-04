@@ -1,7 +1,5 @@
 (ns editor.map-widget-table.add-component-window
   (:require [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
-            [editor.map-widget-table.component-row :as component-row]
-            [editor.rebuild :as rebuild]
             [editor.widget :as widget]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
@@ -34,7 +32,7 @@
                                   (fn [event _actor]
                                     (remove! window)
                                     (let [ctx (:stage/ctx (get-stage event))]
-                                      (add-rows! map-widget-table [(component-row/create
+                                      (add-rows! map-widget-table [((:ctx/create-component-row ctx)
                                                                     {:skin skin
                                                                      :editor-widget (widget/build ctx
                                                                                                   (get schemas k)
@@ -43,7 +41,7 @@
                                                                      :k k
                                                                      :display-remove-component-button? (optional? schemas schema k)
                                                                      :table map-widget-table})])
-                                      (rebuild/f! ctx)))))
+                                      ((:ctx/rebuild-editor-window! ctx) ctx)))))
                   )}]))
     (pack! window)
     window))

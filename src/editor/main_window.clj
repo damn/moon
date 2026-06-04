@@ -8,7 +8,6 @@
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
-            [gdx.textures]
             [moon.db.property-types :refer [property-types]]
             [moon.db.get-raw :refer [get-raw]]))
 

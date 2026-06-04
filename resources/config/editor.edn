@@ -21,7 +21,26 @@
                                                                    [create.stage/step]
                                                                    [create.add-stage-actors/step [[editor.main-window/create]]]
                                                                    [create.textures/step]
-                                                                   [editor.app.create/f! editor.map-widget-table/create]]
+                                                                   [editor.app.create/f! {:ctx/add-component-window editor.map-widget-table.add-component-window/f
+                                                                                          :ctx/create-component-row editor.map-widget-table.component-row/create
+                                                                                          :ctx/create-map-widget-table editor.map-widget-table/create
+                                                                                          :ctx/rebuild-editor-window! editor.rebuild/f!
+                                                                                          :ctx/property-k-sort-order [:property/id
+                                                                                                                      :property/pretty-name
+                                                                                                                      :entity/image
+                                                                                                                      :entity/animation
+                                                                                                                      :entity/species
+                                                                                                                      :creature/level
+                                                                                                                      :entity/body
+                                                                                                                      :item/slot
+                                                                                                                      :projectile/speed
+                                                                                                                      :projectile/max-range
+                                                                                                                      :projectile/piercing?
+                                                                                                                      :skill/action-time-modifier-key
+                                                                                                                      :skill/action-time
+                                                                                                                      :skill/start-action-sound
+                                                                                                                      :skill/cost
+                                                                                                                      :skill/cooldown]}]]
                                                  :dispose! editor.app.dispose/dispose!
                                                  :render-pipeline [[editor.app.render/render!]]
                                                  :resize! editor.app.resize/resize!

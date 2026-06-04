@@ -12,11 +12,14 @@
    {:keys [ctx/db
            ctx/skin
            ctx/create-map-widget-table
-           ctx/property-k-sort-order]
+           ctx/property-k-sort-order
+           ctx/create-component-row
+           ]
     :as ctx}]
   (let [schemas (:db/schemas db)]
     (create-map-widget-table
-     {:skin skin
+     {:create-component-row create-component-row
+      :skin skin
       :schema schema
       :k->widget (into {}
                        (for [[k v] m]
