@@ -2,7 +2,7 @@
   (:require [clojure.order :refer [sort-by-order]]
             [game.ctx.mouse-position :refer [mouse-position]]
             [gdx.stage :as stage]
-            [moon.grid :as grid]
+            [moon.grid.point-to-entities :refer [point->entities]]
             [moon.raycaster :as raycaster]))
 
 (defn step
@@ -20,7 +20,7 @@
                   nil
                   (let [player @player-eid
                         hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
-                                     (grid/point->entities grid position))]
+                                     (point->entities grid position))]
                     (->> render-z-order
                          (sort-by-order hits #(:body/z-order (:entity/body @%)))
                          reverse

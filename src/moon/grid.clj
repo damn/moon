@@ -1,18 +1,11 @@
 (ns moon.grid
-  (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
-            [moon.body.overlaps :refer [overlaps?]]
+  (:require [moon.body.overlaps :refer [overlaps?]]
             [moon.body.touched-tiles :refer [touched-tiles]]
-            [moon.body.rectangle :refer [->rectangle]]
             [moon.cell :as cell]
             [moon.grid.cells-entities :as cells->entities]
             [moon.grid.body-occupied-cells :refer [body->occupied-cells]]
             [moon.faction :as faction]
             [clojure.grid2d.get-cells :refer [get-cells]]))
-
-(defn point->entities [g2d pos]
-  (when-let [cell (g2d (mapv int pos))]
-    (filter #(gdx-rectangle/contains? (->rectangle (:entity/body @%)) pos)
-            (:entities @cell))))
 
 (defn set-touched-cells! [grid eid]
   (let [cells (get-cells grid (touched-tiles (:entity/body @eid)))]
