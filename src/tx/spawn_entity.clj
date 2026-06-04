@@ -1,18 +1,16 @@
 (ns tx.spawn-entity
   (:require [qrecord.core :as q]
+            [game.ctx.create-component :refer [create-component]]
             [game.ctx.register-eid :as register-eid]))
 
 (q/defrecord Entity [entity/body])
 
 (defn do!
-  [{:keys [ctx/k->create
-           ctx/k->after-create]
+  [{:keys [ctx/k->after-create]
     :as ctx}
    entity]
   (let [entity (reduce (fn [m [k v]]
-                         (assoc m k (if-let [f (k->create k)]
-                                      (f v ctx)
-                                      v)))
+                         (assoc m k (create-component ctx k v)))
                        {}
                        entity)
         entity (merge (map->Entity {}) entity)
