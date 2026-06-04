@@ -1,7 +1,7 @@
 (ns entity.tick.movement
   (:require [clojure.math :as math]
             [clojure.math.vector2 :as v]
-            [moon.grid :as grid]
+            [moon.grid.valid-position :refer [valid-position?]]
             [moon.number :as number]))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
@@ -12,7 +12,7 @@
 
 (defn- try-move [grid body entity-id movement]
   (let [new-body (move-body body movement)]
-    (when (grid/valid-position? grid new-body entity-id)
+    (when (valid-position? grid new-body entity-id)
       new-body)))
 
 (defn- try-move-solid-body [grid body entity-id {[vx vy] :direction :as movement}]

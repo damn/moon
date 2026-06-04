@@ -1,6 +1,7 @@
 (ns game.ctx.register-eid
   (:require [moon.content-grid :as content-grid]
-            [moon.grid :as grid]))
+            [moon.grid :as grid]
+            [moon.grid.valid-position :refer [valid-position?]]))
 
 (defn do! [ctx eid]
   (assert (and (not (contains? @eid :entity/id))))
@@ -14,7 +15,7 @@
 
   (assert (:entity/body @eid)) ; <- inside the grid add fn ?
   (when (:body/collides? (:entity/body @eid))
-    (assert (grid/valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
+    (assert (valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
   (grid/set-touched-cells! (:ctx/grid ctx) eid)
   (when (:body/collides? (:entity/body @eid)) ; entity/collides? separate fooziboosh, no 'when' just a callback?
     (grid/set-occupied-cells! (:ctx/grid ctx) eid))
