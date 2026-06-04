@@ -1,8 +1,7 @@
 (ns render.assoc-interaction-state
   (:require [clojure.math.vector2 :as v]
-            [game.ctx.mouse-position :refer [mouse-position]]
+            [game.ctx.mouseover-actor :refer [mouseover-actor]]
             [game.skill :as skill]
-            [gdx.stage :as stage]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
@@ -61,4 +60,4 @@
                                                        world-mouse-position
                                                        mouseover-eid
                                                        player-eid
-                                                       (stage/mouseover-actor stage (mouse-position ctx)))))
+                                                       (mouseover-actor ctx))))
