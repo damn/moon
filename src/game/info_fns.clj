@@ -3,25 +3,19 @@
             [moon.number :as number]
             [moon.timer :as timer]
             info.entity.stats
-            info.stats.modifiers))
+            info.stats.modifiers
+            info.effects.target.convert
+            info.effects.target.damage
+            info.effects.target.kill
+            info.creature.level))
 
 (def mapping
   {
-   :creature/level (fn [v _ctx]
-                     (str "Level: " v))
+   :creature/level info.creature.level/f
    :entity/stats info.entity.stats/f
-   :effects.target/convert (fn [_ _ctx]
-                             "Converts target to your side.")
-   :effects.target/damage (fn [{[min max] :damage/min-max} _ctx]
-                            (str min "-" max " damage")
-                            #_(if source
-                                (let [modified (stats/damage @source damage)]
-                                  (if (= damage modified)
-                                    (damage/info-text damage)
-                                    (str (damage/info-text damage) "\nModified: " (damage/info modified))))
-                                (damage/info-text damage)) )
-   :effects.target/kill (fn [_ _ctx]
-                          "Kills target")
+   :effects.target/convert info.effects.target.convert/f
+   :effects.target/damage info.effects.target.damage/f
+   :effects.target/kill info.effects.target.kill/f
    :effects.target/melee-damage (fn [_ _ctx]
                                   (str "Damage based on entity strength."
                                        #_(when source
