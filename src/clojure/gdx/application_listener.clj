@@ -6,8 +6,7 @@
   [{:keys [state-var
            create-pipeline
            dispose!
-           render!
-           render-params
+           render-pipeline
            resize!]}]
   (let [state @state-var]
     (reify ApplicationListener
@@ -21,7 +20,11 @@
         (dispose! @state))
 
       (render [_]
-        (swap! state render! render-params))
+        (swap! state (fn [ctx]
+                       (reduce (fn [ctx [f & params]]
+                                 (apply f ctx params))
+                               ctx
+                               render-pipeline))))
 
       (resize [_ width height]
         (resize! @state width height))

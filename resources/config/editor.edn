@@ -23,8 +23,7 @@
                                                                    [create.textures/step]
                                                                    [editor.app.create/f! editor.map-widget-table/create]]
                                                  :dispose! editor.app.dispose/dispose!
-                                                 :render! editor.app.render/render!
-                                                 :render-params nil
+                                                 :render-pipeline [[editor.app.render/render!]]
                                                  :resize! editor.app.resize/resize!
                                                  :title "!Editor!"
                                                  :windowed-mode {:width 1440 :height 900}

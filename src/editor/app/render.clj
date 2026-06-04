@@ -6,8 +6,7 @@
 
 (defn render!
   [{:keys [ctx/stage]
-    :as ctx}
-   _params]
+    :as ctx}]
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]

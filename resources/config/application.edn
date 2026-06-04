@@ -34,33 +34,32 @@
                    [create.spawn-player/step]
                    [create.spawn-enemies/step]]
  :dispose! game.ctx.dispose/do!
- :render!  application.render/do!
- :render-params [
-                 [render.get-stage-ctx/step]
-                 [render.validate/step]
-                 [render.update-mouse-positions/step]
-                 [render.update-mouseover-eid/step]
-                 [render.check-debug-viewer/step]
-                 [render.set-active-entities/step]
-                 [render.set-camera-position/step]
-                 [render.clear-screen/step]
-                 [render.draw-tiled-map/step]
-                 [render.draw-on-world-viewport/step]
-                 [render.assoc-interaction-state/step]
-                 [render.set-cursor/step]
-                 [render.handle-player-input/step]
-                 [render.dissoc-interaction-state/step]
-                 [render.assoc-paused/step]
-                 [render.if-not-paused/step [
-                                             render.if-not-paused.update-time/f
-                                             render.if-not-paused.update-potential-fields/f
-                                             render.if-not-paused.tick-entities/f
-                                             ]]
-                 [render.remove-destroyed-entities/step]
-                 [render.window-camera-controls/step]
-                 [render.update-draw-stage/step]
-                 [render.validate/step]
-                 ]
+ :render-pipeline [
+                   [render.get-stage-ctx/step]
+                   [render.validate/step]
+                   [render.update-mouse-positions/step]
+                   [render.update-mouseover-eid/step]
+                   [render.check-debug-viewer/step]
+                   [render.set-active-entities/step]
+                   [render.set-camera-position/step]
+                   [render.clear-screen/step]
+                   [render.draw-tiled-map/step]
+                   [render.draw-on-world-viewport/step]
+                   [render.assoc-interaction-state/step]
+                   [render.set-cursor/step]
+                   [render.handle-player-input/step]
+                   [render.dissoc-interaction-state/step]
+                   [render.assoc-paused/step]
+                   [render.if-not-paused/step [
+                                               render.if-not-paused.update-time/f
+                                               render.if-not-paused.update-potential-fields/f
+                                               render.if-not-paused.tick-entities/f
+                                               ]]
+                   [render.remove-destroyed-entities/step]
+                   [render.window-camera-controls/step]
+                   [render.update-draw-stage/step]
+                   [render.validate/step]
+                   ]
  :resize!  application.resize/do!
  :title "Moon"
  :windowed-mode {:width 1440

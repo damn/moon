@@ -30,8 +30,7 @@
    {:state-var #'state
     :create-pipeline [[create/f!]]
     :dispose! dispose!
-    :render! render/f!
-    :render-params nil
+    :render-pipeline [[render/f!]]
     :resize! resize!
     :title "Levelgen Test"
     :windowed-mode {:width 1440 :height 900}
