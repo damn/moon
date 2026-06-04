@@ -12,7 +12,7 @@
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
             [editor.property-overview-window :as property-overview-window]
             [gdx.scenes.scene2d.ui :as ui]
-            [gdx.scenes.scene2d.ui.image :as image]
+            [clojure.gdx.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.db :as db]
             [moon.property :as property]
@@ -53,8 +53,7 @@
                                                          (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
-          {:actor (doto (image/create
-                         {:content (textures/texture-region textures (property/image property))})
+          {:actor (doto (image/create (textures/texture-region textures (property/image property)))
                     (add-listener! (text-tooltip/create (property/tooltip property) skin))
                     (set-user-object! property-id))}))
       (for [id property-ids]

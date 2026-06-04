@@ -4,7 +4,7 @@
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.group.children :refer [children]]
             [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
-            [gdx.scenes.scene2d.ui.image :as image]
+            [clojure.gdx.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn- find-inventory-window-cell [group cell]
