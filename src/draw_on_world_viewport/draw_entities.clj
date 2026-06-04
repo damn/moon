@@ -1,6 +1,7 @@
 (ns draw-on-world-viewport.draw-entities
   (:require [clojure.order :refer [sort-by-order]]
             [game.ctx.draw :refer [draw!]]
+            [game.ctx.draw-component :refer [draw-component]]
             [moon.body :as body]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]))
@@ -40,7 +41,7 @@
                                        (:colors/debug-body-outline colors)))))
         (doseq [[k v] entity
                 :when (get render-layer k)]
-          (draw! ctx ((k->render k) v entity ctx))))
+          (draw! ctx (draw-component ctx entity k v))))
        (catch Throwable t
          (draw! ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
          (throwable/pretty-pst t))))
