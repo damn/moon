@@ -2,7 +2,7 @@
   (:require [clojure.core.edn-resource :refer [edn-resource]]
             [clojure.gdx.graphics.texture :as texture]
             [clojure.gdx.maps.map-layers :as layers]
-            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [clojure.gdx.utils.disposable :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
@@ -32,7 +32,7 @@
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
     (-> tiled-map
-        tiled-map/layers
+        get-layers
         (layers/get "creatures")
         (set-visible! true))
     (show-whole-map/f! ctx)

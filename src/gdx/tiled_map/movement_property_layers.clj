@@ -1,11 +1,11 @@
 (ns gdx.tiled-map.movement-property-layers
-  (:require [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [clojure.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.gdx.maps.map-properties.get :refer [props-get]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-properties :refer [get-properties]]))
 
 (defn f
   [tiled-map]
   (->> tiled-map
-       tiled-map/layers
+       get-layers
        reverse
        (filter #(props-get (get-properties %) "movement-properties"))))

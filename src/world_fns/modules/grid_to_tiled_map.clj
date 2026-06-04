@@ -1,6 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require [clojure.gdx.maps.map-properties :as props]
-            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.gdx.maps.tiled.tiled-map.get-properties :as tm]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-properties :refer [get-properties]]
@@ -21,7 +21,7 @@
   {:properties (merge (props/->clj (tm/get-properties schema-tiled-map))
                       {"width" (g2d/width grid)
                        "height" (g2d/height grid)})
-   :layers (for [layer (tiled-map/layers schema-tiled-map)]
+   :layers (for [layer (get-layers schema-tiled-map)]
              {:name (get-name layer)
               :visible? (visible? layer)
               :properties (props/->clj (get-properties layer))

@@ -1,6 +1,7 @@
 #_(ns moon.mapgen-test
   (:require [clojure.string :as str]
             [clojure.pprint :refer [pprint]]
+            [clojure.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [moon.utils.camera :as camera-utils]))
@@ -23,7 +24,7 @@
                                  (g/world-mouse-position ctx)
                                  [modules/width modules/height])))
           (when area-level-grid
-            (let [layer (.get (tiled-map/layers this) "creatures")]
+            (let [layer (.get (get-layers this) "creatures")]
               (when-let [cell (get-cell layer tile)]
                 (when-let [id (-> cell
                                   cell/tile
@@ -87,7 +88,7 @@
            ;:area-level-grid area-level-grid
            :start-position start-position)
     (show-whole-map! (:viewport/camera world-viewport) tiled-map)
-    (set-visible! (.get (tiled-map/layers this) "creatures") true)))
+    (set-visible! (.get (get-layers this) "creatures") true)))
 
 #_(defn ->generate-map-window [c level-id]
     (doto (window/create {:title "Properties"
