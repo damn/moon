@@ -10,13 +10,13 @@
 (defn set-touched-cells! [grid eid]
   (let [cells (get-cells grid (touched-tiles (:entity/body @eid)))]
     (assert (not-any? nil? cells))
-    (swap! eid assoc ::touched-cells cells) ; TODO :entity/touched-cells ....
+    (swap! eid assoc :entity/touched-cells cells)
     (doseq [cell cells]
       (assert (not (get (:entities @cell) eid)))
       (swap! cell update :entities conj eid))))
 
 (defn remove-from-touched-cells! [_ eid]
-  (doseq [cell (::touched-cells @eid)]
+  (doseq [cell (:entity/touched-cells @eid)]
     (assert (get (:entities @cell) eid))
     (swap! cell update :entities disj eid)))
 
@@ -25,10 +25,10 @@
     (doseq [cell cells]
       (assert (not (get (:occupied @cell) eid)))
       (swap! cell update :occupied conj eid))
-    (swap! eid assoc ::occupied-cells cells)))
+    (swap! eid assoc :entity/occupied-cells cells)))
 
 (defn remove-from-occupied-cells! [_ eid]
-  (doseq [cell (::occupied-cells @eid)]
+  (doseq [cell (:entity/occupied-cells @eid)]
     (assert (get (:occupied @cell) eid))
     (swap! cell update :occupied disj eid)))
 
