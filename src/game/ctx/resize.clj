@@ -1,4 +1,4 @@
-(ns application.resize
+(ns game.ctx.resize
   (:require [clojure.gdx.utils.viewport :as viewport]))
 
 (defn do!

@@ -60,7 +60,7 @@
                    [render.update-draw-stage/step]
                    [render.validate/step]
                    ]
- :resize!  application.resize/do!
+ :resize!  game.ctx.resize/do!
  :title "Moon"
  :windowed-mode {:width 1440
                  :height 900}
