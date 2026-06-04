@@ -2,7 +2,7 @@
   (:require [clojure.rand.sshuffle :refer [sshuffle]]
             [clojure.rand.srand :refer [srand]]
             [clojure.rand.srand-int :refer [srand-int]]
-            [clojure.math.position :as position]))
+            [clojure.math.position.get-4-neighbours :refer [get-4-neighbours]]))
 
 (defn create-order [random]
   (sshuffle (range 4) random))
@@ -18,7 +18,7 @@
   (when (< (srand random) turn-ratio)
     (reset! current-order (create-order random)))
   (take n
-        (get-in-order (position/get-4-neighbours posi)
+        (get-in-order (get-4-neighbours posi)
                       @current-order)))
 
 (defn- get-default-adj-num [open-paths random]

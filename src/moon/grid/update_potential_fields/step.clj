@@ -1,7 +1,7 @@
 (ns moon.grid.update-potential-fields.step
   (:require [moon.cell :as cell]
             [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
-            [clojure.math.position :as position]))
+            [clojure.math.position.is-diagonal :refer [diagonal?]]))
 
 ; TODO performance
 ; * cached-adjacent-non-blocked-cells ? -> no need for cell blocked check?
@@ -21,8 +21,8 @@
             :when (not (or (cell/pf-blocked? adjacent-cell*)
                            (marked? adjacent-cell*)))
             :let [distance-value (+ (float (distance cell*))
-                                    (float (if (position/diagonal? (:position cell*)
-                                                                   (:position adjacent-cell*))
+                                    (float (if (diagonal? (:position cell*)
+                                                          (:position adjacent-cell*))
                                              1.4 ; square root of 2 * 10
                                              1)))]]
       (swap! adjacent-cell cell/add-field-data faction distance-value (nearest-entity cell*))

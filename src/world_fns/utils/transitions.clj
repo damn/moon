@@ -1,8 +1,8 @@
 (ns world-fns.utils.transitions
-  (:require [clojure.math.position :as position]))
+  (:require [clojure.math.position.get-4-neighbours :refer [get-4-neighbours]]))
 
 (let [idxvalues-order [[1 0] [-1 0] [0 1] [0 -1]]]
-  (assert (= (position/get-4-neighbours [0 0])
+  (assert (= (get-4-neighbours [0 0])
              idxvalues-order)))
 
 (comment
@@ -21,6 +21,6 @@
 
 (defn idx-value [position position->transition?]
   (->> position
-       position/get-4-neighbours
+       get-4-neighbours
        (map-indexed (partial calculate-index-value position->transition?))
        (apply +)))
