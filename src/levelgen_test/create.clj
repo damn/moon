@@ -50,7 +50,6 @@
         ctx (assoc ctx
                    :ctx/input input
                    :ctx/world-viewport world-viewport
-                   :ctx/ui-viewport ui-viewport
                    :ctx/camera (:viewport/camera world-viewport)
                    :ctx/color-setter (constantly (float-bits [1 1 1 1]))
                    :ctx/zoom-speed 0.1

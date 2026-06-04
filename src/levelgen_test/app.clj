@@ -16,10 +16,10 @@
   (disposable/dispose! tiled-map))
 
 (defn resize!
-  [{:keys [ctx/ui-viewport
+  [{:keys [ctx/stage
            ctx/world-viewport]}
    width height]
-  (viewport/update! ui-viewport    width height true)
+  (viewport/update! (:stage/viewport stage) width height true)
   (viewport/update! world-viewport width height false))
 
 (def state (atom nil))

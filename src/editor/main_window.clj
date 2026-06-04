@@ -12,7 +12,9 @@
             [moon.db.property-types :refer [property-types]]
             [moon.db.get-raw :refer [get-raw]]))
 
-(defn create [db skin]
+(defn create
+  [{:keys [ctx/db
+           ctx/skin]}]
   (window/create
    {:title "Edit"
     :skin skin

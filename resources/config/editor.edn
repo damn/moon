@@ -15,7 +15,13 @@
  (clojure.gdx.backends.lwjgl.use-glfw-async/f!)
 
  (clojure.gdx.backends.lwjgl.application/start! {:state-var editor.app/state
-                                                 :create-pipeline [[editor.app.create/f!]]
+                                                 :create-pipeline [[create.batch/step]
+                                                                   [create.skin/step]
+                                                                   [create.db/step]
+                                                                   [create.stage/step]
+                                                                   [create.add-stage-actors/step [[editor.main-window/create]]]
+                                                                   [create.textures/step]
+                                                                   [editor.app.create/f! editor.map-widget-table/create]]
                                                  :dispose! editor.app.dispose/dispose!
                                                  :render! editor.app.render/render!
                                                  :render-params nil
