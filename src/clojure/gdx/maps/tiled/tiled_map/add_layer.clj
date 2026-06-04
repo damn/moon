@@ -2,6 +2,7 @@
   (:require [clojure.gdx.maps.map-layers :as layers]
             [clojure.gdx.maps.map-properties.get :refer [props-get]]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map.get-properties :refer [get-properties]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.create :as create-layer]))
 
 (defn- create-layer*
@@ -9,7 +10,7 @@
                      visible?
                      properties
                      tiles]}]
-  (let [props (tiled-map/props tiled-map)]
+  (let [props (get-properties tiled-map)]
     (create-layer/f {:width      (props-get props "width")
                      :height     (props-get props "height")
                      :tilewidth  (props-get props "tilewidth")

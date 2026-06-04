@@ -1,6 +1,6 @@
 (ns world-fns.modules.place-step
   (:require [clojure.gdx.maps.map-properties.get :refer [props-get]]
-            [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map.get-properties :refer [get-properties]]
             [world-fns.modules.place-step.place-star :refer [place-module*]]))
 
 (def ^:private module-offset-tiles 1)
@@ -15,9 +15,9 @@
    unscaled-floor-positions
    unscaled-transition-positions]
   (let [[modules-width modules-height] modules-scale
-        _ (assert (and (= (props-get (tiled-map/props modules-tiled-map) "width")
+        _ (assert (and (= (props-get (get-properties modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (props-get (tiled-map/props modules-tiled-map) "height")
+                       (= (props-get (get-properties modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* module-offset-tiles
