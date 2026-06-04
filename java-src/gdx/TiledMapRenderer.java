@@ -18,6 +18,9 @@ import com.badlogic.gdx.math.Rectangle;
 
 import static com.badlogic.gdx.graphics.g2d.Batch.*;
 
+// Modified version of:
+// com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
+// with added ColorSetter/apply
 public class TiledMapRenderer {
 
   public interface ColorSetter {
