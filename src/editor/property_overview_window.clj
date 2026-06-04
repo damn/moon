@@ -2,7 +2,7 @@
   (:require [editor.constants :refer [property-type->overview-table-props]]
             [editor.property-overview-window.table-rows :refer [overview-table-rows*]]
             [gdx.scenes.scene2d.ui.window :as window]
-            [moon.db :as db]
+            [moon.db.all-raw :refer [all-raw]]
             [moon.property :as property]
             [moon.textures :as textures]))
 
@@ -16,7 +16,7 @@
                 extra-info-text
                 columns
                 image-scale]} (get property-type->overview-table-props property-type)]
-    (->> (db/all-raw db property-type)
+    (->> (all-raw db property-type)
          (sort-by sort-by-fn)
          (map (fn [property]
                 {:texture-region (textures/texture-region textures (property/image property))

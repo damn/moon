@@ -7,7 +7,7 @@
             [clojure.gdx.utils.disposable :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
-            [moon.db :as db]))
+            [moon.db.all-raw :refer [all-raw]]))
 
 (defn f
   [{:keys [ctx/db
@@ -19,7 +19,7 @@
                 (f
                  (assoc params
                         :level/creature-properties (moon.creature-tiles/prepare
-                                                    (db/all-raw db :properties/creatures)
+                                                    (all-raw db :properties/creatures)
                                                     (fn [{:keys [image/file image/bounds]}]
                                                       (assert file)
                                                       (assert (contains? textures file))

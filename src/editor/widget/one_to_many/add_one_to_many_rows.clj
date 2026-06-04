@@ -14,7 +14,7 @@
             [gdx.scenes.scene2d.ui :as ui]
             [clojure.gdx.scene2d.ui.image :as image]
             [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
-            [moon.db :as db]
+            [moon.db.get-raw :refer [get-raw]]
             [moon.property :as property]
             [moon.textures :as textures]))
 
@@ -52,7 +52,7 @@
                                                          (remove! (find-ancestor actor ui/window?))
                                                          (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
-        (let [property (db/get-raw db property-id)]
+        (let [property (get-raw db property-id)]
           {:actor (doto (image/create (textures/texture-region textures (property/image property)))
                     (add-listener! (text-tooltip/create (property/tooltip property) skin))
                     (set-user-object! property-id))}))

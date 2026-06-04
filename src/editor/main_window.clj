@@ -9,13 +9,14 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.textures]
-            [moon.db :as db]))
+            [moon.db.property-types :refer [property-types]]
+            [moon.db.get-raw :refer [get-raw]]))
 
 (defn create [db skin]
   (window/create
    {:title "Edit"
     :skin skin
-    :table/rows (for [property-type (sort (db/property-types db))]
+    :table/rows (for [property-type (sort (property-types db))]
                   [{:actor (doto (text-button/create
                                   {:text (str/capitalize (name property-type))
                                    :skin skin})
@@ -36,4 +37,4 @@
                                                                                 (add-actor! stage
                                                                                             (editor.window/property-editor-window
                                                                                              {:ctx ctx
-                                                                                              :property (db/get-raw db id)})))})))))))}])}))
+                                                                                              :property (get-raw db id)})))})))))))}])}))

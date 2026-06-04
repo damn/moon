@@ -1,6 +1,6 @@
 (ns create.spawn-player
   (:require [game.ctx.do :refer [do!]]
-            [moon.db :as db]))
+            [moon.db.build :refer [build]]))
 
 (defn step
   [{:keys [ctx/db
@@ -9,7 +9,7 @@
     :as ctx}]
   (do! ctx
        [[:tx/spawn-creature {:position (mapv (partial + 0.5) start-position)
-                             :creature-property (db/build db :creatures/vampire)
+                             :creature-property (build db :creatures/vampire)
                              :components {:entity/fsm {:fsm :fsms/player
                                                        :initial-state :player-idle}
                                           :entity/faction :good

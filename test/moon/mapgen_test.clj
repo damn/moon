@@ -1,6 +1,7 @@
 #_(ns moon.mapgen-test
   (:require [clojure.string :as str]
             [clojure.pprint :refer [pprint]]
+            [moon.db.build :refer [build]]
             [clojure.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
@@ -80,7 +81,7 @@
 (def ^:private world-id :worlds/uf-caves)
 
 #_(defn- generate-screen-ctx [c properties]
-  (let [{:keys [tiled-map start-position]} (generate-level (db/build db world-id))
+  (let [{:keys [tiled-map start-position]} (generate-level (build db world-id))
         atom-data (current-data)]
     (disp/dispose! (:tiled-map @atom-data))
     (swap! atom-data assoc
@@ -93,8 +94,8 @@
 #_(defn ->generate-map-window [c level-id]
     (doto (window/create {:title "Properties"
                           :cell-defaults {:pad 10}
-                          :rows [[(label/create {:label/text (with-out-str (pprint (db/build db level-id)))})]
-                                 [(text-button "Generate" #(try (generate-screen-ctx c (db/build db level-id))
+                          :rows [[(label/create {:label/text (with-out-str (pprint (build db level-id)))})]
+                                 [(text-button "Generate" #(try (generate-screen-ctx c (build db level-id))
                                                                 (catch Throwable t
                                                                   (pretty-pst t)
                                                                   (add-actor! stage (error-window/create skin t))

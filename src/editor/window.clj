@@ -15,7 +15,8 @@
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [moon.db :as db]
+            [moon.db.delete :refer [delete!]]
+            [moon.db.update :refer [update!]]
             [moon.property.type :refer [property->type]]))
 
 (defn property-editor-window
@@ -31,9 +32,9 @@
         get-widget-value #(widget/value schema widget schemas)
         property-id (:property/id property)
         clicked-delete-fn (with-window-close/f (fn [db]
-                                                 (db/delete! db property-id)))
+                                                 (delete! db property-id)))
         clicked-save-fn (with-window-close/f (fn [db]
-                                               (db/update! db (get-widget-value))))
+                                               (update! db (get-widget-value))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
