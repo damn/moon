@@ -1,5 +1,5 @@
 (ns clojure.grid2d.flood-fill
-  (:require [clojure.math.position :as position]
+  (:require [clojure.math.position.get-8-neighbours :refer [get-8-neighbours]]
             [clojure.m.assoc-ks :refer [assoc-ks]]))
 
 (defn f [grid start walk-on-position?]
@@ -10,7 +10,7 @@
       (recur (filter #(and (get grid %)
                            (walk-on-position? %))
                      (distinct
-                      (mapcat position/get-8-neighbours
+                      (mapcat get-8-neighbours
                               next-positions)))
              (concat filled next-positions)
              (assoc-ks grid next-positions nil))
