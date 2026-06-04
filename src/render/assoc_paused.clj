@@ -1,6 +1,6 @@
 (ns render.assoc-paused
-  (:require [clojure.gdx.application :as app]
-            [clojure.gdx.input :as input]
+  (:require [game.ctx.key-pressed :refer [key-pressed?]]
+            [game.ctx.key-just-pressed :refer [key-just-pressed?]]
             [game.constants :refer [pausing?]]))
 
 (def state->pause-game?
@@ -14,13 +14,12 @@
    })
 
 (defn step
-  [{:keys [ctx/app
-           ctx/controls
+  [{:keys [ctx/controls
            ctx/player-eid]
     :as ctx}]
   (assoc ctx :ctx/paused?
          (or #_error
              (and pausing?
                   (state->pause-game? (:state (:entity/fsm @player-eid)))
-                  (not (or (input/key-just-pressed? (app/input app) (:unpause-once controls))
-                           (input/key-pressed? (app/input app) (:unpause-continously controls))))))))
+                  (not (or (key-just-pressed? ctx (:unpause-once controls))
+                           (key-pressed? ctx (:unpause-continously controls))))))))

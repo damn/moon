@@ -1,11 +1,7 @@
 (ns render.clear-screen
-  (:require [clojure.gdx.application :as app]
-            [clojure.gdx.graphics :as graphics]
-            [clojure.gdx.graphics.gl20 :as gl20]))
+  (:require [game.ctx.clear-screen :refer [clear-screen!]]))
 
 (defn step
-  [{:keys [ctx/app] :as ctx}]
-  (let [gl (graphics/gl20 (app/graphics app))]
-    (gl20/clear-color! gl 0 0 0 0)
-    (gl20/clear! gl gl20/color-buffer-bit))
+  [ctx]
+  (clear-screen! ctx 0 0 0 0)
   ctx)
