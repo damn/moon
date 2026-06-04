@@ -1,6 +1,6 @@
 (ns clojure.gdx.maps.tiled.tiled-map-tile-layer.create
   (:require [clojure.gdx.maps.map-properties :as props]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.properties :refer [get-properties]]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-properties :refer [get-properties]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
                                         TiledMapTileLayer$Cell)))

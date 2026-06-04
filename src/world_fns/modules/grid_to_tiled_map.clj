@@ -2,7 +2,7 @@
   (:require [clojure.gdx.maps.map-properties :as props]
             [clojure.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.properties :refer [get-properties]]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-properties :refer [get-properties]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
