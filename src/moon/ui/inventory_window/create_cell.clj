@@ -10,7 +10,7 @@
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
-            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.event.get-stage :as event]
             [clojure.gdx.scene2d.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
@@ -56,7 +56,7 @@
                                           :cell-size cell-size}))])
        (add-listener! (click-listener/create
                        (fn [event _x _y]
-                         (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/stage event))
+                         (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/get-stage event))
                                entity @player-eid
                                state-k (:state (:entity/fsm entity))]
                            (do! ctx

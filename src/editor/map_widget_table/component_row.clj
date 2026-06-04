@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.actor.get-user-object :refer [get-user-object]]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [editor.rebuild :as rebuild]
             [clojure.gdx.scene2d.group.children :refer [children]]
@@ -29,7 +29,7 @@
                                                                                    (and (get-user-object actor)
                                                                                         (= k ((get-user-object actor) 0))))
                                                                                  (children table))))
-                                                         (rebuild/f! (:stage/ctx (event/stage event))))))))
+                                                         (rebuild/f! (:stage/ctx (get-stage event))))))))
                             :left? true}
                            {:actor (label/create
                                     {:text (k-label-text/f k)

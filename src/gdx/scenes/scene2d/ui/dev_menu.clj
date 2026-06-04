@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.actor.create :as actor]
             [clojure.gdx.scene2d.actor.set-touchable :refer [set-touchable!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
@@ -22,7 +22,7 @@
                    (doto (text-button/create {:text label :skin skin})
                      (add-listener! (change-listener/create
                                      (fn [event actor]
-                                       (on-click actor (:stage/ctx (event/stage event)))))))})]})
+                                       (on-click actor (:stage/ctx (get-stage event)))))))})]})
 
 (defn- main-table [skin menus update-labels]
   (let [table (table/create
@@ -31,7 +31,7 @@
                                 (doto (text-button/create {:text label :skin skin})
                                   (add-listener! (change-listener/create
                                                   (fn [event actor]
-                                                    (add-actor! (event/stage event)
+                                                    (add-actor! (get-stage event)
                                                                 (window/create (create-window skin label items)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]

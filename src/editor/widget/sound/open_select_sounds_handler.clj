@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scene2d.actor.get-height :refer [get-height]]
             [clojure.gdx.scene2d.actor.get-width :refer [get-width]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
             [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [game.ctx.do :refer [do!]]
@@ -31,13 +31,13 @@
                                                                  :skin skin})
                                                            (add-listener! (change-listener/create
                                                                            (fn [event actor]
-                                                                             ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/stage event)))))))}
+                                                                             ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (get-stage event)))))))}
                                                  {:actor (doto (text-button/create
                                                                 {:text "play!"
                                                                  :skin skin})
                                                            (add-listener! (change-listener/create
                                                                            (fn [event _actor]
-                                                                             (do! (:stage/ctx (event/stage event))
+                                                                             (do! (:stage/ctx (get-stage event))
                                                                                   [[:tx/sound sound-name]])))))}])} )]
                       {:actor (scroll-pane/create
                                {:actor table

@@ -1,7 +1,7 @@
 (ns editor.property-overview-window.table-rows
   (:require [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.actor.set-touchable :refer [set-touchable!]]
-            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.gdx.scene2d.touchable :as touchable]
             [clojure.gdx.scene2d.ui.stack :as stack]
@@ -23,7 +23,7 @@
                                                            :drawable/scale image-scale}))
                                 (add-listener! (change-listener/create
                                                 (fn [event actor]
-                                                  (on-clicked actor (:stage/ctx (event/stage event))))))
+                                                  (on-clicked actor (:stage/ctx (get-stage event))))))
                                 (add-listener! (text-tooltip/create tooltip skin)))
                               (doto (label/create
                                      {:text extra-info-text

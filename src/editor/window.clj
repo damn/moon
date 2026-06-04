@@ -6,7 +6,7 @@
             [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [clojure.gdx.scene2d.group.add-actor :refer [add-actors!]]
-            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.event.get-stage :as event]
             [clojure.gdx.scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
             [editor.widget :as widget]
             [editor.window.with-window-close :as with-window-close]
@@ -40,14 +40,14 @@
                                            :skin skin})
                                      (add-listener! (change-listener/create
                                                      (fn [event actor]
-                                                       (clicked-save-fn actor (:stage/ctx (event/stage event)))))))
+                                                       (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
                                      (add-listener! (change-listener/create
                                                      (fn [event actor]
-                                                       (clicked-delete-fn actor (:stage/ctx (event/stage event)))))))
+                                                       (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
     (doto (window/create
            {:title "[SKY]Property[]"

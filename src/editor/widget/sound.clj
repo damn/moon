@@ -1,6 +1,6 @@
 (ns editor.widget.sound
   (:require [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
             [editor.widget :as widget]
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
@@ -19,6 +19,6 @@
                             (add-listener! (change-listener/create
                                             (fn [event _actor]
                                               ((open-select-sounds-handler table)
-                                               (:stage/ctx (event/stage event))
+                                               (:stage/ctx (get-stage event))
                                                sound-columns)))))}])])
     table))

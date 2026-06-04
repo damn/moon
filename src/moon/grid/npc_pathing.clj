@@ -7,8 +7,7 @@
             [moon.cell :as cell]
             [moon.faction :as faction]
             [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
-            [clojure.grid2d.get-cells :refer [get-cells]]
-            [clojure.math.position :as position]))
+            [clojure.grid2d.get-cells :refer [get-cells]]))
 
 (defn- inside-cell? [grid entity cell]
   (let [cells (get-cells grid (touched-tiles (:entity/body entity)))]

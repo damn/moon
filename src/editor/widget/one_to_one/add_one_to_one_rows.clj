@@ -3,7 +3,7 @@
             [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [clojure.gdx.scene2d.actor.remove :refer [remove!]]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.event :as event]
+            [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
             [clojure.gdx.scene2d.group.clear-children :refer [clear-children!]]
             [clojure.gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.gdx.scene2d.ui.text-button :as text-button]
@@ -39,7 +39,7 @@
                                                    ctx/skin
                                                    ctx/stage
                                                    ctx/textures]
-                                            :as ctx} (:stage/ctx (event/stage event))]
+                                            :as ctx} (:stage/ctx (get-stage event))]
                                        (add-actor!
                                         stage
                                         (editor.property-overview-window/create
@@ -61,5 +61,5 @@
                          :skin skin})
                    (add-listener! (change-listener/create
                                    (fn [event _actor]
-                                     (redo-rows (:stage/ctx (event/stage event))
+                                     (redo-rows (:stage/ctx (get-stage event))
                                                 nil)))))})]])))
