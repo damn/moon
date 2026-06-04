@@ -4,7 +4,7 @@
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.gdx.scene2d.stage :as stage]))
 
-(defn step
+(defn create-stage
   [{:keys [ctx/app ctx/batch]} width height]
   (let [stage (stage/create (fit-viewport/create width height) batch)]
     (input/set-processor! (app/input app) stage)
