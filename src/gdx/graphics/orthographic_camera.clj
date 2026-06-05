@@ -1,6 +1,5 @@
 (ns gdx.graphics.orthographic-camera
   (:require [clojure.orthographic-camera :as orthographic-camera]
-            [clojure.gdx.math.frustum :as frustum]
             [clojure.to-clj :refer [->clj]]))
 
 (defn create
@@ -17,7 +16,7 @@
   (orthographic-camera/zoom camera))
 
 (defn frustum [camera]
-  (let [plane-points (mapv ->clj (frustum/plane-points (orthographic-camera/frustum camera)))
+  (let [plane-points (mapv ->clj (.planePoints (orthographic-camera/frustum camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))

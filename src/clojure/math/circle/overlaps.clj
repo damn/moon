@@ -1,8 +1,12 @@
 (ns clojure.math.circle.overlaps
-  (:require [clojure.gdx.math.circle :as circle])
-  (:import (com.badlogic.gdx.math Intersector
+  (:import (com.badlogic.gdx.math Circle
+                                  Intersector
                                   Rectangle)))
 
-(defn overlaps? [circle ^Rectangle rectangle]
-  (Intersector/overlaps (circle/create circle)
+(defn overlaps?
+  [{:keys [position radius]}
+   ^Rectangle rectangle]
+  (Intersector/overlaps (Circle. (position 0)
+                                 (position 1)
+                                 radius)
                         rectangle))

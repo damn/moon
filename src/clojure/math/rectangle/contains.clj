@@ -1,4 +1,4 @@
-(ns clojure.gdx.math.rectangle.contains
+(ns clojure.math.rectangle.contains
   (:refer-clojure :exclude [contains?])
   (:import (com.badlogic.gdx.math Rectangle)))
 
