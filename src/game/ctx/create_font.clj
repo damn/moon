@@ -4,7 +4,6 @@
             [clojure.bitmap-font :as font]
             [clojure.bitmap-font.data :as font.data]
             [clojure.freetype-font-generator :as font-generator]
-            [clojure.freetype-font-generator.parameter :as parameter]
             [clojure.texture.filter :as texture-filter]))
 
 (defn create-font
@@ -15,11 +14,10 @@
            use-integer-positions?]}]
   (let [generator (font-generator/create (files/internal (app/files app) path))
         font (font-generator/generate-font generator
-                                           (parameter/create
-                                            {:size (* size quality-scaling)
-                                             ; texture.filter/linear because scaling to world-units
-                                             :min-filter texture-filter/linear
-                                             :mag-filter texture-filter/linear}))]
+                                           {:size (* size quality-scaling)
+                                            ; texture.filter/linear because scaling to world-units
+                                            :min-filter texture-filter/linear
+                                            :mag-filter texture-filter/linear})]
     (font-generator/dispose! generator)
     (font.data/set-scale! (font/data font) (/ quality-scaling))
     (font.data/enable-markup! (font/data font))
