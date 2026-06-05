@@ -5,7 +5,7 @@
             [clojure.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [clojure.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
+            [clojure.get-name :refer [get-name]]
             [clojure.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.grid2d :as g2d]))
 
