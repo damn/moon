@@ -1,0 +1,8 @@
+{
+ :player-item-on-cursor :cursors/hand-grab
+ :player-dead :cursors/black-x
+ :active-skill :cursors/sandclock
+ :stunned :cursors/denied
+ :player-moving :cursors/walking
+ :player-idle entity.state.cursor.player-idle/f
+ }

@@ -1,23 +1,12 @@
 (ns render.set-cursor
   (:require [clojure.gdx.application :as app]
-            [clojure.gdx.graphics :as graphics]
-            entity.state.cursor.player-idle))
-
-(def k->cursor
-  {
-   :player-item-on-cursor :cursors/hand-grab
-   :player-dead :cursors/black-x
-   :active-skill :cursors/sandclock
-   :stunned :cursors/denied
-   :player-moving :cursors/walking
-   :player-idle entity.state.cursor.player-idle/f
-   }
-  )
+            [clojure.gdx.graphics :as graphics]))
 
 (defn step
   [{:keys [ctx/app
            ctx/cursors
-           ctx/player-eid]
+           ctx/player-eid
+           ctx/k->cursor]
     :as ctx}]
   (let [eid player-eid
         entity @eid
