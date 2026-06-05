@@ -2,5 +2,10 @@
   (:import (com.badlogic.gdx.maps MapLayer
                                   MapLayers)))
 
-(defn add! [^MapLayers layers ^MapLayer layer]
-  (.add layers layer))
+(defprotocol Add
+  (add! [_ item]))
+
+(extend-type MapLayers
+  Add
+  (add! [layers ^MapLayer layer]
+    (.add layers layer)))
