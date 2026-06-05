@@ -4,8 +4,7 @@
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
            (com.badlogic.gdx.math Rectangle)
-           (tiled TiledMapRenderer
-                  TiledMapRenderer$ColorSetter)))
+           (tiled TiledMapRenderer)))
 
 (defn draw-tiled-map!
   [^Batch batch
@@ -15,24 +14,20 @@
    color-setter]
   (.setProjectionMatrix batch (.combined camera))
   (.begin batch)
-  (let [viewBounds (Rectangle.)
-        width  (* (.viewportWidth  camera) (.zoom camera))
+  (let [width  (* (.viewportWidth  camera) (.zoom camera))
         height (* (.viewportHeight camera) (.zoom camera))
         w (+ (* width  (Math/abs (.y (.up camera))))
              (* height (Math/abs (.x (.up camera)))))
         h (+ (* height (Math/abs (.y (.up camera))))
-             (* width  (Math/abs (.x (.up camera)))))]
-    (.set viewBounds
-          (- (.x (.position camera)) (/ w 2))
-          (- (.y (.position camera)) (/ h 2))
-          w
-          h)
+             (* width  (Math/abs (.x (.up camera)))))
+        viewBounds (Rectangle. (- (.x (.position camera)) (/ w 2))
+                               (- (.y (.position camera)) (/ h 2))
+                               w
+                               h)]
     (doseq [layer (filter TiledMapTileLayer/.isVisible (get-layers tiled-map))]
-      (TiledMapRenderer/renderMapLayer layer
-                                       batch
-                                       (float world-unit-scale)
-                                       viewBounds
-                                       (reify TiledMapRenderer$ColorSetter
-                                         (apply [_ color x y]
-                                           (color-setter color x y))))))
+      (TiledMapRenderer/renderTileLayer layer
+                                        batch
+                                        (float world-unit-scale)
+                                        viewBounds
+                                        color-setter)))
   (.end batch))

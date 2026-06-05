@@ -23,15 +23,10 @@ import static com.badlogic.gdx.graphics.g2d.Batch.*;
 // with added ColorSetter/apply
 public class TiledMapRenderer {
 
-  public interface ColorSetter {
-
-    public float apply(Color color, float x, float y);
-  }
-
 	public static final int NUM_VERTICES = 20;
 	public static final float[] vertices = new float[NUM_VERTICES];
 
-	public static void renderTileLayer (TiledMapTileLayer layer, Batch batch, float unitScale, Rectangle viewBounds, ColorSetter colorSetter) {
+	public static void renderTileLayer (TiledMapTileLayer layer, Batch batch, float unitScale, Rectangle viewBounds, clojure.lang.IFn colorSetter) {
 		final Color batchColor = batch.getColor();
 
 		final int layerWidth = layer.getWidth();
@@ -87,10 +82,10 @@ public class TiledMapRenderer {
           // System.out.println("x1 : " + x1 + " , x2:" + x2);
           // System.out.println("y1 : " + y1 + " , y2:" + y2);
 
-          float color11 = colorSetter.apply(batchColor, x1, y1);
-          float color12 = colorSetter.apply(batchColor, x1, y2);
-          float color22 = colorSetter.apply(batchColor, x2, y2);
-          float color21 = colorSetter.apply(batchColor, x2, y1);
+          float color11 = (float) colorSetter.invoke(batchColor, x1, y1);
+          float color12 = (float) colorSetter.invoke(batchColor, x1, y2);
+          float color22 = (float) colorSetter.invoke(batchColor, x2, y2);
+          float color21 = (float) colorSetter.invoke(batchColor, x2, y1);
 
           // float color11 = Color.WHITE.toFloatBits();
           // float color12 = Color.WHITE.toFloatBits();
@@ -192,19 +187,4 @@ public class TiledMapRenderer {
 		}
 	}
 
-	public static void renderMapLayer (MapLayer layer, Batch batch, float unitScale, Rectangle viewBounds, ColorSetter colorSetter) {
-		if (!layer.isVisible()) return;
-		if (layer instanceof MapGroupLayer) {
-			MapLayers childLayers = ((MapGroupLayer)layer).getLayers();
-			for (int i = 0; i < childLayers.size(); i++) {
-				MapLayer childLayer = childLayers.get(i);
-				if (!childLayer.isVisible()) continue;
-				renderMapLayer(childLayer, batch, unitScale, viewBounds, colorSetter);
-			}
-		} else {
-			if (layer instanceof TiledMapTileLayer) {
-				renderTileLayer((TiledMapTileLayer)layer, batch, unitScale, viewBounds, colorSetter);
-			}
-		}
-	}
 }
