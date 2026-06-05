@@ -1,5 +1,5 @@
 (ns gdx.tiled-map.tile-movement-property
-  (:require [clojure.maps.map-properties.get :refer [props-get]]
+  (:require [clojure.props-get :refer [props-get]]
             [clojure.get-properties :refer [get-properties]]
             [clojure.get-name :refer [get-name]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]

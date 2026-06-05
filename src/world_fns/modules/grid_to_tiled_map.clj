@@ -1,5 +1,5 @@
 (ns world-fns.modules.grid-to-tiled-map
-  (:require [clojure.maps.map-properties.to-clj :refer [->clj]]
+  (:require [clojure.to-clj :refer [->clj]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
             [clojure.get-properties :refer [get-properties]]

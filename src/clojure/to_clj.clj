@@ -15,3 +15,9 @@
     [(.x v3)
      (.y v3)
      (.z v3)]))
+
+(extend-type com.badlogic.gdx.maps.MapProperties
+  Clojurize
+  (->clj [props]
+    (zipmap (.getKeys props)
+            (.getValues props))))

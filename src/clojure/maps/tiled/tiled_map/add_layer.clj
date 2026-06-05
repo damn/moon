@@ -1,6 +1,6 @@
 (ns clojure.maps.tiled.tiled-map.add-layer
   (:require [clojure.maps.map-layers :as layers]
-            [clojure.maps.map-properties.get :refer [props-get]]
+            [clojure.props-get :refer [props-get]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map-tile-layer.create :as create-layer]))

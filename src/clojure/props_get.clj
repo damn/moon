@@ -1,4 +1,4 @@
-(ns clojure.maps.map-properties.get
+(ns clojure.props-get
   (:import (com.badlogic.gdx.maps MapProperties)))
 
 (defn props-get [^MapProperties props k]

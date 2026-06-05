@@ -1,5 +1,5 @@
 (ns create.grid
-  (:require [clojure.maps.map-properties.get :refer [props-get]]
+  (:require [clojure.props-get :refer [props-get]]
             [clojure.get-properties :refer [get-properties]]
             [gdx.tiled-map.movement-property :as movement-property]
             [moon.cell :as cell]
