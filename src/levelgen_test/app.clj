@@ -1,6 +1,6 @@
 (ns levelgen-test.app
-  (:require [clojure.use-glfw-async :as use-glfw-async]
-            [clojure.gdx.backends.lwjgl.application :as application]
+  (:require [clojure.lwjgl.use-glfw-async :as use-glfw-async]
+            [clojure.lwjgl.application :as application]
             [clojure.gdx.utils.disposable :as disposable]
             [clojure.gdx.utils.viewport :as viewport]
             [levelgen-test.create :as create]
