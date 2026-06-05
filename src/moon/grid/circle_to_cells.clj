@@ -1,10 +1,10 @@
 (ns moon.grid.circle-to-cells
   (:require [clojure.math.circle :as circle]
-            [clojure.math.rectangle :as rectangle]
+            [clojure.math.rectangle.touched-tiles :refer [touched-tiles]]
             [clojure.grid2d.get-cells :refer [get-cells]]))
 
 (defn circle->cells [g2d circle]
   (->> circle
        circle/outer-rectangle
-       rectangle/touched-tiles
+       touched-tiles
        (get-cells g2d)))
