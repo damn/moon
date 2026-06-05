@@ -1,10 +1,9 @@
 (ns game.ctx.create-font
   (:require [clojure.gdx.application :as app]
-            [clojure.gdx.files :as files]
-            [clojure.bitmap-font :as font]
-            [clojure.bitmap-font.data :as font.data]
-            [clojure.freetype-font-generator :as font-generator]
-            [clojure.texture.filter :as texture-filter]))
+            [clojure.gdx.files :as files])
+  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
 
 (defn create-font
   [{:keys [ctx/app]}
@@ -12,14 +11,16 @@
            size
            quality-scaling
            use-integer-positions?]}]
-  (let [generator (font-generator/create (files/internal (app/files app) path))
-        font (font-generator/generate-font generator
-                                           {:size (* size quality-scaling)
-                                            ; texture.filter/linear because scaling to world-units
-                                            :min-filter texture-filter/linear
-                                            :mag-filter texture-filter/linear})]
-    (font-generator/dispose! generator)
-    (font.data/set-scale! (font/data font) (/ quality-scaling))
-    (font.data/enable-markup! (font/data font))
-    (font/set-use-integer-positions! font use-integer-positions?)
+  (let [generator (FreeTypeFontGenerator. (files/internal (app/files app) path))
+        font (.generateFont generator
+                            (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                              (set! (.size params) (* size quality-scaling))
+                              ; texture.filter/linear because scaling to world-units
+                              (set! (.minFilter params) Texture$TextureFilter/Linear)
+                              (set! (.magFilter params) Texture$TextureFilter/Linear)
+                              params))]
+    (.dispose generator)
+    (.setScale (.getData font) (/ quality-scaling))
+    (set! (.markupEnabled (.getData font)) true)
+    (.setUseIntegerPositions font use-integer-positions?)
     font))
