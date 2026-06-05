@@ -1,5 +1,6 @@
 (ns clojure.input
-  (:import (com.badlogic.gdx Input)))
+  (:import (com.badlogic.gdx Input
+                             Input$Buttons)))
 
 (defn set-processor! [^Input input processor]
   (.setInputProcessor input processor))
@@ -16,5 +17,7 @@
 (defn y [^Input input]
   (.getY input))
 
-(defn button-just-pressed? [^Input input button]
-  (.isButtonJustPressed input button))
+(defn button-just-pressed? [^Input input k]
+  (.isButtonJustPressed input (case k
+                                :input.buttons/left  Input$Buttons/LEFT
+                                :input.buttons/right Input$Buttons/RIGHT)))

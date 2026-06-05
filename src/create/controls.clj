@@ -1,6 +1,5 @@
 (ns create.controls
   (:require [clojure.string :as str]
-            [clojure.input.buttons :as input.buttons]
             [clojure.input.keys :as input.keys]))
 
 (defn step [ctx]
@@ -13,7 +12,7 @@
                         :close-windows-key input.keys/escape
                         :toggle-inventory  input.keys/i
                         :toggle-entity-info input.keys/e
-                        :open-debug-button input.buttons/right
+                        :open-debug-button :input.buttons/right
                         }
          :ctx/controls-info (str/join "\n"
                                       ["[W][A][S][D] - Move"
