@@ -1,17 +1,16 @@
 (ns create.controls
-  (:require [clojure.string :as str]
-            [clojure.input.keys :as input.keys]))
+  (:require [clojure.string :as str]))
 
 (defn step [ctx]
   (assoc ctx
          :ctx/controls {
-                        :zoom-in input.keys/minus
-                        :zoom-out input.keys/equals
-                        :unpause-once input.keys/p
-                        :unpause-continously input.keys/space
-                        :close-windows-key input.keys/escape
-                        :toggle-inventory  input.keys/i
-                        :toggle-entity-info input.keys/e
+                        :zoom-in :input.keys/minus
+                        :zoom-out :input.keys/equals
+                        :unpause-once :input.keys/p
+                        :unpause-continously :input.keys/space
+                        :close-windows-key :input.keys/escape
+                        :toggle-inventory  :input.keys/i
+                        :toggle-entity-info :input.keys/e
                         :open-debug-button :input.buttons/right
                         }
          :ctx/controls-info (str/join "\n"

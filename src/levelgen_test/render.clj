@@ -1,6 +1,5 @@
 (ns levelgen-test.render
   (:require [clojure.input :as input]
-            [clojure.input.keys :as input.keys]
             [clojure.screen :as screen-utils]
             [gdx.graphics.orthographic-camera :as camera]
             [clojure.scene2d.stage.draw :refer [draw!]]
@@ -27,16 +26,16 @@
                                                (update (camera/position camera)
                                                        idx
                                                        #(f % camera-movement-speed))))]
-    (if (input/key-pressed? input input.keys/left)  (apply-position 0 -))
-    (if (input/key-pressed? input input.keys/right) (apply-position 0 +))
-    (if (input/key-pressed? input input.keys/up)    (apply-position 1 +))
-    (if (input/key-pressed? input input.keys/down)  (apply-position 1 -))))
+    (if (input/key-pressed? input :input.keys/left)  (apply-position 0 -))
+    (if (input/key-pressed? input :input.keys/right) (apply-position 0 +))
+    (if (input/key-pressed? input :input.keys/up)    (apply-position 1 +))
+    (if (input/key-pressed? input :input.keys/down)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (input/key-pressed? input input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
-  (when (input/key-pressed? input input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (input/key-pressed? input :input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
+  (when (input/key-pressed? input :input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
 
 (defn f!
   [{:keys [ctx/stage]
