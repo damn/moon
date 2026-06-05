@@ -1,6 +1,6 @@
 (ns tx.toggle-inventory-visible
-  (:require [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]))
+  (:require [clojure.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.scene2d.actor.toggle-visible :refer [toggle-visible!]]))
 
 (defn f
   [{:keys [ctx/stage] :as ctx}]

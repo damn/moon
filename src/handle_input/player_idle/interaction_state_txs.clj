@@ -1,6 +1,6 @@
 (ns handle-input.player-idle.interaction-state-txs
-  (:require [clojure.gdx.scene2d.actor.visible :refer [visible?]]
-            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
+  (:require [clojure.scene2d.actor.visible :refer [visible?]]
+            [clojure.scene2d.group.find-actor :refer [find-actor]]
             [moon.inventory :as inventory]))
 
 (defn interaction-state->txs [[k params] stage player-eid]

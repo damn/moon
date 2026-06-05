@@ -1,8 +1,8 @@
 (ns game.ctx.create-stage
   (:require [clojure.gdx.application :as app]
-            [clojure.gdx.input :as input]
+            [clojure.input :as input]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [clojure.gdx.scene2d.stage :as stage]))
+            [clojure.scene2d.stage :as stage]))
 
 (defn create-stage
   [{:keys [ctx/app ctx/batch]} width height]

@@ -1,9 +1,9 @@
 (ns editor.widget
   (:require [clojure.string.truncate :refer [truncate]]
             [clojure.edn-str :refer [->edn-str]]
-            [clojure.gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
-            [clojure.gdx.scene2d.actor.get-user-object :refer [get-user-object]]
-            [clojure.gdx.scene2d.ui.label :as label]))
+            [clojure.scene2d.actor.set-user-object :refer [set-user-object!]]
+            [clojure.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.scene2d.ui.label :as label]))
 
 (defmulti create (fn [[schema-k :as _schema] v ctx]
                    schema-k))

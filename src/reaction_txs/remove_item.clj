@@ -1,5 +1,5 @@
 (ns reaction-txs.remove-item
-  (:require [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
+  (:require [clojure.scene2d.group.find-actor :refer [find-actor]]
             [moon.ui.inventory-window :as inventory-window]))
 
 (defn f

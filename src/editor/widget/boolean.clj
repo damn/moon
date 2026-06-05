@@ -1,5 +1,5 @@
 (ns editor.widget.boolean
-  (:require [clojure.gdx.scene2d.ui.check-box :as check-box]
+  (:require [clojure.scene2d.ui.check-box :as check-box]
             [editor.widget :as widget]))
 
 (defmethod widget/create :s/boolean

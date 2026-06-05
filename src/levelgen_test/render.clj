@@ -1,12 +1,12 @@
 (ns levelgen-test.render
-  (:require [clojure.gdx.input :as input]
-            [clojure.gdx.input.keys :as input.keys]
+  (:require [clojure.input :as input]
+            [clojure.input.keys :as input.keys]
             [clojure.gdx.utils.screen-utils :as screen-utils]
             [gdx.graphics.orthographic-camera :as camera]
-            [clojure.gdx.scene2d.stage.draw :refer [draw!]]
-            [clojure.gdx.scene2d.stage.act :refer [act!]]
-            [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
-            [clojure.gdx.maps.tiled.renderer :as tiled-map-renderer]))
+            [clojure.scene2d.stage.draw :refer [draw!]]
+            [clojure.scene2d.stage.act :refer [act!]]
+            [clojure.scene2d.stage.set-ctx :refer [set-ctx!]]
+            [clojure.maps.tiled.renderer :as tiled-map-renderer]))
 
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
                                 ctx/color-setter

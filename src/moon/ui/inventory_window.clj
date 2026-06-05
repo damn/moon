@@ -1,10 +1,10 @@
 (ns moon.ui.inventory-window
-  (:require [clojure.gdx.scene2d.actor.get-user-object :refer [get-user-object]]
-            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.gdx.scene2d.group.children :refer [children]]
-            [clojure.gdx.scene2d.ui.text-tooltip :as text-tooltip]
-            [clojure.gdx.scene2d.ui.image :as image]
+  (:require [clojure.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.scene2d.group.children :refer [children]]
+            [clojure.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn- find-inventory-window-cell [group cell]

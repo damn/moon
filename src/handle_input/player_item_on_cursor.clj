@@ -1,5 +1,5 @@
 (ns handle-input.player-item-on-cursor
-  (:require [clojure.gdx.input.buttons :as input.buttons]
+  (:require [clojure.input.buttons :as input.buttons]
             [game.ctx.button-just-pressed :refer [button-just-pressed?]]
             [game.ctx.mouseover-actor :refer [mouseover-actor]]))
 

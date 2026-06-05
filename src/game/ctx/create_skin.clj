@@ -1,7 +1,7 @@
 (ns game.ctx.create-skin
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.files :as files]
-            [clojure.gdx.scene2d.ui.skin :as skin]))
+            [clojure.scene2d.ui.skin :as skin]))
 
 (defn create-skin
   [{:keys [ctx/app]} path]

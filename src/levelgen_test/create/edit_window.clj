@@ -1,10 +1,10 @@
 (ns levelgen-test.create.edit-window
-  (:require [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
-            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.event.get-stage :as event]
-            [clojure.gdx.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [clojure.gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
+  (:require [clojure.scene2d.actor.get-stage :refer [get-stage]]
+            [clojure.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scene2d.event.get-stage :as event]
+            [clojure.scene2d.ui.text-button :as text-button]
+            [clojure.scene2d.utils.change-listener :as change-listener]
+            [clojure.scene2d.stage.set-ctx :refer [set-ctx!]]
             [levelgen-test.generate-level :as generate-level]))
 
 (defn edit-window [skin level-fns]

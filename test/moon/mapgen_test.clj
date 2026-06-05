@@ -2,9 +2,9 @@
   (:require [clojure.string :as str]
             [clojure.pprint :refer [pprint]]
             [moon.db.build :refer [build]]
-            [clojure.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
+            [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [clojure.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [moon.utils.camera :as camera-utils]))
 
 (def ^:private infotext

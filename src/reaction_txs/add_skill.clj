@@ -1,5 +1,5 @@
 (ns reaction-txs.add-skill
-  (:require [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
+  (:require [clojure.scene2d.group.find-actor :refer [find-actor]]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
             [moon.textures :as textures]
             [game.info :as info]))

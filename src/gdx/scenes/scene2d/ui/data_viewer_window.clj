@@ -1,15 +1,15 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
   (:require [gdx.scenes.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
-            [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
-            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.ui.label :as label]
-            [clojure.gdx.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.scene2d.actor.get-stage :refer [get-stage]]
+            [clojure.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scene2d.ui.label :as label]
+            [clojure.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scene2d.ui.text-button :as text-button]
+            [clojure.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
+            [clojure.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]
-            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]))
+            [clojure.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn create
   [{:keys [title

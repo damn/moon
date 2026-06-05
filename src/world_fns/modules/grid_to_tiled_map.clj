@@ -1,13 +1,13 @@
 (ns world-fns.modules.grid-to-tiled-map
-  (:require [clojure.gdx.maps.map-properties.to-clj :refer [->clj]]
-            [clojure.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.gdx.maps.tiled.tiled-map.get-properties :as tm]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-properties :refer [get-properties]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
-            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+  (:require [clojure.maps.map-properties.to-clj :refer [->clj]]
+            [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [clojure.maps.tiled.tiled-map.get-properties :as tm]
+            [clojure.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-properties :refer [get-properties]]
+            [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
+            [clojure.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.grid2d :as g2d]))
 
 (def copy-tile

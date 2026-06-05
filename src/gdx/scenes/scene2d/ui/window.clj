@@ -1,11 +1,11 @@
 (ns gdx.scenes.scene2d.ui.window
-  (:require [clojure.gdx.scene2d.actor.remove :refer [remove!]]
-            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.ui.window :as window]
-            [clojure.gdx.scene2d.ui.table.add-cell :refer [add-cell!]]
-            [clojure.gdx.scene2d.ui.table.set-opts :refer [set-opts!]]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
-            [clojure.gdx.scene2d.ui.text-button :as text-button]))
+  (:require [clojure.scene2d.actor.remove :refer [remove!]]
+            [clojure.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scene2d.ui.window :as window]
+            [clojure.scene2d.ui.table.add-cell :refer [add-cell!]]
+            [clojure.scene2d.ui.table.set-opts :refer [set-opts!]]
+            [clojure.scene2d.utils.change-listener :as change-listener]
+            [clojure.scene2d.ui.text-button :as text-button]))
 
 (defn create
   [{:keys [title skin] :as opts}]

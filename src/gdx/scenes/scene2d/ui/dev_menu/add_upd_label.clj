@@ -1,9 +1,9 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.add-upd-label
-  (:require [clojure.gdx.scene2d.ui.label :as label]
+  (:require [clojure.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scene2d.group.add-actor :refer [add-actor!]]
-            [clojure.gdx.scene2d.ui.table.add-cell :refer [add-cell!]]
-            [clojure.gdx.scene2d.ui.image :as image]
+            [clojure.scene2d.group.add-actor :refer [add-actor!]]
+            [clojure.scene2d.ui.table.add-cell :refer [add-cell!]]
+            [clojure.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
 
 (defn add-upd-label!

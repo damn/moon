@@ -1,14 +1,14 @@
 (ns tx.show-modal
-  (:require [clojure.gdx.scene2d.actor.set-position :refer [set-position!]]
-            [clojure.gdx.scene2d.actor.remove :refer [remove!]]
-            [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]
-            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.ui.label :as label]
-            [clojure.gdx.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]
+  (:require [clojure.scene2d.actor.set-position :refer [set-position!]]
+            [clojure.scene2d.actor.remove :refer [remove!]]
+            [clojure.scene2d.actor.set-name :refer [set-name!]]
+            [clojure.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scene2d.ui.label :as label]
+            [clojure.scene2d.ui.text-button :as text-button]
+            [clojure.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.gdx.scene2d.stage.add-actor :refer [add-actor!]]
+            [clojure.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.scene2d.stage.add-actor :refer [add-actor!]]
             [clojure.gdx.utils.align :as align]))
 
 (defn f

@@ -1,14 +1,14 @@
 (ns editor.map-widget-table.component-row
-  (:require [clojure.gdx.scene2d.actor.get-user-object :refer [get-user-object]]
-            [clojure.gdx.scene2d.actor.remove :refer [remove!]]
-            [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
+  (:require [clojure.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.scene2d.actor.remove :refer [remove!]]
+            [clojure.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scene2d.event.get-stage :refer [get-stage]]
             [editor.map-widget-table.k-label-text :as k-label-text]
-            [clojure.gdx.scene2d.group.children :refer [children]]
-            [clojure.gdx.scene2d.ui.label :as label]
+            [clojure.scene2d.group.children :refer [children]]
+            [clojure.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.scene2d.utils.change-listener :as change-listener]))
+            [clojure.scene2d.ui.text-button :as text-button]
+            [clojure.scene2d.utils.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin

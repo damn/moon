@@ -1,12 +1,12 @@
 (ns gdx.tiled-map.spawn-positions
-  (:require [clojure.gdx.maps.map-layers :as layers]
-            [clojure.gdx.maps.map-properties.get :refer [props-get]]
-            [clojure.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.gdx.maps.tiled.tiled-map-tile :as tile]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-width :refer [get-width]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-height :refer [get-height]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+  (:require [clojure.maps.map-layers :as layers]
+            [clojure.maps.map-properties.get :refer [props-get]]
+            [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [clojure.maps.tiled.tiled-map-tile :as tile]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-width :refer [get-width]]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-height :refer [get-height]]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 
 (defn f [tiled-map]
   (let [layer-name "creatures"

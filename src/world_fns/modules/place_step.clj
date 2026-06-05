@@ -1,6 +1,6 @@
 (ns world-fns.modules.place-step
-  (:require [clojure.gdx.maps.map-properties.get :refer [props-get]]
-            [clojure.gdx.maps.tiled.tiled-map.get-properties :refer [get-properties]]
+  (:require [clojure.maps.map-properties.get :refer [props-get]]
+            [clojure.maps.tiled.tiled-map.get-properties :refer [get-properties]]
             [world-fns.modules.place-step.place-star :refer [place-module*]]))
 
 (def ^:private module-offset-tiles 1)

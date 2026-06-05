@@ -1,8 +1,8 @@
 (ns stage.player-state-draw
   (:require [game.ctx.draw :refer [draw!]]
             [game.state :as state]
-            [clojure.gdx.scene2d.actor.get-stage :refer [get-stage]]
-            [clojure.gdx.scene2d.actor.create :as actor]))
+            [clojure.scene2d.actor.get-stage :refer [get-stage]]
+            [clojure.scene2d.actor.create :as actor]))
 
 (defn create [_ctx]
   (actor/create

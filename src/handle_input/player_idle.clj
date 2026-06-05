@@ -1,6 +1,6 @@
 (ns handle-input.player-idle
   (:require [game.ctx.button-just-pressed :refer [button-just-pressed?]]
-            [clojure.gdx.input.buttons :as input.buttons]
+            [clojure.input.buttons :as input.buttons]
             [game.ctx.player-movement-vector :refer [player-movement-vector]]
             [handle-input.player-idle.interaction-state-txs :refer [interaction-state->txs]]))
 
