@@ -3,8 +3,8 @@
             [clojure.gdx.files :as files]
             [clojure.bitmap-font :as font]
             [clojure.bitmap-font.data :as font.data]
-            [clojure.gdx.graphics.g2d.freetype.freetype-font-generator :as font-generator]
-            [clojure.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
+            [clojure.freetype-font-generator :as font-generator]
+            [clojure.freetype-font-generator.parameter :as parameter]
             [clojure.gdx.graphics.texture.texture-filter :as texture-filter]))
 
 (defn create-font
