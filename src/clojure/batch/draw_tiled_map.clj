@@ -8,21 +8,31 @@
                   TiledMapRenderer$ColorSetter)))
 
 (defn draw-tiled-map!
-  [batch world-unit-scale camera tiled-map color-setter]
-  (Batch/.setProjectionMatrix batch (.combined ^OrthographicCamera camera))
-  (Batch/.begin batch)
-  (let [viewBounds (Rectangle.)]
-    (TiledMapRenderer/render tiled-map
-                             (float world-unit-scale)
-                             viewBounds
-                             camera
-                             batch
-                             (reify TiledMapRenderer$ColorSetter
-                               (apply [_ color x y]
-                                 (color-setter color x y)))
-                             (let [layers (get-layers tiled-map)]
-                               (->> layers
-                                    (filter TiledMapTileLayer/.isVisible)
-                                    (map #(.getIndex layers ^TiledMapTileLayer %))
-                                    int-array))))
-  (Batch/.end batch))
+  [^Batch batch
+   world-unit-scale
+   ^OrthographicCamera camera
+   tiled-map
+   color-setter]
+  (.setProjectionMatrix batch (.combined camera))
+  (.begin batch)
+  (let [viewBounds (Rectangle.)
+        width  (* (.viewportWidth  camera) (.zoom camera))
+        height (* (.viewportHeight camera) (.zoom camera))
+        w (+ (* width  (Math/abs (.y (.up camera))))
+             (* height (Math/abs (.x (.up camera)))))
+        h (+ (* height (Math/abs (.y (.up camera))))
+             (* width  (Math/abs (.x (.up camera)))))]
+    (.set viewBounds
+          (- (.x (.position camera)) (/ w 2))
+          (- (.y (.position camera)) (/ h 2))
+          w
+          h)
+    (doseq [layer (filter TiledMapTileLayer/.isVisible (get-layers tiled-map))]
+      (TiledMapRenderer/renderMapLayer layer
+                                       batch
+                                       (float world-unit-scale)
+                                       viewBounds
+                                       (reify TiledMapRenderer$ColorSetter
+                                         (apply [_ color x y]
+                                           (color-setter color x y))))))
+  (.end batch))

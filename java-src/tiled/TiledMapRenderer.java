@@ -192,18 +192,6 @@ public class TiledMapRenderer {
 		}
 	}
 
-	public static void render (TiledMap map, float unitScale, Rectangle viewBounds, OrthographicCamera camera, Batch batch, ColorSetter colorSetter, int[] layers) {
-		float width = camera.viewportWidth * camera.zoom;
-		float height = camera.viewportHeight * camera.zoom;
-		float w = width * Math.abs(camera.up.y) + height * Math.abs(camera.up.x);
-		float h = height * Math.abs(camera.up.y) + width * Math.abs(camera.up.x);
-		viewBounds.set(camera.position.x - w / 2, camera.position.y - h / 2, w, h);
-		for (int layerIdx : layers) {
-			MapLayer layer = map.getLayers().get(layerIdx);
-			renderMapLayer(layer, batch, unitScale, viewBounds, colorSetter);
-		}
-	}
-
 	public static void renderMapLayer (MapLayer layer, Batch batch, float unitScale, Rectangle viewBounds, ColorSetter colorSetter) {
 		if (!layer.isVisible()) return;
 		if (layer instanceof MapGroupLayer) {
