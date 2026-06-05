@@ -1,5 +1,9 @@
-(ns game.info-fns
-  (:require [clojure.string :as str]
+(ns info.entity
+  (:require [clojure.core.sort-by-k-order :refer [sort-by-k-order]]
+            [clojure.string :as str]
+            [clojure.string.remove-newlines :refer [remove-newlines]]
+            [game.info :as info]
+            [game.constants :refer [k->colors k-order]]
             [moon.number :as number]
             [moon.timer :as timer]
             info.entity.stats
@@ -9,7 +13,7 @@
             info.effects.target.kill
             info.creature.level))
 
-(def mapping
+(def info-fns-mapping
   {
    :creature/level info.creature.level/f
    :entity/stats info.entity.stats/f
@@ -62,3 +66,22 @@
    :maxrange (fn [v _ctx]
                (str "Range: " v " Meters."))
    })
+
+(defmethod info/text :info/entity [entity ctx]
+  (let [component-info (fn [[k v]]
+                         (let [s (if-let [info-fn (info-fns-mapping k)]
+                                   (do
+                                    (str #_k #_" - " (info-fn v ctx))))]
+                           (if-let [color (k->colors k)]
+                             (str "[" color "]" s "[]")
+                             s)))]
+    (->> entity
+         (sort-by-k-order k-order)
+         (keep (fn [{k 0 v 1 :as component}]
+                 (str (try (component-info component)
+                           (catch Throwable t
+                             (str "*info-error* " k))) ; TODO this try/catch FIXME design error
+                      (when (map? v)
+                        (str "\n" (info/text v ctx))))))
+         (str/join "\n")
+         remove-newlines)))

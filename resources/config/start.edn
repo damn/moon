@@ -1,4 +1,6 @@
-[(clojure.core/require schema.malli-form
+[(clojure.core/require info.entity
+                       info.item
+                       schema.malli-form
                        entity.state.create.active-skill
                        entity.state.create.stunned
                        entity.state.create.player-moving
