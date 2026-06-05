@@ -12,8 +12,6 @@
                        editor.widget.val-max
                        schema.malli-form)
 
- (clojure.lwjgl.use-glfw-async/f!)
-
  (clojure.lwjgl.application/start! {:state-var editor.app/state
                                     :create-pipeline [[create.batch/step]
                                                       [create.skin/step]

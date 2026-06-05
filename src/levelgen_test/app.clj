@@ -1,6 +1,5 @@
 (ns levelgen-test.app
-  (:require [clojure.lwjgl.use-glfw-async :as use-glfw-async]
-            [clojure.lwjgl.application :as application]
+  (:require [clojure.lwjgl.application :as application]
             [clojure.dispose :as disposable]
             [clojure.viewport :as viewport]
             [levelgen-test.create :as create]
@@ -25,7 +24,6 @@
 (def state (atom nil))
 
 (defn -main []
-  (use-glfw-async/f!)
   (application/start!
    {:state-var #'state
     :create-pipeline [[create/f!]]

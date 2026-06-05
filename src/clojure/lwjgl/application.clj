@@ -1,13 +1,10 @@
 (ns clojure.lwjgl.application
-  (:require [clojure.application-listener :as listener])
-  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)))
+  (:require [clojure.application-listener :as listener]
+            [gdx.backends.lwjgl.application :as application]
+            [gdx.backends.lwjgl.application-config :as config]))
 
 (defn start!
-  [{:keys [title windowed-mode foreground-fps]
-    :as config}]
-  (Lwjgl3Application. (listener/create config)
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle title)
-                        (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
-                        (.setForegroundFPS foreground-fps))))
+  [config]
+  (config/use-glfw-async!)
+  (application/create (listener/create config)
+                      (config/create config)))
