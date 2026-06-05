@@ -1,0 +1,12 @@
+[
+ (clojure.lwjgl.application/start!
+  {:state-var levelgen-test.app/state
+   :create-pipeline [[levelgen-test.create/f!]]
+   :dispose! levelgen-test.dispose/f!
+   :render-pipeline [[levelgen-test.render/f!]]
+   :resize! levelgen-test.resize/f!
+   :title "Levelgen Test"
+   :windowed-mode {:width 1440 :height 900}
+   :foreground-fps 60}
+  )
+ ]
