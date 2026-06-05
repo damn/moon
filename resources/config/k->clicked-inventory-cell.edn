@@ -1,0 +1,4 @@
+{
+ :player-item-on-cursor entity.state.clicked-inventory-cell.player-item-on-cursor/f
+ :player-idle entity.state.clicked-inventory-cell.player-idle/f
+ }

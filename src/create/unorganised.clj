@@ -21,6 +21,7 @@
          :ctx/k->state-exit (edn-resource "config/k->state-exit.edn")
          :ctx/k->handle-input (edn-resource "config/k->handle-input.edn")
          :ctx/k->cursor (edn-resource "config/k->cursor.edn")
+         :ctx/k->clicked-inventory-cell (edn-resource "config/k->clicked-inventory-cell.edn")
          :ctx/world-unit-scale (float (/ 48))
          :ctx/unit-scale (atom 1)
          :ctx/active-entities nil

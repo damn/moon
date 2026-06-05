@@ -18,16 +18,7 @@
             [clojure.gdx.math.vector2 :as vector2]
             [clojure.gdx.scene2d.utils.click-listener :as click-listener]
             [clojure.gdx.scene2d.ui.image :as image]
-            [clojure.gdx.scene2d.ui.stack :as stack]
-            entity.state.clicked-inventory-cell.player-item-on-cursor
-            entity.state.clicked-inventory-cell.player-idle))
-
-(def k->fn
-  {
-   :player-item-on-cursor entity.state.clicked-inventory-cell.player-item-on-cursor/f
-   :player-idle entity.state.clicked-inventory-cell.player-idle/f
-   }
-  )
+            [clojure.gdx.scene2d.ui.stack :as stack]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -56,11 +47,13 @@
                                           :cell-size cell-size}))])
        (add-listener! (click-listener/create
                        (fn [event _x _y]
-                         (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (event/get-stage event))
+                         (let [{:keys [ctx/player-eid
+                                       ctx/k->clicked-inventory-cell]
+                                :as ctx} (:stage/ctx (event/get-stage event))
                                entity @player-eid
                                state-k (:state (:entity/fsm entity))]
                            (do! ctx
-                                (if-let [f (k->fn state-k)]
+                                (if-let [f (k->clicked-inventory-cell state-k)]
                                   (f player-eid cell)
                                   nil))))))
        (set-name! "inventory-cell")
