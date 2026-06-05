@@ -1,6 +1,6 @@
 (ns gdx.textures
   (:require [clojure.string :as str]
-            [clojure.gdx.files :as files]
+            [clojure.files :as files]
             [clojure.file :as file]
             [clojure.texture :as texture]))
 

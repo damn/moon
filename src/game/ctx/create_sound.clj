@@ -1,7 +1,7 @@
 (ns game.ctx.create-sound
-  (:require [clojure.gdx.application :as app]
-            [clojure.gdx.audio :as audio]
-            [clojure.gdx.files :as files]))
+  (:require [clojure.application :as app]
+            [clojure.audio :as audio]
+            [clojure.files :as files]))
 
 (defn create-sound [{:keys [ctx/app]} path]
   (audio/new-sound (app/audio app)

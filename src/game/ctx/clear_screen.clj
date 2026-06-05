@@ -1,5 +1,5 @@
 (ns game.ctx.clear-screen
-  (:require [clojure.gdx.application :as app]
+  (:require [clojure.application :as app]
             [clojure.graphics :as graphics]
             [clojure.gl20 :as gl20]))
 

@@ -1,5 +1,5 @@
 (ns game.ctx.button-just-pressed
-  (:require [clojure.gdx.application :as app]
+  (:require [clojure.application :as app]
             [clojure.input :as input]))
 
 (defn button-just-pressed?

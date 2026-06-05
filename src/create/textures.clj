@@ -1,5 +1,5 @@
 (ns create.textures
-  (:require [clojure.gdx.application :as app]
+  (:require [clojure.application :as app]
             [gdx.textures]))
 
 (defn step

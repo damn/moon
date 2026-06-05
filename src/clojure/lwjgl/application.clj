@@ -1,5 +1,5 @@
 (ns clojure.lwjgl.application
-  (:require [clojure.gdx.application-listener :as listener])
+  (:require [clojure.application-listener :as listener])
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
                                              Lwjgl3ApplicationConfiguration)))
 

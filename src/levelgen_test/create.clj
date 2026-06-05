@@ -1,6 +1,6 @@
 (ns levelgen-test.create
-  (:require [clojure.gdx.application :as app]
-            [clojure.gdx.files :as files]
+  (:require [clojure.application :as app]
+            [clojure.files :as files]
             [clojure.color.float-bits :refer [float-bits]]
             [clojure.sprite-batch :as sprite-batch]
             [clojure.input :as input]

@@ -1,6 +1,6 @@
 (ns game.ctx.create-font
-  (:require [clojure.gdx.application :as app]
-            [clojure.gdx.files :as files])
+  (:require [clojure.application :as app]
+            [clojure.files :as files])
   (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))

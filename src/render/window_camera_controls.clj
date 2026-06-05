@@ -1,5 +1,5 @@
 (ns render.window-camera-controls
-  (:require [clojure.gdx.application :as app]
+  (:require [clojure.application :as app]
             [clojure.input :as input]
             [gdx.graphics.orthographic-camera :as camera]
             [game.constants :refer [zoom-speed]]
