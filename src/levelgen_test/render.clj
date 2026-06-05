@@ -6,18 +6,18 @@
             [clojure.scene2d.stage.draw :refer [draw!]]
             [clojure.scene2d.stage.act :refer [act!]]
             [clojure.scene2d.stage.set-ctx :refer [set-ctx!]]
-            [clojure.maps.tiled.renderer :as tiled-map-renderer]))
+            [clojure.batch.draw-tiled-map :as batch]))
 
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch
                                 ctx/color-setter
                                 ctx/tiled-map
                                 ctx/world-unit-scale
                                 ctx/world-viewport]}]
-  (tiled-map-renderer/draw! sprite-batch
-                            world-unit-scale
-                            (:viewport/camera world-viewport)
-                            tiled-map
-                            color-setter))
+  (batch/draw-tiled-map! sprite-batch
+                         world-unit-scale
+                         (:viewport/camera world-viewport)
+                         tiled-map
+                         color-setter))
 
 (defn- camera-movement-controls! [{:keys [ctx/input
                                           ctx/camera
