@@ -1,7 +1,5 @@
 (ns draw.load
-  (:require [clojure.gdx.graphics.g2d.batch :as batch]
-            [clojure.gdx.graphics.g2d.texture-region :as texture-region]
-            [draw.text]
+  (:require [draw.text]
             [draw.texture-region]
             [game.constants :as constants]
             [game.ctx.draw :refer [draw!]]
