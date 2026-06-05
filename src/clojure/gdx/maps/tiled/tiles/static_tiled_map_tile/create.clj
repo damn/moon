@@ -1,5 +1,5 @@
 (ns clojure.gdx.maps.tiled.tiles.static-tiled-map-tile.create
-  (:require [clojure.gdx.maps.map-properties.put :refer [put!]]
+  (:require [clojure.put :refer [put!]]
             [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f
