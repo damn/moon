@@ -5,7 +5,7 @@
             [clojure.bitmap-font.data :as font.data]
             [clojure.freetype-font-generator :as font-generator]
             [clojure.freetype-font-generator.parameter :as parameter]
-            [clojure.gdx.graphics.texture.texture-filter :as texture-filter]))
+            [clojure.texture.filter :as texture-filter]))
 
 (defn create-font
   [{:keys [ctx/app]}

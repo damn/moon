@@ -1,7 +1,7 @@
 (ns game.ctx.clear-screen
   (:require [clojure.gdx.application :as app]
-            [clojure.gdx.graphics :as graphics]
-            [clojure.gdx.graphics.gl20 :as gl20]))
+            [clojure.graphics :as graphics]
+            [clojure.gl20 :as gl20]))
 
 (defn clear-screen!
   [{:keys [ctx/app]} r g b a]

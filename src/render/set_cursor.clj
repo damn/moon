@@ -1,6 +1,6 @@
 (ns render.set-cursor
   (:require [clojure.gdx.application :as app]
-            [clojure.gdx.graphics :as graphics]))
+            [clojure.graphics :as graphics]))
 
 (defn step
   [{:keys [ctx/app

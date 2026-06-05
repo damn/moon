@@ -1,5 +1,5 @@
 (ns create.put-colors
-  (:require [clojure.gdx.graphics.color :refer [Color]]
+  (:require [clojure.gdx.color :refer [Color]]
             [clojure.colors.put :refer [put!]]))
 
 (defn step [ctx]

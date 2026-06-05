@@ -1,8 +1,8 @@
 (ns game.ctx.create-cursor
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.files :as files]
-            [clojure.gdx.graphics :as graphics]
-            [clojure.gdx.graphics.pixmap :as pixmap]))
+            [clojure.graphics :as graphics]
+            [clojure.pixmap :as pixmap]))
 
 (defn create-cursor
   [{:keys [ctx/app]} path [hotspot-x hotspot-y]]

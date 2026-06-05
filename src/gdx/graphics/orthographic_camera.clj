@@ -1,5 +1,5 @@
 (ns gdx.graphics.orthographic-camera
-  (:require [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
+  (:require [clojure.orthographic-camera :as orthographic-camera]
             [clojure.gdx.math.frustum :as frustum]
             [clojure.gdx.math.vector3 :as vector3]))
 

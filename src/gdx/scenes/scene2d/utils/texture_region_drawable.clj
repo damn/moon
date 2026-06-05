@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.utils.texture-region-drawable
-  (:require [clojure.gdx.graphics.color :refer [Color]]
-            [clojure.gdx.graphics.g2d.texture-region.get-region-height :refer [get-region-height]]
-            [clojure.gdx.graphics.g2d.texture-region.get-region-width :refer [get-region-width]]
+  (:require [clojure.gdx.color :refer [Color]]
+            [clojure.texture-region.get-region-height :refer [get-region-height]]
+            [clojure.texture-region.get-region-width :refer [get-region-width]]
             [clojure.gdx.scene2d.utils.texture-region-drawable :as drawable]))
 
 (defn create

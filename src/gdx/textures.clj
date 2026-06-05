@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.gdx.files :as files]
             [clojure.file :as file]
-            [clojure.gdx.graphics.texture :as texture]))
+            [clojure.texture :as texture]))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
