@@ -2,7 +2,7 @@
   (:require [clojure.maps.map-layers :as layers]
             [clojure.maps.map-properties.get :refer [props-get]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.maps.tiled.tiled-map-tile :as tile]
+            [clojure.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-width :refer [get-width]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-height :refer [get-height]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
@@ -19,7 +19,7 @@
           :when cell
           :let [value (-> cell
                           cell/tile
-                          tile/properties
+                          get-properties
                           (props-get property-key))]
           :when value]
       [position value])))

@@ -29,7 +29,7 @@
               (when-let [cell (get-cell layer tile)]
                 (when-let [id (-> cell
                                   cell/tile
-                                  .getProperties
+                                  get-properties
                                   (.get "id"))]
                   (str "Creature id: " id)))))
           (when area-level-grid

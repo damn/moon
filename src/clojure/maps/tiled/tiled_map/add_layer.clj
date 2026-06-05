@@ -2,7 +2,7 @@
   (:require [clojure.maps.map-layers :as layers]
             [clojure.maps.map-properties.get :refer [props-get]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.maps.tiled.tiled-map.get-properties :refer [get-properties]]
+            [clojure.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map-tile-layer.create :as create-layer]))
 
 (defn- create-layer*
