@@ -1,9 +1,5 @@
 (ns game.effect)
 
-; TODO just function maps ???
-; ??!?
-; so database 'things' need also functions ?
-
 (defmulti applicable?
   (fn [[k _v] _effect-ctx]
     k))
