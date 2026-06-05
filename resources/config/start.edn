@@ -19,5 +19,5 @@
                        effect.target-all
                        effect.target-entity
                        draw.load)
- (clojure.gdx.backends.lwjgl.use-glfw-async/f!)
+ (clojure.use-glfw-async/f!)
  (clojure.gdx.backends.lwjgl.application/start! #edn/resource "config/application.edn")]

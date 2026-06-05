@@ -1,4 +1,4 @@
-(ns clojure.gdx.backends.lwjgl.use-glfw-async
+(ns clojure.use-glfw-async
   "Whether to use the \"glfw_async\" library. This method only does something on mac operating system.
 
   This means you do not have to set the JVM argument \"-XstartOnFirstThread\".
