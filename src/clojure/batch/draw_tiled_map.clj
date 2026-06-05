@@ -15,6 +15,6 @@
                                (color-setter color x y)))
                            (let [layers (get-layers tiled-map)]
                              (->> layers
-                                  (filter TiledMapTileLayer/.isVisible) ; TODO already done
+                                  (filter TiledMapTileLayer/.isVisible)
                                   (map #(.getIndex layers ^TiledMapTileLayer %))
                                   int-array))))
