@@ -236,20 +236,8 @@ public class TiledMapRenderer {
 				renderTileLayer((TiledMapTileLayer)layer);
 			} else if (layer instanceof TiledMapImageLayer) {
 				renderImageLayer((TiledMapImageLayer)layer);
-			} else {
-				renderObjects(layer);
 			}
 		}
-	}
-
-	private void renderObjects (MapLayer layer) {
-		for (MapObject object : layer.getObjects()) {
-			renderObject(object);
-		}
-	}
-
-	private void renderObject (MapObject object) {
-
 	}
 
 	private void renderImageLayer (TiledMapImageLayer layer) {
