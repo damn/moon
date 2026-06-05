@@ -31,11 +31,9 @@
 (defn key-just-pressed? [^Input input k]
   (.isKeyJustPressed input (k->inputkey k)))
 
-(defn x [^Input input]
-  (.getX input))
-
-(defn y [^Input input]
-  (.getY input))
+(defn position [^Input input]
+  [(.getX input)
+   (.getY input)])
 
 (defn button-just-pressed? [^Input input k]
   (.isButtonJustPressed input (case k
