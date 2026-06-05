@@ -1,5 +1,6 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [clojure.scene2d.actor.hit :refer [hit]]
+  (:require [clojure.to-clj :refer [->clj]]
+            [clojure.scene2d.actor.hit :refer [hit]]
             [clojure.scene2d.actor.stage-local-coordinates :refer [stage->local-coordinates]]
             [clojure.scene2d.actor.get-x :refer [get-x]]
             [clojure.scene2d.actor.get-y :refer [get-y]]
@@ -15,10 +16,10 @@
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]
-            [clojure.gdx.math.vector2 :as vector2]
             [clojure.scene2d.utils.click-listener :as click-listener]
             [clojure.scene2d.ui.image :as image]
-            [clojure.scene2d.ui.stack :as stack]))
+            [clojure.scene2d.ui.stack :as stack])
+  (:import (com.badlogic.gdx.math Vector2)))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -36,9 +37,10 @@
                                                            (get-x this)
                                                            (get-y this)
                                                            (hit this
-                                                                (vector2/->clj
+                                                                (->clj
                                                                  (stage->local-coordinates this
-                                                                                           (vector2/create ui-mouse-position)))
+                                                                                           (Vector2. (ui-mouse-position 0)
+                                                                                                     (ui-mouse-position 1))))
                                                                 true)
                                                            (get-user-object (get-parent this)))))))})
                      (doto (image/create background-drawable)

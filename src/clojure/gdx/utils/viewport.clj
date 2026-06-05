@@ -1,11 +1,12 @@
 (ns clojure.gdx.utils.viewport
-  (:require [clojure.gdx.math.vector2 :as vector2])
-  (:import (com.badlogic.gdx.utils.viewport Viewport)))
+  (:require [clojure.to-clj :refer [->clj]])
+  (:import (com.badlogic.gdx.utils.viewport Viewport)
+           (com.badlogic.gdx.math Vector2)))
 
 (defn update! [^Viewport viewport screen-width screen-height center-camera?]
   (.update viewport screen-width screen-height center-camera?))
 
-(defn unproject [^Viewport viewport xy]
+(defn unproject [^Viewport viewport [x y]]
   (-> viewport
-      (.unproject (vector2/create xy))
-      vector2/->clj))
+      (.unproject (Vector2. x y))
+      ->clj))
