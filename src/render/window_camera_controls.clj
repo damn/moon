@@ -6,8 +6,7 @@
             [clojure.gdx.scene2d.group.find-actor :refer [find-actor]]
             [clojure.gdx.scene2d.actor.set-visible :refer [set-visible!]]
             [clojure.gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]
-            [clojure.gdx.scene2d.group.children :refer [children]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+            [clojure.gdx.scene2d.group.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/app

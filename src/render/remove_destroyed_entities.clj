@@ -1,15 +1,9 @@
 (ns render.remove-destroyed-entities
-  (:require render.remove-destroyed-entities.destroy-audiovisual
-            [game.ctx.do :refer [do!]]))
-
-(def k->destroy
-  {
-   :entity/destroy-audiovisual render.remove-destroyed-entities.destroy-audiovisual/f
-   }
-  )
+  (:require [game.ctx.do :refer [do!]]))
 
 (defn step
-  [ctx]
+  [{:keys [ctx/k->destroy]
+    :as ctx}]
   (do! ctx
        (mapcat
         (fn [eid]

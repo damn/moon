@@ -4,6 +4,7 @@
  [:ctx/k->tick :some]
  [:ctx/k->render :some]
  [:ctx/k->create :some]
+ [:ctx/k->destroy :some]
  [:ctx/k->after-create :some]
  [:ctx/k->state-enter :some]
  [:ctx/k->state-exit :some]

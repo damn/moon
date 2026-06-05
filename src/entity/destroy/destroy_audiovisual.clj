@@ -1,4 +1,4 @@
-(ns render.remove-destroyed-entities.destroy-audiovisual)
+(ns entity.destroy.destroy-audiovisual)
 
 (defn f
   [audiovisuals-id eid]

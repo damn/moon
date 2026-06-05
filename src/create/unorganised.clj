@@ -15,6 +15,7 @@
          :ctx/k->tick (edn-resource "config/k-tick.edn")
          :ctx/k->render (edn-resource "config/k->render.edn")
          :ctx/k->create (edn-resource "config/k->create.edn")
+         :ctx/k->destroy (edn-resource "config/k->destroy.edn")
          :ctx/k->after-create (edn-resource "config/k->after-create.edn")
          :ctx/k->state-enter (edn-resource "config/k->state-enter.edn")
          :ctx/k->state-exit (edn-resource "config/k->state-exit.edn")
