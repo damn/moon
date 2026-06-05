@@ -6,16 +6,15 @@
 
 (defn draw-tiled-map!
   [batch world-unit-scale camera tiled-map color-setter]
-  (let [renderer (TiledMapRenderer. tiled-map
-                                    (float world-unit-scale)
-                                    camera
-                                    batch
-                                    (reify TiledMapRenderer$ColorSetter
-                                      (apply [_ color x y]
-                                        (color-setter color x y))))
-        layers (get-layers tiled-map)]
-    (->> layers
-         (filter TiledMapTileLayer/.isVisible) ; TODO already done
-         (map #(.getIndex layers ^TiledMapTileLayer %))
-         int-array
-         (.render renderer))))
+  (TiledMapRenderer/render tiled-map
+                           (float world-unit-scale)
+                           camera
+                           batch
+                           (reify TiledMapRenderer$ColorSetter
+                             (apply [_ color x y]
+                               (color-setter color x y)))
+                           (let [layers (get-layers tiled-map)]
+                             (->> layers
+                                  (filter TiledMapTileLayer/.isVisible) ; TODO already done
+                                  (map #(.getIndex layers ^TiledMapTileLayer %))
+                                  int-array))))
