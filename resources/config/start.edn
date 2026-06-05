@@ -1,5 +1,4 @@
-[(clojure.core/require clojure.gdx.scene2d.ui.cell
-                       info.entity
+[(clojure.core/require info.entity
                        info.item
                        schema.malli-form
                        entity.state.create.active-skill
