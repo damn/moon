@@ -1,5 +1,5 @@
 (ns moon.schemas.validate
-  (:require [moon.schemas.malli-form :refer [malli-form]]
+  (:require [clojure.malli-form :refer [malli-form]]
             [malli.core :as m]
             [malli.utils.validate-humanize :refer [validate-humanize]]))
 

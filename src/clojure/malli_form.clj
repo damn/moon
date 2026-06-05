@@ -1,4 +1,4 @@
-(ns moon.schemas.malli-form)
+(ns clojure.malli-form)
 
 (defmulti malli-form (fn [[k] _schemas]
                        k))

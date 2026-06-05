@@ -1,5 +1,5 @@
 (ns moon.schemas.create-map-schema
-  (:require [moon.schemas.malli-form :refer [malli-form]]
+  (:require [clojure.malli-form :refer [malli-form]]
             [malli.utils :as mu]))
 
 (defn create-map-schema [schemas ks]
