@@ -1,4 +1,4 @@
-package clojure.gdx.maps.tiled;
+package tiled;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;

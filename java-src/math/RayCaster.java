@@ -1,4 +1,4 @@
-package clojure.math;
+package math;
 
 import java.util.ArrayList;
 

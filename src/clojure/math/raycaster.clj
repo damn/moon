@@ -1,5 +1,5 @@
 (ns clojure.math.raycaster
-  (:import (clojure.math RayCaster)))
+  (:import (math RayCaster)))
 
 (defn blocked? [[arr width height] [start-x start-y] [target-x target-y]]
   (RayCaster/rayBlocked (double start-x)
