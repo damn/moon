@@ -1,5 +1,5 @@
 (ns world-fns.modules.last-steps
-  (:require [clojure.maps.map-layers :as layers]
+  (:require [clojure.get-layer :refer [get-layer]]
             [gdx.tiled-map.property-value :refer [property-value]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.grid2d :as g2d]
@@ -44,7 +44,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (layers/get (get-layers tiled-map) "creatures")
+                                                    (property-value (get-layer (get-layers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

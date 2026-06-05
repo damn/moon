@@ -1,7 +1,7 @@
 (ns levelgen-test.generate-level
   (:require [clojure.edn-resource :refer [edn-resource]]
             [clojure.texture :as texture]
-            [clojure.maps.map-layers :as layers]
+            [clojure.get-layer :refer [get-layer]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [clojure.dispose :as disposable]
@@ -33,7 +33,7 @@
     (assert tiled-map)
     (-> tiled-map
         get-layers
-        (layers/get "creatures")
+        (get-layer "creatures")
         (set-visible! true))
     (show-whole-map/f! ctx)
     ctx))

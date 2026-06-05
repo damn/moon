@@ -1,5 +1,5 @@
 (ns clojure.maps.tiled.tiled-map.add-layer
-  (:require [clojure.maps.map-layers :as layers]
+  (:require [clojure.add :refer [add!]]
             [clojure.props-get :refer [props-get]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.get-properties :refer [get-properties]]
@@ -21,5 +21,5 @@
                      :tiles tiles})))
 
 (defn f [tiled-map layer]
-  (layers/add! (get-layers tiled-map)
-               (create-layer* tiled-map layer)))
+  (add! (get-layers tiled-map)
+        (create-layer* tiled-map layer)))

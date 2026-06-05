@@ -1,5 +1,5 @@
 (ns gdx.tiled-map.spawn-positions
-  (:require [clojure.maps.map-layers :as layers]
+  (:require [clojure.get-layer :refer [get-layer]]
             [clojure.props-get :refer [props-get]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.get-properties :refer [get-properties]]
@@ -11,7 +11,7 @@
 (defn f [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (layers/get (get-layers tiled-map) layer-name)]
+        layer (get-layer (get-layers tiled-map) layer-name)]
     (for [x (range (get-width layer))
           y (range (get-height layer))
           :let [position [x y]
