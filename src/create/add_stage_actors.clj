@@ -6,5 +6,4 @@
     :as ctx}
    actor-fns]
   (doseq [[f & params] actor-fns]
-    (add-actor! stage (apply f ctx params)))
-  ctx)
+    (add-actor! stage (apply f ctx params))))

@@ -19,7 +19,8 @@
                                                       [create.skin/step]
                                                       [create.db/step]
                                                       [create.stage/step]
-                                                      [create.add-stage-actors/step [[editor.main-window/create]]]
+                                                      [clojure.pipeline.do/step
+                                                       [create.add-stage-actors/step [[editor.main-window/create]]]]
                                                       [create.textures/step]
                                                       [editor.app.create/f! {:ctx/add-component-window editor.map-widget-table.add-component-window/f
                                                                              :ctx/create-component-row editor.map-widget-table.component-row/create
