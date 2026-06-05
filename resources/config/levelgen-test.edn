@@ -1,4 +1,5 @@
 [
+ (clojure.core/require schema.malli-form)
  (clojure.lwjgl.application/start!
   {:state-var levelgen-test.app/state
    :create-pipeline [[levelgen-test.create/f!]]

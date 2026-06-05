@@ -13,8 +13,7 @@
             [gdx.textures]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]
-            [moon.db :as db]
-            [schema.malli-form]))
+            [moon.db :as db]))
 
 (def initial-level-fn "config/world_fns/uf_caves.edn")
 
@@ -55,6 +54,7 @@
                    :ctx/zoom-speed 0.1
                    :ctx/camera-movement-speed 1
                    :ctx/sprite-batch sprite-batch
+                   :ctx/skin skin
                    :ctx/world-unit-scale world-unit-scale)
         ctx (generate-level/f ctx initial-level-fn)]
     (add-actor! (:ctx/stage ctx) (window/create (edit-window skin level-fns)))
