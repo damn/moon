@@ -1,5 +1,5 @@
 (ns start
-  (:require [clojure.core.run-executions :refer [run-executions!]])
+  (:require [clojure.run-executions :refer [run-executions!]])
   (:gen-class))
 
 (defn -main []

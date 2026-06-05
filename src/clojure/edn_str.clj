@@ -1,4 +1,4 @@
-(ns clojure.core.edn-str)
+(ns clojure.edn-str)
 
 (defn ->edn-str ^String [v]
   (binding [*print-level* nil]

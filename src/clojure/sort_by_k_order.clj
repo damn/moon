@@ -1,4 +1,4 @@
-(ns clojure.core.sort-by-k-order
+(ns clojure.sort-by-k-order
   (:require [clojure.lang.persistent-vector :refer [index-of]]))
 
 (comment

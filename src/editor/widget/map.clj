@@ -1,5 +1,5 @@
 (ns editor.widget.map
-  (:require [clojure.core.sort-by-k-order :refer [sort-by-k-order]]
+  (:require [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.set :as set]
             [editor.map-widget-table.get-value :as get-value]
             [editor.widget :as widget]

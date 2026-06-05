@@ -1,4 +1,4 @@
-(ns clojure.core.edn-resource
+(ns clojure.edn-resource
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.walk :as walk]))

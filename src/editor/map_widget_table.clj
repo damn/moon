@@ -1,5 +1,5 @@
 (ns editor.map-widget-table
-  (:require [clojure.core.interpose-f :refer [interpose-f]]
+  (:require [clojure.interpose-f :refer [interpose-f]]
             [clojure.gdx.scene2d.event.get-stage :refer [get-stage]]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scene2d.actor.set-name :refer [set-name!]]

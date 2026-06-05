@@ -1,5 +1,5 @@
 (ns create.unorganised
-  (:require [clojure.core.edn-resource :refer [edn-resource]]
+  (:require [clojure.edn-resource :refer [edn-resource]]
             [malli.core :as m]
             [reduce-fsm :as fsm]))
 

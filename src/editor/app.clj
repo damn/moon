@@ -1,5 +1,5 @@
 (ns editor.app
-  (:require [clojure.core.run-executions :refer [run-executions!]]))
+  (:require [clojure.run-executions :refer [run-executions!]]))
 
 (def state (atom nil))
 

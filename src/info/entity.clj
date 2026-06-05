@@ -1,5 +1,5 @@
 (ns info.entity
-  (:require [clojure.core.sort-by-k-order :refer [sort-by-k-order]]
+  (:require [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.string :as str]
             [clojure.string.remove-newlines :refer [remove-newlines]]
             [game.info :as info]

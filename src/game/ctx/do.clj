@@ -1,5 +1,5 @@
 (ns game.ctx.do
-  (:require [clojure.core.actions :refer [actions!]]))
+  (:require [clojure.actions :refer [actions!]]))
 
 (defn do!
   [{:keys [ctx/txs-fn-map]

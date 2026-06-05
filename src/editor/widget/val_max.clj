@@ -1,5 +1,5 @@
 (ns editor.widget.val-max
-  (:require [clojure.core.edn-str :refer [->edn-str]]
+  (:require [clojure.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
             [editor.widget :as widget]
             [clojure.gdx.scene2d.actor.add-listener :refer [add-listener!]]
