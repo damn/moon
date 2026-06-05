@@ -1,6 +1,6 @@
 (ns clojure.batch.draw-tiled-map
-  (:import (com.badlogic.gdx.maps.tiled TiledMap
-                                        TiledMapTileLayer)
+  (:require [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
            (tiled TiledMapRenderer
                   TiledMapRenderer$ColorSetter)))
 
@@ -13,7 +13,7 @@
                                     (reify TiledMapRenderer$ColorSetter
                                       (apply [_ color x y]
                                         (color-setter color x y))))
-        layers (TiledMap/.getLayers tiled-map)]
+        layers (get-layers tiled-map)]
     (->> layers
          (filter TiledMapTileLayer/.isVisible) ; TODO already done
          (map #(.getIndex layers ^TiledMapTileLayer %))
