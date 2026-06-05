@@ -11,6 +11,9 @@
             info.effects.target.convert
             info.effects.target.damage
             info.effects.target.kill
+            info.effects.target.melee-damage
+            info.effects.target.spiderweb
+            info.effects.target.stun
             info.creature.level))
 
 (def info-fns-mapping
@@ -20,14 +23,9 @@
    :effects.target/convert info.effects.target.convert/f
    :effects.target/damage info.effects.target.damage/f
    :effects.target/kill info.effects.target.kill/f
-   :effects.target/melee-damage (fn [_ _ctx]
-                                  (str "Damage based on entity strength."
-                                       #_(when source
-                                           (str "\n" (damage-info (entity->melee-damage @source))))))
-   :effects.target/spiderweb (fn [_ _ctx]
-                               "Spiderweb slows 50% for 5 seconds.")
-   :effects.target/stun (fn [duration _ctx]
-                          (str "Stuns for " (number/readable duration) " seconds"))
+   :effects.target/melee-damage info.effects.target.melee-damage/f
+   :effects.target/spiderweb info.effects.target.spiderweb/f
+   :effects.target/stun info.effects.target.stun/f
    :effects/spawn (fn [{:keys [property/pretty-name]} _ctx]
                     (str "Spawns a " pretty-name))
    :effects/target-all (fn [_ _ctx]
