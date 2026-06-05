@@ -1,8 +1,8 @@
 (ns game.ctx.create-font
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.files :as files]
-            [clojure.gdx.graphics.g2d.bitmap-font :as font]
-            [clojure.gdx.graphics.g2d.bitmap-font.data :as font.data]
+            [clojure.bitmap-font :as font]
+            [clojure.bitmap-font.data :as font.data]
             [clojure.gdx.graphics.g2d.freetype.freetype-font-generator :as font-generator]
             [clojure.gdx.graphics.g2d.freetype.freetype-font-generator.parameter :as parameter]
             [clojure.gdx.graphics.texture.texture-filter :as texture-filter]))

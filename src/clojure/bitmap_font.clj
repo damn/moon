@@ -1,4 +1,4 @@
-(ns clojure.gdx.graphics.g2d.bitmap-font
+(ns clojure.bitmap-font
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
 
 (defn data [^BitmapFont font]

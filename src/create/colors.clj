@@ -1,6 +1,6 @@
 (ns create.colors
   (:require [game.constants :refer [black white gray red outline-alpha]]
-            [clojure.gdx.graphics.color.float-bits :refer [float-bits]]))
+            [clojure.color.float-bits :refer [float-bits]]))
 
 (defn step [ctx]
   (assoc ctx :ctx/colors

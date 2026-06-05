@@ -1,8 +1,8 @@
 (ns levelgen-test.create
   (:require [clojure.gdx.application :as app]
             [clojure.gdx.files :as files]
-            [clojure.gdx.graphics.color.float-bits :refer [float-bits]]
-            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.color.float-bits :refer [float-bits]]
+            [clojure.sprite-batch :as sprite-batch]
             [clojure.gdx.input :as input]
             [clojure.gdx.scene2d.ui.skin :as skin]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
