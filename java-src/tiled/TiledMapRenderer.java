@@ -38,16 +38,19 @@ public class TiledMapRenderer {
 	private float[] vertices = new float[NUM_VERTICES];
 	private ColorSetter colorSetter;
 
-	public TiledMapRenderer (TiledMap map, float unitScale, Batch batch) {
+	public TiledMapRenderer (TiledMap map, float unitScale, OrthographicCamera camera, Batch batch, ColorSetter colorSetter) {
 		this.map = map;
 		this.unitScale = unitScale;
 		this.viewBounds = new Rectangle();
 		this.batch = batch;
-	}
-
-  public void setColorSetter(ColorSetter colorSetter) {
     this.colorSetter = colorSetter;
-  }
+		batch.setProjectionMatrix(camera.combined);
+		float width = camera.viewportWidth * camera.zoom;
+		float height = camera.viewportHeight * camera.zoom;
+		float w = width * Math.abs(camera.up.y) + height * Math.abs(camera.up.x);
+		float h = height * Math.abs(camera.up.y) + width * Math.abs(camera.up.x);
+		viewBounds.set(camera.position.x - w / 2, camera.position.y - h / 2, w, h);
+	}
 
 	private void renderTileLayer (TiledMapTileLayer layer) {
 		final Color batchColor = batch.getColor();
@@ -208,15 +211,6 @@ public class TiledMapRenderer {
 			}
 			y -= layerTileHeight;
 		}
-	}
-
-	public void setView (OrthographicCamera camera) {
-		batch.setProjectionMatrix(camera.combined);
-		float width = camera.viewportWidth * camera.zoom;
-		float height = camera.viewportHeight * camera.zoom;
-		float w = width * Math.abs(camera.up.y) + height * Math.abs(camera.up.x);
-		float h = height * Math.abs(camera.up.y) + width * Math.abs(camera.up.x);
-		viewBounds.set(camera.position.x - w / 2, camera.position.y - h / 2, w, h);
 	}
 
 	public void render (int[] layers) {
