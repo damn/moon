@@ -5,7 +5,7 @@
             [clojure.sprite-batch :as sprite-batch]
             [clojure.input :as input]
             [clojure.scene2d.ui.skin :as skin]
-            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [clojure.fit-viewport :as fit-viewport]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.scene2d.stage :as stage]

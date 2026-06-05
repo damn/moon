@@ -1,4 +1,4 @@
-(ns clojure.gdx.utils.screen-utils
+(ns clojure.screen
   (:import (com.badlogic.gdx.utils ScreenUtils)))
 
 (defn clear! [r g b a]

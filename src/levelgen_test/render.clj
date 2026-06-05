@@ -1,7 +1,7 @@
 (ns levelgen-test.render
   (:require [clojure.input :as input]
             [clojure.input.keys :as input.keys]
-            [clojure.gdx.utils.screen-utils :as screen-utils]
+            [clojure.screen :as screen-utils]
             [gdx.graphics.orthographic-camera :as camera]
             [clojure.scene2d.stage.draw :refer [draw!]]
             [clojure.scene2d.stage.act :refer [act!]]

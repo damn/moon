@@ -8,8 +8,8 @@
             [clojure.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.scene2d.stage.add-actor :refer [add-actor!]]
-            [clojure.gdx.utils.align :as align]))
+            [clojure.scene2d.stage.add-actor :refer [add-actor!]])
+  (:import (com.badlogic.gdx.utils Align)))
 
 (defn f
   [{:keys [ctx/skin
@@ -33,7 +33,7 @@
                 (set-name! "moon.ui.modal-window")
                 (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                 (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
-                               align/center)))
+                               Align/center)))
   nil)
 
 ; no window movable type cursor appears here like in player idle

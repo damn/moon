@@ -1,5 +1,5 @@
 (ns render.update-mouse-positions
-  (:require [clojure.gdx.utils.viewport :as viewport]
+  (:require [clojure.viewport :as viewport]
             [game.ctx.mouse-position :refer [mouse-position]]))
 
 (defn step

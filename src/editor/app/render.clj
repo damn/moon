@@ -1,5 +1,5 @@
 (ns editor.app.render
-  (:require [clojure.gdx.utils.screen-utils :as screen-utils]
+  (:require [clojure.screen :as screen-utils]
             [clojure.scene2d.stage.set-ctx :refer [set-ctx!]]
             [clojure.scene2d.stage.act :refer [act!]]
             [clojure.scene2d.stage.draw :refer [draw!]]))

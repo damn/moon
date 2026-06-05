@@ -1,7 +1,8 @@
 (ns draw.text
   (:require [clojure.string :as str]
-            [clojure.gdx.utils.align :as align])
-  (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
+            )
+  (:import (com.badlogic.gdx.graphics.g2d BitmapFont)
+           (com.badlogic.gdx.utils Align)))
 
 (defn f
   [{:keys [ctx/batch
@@ -26,6 +27,6 @@
                              (* (.getLineHeight font)))
                          0)))
            (float target-width)
-           align/center
+           Align/center
            wrap?)
     (.setScale (.getData font) old-scale)))

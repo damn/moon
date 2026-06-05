@@ -1,8 +1,8 @@
 (ns levelgen-test.app
   (:require [clojure.lwjgl.use-glfw-async :as use-glfw-async]
             [clojure.lwjgl.application :as application]
-            [clojure.gdx.utils.disposable :as disposable]
-            [clojure.gdx.utils.viewport :as viewport]
+            [clojure.dispose :as disposable]
+            [clojure.viewport :as viewport]
             [levelgen-test.create :as create]
             [levelgen-test.render :as render]))
 
