@@ -1,5 +1,5 @@
 (ns create.db
   (:require [moon.db :as db]))
 
-(defn step [ctx]
-  (assoc ctx :ctx/db (db/create)))
+(defn step [_ctx]
+  (db/create))

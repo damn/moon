@@ -5,9 +5,9 @@
 
 (defn step
   [ctx]
-  (assoc ctx :ctx/cursors (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
-                            (update-vals data
-                                         (fn [[path hotspot-position]]
-                                           (create-cursor ctx
-                                                          (format path-format path)
-                                                          hotspot-position))))))
+  (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
+    (update-vals data
+                 (fn [[path hotspot-position]]
+                   (create-cursor ctx
+                                  (format path-format path)
+                                  hotspot-position)))))

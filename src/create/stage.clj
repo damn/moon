@@ -3,4 +3,4 @@
 
 (defn step
   [ctx]
-  (assoc ctx :ctx/stage (create-stage ctx 1440 900)))
+  (create-stage ctx 1440 900))

@@ -4,4 +4,4 @@
 
 (defn step
   [ctx]
-  (assoc ctx :ctx/textures (gdx.textures/create (app/files (:ctx/app ctx)))))
+  (gdx.textures/create (app/files (:ctx/app ctx))))

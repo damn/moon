@@ -13,5 +13,4 @@
                               :creature-property (build db (keyword creature-id))
                               :components {:entity/fsm {:fsm :fsms/npc
                                                         :initial-state :npc-sleeping}
-                                           :entity/faction :evil}}]))
-  ctx)
+                                           :entity/faction :evil}}])))

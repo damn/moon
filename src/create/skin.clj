@@ -3,4 +3,4 @@
 
 (defn step
   [ctx]
-  (assoc ctx :ctx/skin (create-skin ctx "skin/uiskin.json")))
+  (create-skin ctx "skin/uiskin.json"))

@@ -2,6 +2,5 @@
 
 (defn step
   [{:keys [ctx/minimum-size
-           ctx/max-delta]
-    :as ctx}]
-  (assoc ctx :ctx/max-speed (/ minimum-size max-delta)))
+           ctx/max-delta]}]
+  (/ minimum-size max-delta))
