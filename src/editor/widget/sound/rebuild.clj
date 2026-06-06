@@ -8,7 +8,7 @@
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]))
 
-(defn rebuild-sound-widget! [^Table table sound-name ->sound-columns]
+(defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]
     (clear-children! table)
     (add-rows! table [(->sound-columns skin table sound-name)])
