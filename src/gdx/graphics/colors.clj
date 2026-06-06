@@ -1,4 +1,4 @@
-(ns gdx.colors
+(ns gdx.graphics.colors
   (:import (com.badlogic.gdx.graphics Color
                                       Colors)))
 

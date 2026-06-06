@@ -1,5 +1,5 @@
 (ns editor.app.resize
-  (:require [gdx.viewport :as viewport]))
+  (:require [gdx.utils.viewport :as viewport]))
 
 (defn resize!
   [{:keys [ctx/stage]} width height]

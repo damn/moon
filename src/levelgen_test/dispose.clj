@@ -1,5 +1,5 @@
 (ns levelgen-test.dispose
-  (:require [gdx.dispose :as disposable]))
+  (:require [gdx.utils.dispose :as disposable]))
 
 (defn f!
   [{:keys [ctx/skin

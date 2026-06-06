@@ -1,4 +1,4 @@
-(ns gdx.float-bits
+(ns gdx.graphics.color.float-bits
   (:import (com.badlogic.gdx.graphics Color)))
 
 (defn float-bits [[r g b a]]

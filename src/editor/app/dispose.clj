@@ -1,5 +1,5 @@
 (ns editor.app.dispose
-  (:require [gdx.dispose :as disposable]))
+  (:require [gdx.utils.dispose :as disposable]))
 
 (defn dispose!
   [{:keys [ctx/skin

@@ -1,5 +1,5 @@
 (ns create.shape-drawer
-  (:require [gdx.texture :as texture]
+  (:require [gdx.graphics.texture :as texture]
             [gdx.shape-drawer :as shape-drawer]))
 
 (defn step

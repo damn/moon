@@ -1,5 +1,5 @@
 (ns tx.show-modal
-  (:require [gdx.align :as align]
+  (:require [gdx.utils.align :as align]
             [gdx.scene2d.actor.set-position :refer [set-position!]]
             [gdx.scene2d.actor.remove :refer [remove!]]
             [gdx.scene2d.actor.set-name :refer [set-name!]]

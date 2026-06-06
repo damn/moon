@@ -1,5 +1,5 @@
 (ns clojure.white-pixel-texture
-  (:require [gdx.pixmap :as pixmap]))
+  (:require [gdx.graphics.pixmap :as pixmap]))
 
 (defn f []
   (let [pixmap (doto (pixmap/create 1 1)

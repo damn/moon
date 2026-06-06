@@ -1,4 +1,4 @@
-(ns gdx.dispose
+(ns gdx.utils.dispose
   (:import (com.badlogic.gdx.utils Disposable)))
 
 (def dispose! Disposable/.dispose)

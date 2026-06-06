@@ -1,5 +1,5 @@
 (ns game.ctx.dispose
-  (:require [gdx.dispose :as disposable]))
+  (:require [gdx.utils.dispose :as disposable]))
 
 (defn do!
   [{:keys [ctx/audio

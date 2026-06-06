@@ -1,6 +1,6 @@
 (ns render.draw-on-world-viewport
   (:require [game.ctx.draw :refer [draw!]]
-            [gdx.batch :as batch]
+            [gdx.graphics.g2d.batch :as batch]
             [gdx.graphics.orthographic-camera.get-combined :refer [get-combined]]
             [gdx.shape-drawer :as shape-drawer]))
 

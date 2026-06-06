@@ -2,7 +2,7 @@
   (:require [gdx.application :as app]
             [gdx.files :as files]
             [gdx.graphics :as graphics]
-            [gdx.pixmap :as pixmap]))
+            [gdx.graphics.pixmap :as pixmap]))
 
 (defn create-cursor
   [{:keys [ctx/app]} path [hotspot-x hotspot-y]]

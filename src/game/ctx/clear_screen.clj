@@ -1,7 +1,7 @@
 (ns game.ctx.clear-screen
   (:require [gdx.application :as app]
             [gdx.graphics :as graphics]
-            [gdx.gl20 :as gl20]))
+            [gdx.graphics.gl20 :as gl20]))
 
 (defn clear-screen!
   [{:keys [ctx/app]} r g b a]

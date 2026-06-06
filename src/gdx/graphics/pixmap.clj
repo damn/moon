@@ -1,4 +1,4 @@
-(ns gdx.pixmap
+(ns gdx.graphics.pixmap
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
