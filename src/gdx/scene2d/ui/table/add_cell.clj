@@ -1,5 +1,5 @@
 (ns gdx.scene2d.ui.table.add-cell
-  (:require [clojure.set-opts :refer [set-opts!]])
+  (:require [gdx.scene2d.ui.cell :refer [set-opts!]])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
 

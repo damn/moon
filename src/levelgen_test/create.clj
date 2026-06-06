@@ -2,7 +2,7 @@
   (:require [gdx.application :as app]
             [gdx.files :as files]
             [gdx.float-bits :refer [float-bits]]
-            [clojure.sprite-batch :as sprite-batch]
+            [gdx.sprite-batch :as sprite-batch]
             [gdx.input :as input]
             [gdx.scene2d.ui.skin :as skin]
             [gdx.fit-viewport :as fit-viewport]

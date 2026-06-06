@@ -1,5 +1,5 @@
 (ns world-fns.uf-caves
-  (:require [clojure.texture :as texture]
+  (:require [gdx.texture :as texture]
             [clojure.grid2d :as g2d]
             [gdx.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]
             [world-fns.uf-caves.last-steps]))

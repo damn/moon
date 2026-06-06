@@ -1,5 +1,5 @@
 (ns create.shape-drawer
-  (:require [clojure.texture :as texture]
+  (:require [gdx.texture :as texture]
             [space.earlygrey.shape-drawer :as shape-drawer]))
 
 (defn step

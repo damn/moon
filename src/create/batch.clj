@@ -1,5 +1,5 @@
 (ns create.batch
-  (:require [clojure.sprite-batch :as sprite-batch]))
+  (:require [gdx.sprite-batch :as sprite-batch]))
 
 (defn step [_ctx]
   (sprite-batch/create))

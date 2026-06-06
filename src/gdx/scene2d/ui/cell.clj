@@ -1,11 +1,11 @@
-(ns clojure.set-opts
+(ns gdx.scene2d.ui.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defprotocol SetOpts
   (set-opts! [_ opts]))
 
 (extend-type Cell
-  clojure.set-opts/SetOpts
+  gdx.scene2d.ui.cell/SetOpts
   (set-opts! [cell opts]
     (doseq [[option arg] opts]
       (case option
