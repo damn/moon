@@ -1,7 +1,10 @@
 (ns clojure.lwjgl.application
   (:require [gdx.application-listener :refer [application-listener]]
             [gdx.backends.lwjgl.application :as application]
-            [gdx.backends.lwjgl.application-config :as config]))
+            [gdx.backends.lwjgl.application-config :as config]
+            [gdx.utils.shared-library-loader :as shared-library-loader]
+            [gdx.utils.os :as os]
+            [lwjgl.system.configuration]))
 
 (defn start!
   [{:keys [state-var
@@ -10,7 +13,8 @@
            render-pipeline
            resize!]
     :as config}]
-  (config/use-glfw-async!)
+  (when (= (shared-library-loader/os) os/mac-os)
+    (lwjgl.system.configuration/set-glfw-library-name! "glfw_async"))
   (application/create (application-listener
                        (let [state @state-var]
                          {:create! (fn [app]
