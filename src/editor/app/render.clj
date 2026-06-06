@@ -1,8 +1,8 @@
 (ns editor.app.render
   (:require [clojure.screen :as screen-utils]
-            [clojure.scene2d.stage.set-ctx :refer [set-ctx!]]
-            [clojure.scene2d.stage.act :refer [act!]]
-            [clojure.scene2d.stage.draw :refer [draw!]]))
+            [gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
+            [gdx.scene2d.stage.act :refer [act!]]
+            [gdx.scene2d.stage.draw :refer [draw!]]))
 
 (defn render!
   [{:keys [ctx/stage]

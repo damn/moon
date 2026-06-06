@@ -1,9 +1,9 @@
 (ns editor.widget.image
-  (:require [clojure.scene2d.ui.scroll-pane :as scroll-pane]
+  (:require [gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.ui :as ui]
-            [clojure.scene2d.ui.image-button :as image-button]
-            [clojure.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.ui.image-button :as image-button]
+            [gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
 

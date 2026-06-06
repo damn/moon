@@ -1,16 +1,16 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [clojure.scene2d.actor.get-height :refer [get-height]]
-            [clojure.scene2d.actor.get-width :refer [get-width]]
-            [clojure.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.scene2d.event.get-stage :refer [get-stage]]
-            [clojure.scene2d.ui.scroll-pane :as scroll-pane]
+  (:require [gdx.scene2d.actor.get-height :refer [get-height]]
+            [gdx.scene2d.actor.get-width :refer [get-width]]
+            [gdx.scene2d.actor.add-listener :refer [add-listener!]]
+            [gdx.scene2d.event.get-stage :refer [get-stage]]
+            [gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [game.ctx.do :refer [do!]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.scene2d.stage.add-actor :refer [add-actor!]]))
+            [gdx.scene2d.utils.change-listener :as change-listener]
+            [gdx.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin

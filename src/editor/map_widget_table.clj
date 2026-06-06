@@ -1,13 +1,13 @@
 (ns editor.map-widget-table
   (:require [clojure.interpose-f :refer [interpose-f]]
-            [clojure.scene2d.event.get-stage :refer [get-stage]]
+            [gdx.scene2d.event.get-stage :refer [get-stage]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.scene2d.actor.set-name :refer [set-name!]]
-            [clojure.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.scene2d.ui.table.add-rows :refer [add-rows!]]
-            [clojure.scene2d.ui.text-button :as text-button]
-            [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.scene2d.stage.add-actor :refer [add-actor!]]))
+            [gdx.scene2d.actor.set-name :refer [set-name!]]
+            [gdx.scene2d.actor.add-listener :refer [add-listener!]]
+            [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.utils.change-listener :as change-listener]
+            [gdx.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn- horiz-sep [colspan]
   (fn []

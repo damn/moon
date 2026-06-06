@@ -1,9 +1,9 @@
 (ns editor.window.with-window-close
-  (:require [clojure.scene2d.actor.get-stage :refer [get-stage]]
-            [clojure.scene2d.actor.remove :refer [remove!]]
-            [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [clojure.scene2d.stage.set-ctx :refer [set-ctx!]]
-            [clojure.scene2d.stage.add-actor :refer [add-actor!]]
+  (:require [gdx.scene2d.actor.get-stage :refer [get-stage]]
+            [gdx.scene2d.actor.remove :refer [remove!]]
+            [gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
+            [gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
             [gdx.scenes.scene2d.ui :as ui]))

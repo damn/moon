@@ -1,5 +1,5 @@
 (ns world-fns.modules.place-step
-  (:require [clojure.props-get :refer [props-get]]
+  (:require [gdx.maps.properties.get :refer [props-get]]
             [clojure.get-properties :refer [get-properties]]
             [world-fns.modules.place-step.place-star :refer [place-module*]]))
 

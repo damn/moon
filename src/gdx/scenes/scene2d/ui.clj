@@ -1,8 +1,8 @@
 (ns gdx.scenes.scene2d.ui
-  (:require [clojure.scene2d.actor.get-parent :refer [get-parent]]
-            [clojure.scene2d.ui.button :as button]
-            [clojure.scene2d.ui.label :as label]
-            [clojure.scene2d.ui.window :as window]))
+  (:require [gdx.scene2d.actor.get-parent :refer [get-parent]]
+            [gdx.scene2d.ui.button :as button]
+            [gdx.scene2d.ui.label :as label]
+            [gdx.scene2d.ui.window :as window]))
 
 (defn window? [actor]
   (instance? window/class actor))

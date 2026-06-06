@@ -1,5 +1,5 @@
 (ns gdx.graphics.orthographic-camera
-  (:require [clojure.orthographic-camera :as orthographic-camera]
+  (:require [gdx.orthographic-camera :as orthographic-camera]
             [clojure.to-clj :refer [->clj]]))
 
 (defn create

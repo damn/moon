@@ -1,12 +1,12 @@
 (ns render.window-camera-controls
   (:require [gdx.application :as app]
-            [clojure.input :as input]
+            [gdx.input :as input]
             [gdx.graphics.orthographic-camera :as camera]
             [game.constants :refer [zoom-speed]]
-            [clojure.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.scene2d.actor.set-visible :refer [set-visible!]]
-            [clojure.scene2d.actor.toggle-visible :refer [toggle-visible!]]
-            [clojure.scene2d.group.children :refer [children]]))
+            [gdx.scene2d.group.find-actor :refer [find-actor]]
+            [gdx.scene2d.actor.set-visible :refer [set-visible!]]
+            [gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]
+            [gdx.scene2d.group.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/app

@@ -1,5 +1,5 @@
 (ns create.content-grid
-  (:require [clojure.props-get :refer [props-get]]
+  (:require [gdx.maps.properties.get :refer [props-get]]
             [clojure.get-properties :refer [get-properties]]
             [moon.content-grid :as content-grid]))
 

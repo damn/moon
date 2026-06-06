@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.utils.texture-region-drawable
   (:require [clojure.texture-region.get-region-height :refer [get-region-height]]
             [clojure.texture-region.get-region-width :refer [get-region-width]]
-            [clojure.scene2d.utils.texture-region-drawable :as drawable])
+            [gdx.scene2d.utils.texture-region-drawable :as drawable])
   (:import (com.badlogic.gdx.graphics Color)))
 
 (defn create

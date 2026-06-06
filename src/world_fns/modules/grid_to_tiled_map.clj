@@ -1,12 +1,12 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require [clojure.to-clj :refer [->clj]]
-            [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
+            [gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [gdx.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
             [clojure.get-properties :refer [get-properties]]
-            [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [clojure.get-name :refer [get-name]]
-            [clojure.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.grid2d :as g2d]))
 
 (def copy-tile

@@ -1,5 +1,5 @@
 (ns create.explored-tile-corners
-  (:require [clojure.props-get :refer [props-get]]
+  (:require [gdx.maps.properties.get :refer [props-get]]
             [clojure.get-properties :refer [get-properties]]
             [clojure.grid2d :as g2d]))
 

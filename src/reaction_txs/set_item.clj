@@ -1,5 +1,5 @@
 (ns reaction-txs.set-item
-  (:require [clojure.scene2d.group.find-actor :refer [find-actor]]
+  (:require [gdx.scene2d.group.find-actor :refer [find-actor]]
             [moon.ui.inventory-window :as inventory-window]
             [moon.textures :as textures]
             [game.info :as info]))

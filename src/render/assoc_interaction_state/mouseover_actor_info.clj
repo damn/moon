@@ -1,7 +1,7 @@
 (ns render.assoc-interaction-state.mouseover-actor-info
-  (:require [clojure.scene2d.actor.get-user-object :refer [get-user-object]]
+  (:require [gdx.scene2d.actor.get-user-object :refer [get-user-object]]
             [clojure.get-name :refer [get-name]]
-            [clojure.scene2d.actor.get-parent :refer [get-parent]]
+            [gdx.scene2d.actor.get-parent :refer [get-parent]]
             [gdx.scenes.scene2d.ui :as ui]))
 
 (defn mouseover-actor-info [actor]

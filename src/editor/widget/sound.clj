@@ -1,13 +1,13 @@
 (ns editor.widget.sound
-  (:require [clojure.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.scene2d.event.get-stage :refer [get-stage]]
+  (:require [gdx.scene2d.actor.add-listener :refer [add-listener!]]
+            [gdx.scene2d.event.get-stage :refer [get-stage]]
             [editor.widget :as widget]
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.scene2d.ui.table.add-rows :refer [add-rows!]]
-            [clojure.scene2d.ui.text-button :as text-button]
-            [clojure.scene2d.utils.change-listener :as change-listener]))
+            [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.utils.change-listener :as change-listener]))
 
 (defmethod widget/create :s/sound [_  sound-name {:keys [ctx/skin]}]
   (let [table (table/create
