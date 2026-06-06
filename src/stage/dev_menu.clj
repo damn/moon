@@ -1,7 +1,7 @@
 (ns stage.dev-menu
   (:require [gdx.application :as app]
-            [gdx.graphics :as graphics]
-            [gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
+            [com.badlogic.gdx.graphics :as graphics]
+            [com.badlogic.gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
             [moon.number :as number]
             [stage.dev-menu.ctx-data :as ctx-data]))

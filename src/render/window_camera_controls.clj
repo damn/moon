@@ -1,7 +1,7 @@
 (ns render.window-camera-controls
   (:require [gdx.application :as app]
             [gdx.input :as input]
-            [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [game.constants :refer [zoom-speed]]
             [gdx.scene2d.group.find-actor :refer [find-actor]]
             [gdx.scene2d.actor.set-visible :refer [set-visible!]]

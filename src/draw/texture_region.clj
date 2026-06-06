@@ -1,5 +1,5 @@
 (ns draw.texture-region
-  (:require [gdx.graphics.g2d.batch :as batch]
+  (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [gdx.texture-region.get-region-height :refer [get-region-height]]
             [gdx.texture-region.get-region-width :refer [get-region-width]]))
 

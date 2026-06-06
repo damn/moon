@@ -8,7 +8,7 @@
             [gdx.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scene2d.ui.widget-group.set-fill-parent :refer [set-fill-parent!]]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout.set-fill-parent :refer [set-fill-parent!]]
             [gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scene2d.touchable :as touchable]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]))

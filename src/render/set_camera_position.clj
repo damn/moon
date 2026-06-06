@@ -1,5 +1,5 @@
 (ns render.set-camera-position
-  (:require [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]))
+  (:require [com.badlogic.gdx.graphics.orthographic-camera.set-position :refer [set-position!]]))
 
 (defn step
   [{:keys [ctx/player-eid

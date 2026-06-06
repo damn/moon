@@ -1,5 +1,5 @@
 (ns create.world-viewport
-  (:require [gdx.graphics.orthographic-camera :as camera]
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [gdx.utils.fit-viewport :as fit-viewport]))
 
 (defn step

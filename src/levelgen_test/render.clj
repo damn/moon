@@ -1,9 +1,9 @@
 (ns levelgen-test.render
   (:require [gdx.input :as input]
             [gdx.screen :as screen-utils]
-            [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [gdx.graphics.orthographic-camera.get-position :refer [get-position]]
-            [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
+            [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [com.badlogic.gdx.graphics.orthographic-camera.get-position :refer [get-position]]
+            [com.badlogic.gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
             [gdx.scene2d.stage.draw :refer [draw!]]
             [gdx.scene2d.stage.act :refer [act!]]
             [gdx.scene2d.stage.set-ctx :refer [set-ctx!]]

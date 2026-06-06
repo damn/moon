@@ -1,9 +1,9 @@
 (ns levelgen-test.show-whole-map
   (:require [gdx.maps.properties.get :refer [props-get]]
             [gdx.maps.get-properties :refer [get-properties]]
-            [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
-            [gdx.graphics.orthographic-camera.calculate-zoom :refer [calculate-zoom]]
-            [gdx.graphics.orthographic-camera.set-zoom :refer [set-zoom!]]))
+            [com.badlogic.gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
+            [com.badlogic.gdx.graphics.orthographic-camera.calculate-zoom :refer [calculate-zoom]]
+            [com.badlogic.gdx.graphics.orthographic-camera.set-zoom :refer [set-zoom!]]))
 
 (defn f!
   [{:keys [ctx/camera

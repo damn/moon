@@ -1,9 +1,19 @@
+Simple idea:
+
+We wrap each method/constructor
+and as such it is 'eingapackt' and under my control and can rewreite it
+(defn update! [^OrthographicCamera camera]
+  (.update camera))
+
 # 1. 'GDX' - minimal facade API - nothing more - no interdependencies - only implemnentation
 
     => then I can _REWRITE_ IT WITHOUT ADJUSTING MY CURRENT CODE !
     => AS EXTERNAL LIBRARY
 
     RULE: grep 'badlogic' or 'earlygrey' => no results in whole project !
+
+    RULE: EACH method/construcor/value only refernece _once_
+    e.g. camera .updaet reference twice
 
 
 # Idea:

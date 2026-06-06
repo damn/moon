@@ -7,7 +7,7 @@
             [gdx.scene2d.group.find-actor :refer [find-actor]]
             [gdx.scene2d.group.add-actor :refer [add-actor!]]
             [gdx.scene2d.ui.button-group :as button-group]
-            [gdx.scene2d.ui.widget-group.set-fill-parent :refer [set-fill-parent!]]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout.set-fill-parent :refer [set-fill-parent!]]
             [gdx.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]

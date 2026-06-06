@@ -1,10 +1,10 @@
 (ns draw-on-world-viewport.draw-tile-grid
-  (:require [gdx.graphics.color.float-bits :refer [float-bits]]
-            [gdx.graphics.orthographic-camera :as camera]))
+  (:require [com.badlogic.gdx.graphics.color.float-bits :refer [float-bits]]
+            [com.badlogic.gdx.graphics.orthographic-camera.frustum :refer [frustum]]))
 
 (defn f
   [{:keys [ctx/world-viewport]}]
-  (let [[left-x _right-x bottom-y _top-y] (camera/frustum (:viewport/camera world-viewport))]
+  (let [[left-x _right-x bottom-y _top-y] (frustum (:viewport/camera world-viewport))]
     [[:draw/grid
       (int left-x)
       (int bottom-y)
