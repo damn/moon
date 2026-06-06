@@ -4,7 +4,7 @@
             [gdx.scene2d.actor.set-user-object :refer [set-user-object!]]
             [gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [gdx.scene2d.group.clear-children :refer [clear-children!]]
-            [gdx.scene2d.ui.widget-group.pack :refer [pack!]]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout.pack :refer [pack!]]
             [gdx.scenes.scene2d.ui :as ui]
             [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]))
 

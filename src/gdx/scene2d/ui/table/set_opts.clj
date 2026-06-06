@@ -1,7 +1,7 @@
 (ns gdx.scene2d.ui.table.set-opts
   (:require [gdx.scene2d.ui.cell :as cell]
             [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
-            [gdx.scene2d.ui.widget-group.pack :refer [pack!]])
+            [com.badlogic.gdx.scenes.scene2d.utils.layout.pack :refer [pack!]])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn set-opts! [table opts]

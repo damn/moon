@@ -5,7 +5,7 @@
             [gdx.scene2d.actor.add-listener :refer [add-listener!]]
             [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [gdx.scene2d.ui.text-button :as text-button]
-            [gdx.scene2d.ui.widget-group.pack :refer [pack!]]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout.pack :refer [pack!]]
             [gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas.default-value :refer [default-value]]

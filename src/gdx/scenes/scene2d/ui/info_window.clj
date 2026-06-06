@@ -8,7 +8,7 @@
             [gdx.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scene2d.ui.widget-group.pack :refer [pack!]]))
+            [com.badlogic.gdx.scenes.scene2d.utils.layout.pack :refer [pack!]]))
 
 (defn create
   [{:keys [title

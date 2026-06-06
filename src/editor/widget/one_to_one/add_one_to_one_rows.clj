@@ -8,7 +8,7 @@
             [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
             [gdx.scene2d.ui.text-button :as text-button]
             [gdx.scene2d.ui.text-tooltip :as text-tooltip]
-            [gdx.scene2d.ui.widget-group.pack :refer [pack!]]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout.pack :refer [pack!]]
             [gdx.scene2d.utils.change-listener :as change-listener]
             [editor.property-overview-window]
             [gdx.scenes.scene2d.ui :as ui]
