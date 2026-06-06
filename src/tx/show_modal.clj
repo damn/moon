@@ -1,5 +1,6 @@
 (ns tx.show-modal
-  (:require [gdx.scene2d.actor.set-position :refer [set-position!]]
+  (:require [gdx.align :as align]
+            [gdx.scene2d.actor.set-position :refer [set-position!]]
             [gdx.scene2d.actor.remove :refer [remove!]]
             [gdx.scene2d.actor.set-name :refer [set-name!]]
             [gdx.scene2d.actor.add-listener :refer [add-listener!]]
@@ -8,8 +9,7 @@
             [gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scene2d.group.find-actor :refer [find-actor]]
-            [gdx.scene2d.stage.add-actor :refer [add-actor!]])
-  (:import (com.badlogic.gdx.utils Align)))
+            [gdx.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn f
   [{:keys [ctx/skin
@@ -33,7 +33,7 @@
                 (set-name! "moon.ui.modal-window")
                 (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                 (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
-                               Align/center)))
+                               align/center)))
   nil)
 
 ; no window movable type cursor appears here like in player idle
