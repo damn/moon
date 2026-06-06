@@ -1,6 +1,5 @@
 (ns clojure.lwjgl.application
-  (:require [clojure.gdx :as gdx]
-            [clojure.gdx.application-listener :as application-listener]
+  (:require [clojure.gdx.application-listener :refer [application-listener]]
             [gdx.backends.lwjgl.application :as application]
             [gdx.backends.lwjgl.application-config :as config]))
 
@@ -12,12 +11,12 @@
            resize!]
     :as config}]
   (config/use-glfw-async!)
-  (application/create (application-listener/create
+  (application/create (application-listener
                        (let [state @state-var]
-                         {:create! (fn []
+                         {:create! (fn [app]
                                      (reset! state (reduce (fn [ctx [f & params]]
                                                              (apply f ctx params))
-                                                           {:ctx/app (gdx/app)}
+                                                           {:ctx/app app}
                                                            create-pipeline)))
 
                           :dispose! (fn []
