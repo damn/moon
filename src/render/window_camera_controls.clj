@@ -1,7 +1,7 @@
 (ns render.window-camera-controls
   (:require [gdx.application :as app]
             [gdx.input :as input]
-            [gdx.graphics.orthographic-camera :as camera]
+            [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [game.constants :refer [zoom-speed]]
             [gdx.scene2d.group.find-actor :refer [find-actor]]
             [gdx.scene2d.actor.set-visible :refer [set-visible!]]
@@ -16,10 +16,10 @@
     :as ctx}]
   (let [input (app/input app)]
     (when (input/key-pressed? input (:zoom-in controls))
-      (camera/inc-zoom! (:viewport/camera world-viewport) zoom-speed))
+      (inc-zoom! (:viewport/camera world-viewport) zoom-speed))
 
     (when (input/key-pressed? input (:zoom-out controls))
-      (camera/inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
+      (inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
 
     (when (input/key-just-pressed? input (:close-windows-key controls))
       (->> (find-actor (:stage/root stage) "moon.ui.windows")

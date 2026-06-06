@@ -1,7 +1,7 @@
 (ns levelgen-test.render
   (:require [gdx.input :as input]
             [gdx.screen :as screen-utils]
-            [gdx.graphics.orthographic-camera :as camera]
+            [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [gdx.graphics.orthographic-camera.get-position :refer [get-position]]
             [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
             [gdx.scene2d.stage.draw :refer [draw!]]
@@ -36,8 +36,8 @@
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (input/key-pressed? input :input.keys/minus)  (camera/inc-zoom! camera zoom-speed))
-  (when (input/key-pressed? input :input.keys/equals) (camera/inc-zoom! camera (- zoom-speed))))
+  (when (input/key-pressed? input :input.keys/minus)  (inc-zoom! camera zoom-speed))
+  (when (input/key-pressed? input :input.keys/equals) (inc-zoom! camera (- zoom-speed))))
 
 (defn f!
   [{:keys [ctx/stage]
