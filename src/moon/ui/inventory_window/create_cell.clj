@@ -18,8 +18,8 @@
             [game.state :as state]
             [gdx.scene2d.utils.click-listener :as click-listener]
             [gdx.scene2d.ui.image :as image]
-            [gdx.scene2d.ui.stack :as stack])
-  (:import (com.badlogic.gdx.math Vector2)))
+            [gdx.scene2d.ui.stack :as stack]
+            [gdx.math.vector2 :as vector2]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -39,8 +39,7 @@
                                                            (hit this
                                                                 (->clj
                                                                  (stage->local-coordinates this
-                                                                                           (Vector2. (ui-mouse-position 0)
-                                                                                                     (ui-mouse-position 1))))
+                                                                                           (vector2/create ui-mouse-position)))
                                                                 true)
                                                            (get-user-object (get-parent this)))))))})
                      (doto (image/create background-drawable)
