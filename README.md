@@ -1,3 +1,6 @@
+# 1. 'GDX' - minimal facade API - nothing more - no interdependencies - only implemnentation
+
+
 # Idea:
 
 Explain till crate/render/dispose/resize steps
