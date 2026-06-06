@@ -1,5 +1,5 @@
 (ns stage.dev-menu
-  (:require [clojure.application :as app]
+  (:require [gdx.application :as app]
             [clojure.graphics :as graphics]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]

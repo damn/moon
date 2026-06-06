@@ -1,6 +1,6 @@
 (ns game.ctx.create-cursor
-  (:require [clojure.application :as app]
-            [clojure.files :as files]
+  (:require [gdx.application :as app]
+            [gdx.files :as files]
             [clojure.graphics :as graphics]
             [clojure.pixmap :as pixmap]))
 

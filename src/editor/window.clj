@@ -1,5 +1,5 @@
 (ns editor.window
-  (:require [clojure.application :as app]
+  (:require [gdx.application :as app]
             [clojure.input :as input]
             [clojure.scene2d.actor.get-stage :refer [get-stage]]
             [clojure.scene2d.actor.set-name :refer [set-name!]]

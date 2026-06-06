@@ -1,5 +1,5 @@
 (ns clojure.lwjgl.application
-  (:require [clojure.gdx.application-listener :refer [application-listener]]
+  (:require [gdx.application-listener :refer [application-listener]]
             [gdx.backends.lwjgl.application :as application]
             [gdx.backends.lwjgl.application-config :as config]))
 

@@ -1,5 +1,5 @@
 (ns draw.texture-region
-  (:require [clojure.batch :as batch]
+  (:require [gdx.batch :as batch]
             [clojure.texture-region.get-region-height :refer [get-region-height]]
             [clojure.texture-region.get-region-width :refer [get-region-width]]))
 

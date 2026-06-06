@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-tile-grid
-  (:require [clojure.color.float-bits :refer [float-bits]]
+  (:require [gdx.float-bits :refer [float-bits]]
             [gdx.graphics.orthographic-camera :as camera]))
 
 (defn f

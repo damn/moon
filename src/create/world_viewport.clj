@@ -1,6 +1,6 @@
 (ns create.world-viewport
   (:require [gdx.graphics.orthographic-camera :as camera]
-            [clojure.fit-viewport :as fit-viewport]))
+            [gdx.fit-viewport :as fit-viewport]))
 
 (defn step
   [{:keys [ctx/world-unit-scale]}]

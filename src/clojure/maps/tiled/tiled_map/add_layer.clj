@@ -1,5 +1,5 @@
 (ns clojure.maps.tiled.tiled-map.add-layer
-  (:require [clojure.add :refer [add!]]
+  (:require [gdx.maps.layers.add :refer [add!]]
             [clojure.props-get :refer [props-get]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.get-properties :refer [get-properties]]

@@ -1,5 +1,5 @@
 (ns game.ctx.key-just-pressed
-  (:require [clojure.application :as app]
+  (:require [gdx.application :as app]
             [clojure.input :as input]))
 
 (defn key-just-pressed? [{:keys [ctx/app]} input-key]

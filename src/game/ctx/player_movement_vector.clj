@@ -1,6 +1,6 @@
 (ns game.ctx.player-movement-vector
   (:require [clojure.math.vector2 :as v]
-            [clojure.application :as app]
+            [gdx.application :as app]
             [clojure.input :as input]))
 
 (defn player-movement-vector [{:keys [ctx/app]}]

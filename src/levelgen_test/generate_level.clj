@@ -4,7 +4,7 @@
             [clojure.get-layer :refer [get-layer]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
-            [clojure.dispose :as disposable]
+            [gdx.dispose :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
             [moon.db.all-raw :refer [all-raw]]))

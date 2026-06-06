@@ -1,5 +1,5 @@
 (ns game.ctx.graphics-delta-time
-  (:require [clojure.application :as app]
+  (:require [gdx.application :as app]
             [clojure.graphics :as graphics]))
 
 (defn graphics-delta-time

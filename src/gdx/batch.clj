@@ -1,4 +1,4 @@
-(ns clojure.batch
+(ns gdx.batch
   (:import (com.badlogic.gdx.graphics.g2d Batch
                                           TextureRegion)))
 
