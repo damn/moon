@@ -1,6 +1,5 @@
 (ns draw.text
-  (:require [clojure.string :as str]
-            )
+  (:require [clojure.string :as str])
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont)
            (com.badlogic.gdx.utils Align)))
 

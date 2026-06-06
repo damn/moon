@@ -1,5 +1,5 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [clojure.to-clj :refer [->clj]]
+  (:require [gdx.to-clj :refer [->clj]]
             [gdx.scene2d.actor.hit :refer [hit]]
             [gdx.scene2d.actor.stage-local-coordinates :refer [stage->local-coordinates]]
             [gdx.scene2d.actor.get-x :refer [get-x]]

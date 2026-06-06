@@ -1,6 +1,6 @@
 (ns gdx.tiled-map.property-value
   (:require [gdx.maps.properties.get :refer [props-get]]
-            [clojure.get-properties :refer [get-properties]]
+            [gdx.maps.get-properties :refer [get-properties]]
             [gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 

@@ -2,7 +2,7 @@
   (:require [gdx.maps.layers.add :refer [add!]]
             [gdx.maps.properties.get :refer [props-get]]
             [gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.get-properties :refer [get-properties]]
+            [gdx.maps.get-properties :refer [get-properties]]
             [gdx.maps.tiled.tiled-map-tile-layer.create :as create-layer]))
 
 (defn- create-layer*

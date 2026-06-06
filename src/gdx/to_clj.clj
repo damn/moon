@@ -1,4 +1,4 @@
-(ns clojure.to-clj)
+(ns gdx.to-clj)
 
 (defprotocol Clojurize
   (->clj [_]))

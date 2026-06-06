@@ -1,6 +1,6 @@
 (ns gdx.graphics.orthographic-camera
   (:require [gdx.orthographic-camera :as orthographic-camera]
-            [clojure.to-clj :refer [->clj]]))
+            [gdx.to-clj :refer [->clj]]))
 
 (defn create
   [{:keys [y-down?

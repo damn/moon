@@ -1,4 +1,4 @@
-(ns clojure.get-properties)
+(ns gdx.maps.get-properties)
 
 (defprotocol GetProperties
   (get-properties [_]))

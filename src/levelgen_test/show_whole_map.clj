@@ -1,6 +1,6 @@
 (ns levelgen-test.show-whole-map
   (:require [gdx.maps.properties.get :refer [props-get]]
-            [clojure.get-properties :refer [get-properties]]
+            [gdx.maps.get-properties :refer [get-properties]]
             [gdx.graphics.orthographic-camera :as camera]))
 
 (defn f!

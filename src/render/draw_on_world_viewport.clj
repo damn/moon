@@ -1,7 +1,7 @@
 (ns render.draw-on-world-viewport
   (:require [game.ctx.draw :refer [draw!]]
             [gdx.graphics.orthographic-camera :as camera]
-            [space.earlygrey.shape-drawer :as shape-drawer]))
+            [gdx.shape-drawer :as shape-drawer]))
 
 (defn step
   [{:keys [^com.badlogic.gdx.graphics.g2d.SpriteBatch ctx/batch

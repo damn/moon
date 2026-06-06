@@ -6,8 +6,7 @@
             [gdx.scene2d.group.clear-children :refer [clear-children!]]
             [gdx.scene2d.ui.widget-group.pack :refer [pack!]]
             [gdx.scenes.scene2d.ui :as ui]
-            [gdx.scene2d.ui.table.add-rows :refer [add-rows!]])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
+            [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [^Table table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]

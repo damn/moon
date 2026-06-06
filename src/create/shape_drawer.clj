@@ -1,6 +1,6 @@
 (ns create.shape-drawer
   (:require [gdx.texture :as texture]
-            [space.earlygrey.shape-drawer :as shape-drawer]))
+            [gdx.shape-drawer :as shape-drawer]))
 
 (defn step
   [{:keys [ctx/batch

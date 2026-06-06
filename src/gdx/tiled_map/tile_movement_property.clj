@@ -1,7 +1,7 @@
 (ns gdx.tiled-map.tile-movement-property
   (:require [gdx.maps.properties.get :refer [props-get]]
-            [clojure.get-properties :refer [get-properties]]
-            [clojure.get-name :refer [get-name]]
+            [gdx.maps.get-properties :refer [get-properties]]
+            [gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
             [gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 

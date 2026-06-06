@@ -2,7 +2,7 @@
   (:require [gdx.maps.layers.get-layer :refer [get-layer]]
             [gdx.maps.properties.get :refer [props-get]]
             [gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.get-properties :refer [get-properties]]
+            [gdx.maps.get-properties :refer [get-properties]]
             [gdx.maps.tiled.tiled-map-tile-layer.get-width :refer [get-width]]
             [gdx.maps.tiled.tiled-map-tile-layer.get-height :refer [get-height]]
             [gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]

@@ -1,6 +1,6 @@
 (ns gdx.maps.tiled.tiles.static-tiled-map-tile.create
   (:require [gdx.maps.properties.put :refer [put!]]
-            [clojure.get-properties :refer [get-properties]]
+            [gdx.maps.get-properties :refer [get-properties]]
             [gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f
