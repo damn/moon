@@ -1,5 +1,8 @@
 # 1. 'GDX' - minimal facade API - nothing more - no interdependencies - only implemnentation
 
+    => then I can _REWRITE_ IT WITHOUT ADJUSTING MY CURRENT CODE !
+    => AS EXTERNAL LIBRARY
+
 
 # Idea:
 
