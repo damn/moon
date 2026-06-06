@@ -1,7 +1,7 @@
 {
  :state-var game.app/state
  :create-pipeline [[create.batch/step]
-                   [create.audio/step]
+                   [clojure.m.assoc-create/f :ctx/audio create.audio/step]
                    [create.shape-drawer-texture/step]
                    [create.shape-drawer/step]
                    [create.skin/step]
