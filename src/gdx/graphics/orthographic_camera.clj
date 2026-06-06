@@ -1,5 +1,8 @@
 (ns gdx.graphics.orthographic-camera
-  (:require [gdx.to-clj :refer [->clj]])
+  (:require [gdx.to-clj :refer [->clj]]
+            [gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
+            [gdx.graphics.orthographic-camera.frustum :refer [frustum]]
+            [gdx.graphics.orthographic-camera.get-position :refer [get-position]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn create
@@ -9,35 +12,12 @@
   (doto (OrthographicCamera.)
     (.setToOrtho y-down? world-width world-height)))
 
-(defn combined [^OrthographicCamera camera]
-  (.combined camera))
-
-(defn zoom [^OrthographicCamera camera]
-  (.zoom camera))
-
-(defn frustum [^OrthographicCamera camera]
-  (let [plane-points (mapv ->clj (.planePoints (.frustum camera)))
-        frustum-points (take 4 plane-points)
-        left-x   (apply min (map first  frustum-points))
-        right-x  (apply max (map first  frustum-points))
-        bottom-y (apply min (map second frustum-points))
-        top-y    (apply max (map second frustum-points))]
-    [left-x right-x bottom-y top-y]))
-
-(defn position [^OrthographicCamera camera]
-  (->clj (.position camera)))
-
-(defn set-position! [^OrthographicCamera camera [x y]]
-  (set! (.x (.position camera)) x)
-  (set! (.y (.position camera)) y)
-  (.update camera))
-
 (defn set-zoom! [^OrthographicCamera camera amount]
   (set! (.zoom camera) amount)
   (.update camera))
 
 (defn inc-zoom! [cam by]
-  (set-zoom! cam (max 0.1 (+ (zoom cam) by))))
+  (set-zoom! cam (max 0.1 (+ (get-zoom cam) by))))
 
 (defn visible-tiles [camera]
   (let [[left-x right-x bottom-y top-y] (frustum camera)]
@@ -50,7 +30,7 @@
   [^OrthographicCamera camera {:keys [left top right bottom]}]
   (let [viewport-width  (.viewportWidth  camera)
         viewport-height (.viewportHeight camera)
-        [px py] (position camera)
+        [px py] (get-position camera)
         px (float px)
         py (float py)
         leftx (float (left 0))

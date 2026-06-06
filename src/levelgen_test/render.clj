@@ -2,6 +2,8 @@
   (:require [gdx.input :as input]
             [gdx.screen :as screen-utils]
             [gdx.graphics.orthographic-camera :as camera]
+            [gdx.graphics.orthographic-camera.get-position :refer [get-position]]
+            [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
             [gdx.scene2d.stage.draw :refer [draw!]]
             [gdx.scene2d.stage.act :refer [act!]]
             [gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
@@ -22,10 +24,10 @@
                                           ctx/camera
                                           ctx/camera-movement-speed]}]
   (let [apply-position (fn [idx f]
-                         (camera/set-position! camera
-                                               (update (camera/position camera)
-                                                       idx
-                                                       #(f % camera-movement-speed))))]
+                         (set-position! camera
+                                        (update (get-position camera)
+                                                idx
+                                                #(f % camera-movement-speed))))]
     (if (input/key-pressed? input :input.keys/left)  (apply-position 0 -))
     (if (input/key-pressed? input :input.keys/right) (apply-position 0 +))
     (if (input/key-pressed? input :input.keys/up)    (apply-position 1 +))

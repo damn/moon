@@ -1,7 +1,7 @@
 (ns stage.dev-menu
   (:require [gdx.application :as app]
             [gdx.graphics :as graphics]
-            [gdx.graphics.orthographic-camera :as camera]
+            [gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
             [moon.number :as number]
             [stage.dev-menu.ctx-data :as ctx-data]))
@@ -58,7 +58,7 @@
                                              (mapv int world-mouse-position))}
                                {:label "Zoom"
                                 :update-fn (fn [{:keys [ctx/world-viewport]}]
-                                             (camera/zoom (:viewport/camera world-viewport)))
+                                             (get-zoom (:viewport/camera world-viewport)))
                                 :icon "images/zoom.png"}
                                ]]
                      (if (:icon item)
