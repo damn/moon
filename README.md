@@ -3,6 +3,8 @@
     => then I can _REWRITE_ IT WITHOUT ADJUSTING MY CURRENT CODE !
     => AS EXTERNAL LIBRARY
 
+    RULE: grep 'badlogic' or 'earlygrey' => no results in whole project !
+
 
 # Idea:
 
