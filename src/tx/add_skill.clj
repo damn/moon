@@ -1,8 +1,7 @@
-(ns tx.add-skill
-  (:require [reaction-txs.add-skill :as add-skill-reaction]))
+(ns tx.add-skill)
 
 (defn do! [ctx eid {:keys [property/id] :as skill}]
   {:pre [(not (contains? (:entity/skills @eid) id))]}
-  (swap! eid update :entity/skills assoc id skill)
-  (add-skill-reaction/f ctx eid skill)
-  nil)
+  [[:tx/update eid :entity/skills assoc id skill]
+   (when (:entity/player? @eid)
+     [:tx/ui-update-skill eid skill])])

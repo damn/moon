@@ -29,6 +29,7 @@
  :tx/spawn-entity             tx.spawn-entity/do!
  :tx/sound                    tx.sound/f
  :tx/toggle-inventory-visible tx.toggle-inventory-visible/f
+ :tx/ui-update-skill          tx.ui-update-skill/f
  :tx/show-message             tx.show-message/f
  :tx/show-modal               tx.show-modal/f
  }
