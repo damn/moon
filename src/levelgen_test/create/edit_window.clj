@@ -1,10 +1,10 @@
 (ns levelgen-test.create.edit-window
-  (:require [gdx.scene2d.actor.get-stage :refer [get-stage]]
-            [gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [gdx.scene2d.event.get-stage :as event]
-            [gdx.scene2d.ui.text-button :as text-button]
-            [gdx.scene2d.utils.change-listener :as change-listener]
-            [gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
+            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [com.badlogic.gdx.scenes.scene2d.event.get-stage :as event]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.scenes.scene2d.stage.set-ctx :refer [set-ctx!]]
             [levelgen-test.generate-level :as generate-level]))
 
 (defn edit-window [skin level-fns]

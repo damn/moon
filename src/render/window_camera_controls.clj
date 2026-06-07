@@ -3,10 +3,10 @@
             [gdx.input :as input]
             [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [game.constants :refer [zoom-speed]]
-            [gdx.scene2d.group.find-actor :refer [find-actor]]
-            [gdx.scene2d.actor.set-visible :refer [set-visible!]]
-            [gdx.scene2d.actor.toggle-visible :refer [toggle-visible!]]
-            [gdx.scene2d.group.children :refer [children]]))
+            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [com.badlogic.gdx.scenes.scene2d.actor.set-visible :refer [set-visible!]]
+            [com.badlogic.gdx.scenes.scene2d.actor.toggle-visible :refer [toggle-visible!]]
+            [com.badlogic.gdx.scenes.scene2d.group.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/app

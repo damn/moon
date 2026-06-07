@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.utils.texture-region-drawable
   (:require [gdx.texture-region.get-region-height :refer [get-region-height]]
             [gdx.texture-region.get-region-width :refer [get-region-width]]
-            [gdx.scene2d.utils.texture-region-drawable :as drawable])
+            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as drawable])
   (:import (com.badlogic.gdx.graphics Color)))
 
 (defn create

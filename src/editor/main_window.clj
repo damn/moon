@@ -1,13 +1,13 @@
 (ns editor.main-window
   (:require [clojure.string :as str]
-            [gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [gdx.scene2d.event.get-stage :refer [get-stage]]
+            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [com.badlogic.gdx.scenes.scene2d.event.get-stage :refer [get-stage]]
             [editor.property-overview-window]
             [editor.window]
-            [gdx.scene2d.ui.text-button :as text-button]
-            [gdx.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scene2d.stage.add-actor :refer [add-actor!]]
+            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.db.property-types :refer [property-types]]
             [moon.db.get-raw :refer [get-raw]]))
 

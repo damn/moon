@@ -1,5 +1,5 @@
 (ns render.check-debug-viewer
-  (:require [gdx.scene2d.stage.add-actor :refer [add-actor!]]
+  (:require [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [game.ctx.button-just-pressed :refer [button-just-pressed?]]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]))
 

@@ -1,7 +1,7 @@
 (ns moon.ui.inventory-window.create
-  (:require [gdx.scene2d.actor.set-position :refer [set-position!]]
-            [gdx.scene2d.actor.set-name :refer [set-name!]]
-            [gdx.scene2d.actor.set-visible :refer [set-visible!]]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor.set-position :refer [set-position!]]
+            [com.badlogic.gdx.scenes.scene2d.actor.set-name :refer [set-name!]]
+            [com.badlogic.gdx.scenes.scene2d.actor.set-visible :refer [set-visible!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]

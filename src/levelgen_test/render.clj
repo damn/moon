@@ -4,9 +4,9 @@
             [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-position :refer [get-position]]
             [com.badlogic.gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
-            [gdx.scene2d.stage.draw :refer [draw!]]
-            [gdx.scene2d.stage.act :refer [act!]]
-            [gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
+            [com.badlogic.gdx.scenes.scene2d.stage.draw :refer [draw!]]
+            [com.badlogic.gdx.scenes.scene2d.stage.act :refer [act!]]
+            [com.badlogic.gdx.scenes.scene2d.stage.set-ctx :refer [set-ctx!]]
             [gdx.draw-tiled-map :as batch]))
 
 (defn- draw-tiled-map! [{:keys [ctx/sprite-batch

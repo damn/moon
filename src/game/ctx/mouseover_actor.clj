@@ -1,5 +1,5 @@
 (ns game.ctx.mouseover-actor
-  (:require [gdx.scene2d.stage.hit :refer [hit]]
+  (:require [com.badlogic.gdx.scenes.scene2d.stage.hit :refer [hit]]
             [gdx.utils.viewport :as viewport]
             [game.ctx.mouse-position :refer [mouse-position]]))
 

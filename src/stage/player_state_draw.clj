@@ -1,8 +1,8 @@
 (ns stage.player-state-draw
   (:require [game.ctx.draw :refer [draw!]]
             [game.state :as state]
-            [gdx.scene2d.actor.get-stage :refer [get-stage]]
-            [gdx.scene2d.actor.create :as actor]))
+            [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
+            [com.badlogic.gdx.scenes.scene2d.actor.create :as actor]))
 
 (defn create [_ctx]
   (actor/create

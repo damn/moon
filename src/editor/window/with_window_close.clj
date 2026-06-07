@@ -1,9 +1,9 @@
 (ns editor.window.with-window-close
-  (:require [gdx.scene2d.actor.get-stage :refer [get-stage]]
-            [gdx.scene2d.actor.remove :refer [remove!]]
-            [gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
-            [gdx.scene2d.stage.add-actor :refer [add-actor!]]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
+            [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
+            [com.badlogic.gdx.scenes.scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [com.badlogic.gdx.scenes.scene2d.stage.set-ctx :refer [set-ctx!]]
+            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
             [gdx.scenes.scene2d.ui :as ui]))

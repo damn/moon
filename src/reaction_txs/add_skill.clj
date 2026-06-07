@@ -1,5 +1,5 @@
 (ns reaction-txs.add-skill
-  (:require [gdx.scene2d.group.find-actor :refer [find-actor]]
+  (:require [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
             [gdx.scenes.scene2d.ui.action-bar :as action-bar]
             [moon.textures :as textures]
             [game.info :as info]))

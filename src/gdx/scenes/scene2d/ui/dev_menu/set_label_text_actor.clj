@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor
-  (:require [gdx.scene2d.actor.get-stage :refer [get-stage]]
-            [gdx.scene2d.actor.create :as actor]
-            [gdx.scene2d.ui.label :as label]))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
+            [com.badlogic.gdx.scenes.scene2d.actor.create :as actor]
+            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]))
 
 (defn set-label-text-actor [label text-fn]
   (actor/create

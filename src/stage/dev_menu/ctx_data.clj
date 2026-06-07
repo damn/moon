@@ -1,5 +1,5 @@
 (ns stage.dev-menu.ctx-data
-  (:require [gdx.scene2d.stage.add-actor :refer [add-actor!]]
+  (:require [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]))
 
 (def item

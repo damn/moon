@@ -1,5 +1,0 @@
-(ns gdx.scene2d.group.children
-  (:import (com.badlogic.gdx.scenes.scene2d Group)))
-
-(defn children [^Group group]
-  (.getChildren group))

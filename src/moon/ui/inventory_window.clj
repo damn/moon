@@ -1,10 +1,10 @@
 (ns moon.ui.inventory-window
-  (:require [gdx.scene2d.actor.get-user-object :refer [get-user-object]]
-            [gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [gdx.scene2d.group.find-actor :refer [find-actor]]
-            [gdx.scene2d.group.children :refer [children]]
-            [gdx.scene2d.ui.text-tooltip :as text-tooltip]
-            [gdx.scene2d.ui.image :as image]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [com.badlogic.gdx.scenes.scene2d.group.children :refer [children]]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn- find-inventory-window-cell [group cell]

@@ -1,14 +1,14 @@
 (ns editor.map-widget-table.component-row
-  (:require [gdx.scene2d.actor.get-user-object :refer [get-user-object]]
-            [gdx.scene2d.actor.remove :refer [remove!]]
-            [gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [gdx.scene2d.event.get-stage :refer [get-stage]]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+            [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
+            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [com.badlogic.gdx.scenes.scene2d.event.get-stage :refer [get-stage]]
             [editor.map-widget-table.k-label-text :as k-label-text]
-            [gdx.scene2d.group.children :refer [children]]
-            [gdx.scene2d.ui.label :as label]
+            [com.badlogic.gdx.scenes.scene2d.group.children :refer [children]]
+            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scene2d.ui.text-button :as text-button]
-            [gdx.scene2d.utils.change-listener :as change-listener]))
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin

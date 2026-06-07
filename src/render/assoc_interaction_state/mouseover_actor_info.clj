@@ -1,7 +1,7 @@
 (ns render.assoc-interaction-state.mouseover-actor-info
-  (:require [gdx.scene2d.actor.get-user-object :refer [get-user-object]]
-            [gdx.scene2d.actor.get-name :refer [get-name]]
-            [gdx.scene2d.actor.get-parent :refer [get-parent]]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+            [com.badlogic.gdx.scenes.scene2d.actor.get-name :refer [get-name]]
+            [com.badlogic.gdx.scenes.scene2d.actor.get-parent :refer [get-parent]]
             [gdx.scenes.scene2d.ui :as ui]))
 
 (defn mouseover-actor-info [actor]

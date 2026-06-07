@@ -1,10 +1,10 @@
 (ns editor.widget.sound.columns
-  (:require [gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [gdx.scene2d.event.get-stage :refer [get-stage]]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [com.badlogic.gdx.scenes.scene2d.event.get-stage :refer [get-stage]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [game.ctx.do :refer [do!]]
-            [gdx.scene2d.ui.text-button :as text-button]
-            [gdx.scene2d.utils.change-listener :as change-listener]))
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn sound-columns [skin table sound-name]
   [{:actor (doto (text-button/create

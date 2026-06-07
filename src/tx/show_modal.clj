@@ -1,15 +1,15 @@
 (ns tx.show-modal
   (:require [gdx.utils.align :as align]
-            [gdx.scene2d.actor.set-position :refer [set-position!]]
-            [gdx.scene2d.actor.remove :refer [remove!]]
-            [gdx.scene2d.actor.set-name :refer [set-name!]]
-            [gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [gdx.scene2d.ui.label :as label]
-            [gdx.scene2d.ui.text-button :as text-button]
-            [gdx.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.scenes.scene2d.actor.set-position :refer [set-position!]]
+            [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
+            [com.badlogic.gdx.scenes.scene2d.actor.set-name :refer [set-name!]]
+            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scene2d.group.find-actor :refer [find-actor]]
-            [gdx.scene2d.stage.add-actor :refer [add-actor!]]))
+            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn f
   [{:keys [ctx/skin

@@ -1,7 +1,7 @@
 (ns render.if-not-paused.tick-entities
   (:require [game.ctx.do :refer [do!]]
             [game.ctx.tick-component :refer [tick-component]]
-            [gdx.scene2d.stage.add-actor :refer [add-actor!]]
+            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]))
 

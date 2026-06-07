@@ -1,8 +1,8 @@
 (ns editor.app.render
   (:require [gdx.screen :as screen-utils]
-            [gdx.scene2d.stage.set-ctx :refer [set-ctx!]]
-            [gdx.scene2d.stage.act :refer [act!]]
-            [gdx.scene2d.stage.draw :refer [draw!]]))
+            [com.badlogic.gdx.scenes.scene2d.stage.set-ctx :refer [set-ctx!]]
+            [com.badlogic.gdx.scenes.scene2d.stage.act :refer [act!]]
+            [com.badlogic.gdx.scenes.scene2d.stage.draw :refer [draw!]]))
 
 (defn render!
   [{:keys [ctx/stage]

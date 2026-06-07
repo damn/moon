@@ -1,8 +1,8 @@
 (ns editor.widget.string
   (:require [editor.widget :as widget]
-            [gdx.scene2d.actor.add-listener :refer [add-listener!]]
-            [gdx.scene2d.ui.text-field :as text-field]
-            [gdx.scene2d.ui.text-tooltip :as text-tooltip]))
+            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]))
 
 (defmethod widget/create :s/string [schema v {:keys [ctx/skin]}]
   (doto (text-field/create (str v) skin)

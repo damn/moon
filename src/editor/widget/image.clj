@@ -1,9 +1,9 @@
 (ns editor.widget.image
-  (:require [gdx.scene2d.ui.scroll-pane :as scroll-pane]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget :as widget]
             [gdx.scenes.scene2d.ui :as ui]
-            [gdx.scene2d.ui.image-button :as image-button]
-            [gdx.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
 

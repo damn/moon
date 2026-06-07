@@ -2,7 +2,7 @@
   (:require [gdx.application :as app]
             [gdx.input :as input]
             [gdx.utils.fit-viewport :as fit-viewport]
-            [gdx.scene2d.stage :as stage]))
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn create-stage
   [{:keys [ctx/app ctx/batch]} width height]

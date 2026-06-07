@@ -1,5 +1,5 @@
 (ns reaction-txs.set-item
-  (:require [gdx.scene2d.group.find-actor :refer [find-actor]]
+  (:require [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
             [moon.ui.inventory-window :as inventory-window]
             [moon.textures :as textures]
             [game.info :as info]))

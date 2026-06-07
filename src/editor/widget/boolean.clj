@@ -1,5 +1,5 @@
 (ns editor.widget.boolean
-  (:require [gdx.scene2d.ui.check-box :as check-box]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
             [editor.widget :as widget]))
 
 (defmethod widget/create :s/boolean
