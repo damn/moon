@@ -1,12 +1,12 @@
 (ns gdx.tiled-map.spawn-positions
-  (:require [gdx.maps.layers.get-layer :refer [get-layer]]
-            [gdx.maps.properties.get :refer [props-get]]
-            [gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [gdx.maps.get-properties :refer [get-properties]]
-            [gdx.maps.tiled.tiled-map-tile-layer.get-width :refer [get-width]]
-            [gdx.maps.tiled.tiled-map-tile-layer.get-height :refer [get-height]]
-            [gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+  (:require [com.badlogic.gdx.maps.layers.get-layer :refer [get-layer]]
+            [com.badlogic.gdx.maps.properties.get :refer [props-get]]
+            [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-width :refer [get-width]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-height :refer [get-height]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 
 (defn f [tiled-map]
   (let [layer-name "creatures"

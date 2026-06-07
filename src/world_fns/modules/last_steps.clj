@@ -1,7 +1,7 @@
 (ns world-fns.modules.last-steps
-  (:require [gdx.maps.layers.get-layer :refer [get-layer]]
+  (:require [com.badlogic.gdx.maps.layers.get-layer :refer [get-layer]]
             [gdx.tiled-map.property-value :refer [property-value]]
-            [gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.grid2d :as g2d]
             [clojure.grid2d.scale-grid :as scale-grid]
             [clojure.grid2d.printgrid :as printgrid]

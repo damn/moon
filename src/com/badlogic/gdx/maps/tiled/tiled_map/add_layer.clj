@@ -1,9 +1,9 @@
-(ns gdx.maps.tiled.tiled-map.add-layer
-  (:require [gdx.maps.layers.add :refer [add!]]
-            [gdx.maps.properties.get :refer [props-get]]
-            [gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [gdx.maps.get-properties :refer [get-properties]]
-            [gdx.maps.tiled.tiled-map-tile-layer.create :as create-layer]))
+(ns com.badlogic.gdx.maps.tiled.tiled-map.add-layer
+  (:require [com.badlogic.gdx.maps.layers.add :refer [add!]]
+            [com.badlogic.gdx.maps.properties.get :refer [props-get]]
+            [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.create :as create-layer]))
 
 (defn- create-layer*
   [tiled-map {:keys [name

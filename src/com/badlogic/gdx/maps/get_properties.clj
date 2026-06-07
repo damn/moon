@@ -1,4 +1,4 @@
-(ns gdx.maps.get-properties)
+(ns com.badlogic.gdx.maps.get-properties)
 
 (defprotocol GetProperties
   (get-properties [_]))

@@ -1,7 +1,7 @@
-(ns gdx.maps.tiled.tiled-map.create
-  (:require [gdx.maps.properties.put :refer [put!]]
-            [gdx.maps.get-properties :refer [get-properties]]
-            [gdx.maps.tiled.tiled-map.add-layer :as add-layer])
+(ns com.badlogic.gdx.maps.tiled.tiled-map.create
+  (:require [com.badlogic.gdx.maps.properties.put :refer [put!]]
+            [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
+            [com.badlogic.gdx.maps.tiled.tiled-map.add-layer :as add-layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn f

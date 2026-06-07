@@ -1,8 +1,8 @@
 (ns gdx.tiled-map.property-value
-  (:require [gdx.maps.properties.get :refer [props-get]]
-            [gdx.maps.get-properties :refer [get-properties]]
-            [gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+  (:require [com.badlogic.gdx.maps.properties.get :refer [props-get]]
+            [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 
 (defn property-value [layer xy property-key]
   (if-let [cell (get-cell layer xy)]

@@ -1,9 +1,9 @@
 (ns gdx.tiled-map.tile-movement-property
-  (:require [gdx.maps.properties.get :refer [props-get]]
-            [gdx.maps.get-properties :refer [get-properties]]
-            [gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
-            [gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+  (:require [com.badlogic.gdx.maps.properties.get :refer [props-get]]
+            [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 
 (defn f
   [tiled-map layer [x y]]

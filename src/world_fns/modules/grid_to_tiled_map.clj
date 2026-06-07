@@ -1,12 +1,12 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require [gdx.to-clj :refer [->clj]]
-            [gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [gdx.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
-            [gdx.maps.get-properties :refer [get-properties]]
-            [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
-            [gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
+            [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.grid2d :as g2d]))
 
 (def copy-tile

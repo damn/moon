@@ -1,4 +1,4 @@
-(ns gdx.maps.properties.put
+(ns com.badlogic.gdx.maps.properties.put
   (:import (com.badlogic.gdx.maps MapProperties)))
 
 (defn put! [^MapProperties props k v]

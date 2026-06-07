@@ -1,5 +1,5 @@
 (ns gdx.draw-tiled-map
-  (:require [gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]])
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]])
   (:import (com.badlogic.gdx.graphics Color
                                       OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch
