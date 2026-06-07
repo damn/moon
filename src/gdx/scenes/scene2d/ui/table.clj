@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.table
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.table.set-opts :refer [set-opts!]])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [com.badlogic.gdx.scenes.scene2d.ui.table.set-opts :refer [set-opts!]]))
 
 (defn create [opts]
-  (doto (Table.)
+  (doto (table/create)
     (set-opts! opts)))
