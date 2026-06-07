@@ -1,7 +1,7 @@
 (ns com.badlogic.gdx.graphics.orthographic-camera.frustum
   (:require [gdx.to-clj :refer [->clj]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-frustum :refer [get-frustum]]
-            [gdx.math.frustum.get-plane-points :refer [get-plane-points]]))
+            [com.badlogic.gdx.math.frustum.get-plane-points :refer [get-plane-points]]))
 
 (defn frustum [camera]
   (let [plane-points (mapv ->clj (get-plane-points (get-frustum camera)))

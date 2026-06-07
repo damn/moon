@@ -19,7 +19,7 @@
             [gdx.scene2d.utils.click-listener :as click-listener]
             [gdx.scene2d.ui.image :as image]
             [gdx.scene2d.ui.stack :as stack]
-            [gdx.math.vector2 :as vector2]))
+            [com.badlogic.gdx.math.vector2 :as vector2]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]

@@ -1,4 +1,4 @@
-(ns gdx.math.intersector.overlaps
+(ns com.badlogic.gdx.math.intersector.overlaps
   (:import (com.badlogic.gdx.math Circle
                                   Intersector
                                   Rectangle)))

@@ -1,4 +1,4 @@
-(ns gdx.math.circle
+(ns com.badlogic.gdx.math.circle
   (:import (com.badlogic.gdx.math Circle)))
 
 (defn create [{:keys [position radius]}]

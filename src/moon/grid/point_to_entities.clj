@@ -1,5 +1,5 @@
 (ns moon.grid.point-to-entities
-  (:require [gdx.math.rectangle.contains :as rectangle]
+  (:require [com.badlogic.gdx.math.rectangle.contains :as rectangle]
             [moon.body.rectangle :refer [->rectangle]]))
 
 (defn point->entities [g2d pos]

@@ -1,4 +1,4 @@
-(ns gdx.math.rectangle
+(ns com.badlogic.gdx.math.rectangle
   (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn create [x y width height]
