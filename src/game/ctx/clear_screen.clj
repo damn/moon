@@ -1,5 +1,5 @@
 (ns game.ctx.clear-screen
-  (:require [gdx.application :as app]
+  (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]))
 

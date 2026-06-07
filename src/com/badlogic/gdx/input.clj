@@ -1,4 +1,4 @@
-(ns gdx.input
+(ns com.badlogic.gdx.input
   (:import (com.badlogic.gdx Input
                              Input$Buttons
                              Input$Keys)))

@@ -1,5 +1,5 @@
 (ns stage.dev-menu
-  (:require [gdx.application :as app]
+  (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]

@@ -1,5 +1,5 @@
 (ns render.set-cursor
-  (:require [gdx.application :as app]
+  (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.graphics :as graphics]))
 
 (defn step

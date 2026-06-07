@@ -1,6 +1,6 @@
 (ns game.ctx.create-cursor
-  (:require [gdx.application :as app]
-            [gdx.files :as files]
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 

@@ -1,5 +1,5 @@
 (ns clojure.lwjgl.application
-  (:require [gdx.application-listener :refer [application-listener]]
+  (:require [com.badlogic.gdx.application-listener :refer [application-listener]]
             [com.badlogic.gdx.backends.lwjgl.application :as application]
             [com.badlogic.gdx.backends.lwjgl.application-config :as config]
             [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]

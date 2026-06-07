@@ -1,9 +1,9 @@
 (ns levelgen-test.create
-  (:require [gdx.application :as app]
-            [gdx.files :as files]
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.graphics.color.float-bits :refer [float-bits]]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [gdx.input :as input]
+            [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.utils.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.graphics.orthographic-camera :as camera]

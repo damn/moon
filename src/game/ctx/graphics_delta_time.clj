@@ -1,5 +1,5 @@
 (ns game.ctx.graphics-delta-time
-  (:require [gdx.application :as app]
+  (:require [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.graphics :as graphics]))
 
 (defn graphics-delta-time

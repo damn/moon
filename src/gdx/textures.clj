@@ -1,6 +1,6 @@
 (ns gdx.textures
   (:require [clojure.string :as str]
-            [gdx.files :as files]
+            [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.files.file-handle :as file]
             [com.badlogic.gdx.graphics.texture :as texture]))
 

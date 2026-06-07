@@ -1,6 +1,6 @@
 (ns game.ctx.create-skin
-  (:require [gdx.application :as app]
-            [gdx.files :as files]
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
 (defn create-skin

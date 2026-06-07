@@ -1,6 +1,6 @@
 (ns editor.window
-  (:require [gdx.application :as app]
-            [gdx.input :as input]
+  (:require [com.badlogic.gdx.application :as app]
+            [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
             [com.badlogic.gdx.scenes.scene2d.actor.set-name :refer [set-name!]]
             [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]

@@ -1,5 +1,5 @@
 (ns levelgen-test.render
-  (:require [gdx.input :as input]
+  (:require [com.badlogic.gdx.input :as input]
             [gdx.screen :as screen-utils]
             [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-position :refer [get-position]]
