@@ -1,6 +1,5 @@
 (ns editor.window
-  (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]
+  (:require [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
             [com.badlogic.gdx.scenes.scene2d.actor.set-name :refer [set-name!]]
             [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
@@ -65,6 +64,6 @@
                      {:act! (fn [this delta]
                               (when-let [stage (get-stage this)]
                                 (let [ctx (:stage/ctx stage)]
-                                  (when (input/key-just-pressed? (app/input (:ctx/app ctx)) :input.keys/enter)
+                                  (when (input/key-just-pressed? (:ctx/input ctx) :input.keys/enter)
                                     (clicked-save-fn this ctx)))))})])
       (set-name! "moon.ui.editor.window"))))

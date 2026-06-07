@@ -1,11 +1,9 @@
 (ns game.ctx.player-movement-vector
   (:require [clojure.math.vector2 :as v]
-            [com.badlogic.gdx.application :as app]
             [com.badlogic.gdx.input :as input]))
 
-(defn player-movement-vector [{:keys [ctx/app]}]
-  (let [input (app/input app)
-        r (when (input/key-pressed? input :input.keys/d) [1  0])
+(defn player-movement-vector [{:keys [ctx/input]}]
+  (let [r (when (input/key-pressed? input :input.keys/d) [1  0])
         l (when (input/key-pressed? input :input.keys/a) [-1 0])
         u (when (input/key-pressed? input :input.keys/w) [0  1])
         d (when (input/key-pressed? input :input.keys/s) [0 -1])]

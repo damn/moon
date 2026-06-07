@@ -1,7 +1,6 @@
 (ns game.ctx.button-just-pressed
-  (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.input :as input]))
+  (:require [com.badlogic.gdx.input :as input]))
 
 (defn button-just-pressed?
-  [{:keys [ctx/app]} button-code]
-  (input/button-just-pressed? (app/input app) button-code))
+  [{:keys [ctx/input]} button-code]
+  (input/button-just-pressed? input button-code))

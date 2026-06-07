@@ -12,7 +12,7 @@
  [:ctx/k->handle-input :some]
  [:ctx/k->cursor :some]
  [:ctx/k->clicked-inventory-cell :some]
- [:ctx/app :some]
+ [:ctx/input :some]
  [:ctx/graphics :some]
  [:ctx/audio :some]
  [:ctx/batch :some]

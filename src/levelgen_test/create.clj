@@ -1,6 +1,5 @@
 (ns levelgen-test.create
-  (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.files :as files]
+  (:require [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.graphics.color.float-bits :refer [float-bits]]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.input :as input]
@@ -23,11 +22,10 @@
    "config/world_fns/modules.edn"])
 
 (defn f!
-  [{:keys [ctx/app
-           ctx/files
-           ctx/graphics]}]
-  (let [input (app/input app)
-        skin (skin/create (files/internal files "skin/uiskin.json"))
+  [{:keys [ctx/files
+           ctx/graphics
+           ctx/input]}]
+  (let [skin (skin/create (files/internal files "skin/uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch)
