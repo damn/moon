@@ -1,5 +1,6 @@
 (ns com.badlogic.gdx.backends.lwjgl
-  (:require [com.badlogic.gdx.application-listener :refer [application-listener]]
+  (:require [com.badlogic.gdx :as gdx]
+            [com.badlogic.gdx.application-listener :refer [application-listener]]
             [com.badlogic.gdx.backends.lwjgl.application :as application]
             [com.badlogic.gdx.backends.lwjgl.application-config :as config]
             [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
@@ -17,10 +18,10 @@
     (lwjgl.system.configuration/set-glfw-library-name! "glfw_async"))
   (application/create (application-listener
                        (let [state @state-var]
-                         {:create! (fn [app]
+                         {:create! (fn []
                                      (reset! state (reduce (fn [ctx [f & params]]
                                                              (apply f ctx params))
-                                                           {:ctx/app app}
+                                                           {:ctx/app (gdx/app)}
                                                            create-pipeline)))
 
                           :dispose! (fn []

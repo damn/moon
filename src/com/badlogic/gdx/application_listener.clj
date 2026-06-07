@@ -1,6 +1,5 @@
 (ns com.badlogic.gdx.application-listener
-  (:import (com.badlogic.gdx ApplicationListener
-                             Gdx)))
+  (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn application-listener
   [{:keys [create!
@@ -11,7 +10,7 @@
            resume!]}]
   (reify ApplicationListener
     (create [_]
-      (create! Gdx/app))
+      (create!))
 
     (dispose [_]
       (dispose!))
