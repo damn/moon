@@ -1,6 +1,6 @@
 [
  (clojure.core/require schema.malli-form)
- (clojure.lwjgl.application/start!
+ (com.badlogic.gdx.backends.lwjgl/application!
   {:state-var levelgen-test.app/state
    :create-pipeline [[levelgen-test.create/f!]]
    :dispose! levelgen-test.dispose/f!

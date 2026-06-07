@@ -1,4 +1,4 @@
-(ns clojure.white-pixel-texture
+(ns com.badlogic.gdx.graphics.white-pixel-texture
   (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 
 (defn f []

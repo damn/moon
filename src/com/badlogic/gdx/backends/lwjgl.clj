@@ -1,4 +1,4 @@
-(ns clojure.lwjgl.application
+(ns com.badlogic.gdx.backends.lwjgl
   (:require [com.badlogic.gdx.application-listener :refer [application-listener]]
             [com.badlogic.gdx.backends.lwjgl.application :as application]
             [com.badlogic.gdx.backends.lwjgl.application-config :as config]
@@ -6,7 +6,7 @@
             [com.badlogic.gdx.utils.os :as os]
             [lwjgl.system.configuration]))
 
-(defn start!
+(defn application!
   [{:keys [state-var
            create-pipeline
            dispose!

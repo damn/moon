@@ -19,4 +19,4 @@
                        effect.target-all
                        effect.target-entity
                        draw.load)
- (clojure.lwjgl.application/start! #edn/resource "config/application.edn")]
+ (com.badlogic.gdx.backends.lwjgl/application!  #edn/resource "config/application.edn")]
