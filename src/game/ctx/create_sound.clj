@@ -3,6 +3,9 @@
             [com.badlogic.gdx.audio :as audio]
             [com.badlogic.gdx.files :as files]))
 
-(defn create-sound [{:keys [ctx/app]} path]
-  (audio/new-sound (app/audio app)
+(defn create-sound
+  [{:keys [ctx/app
+           ctx/audio]}
+   path]
+  (audio/new-sound audio
                    (files/internal (app/files app) path)))

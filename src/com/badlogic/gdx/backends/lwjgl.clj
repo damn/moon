@@ -21,7 +21,10 @@
                          {:create! (fn []
                                      (reset! state (reduce (fn [ctx [f & params]]
                                                              (apply f ctx params))
-                                                           {:ctx/app (gdx/app)}
+                                                           {
+                                                            :ctx/app   (gdx/app)
+                                                            :ctx/audio (gdx/audio)
+                                                            }
                                                            create-pipeline)))
 
                           :dispose! (fn []

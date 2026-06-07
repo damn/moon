@@ -3,3 +3,6 @@
 
 (defn app []
   Gdx/app)
+
+(defn audio []
+  Gdx/audio)
