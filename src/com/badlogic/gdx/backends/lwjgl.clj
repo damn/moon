@@ -22,9 +22,10 @@
                                      (reset! state (reduce (fn [ctx [f & params]]
                                                              (apply f ctx params))
                                                            {
-                                                            :ctx/app   (gdx/app)
-                                                            :ctx/audio (gdx/audio)
-                                                            :ctx/files (gdx/files)
+                                                            :ctx/app      (gdx/app)
+                                                            :ctx/audio    (gdx/audio)
+                                                            :ctx/files    (gdx/files)
+                                                            :ctx/graphics (gdx/graphics)
                                                             }
                                                            create-pipeline)))
 

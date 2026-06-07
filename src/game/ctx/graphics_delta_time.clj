@@ -1,7 +1,6 @@
 (ns game.ctx.graphics-delta-time
-  (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.graphics :as graphics]))
+  (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (defn graphics-delta-time
-  [{:keys [ctx/app]}]
-  (graphics/delta-time (app/graphics app)))
+  [{:keys [ctx/graphics]}]
+  (graphics/delta-time graphics))

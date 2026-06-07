@@ -24,9 +24,9 @@
 
 (defn f!
   [{:keys [ctx/app
-           ctx/files]}]
-  (let [graphics (app/graphics app)
-        input (app/input app)
+           ctx/files
+           ctx/graphics]}]
+  (let [input (app/input app)
         skin (skin/create (files/internal files "skin/uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (sprite-batch/create)

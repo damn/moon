@@ -1,9 +1,8 @@
 (ns render.set-cursor
-  (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.graphics :as graphics]))
+  (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (defn step
-  [{:keys [ctx/app
+  [{:keys [ctx/graphics
            ctx/cursors
            ctx/player-eid
            ctx/k->cursor]
@@ -16,5 +15,5 @@
                      f
                      (f eid ctx))]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! (app/graphics app) (get cursors cursor-key)))
+    (graphics/set-cursor! graphics (get cursors cursor-key)))
   ctx)

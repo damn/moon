@@ -13,6 +13,7 @@
  [:ctx/k->cursor :some]
  [:ctx/k->clicked-inventory-cell :some]
  [:ctx/app :some]
+ [:ctx/graphics :some]
  [:ctx/audio :some]
  [:ctx/batch :some]
  [:ctx/cursors :some]

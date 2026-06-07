@@ -1,6 +1,5 @@
 (ns stage.dev-menu
-  (:require [com.badlogic.gdx.application :as app]
-            [com.badlogic.gdx.graphics :as graphics]
+  (:require [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
             [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
             [moon.number :as number]
@@ -40,8 +39,8 @@
                                              (str (number/readable elapsed-time) " seconds"))
                                 :icon "images/clock.png"}
                                {:label "FPS"
-                                :update-fn (fn [{:keys [ctx/app]}]
-                                             (graphics/frames-per-second (app/graphics app)))
+                                :update-fn (fn [{:keys [ctx/graphics]}]
+                                             (graphics/frames-per-second graphics))
                                 :icon "images/fps.png"}
                                {:label "Mouseover-entity id"
                                 :update-fn (fn [{:keys [ctx/mouseover-eid]}]

@@ -9,3 +9,6 @@
 
 (defn files []
   Gdx/files)
+
+(defn graphics []
+  Gdx/graphics)
