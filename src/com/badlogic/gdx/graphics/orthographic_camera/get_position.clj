@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.graphics.orthographic-camera.get-position
-  (:require [gdx.to-clj :refer [->clj]])
+  (:require [com.badlogic.gdx.math.vector3 :refer [->clj]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn get-position [^OrthographicCamera camera]

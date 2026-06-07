@@ -1,5 +1,5 @@
 (ns world-fns.modules.grid-to-tiled-map
-  (:require [gdx.to-clj :refer [->clj]]
+  (:require [com.badlogic.gdx.maps.properties.to-clj :refer [->clj]]
             [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.visible :refer [visible?]]
             [com.badlogic.gdx.maps.get-properties :refer [get-properties]]

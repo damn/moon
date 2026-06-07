@@ -1,5 +1,5 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [gdx.to-clj :refer [->clj]]
+  (:require [com.badlogic.gdx.math.vector2 :refer [->clj]]
             [com.badlogic.gdx.scenes.scene2d.actor.hit :refer [hit]]
             [com.badlogic.gdx.scenes.scene2d.actor.stage-local-coordinates :refer [stage->local-coordinates]]
             [com.badlogic.gdx.scenes.scene2d.actor.get-x :refer [get-x]]
