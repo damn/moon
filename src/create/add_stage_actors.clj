@@ -1,4 +1,4 @@
-(ns clojure.ctx.add-stage-actors
+(ns create.add-stage-actors
   (:require [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn f!

@@ -22,13 +22,13 @@
                    (clojure.m.assoc-create/f :ctx/max-speed create.max-speed/step)
                    (clojure.m.assoc-create/f :ctx/db create.db/step)
                    (clojure.pipeline.do/step
-                    (clojure.ctx.add-stage-actors/f! [(stage.dev-menu/create)
-                                                      (stage.action-bar/create)
-                                                      (stage.hp-mana-bar/create)
-                                                      (stage.windows/create [stage.info-window/create
-                                                                             stage.inventory-window/create])
-                                                      (stage.player-state-draw/create)
-                                                      (stage.player-message-actor/create)]))
+                    (create.add-stage-actors/f! [(stage.dev-menu/create)
+                                                 (stage.action-bar/create)
+                                                 (stage.hp-mana-bar/create)
+                                                 (stage.windows/create [stage.info-window/create
+                                                                        stage.inventory-window/create])
+                                                 (stage.player-state-draw/create)
+                                                 (stage.player-message-actor/create)]))
                    (create.tiled-map/step)
                    (clojure.m.assoc-create/f :ctx/grid create.grid/step)
                    (clojure.m.assoc-create/f :ctx/content-grid create.content-grid/step)

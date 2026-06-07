@@ -18,7 +18,7 @@
                                                       (clojure.m.assoc-create/f :ctx/db create.db/step)
                                                       (clojure.m.assoc-create/f :ctx/stage create.stage/step)
                                                       (clojure.pipeline.do/step
-                                                       (clojure.ctx.add-stage-actors/f! [[editor.main-window/create]]))
+                                                       (create.add-stage-actors/f! [[editor.main-window/create]]))
                                                       (clojure.m.assoc-create/f :ctx/textures create.textures/step)
                                                       (editor.app.create/f! {:ctx/add-component-window editor.map-widget-table.add-component-window/f
                                                                              :ctx/create-component-row editor.map-widget-table.component-row/create
