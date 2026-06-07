@@ -6,3 +6,6 @@
 
 (defn audio []
   Gdx/audio)
+
+(defn files []
+  Gdx/files)

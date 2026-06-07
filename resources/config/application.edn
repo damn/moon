@@ -1,6 +1,7 @@
 {
  :state-var game.app/state
- :create-pipeline [(create.unorganised/step)
+ :create-pipeline [
+                   (create.unorganised/step)
                    (clojure.m.assoc-create/f :ctx/batch create.batch/step)
                    (clojure.m.assoc-create/f :ctx/audio create.audio/step)
                    (clojure.m.assoc-create/f :ctx/shape-drawer-texture create.shape-drawer-texture/step)
@@ -36,7 +37,9 @@
                    [clojure.m.assoc-create/f :ctx/raycaster create.raycaster/step]
                    (create.spawn-player/step)
                    (clojure.pipeline.do/step
-                    (create.spawn-enemies/step))]
+                    (create.spawn-enemies/step))
+                   (clojure.core/dissoc :ctx/files)
+                   ]
  :dispose! game.ctx.dispose/do!
  :render-pipeline [
                    [render.get-stage-ctx/step]

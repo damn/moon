@@ -24,6 +24,7 @@
                                                            {
                                                             :ctx/app   (gdx/app)
                                                             :ctx/audio (gdx/audio)
+                                                            :ctx/files (gdx/files)
                                                             }
                                                            create-pipeline)))
 

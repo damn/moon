@@ -5,8 +5,11 @@
             [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 
 (defn create-cursor
-  [{:keys [ctx/app]} path [hotspot-x hotspot-y]]
-  (let [pixmap (pixmap/create (files/internal (app/files app) path))
+  [{:keys [ctx/app
+           ctx/files]}
+   path
+   [hotspot-x hotspot-y]]
+  (let [pixmap (pixmap/create (files/internal files path))
         cursor (graphics/new-cursor (app/graphics app) pixmap hotspot-x hotspot-y)]
     (pixmap/dispose! pixmap)
     cursor))

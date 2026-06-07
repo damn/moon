@@ -23,9 +23,9 @@
    "config/world_fns/modules.edn"])
 
 (defn f!
-  [{:keys [ctx/app]}]
-  (let [files (app/files app)
-        graphics (app/graphics app)
+  [{:keys [ctx/app
+           ctx/files]}]
+  (let [graphics (app/graphics app)
         input (app/input app)
         skin (skin/create (files/internal files "skin/uiskin.json"))
         ui-viewport (fit-viewport/create 1440 900)
