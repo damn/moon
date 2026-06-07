@@ -12,7 +12,7 @@
                  [org.clj-commons/pretty "3.2.0"]
                  [org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.namespace "1.3.0"]
-                 [space.earlygrey/shapedrawer "2.6.0"]]
+                 [com.github.damn/space.earlygrey.shape-drawer "82d772e482"]]
   :java-source-paths ["java-src"]
   :source-paths ["src"]
   :resource-paths ["resources/"]
