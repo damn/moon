@@ -1,5 +1,5 @@
 (ns moon.stats
-  (:require [malli.core :as m]
+  (:require [malli.validate :refer [validate]]
             [moon.modifiers :as modifiers]
             [moon.val-max :as val-max]))
 
@@ -8,20 +8,20 @@
 
 ; TODO can just pass ops instead of modifiers modifier-k
 (defn- apply-max [val-max modifiers modifier-k]
-  (assert (m/validate val-max/schema val-max) val-max)
+  (assert (validate val-max/schema val-max) val-max)
   (let [val-max (update val-max 1 modifiers/get-value modifiers modifier-k)
         [v mx] (->pos-int val-max)
         result [(min v mx) mx]]
-    (assert (m/validate val-max/schema result) result)
+    (assert (validate val-max/schema result) result)
     result))
 
 ; TODO can just pass ops instead of modifiers modifier-k
 (defn- apply-min [val-max modifiers modifier-k]
-  (assert (m/validate val-max/schema val-max) val-max)
+  (assert (validate val-max/schema val-max) val-max)
   (let [val-max (update val-max 0 modifiers/get-value modifiers modifier-k)
         [v mx] (->pos-int val-max)
         result [v (max v mx)]]
-    (assert (m/validate val-max/schema result) result)
+    (assert (validate val-max/schema result) result)
     result))
 
 (defn add [stats mods]

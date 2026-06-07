@@ -1,9 +1,7 @@
 (ns malli.utils.validate-humanize
-  (:require [malli.core :as m]
-            [malli.error :as me]))
+  (:require [malli.create-ex-info :refer [create-ex-info]]
+            [malli.validate :refer [validate]]))
 
 (defn validate-humanize [schema value]
-  (when-not (m/validate schema value)
-    (throw (ex-info (str (me/humanize (m/explain schema value)))
-                    {:value value
-                     :schema (m/form schema)}))))
+  (when-not (validate schema value)
+    (throw (create-ex-info schema value))))

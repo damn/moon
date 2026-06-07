@@ -1,6 +1,6 @@
 (ns create.unorganised
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [malli.core :as m]
+            [malli.create-schema :refer [create-schema]]
             [reduce-fsm :as fsm]))
 
 (defn- load-fsm [path]
@@ -35,7 +35,7 @@
          :ctx/potential-field-cache (atom nil)
          :ctx/id-counter (atom 0)
          :ctx/entity-ids (atom {})
-         :ctx/schema (m/schema (edn-resource "config/app-schema.edn"))
+         :ctx/schema (create-schema (edn-resource "config/app-schema.edn"))
          :ctx/factions-iterations {:good 15 :evil 5}
          :ctx/max-delta 0.04
          :ctx/minimum-size 0.39
