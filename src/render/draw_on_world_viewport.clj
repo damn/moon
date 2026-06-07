@@ -2,7 +2,7 @@
   (:require [game.ctx.draw :refer [draw!]]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.graphics.orthographic-camera.get-combined :refer [get-combined]]
-            [gdx.shape-drawer :as shape-drawer]))
+            [space.earlygrey.shape-drawer :as shape-drawer]))
 
 (defn step
   [{:keys [ctx/batch

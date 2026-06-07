@@ -3,7 +3,7 @@
             [draw.texture-region]
             [game.constants :as constants]
             [game.ctx.draw :refer [draw!]]
-            [gdx.shape-drawer :as shape-drawer]))
+            [space.earlygrey.shape-drawer :as shape-drawer]))
 
 (.bindRoot #'constants/draw-fns
            {
