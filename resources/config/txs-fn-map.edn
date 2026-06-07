@@ -30,6 +30,7 @@
  :tx/sound                    tx.sound/f
  :tx/toggle-inventory-visible tx.toggle-inventory-visible/f
  :tx/ui-remove-item           tx.ui-remove-item/f
+ :tx/ui-set-item              tx.ui-set-item/f
  :tx/ui-update-skill          tx.ui-update-skill/f
  :tx/show-message             tx.show-message/f
  :tx/show-modal               tx.show-modal/f
