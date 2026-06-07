@@ -1,7 +1,7 @@
 (ns moon.schemas.validate
   (:require [clojure.malli-form :refer [malli-form]]
             [malli.create-schema :refer [create-schema]]
-            [malli.utils.validate-humanize :refer [validate-humanize]]))
+            [malli.validate-humanize :refer [validate-humanize]]))
 
 (defn validate [schemas k value]
   (-> (get schemas k)

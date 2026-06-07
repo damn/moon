@@ -1,6 +1,6 @@
 (ns malli.utils
-  (:require [malli.utils.map-keys :as map-keys]
-            [malli.utils.map-form-k-properties :refer [map-form-k->properties]]))
+  (:require [malli.map-keys :as map-keys]
+            [malli.map-form-k-properties :refer [map-form-k->properties]]))
 
 (defn optional? [k map-schema]
   (:optional (k (map-form-k->properties map-schema))))
