@@ -1,5 +1,5 @@
 (ns render.update-mouse-positions
-  (:require [gdx.utils.viewport :as viewport]
+  (:require [com.badlogic.gdx.utils.viewport :as viewport]
             [game.ctx.mouse-position :refer [mouse-position]]))
 
 (defn step

@@ -1,4 +1,4 @@
-(ns gdx.utils.os
+(ns com.badlogic.gdx.utils.os
   (:import (com.badlogic.gdx.utils Os)))
 
 (def mac-os Os/MacOsX)

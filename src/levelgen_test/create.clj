@@ -5,7 +5,7 @@
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
-            [gdx.utils.fit-viewport :as fit-viewport]
+            [com.badlogic.gdx.utils.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]

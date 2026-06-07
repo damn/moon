@@ -1,5 +1,5 @@
 (ns game.ctx.resize
-  (:require [gdx.utils.viewport :as viewport]))
+  (:require [com.badlogic.gdx.utils.viewport :as viewport]))
 
 (defn do!
   [{:keys [ctx/stage

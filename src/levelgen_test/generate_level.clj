@@ -4,7 +4,7 @@
             [com.badlogic.gdx.maps.layers.get-layer :refer [get-layer]]
             [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.set-visible :refer [set-visible!]]
-            [gdx.utils.dispose :as disposable]
+            [com.badlogic.gdx.utils.dispose :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
             [moon.db.all-raw :refer [all-raw]]))

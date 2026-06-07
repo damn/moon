@@ -1,7 +1,7 @@
 (ns game.ctx.create-stage
   (:require [gdx.application :as app]
             [gdx.input :as input]
-            [gdx.utils.fit-viewport :as fit-viewport]
+            [com.badlogic.gdx.utils.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn create-stage

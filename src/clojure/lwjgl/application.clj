@@ -2,8 +2,8 @@
   (:require [gdx.application-listener :refer [application-listener]]
             [com.badlogic.gdx.backends.lwjgl.application :as application]
             [com.badlogic.gdx.backends.lwjgl.application-config :as config]
-            [gdx.utils.shared-library-loader :as shared-library-loader]
-            [gdx.utils.os :as os]
+            [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
+            [com.badlogic.gdx.utils.os :as os]
             [lwjgl.system.configuration]))
 
 (defn start!
