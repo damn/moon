@@ -14,7 +14,10 @@
             info.effects.target.melee-damage
             info.effects.target.spiderweb
             info.effects.target.stun
-            info.creature.level))
+            info.creature.level
+            info.effects.spawn
+            info.effects.target-all
+            ))
 
 (def info-fns-mapping
   {
@@ -26,10 +29,8 @@
    :effects.target/melee-damage info.effects.target.melee-damage/f
    :effects.target/spiderweb info.effects.target.spiderweb/f
    :effects.target/stun info.effects.target.stun/f
-   :effects/spawn (fn [{:keys [property/pretty-name]} _ctx]
-                    (str "Spawns a " pretty-name))
-   :effects/target-all (fn [_ _ctx]
-                         "All visible targets")
+   :effects/spawn info.effects.spawn/f
+   :effects/target-all info.effects.target-all/f
    :entity/delete-after-duration (fn [counter {:keys [ctx/elapsed-time]}]
                                    (str "Remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
    :entity/faction (fn [faction _ctx]
