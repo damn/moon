@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.backends.lwjgl
+(ns gdx.lwjgl
   (:require [com.badlogic.gdx.application-listener :refer [application-listener]]
             [com.badlogic.gdx.backends.lwjgl.application :as application]
             [com.badlogic.gdx.backends.lwjgl.application-config :as config]

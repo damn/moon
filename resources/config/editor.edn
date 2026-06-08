@@ -12,7 +12,7 @@
                        editor.widget.val-max
                        schema.malli-form)
 
- (com.badlogic.gdx.backends.lwjgl/application!
+ (gdx.lwjgl/application!
   {:state-var editor.app/state
    :create-pipeline [(clojure.m.assoc-create/f :ctx/batch create.batch/step)
                      (clojure.m.assoc-create/f :ctx/skin create.skin/step)

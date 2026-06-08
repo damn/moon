@@ -19,4 +19,4 @@
                        effect.target-all
                        effect.target-entity
                        draw.load)
- (com.badlogic.gdx.backends.lwjgl/application!  #edn/resource "config/application.edn")]
+ (gdx.lwjgl/application! #edn/resource "config/application.edn")]
