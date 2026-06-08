@@ -1,4 +1,4 @@
-(ns moon.nads
+(ns clojure.grid2d.nads
   (:require [clojure.m.assoc-ks :refer [assoc-ks]]
             [clojure.grid2d :as g2d]))
 

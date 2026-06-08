@@ -1,6 +1,6 @@
 [world-fns.uf-caves/create
  {:initial-grid-create-fn moon.caves/create
-  :grid2d-fix-nads-fn moon.nads/fix-nads
+  :grid2d-fix-nads-fn clojure.grid2d.nads/fix-nads
   :tile-size 48
   :texture-path "images/uf_terrain.png"
   :spawn-rate 0.02
