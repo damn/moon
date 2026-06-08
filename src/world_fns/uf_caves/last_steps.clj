@@ -1,7 +1,7 @@
 (ns world-fns.uf-caves.last-steps
   (:require [clojure.grid2d.flood-fill :as flood-fill]
             [world-fns.uf-caves.position-tile-fn :as position-tile-fn]
-            [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]
+            [world-fns.uf-caves.assoc-transition-cells :as assoc-transition-cells]
             [gdx.tiled-map.movement-property :as movement-property]
             [clojure.grid2d :as g2d]
             [clojure.grid2d.printgrid :as printgrid]
@@ -15,17 +15,6 @@
     ;_ (println)
     {:start-position (mapv #(* % scale) start)
      :grid grid}))
-
-(defn- assoc-transition-cells [grid]
-  (let [grid (reduce #(assoc %1 %2 :transition) grid
-                     (adjacent-wall-positions/f grid))]
-    (assert (or
-             (= #{:wall :ground :transition} (set (g2d/cells grid)))
-             (= #{:ground :transition}       (set (g2d/cells grid))))
-            (str "(set (g2d/cells grid)): " (set (g2d/cells grid))))
-    ;_ (printgrid/f grid)
-    ;_ (println)
-    grid))
 
 ; TODO don't spawn my faction vampire w. player items ...
 ; FIXME - overlapping with player - don't spawn creatures on start position
@@ -41,7 +30,7 @@
     }]
   (assert (= #{:wall :ground} (set (g2d/cells grid))))
   (let [{:keys [start-position grid]} (scale-grid grid start scaling)
-        grid (assoc-transition-cells grid)
+        grid (assoc-transition-cells/f grid)
         position->tile (position-tile-fn/f grid)
         tiled-map (create-tiled-map/f
                    {:properties {"width"  (g2d/width  grid)
