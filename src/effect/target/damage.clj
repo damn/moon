@@ -2,7 +2,8 @@
   (:require [clojure.rand.int-between :refer [rand-int-between]]
             [game.effect :as effect]
             [moon.stats.get-stat-value :refer [get-stat-value]]
-            [moon.stats :as stats]))
+            [moon.stats :as stats]
+            [moon.stats.calc-damage :as calc-damage]))
 
 ; not in stats because projectile as source doesnt have stats
 ; FIXME I don't see it triggering with 10 armor save ... !
@@ -47,9 +48,9 @@
 
      :else
      (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
-                     (:damage/min-max (stats/calc-damage (:entity/stats source*)
-                                                         (:entity/stats target*)
-                                                         damage))
+                     (:damage/min-max (calc-damage/f (:entity/stats source*)
+                                                     (:entity/stats target*)
+                                                     damage))
                      (:damage/min-max damage))
            dmg-amount (rand-int-between min-max)
            new-hp-val (max (- (hp 0) dmg-amount)
