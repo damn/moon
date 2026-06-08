@@ -1,5 +1,5 @@
 (ns render.assoc-interaction-state
-  (:require [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2.direction :as direction]
             [game.ctx.mouseover-actor :refer [mouseover-actor]]
             [game.skill :as skill]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
@@ -14,7 +14,7 @@
     {:effect/source player-eid
      :effect/target mouseover-eid
      :effect/target-position target-position
-     :effect/target-direction (v/direction (:body/position (:entity/body @player-eid))
+     :effect/target-direction (direction/f (:body/position (:entity/body @player-eid))
                                            target-position)}))
 
 (defn create

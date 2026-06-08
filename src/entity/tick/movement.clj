@@ -1,6 +1,7 @@
 (ns entity.tick.movement
   (:require [clojure.math :as math]
             [clojure.math.vector2 :as v]
+            [clojure.math.vector2.length :as length]
             [moon.grid.valid-position :refer [valid-position?]]
             [moon.number :as number]))
 
@@ -34,10 +35,10 @@
   (assert (<= 0 speed max-speed)
           (pr-str speed))
   (assert (vector? direction))
-  (assert (or (zero? (v/length direction))
-              (number/nearly-equal? 1 (v/length direction)))
+  (assert (or (zero? (length/f direction))
+              (number/nearly-equal? 1 (length/f direction)))
           (str "cannot understand direction: " (pr-str direction)))
-  (when-not (or (zero? (v/length direction))
+  (when-not (or (zero? (length/f direction))
                 (nil? speed)
                 (zero? speed))
     (let [movement (assoc movement :delta-time delta-time)

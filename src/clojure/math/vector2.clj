@@ -1,28 +1,6 @@
 (ns clojure.math.vector2
   (:require [clojure.math :as math]))
 
-(defn scale [[x y] scalar]
-  [(* x scalar)
-   (* y scalar)])
-
-(defn length [[x y]]
-  (math/sqrt (+ (* x x)
-                (* y y))))
-
-(defn normalise [[x y :as v]]
-  (let [len (length v)]
-    (if (zero? len)
-      v
-      [(/ x len)
-       (/ y len)])))
-
-(defn add [v1 v2]
-  (mapv + v1 v2))
-
-(defn direction [[sx sy] [tx ty]]
-  (normalise [(- (float tx) (float sx))
-              (- (float ty) (float sy))]))
-
 (defn crs
   "Calculates the 2D cross product between this and the given vector"
   [[this-x this-y] [x y]]

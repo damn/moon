@@ -1,18 +1,20 @@
 (ns effect.target-entity
-  (:require [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2.add :as add]
+            [clojure.math.vector2.direction :as direction]
             [clojure.math.vector2.distance :as distance]
+            [clojure.math.vector2.scale :as scale]
             [game.effect :as effect]))
 
 ; TODO use at projectile & also adjust rotation
 (defn- start-point [body target-body]
-  (v/add (:body/position body)
-         (v/scale (v/direction (:body/position body)
+  (add/f (:body/position body)
+         (scale/f (direction/f (:body/position body)
                                (:body/position target-body))
                   (/ (:body/width body) 2))))
 
 (defn- end-point [body target-body maxrange]
-  (v/add (start-point body target-body)
-         (v/scale (v/direction (:body/position body)
+  (add/f (start-point body target-body)
+         (scale/f (direction/f (:body/position body)
                                (:body/position target-body))
                   maxrange)))
 

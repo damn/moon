@@ -1,6 +1,8 @@
 (ns game.ctx.item-place-position
-  (:require [clojure.math.vector2 :as v]
-            [clojure.math.vector2.distance :as distance]))
+  (:require [clojure.math.vector2.add :as add]
+            [clojure.math.vector2.direction :as direction]
+            [clojure.math.vector2.distance :as distance]
+            [clojure.math.vector2.scale :as scale]))
 
 ; It is possible to put items out of sight, losing them.
 ; Because line of sight checks center of entity only, not corners
@@ -10,7 +12,7 @@
   (let [player-position (:body/position (:entity/body player-entity))
         ; so you cannot put it out of your own reach
         maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
-    (v/add player-position
-           (v/scale (v/direction player-position world-mouse-position)
+    (add/f player-position
+           (scale/f (direction/f player-position world-mouse-position)
                     (min maxrange
                          (distance/f player-position world-mouse-position))))))

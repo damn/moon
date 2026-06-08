@@ -1,10 +1,11 @@
 (ns effect.handle.projectile
-  (:require [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2.add :as add]
+            [clojure.math.vector2.scale :as scale]
             [game.effect :as effect]))
 
 (defn- proj-start-point [body direction size]
-  (v/add (:body/position body)
-         (v/scale direction
+  (add/f (:body/position body)
+         (scale/f direction
                   (+ (/ (:body/width body) 2) size 0.1))))
 
 (defmethod effect/handle :effects/projectile

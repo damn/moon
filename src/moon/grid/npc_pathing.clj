@@ -1,5 +1,5 @@
 (ns moon.grid.npc-pathing
-  (:require [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2.direction :as direction]
             [moon.cell :as cell]
             [moon.grid.npc-pathing.find-next-cell :as find-next-cell]
             [moon.grid.npc-pathing.inside-cell :as inside-cell?]))
@@ -10,7 +10,7 @@
         {:keys [target-entity target-cell]} (find-next-cell/f grid eid own-cell)]
     (cond
      target-entity
-     (v/direction position (:body/position (:entity/body @target-entity)))
+     (direction/f position (:body/position (:entity/body @target-entity)))
 
      (nil? target-cell)
      nil
@@ -19,4 +19,4 @@
      (when-not (and (= target-cell own-cell)
                     (cell/occupied-by-other? @own-cell eid)) ; prevent friction 2 move to center
        (when-not (inside-cell?/f grid @eid target-cell)
-         (v/direction position (:middle @target-cell)))))))
+         (direction/f position (:middle @target-cell)))))))
