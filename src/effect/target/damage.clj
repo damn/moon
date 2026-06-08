@@ -2,7 +2,7 @@
   (:require [clojure.rand.int-between :refer [rand-int-between]]
             [game.effect :as effect]
             [moon.stats.get-stat-value :refer [get-stat-value]]
-            [moon.stats :as stats]
+            [moon.stats.get-hitpoints :as get-hitpoints]
             [moon.stats.calc-damage :as calc-damage]))
 
 ; not in stats because projectile as source doesnt have stats
@@ -31,7 +31,7 @@
   [[_ damage] {:keys [effect/source effect/target]} _ctx]
   (let [source* @source
         target* @target
-        hp (stats/get-hitpoints (:entity/stats target*))]
+        hp (get-hitpoints/f (:entity/stats target*))]
     (cond
      (zero? (hp 0))
      nil

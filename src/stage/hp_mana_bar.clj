@@ -3,7 +3,8 @@
             [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
             [com.badlogic.gdx.scenes.scene2d.actor.create :as actor]
             [moon.number :as number]
-            [moon.stats :as stats]
+            [moon.stats.get-hitpoints :as get-hitpoints]
+            [moon.stats.get-mana :as get-mana]
             [moon.textures :as textures]
             [moon.val-max :as val-max]))
 
@@ -44,8 +45,8 @@
                        (let [stats (:entity/stats @player-eid)
                              x (- x (/ rahmenw 2))]
                          (concat
-                          (render-hpmana-bar x y-hp   hpcontent-file   (stats/get-hitpoints stats) "HP")
-                          (render-hpmana-bar x y-mana manacontent-file (stats/get-mana      stats) "MP"))))]
+                          (render-hpmana-bar x y-hp   hpcontent-file   (get-hitpoints/f stats) "HP")
+                          (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
     (actor/create
      {:draw! (fn [this _batch _parent-alpha]
                (when-let [stage (get-stage this)]

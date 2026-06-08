@@ -1,6 +1,6 @@
 (ns game.skill
   (:require [game.effect :as effect]
-            [moon.stats :as stats]))
+            [moon.stats.not-enough-mana :as not-enough-mana?]))
 
 (defn valid? [skill]
   (= #{:property/id
@@ -22,7 +22,7 @@
    cooling-down?
    :cooldown
 
-   (stats/not-enough-mana? (:entity/stats entity) skill)
+   (not-enough-mana?/f (:entity/stats entity) skill)
    :not-enough-mana
 
    (not (seq (filter #(effect/applicable? % effect-ctx) effects)))

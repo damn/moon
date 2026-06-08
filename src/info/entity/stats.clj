@@ -1,7 +1,8 @@
 (ns info.entity.stats
   (:require [clojure.string :as str]
             [moon.stats.get-stat-value :refer [get-stat-value]]
-            [moon.stats :as stats]))
+            [moon.stats.get-mana :as get-mana]
+            [moon.stats.get-hitpoints :as get-hitpoints]))
 
 (def ^:private non-val-max-stat-ks
   [:stats/movement-speed
@@ -16,8 +17,8 @@
 (defn f [stats _ctx]
   (str/join "\n" (concat
                   ["*STATS*"
-                   (str "Mana: " (stats/get-mana stats))
-                   (str "Hitpoints: " (stats/get-hitpoints stats))]
+                   (str "Mana: " (get-mana/f stats))
+                   (str "Hitpoints: " (get-hitpoints/f stats))]
                   (for [stat-k non-val-max-stat-ks]
                     (str (str/capitalize (name stat-k)) ": "
                          (get-stat-value stats stat-k))))))

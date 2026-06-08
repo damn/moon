@@ -1,6 +1,6 @@
 (ns tx.set-item
   (:require [moon.inventory :as inventory]
-            [moon.stats :as stats]))
+            [moon.stats.add-mods :as add-mods]))
 
 (defn do! [ctx eid cell item]
   (let [entity @eid
@@ -9,6 +9,6 @@
                  (inventory/valid-slot? cell item)))
     [[:tx/assoc-in eid (cons :entity/inventory cell) item]
      (when (inventory/applies-modifiers? cell)
-       [:tx/update eid :entity/stats stats/add (:stats/modifiers item)])
+       [:tx/update eid :entity/stats add-mods/f (:stats/modifiers item)])
      (when (:entity/player? @eid)
        [:tx/ui-set-item eid cell item])]))
