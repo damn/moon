@@ -1,57 +1,13 @@
 (ns moon.grid.npc-pathing
   (:require [clojure.math.vector2 :as v]
-            [moon.grid.npc-pathing.filter-viable-cells :as filter-viable-cells]
-            [moon.grid.npc-pathing.get-min-dist-cell :refer [get-min-dist-cell]]
-            [moon.body.touched-tiles :refer [touched-tiles]]
-            [moon.grid.npc-pathing.viable-cell :refer [viable-cell?]]
             [moon.cell :as cell]
-            [moon.faction :as faction]
-            [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
-            [clojure.grid2d.get-cells :refer [get-cells]]))
-
-(defn- inside-cell? [grid entity cell]
-  (let [cells (get-cells grid (touched-tiles (:entity/body entity)))]
-    (and (= 1 (count cells))
-         (= cell (first cells)))))
-
-(defn- find-next-cell
-  "returns {:target-entity eid} or {:target-cell cell}. Cell can be nil."
-  [grid eid own-cell]
-  (let [faction (faction/enemy (:entity/faction @eid))
-        distance-to    #(cell/nearest-entity-distance @% faction)
-        nearest-entity #(cell/nearest-entity          @% faction)
-        own-dist (distance-to own-cell)
-        adjacent-cells (cached-adjacent-cells grid own-cell)]
-    (if (and own-dist (zero? (float own-dist)))
-      {:target-entity (nearest-entity own-cell)}
-      (if-let [adjacent-cell (first (filter #(and (distance-to %)
-                                                  (zero? (float (distance-to %))))
-                                            adjacent-cells))]
-        {:target-entity (nearest-entity adjacent-cell)}
-        {:target-cell (let [cells (filter-viable-cells/f eid adjacent-cells)
-                            min-key-cell (get-min-dist-cell distance-to cells)]
-                        (cond
-                         (not min-key-cell)  ; red
-                         own-cell
-
-                         (not own-dist)
-                         min-key-cell
-
-                         (> (float (distance-to min-key-cell)) (float own-dist)) ; red
-                         own-cell
-
-                         (< (float (distance-to min-key-cell)) (float own-dist)) ; green
-                         min-key-cell
-
-                         (= (distance-to min-key-cell) own-dist) ; yellow
-                         (or
-                          (some #(viable-cell? grid distance-to own-dist eid %) cells)
-                          own-cell)))}))))
+            [moon.grid.npc-pathing.find-next-cell :as find-next-cell]
+            [moon.grid.npc-pathing.inside-cell :as inside-cell?]))
 
 (defn find-direction [grid eid]
   (let [position (:body/position (:entity/body @eid))
         own-cell (grid (mapv int position))
-        {:keys [target-entity target-cell]} (find-next-cell grid eid own-cell)]
+        {:keys [target-entity target-cell]} (find-next-cell/f grid eid own-cell)]
     (cond
      target-entity
      (v/direction position (:body/position (:entity/body @target-entity)))
@@ -62,5 +18,5 @@
      :else
      (when-not (and (= target-cell own-cell)
                     (cell/occupied-by-other? @own-cell eid)) ; prevent friction 2 move to center
-       (when-not (inside-cell? grid @eid target-cell)
+       (when-not (inside-cell?/f grid @eid target-cell)
          (v/direction position (:middle @target-cell)))))))
