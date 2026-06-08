@@ -10,7 +10,6 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [com.badlogic.gdx.scenes.scene2d.utils.layout.pack :refer [pack!]]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [editor.property-overview-window]
             [gdx.scenes.scene2d.ui :as ui]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
@@ -38,11 +37,12 @@
                                      (let [{:keys [ctx/db
                                                    ctx/skin
                                                    ctx/stage
-                                                   ctx/textures]
+                                                   ctx/textures
+                                                   ctx/property-overview-window]
                                             :as ctx} (:stage/ctx (get-stage event))]
                                        (add-actor!
                                         stage
-                                        (editor.property-overview-window/create
+                                        (property-overview-window
                                          {:db db
                                           :textures textures
                                           :skin skin

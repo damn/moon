@@ -2,7 +2,6 @@
   (:require [clojure.string :as str]
             [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
             [com.badlogic.gdx.scenes.scene2d.event.get-stage :refer [get-stage]]
-            [editor.property-overview-window]
             [editor.window]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
@@ -26,10 +25,11 @@
                                                (let [{:keys [ctx/db
                                                              ctx/skin
                                                              ctx/stage
-                                                             ctx/textures]
+                                                             ctx/textures
+                                                             ctx/property-overview-window]
                                                       :as ctx} (:stage/ctx (get-stage event))]
                                                  (add-actor! stage
-                                                             (editor.property-overview-window/create
+                                                             (property-overview-window
                                                               {:db db
                                                                :textures textures
                                                                :skin skin
