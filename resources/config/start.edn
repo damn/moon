@@ -7,15 +7,19 @@
                        entity.state.create.npc-moving
                        entity.state.create.player-item-on-cursor
                        entity.state.draw-ui-view.player-item-on-cursor
-                       effect.load
+                       effect.audiovisual
                        effect.target.audiovisual
+                       effect.target.convert
+                       effect.target.damage
+                       effect.target.kill
                        effect.target.melee-damage
+                       effect.target.spiderweb
+                       effect.target.stun
                        effect.applicable.spawn
                        effect.handle.spawn
                        effect.applicable.projectile
                        effect.handle.projectile
                        effect.useful.projectile
-                       effect.target.damage
                        effect.target-all
                        effect.target-entity
                        draw.load)
