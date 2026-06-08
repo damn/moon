@@ -17,7 +17,6 @@
      :effect/target-direction (v/direction (:body/position (:entity/body @player-eid))
                                            target-position)}))
 
-
 (defn- interaction-state
   [stage
    world-mouse-position
