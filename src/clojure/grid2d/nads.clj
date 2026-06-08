@@ -1,15 +1,7 @@
 (ns clojure.grid2d.nads
   (:require [clojure.m.assoc-ks :refer [assoc-ks]]
-            [clojure.grid2d :as g2d]))
-
-(defn- wall-at? [grid posi]
-  (= :wall (get grid posi)))
-
-(defn- nad-corner? [grid [fromx fromy] [tox toy]]
-  (and
-    (= :ground (get grid [tox toy])) ; also filters nil/out of map
-    (wall-at? grid [tox fromy])
-    (wall-at? grid [fromx toy])))
+            [clojure.grid2d :as g2d]
+            [clojure.grid2d.nads.nad-corner :as nad-corner?]))
 
 (def ^:private diagonal-steps [[-1 -1] [-1 1] [1 -1] [1 1]])
 
@@ -24,7 +16,7 @@
       (let [position (first checkposis)
             diagonal-posis (map #(mapv + position %) diagonal-steps)
             nads (map (fn [nad] [position nad])
-                      (filter #(nad-corner? grid position %) diagonal-posis))]
+                      (filter #(nad-corner?/f grid position %) diagonal-posis))]
         (recur
           (rest checkposis)
           (doall (concat result nads)))) ; doall else stackoverflow error
@@ -49,9 +41,9 @@
 ;    (println "cell2 " cell2)
 ;    (println "cell21 " cell21)
 ;    (println "cell3 " cell3)
-    (if-not (nad-corner? grid cell1 cell11)
+    (if-not (nad-corner?/f grid cell1 cell11)
       [cell1]
-      (if-not (nad-corner? grid cell2 cell21)
+      (if-not (nad-corner?/f grid cell2 cell21)
         [cell1 cell2]
         [cell1 cell2 cell3]))))
 
