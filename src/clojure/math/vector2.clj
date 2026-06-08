@@ -19,14 +19,6 @@
 (defn add [v1 v2]
   (mapv + v1 v2))
 
-(defn distance
-  [[x1 y1]
-   [x2 y2]]
-  (let [x-d (- x2 x1)
-        y-d (- y2 y1)]
-   (math/sqrt (+ (* x-d x-d)
-                 (* y-d y-d))) ))
-
 (defn direction [[sx sy] [tx ty]]
   (normalise [(- (float tx) (float sx))
               (- (float ty) (float sy))]))

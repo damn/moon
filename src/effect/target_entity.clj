@@ -1,5 +1,6 @@
 (ns effect.target-entity
   (:require [clojure.math.vector2 :as v]
+            [clojure.math.vector2.distance :as distance]
             [game.effect :as effect]))
 
 ; TODO use at projectile & also adjust rotation
@@ -16,7 +17,7 @@
                   maxrange)))
 
 (defn- in-range? [body target-body maxrange]
-  (< (- (float (v/distance (:body/position body)
+  (< (- (float (distance/f (:body/position body)
                            (:body/position target-body)))
         (float (/ (:body/width body)  2))
         (float (/ (:body/width target-body) 2)))

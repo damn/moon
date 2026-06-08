@@ -1,5 +1,6 @@
 (ns effect.useful.projectile
   (:require [clojure.math.vector2 :as v]
+            [clojure.math.vector2.distance :as distance]
             [moon.raycaster :as raycaster]
             [game.effect :as effect]))
 
@@ -33,6 +34,6 @@
                  (raycaster/blocked? raycaster start1 target1)
                  (raycaster/blocked? raycaster start2 target2))))
          ; TODO not taking into account body sizes
-         (< (v/distance source-p ; entity/distance function protocol EntityPosition
+         (< (distance/f source-p ; entity/distance function protocol EntityPosition
                         target-p)
             max-range))))
