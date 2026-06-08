@@ -4,13 +4,6 @@
 (def ^:dbg-flag show-cell-entities? false)
 (def ^:dbg-flag show-cell-occupied? false)
 
-(def black [0 0 0 1])
-(def white [1 1 1 1])
-(def gray  [0.5 0.5 0.5 1])
-(def red   [1 0 0 1])
-
-(def outline-alpha 0.4)
-
 (def world-fn-file
   ; "config/world_fns/modules.edn"
   ; "config/world_fns/vampire.edn"
