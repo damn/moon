@@ -58,10 +58,10 @@
                                                         #_moon.geom-test
                                                         draw-on-world-viewport.highlight-mouseover-tile/f
                                                         ]]
-                   [render.assoc-interaction-state/step]
+                   (clojure.m.assoc-create/f :ctx/interaction-state render.assoc-interaction-state/create)
                    [render.set-cursor/step]
                    [render.handle-player-input/step]
-                   [render.dissoc-interaction-state/step]
+                   (clojure.core/dissoc :ctx/interaction-state)
                    [render.assoc-paused/step]
                    [render.if-not-paused/step [
                                                render.if-not-paused.update-time/f
