@@ -1,4 +1,4 @@
-(ns malli.utils.validate-humanize
+(ns malli.validate-humanize
   (:require [malli.create-ex-info :refer [create-ex-info]]
             [malli.validate :refer [validate]]))
 

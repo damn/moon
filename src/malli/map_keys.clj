@@ -1,4 +1,4 @@
-(ns malli.utils.map-keys)
+(ns malli.map-keys)
 
 (defn f [map-schema]
   (let [[_m _p & ks] map-schema]
