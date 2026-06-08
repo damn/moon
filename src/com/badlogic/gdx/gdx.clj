@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx
+(ns com.badlogic.gdx.gdx
   (:import (com.badlogic.gdx Gdx)))
 
 (defn audio []
