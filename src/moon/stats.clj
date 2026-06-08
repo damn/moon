@@ -1,28 +1,6 @@
 (ns moon.stats
-  (:require [malli.validate :refer [validate]]
-            [moon.modifiers :as modifiers]
-            [moon.val-max :as val-max]))
-
-(defn- ->pos-int [val-max]
-  (mapv #(-> % int (max 0)) val-max))
-
-; TODO can just pass ops instead of modifiers modifier-k
-(defn apply-max [val-max modifiers modifier-k]
-  (assert (validate val-max/schema val-max) val-max)
-  (let [val-max (update val-max 1 modifiers/get-value modifiers modifier-k)
-        [v mx] (->pos-int val-max)
-        result [(min v mx) mx]]
-    (assert (validate val-max/schema result) result)
-    result))
-
-; TODO can just pass ops instead of modifiers modifier-k
-(defn apply-min [val-max modifiers modifier-k]
-  (assert (validate val-max/schema val-max) val-max)
-  (let [val-max (update val-max 0 modifiers/get-value modifiers modifier-k)
-        [v mx] (->pos-int val-max)
-        result [v (max v mx)]]
-    (assert (validate val-max/schema result) result)
-    result))
+  (:require [moon.modifiers :as modifiers]
+            [moon.val-max.apply-max :as apply-max]))
 
 (defn add [stats mods]
   (update stats :stats/modifiers modifiers/add mods))
@@ -32,7 +10,7 @@
 
 (defn get-mana [{:keys [stats/mana
                         stats/modifiers]}]
-  (apply-max mana modifiers :modifier/mana-max))
+  (apply-max/f mana modifiers :modifier/mana-max))
 
 (defn not-enough-mana? [stats {:keys [skill/cost]}]
   (> cost ((get-mana stats) 0)))
@@ -44,4 +22,4 @@
 
 (defn get-hitpoints [{:keys [stats/hp
                              stats/modifiers]}]
-  (apply-max hp modifiers :modifier/hp-max))
+  (apply-max/f hp modifiers :modifier/hp-max))
