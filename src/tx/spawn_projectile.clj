@@ -1,5 +1,5 @@
 (ns tx.spawn-projectile
-  (:require [clojure.math.vector2 :as v]))
+  (:require [clojure.math.vector2.angle-from-vector :as angle-from-vector]))
 
 (defn do!
   [_ctx
@@ -15,7 +15,7 @@
                    :width size
                    :height size
                    :z-order :z-order/flying
-                   :rotation-angle (v/angle-from-vector direction)}
+                   :rotation-angle (angle-from-vector/f direction)}
      :entity/movement {:direction direction
                        :speed speed}
      :entity/image image

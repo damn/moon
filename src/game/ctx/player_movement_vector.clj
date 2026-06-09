@@ -1,6 +1,5 @@
 (ns game.ctx.player-movement-vector
-  (:require [clojure.math.vector2 :as v]
-            [clojure.math.vector2.add :as add]
+  (:require [clojure.math.vector2.add :as add]
             [clojure.math.vector2.length :as length]
             [clojure.math.vector2.normalise :as normalise]
             [com.badlogic.gdx.input :as input]))

@@ -1,6 +1,6 @@
 (ns entity.tick.movement
   (:require [clojure.math :as math]
-            [clojure.math.vector2 :as v]
+            [clojure.math.vector2.angle-from-vector :as angle-from-vector]
             [clojure.math.vector2.length :as length]
             [moon.grid.valid-position :refer [valid-position?]]
             [moon.number :as number]))
@@ -48,5 +48,5 @@
                         (move-body body movement))]
         [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
          (when rotate-in-movement-direction?
-           [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v/angle-from-vector direction)])
+           [:tx/assoc-in eid [:entity/body :body/rotation-angle] (angle-from-vector/f direction)])
          [:tx/move-entity eid]]))))

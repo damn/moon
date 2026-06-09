@@ -1,6 +1,5 @@
 (ns moon.math.vector2-test
   (:require [moon.number :as math]
-            [clojure.math.vector2 :as v]
             [clojure.math.vector2.scale :as scale]
             [clojure.math.vector2.length :as length]
             [clojure.test :refer :all]))
@@ -41,6 +40,6 @@
            [-1 0]
            [-1 1]]]
     [v
-     (angle-from-vector v)]))
+     (clojure.math.vector2.angle-from-vector/f v)]))
 
  )

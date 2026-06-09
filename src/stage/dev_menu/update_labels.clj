@@ -1,5 +1,5 @@
 (ns stage.dev-menu.update-labels
-  (:require [com.badlogic.gdx.graphics :as graphics]
+  (:require [com.badlogic.gdx.graphics.frames-per-second :as frames-per-second]
             [com.badlogic.gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
             [moon.number :as number]))
 
@@ -11,7 +11,7 @@
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn (fn [{:keys [ctx/graphics]}]
-                 (graphics/frames-per-second graphics))
+                 (frames-per-second/f graphics))
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
     :update-fn (fn [{:keys [ctx/mouseover-eid]}]

@@ -1,3 +1,14 @@
+#
+
+* No private vars/functions
+* no vars with game constants
+* one function per namespace = function is the module
+* no defprotocols/extend-types
+* no multimethods
+
+
+#
+
 Simple idea:
 
 We wrap each method/constructor

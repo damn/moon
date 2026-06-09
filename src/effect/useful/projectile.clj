@@ -1,5 +1,5 @@
 (ns effect.useful.projectile
-  (:require [clojure.math.vector2 :as v]
+  (:require [clojure.math.vector2.normal-vectors :as normal-vectors]
             [clojure.math.vector2.add :as add]
             [clojure.math.vector2.direction :as direction]
             [clojure.math.vector2.distance :as distance]
@@ -15,7 +15,7 @@
   (let [path-w (+ path-w 0.02) ;etwas gr�sser damit z.b. projektil nicht an ecken anst�sst
         v (direction/f [start-x start-y]
                        [target-y target-y])
-        [normal1 normal2] (v/normal-vectors v)
+        [normal1 normal2] (normal-vectors/f v)
         normal1 (scale/f normal1 (/ path-w 2))
         normal2 (scale/f normal2 (/ path-w 2))
         start1  (add/f [start-x  start-y]  normal1)

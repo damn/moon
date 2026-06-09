@@ -1,5 +1,5 @@
 (ns render.set-cursor
-  (:require [com.badlogic.gdx.graphics :as graphics]))
+  (:require [com.badlogic.gdx.graphics.set-cursor :as set-cursor!]))
 
 (defn step
   [{:keys [ctx/graphics
@@ -15,5 +15,5 @@
                      f
                      (f eid ctx))]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! graphics (get cursors cursor-key)))
+    (set-cursor!/f graphics (get cursors cursor-key)))
   ctx)
