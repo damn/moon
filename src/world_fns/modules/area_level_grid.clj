@@ -1,5 +1,5 @@
 (ns world-fns.modules.area-level-grid
-  (:require [clojure.grid2d :as g2d]
+  (:require [clojure.grid2d.cells :refer [->cells]]
             [clojure.math.position.get-4-neighbours :refer [get-4-neighbours]]))
 
 ; can adjust:
@@ -21,7 +21,7 @@
   level 0 to max-level, so the player has to decide which areas to do in which order."
   [& {:keys [grid start max-level walk-on]}]
   (let [maxcount (->> grid
-                      g2d/cells
+                      ->cells
                       (filter walk-on)
                       count)
         ; -> assume all :ground cells can be reached from start

@@ -1,6 +1,6 @@
 (ns clojure.grid2d.nads
   (:require [clojure.m.assoc-ks :refer [assoc-ks]]
-            [clojure.grid2d :as g2d]
+            [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d.posis :as posis]
             [clojure.grid2d.nads.nad-corner :as nad-corner?]))
 
@@ -52,6 +52,6 @@
   (assoc-ks grid (mapcat #(get-tiles-needing-fix-for-nad grid %) nads) label))
 
 (defn fix-nads [grid]
-  {:pre [(= #{:wall :ground} (set (g2d/cells grid)))]
-   :post [(= #{:wall :ground} (set (g2d/cells %)))]}
+  {:pre [(= #{:wall :ground} (set (->cells grid)))]
+   :post [(= #{:wall :ground} (set (->cells %)))]}
   (mark-nads grid (get-nads grid) :ground))

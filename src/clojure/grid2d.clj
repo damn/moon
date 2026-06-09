@@ -1,16 +1,20 @@
 (ns clojure.grid2d
-  (:require [clojure.grid2d.posis :as posis]))
+  (:require [clojure.grid2d.cells :as cells]
+            [clojure.grid2d.posis :as posis]))
 
 ; 2dimvector is 7x faster than a hashmap of [x y] to values
 ; like in rich hickey ant demo vectors of vectors:
 ; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj
 
 (defprotocol Grid2D
-  (cells [this])
   (width [this])
   (height [this]))
 
 (deftype VectorGrid [data]
+  cells/Cells
+  (->cells [_]
+    (apply concat data))
+
   posis/Positions
   (f [this]
     (for [x (range (width this))
@@ -18,8 +22,6 @@
       [x y]))
 
   Grid2D
-  (cells [_]
-    (apply concat data))
   (width [this] (count data))
   (height [this] (count (data 0)))
 
@@ -34,7 +36,7 @@
 
   clojure.lang.Seqable
   (seq [this]
-    (map #(vector %1 %2) (posis/f this) (cells this)))
+    (map #(vector %1 %2) (posis/f this) (cells/->cells this)))
 
   clojure.lang.IPersistentCollection
   (equiv [this obj]

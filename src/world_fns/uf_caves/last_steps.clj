@@ -4,6 +4,7 @@
             [world-fns.uf-caves.assoc-transition-cells :as assoc-transition-cells]
             [gdx.tiled-map.movement-property :as movement-property]
             [clojure.grid2d :as g2d]
+            [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d.posis :as posis]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.scalegrid :as scalegrid]
@@ -29,7 +30,7 @@
            level/scaling]
     :as lvlctx
     }]
-  (assert (= #{:wall :ground} (set (g2d/cells grid))))
+  (assert (= #{:wall :ground} (set (->cells grid))))
   (let [{:keys [start-position grid]} (scale-grid grid start scaling)
         grid (assoc-transition-cells/f grid)
         position->tile (position-tile-fn/f grid)

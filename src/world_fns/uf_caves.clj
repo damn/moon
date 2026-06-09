@@ -1,6 +1,6 @@
 (ns world-fns.uf-caves
   (:require [com.badlogic.gdx.graphics.texture :as texture]
-            [clojure.grid2d :as g2d]
+            [clojure.grid2d.cells :refer [->cells]]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]
             [world-fns.uf-caves.last-steps]))
 
@@ -11,7 +11,7 @@
            random]
     :as level}]
   (let [{:keys [start grid]} (initial-grid-create-fn random size size cave-style)]
-    (assert (= #{:wall :ground} (set (g2d/cells grid))))
+    (assert (= #{:wall :ground} (set (->cells grid))))
     (assoc level
            :level/start start
            :level/grid grid)))

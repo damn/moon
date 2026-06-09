@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.maps.layers.get-layer :refer [get-layer]]
             [gdx.tiled-map.property-value :refer [property-value]]
             [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.grid2d :as g2d]
+            [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d.scale-grid :as scale-grid]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.flood-fill :as flood-fill]
@@ -34,9 +34,9 @@
         ;_ (printgrid/f area-level-grid)
         _ (assert (or
                    (= (set (concat [max-area-level] (range max-area-level)))
-                      (set (g2d/cells area-level-grid)))
+                      (set (->cells area-level-grid)))
                    (= (set (concat [:wall max-area-level] (range max-area-level)))
-                      (set (g2d/cells area-level-grid)))))
+                      (set (->cells area-level-grid)))))
         scaled-area-level-grid (scale-grid/f area-level-grid scale)
         get-free-position-in-area-level (fn [area-level]
                                           (rand-nth

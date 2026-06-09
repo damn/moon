@@ -1,12 +1,13 @@
 (ns moon.raycaster
   (:require [clojure.math.raycaster :as raycaster]
+            [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d :as g2d]
             [moon.cell :as cell]))
 
 (defn create [grid]
   (let [width  (g2d/width  grid)
         height (g2d/height grid)
-        cells  (for [cell (map deref (g2d/cells grid))]
+        cells  (for [cell (map deref (->cells grid))]
                  [(:position cell)
                   (boolean (cell/blocks-vision? cell))])]
     (let [arr (make-array Boolean/TYPE width height)]
