@@ -1,5 +1,5 @@
 (ns render.update-mouse-positions
-  (:require [com.badlogic.gdx.utils.viewport :as viewport]
+  (:require [com.badlogic.gdx.utils.viewport.unproject :as unproject]
             [game.ctx.mouse-position :refer [mouse-position]]))
 
 (defn step
@@ -8,5 +8,5 @@
     :as ctx}]
   (let [mp (mouse-position ctx)]
     (-> ctx
-        (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
-        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
+        (assoc :ctx/world-mouse-position (unproject/f world-viewport mp))
+        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (unproject/f mp))))))

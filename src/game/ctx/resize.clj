@@ -1,9 +1,9 @@
 (ns game.ctx.resize
-  (:require [com.badlogic.gdx.utils.viewport :as viewport]))
+  (:require [com.badlogic.gdx.utils.viewport.update :as update!]))
 
 (defn do!
   [{:keys [ctx/stage
            ctx/world-viewport]}
    width height]
-  (viewport/update! (:stage/viewport stage) width height true)
-  (viewport/update! world-viewport width height false))
+  (update!/f (:stage/viewport stage) width height true)
+  (update!/f world-viewport width height false))

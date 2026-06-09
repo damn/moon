@@ -1,6 +1,6 @@
 (ns editor.app.resize
-  (:require [com.badlogic.gdx.utils.viewport :as viewport]))
+  (:require [com.badlogic.gdx.utils.viewport.update :as update!]))
 
 (defn resize!
   [{:keys [ctx/stage]} width height]
-  (viewport/update! (:stage/viewport stage) width height true))
+  (update!/f (:stage/viewport stage) width height true))
