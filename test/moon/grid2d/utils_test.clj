@@ -1,6 +1,7 @@
 (ns moon.grid2d.utils-test
   (:require [moon.caves :as caves]
-            [clojure.grid2d :as g2d]
+            [clojure.grid2d.height :refer [->height]]
+            [clojure.grid2d.width :refer [->width]]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.flood-fill :as flood-fill]))
 
@@ -11,8 +12,8 @@
        ;_ (println)
        ;_ (println "WITH START POSITION (0) :\n")
        ;_ (printgrid/f (assoc grid start 0))
-       ;_ (println "\nwidth:  " (g2d/width  grid)
-       ;           "height: " (g2d/height grid)
+       ;_ (println "\nwidth:  " (->width  grid)
+       ;           "height: " (->height grid)
        ;           "start " start "\n")
        ;_ (println (posis/f grid))
        _ (println "\n\n")

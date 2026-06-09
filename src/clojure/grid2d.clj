@@ -1,29 +1,31 @@
 (ns clojure.grid2d
   (:require [clojure.grid2d.cells :as cells]
-            [clojure.grid2d.posis :as posis]))
+            [clojure.grid2d.posis :as posis]
+            [clojure.grid2d.height :as height]
+            [clojure.grid2d.width :as width]))
 
 ; 2dimvector is 7x faster than a hashmap of [x y] to values
 ; like in rich hickey ant demo vectors of vectors:
 ; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj
 
-(defprotocol Grid2D
-  (width [this])
-  (height [this]))
-
 (deftype VectorGrid [data]
+  height/Height
+  (->height [_]
+    (count (data 0)))
+
+  width/Width
+  (->width [_]
+    (count data))
+
   cells/Cells
   (->cells [_]
     (apply concat data))
 
   posis/Positions
   (f [this]
-    (for [x (range (width this))
-          y (range (height this))]
+    (for [x (range (width/->width this))
+          y (range (height/->height this))]
       [x y]))
-
-  Grid2D
-  (width [this] (count data))
-  (height [this] (count (data 0)))
 
   clojure.lang.ILookup
   (valAt [this p]  ; {x 0 y 1} or [x y] is much slower
@@ -56,7 +58,7 @@
     (and (= VectorGrid (class obj))
          (.equals (.data ^VectorGrid obj) data)))
   (toString [this]
-    (str "width " (width this) ", height " (height this))))
+    (str "width " (width/->width this) ", height " (height/->height this))))
 
 (defn create-grid
   [w h xyfn]

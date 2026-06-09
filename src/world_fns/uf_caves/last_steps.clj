@@ -3,7 +3,8 @@
             [world-fns.uf-caves.position-tile-fn :as position-tile-fn]
             [world-fns.uf-caves.assoc-transition-cells :as assoc-transition-cells]
             [gdx.tiled-map.movement-property :as movement-property]
-            [clojure.grid2d :as g2d]
+            [clojure.grid2d.height :refer [->height]]
+            [clojure.grid2d.width :refer [->width]]
             [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d.posis :as posis]
             [clojure.grid2d.printgrid :as printgrid]
@@ -35,8 +36,8 @@
         grid (assoc-transition-cells/f grid)
         position->tile (position-tile-fn/f grid)
         tiled-map (create-tiled-map/f
-                   {:properties {"width"  (g2d/width  grid)
-                                 "height" (g2d/height grid)
+                   {:properties {"width"  (->width  grid)
+                                 "height" (->height grid)
                                  "tilewidth"  tile-size
                                  "tileheight" tile-size}
                     :layers [{:name "ground"

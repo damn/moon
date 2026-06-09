@@ -8,7 +8,8 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.grid2d.posis :as posis]
-            [clojure.grid2d :as g2d]))
+            [clojure.grid2d.width :refer [->width]]
+            [clojure.grid2d.height :refer [->height]]))
 
 (def copy-tile
   (memoize
@@ -19,8 +20,8 @@
 (defn grid->tiled-map
   [schema-tiled-map grid]
   {:properties (merge (->clj (get-properties schema-tiled-map))
-                      {"width" (g2d/width grid)
-                       "height" (g2d/height grid)})
+                      {"width" (->width grid)
+                       "height" (->height grid)})
    :layers (for [layer (get-layers schema-tiled-map)]
              {:name (get-name layer)
               :visible? (visible? layer)
