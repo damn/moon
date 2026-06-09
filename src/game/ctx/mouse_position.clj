@@ -1,5 +1,5 @@
 (ns game.ctx.mouse-position
-  (:require [com.badlogic.gdx.input :as input]))
+  (:require [com.badlogic.gdx.input.get-position :as get-position]))
 
 (defn mouse-position [{:keys [ctx/input]}]
-  (input/position input))
+  (get-position/f input))

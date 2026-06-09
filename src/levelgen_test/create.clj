@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.graphics.color.float-bits :refer [float-bits]]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [com.badlogic.gdx.input :as input]
+            [com.badlogic.gdx.input.set-processor :as set-processor!]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.utils.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.graphics.orthographic-camera :as camera]
@@ -29,7 +29,7 @@
         ui-viewport (fit-viewport/create 1440 900)
         sprite-batch (sprite-batch/create)
         stage (stage/create ui-viewport sprite-batch)
-        _  (input/set-processor! input stage)
+        _  (set-processor!/f input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
         ctx {:ctx/stage stage

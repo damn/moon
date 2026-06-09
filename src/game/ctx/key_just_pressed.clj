@@ -1,5 +1,5 @@
 (ns game.ctx.key-just-pressed
-  (:require [com.badlogic.gdx.input :as input]))
+  (:require [com.badlogic.gdx.input.key-just-pressed :as key-just-pressed?]))
 
 (defn key-just-pressed? [{:keys [ctx/input]} input-key]
-  (input/key-just-pressed? input input-key))
+  (key-just-pressed?/f input input-key))

@@ -1,5 +1,5 @@
 (ns levelgen-test.render
-  (:require [com.badlogic.gdx.input :as input]
+  (:require [com.badlogic.gdx.input.key-pressed :as key-pressed?]
             [gdx.screen :as screen-utils]
             [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-position :refer [get-position]]
@@ -28,16 +28,16 @@
                                         (update (get-position camera)
                                                 idx
                                                 #(f % camera-movement-speed))))]
-    (if (input/key-pressed? input :input.keys/left)  (apply-position 0 -))
-    (if (input/key-pressed? input :input.keys/right) (apply-position 0 +))
-    (if (input/key-pressed? input :input.keys/up)    (apply-position 1 +))
-    (if (input/key-pressed? input :input.keys/down)  (apply-position 1 -))))
+    (if (key-pressed?/f input :input.keys/left)  (apply-position 0 -))
+    (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
+    (if (key-pressed?/f input :input.keys/up)    (apply-position 1 +))
+    (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -))))
 
 (defn- camera-zoom-controls! [{:keys [ctx/input
                                       ctx/camera
                                       ctx/zoom-speed]}]
-  (when (input/key-pressed? input :input.keys/minus)  (inc-zoom! camera zoom-speed))
-  (when (input/key-pressed? input :input.keys/equals) (inc-zoom! camera (- zoom-speed))))
+  (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
+  (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed))))
 
 (defn f!
   [{:keys [ctx/stage]
