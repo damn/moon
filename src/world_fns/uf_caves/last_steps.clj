@@ -4,6 +4,7 @@
             [world-fns.uf-caves.assoc-transition-cells :as assoc-transition-cells]
             [gdx.tiled-map.movement-property :as movement-property]
             [clojure.grid2d :as g2d]
+            [clojure.grid2d.posis :as posis]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.scalegrid :as scalegrid]
             [com.badlogic.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
@@ -40,7 +41,7 @@
                     :layers [{:name "ground"
                               :visible? true
                               :properties {"movement-properties" true}
-                              :tiles (for [position (g2d/posis grid)]
+                              :tiles (for [position (posis/f grid)]
                                        [position (create-tile (position->tile position))])}]})
 
         can-spawn? #(= "all" (movement-property/f tiled-map %))

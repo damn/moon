@@ -1,6 +1,7 @@
 (ns clojure.grid2d.nads
   (:require [clojure.m.assoc-ks :refer [assoc-ks]]
             [clojure.grid2d :as g2d]
+            [clojure.grid2d.posis :as posis]
             [clojure.grid2d.nads.nad-corner :as nad-corner?]))
 
 (def ^:private diagonal-steps [[-1 -1] [-1 1] [1 -1] [1 1]])
@@ -10,7 +11,7 @@
   (loop [checkposis (filter (fn [{y 1 :as posi}]
                               (and (even? y)
                                    (= :ground (get grid posi))))
-                            (g2d/posis grid))
+                            (posis/f grid))
          result []]
     (if (seq checkposis)
       (let [position (first checkposis)

@@ -7,6 +7,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [clojure.grid2d.posis :as posis]
             [clojure.grid2d :as g2d]))
 
 (def copy-tile
@@ -24,7 +25,7 @@
              {:name (get-name layer)
               :visible? (visible? layer)
               :properties (->clj (get-properties layer))
-              :tiles (for [position (g2d/posis grid)
+              :tiles (for [position (posis/f grid)
                            :let [local-position (get grid position)]
                            :when local-position]
                        (when (vector? local-position)

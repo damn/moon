@@ -14,7 +14,7 @@
        ;_ (println "\nwidth:  " (g2d/width  grid)
        ;           "height: " (g2d/height grid)
        ;           "start " start "\n")
-       ;_ (println (g2d/posis grid))
+       ;_ (println (posis/f grid))
        _ (println "\n\n")
        filled (flood-fill/f grid start (fn [p] (= :ground (get grid p))))
        _ (printgrid/f (reduce #(assoc %1 %2 nil) grid filled))])
