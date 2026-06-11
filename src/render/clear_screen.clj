@@ -1,7 +1,7 @@
 (ns render.clear-screen
-  (:require [game.ctx.clear-screen :refer [clear-screen!]]))
+  (:require [com.badlogic.gdx.graphics.clear :as clear]))
 
 (defn step
-  [ctx]
-  (clear-screen! ctx 0 0 0 0)
+  [{:keys [ctx/graphics]}]
+  (clear/f! graphics 0 0 0 0)
   ctx)
