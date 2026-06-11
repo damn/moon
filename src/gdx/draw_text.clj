@@ -1,26 +1,29 @@
 (ns gdx.draw-text
-  (:require [clojure.string :as str])
-  (:import (com.badlogic.gdx.graphics.g2d BitmapFont)
-           (com.badlogic.gdx.utils Align)))
+  (:require [clojure.string :as str]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.draw :as draw]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.get-scale-x :as get-scale-x]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.get-line-height :as get-line-height]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.set-scale :as set-scale]
+            [com.badlogic.gdx.utils.align :as align]))
 
-(defn draw-text! [^BitmapFont font batch unit-scale scale text x y up?]
-  (let [old-scale (.scaleX (.getData font))
+(defn draw-text! [font batch unit-scale scale text x y up?]
+  (let [old-scale (get-scale-x/f font)
         target-width 0
         wrap? false
         scale (* (float unit-scale)
                  (float scale))]
-    (.setScale (.getData font) (* old-scale scale))
-    (.draw font
-           batch
-           text
-           (float x)
-           (float (+ y (if up?
-                         (-> text
-                             (str/split #"\n")
-                             count
-                             (* (.getLineHeight font)))
-                         0)))
-           (float target-width)
-           Align/center
-           wrap?)
-    (.setScale (.getData font) old-scale)))
+    (set-scale/f! font (* old-scale scale))
+    (draw/f! font
+             batch
+             text
+             x
+             (+ y (if up?
+                    (-> text
+                        (str/split #"\n")
+                        count
+                        (* (get-line-height/f font)))
+                    0))
+             target-width
+             align/center
+             wrap?)
+    (set-scale/f! font old-scale)))

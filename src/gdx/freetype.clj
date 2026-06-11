@@ -1,4 +1,6 @@
 (ns gdx.freetype
+  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font.enable-markup :as enable-markup]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font.set-scale :as set-scale])
   (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
@@ -17,7 +19,7 @@
                               (set! (.magFilter params) Texture$TextureFilter/Linear)
                               params))]
     (.dispose generator)
-    (.setScale (.getData font) (/ quality-scaling))
-    (set! (.markupEnabled (.getData font)) true)
+    (set-scale/f! font (/ quality-scaling))
+    (enable-markup/f! font)
     (.setUseIntegerPositions font use-integer-positions?)
     font))
