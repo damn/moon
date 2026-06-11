@@ -43,7 +43,8 @@
                                                                         :skill/cost
                                                                         :skill/cooldown]})]
    :dispose! editor.app.dispose/dispose!
-   :render-pipeline [[editor.app.render/render!]]
+   :render-pipeline [(render.clear-screen/step)
+                     (editor.app.render/render!)]
    :resize! editor.app.resize/resize!
    :title "!Editor!"
    :windowed-mode {:width 1440 :height 900}

@@ -45,6 +45,7 @@
                                                 :world-width world-width
                                                 :world-height world-height})))
         ctx (assoc ctx
+                   :ctx/graphics graphics
                    :ctx/input input
                    :ctx/world-viewport world-viewport
                    :ctx/camera (:viewport/camera world-viewport)

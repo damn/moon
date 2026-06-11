@@ -1,6 +1,5 @@
 (ns levelgen-test.render
   (:require [com.badlogic.gdx.input.key-pressed :as key-pressed?]
-            [gdx.screen :as screen-utils]
             [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-position :refer [get-position]]
             [com.badlogic.gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
@@ -45,7 +44,6 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (screen-utils/clear! 0 0 0 0)
     (draw-tiled-map! ctx)
     (camera-zoom-controls! ctx)
     (camera-movement-controls! ctx)
