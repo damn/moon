@@ -42,12 +42,12 @@
 ; hmmm interesting ... can disable @ item in cursor  / moving / etc.
 
 (comment
- (gdx.post-runnable/post-runnable!
-  (fn []
-    (:tx/show-modal @dev.application/state
-                    {:title "TestTitle"
-                     :text "TextTEXT"
-                     :button-text "testbuttonTEXT"
-                     :on-click (fn [])})))
+ (.postRunnable com.badlogic.gdx.Gdx/app
+                (fn []
+                  (:tx/show-modal @dev.application/state
+                                  {:title "TestTitle"
+                                   :text "TextTEXT"
+                                   :button-text "testbuttonTEXT"
+                                   :on-click (fn [])})))
 
  )
