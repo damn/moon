@@ -2,7 +2,8 @@
   (:require [game.ctx.draw :refer [draw!]]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.graphics.orthographic-camera.get-combined :refer [get-combined]]
-            [space.earlygrey.shape-drawer :as shape-drawer]))
+            [space.earlygrey.shape-drawer.default-line-width :refer [default-line-width]]
+            [space.earlygrey.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
 
 (defn step
   [{:keys [ctx/batch
@@ -15,12 +16,11 @@
   (batch/setup-drawing! batch
                         (get-combined (:viewport/camera world-viewport))
                         (fn []
-                          (let [old-line-width (shape-drawer/default-line-width shape-drawer)]
-                            (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
+                          (let [old-line-width (default-line-width shape-drawer)]
+                            (set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
                             (reset! unit-scale world-unit-scale)
                             (doseq [f draw-fns]
                               (draw! ctx (f ctx)))
                             (reset! unit-scale 1)
-                            (shape-drawer/set-default-line-width! shape-drawer old-line-width))                        ))
-
+                            (set-default-line-width! shape-drawer old-line-width))))
   ctx)
