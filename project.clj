@@ -1,8 +1,7 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 ; then reddit post
-                 ; split into !2!
+                 [clojure.core-ext "0.1"]
                  [badlogic "-SNAPSHOT"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
