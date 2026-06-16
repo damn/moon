@@ -1,10 +1,9 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
-  :dependencies [[com.badlogicgames.gdx/gdx                   "1.14.2"]
-                 [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.2"]
-                 [com.badlogicgames.gdx/gdx-freetype          "1.14.2"]
-                 [com.badlogicgames.gdx/gdx-freetype-platform "1.14.2" :classifier "natives-desktop"]
-                 [com.badlogicgames.gdx/gdx-platform          "1.14.2" :classifier "natives-desktop"]
+  :dependencies [
+                 ; then reddit post
+                 ; split into !2!
+                 [badlogic "-SNAPSHOT"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
                  [metosin/malli "0.13.0"]
@@ -12,7 +11,7 @@
                  [org.clj-commons/pretty "3.2.0"]
                  [org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.namespace "1.3.0"]
-                 [space.earlygrey/shapedrawer "2.6.0"]]
+                 ]
   :java-source-paths ["java-src"]
   :source-paths ["src"]
   :resource-paths ["resources/"]
