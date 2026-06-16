@@ -11,7 +11,6 @@
                  [org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.namespace "1.3.0"]
                  ]
-  :java-source-paths ["java-src"]
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {"dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'start/-main))"]
