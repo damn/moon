@@ -4,9 +4,6 @@
 (defn create [batch texture-region]
   (ShapeDrawer. batch texture-region))
 
-(defn set-color! [^ShapeDrawer this color-float-bits]
-  (.setColor this (float color-float-bits)))
-
 (defn circle! [^ShapeDrawer this x y radius]
   (.circle this x y radius))
 
