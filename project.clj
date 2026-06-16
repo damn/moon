@@ -1,8 +1,8 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 [clojure.core-ext "0.1"]
-                 [badlogic "-SNAPSHOT"]
+                 [com.github.damn/clojure.core-ext "6384e58dfc"]
+                 [com.github.damn/badlogic "7959c0216c"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
                  [metosin/malli "0.13.0"]
