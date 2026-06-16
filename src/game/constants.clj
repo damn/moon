@@ -11,8 +11,8 @@
 
 (def world-fn-file
   ; "config/world_fns/modules.edn"
-  ; "config/world_fns/vampire.edn"
-   "config/world_fns/uf_caves.edn"
+   "config/world_fns/vampire.edn"
+  ; "config/world_fns/uf_caves.edn"
   )
 
 (def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
