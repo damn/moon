@@ -4,7 +4,10 @@
  (gdx.application/f!
   {:listener (gdx.listener/f
               {:state-var levelgen-test.app/state
-               :create-pipeline [[levelgen-test.create/f!]]
+               :create-pipeline [
+                                 (create.gdx-context/f)
+                                 (levelgen-test.create/f!)
+                                 ]
                :dispose! levelgen-test.dispose/f!
                :render-pipeline [(render.clear-screen/step)
                                  (levelgen-test.render/f!)]
