@@ -6,20 +6,6 @@
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]))
 
-(def ^:private render-layers
-  [#{:entity/mouseover?
-     :stunned
-     :player-item-on-cursor}
-   #{:entity/clickable
-     :entity/animation
-     :entity/image
-     :entity/line-render}
-   #{:npc-sleeping
-     :entity/temp-modifier
-     :entity/string-effect}
-   #{:entity/stats
-     :active-skill}])
-
 (def ^:dbg-flag show-body-bounds? false)
 
 (defn- draw-body-rect [{:keys [body/position body/width body/height]} color-float-bits]
@@ -51,7 +37,8 @@
            ctx/player-eid
            ctx/raycaster
            ctx/render-z-order]
-    :as ctx}]
+    :as ctx}
+   render-layers]
   (let [entities (map deref active-entities)
         player @player-eid
         should-draw? (fn [entity z-order]

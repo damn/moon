@@ -19,8 +19,8 @@
                           (let [old-line-width (default-line-width shape-drawer)]
                             (set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
                             (reset! unit-scale world-unit-scale)
-                            (doseq [f draw-fns]
-                              (draw! ctx (f ctx)))
+                            (doseq [[f & params] draw-fns]
+                              (draw! ctx (apply f ctx params)))
                             (reset! unit-scale 1)
                             (set-default-line-width! shape-drawer old-line-width))))
   ctx)
