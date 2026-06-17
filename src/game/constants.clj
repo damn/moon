@@ -25,8 +25,6 @@
 
 (def pausing? true)
 
-(declare draw-fns)
-
 (def k->colors
   {:property/pretty-name "PRETTY_NAME"
    :stats/modifiers "CYAN"

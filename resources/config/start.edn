@@ -22,5 +22,5 @@
                        effect.useful.projectile
                        effect.target-all
                        effect.target-entity
-                       draw.load)
+                       )
  (gdx.lwjgl/application! #edn/resource "config/application.edn")]

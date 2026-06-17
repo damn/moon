@@ -1,4 +1,5 @@
 [:map {:closed true}
+ [:ctx/draw-fns :some]
  [:ctx/fsms :some]
  [:ctx/txs-fn-map :some]
  [:ctx/k->info :some]

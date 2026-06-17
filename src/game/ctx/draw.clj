@@ -1,7 +1,6 @@
-(ns game.ctx.draw
-  (:require [game.constants :refer [draw-fns]]))
+(ns game.ctx.draw)
 
-(defn draw! [ctx draws]
+(defn draw! [{:keys [ctx/draw-fns] :as ctx} draws]
   (doseq [{k 0 :as component} draws
           :when component]
     (apply (get draw-fns k) ctx (rest component))))
