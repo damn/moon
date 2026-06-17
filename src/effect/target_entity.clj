@@ -1,29 +1,8 @@
 (ns effect.target-entity
-  (:require [clojure.math.vector2.add :as add]
-            [clojure.math.vector2.direction :as direction]
-            [clojure.math.vector2.distance :as distance]
-            [clojure.math.vector2.scale :as scale]
+  (:require [moon.body.in-range :refer [in-range?]]
+            [moon.body.start-point :refer [start-point]]
+            [moon.body.end-point :refer [end-point]]
             [game.effect :as effect]))
-
-; TODO use at projectile & also adjust rotation
-(defn- start-point [body target-body]
-  (add/f (:body/position body)
-         (scale/f (direction/f (:body/position body)
-                               (:body/position target-body))
-                  (/ (:body/width body) 2))))
-
-(defn- end-point [body target-body maxrange]
-  (add/f (start-point body target-body)
-         (scale/f (direction/f (:body/position body)
-                               (:body/position target-body))
-                  maxrange)))
-
-(defn- in-range? [body target-body maxrange]
-  (< (- (float (distance/f (:body/position body)
-                           (:body/position target-body)))
-        (float (/ (:body/width body)  2))
-        (float (/ (:body/width target-body) 2)))
-     (float maxrange)))
 
 (defmethod effect/applicable? :effects/target-entity
   [[_ {:keys [entity-effects]}] {:keys [effect/target] :as effect-ctx}]
