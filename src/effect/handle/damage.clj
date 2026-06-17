@@ -1,4 +1,4 @@
-(ns effect.target.damage
+(ns effect.handle.damage
   (:require [clojure.rand.int-between :refer [rand-int-between]]
             [game.effect :as effect]
             [moon.stats.get-stat-value :refer [get-stat-value]]
@@ -21,11 +21,6 @@
        target* {:stats/armor-save   0.5}]
    (effective-armor-save source* target*))
  )
-
-(defmethod effect/applicable? :effects.target/damage
-  [_ {:keys [effect/target]}]
-  (and target
-       #_(:stats/hp @target))) ; not exist anymore ... bugfix .... -> is 'creature?'
 
 (defmethod effect/handle :effects.target/damage
   [[_ damage] {:keys [effect/source effect/target]} _ctx]

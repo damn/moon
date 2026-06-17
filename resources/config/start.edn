@@ -10,7 +10,8 @@
                        effect.audiovisual
                        effect.target.audiovisual
                        effect.target.convert
-                       effect.target.damage
+                       effect.applicable.damage
+                       effect.handle.damage
                        effect.target.kill
                        effect.target.melee-damage
                        effect.target.spiderweb
