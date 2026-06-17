@@ -90,7 +90,4 @@
                    [render.validate/step]
                    ]
  :resize!  game.ctx.resize/do!
- :title "Moon"
- :windowed-mode {:width 1440
-                 :height 900}
- :foreground-fps 60}
+ }

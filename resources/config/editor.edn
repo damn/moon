@@ -14,39 +14,41 @@
 
  (gdx.use-glfw-async/f!)
  (gdx.application/f!
-  {:state-var editor.app/state
-   :create-pipeline [(clojure.m.assoc-create/f :ctx/batch create.batch/step)
-                     (clojure.m.assoc-create/f :ctx/skin create.skin/step)
-                     (clojure.m.assoc-create/f :ctx/db create.db/step)
-                     (clojure.m.assoc-create/f :ctx/stage create.stage/step)
-                     (clojure.pipeline.do/step
-                      (create.add-stage-actors/f! [[editor.main-window/create]]))
-                     (clojure.m.assoc-create/f :ctx/textures create.textures/step)
-                     (editor.app.create/f! {:ctx/property-overview-window editor.property-overview-window/create
-                                            :ctx/add-component-window editor.map-widget-table.add-component-window/f
-                                            :ctx/create-component-row editor.map-widget-table.component-row/create
-                                            :ctx/create-map-widget-table editor.map-widget-table/create
-                                            :ctx/rebuild-editor-window! editor.rebuild/f!
-                                            :ctx/property-k-sort-order [:property/id
-                                                                        :property/pretty-name
-                                                                        :entity/image
-                                                                        :entity/animation
-                                                                        :entity/species
-                                                                        :creature/level
-                                                                        :entity/body
-                                                                        :item/slot
-                                                                        :projectile/speed
-                                                                        :projectile/max-range
-                                                                        :projectile/piercing?
-                                                                        :skill/action-time-modifier-key
-                                                                        :skill/action-time
-                                                                        :skill/start-action-sound
-                                                                        :skill/cost
-                                                                        :skill/cooldown]})]
-   :dispose! editor.app.dispose/dispose!
-   :render-pipeline [(render.clear-screen/step)
-                     (editor.app.render/render!)]
-   :resize! editor.app.resize/resize!
+  {:listener (gdx.listener/f
+              {
+               :state-var editor.app/state
+               :create-pipeline [(clojure.m.assoc-create/f :ctx/batch create.batch/step)
+                                 (clojure.m.assoc-create/f :ctx/skin create.skin/step)
+                                 (clojure.m.assoc-create/f :ctx/db create.db/step)
+                                 (clojure.m.assoc-create/f :ctx/stage create.stage/step)
+                                 (clojure.pipeline.do/step
+                                  (create.add-stage-actors/f! [[editor.main-window/create]]))
+                                 (clojure.m.assoc-create/f :ctx/textures create.textures/step)
+                                 (editor.app.create/f! {:ctx/property-overview-window editor.property-overview-window/create
+                                                        :ctx/add-component-window editor.map-widget-table.add-component-window/f
+                                                        :ctx/create-component-row editor.map-widget-table.component-row/create
+                                                        :ctx/create-map-widget-table editor.map-widget-table/create
+                                                        :ctx/rebuild-editor-window! editor.rebuild/f!
+                                                        :ctx/property-k-sort-order [:property/id
+                                                                                    :property/pretty-name
+                                                                                    :entity/image
+                                                                                    :entity/animation
+                                                                                    :entity/species
+                                                                                    :creature/level
+                                                                                    :entity/body
+                                                                                    :item/slot
+                                                                                    :projectile/speed
+                                                                                    :projectile/max-range
+                                                                                    :projectile/piercing?
+                                                                                    :skill/action-time-modifier-key
+                                                                                    :skill/action-time
+                                                                                    :skill/start-action-sound
+                                                                                    :skill/cost
+                                                                                    :skill/cooldown]})]
+               :dispose! editor.app.dispose/dispose!
+               :render-pipeline [(render.clear-screen/step)
+                                 (editor.app.render/render!)]
+               :resize! editor.app.resize/resize!})
    :title "!Editor!"
    :windowed-mode {:width 1440 :height 900}
    :foreground-fps 60})
