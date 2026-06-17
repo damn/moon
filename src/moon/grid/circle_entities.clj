@@ -1,5 +1,5 @@
 (ns moon.grid.circle-entities
-  (:require [clojure.math.circle.overlaps :refer [overlaps?]]
+  (:require [gdx.math.circle.overlaps :refer [overlaps?]]
             [moon.body.rectangle :refer [->rectangle]]
             [moon.grid.circle-to-cells :refer [circle->cells]]
             [moon.grid.cells-entities :as cells->entities]))
