@@ -1,6 +1,5 @@
 (ns info.item
   (:require [clojure.string :as str]
-            [game.info :as info]
             info.stats.modifiers))
 
 (defn- valid-item? [item]
@@ -15,7 +14,7 @@
              :entity/image
              :item/slot} keyset))))
 
-(defmethod info/text :info/item [item _ctx]
+(defn info-text [item _ctx]
   (assert (valid-item? item))
   (str/join "\n"
             (remove nil?

@@ -2,10 +2,9 @@
   (:require [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.string :as str]
             [clojure.string.remove-newlines :refer [remove-newlines]]
-            [game.info :as info]
             [game.constants :refer [k->colors k-order]]))
 
-(defmethod info/text :info/entity
+(defn info-text
   [entity {:keys [ctx/k->info] :as ctx}]
   (let [component-info (fn [[k v]]
                          (let [s (if-let [info-fn (k->info k)]
@@ -21,6 +20,6 @@
                            (catch Throwable t
                              (str "*info-error* " k))) ; TODO this try/catch FIXME design error
                       (when (map? v)
-                        (str "\n" (info/text v ctx))))))
+                        (str "\n" (info-text v ctx))))))
          (str/join "\n")
          remove-newlines)))

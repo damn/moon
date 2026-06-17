@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
             [moon.ui.inventory-window :as inventory-window]
             [moon.textures :as textures]
-            [game.info :as info]))
+            [info.item :refer [info-text]]))
 
 (defn f
   [{:keys [ctx/skin
@@ -14,6 +14,6 @@
       :stage/root
       (find-actor "moon.ui.windows.inventory")
       (inventory-window/set-item! cell {:texture-region (textures/texture-region textures (:entity/image item))
-                                        :tooltip-text (info/text item ctx)}
+                                        :tooltip-text (info-text item ctx)}
                                   skin))
   nil)

@@ -1,5 +1,5 @@
 (ns stage.info-window
-  (:require [game.info :as info]
+  (:require [info.entity :refer [info-text]]
             [gdx.scenes.scene2d.ui.info-window :as info-window]))
 
 (defn create
@@ -13,7 +13,7 @@
     :set-label-text! (fn [{:keys [ctx/mouseover-eid]
                            :as ctx}]
                        (if-let [eid mouseover-eid]
-                         (info/text (apply dissoc @eid [:entity/skills
+                         (info-text (apply dissoc @eid [:entity/skills
                                                         :entity/faction
                                                         :active-skill])
                                     ctx)

@@ -1,5 +1,4 @@
-[(clojure.core/require info.entity
-                       info.item
+[(clojure.core/require
                        schema.malli-form
                        entity.state.create.active-skill
                        entity.state.create.stunned
