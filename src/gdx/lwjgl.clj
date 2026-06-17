@@ -2,10 +2,7 @@
   (:require [com.badlogic.gdx.application-listener :refer [application-listener]]
             [com.badlogic.gdx.backends.lwjgl.application :as application]
             [com.badlogic.gdx.backends.lwjgl.application-config :as config]
-            [com.badlogic.gdx.gdx :as gdx]
-            [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
-            [com.badlogic.gdx.utils.os :as os]
-            [lwjgl.system.configuration]))
+            [com.badlogic.gdx.gdx :as gdx]))
 
 (defn application!
   [{:keys [state-var
@@ -14,8 +11,6 @@
            render-pipeline
            resize!]
     :as config}]
-  (when (= (shared-library-loader/os) os/mac-os)
-    (lwjgl.system.configuration/set-glfw-library-name! "glfw_async"))
   (application/create (application-listener
                        (let [state @state-var]
                          {:create! (fn []

@@ -1,11 +1,14 @@
 [(clojure.core/require
                        schema.malli-form
+
                        entity.state.create.active-skill
                        entity.state.create.stunned
                        entity.state.create.player-moving
                        entity.state.create.npc-moving
                        entity.state.create.player-item-on-cursor
+
                        entity.state.draw-ui-view.player-item-on-cursor
+
                        effect.audiovisual
                        effect.target.audiovisual
                        effect.target.convert
@@ -23,4 +26,5 @@
                        effect.target-all
                        effect.target-entity
                        )
+ (gdx.use-glfw-async/f!)
  (gdx.lwjgl/application! #edn/resource "config/application.edn")]
