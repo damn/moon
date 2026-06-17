@@ -27,4 +27,4 @@
                        effect.target-entity
                        )
  (gdx.use-glfw-async/f!)
- (gdx.lwjgl/application! #edn/resource "config/application.edn")]
+ (gdx.application/f! #edn/resource "config/application.edn")]

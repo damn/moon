@@ -1,7 +1,7 @@
 [
  (clojure.core/require schema.malli-form)
  (gdx.use-glfw-async/f!)
- (gdx.lwjgl/application!
+ (gdx.application/f!
   {:state-var levelgen-test.app/state
    :create-pipeline [[levelgen-test.create/f!]]
    :dispose! levelgen-test.dispose/f!

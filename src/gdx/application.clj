@@ -1,10 +1,10 @@
-(ns gdx.lwjgl
+(ns gdx.application
   (:require [com.badlogic.gdx.application-listener :refer [application-listener]]
             [com.badlogic.gdx.backends.lwjgl.application :as application]
             [com.badlogic.gdx.backends.lwjgl.application-config :as config]
             [com.badlogic.gdx.gdx :as gdx]))
 
-(defn application!
+(defn f!
   [{:keys [state-var
            create-pipeline
            dispose!

@@ -13,7 +13,7 @@
                        schema.malli-form)
 
  (gdx.use-glfw-async/f!)
- (gdx.lwjgl/application!
+ (gdx.application/f!
   {:state-var editor.app/state
    :create-pipeline [(clojure.m.assoc-create/f :ctx/batch create.batch/step)
                      (clojure.m.assoc-create/f :ctx/skin create.skin/step)
