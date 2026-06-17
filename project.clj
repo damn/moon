@@ -1,7 +1,6 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 [com.github.damn/clojure.core-ext "6384e58dfc"]
                  [com.github.damn/badlogic "7959c0216c"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
@@ -11,6 +10,7 @@
                  [org.clojure/clojure "1.12.0"]
                  [org.clojure/tools.namespace "1.3.0"]
                  ]
+  :java-source-paths ["java-src"]
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {"dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'start/-main))"]
