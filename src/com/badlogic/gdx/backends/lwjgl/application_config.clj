@@ -1,0 +1,9 @@
+(ns com.badlogic.gdx.backends.lwjgl.application-config
+  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
+
+(defn create
+  [{:keys [title windowed-mode foreground-fps]}]
+  (doto (Lwjgl3ApplicationConfiguration.)
+    (.setTitle title)
+    (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
+    (.setForegroundFPS foreground-fps)))
