@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.graphics.orthographic-camera.calculate-zoom
+(ns gdx.orthographic-camera.calculate-zoom
   (:require [com.badlogic.gdx.graphics.orthographic-camera.get-position :refer [get-position]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-viewport-width :refer [get-viewport-width]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-viewport-height :refer [get-viewport-height]]))

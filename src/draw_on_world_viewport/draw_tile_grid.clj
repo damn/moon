@@ -1,6 +1,6 @@
 (ns draw-on-world-viewport.draw-tile-grid
   (:require [com.badlogic.gdx.graphics.color.float-bits :refer [float-bits]]
-            [com.badlogic.gdx.graphics.orthographic-camera.frustum :refer [frustum]]))
+            [gdx.orthographic-camera.frustum :refer [frustum]]))
 
 (defn f
   [{:keys [ctx/world-viewport]}]

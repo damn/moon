@@ -1,7 +1,7 @@
 (ns render.window-camera-controls
   (:require [com.badlogic.gdx.input.key-just-pressed :as key-just-pressed?]
             [com.badlogic.gdx.input.key-pressed :as key-pressed?]
-            [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [gdx.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [game.constants :refer [zoom-speed]]
             [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
             [com.badlogic.gdx.scenes.scene2d.actor.set-visible :refer [set-visible!]]

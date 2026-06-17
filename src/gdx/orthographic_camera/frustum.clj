@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.graphics.orthographic-camera.frustum
+(ns gdx.orthographic-camera.frustum
   (:require [com.badlogic.gdx.math.vector3 :refer [->clj]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-frustum :refer [get-frustum]]
             [com.badlogic.gdx.math.frustum.get-plane-points :refer [get-plane-points]]))

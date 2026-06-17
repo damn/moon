@@ -1,6 +1,6 @@
 (ns levelgen-test.render
   (:require [com.badlogic.gdx.input.key-pressed :as key-pressed?]
-            [com.badlogic.gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [gdx.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [com.badlogic.gdx.graphics.orthographic-camera.get-position :refer [get-position]]
             [com.badlogic.gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
             [com.badlogic.gdx.scenes.scene2d.stage.draw :refer [draw!]]

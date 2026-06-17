@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.maps.properties.get :refer [props-get]]
             [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
             [com.badlogic.gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
-            [com.badlogic.gdx.graphics.orthographic-camera.calculate-zoom :refer [calculate-zoom]]
+            [gdx.orthographic-camera.calculate-zoom :refer [calculate-zoom]]
             [com.badlogic.gdx.graphics.orthographic-camera.set-zoom :refer [set-zoom!]]))
 
 (defn f!
