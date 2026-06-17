@@ -30,7 +30,11 @@
                                                                         stage.inventory-window/create])
                                                  (stage.player-state-draw/create)
                                                  (stage.player-message-actor/create)]))
-                   (create.tiled-map/step)
+                   (create.tiled-map/step #edn/resource
+                                          ; "config/world_fns/modules.edn"
+                                          "config/world_fns/vampire.edn"
+                                          ; "config/world_fns/uf_caves.edn"
+                                          )
                    (clojure.m.assoc-create/f :ctx/grid create.grid/step)
                    (clojure.m.assoc-create/f :ctx/content-grid create.content-grid/step)
                    [clojure.m.assoc-create/f :ctx/explored-tile-corners create.explored-tile-corners/step]

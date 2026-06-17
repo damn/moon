@@ -9,12 +9,6 @@
 (def ^:dbg-flag show-cell-entities? false)
 (def ^:dbg-flag show-cell-occupied? false)
 
-(def world-fn-file
-  ; "config/world_fns/modules.edn"
-   "config/world_fns/vampire.edn"
-  ; "config/world_fns/uf_caves.edn"
-  )
-
 (def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
 (def spiderweb-duration 5)
 

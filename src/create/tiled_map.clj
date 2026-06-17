@@ -1,15 +1,14 @@
 (ns create.tiled-map
-  (:require [clojure.edn-resource :refer [edn-resource]]
-            [game.constants :refer [world-fn-file]]
-            [moon.creature-tiles]
+  (:require [moon.creature-tiles]
             [moon.db.all-raw :refer [all-raw]]
             [moon.textures :as textures]))
 
 (defn step
   [{:keys [ctx/db
            ctx/textures]
-    :as ctx}]
-  (let [[f params] (edn-resource world-fn-file)
+    :as ctx}
+   world-fn-file]
+  (let [[f params] world-fn-file
         {:keys [tiled-map
                 start-position]} (f
                                   (assoc params
