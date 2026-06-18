@@ -1,11 +1,6 @@
 (ns gdx.listener
   (:require [com.badlogic.gdx.application-listener :refer [application-listener]]))
 
-; TODO
-; 1. move application-listener one up
-; 2. initial context? @ state-var ?
-; 3. dispose/resize pipelined
-
 (defn f
   [{:keys [state-var
            create-pipeline
