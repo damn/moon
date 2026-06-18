@@ -1,6 +1,5 @@
 (ns schema.malli-form.one-to-many
-  (:require [clojure.malli-form :refer [malli-form]]
-            [moon.property.type-id-namespace :refer [type->id-namespace]]))
+  (:require [moon.property.type-id-namespace :refer [type->id-namespace]]))
 
-(defmethod malli-form :s/one-to-many [[_ property-type] _schemas]
+(defn f [[_ property-type] _schemas]
   [:set [:qualified-keyword {:namespace (type->id-namespace property-type)}]])

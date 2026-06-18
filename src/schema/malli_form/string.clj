@@ -1,5 +1,4 @@
-(ns schema.malli-form.string
-  (:require [clojure.malli-form :refer [malli-form]]))
+(ns schema.malli-form.string)
 
-(defmethod malli-form :s/string [_ _schemas]
+(defn f [_ _schemas]
   :string)

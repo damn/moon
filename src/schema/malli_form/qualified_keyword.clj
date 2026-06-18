@@ -1,5 +1,4 @@
-(ns schema.malli-form.qualified-keyword
-  (:require [clojure.malli-form :refer [malli-form]]))
+(ns schema.malli-form.qualified-keyword)
 
-(defmethod malli-form :s/qualified-keyword [[_ & params] _schemas]
+(defn f [[_ & params] _schemas]
   (apply vector :qualified-keyword params))

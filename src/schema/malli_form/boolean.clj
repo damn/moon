@@ -1,5 +1,4 @@
-(ns schema.malli-form.boolean
-  (:require [clojure.malli-form :refer [malli-form]]))
+(ns schema.malli-form.boolean)
 
-(defmethod malli-form :s/boolean [_ _schemas]
+(defn f [_ _schemas]
   :boolean)

@@ -1,5 +1,4 @@
-(ns schema.malli-form.enum
-  (:require [clojure.malli-form :refer [malli-form]]))
+(ns schema.malli-form.enum)
 
-(defmethod malli-form :s/enum [[_ & params] _schemas]
+(defn f [[_ & params] _schemas]
   (apply vector :enum params))

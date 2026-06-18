@@ -1,5 +1,4 @@
-(ns schema.malli-form.sound
-  (:require [clojure.malli-form :refer [malli-form]]))
+(ns schema.malli-form.sound)
 
-(defmethod malli-form :s/sound [_ _schemas]
+(defn f [_ _schemas]
   :string)

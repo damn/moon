@@ -1,0 +1,16 @@
+{
+ :s/animation         schema.malli-form.animation/f
+ :s/boolean           schema.malli-form.boolean/f
+ :s/enum              schema.malli-form.enum/f
+ :s/image             schema.malli-form.image/f
+ :s/map               schema.malli-form.map/f
+ :s/number            schema.malli-form.number/f
+ :s/one-to-many       schema.malli-form.one-to-many/f
+ :s/one-to-one        schema.malli-form.one-to-one/f
+ :s/qualified-keyword schema.malli-form.qualified-keyword/f
+ :s/some              schema.malli-form.some/f
+ :s/sound             schema.malli-form.sound/f
+ :s/string            schema.malli-form.string/f
+ :s/val-max           schema.malli-form.val-max/f
+ :s/vector            schema.malli-form.vector/f
+ }

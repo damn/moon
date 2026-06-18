@@ -1,3 +1,5 @@
+; TODO simply k->schema ???
+; attributes ?
 {
  :property/id [:s/qualified-keyword],
 

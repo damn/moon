@@ -1,6 +1,8 @@
-[(clojure.core/require
-                       schema.malli-form
-
+; TODO use add-methods for other defmethods
+; Then change to k->fn map
+[
+ (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
+ (clojure.core/require
                        entity.state.create.active-skill
                        entity.state.create.stunned
                        entity.state.create.player-moving

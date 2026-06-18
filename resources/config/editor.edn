@@ -1,4 +1,5 @@
 [
+ (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
  (clojure.core/require editor.widget.animation
                        editor.widget.boolean
                        editor.widget.enum
@@ -9,8 +10,7 @@
                        editor.widget.one-to-one
                        editor.widget.sound
                        editor.widget.string
-                       editor.widget.val-max
-                       schema.malli-form)
+                       editor.widget.val-max)
 
  (gdx.use-glfw-async/f!)
  (gdx.application/f!

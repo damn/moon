@@ -1,7 +1,6 @@
-(ns schema.malli-form.number
-  (:require [clojure.malli-form :refer [malli-form]]))
+(ns schema.malli-form.number)
 
-(defmethod malli-form :s/number [[_ predicate] _schemas]
+(defn f [[_ predicate] _schemas]
   (case predicate
     :int     int?
     :nat-int nat-int?

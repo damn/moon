@@ -1,5 +1,5 @@
 [
- (clojure.core/require schema.malli-form)
+ (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
  (gdx.use-glfw-async/f!)
  (gdx.application/f!
   {:listener (gdx.listener/f
