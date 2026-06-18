@@ -1,16 +1,15 @@
 (ns effect.target.spiderweb
-  (:require [game.effect :as effect]
-            [moon.stats.add-mods :as add-mods]
+  (:require [moon.stats.add-mods :as add-mods]
             [game.constants :refer [spiderweb-modifiers spiderweb-duration]]
             [clojure.timer.create :refer [create-timer]]))
 
-(defmethod effect/applicable? :effects.target/spiderweb
+(defn applicable?
   [_ {:keys [effect/target]}]
   ; TODO has stats , for mod-add
   ; e,g, spiderweb on projectile leads to error
   (:entity/stats @target))
 
-(defmethod effect/handle :effects.target/spiderweb
+(defn handle
   [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]
   ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
   (when-not (:entity/temp-modifier @target)

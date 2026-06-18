@@ -1,7 +1,6 @@
-(ns effect.applicable.projectile
-  (:require [game.effect :as effect]))
+(ns effect.applicable.projectile)
 
-(defmethod effect/applicable? :effects/projectile
+(defn f
   [_ {:keys [effect/target-direction]}]
   ; TODO for npcs need target -- anyway only with direction
   ; faction @ source also ?

@@ -4,8 +4,7 @@
             [clojure.math.vector2.direction :as direction]
             [clojure.math.vector2.distance :as distance]
             [clojure.math.vector2.scale :as scale]
-            [moon.raycaster :as raycaster]
-            [game.effect :as effect]))
+            [moon.raycaster :as raycaster]))
 
 (defn- create-double-ray-endpositions
   [[start-x start-y]
@@ -24,7 +23,7 @@
         target2 (add/f [target-x target-y] normal2)]
     [start1,target1,start2,target2]))
 
-(defmethod effect/useful? :effects/projectile
+(defn f
   [[_ {:keys [projectile/max-range] :as projectile}]
    {:keys [effect/source effect/target]}
    {:keys [ctx/raycaster]}]

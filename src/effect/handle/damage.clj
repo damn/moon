@@ -1,6 +1,5 @@
 (ns effect.handle.damage
   (:require [clojure.rand.int-between :refer [rand-int-between]]
-            [game.effect :as effect]
             [moon.stats.get-stat-value :refer [get-stat-value]]
             [moon.stats.get-hitpoints :as get-hitpoints]
             [moon.stats.calc-damage :as calc-damage]))
@@ -22,7 +21,7 @@
    (effective-armor-save source* target*))
  )
 
-(defmethod effect/handle :effects.target/damage
+(defn f
   [[_ damage] {:keys [effect/source effect/target]} _ctx]
   (let [source* @source
         target* @target

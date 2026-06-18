@@ -1,14 +1,13 @@
-(ns effect.target.audiovisual
-  (:require [game.effect :as effect]))
+(ns effect.target.audiovisual)
 
-(defmethod effect/applicable? :effects.target/audiovisual
+(defn applicable?
   [_ {:keys [effect/target]}]
   target)
 
-(defmethod effect/useful? :effects.target/audiovisual
+(defn useful?
   [_ _effect-ctx _ctx]
   false)
 
-(defmethod effect/handle :effects.target/audiovisual
+(defn handle
   [[_ audiovisual] {:keys [effect/target]} _ctx]
   [[:tx/audiovisual (:body/position (:entity/body @target)) audiovisual]])

@@ -1,6 +1,9 @@
 ; TODO use add-methods for other defmethods
-; Then change to k->fn map
+
+; Then change to k->fn map (and remove k first param)
+
 ; defmulti/add-method/defmethod == global side effect
+
 [
  (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
  (clojure.add-methods/f! game.state/create
@@ -17,24 +20,53 @@
                           :player-item-on-cursor entity.state.draw-ui-view.player-item-on-cursor/f
                           }
                          )
- (clojure.core/require
-                       effect.audiovisual
-                       effect.target.audiovisual
-                       effect.target.convert
-                       effect.applicable.damage
-                       effect.handle.damage
-                       effect.target.kill
-                       effect.target.melee-damage
-                       effect.target.spiderweb
-                       effect.target.stun
-                       effect.applicable.spawn
-                       effect.handle.spawn
-                       effect.applicable.projectile
-                       effect.handle.projectile
-                       effect.useful.projectile
-                       effect.target-all
-                       effect.target-entity
-                       )
+ (clojure.add-methods/f! game.effect/applicable?
+                         {
+                          :effects/audiovisual effect.applicable.audiovisual/f
+                          :effects.target/damage effect.applicable.damage/f
+                          :effects/projectile effect.applicable.projectile/f
+                          :effects/spawn effect.applicable.spawn/f
+                          :effects.target/audiovisual effect.target.audiovisual/applicable?
+                          :effects.target/convert effect.target.convert/applicable?
+                          :effects.target/kill effect.target.kill/applicable?
+                          :effects.target/melee-damage effect.target.melee-damage/applicable?
+                          :effects.target/spiderweb effect.target.spiderweb/applicable?
+                          :effects.target/stun effect.target.stun/applicable?
+                          :effects/target-all effect.target-all/applicable?
+                          :effects/target-entity effect.target-entity/applicable?
+                          }
+                         )
+ (clojure.add-methods/f! game.effect/useful?
+                         {
+                          :effects/audiovisual effect.audiovisual/useful?
+                          :effects.target/audiovisual effect.target.audiovisual/useful?
+                          :effects/projectile effect.useful.projectile/f
+                          :effects/target-all effect.target-all/useful?
+                          :effects/target-entity effect.target-entity/useful?
+                          }
+                         )
+ (clojure.add-methods/f! game.effect/handle
+                         {
+                          :effects/target-all effect.target-all/handle
+                          :effects/target-entity effect.target-entity/handle
+                          :effects/audiovisual effect.audiovisual/handle
+                          :effects.target/audiovisual effect.target.audiovisual/handle
+                          :effects.target/convert effect.target.convert/handle
+                          :effects.target/damage effect.handle.damage/f
+                          :effects.target/kill effect.target.kill/handle
+                          :effects.target/melee-damage effect.target.melee-damage/handle
+                          :effects.target/spiderweb effect.target.spiderweb/handle
+                          :effects.target/stun effect.target.stun/handle
+                          :effects/spawn effect.handle.spawn/f
+                          :effects/projectile effect.handle.projectile/f
+                          }
+                         )
+ (clojure.add-methods/f! game.effect/render
+                         {
+                          :effects/target-all effect.target-all/render
+                          :effects/target-entity effect.target-entity/render
+                          }
+                         )
  (gdx.use-glfw-async/f!)
  (gdx.application/f!
   {:listener (gdx.listener/f #edn/resource "config/listener.edn")

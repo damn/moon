@@ -9,10 +9,10 @@
 (defn- melee-damage-effect [entity]
   [:effects.target/damage (entity->melee-damage entity)])
 
-(defmethod effect/applicable? :effects.target/melee-damage
+(defn applicable?
   [_ {:keys [effect/source] :as effect-ctx}]
   (effect/applicable? (melee-damage-effect @source) effect-ctx))
 
-(defmethod effect/handle :effects.target/melee-damage
+(defn handle
   [_ {:keys [effect/source] :as effect-ctx} ctx]
   (effect/handle (melee-damage-effect @source) effect-ctx ctx))

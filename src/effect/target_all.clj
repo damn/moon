@@ -1,6 +1,5 @@
 (ns effect.target-all
-  (:require [game.effect :as effect]
-            [moon.raycaster :as raycaster]))
+  (:require [moon.raycaster :as raycaster]))
 
 (comment
  ; TODO applicable targets? e.g. projectiles/effect s/???item entiteis ??? check
@@ -21,15 +20,15 @@
        (filter #(raycaster/line-of-sight? raycaster entity @%))
        (remove #(:entity/player? @%))))
 
-(defmethod effect/applicable? :effects/target-all
+(defn applicable?
   [_ _] ; TODO check ..
   true)
 
-(defmethod effect/useful? :effects/target-all
+(defn useful?
   [_ _effect-ctx _ctx]
   false)
 
-(defmethod effect/handle :effects/target-all
+(defn handle
   [[_ {:keys [entity-effects]}]
    {:keys [effect/source]}
    {:keys [ctx/active-entities
@@ -49,7 +48,7 @@
                 :effect/target target}
                entity-effects]]))))
 
-(defmethod effect/render :effects/target-all
+(defn render
   [_
    {:keys [effect/source]}
    {:keys [ctx/active-entities

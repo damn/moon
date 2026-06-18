@@ -1,11 +1,10 @@
-(ns effect.target.kill
-  (:require [game.effect :as effect]))
+(ns effect.target.kill)
 
-(defmethod effect/applicable? :effects.target/kill
+(defn applicable?
   [_ {:keys [effect/target]}]
   (and target
        (:entity/fsm @target)))
 
-(defmethod effect/handle :effects.target/kill
+(defn handle
   [_ {:keys [effect/target]} _ctx]
   [[:tx/event target :kill]])

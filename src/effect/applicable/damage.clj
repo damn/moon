@@ -1,7 +1,6 @@
-(ns effect.applicable.damage
-  (:require [game.effect :as effect]))
+(ns effect.applicable.damage)
 
-(defmethod effect/applicable? :effects.target/damage
+(defn f
   [_ {:keys [effect/target]}]
   (and target
        #_(:stats/hp @target))) ; not exist anymore ... bugfix .... -> is 'creature?'

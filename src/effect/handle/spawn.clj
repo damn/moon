@@ -1,7 +1,6 @@
-(ns effect.handle.spawn
-  (:require [game.effect :as effect]))
+(ns effect.handle.spawn)
 
-(defmethod effect/handle :effects/spawn
+(defn f
   [[_ {:keys [property/id] :as property}]
    {:keys [effect/source effect/target-position]}
    _ctx]
