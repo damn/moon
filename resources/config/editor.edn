@@ -2,6 +2,7 @@
  (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
  (clojure.add-methods/f! editor.widget/create
                          {
+                          :default editor.widget.default/create
                           :s/animation editor.widget.animation/create
                           :s/boolean editor.widget.boolean/create
                           :s/enum editor.widget.enum/create
@@ -17,6 +18,7 @@
                          )
  (clojure.add-methods/f! editor.widget/value
                          {
+                          :default editor.widget.default/value
                           :s/boolean editor.widget.boolean/value
                           :s/enum editor.widget.enum/value
                           :s/map editor.widget.map/value
