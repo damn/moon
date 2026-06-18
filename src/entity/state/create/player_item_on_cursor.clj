@@ -1,6 +1,5 @@
-(ns entity.state.create.player-item-on-cursor
-  (:require [game.state :as state]))
+(ns entity.state.create.player-item-on-cursor)
 
-(defmethod state/create :player-item-on-cursor
+(defn f
   [[_k item] _eid _ctx]
   {:item item})

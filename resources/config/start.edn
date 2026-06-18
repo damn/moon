@@ -2,13 +2,16 @@
 ; Then change to k->fn map
 [
  (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
+ (clojure.add-methods/f! game.state/create
+                         {
+                          :active-skill          entity.state.create.active-skill/f
+                          :stunned               entity.state.create.stunned/f
+                          :player-moving         entity.state.create.player-moving/f
+                          :npc-moving            entity.state.create.npc-moving/f
+                          :player-item-on-cursor entity.state.create.player-item-on-cursor/f
+                          }
+                         )
  (clojure.core/require
-                       entity.state.create.active-skill
-                       entity.state.create.stunned
-                       entity.state.create.player-moving
-                       entity.state.create.npc-moving
-                       entity.state.create.player-item-on-cursor
-
                        entity.state.draw-ui-view.player-item-on-cursor
 
                        effect.audiovisual
