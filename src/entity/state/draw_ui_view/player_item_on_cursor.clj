@@ -1,9 +1,8 @@
 (ns entity.state.draw-ui-view.player-item-on-cursor
   (:require [game.ctx.mouseover-actor :refer [mouseover-actor]]
-            [game.state :as state]
             [moon.textures :as textures]))
 
-(defmethod state/draw-ui-view :player-item-on-cursor
+(defn f
   [_ eid {:keys [ctx/textures
                  ctx/ui-mouse-position]
           :as ctx}]
