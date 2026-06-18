@@ -15,10 +15,7 @@
    ^floats verts
    ^Batch batch
    num-vertices]
-  (let [flip-x (.getFlipHorizontally cell)
-        flip-y (.getFlipVertically cell)
-        rotations (.getRotation cell)
-        ^TextureRegion region (.getTextureRegion tile)
+  (let [^TextureRegion region (.getTextureRegion tile)
         x1 (+ x (* (.getOffsetX tile) unit-scale))
         y1 (+ y (* (.getOffsetY tile) unit-scale))
         x2 (+ x1 (* (.getRegionWidth region) unit-scale))
@@ -51,61 +48,6 @@
     (aset-float verts Batch/C4 color21)
     (aset-float verts Batch/U4 u2)
     (aset-float verts Batch/V4 v1)
-    (when flip-x
-      (let [tmp (aget verts Batch/U1)]
-        (aset-float verts Batch/U1 (aget verts Batch/U3))
-        (aset-float verts Batch/U3 tmp))
-      (let [tmp (aget verts Batch/U2)]
-        (aset-float verts Batch/U2 (aget verts Batch/U4))
-        (aset-float verts Batch/U4 tmp)))
-    (when flip-y
-      (let [tmp (aget verts Batch/V1)]
-        (aset-float verts Batch/V1 (aget verts Batch/V3))
-        (aset-float verts Batch/V3 tmp))
-      (let [tmp (aget verts Batch/V2)]
-        (aset-float verts Batch/V2 (aget verts Batch/V4))
-        (aset-float verts Batch/V4 tmp)))
-    (case rotations
-      TiledMapTileLayer$Cell/ROTATE_90
-      (do
-       (let [tmp (aget verts Batch/V1)]
-         (aset-float verts Batch/V1 (aget verts Batch/V2))
-         (aset-float verts Batch/V2 (aget verts Batch/V3))
-         (aset-float verts Batch/V3 (aget verts Batch/V4))
-         (aset-float verts Batch/V4 tmp))
-
-       (let [tmp (aget verts Batch/U1)]
-         (aset-float verts Batch/U1 (aget verts Batch/U2))
-         (aset-float verts Batch/U2 (aget verts Batch/U3))
-         (aset-float verts Batch/U3 (aget verts Batch/U4))
-         (aset-float verts Batch/U4 tmp)))
-      TiledMapTileLayer$Cell/ROTATE_180
-      (do
-       (let [tmp (aget verts Batch/U1)]
-         (aset-float verts Batch/U1 (aget verts Batch/U3))
-         (aset-float verts Batch/U3 tmp))
-       (let [tmp (aget verts Batch/U2)]
-         (aset-float verts Batch/U2 (aget verts Batch/U4))
-         (aset-float verts Batch/U4 tmp))
-       (let [tmp (aget verts Batch/V1)]
-         (aset-float verts Batch/V1 (aget verts Batch/V3))
-         (aset-float verts Batch/V3 tmp))
-       (let [tmp (aget verts Batch/V2)]
-         (aset-float verts Batch/V2 (aget verts Batch/V4))
-         (aset-float verts Batch/V4 tmp)))
-      TiledMapTileLayer$Cell/ROTATE_270
-      (do
-       (let [tmp (aget verts Batch/V1)]
-         (aset-float verts Batch/V1 (aget verts Batch/V4))
-         (aset-float verts Batch/V4 (aget verts Batch/V3))
-         (aset-float verts Batch/V3 (aget verts Batch/V2))
-         (aset-float verts Batch/V2 tmp))
-       (let [tmp (aget verts Batch/U1)]
-         (aset-float verts Batch/U1 (aget verts Batch/U4))
-         (aset-float verts Batch/U4 (aget verts Batch/U3))
-         (aset-float verts Batch/U3 (aget verts Batch/U2))
-         (aset-float verts Batch/U2 tmp)))
-      nil)
     (.draw batch
            (.getTexture region)
            ^floats verts
