@@ -1,13 +1,12 @@
 (ns editor.widget.boolean
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
-            [editor.widget :as widget]))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]))
 
-(defmethod widget/create :s/boolean
+(defn create
   [_ checked? {:keys [ctx/skin]}]
   (check-box/create
    {:skin skin
     :checked? checked?}))
 
-(defmethod widget/value :s/boolean
+(defn value
   [_ widget _schemas]
   (check-box/checked? widget))

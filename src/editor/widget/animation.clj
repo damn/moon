@@ -1,11 +1,10 @@
 (ns editor.widget.animation
-  (:require [editor.widget :as widget]
-            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
 
-(defmethod widget/create :s/animation
+(defn create
   [_ animation {:keys [ctx/textures]}]
   (table/create
    {:table/cell-defaults {:pad 1}

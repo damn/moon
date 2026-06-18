@@ -6,7 +6,7 @@
             [moon.schemas.optional-keyset :refer [optional-keyset]]
             [moon.schemas.optional :refer [optional?]]))
 
-(defmethod widget/create :s/map
+(defn create
   [schema
    m
    {:keys [ctx/db
@@ -29,6 +29,6 @@
       :opt? (seq (set/difference (optional-keyset schemas schema)
                                  (set (keys m))))})))
 
-(defmethod widget/value :s/map
+(defn value
   [_ table schemas]
   (get-value/f table schemas))

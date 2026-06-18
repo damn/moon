@@ -1,6 +1,5 @@
 (ns editor.widget.image
   (:require [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [editor.widget :as widget]
             [gdx.scenes.scene2d.ui :as ui]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
@@ -16,7 +15,7 @@
       #_[(text-button/create file
                              (fn [_actor _ctx]))]))
 
-(defmethod widget/create :s/image
+(defn create
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
   (image-button/create
