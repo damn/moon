@@ -2,7 +2,7 @@
   (:require [clojure.m.assoc-ks :refer [assoc-ks]]
             [clojure.grid2d.get-nads :refer [get-nads]]
             [clojure.grid2d.cells :refer [->cells]]
-            [clojure.grid2d.nads.nad-corner :as nad-corner?]))
+            [clojure.grid2d.is-nad-corner :as nad-corner?]))
 
 (defn- get-tiles-needing-fix-for-nad [grid [[fromx fromy] [tox toy]]]
   (let [xstep (- tox fromx)
