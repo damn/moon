@@ -6,7 +6,7 @@
             [moon.stats.get-hitpoints :as get-hitpoints]
             [moon.stats.get-mana :as get-mana]
             [moon.textures :as textures]
-            [moon.val-max :as val-max]))
+            [moon.val-max.ratio :as ratio]))
 
 (defn create
   [{:keys [ctx/textures
@@ -31,7 +31,7 @@
                              [:draw/texture-region
                               (textures/texture-region textures
                                                        {:image/file content-file
-                                                        :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
+                                                        :image/bounds [0 0 (* rahmenw (ratio/f minmaxval)) rahmenh]})
                               [x y]]
                              [:draw/text {:text (str (number/readable (minmaxval 0))
                                                      "/"

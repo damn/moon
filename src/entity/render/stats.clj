@@ -1,11 +1,11 @@
 (ns entity.render.stats
   (:require [moon.stats.get-hitpoints :as get-hitpoints]
-            [moon.val-max :as val-max]))
+            [moon.val-max.ratio :as ratio]))
 
 (defn f
   [_ entity {:keys [ctx/colors
                     ctx/world-unit-scale]}]
-  (let [ratio (val-max/ratio (get-hitpoints/f (:entity/stats entity)))]
+  (let [ratio (ratio/f (get-hitpoints/f (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [body/position body/width body/height]} (:entity/body entity)
             [x y] position
