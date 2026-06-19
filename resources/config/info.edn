@@ -1,0 +1,61 @@
+{
+ :k->fn {
+         :creature/level info.creature.level/f
+         :entity/stats info.entity.stats/f
+         :effects.target/convert info.effects.target.convert/f
+         :effects.target/damage info.effects.target.damage/f
+         :effects.target/kill info.effects.target.kill/f
+         :effects.target/melee-damage info.effects.target.melee-damage/f
+         :effects.target/spiderweb info.effects.target.spiderweb/f
+         :effects.target/stun info.effects.target.stun/f
+         :effects/spawn info.effects.spawn/f
+         :effects/target-all info.effects.target-all/f
+         :entity/delete-after-duration info.entity.delete-after-duration/f
+         :entity/faction info.entity.faction/f
+         :entity/fsm info.entity.fsm/f
+         :stats/modifiers info.stats.modifiers/info
+         :entity/skills info.entity.skills/f
+         :entity/species info.entity.species/f
+         :entity/temp-modifier info.entity.temp-modifier/f
+         :projectile/piercing? info.projectile.piercing/f
+         :property/pretty-name info.property.pretty-name/f
+         :skill/cooling-down? info.skill.cooling-down/f
+         :skill/action-time info.skill.action-time/f
+         :skill/action-time-modifier-key info.skill.action-time-modifier-key/f
+         :skill/cooldown info.skill.cooldown/f
+         :skill/cost info.skill.cost/f
+         :maxrange info.projectile.maxrange/f
+         }
+ :k-order [
+           :property/pretty-name
+           :skill/action-time-modifier-key
+           :skill/action-time
+           :skill/cooldown
+           :skill/cost
+           :skill/effects
+           :entity/species
+           :creature/level
+           :entity/stats
+           :entity/delete-after-duration
+           :projectile/piercing?
+           :entity/projectile-collision
+           :maxrange
+           :entity-effects
+           ]
+ :k->colors {
+             :property/pretty-name "PRETTY_NAME"
+             :stats/modifiers "CYAN"
+             :maxrange "LIGHT_GRAY"
+             :creature/level "GRAY"
+             :projectile/piercing? "LIME"
+             :skill/action-time-modifier-key "VIOLET"
+             :skill/action-time "GOLD"
+             :skill/cooldown "SKY"
+             :skill/cost "CYAN"
+             :entity/delete-after-duration "LIGHT_GRAY"
+             :entity/faction "SLATE"
+             :entity/fsm "YELLOW"
+             :entity/species "LIGHT_GRAY"
+             :entity/temp-modifier "LIGHT_GRAY"
+             }
+ }

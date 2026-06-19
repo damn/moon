@@ -2,7 +2,7 @@
  [:ctx/draw-fns :some]
  [:ctx/fsms :some]
  [:ctx/txs-fn-map :some]
- [:ctx/k->info :some]
+ [:ctx/info :some]
  [:ctx/k->tick :some]
  [:ctx/k->render :some]
  [:ctx/k->create :some]

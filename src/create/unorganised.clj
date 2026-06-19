@@ -9,7 +9,7 @@
 
 (defn step [ctx]
   (assoc ctx
-         :ctx/k->info (edn-resource "config/k->info.edn")
+         :ctx/info (edn-resource "config/info.edn")
          :ctx/fsms {:npc (load-fsm "config/npc-fsm.edn")
                     :player (load-fsm "config/player-fsm.edn")}
          :ctx/txs-fn-map (edn-resource "config/txs-fn-map.edn")

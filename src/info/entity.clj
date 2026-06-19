@@ -1,13 +1,15 @@
 (ns info.entity
   (:require [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.string :as str]
-            [clojure.string.remove-newlines :refer [remove-newlines]]
-            [game.constants :refer [k->colors k-order]]))
+            [clojure.string.remove-newlines :refer [remove-newlines]]))
 
 (defn info-text
-  [entity {:keys [ctx/k->info] :as ctx}]
-  (let [component-info (fn [[k v]]
-                         (let [s (if-let [info-fn (k->info k)]
+  [entity {:keys [ctx/info] :as ctx}]
+  (let [{:keys [k->fn
+                k-order
+                k->colors]} info
+        component-info (fn [[k v]]
+                         (let [s (if-let [info-fn (k->fn k)]
                                    (do
                                     (str #_k #_" - " (info-fn v ctx))))]
                            (if-let [color (k->colors k)]
