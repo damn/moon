@@ -1,25 +1,8 @@
 (ns effects-target.handle.damage
   (:require [clojure.rand.int-between :refer [rand-int-between]]
-            [moon.stats.get-stat-value :refer [get-stat-value]]
+            [moon.stats.effective-armor-save :as effective-armor-save]
             [moon.stats.get-hitpoints :as get-hitpoints]
             [moon.stats.calc-damage :as calc-damage]))
-
-; not in stats because projectile as source doesnt have stats
-; FIXME I don't see it triggering with 10 armor save ... !
-(defn- effective-armor-save [source-stats target-stats]
-  (max (- (or (get-stat-value source-stats :stats/armor-save)   0)
-          (or (get-stat-value target-stats :stats/armor-pierce) 0))
-       0))
-
-(comment
-
- (effective-armor-save {} {:stats/modifiers {:modifiers/armor-save {:op/inc 10}}
-                           :stats/armor-save 0})
- ; broken
- (let [source* {:stats/armor-pierce 0.4}
-       target* {:stats/armor-save   0.5}]
-   (effective-armor-save source* target*))
- )
 
 (defn f
   [[_ damage] {:keys [effect/source effect/target]} _ctx]
@@ -36,8 +19,8 @@
 
      (and (:entity/stats source*)
           (:entity/stats target*)
-          (< (rand) (effective-armor-save (:entity/stats source*)
-                                          (:entity/stats target*))))
+          (< (rand) (effective-armor-save/f (:entity/stats source*)
+                                            (:entity/stats target*))))
      [[:tx/add-text-effect target "[WHITE]ARMOR" 0.3]]
 
      :else
