@@ -1,4 +1,4 @@
-(ns effect.applicable.spawn)
+(ns effects.applicable.spawn)
 
 (defn f
   [_ {:keys [effect/source effect/target-position]}]

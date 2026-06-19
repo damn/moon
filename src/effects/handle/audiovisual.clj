@@ -1,9 +1,5 @@
-(ns effect.audiovisual)
+(ns effects.handle.audiovisual)
 
-(defn useful?
-  [_ _effect-ctx _ctx]
-  false)
-
-(defn handle
+(defn f
   [[_ audiovisual] {:keys [effect/target-position]} _ctx]
   [[:tx/audiovisual target-position audiovisual]])

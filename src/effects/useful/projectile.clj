@@ -1,4 +1,4 @@
-(ns effect.useful.projectile
+(ns effects.useful.projectile
   (:require [clojure.math.vector2.normal-vectors :as normal-vectors]
             [clojure.math.vector2.add :as add]
             [clojure.math.vector2.direction :as direction]

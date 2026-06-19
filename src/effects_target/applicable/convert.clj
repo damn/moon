@@ -1,12 +1,8 @@
-(ns effect.target.convert
+(ns effects-target.applicable.convert
   (:require [moon.faction :as faction]))
 
-(defn applicable?
+(defn f
   [_ {:keys [effect/source effect/target]}]
   (and target
        (= (:entity/faction @target)
           (faction/enemy (:entity/faction @source)))))
-
-(defn handle
-  [_ {:keys [effect/source effect/target]} _ctx]
-  [[:tx/assoc target :entity/faction (:entity/faction @source)]])

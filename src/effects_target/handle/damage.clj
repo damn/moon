@@ -1,4 +1,4 @@
-(ns effect.handle.damage
+(ns effects-target.handle.damage
   (:require [clojure.rand.int-between :refer [rand-int-between]]
             [moon.stats.get-stat-value :refer [get-stat-value]]
             [moon.stats.get-hitpoints :as get-hitpoints]

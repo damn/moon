@@ -22,49 +22,52 @@
                          )
  (clojure.add-methods/f! game.effect/applicable?
                          {
-                          :effects/audiovisual effect.applicable.audiovisual/f
-                          :effects.target/damage effect.applicable.damage/f
-                          :effects/projectile effect.applicable.projectile/f
-                          :effects/spawn effect.applicable.spawn/f
-                          :effects.target/audiovisual effect.target.audiovisual/applicable?
-                          :effects.target/convert effect.target.convert/applicable?
-                          :effects.target/kill effect.target.kill/applicable?
-                          :effects.target/melee-damage effect.target.melee-damage/applicable?
-                          :effects.target/spiderweb effect.target.spiderweb/applicable?
-                          :effects.target/stun effect.target.stun/applicable?
-                          :effects/target-all effect.target-all/applicable?
-                          :effects/target-entity effect.target-entity/applicable?
+                          :effects/audiovisual   effects.applicable.audiovisual/f
+                          :effects/projectile    effects.applicable.projectile/f
+                          :effects/spawn         effects.applicable.spawn/f
+                          :effects/target-all    effects.applicable.target-all/f
+                          :effects/target-entity effects.applicable.target-entity/f
+
+                          :effects.target/audiovisual  effects-target.applicable.audiovisual/f
+                          :effects.target/convert      effects-target.applicable.convert/f
+                          :effects.target/damage       effects-target.applicable.damage/f
+                          :effects.target/kill         effects-target.applicable.kill/f
+                          :effects.target/melee-damage effects-target.applicable.melee-damage/f
+                          :effects.target/spiderweb    effects-target.applicable.spiderweb/f
+                          :effects.target/stun         effects-target.applicable.stun/f
                           }
                          )
  (clojure.add-methods/f! game.effect/useful?
                          {
-                          :effects/audiovisual effect.audiovisual/useful?
-                          :effects.target/audiovisual effect.target.audiovisual/useful?
-                          :effects/projectile effect.useful.projectile/f
-                          :effects/target-all effect.target-all/useful?
-                          :effects/target-entity effect.target-entity/useful?
+                          :effects/audiovisual   effects.useful.audiovisual/f
+                          :effects/projectile    effects.useful.projectile/f
+                          :effects/target-all    effects.useful.target-all/f
+                          :effects/target-entity effects.useful.target-entity/f
+
+                          :effects.target/audiovisual effects-target.useful.audiovisual/f
                           }
                          )
  (clojure.add-methods/f! game.effect/handle
                          {
-                          :effects/target-all effect.target-all/handle
-                          :effects/target-entity effect.target-entity/handle
-                          :effects/audiovisual effect.audiovisual/handle
-                          :effects.target/audiovisual effect.target.audiovisual/handle
-                          :effects.target/convert effect.target.convert/handle
-                          :effects.target/damage effect.handle.damage/f
-                          :effects.target/kill effect.target.kill/handle
-                          :effects.target/melee-damage effect.target.melee-damage/handle
-                          :effects.target/spiderweb effect.target.spiderweb/handle
-                          :effects.target/stun effect.target.stun/handle
-                          :effects/spawn effect.handle.spawn/f
-                          :effects/projectile effect.handle.projectile/f
+                          :effects/audiovisual   effects.handle.audiovisual/f
+                          :effects/projectile    effects.handle.projectile/f
+                          :effects/spawn         effects.handle.spawn/f
+                          :effects/target-all    effects.handle.target-all/f
+                          :effects/target-entity effects.handle.target-entity/f
+
+                          :effects.target/audiovisual  effects-target.handle.audiovisual/f
+                          :effects.target/convert      effects-target.handle.convert/f
+                          :effects.target/damage       effects-target.handle.damage/f
+                          :effects.target/kill         effects-target.handle.kill/f
+                          :effects.target/melee-damage effects-target.handle.melee-damage/f
+                          :effects.target/spiderweb    effects-target.handle.spiderweb/f
+                          :effects.target/stun         effects-target.handle.stun/f
                           }
                          )
  (clojure.add-methods/f! game.effect/render
                          {
-                          :effects/target-all effect.target-all/render
-                          :effects/target-entity effect.target-entity/render
+                          :effects/target-all    effects.render.target-all/f
+                          :effects/target-entity effects.render.target-entity/f
                           }
                          )
  (gdx.use-glfw-async/f!)

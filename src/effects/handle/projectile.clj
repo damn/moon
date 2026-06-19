@@ -1,4 +1,4 @@
-(ns effect.handle.projectile
+(ns effects.handle.projectile
   (:require [clojure.math.vector2.add :as add]
             [clojure.math.vector2.scale :as scale]))
 
