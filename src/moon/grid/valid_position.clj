@@ -2,13 +2,13 @@
   (:require [clojure.grid2d.get-cells :refer [get-cells]]
             [moon.body.touched-tiles :refer [touched-tiles]]
             [moon.body.overlaps :refer [overlaps?]]
-            [moon.cell :as cell]
+            [moon.cell.is-blocked :as blocked?]
             [moon.grid.cells-entities :as cells->entities]))
 
 (defn valid-position? [g2d {:keys [body/z-order] :as body} entity-id]
   (assert (:body/collides? body))
   (let [cells* (into [] (map deref) (get-cells g2d (touched-tiles body)))]
-    (and (not-any? #(cell/blocked? % z-order) cells*)
+    (and (not-any? #(blocked?/f % z-order) cells*)
          (->> cells*
               cells->entities/f
               (not-any? (fn [other-entity]

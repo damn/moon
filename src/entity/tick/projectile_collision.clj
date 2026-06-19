@@ -1,7 +1,7 @@
 (ns entity.tick.projectile-collision
   (:require [moon.body.overlaps :refer [overlaps?]]
             [moon.body.touched-tiles :refer [touched-tiles]]
-            [moon.cell :as cell]
+            [moon.cell.is-blocked :as blocked?]
             [moon.grid.cells-entities :as cells->entities]
             [clojure.grid2d.get-cells :refer [get-cells]]))
 
@@ -19,7 +19,7 @@
                                                    (:entity/body @%)))
                                   (cells->entities/f cells*)))
         destroy? (or (and hit-entity (not piercing?))
-                     (some #(cell/blocked? % (:body/z-order (:entity/body entity))) cells*))]
+                     (some #(blocked?/f % (:body/z-order (:entity/body entity))) cells*))]
     [(when destroy?
        [:tx/mark-destroyed eid])
      (when hit-entity

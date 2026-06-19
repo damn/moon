@@ -1,12 +1,5 @@
-(ns moon.cell)
-
-(defn blocked? [{:keys [movement]} z-order]
-  (case movement
-    :none true
-    :air (case z-order
-           :z-order/flying false
-           :z-order/ground true)
-    :all false))
+(ns moon.cell
+  (:require [moon.cell.is-blocked :as blocked?]))
 
 (defn blocks-vision? [{:keys [movement]}]
   (= movement :none))
@@ -21,7 +14,7 @@
   (-> this faction :distance))
 
 (defn pf-blocked? [this]
-  (blocked? this :z-order/ground))
+  (blocked?/f this :z-order/ground))
 
 (defrecord FieldData [distance eid])
 
