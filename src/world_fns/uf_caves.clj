@@ -1,26 +1,9 @@
 (ns world-fns.uf-caves
   (:require [com.badlogic.gdx.graphics.texture :as texture]
-            [clojure.grid2d.cells :refer [->cells]]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]
+            [world-fns.uf-caves.initial-grid]
+            [world-fns.uf-caves.fix-nads]
             [world-fns.uf-caves.last-steps]))
-
-(defn- initial-grid
-  [{:keys [initial-grid-create-fn
-           size
-           cave-style
-           random]
-    :as level}]
-  (let [{:keys [start grid]} (initial-grid-create-fn random size size cave-style)]
-    (assert (= #{:wall :ground} (set (->cells grid))))
-    (assoc level
-           :level/start start
-           :level/grid grid)))
-
-(defn- fix-nads
-  [{:keys [level/grid]
-    :as level}]
-  (let [grid ((:grid2d-fix-nads-fn level) grid)]
-    (assoc level :level/grid grid)))
 
 (defn create
   [{:keys [initial-grid-create-fn
@@ -55,6 +38,6 @@
            :level/spawn-rate spawn-rate
            :level/scaling scaling
            :level/creature-properties creature-properties}
-          [initial-grid
-           fix-nads
+          [world-fns.uf-caves.initial-grid/f
+           world-fns.uf-caves.fix-nads/f
            world-fns.uf-caves.last-steps/step]))
