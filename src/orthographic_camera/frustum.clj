@@ -1,6 +1,6 @@
 (ns orthographic-camera.frustum
   (:require [clojure.math.vector3.clojurize :as clojurize]
-            [clojure.graphics.orthographic-camera.get-frustum :refer [get-frustum]]
+            [clojure.orthographic-camera.get-frustum :refer [get-frustum]]
             [clojure.math.frustum.get-plane-points :refer [get-plane-points]]))
 
 (defn frustum [camera]

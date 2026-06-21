@@ -1,7 +1,7 @@
 (ns render.draw-on-world-viewport
   (:require [game.ctx.draw :refer [draw!]]
-            [clojure.graphics.g2d.batch :as batch]
-            [clojure.graphics.orthographic-camera.get-combined :refer [get-combined]]
+            [clojure.batch :as batch]
+            [clojure.orthographic-camera.get-combined :refer [get-combined]]
             [moon.shape-drawer.default-line-width :refer [default-line-width]]
             [moon.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
 

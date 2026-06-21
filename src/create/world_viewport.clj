@@ -1,5 +1,5 @@
 (ns create.world-viewport
-  (:require [clojure.graphics.orthographic-camera :as camera]
+  (:require [clojure.orthographic-camera :as camera]
             [clojure.utils.fit-viewport :as fit-viewport]))
 
 (defn step

@@ -1,9 +1,9 @@
 (ns levelgen-test.show-whole-map
   (:require [clojure.maps.properties.get :refer [props-get]]
             [clojure.maps.get-properties :refer [get-properties]]
-            [clojure.graphics.orthographic-camera.set-position :refer [set-position!]]
+            [clojure.orthographic-camera.set-position :refer [set-position!]]
             [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
-            [clojure.graphics.orthographic-camera.set-zoom :refer [set-zoom!]]))
+            [clojure.orthographic-camera.set-zoom :refer [set-zoom!]]))
 
 (defn f!
   [{:keys [ctx/camera

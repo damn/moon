@@ -1,5 +1,5 @@
-(ns clojure.graphics.orthographic-camera.set-position
-  (:require [clojure.graphics.orthographic-camera.update :refer [update!]])
+(ns clojure.orthographic-camera.set-position
+  (:require [clojure.orthographic-camera.update :refer [update!]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn set-position! [^OrthographicCamera camera [x y]]

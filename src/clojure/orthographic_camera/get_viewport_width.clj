@@ -1,4 +1,4 @@
-(ns clojure.graphics.orthographic-camera.get-viewport-width
+(ns clojure.orthographic-camera.get-viewport-width
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn get-viewport-width [^OrthographicCamera camera]

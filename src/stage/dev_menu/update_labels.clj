@@ -1,6 +1,6 @@
 (ns stage.dev-menu.update-labels
   (:require [clojure.graphics.frames-per-second :as frames-per-second]
-            [clojure.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
+            [clojure.orthographic-camera.get-zoom :refer [get-zoom]]
             [clojure.readable :as readable]))
 
 (def v

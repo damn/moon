@@ -1,5 +1,5 @@
 (ns create.shape-drawer-texture
-  (:require [clojure.graphics.pixmap :as pixmap]
+  (:require [clojure.pixmap :as pixmap]
             [pixmap.set-color :as set-color]
             [pixmap.draw-pixel :as draw-pixel]
             [pixmap.texture :as pixmap->texture]

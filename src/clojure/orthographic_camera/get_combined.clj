@@ -1,4 +1,4 @@
-(ns clojure.graphics.orthographic-camera.get-combined
+(ns clojure.orthographic-camera.get-combined
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn get-combined [^OrthographicCamera camera]

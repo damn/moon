@@ -1,7 +1,7 @@
 (ns levelgen-test.camera-movement-controls
   (:require [clojure.input.key-pressed :as key-pressed?]
-            [clojure.graphics.orthographic-camera.get-position :refer [get-position]]
-            [clojure.graphics.orthographic-camera.set-position :refer [set-position!]]))
+            [clojure.orthographic-camera.get-position :refer [get-position]]
+            [clojure.orthographic-camera.set-position :refer [set-position!]]))
 
 (defn f
   [{:keys [ctx/input

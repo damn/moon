@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.files :as files]
             [clojure.file-handle :as file]
-            [clojure.graphics.texture :as texture]))
+            [clojure.file.texture :as texture]))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
@@ -24,4 +24,4 @@
 
                                    :else
                                    (recur remaining result))))]
-             [path (texture/create (files/internal files path))])))
+             [path (texture/f (files/internal files path))])))

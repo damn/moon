@@ -1,4 +1,4 @@
-(ns clojure.graphics.g2d.sprite-batch
+(ns clojure.sprite-batch
   (:import (com.badlogic.gdx.graphics.g2d SpriteBatch)))
 
 (defn create []

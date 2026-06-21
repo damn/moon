@@ -1,4 +1,4 @@
-(ns clojure.graphics.orthographic-camera
+(ns clojure.orthographic-camera
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn create
