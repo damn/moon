@@ -1,4 +1,4 @@
-(ns moon.shape-drawer.set-color
+(ns clojure.shape-drawer.set-color
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn set-color! [^ShapeDrawer this float-bits]

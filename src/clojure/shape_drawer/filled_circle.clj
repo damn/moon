@@ -1,4 +1,4 @@
-(ns moon.shape-drawer.filled-circle
+(ns clojure.shape-drawer.filled-circle
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn filled-circle! [^ShapeDrawer this x y radius]

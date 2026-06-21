@@ -1,6 +1,6 @@
 (ns draw.rectangle
-  (:require [moon.shape-drawer.rectangle :refer [rectangle!]]
-            [moon.shape-drawer.set-color :refer [set-color!]]))
+  (:require [clojure.shape-drawer.rectangle :refer [rectangle!]]
+            [clojure.shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} x y w h color-float-bits]

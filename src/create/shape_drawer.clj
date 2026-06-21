@@ -1,6 +1,6 @@
 (ns create.shape-drawer
   (:require [clojure.texture.region :as region]
-            [moon.shape-drawer :refer [shape-drawer]]))
+            [clojure.shape-drawer :refer [shape-drawer]]))
 
 (defn step
   [{:keys [ctx/batch

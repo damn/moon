@@ -2,8 +2,8 @@
   (:require [game.ctx.draw :refer [draw!]]
             [clojure.batch :as batch]
             [clojure.orthographic-camera.get-combined :refer [get-combined]]
-            [moon.shape-drawer.default-line-width :refer [default-line-width]]
-            [moon.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
+            [clojure.shape-drawer.default-line-width :refer [default-line-width]]
+            [clojure.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
 
 (defn step
   [{:keys [ctx/batch

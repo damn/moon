@@ -1,4 +1,4 @@
-(ns moon.shape-drawer.filled-rectangle
+(ns clojure.shape-drawer.filled-rectangle
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn filled-rectangle! [^ShapeDrawer this x y w h]
