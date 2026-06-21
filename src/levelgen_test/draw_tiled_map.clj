@@ -1,5 +1,5 @@
 (ns levelgen-test.draw-tiled-map
-  (:require [gdx.draw-tiled-map :as batch]))
+  (:require [batch.draw-tiled-map :as batch]))
 
 (defn f
   [{:keys [ctx/sprite-batch
