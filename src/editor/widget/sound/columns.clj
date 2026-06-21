@@ -4,7 +4,7 @@
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [game.ctx.do :refer [do!]]
             [clojure.ui.text-button :as text-button]
-            [clojure.utils.change-listener :as change-listener]))
+            [clojure.change-listener :as change-listener]))
 
 (defn sound-columns [skin table sound-name]
   [{:actor (doto (text-button/create

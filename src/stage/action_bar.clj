@@ -3,7 +3,7 @@
             [clojure.actor.set-user-object :refer [set-user-object!]]
             [clojure.ui.button-group :as button-group]
             [clojure.ui.horizontal-group :as horizontal-group]
-            [clojure.utils.layout.set-fill-parent :refer [set-fill-parent!]]
+            [clojure.layout.set-fill-parent :refer [set-fill-parent!]]
             [gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create [_ctx]

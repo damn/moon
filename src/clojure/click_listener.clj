@@ -1,4 +1,4 @@
-(ns clojure.utils.click-listener
+(ns clojure.click-listener
   (:import (com.badlogic.gdx.scenes.scene2d.utils ClickListener)))
 
 (defn create [f]

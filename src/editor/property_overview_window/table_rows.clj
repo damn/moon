@@ -6,7 +6,7 @@
             [clojure.touchable :as touchable]
             [clojure.ui.stack :as stack]
             [clojure.ui.text-tooltip :as text-tooltip]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [clojure.ui.image-button :as image-button]
             [clojure.ui.label :as label]
             [clojure.map.texture-region-drawable :as texture-region-drawable]))

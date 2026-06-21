@@ -8,7 +8,7 @@
             [clojure.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.ui.text-button :as text-button]
-            [clojure.utils.change-listener :as change-listener]))
+            [clojure.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin

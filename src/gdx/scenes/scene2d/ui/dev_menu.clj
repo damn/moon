@@ -8,8 +8,8 @@
             [clojure.stage.add-actor :refer [add-actor!]]
             [clojure.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.utils.layout.set-fill-parent :refer [set-fill-parent!]]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.layout.set-fill-parent :refer [set-fill-parent!]]
+            [clojure.change-listener :as change-listener]
             [clojure.touchable :as touchable]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]))
 

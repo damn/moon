@@ -13,7 +13,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [moon.db.delete :refer [delete!]]
             [moon.db.update :refer [update!]]
             [moon.property.type :refer [property->type]]))

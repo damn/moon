@@ -16,7 +16,7 @@
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]
-            [clojure.utils.click-listener :as click-listener]
+            [clojure.click-listener :as click-listener]
             [clojure.ui.image :as image]
             [clojure.ui.stack :as stack]
             [clojure.math.vector2 :as vector2]))

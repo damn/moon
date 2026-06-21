@@ -1,4 +1,4 @@
-(ns clojure.utils.layout.pack
+(ns clojure.layout.pack
   (:import (com.badlogic.gdx.scenes.scene2d.utils Layout)))
 
 (defn pack! [^Layout layout]

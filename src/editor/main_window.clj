@@ -4,7 +4,7 @@
             [clojure.event.get-stage :refer [get-stage]]
             [editor.window]
             [clojure.ui.text-button :as text-button]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.stage.add-actor :refer [add-actor!]]
             [moon.db.property-types :refer [property-types]]

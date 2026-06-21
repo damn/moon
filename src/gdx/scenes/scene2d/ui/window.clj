@@ -4,7 +4,7 @@
             [clojure.ui.window :as window]
             [clojure.ui.table.add-cell :refer [add-cell!]]
             [clojure.ui.table.set-opts :refer [set-opts!]]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [clojure.ui.text-button :as text-button]))
 
 (defn create

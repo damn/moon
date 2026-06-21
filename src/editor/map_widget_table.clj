@@ -6,7 +6,7 @@
             [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.ui.text-button :as text-button]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [clojure.stage.add-actor :refer [add-actor!]]
             [editor.horiz-sep :as horiz-sep]))
 

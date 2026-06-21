@@ -8,7 +8,7 @@
             [clojure.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.utils.layout.pack :refer [pack!]]))
+            [clojure.layout.pack :refer [pack!]]))
 
 (defn create
   [{:keys [title

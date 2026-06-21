@@ -7,7 +7,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]
             [clojure.stage.add-actor :refer [add-actor!]]))
 

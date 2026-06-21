@@ -6,7 +6,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.ui.text-button :as text-button]
-            [clojure.utils.change-listener :as change-listener]))
+            [clojure.change-listener :as change-listener]))
 
 (defn create
   [_  sound-name {:keys [ctx/skin]}]

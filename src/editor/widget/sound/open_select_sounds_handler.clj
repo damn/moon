@@ -9,7 +9,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [clojure.stage.add-actor :refer [add-actor!]]))
 
 (defn open-select-sounds-handler [table ->sound-columns]

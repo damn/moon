@@ -6,7 +6,7 @@
             [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.ui.label :as label]
             [clojure.ui.text-button :as text-button]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.group.find-actor :refer [find-actor]]
             [clojure.stage.add-actor :refer [add-actor!]]))

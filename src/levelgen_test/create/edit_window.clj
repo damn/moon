@@ -3,7 +3,7 @@
             [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.event.get-stage :as event]
             [clojure.ui.text-button :as text-button]
-            [clojure.utils.change-listener :as change-listener]
+            [clojure.change-listener :as change-listener]
             [clojure.stage.set-ctx :refer [set-ctx!]]
             [levelgen-test.generate-level :as generate-level]))
 
