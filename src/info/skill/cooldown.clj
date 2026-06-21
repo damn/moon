@@ -1,5 +1,5 @@
 (ns info.skill.cooldown
-  (:require [moon.number :as number]))
+  (:require [clojure.readable :as readable]))
 
 (defn f [v _ctx]
-  (str "Cooldown: " (number/readable v) " seconds"))
+  (str "Cooldown: " (readable/f v) " seconds"))

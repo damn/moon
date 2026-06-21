@@ -1,13 +1,13 @@
 (ns stage.dev-menu.update-labels
   (:require [com.badlogic.gdx.graphics.frames-per-second :as frames-per-second]
             [com.badlogic.gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
-            [moon.number :as number]))
+            [clojure.readable :as readable]))
 
 (def v
   [
    {:label "elapsed-time"
     :update-fn (fn [{:keys [ctx/elapsed-time]}]
-                 (str (number/readable elapsed-time) " seconds"))
+                 (str (readable/f elapsed-time) " seconds"))
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn (fn [{:keys [ctx/graphics]}]

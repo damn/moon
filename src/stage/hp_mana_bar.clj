@@ -2,7 +2,7 @@
   (:require [game.ctx.draw :refer [draw!]]
             [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
             [com.badlogic.gdx.scenes.scene2d.actor.create :as actor]
-            [moon.number :as number]
+            [clojure.readable :as readable]
             [moon.stats.get-hitpoints :as get-hitpoints]
             [moon.stats.get-mana :as get-mana]
             [moon.textures :as textures]
@@ -33,7 +33,7 @@
                                                        {:image/file content-file
                                                         :image/bounds [0 0 (* rahmenw (ratio/f minmaxval)) rahmenh]})
                               [x y]]
-                             [:draw/text {:text (str (number/readable (minmaxval 0))
+                             [:draw/text {:text (str (readable/f (minmaxval 0))
                                                      "/"
                                                      (minmaxval 1)
                                                      " "

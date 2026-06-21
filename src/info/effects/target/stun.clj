@@ -1,5 +1,5 @@
 (ns info.effects.target.stun
-  (:require [moon.number :as number]))
+  (:require [clojure.readable :as readable]))
 
 (defn f [duration _ctx]
-  (str "Stuns for " (number/readable duration) " seconds"))
+  (str "Stuns for " (readable/f duration) " seconds"))

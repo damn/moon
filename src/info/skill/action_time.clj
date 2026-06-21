@@ -1,5 +1,5 @@
 (ns info.skill.action-time
-  (:require [moon.number :as number]))
+  (:require [clojure.readable :as readable]))
 
 (defn f [v _ctx]
-  (str "Action-Time: " (number/readable v) " seconds"))
+  (str "Action-Time: " (readable/f v) " seconds"))
