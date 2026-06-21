@@ -1,13 +1,18 @@
 (ns create.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [game.ctx.create-cursor :refer [create-cursor]]))
+            [com.badlogic.gdx.files :as files]
+            [com.badlogic.gdx.graphics.new-cursor :as new-cursor]
+            [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 
 (defn step
-  [ctx]
+  [{:keys [ctx/files
+           ctx/graphics]}]
   (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
     (update-vals data
-                 (fn [[path hotspot-position]]
-                   (create-cursor ctx
-                                  (format path-format path)
-                                  hotspot-position)))))
+                 (fn [[path-segment [hotspot-x hotspot-y]]]
+                   (let [path (format path-format path-segment)
+                         pixmap (pixmap/create (files/internal files path))
+                         cursor (new-cursor/f graphics pixmap hotspot-x hotspot-y)]
+                     (pixmap/dispose! pixmap)
+                     cursor)))))
