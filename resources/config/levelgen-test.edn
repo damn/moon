@@ -13,8 +13,16 @@
                                  (levelgen-test.create/f!)
                                  ]
                :dispose! levelgen-test.dispose/f!
-               :render-pipeline [(render.clear-screen/step)
-                                 (levelgen-test.render/f!)]
+               :render-pipeline [(render.get-stage-ctx/step)
+                                 (clojure.pipeline.do/step
+                                  (render.clear-screen/step))
+                                 (clojure.pipeline.do/step
+                                  (levelgen-test.draw-tiled-map/f))
+                                 (clojure.pipeline.do/step
+                                  (levelgen-test.camera-zoom-controls/f))
+                                 (clojure.pipeline.do/step
+                                  (levelgen-test.camera-movement-controls/f))
+                                 (render.update-draw-stage/step)]
                :resize! levelgen-test.resize/f!})
    :title "Levelgen Test"
    :windowed-mode {:width 1440 :height 900}
