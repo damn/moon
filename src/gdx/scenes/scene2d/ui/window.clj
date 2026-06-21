@@ -1,11 +1,11 @@
 (ns gdx.scenes.scene2d.ui.window
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.ui.table.add-cell :refer [add-cell!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.table.set-opts :refer [set-opts!]]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]))
+  (:require [clojure.scenes.scene2d.actor.remove :refer [remove!]]
+            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.ui.window :as window]
+            [clojure.scenes.scene2d.ui.table.add-cell :refer [add-cell!]]
+            [clojure.scenes.scene2d.ui.table.set-opts :refer [set-opts!]]
+            [clojure.scenes.scene2d.utils.change-listener :as change-listener]
+            [clojure.scenes.scene2d.ui.text-button :as text-button]))
 
 (defn create
   [{:keys [title skin] :as opts}]

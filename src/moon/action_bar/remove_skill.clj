@@ -1,6 +1,6 @@
 (ns moon.action-bar.remove-skill
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+  (:require [clojure.scenes.scene2d.actor.remove :refer [remove!]]
+            [clojure.scenes.scene2d.ui.button-group :as button-group]
             [moon.action-bar.get-data :as get-data]))
 
 (defn f [action-bar skill-id]

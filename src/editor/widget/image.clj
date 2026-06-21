@@ -1,7 +1,7 @@
 (ns editor.widget.image
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+  (:require [clojure.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.scenes.scene2d.ui.image-button :as image-button]
+            [clojure.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
 

@@ -1,9 +1,9 @@
 (ns editor.rebuild
   (:require [editor.map-widget-table.get-value :as get-value]
-            [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
-            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.scenes.scene2d.actor.remove :refer [remove!]]
+            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
             [editor.window]
-            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
+            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn f!
   [{:keys [ctx/db

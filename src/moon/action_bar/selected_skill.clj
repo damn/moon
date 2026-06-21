@@ -1,6 +1,6 @@
 (ns moon.action-bar.selected-skill
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
-            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+  (:require [clojure.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.scenes.scene2d.ui.button-group :as button-group]
             [moon.action-bar.get-data :as get-data]))
 
 (defn f [action-bar]

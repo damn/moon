@@ -1,5 +1,5 @@
 (ns moon.batch.draw-tiled-map
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+  (:require [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [moon.batch.draw-tiled-map.render-tile-layer :refer [render-tile-layer!]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch)

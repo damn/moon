@@ -1,9 +1,9 @@
 (ns tiled-map.tile-movement-property
-  (:require [com.badlogic.gdx.maps.properties.get :refer [props-get]]
-            [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+  (:require [clojure.maps.properties.get :refer [props-get]]
+            [clojure.maps.get-properties :refer [get-properties]]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
+            [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]))
 
 (defn f
   [tiled-map layer [x y]]

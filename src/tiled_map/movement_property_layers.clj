@@ -1,7 +1,7 @@
 (ns tiled-map.movement-property-layers
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [com.badlogic.gdx.maps.properties.get :refer [props-get]]
-            [com.badlogic.gdx.maps.get-properties :refer [get-properties]]))
+  (:require [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [clojure.maps.properties.get :refer [props-get]]
+            [clojure.maps.get-properties :refer [get-properties]]))
 
 (defn f
   [tiled-map]

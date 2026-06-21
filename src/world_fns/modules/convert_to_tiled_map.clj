@@ -1,5 +1,5 @@
 (ns world-fns.modules.convert-to-tiled-map
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
+  (:require [clojure.maps.tiled.tiled-map.create :as create-tiled-map]
             [world-fns.modules.grid-to-tiled-map :refer [grid->tiled-map]]))
 
 (defn f

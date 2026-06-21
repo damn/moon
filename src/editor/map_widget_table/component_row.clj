@@ -1,14 +1,14 @@
 (ns editor.map-widget-table.component-row
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
-            [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.event.get-stage :refer [get-stage]]
+  (:require [clojure.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.scenes.scene2d.actor.remove :refer [remove!]]
+            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
             [editor.map-widget-table.k-label-text :as k-label-text]
-            [com.badlogic.gdx.scenes.scene2d.group.children :refer [children]]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.scenes.scene2d.group.children :refer [children]]
+            [clojure.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
+            [clojure.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin

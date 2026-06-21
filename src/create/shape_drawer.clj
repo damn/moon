@@ -1,5 +1,5 @@
 (ns create.shape-drawer
-  (:require [com.badlogic.gdx.graphics.texture.region :as region]
+  (:require [clojure.graphics.texture.region :as region]
             [moon.shape-drawer :refer [shape-drawer]]))
 
 (defn step

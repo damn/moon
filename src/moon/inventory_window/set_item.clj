@@ -1,9 +1,9 @@
 (ns moon.inventory-window.set-item
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
-            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+  (:require [clojure.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.scenes.scene2d.ui.image :as image]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.inventory-window.get-cell :as get-cell]))
 

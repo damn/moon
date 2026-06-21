@@ -1,13 +1,13 @@
 (ns editor.map-widget-table
   (:require [clojure.interpose-f :refer [interpose-f]]
-            [com.badlogic.gdx.scenes.scene2d.event.get-stage :refer [get-stage]]
+            [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [com.badlogic.gdx.scenes.scene2d.actor.set-name :refer [set-name!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.table.add-rows :refer [add-rows!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
+            [clojure.scenes.scene2d.actor.set-name :refer [set-name!]]
+            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.ui.table.add-rows :refer [add-rows!]]
+            [clojure.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.scenes.scene2d.utils.change-listener :as change-listener]
+            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [editor.horiz-sep :as horiz-sep]))
 
 (defn create

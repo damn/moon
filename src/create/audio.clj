@@ -1,8 +1,8 @@
 (ns create.audio
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [com.badlogic.gdx.audio :as audio]
-            [com.badlogic.gdx.files :as files]))
+            [clojure.audio :as audio]
+            [clojure.files :as files]))
 
 (defn step
   [{:keys [ctx/audio

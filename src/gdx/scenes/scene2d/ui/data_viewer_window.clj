@@ -1,15 +1,15 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
   (:require [gdx.scenes.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
-            [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
-            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.scenes.scene2d.actor.get-stage :refer [get-stage]]
+            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.ui.label :as label]
+            [clojure.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scenes.scene2d.ui.table :as table]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [clojure.scenes.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]
-            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
+            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn create
   [{:keys [title

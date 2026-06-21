@@ -1,7 +1,7 @@
 (ns editor.widget.string
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]))
+  (:require [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.ui.text-field :as text-field]
+            [clojure.scenes.scene2d.ui.text-tooltip :as text-tooltip]))
 
 (defn create
   [schema v {:keys [ctx/skin]}]

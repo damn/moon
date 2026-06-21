@@ -1,6 +1,6 @@
 (ns tx.show-message
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
-            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]))
+  (:require [clojure.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
+            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]))
 
 (defn f
   [{:keys [ctx/stage] :as ctx} message]

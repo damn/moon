@@ -1,16 +1,16 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-height :refer [get-height]]
-            [com.badlogic.gdx.scenes.scene2d.actor.get-width :refer [get-width]]
-            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.event.get-stage :refer [get-stage]]
-            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+  (:require [clojure.scenes.scene2d.actor.get-height :refer [get-height]]
+            [clojure.scenes.scene2d.actor.get-width :refer [get-width]]
+            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
+            [clojure.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [game.ctx.do :refer [do!]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
+            [clojure.scenes.scene2d.utils.change-listener :as change-listener]
+            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin

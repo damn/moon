@@ -1,7 +1,7 @@
 (ns create.stage
-  (:require [com.badlogic.gdx.input.set-processor :as set-processor!]
-            [com.badlogic.gdx.utils.fit-viewport :as fit-viewport]
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
+  (:require [clojure.input.set-processor :as set-processor!]
+            [clojure.utils.fit-viewport :as fit-viewport]
+            [clojure.scenes.scene2d.stage :as stage]))
 
 (defn step
   [{:keys [ctx/input

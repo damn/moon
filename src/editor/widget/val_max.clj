@@ -1,9 +1,9 @@
 (ns editor.widget.val-max
   (:require [clojure.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
-            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]))
+            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.ui.text-field :as text-field]
+            [clojure.scenes.scene2d.ui.text-tooltip :as text-tooltip]))
 
 (defn create
   [schema v {:keys [ctx/skin]}]

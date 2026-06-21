@@ -1,9 +1,9 @@
 (ns stage.action-bar
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.set-name :refer [set-name!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
-            [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout.set-fill-parent :refer [set-fill-parent!]]
+  (:require [clojure.scenes.scene2d.actor.set-name :refer [set-name!]]
+            [clojure.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
+            [clojure.scenes.scene2d.ui.button-group :as button-group]
+            [clojure.scenes.scene2d.ui.horizontal-group :as horizontal-group]
+            [clojure.scenes.scene2d.utils.layout.set-fill-parent :refer [set-fill-parent!]]
             [gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create [_ctx]

@@ -1,11 +1,11 @@
 (ns render.window-camera-controls
-  (:require [com.badlogic.gdx.input.key-just-pressed :as key-just-pressed?]
-            [com.badlogic.gdx.input.key-pressed :as key-pressed?]
+  (:require [clojure.input.key-just-pressed :as key-just-pressed?]
+            [clojure.input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
-            [com.badlogic.gdx.scenes.scene2d.actor.set-visible :refer [set-visible!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.toggle-visible :refer [toggle-visible!]]
-            [com.badlogic.gdx.scenes.scene2d.group.children :refer [children]]))
+            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.scenes.scene2d.actor.set-visible :refer [set-visible!]]
+            [clojure.scenes.scene2d.actor.toggle-visible :refer [toggle-visible!]]
+            [clojure.scenes.scene2d.group.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/input

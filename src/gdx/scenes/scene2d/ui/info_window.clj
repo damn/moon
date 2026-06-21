@@ -1,14 +1,14 @@
 (ns gdx.scenes.scene2d.ui.info-window
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.set-position :refer [set-position!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.get-stage :refer [get-stage]]
-            [com.badlogic.gdx.scenes.scene2d.actor.set-name :refer [set-name!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.set-visible :refer [set-visible!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.create :as actor]
-            [com.badlogic.gdx.scenes.scene2d.group.add-actor :refer [add-actor!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+  (:require [clojure.scenes.scene2d.actor.set-position :refer [set-position!]]
+            [clojure.scenes.scene2d.actor.get-stage :refer [get-stage]]
+            [clojure.scenes.scene2d.actor.set-name :refer [set-name!]]
+            [clojure.scenes.scene2d.actor.set-visible :refer [set-visible!]]
+            [clojure.scenes.scene2d.actor.create :as actor]
+            [clojure.scenes.scene2d.group.add-actor :refer [add-actor!]]
+            [clojure.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout.pack :refer [pack!]]))
+            [clojure.scenes.scene2d.utils.layout.pack :refer [pack!]]))
 
 (defn create
   [{:keys [title

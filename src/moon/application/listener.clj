@@ -1,5 +1,5 @@
 (ns moon.application.listener
-  (:require [com.badlogic.gdx.application-listener :refer [application-listener]]))
+  (:require [clojure.application-listener :refer [application-listener]]))
 
 (defn f
   [{:keys [state-var

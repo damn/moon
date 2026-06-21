@@ -1,5 +1,5 @@
 (ns tiled-map.movement-properties
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
+  (:require [clojure.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled-map.tile-movement-property :as tile-movement-property]
             [tiled-map.movement-property-layers :as movement-property-layers]))
 

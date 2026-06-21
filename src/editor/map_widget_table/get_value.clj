@@ -1,6 +1,6 @@
 (ns editor.map-widget-table.get-value
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
-            [com.badlogic.gdx.scenes.scene2d.group.children :refer [children]]
+  (:require [clojure.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.scenes.scene2d.group.children :refer [children]]
             [moon.schema.widget-value :as widget-value]))
 
 (defn f [table schemas]

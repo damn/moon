@@ -3,8 +3,8 @@
             [clojure.java.io :as io]
             [file-handle.pixmap :as file-handle->pixmap]
             [pixmap.dispose :as dispose]
-            [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.new-cursor :as new-cursor]))
+            [clojure.files :as files]
+            [clojure.graphics.new-cursor :as new-cursor]))
 
 (defn step
   [{:keys [ctx/files

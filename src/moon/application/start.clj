@@ -1,6 +1,6 @@
 (ns moon.application.start
-  (:require [com.badlogic.gdx.backends.lwjgl.application :as application]
-            [com.badlogic.gdx.backends.lwjgl.application-config :as config]))
+  (:require [clojure.backends.lwjgl.application :as application]
+            [clojure.backends.lwjgl.application-config :as config]))
 
 (defn f!
   [{:keys [listener]

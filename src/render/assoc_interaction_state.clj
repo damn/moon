@@ -3,7 +3,7 @@
             [game.ctx.mouseover-actor :refer [mouseover-actor]]
             [game.skill :as skill]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
-            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
             [moon.action-bar.selected-skill :as selected-skill]
             [moon.body :as body]))
 

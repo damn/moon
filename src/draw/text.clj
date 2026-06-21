@@ -1,10 +1,10 @@
 (ns draw.text
   (:require [clojure.string :as str]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.draw :as draw]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.get-scale-x :as get-scale-x]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.get-line-height :as get-line-height]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.set-scale :as set-scale]
-            [com.badlogic.gdx.utils.align :as align]))
+            [clojure.graphics.g2d.bitmap-font.draw :as draw]
+            [clojure.graphics.g2d.bitmap-font.get-scale-x :as get-scale-x]
+            [clojure.graphics.g2d.bitmap-font.get-line-height :as get-line-height]
+            [clojure.graphics.g2d.bitmap-font.set-scale :as set-scale]
+            [clojure.utils.align :as align]))
 
 (defn f
   [{:keys [ctx/batch

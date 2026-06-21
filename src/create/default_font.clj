@@ -1,13 +1,13 @@
 (ns create.default-font
-  (:require [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.texture.filter :as texture.filter]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.enable-markup :as enable-markup]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.set-scale :as set-scale]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
-            [com.badlogic.gdx.graphics.g2d.freetype.font-generator :as font-generator]
-            [com.badlogic.gdx.graphics.g2d.freetype.font-generator.generate-font :as generate-font]
-            [com.badlogic.gdx.graphics.g2d.freetype.font-generator.dispose :refer [dispose!]]
-            [com.badlogic.gdx.graphics.g2d.freetype.font-generator.parameter :as parameter]))
+  (:require [clojure.files :as files]
+            [clojure.graphics.texture.filter :as texture.filter]
+            [clojure.graphics.g2d.bitmap-font.enable-markup :as enable-markup]
+            [clojure.graphics.g2d.bitmap-font.set-scale :as set-scale]
+            [clojure.graphics.g2d.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
+            [clojure.graphics.g2d.freetype.font-generator :as font-generator]
+            [clojure.graphics.g2d.freetype.font-generator.generate-font :as generate-font]
+            [clojure.graphics.g2d.freetype.font-generator.dispose :refer [dispose!]]
+            [clojure.graphics.g2d.freetype.font-generator.parameter :as parameter]))
 
 (defn step
   [{:keys [ctx/files]}]

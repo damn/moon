@@ -1,7 +1,7 @@
 (ns orthographic-camera.frustum
-  (:require [com.badlogic.gdx.math.vector3.clojurize :as clojurize]
-            [com.badlogic.gdx.graphics.orthographic-camera.get-frustum :refer [get-frustum]]
-            [com.badlogic.gdx.math.frustum.get-plane-points :refer [get-plane-points]]))
+  (:require [clojure.math.vector3.clojurize :as clojurize]
+            [clojure.graphics.orthographic-camera.get-frustum :refer [get-frustum]]
+            [clojure.math.frustum.get-plane-points :refer [get-plane-points]]))
 
 (defn frustum [camera]
   (let [plane-points (mapv clojurize/f (get-plane-points (get-frustum camera)))

@@ -1,12 +1,12 @@
 (ns levelgen-test.create
-  (:require [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.color.float-bits :refer [float-bits]]
-            [com.badlogic.gdx.input.set-processor :as set-processor!]
-            [com.badlogic.gdx.utils.fit-viewport :as fit-viewport]
-            [com.badlogic.gdx.graphics.orthographic-camera :as camera]
+  (:require [clojure.files :as files]
+            [clojure.graphics.color.float-bits :refer [float-bits]]
+            [clojure.input.set-processor :as set-processor!]
+            [clojure.utils.fit-viewport :as fit-viewport]
+            [clojure.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
+            [clojure.scenes.scene2d.stage :as stage]
+            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]))
 

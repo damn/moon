@@ -1,5 +1,5 @@
 (ns tx.ui-set-item
-  (:require [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
+  (:require [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
             [moon.inventory-window.set-item :as set-item]
             [moon.textures :as textures]
             [info.item :refer [info-text]]))

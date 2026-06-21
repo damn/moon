@@ -1,5 +1,5 @@
 (ns tx.sound
-  (:require [com.badlogic.gdx.audio.sound.play :refer [play!]]))
+  (:require [clojure.audio.sound.play :refer [play!]]))
 
 (defn f
   [{:keys [ctx/audio] :as ctx} sound-name]

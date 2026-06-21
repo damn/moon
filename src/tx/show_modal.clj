@@ -1,15 +1,15 @@
 (ns tx.show-modal
-  (:require [com.badlogic.gdx.utils.align :as align]
-            [com.badlogic.gdx.scenes.scene2d.actor.set-position :refer [set-position!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.set-name :refer [set-name!]]
-            [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+  (:require [clojure.utils.align :as align]
+            [clojure.scenes.scene2d.actor.set-position :refer [set-position!]]
+            [clojure.scenes.scene2d.actor.remove :refer [remove!]]
+            [clojure.scenes.scene2d.actor.set-name :refer [set-name!]]
+            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.scenes.scene2d.ui.label :as label]
+            [clojure.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.scenes.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
-            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
+            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn f
   [{:keys [ctx/skin
@@ -42,7 +42,7 @@
 ; hmmm interesting ... can disable @ item in cursor  / moving / etc.
 
 (comment
- (.postRunnable com.badlogic.gdx.Gdx/app
+ (.postRunnable clojure.Gdx/app
                 (fn []
                   (:tx/show-modal @dev.application/state
                                   {:title "TestTitle"

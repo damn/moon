@@ -1,6 +1,6 @@
 (ns moon.grid.circle-entities
-  (:require [com.badlogic.gdx.math.circle :as circle]
-            [com.badlogic.gdx.math.intersector.overlaps :as intersector]
+  (:require [clojure.math.circle :as circle]
+            [clojure.math.intersector.overlaps :as intersector]
             [moon.body.rectangle :refer [->rectangle]]
             [moon.grid.circle-to-cells :refer [circle->cells]]
             [moon.grid.cells-entities :as cells->entities]))

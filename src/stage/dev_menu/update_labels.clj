@@ -1,6 +1,6 @@
 (ns stage.dev-menu.update-labels
-  (:require [com.badlogic.gdx.graphics.frames-per-second :as frames-per-second]
-            [com.badlogic.gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
+  (:require [clojure.graphics.frames-per-second :as frames-per-second]
+            [clojure.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
             [clojure.readable :as readable]))
 
 (def v

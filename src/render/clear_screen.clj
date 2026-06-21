@@ -1,5 +1,5 @@
 (ns render.clear-screen
-  (:require [com.badlogic.gdx.graphics.clear :as clear]))
+  (:require [clojure.graphics.clear :as clear]))
 
 (defn step
   [{:keys [ctx/graphics] :as ctx}]

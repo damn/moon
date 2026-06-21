@@ -1,7 +1,7 @@
 (ns render.assoc-interaction-state.mouseover-actor-info
-  (:require [com.badlogic.gdx.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
-            [com.badlogic.gdx.scenes.scene2d.actor.get-name :refer [get-name]]
-            [com.badlogic.gdx.scenes.scene2d.actor.get-parent :refer [get-parent]]
+  (:require [clojure.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+            [clojure.scenes.scene2d.actor.get-name :refer [get-name]]
+            [clojure.scenes.scene2d.actor.get-parent :refer [get-parent]]
             [scene2d.actor.is-button :as button?]
             [scene2d.actor.is-window-title-bar :as window-title-bar?]))
 

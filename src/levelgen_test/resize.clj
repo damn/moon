@@ -1,5 +1,5 @@
 (ns levelgen-test.resize
-  (:require [com.badlogic.gdx.utils.viewport.update :as update!]))
+  (:require [clojure.utils.viewport.update :as update!]))
 
 (defn f!
   [{:keys [ctx/stage
