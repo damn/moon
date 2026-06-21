@@ -9,7 +9,7 @@
             [clojure.grid2d.posis :as posis]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.scalegrid :as scalegrid]
-            [clojure.maps.tiled.tiled-map.create :as create-tiled-map]
+            [clojure.tiled-map.create :as create-tiled-map]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]))
 
 (defn- scale-grid [grid start scale]

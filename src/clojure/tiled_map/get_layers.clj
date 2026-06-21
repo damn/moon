@@ -1,4 +1,4 @@
-(ns clojure.maps.tiled.tiled-map.get-layers
+(ns clojure.tiled-map.get-layers
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn get-layers [^TiledMap tiled-map]

@@ -1,5 +1,5 @@
 (ns clojure.tiled-map.movement-properties
-  (:require [clojure.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
+  (:require [clojure.tiled-map-tile-layer.get-name :refer [get-name]]
             [clojure.tiled-map.tile-movement-property :as tile-movement-property]
             [clojure.tiled-map.movement-property-layers :as movement-property-layers]))
 

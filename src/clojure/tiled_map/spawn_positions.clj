@@ -1,12 +1,12 @@
 (ns clojure.tiled-map.spawn-positions
   (:require [clojure.map-layers.get-layer :refer [get-layer]]
             [clojure.map-properties.get :refer [props-get]]
-            [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [clojure.tiled-map.get-layers :refer [get-layers]]
             [clojure.get-properties :refer [get-properties]]
-            [clojure.maps.tiled.tiled-map-tile-layer.get-width :refer [get-width]]
-            [clojure.maps.tiled.tiled-map-tile-layer.get-height :refer [get-height]]
-            [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]))
+            [clojure.tiled-map-tile-layer.get-width :refer [get-width]]
+            [clojure.tiled-map-tile-layer.get-height :refer [get-height]]
+            [clojure.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [clojure.tiled-map-tile-layer.cell :as cell]))
 
 (defn f [tiled-map]
   (let [layer-name "creatures"

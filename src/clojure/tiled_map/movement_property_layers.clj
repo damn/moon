@@ -1,5 +1,5 @@
 (ns clojure.tiled-map.movement-property-layers
-  (:require [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+  (:require [clojure.tiled-map.get-layers :refer [get-layers]]
             [clojure.map-properties.get :refer [props-get]]
             [clojure.get-properties :refer [get-properties]]))
 

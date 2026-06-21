@@ -1,9 +1,9 @@
-(ns clojure.maps.tiled.tiled-map.add-layer
+(ns clojure.tiled-map.add-layer
   (:require [clojure.map-layers.add :refer [add!]]
             [clojure.map-properties.get :refer [props-get]]
-            [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
+            [clojure.tiled-map.get-layers :refer [get-layers]]
             [clojure.get-properties :refer [get-properties]]
-            [clojure.maps.tiled.tiled-map-tile-layer.create :as create-layer]))
+            [clojure.tiled-map-tile-layer.create :as create-layer]))
 
 (defn- create-layer*
   [tiled-map {:keys [name

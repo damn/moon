@@ -1,5 +1,5 @@
 (ns world-fns.tmx
-  (:require [clojure.maps.tiled.tmx-map-loader :as tmx-map-loader]))
+  (:require [clojure.tmx-map-loader :as tmx-map-loader]))
 
 (defn create
   [{:keys [tmx-file
