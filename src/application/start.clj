@@ -1,4 +1,4 @@
-(ns gdx.application
+(ns application.start
   (:require [com.badlogic.gdx.backends.lwjgl.application :as application]
             [com.badlogic.gdx.backends.lwjgl.application-config :as config]))
 

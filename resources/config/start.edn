@@ -74,9 +74,9 @@
                           :effects/target-entity effects.render.target-entity/f
                           }
                          )
- (gdx.use-glfw-async/f!)
- (gdx.application/f!
-  {:listener (gdx.listener/f #edn/resource "config/listener.edn")
+ (application.use-glfw-async/f!)
+ (application.start/f!
+  {:listener (application.listener/f #edn/resource "config/listener.edn")
    :title "Moon"
    :windowed-mode {:width 1440
                    :height 900}

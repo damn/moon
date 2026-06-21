@@ -1,4 +1,4 @@
-(ns gdx.listener
+(ns application.listener
   (:require [com.badlogic.gdx.application-listener :refer [application-listener]]))
 
 (defn f

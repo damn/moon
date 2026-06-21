@@ -29,9 +29,9 @@
                           :s/val-max editor.widget.val-max/value
                           }
                          )
- (gdx.use-glfw-async/f!)
- (gdx.application/f!
-  {:listener (gdx.listener/f
+ (application.use-glfw-async/f!)
+ (application.start/f!
+  {:listener (application.listener/f
               {
                :state-var editor.app/state
                :create-pipeline [
