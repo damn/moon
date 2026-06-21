@@ -1,9 +1,10 @@
 (ns draw.text
   (:require [clojure.string :as str]
             [clojure.bitmap-font.draw :as draw]
-            [clojure.bitmap-font.get-scale-x :as get-scale-x]
             [clojure.bitmap-font.get-line-height :as get-line-height]
-            [clojure.bitmap-font.set-scale :as set-scale]
+            [clojure.bitmap-font.get-data :refer [get-data]]
+            [clojure.bitmap-font-data.set-scale :as set-scale]
+            [clojure.bitmap-font-data.scale-x :as scale-x]
             [clojure.align :as align]))
 
 (defn f
@@ -14,12 +15,12 @@
   (let [font (or font default-font)
         unit-scale @unit-scale
         scale (or scale 1)
-        old-scale (get-scale-x/f font)
+        old-scale (scale-x/f (get-data font))
         target-width 0
         wrap? false
         scale (* (float unit-scale)
                  (float scale))]
-    (set-scale/f! font (* old-scale scale))
+    (set-scale/f (get-data font) (* old-scale scale))
     (draw/f! font
              batch
              text
@@ -33,4 +34,4 @@
              target-width
              align/center
              wrap?)
-    (set-scale/f! font old-scale)))
+    (set-scale/f (get-data font) old-scale)))

@@ -1,12 +1,11 @@
 (ns create.skin
   (:require [clojure.files :as files]
-            [clojure.scenes.scene2d.ui.skin :as skin]
-            [clojure.bitmap-font.enable-markup :as enable-markup]))
+            [clojure.bitmap-font.get-data :refer [get-data]]
+            [clojure.bitmap-font-data.enable-markup :refer [enable-markup!]]
+            [clojure.scenes.scene2d.ui.skin :as skin]))
 
 (defn step
   [{:keys [ctx/files]}]
   (let [skin (skin/create (files/internal files "skin/uiskin.json"))]
-    (-> skin
-        (skin/font "default-font")
-        enable-markup/f!)
+    (enable-markup! (get-data (skin/font skin "default-font")))
     skin))

@@ -1,8 +1,9 @@
 (ns create.default-font
   (:require [clojure.files :as files]
             [clojure.texture.filter :as texture.filter]
-            [clojure.bitmap-font.enable-markup :as enable-markup]
-            [clojure.bitmap-font.set-scale :as set-scale]
+            [clojure.bitmap-font.get-data :refer [get-data]]
+            [clojure.bitmap-font-data.enable-markup :refer [enable-markup!]]
+            [clojure.bitmap-font-data.set-scale :as set-scale]
             [clojure.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
             [clojure.font-generator :as font-generator]
             [clojure.font-generator.generate-font :as generate-font]
@@ -26,7 +27,7 @@
                                 :min-filter texture.filter/linear
                                 :mag-filter texture.filter/linear}))]
     (dispose! generator)
-    (set-scale/f! font (/ quality-scaling))
-    (enable-markup/f! font)
+    (set-scale/f (get-data font) (/ quality-scaling))
+    (enable-markup! (get-data font))
     (set-use-integer-positions/f! font use-integer-positions?)
     font))
