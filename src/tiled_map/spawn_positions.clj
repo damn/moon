@@ -1,4 +1,4 @@
-(ns gdx.tiled-map.spawn-positions
+(ns tiled-map.spawn-positions
   (:require [com.badlogic.gdx.maps.layers.get-layer :refer [get-layer]]
             [com.badlogic.gdx.maps.properties.get :refer [props-get]]
             [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]

@@ -1,13 +1,13 @@
 (ns world-fns.modules.last-steps
   (:require [com.badlogic.gdx.maps.layers.get-layer :refer [get-layer]]
-            [gdx.tiled-map.property-value :refer [property-value]]
+            [tiled-map.property-value :refer [property-value]]
             [com.badlogic.gdx.maps.tiled.tiled-map.get-layers :refer [get-layers]]
             [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d.scale-grid :as scale-grid]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.flood-fill :as flood-fill]
-            [gdx.tiled-map.movement-property :as movement-property]
-            [gdx.tiled-map.add-creatures-layer :as add-creatures-layer]
+            [tiled-map.movement-property :as movement-property]
+            [tiled-map.add-creatures-layer :as add-creatures-layer]
             [world-fns.modules.area-level-grid :as area-level-grid]))
 
 (defn step

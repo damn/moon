@@ -1,7 +1,7 @@
-(ns gdx.tiled-map.movement-properties
+(ns tiled-map.movement-properties
   (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
-            [gdx.tiled-map.tile-movement-property :as tile-movement-property]
-            [gdx.tiled-map.movement-property-layers :as movement-property-layers]))
+            [tiled-map.tile-movement-property :as tile-movement-property]
+            [tiled-map.movement-property-layers :as movement-property-layers]))
 
 (defn f [tiled-map position]
   (for [layer (movement-property-layers/f tiled-map)]

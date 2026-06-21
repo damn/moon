@@ -2,7 +2,7 @@
   (:require [clojure.grid2d.flood-fill :as flood-fill]
             [world-fns.uf-caves.position-tile-fn :as position-tile-fn]
             [world-fns.uf-caves.assoc-transition-cells :as assoc-transition-cells]
-            [gdx.tiled-map.movement-property :as movement-property]
+            [tiled-map.movement-property :as movement-property]
             [clojure.grid2d.height :refer [->height]]
             [clojure.grid2d.width :refer [->width]]
             [clojure.grid2d.cells :refer [->cells]]
@@ -10,7 +10,7 @@
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.scalegrid :as scalegrid]
             [com.badlogic.gdx.maps.tiled.tiled-map.create :as create-tiled-map]
-            [gdx.tiled-map.add-creatures-layer :as add-creatures-layer]))
+            [tiled-map.add-creatures-layer :as add-creatures-layer]))
 
 (defn- scale-grid [grid start scale]
   (let [grid (scalegrid/f grid scale)]

@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-cell-debug
-  (:require [gdx.orthographic-camera.visible-tiles :refer [visible-tiles]]
+  (:require [orthographic-camera.visible-tiles :refer [visible-tiles]]
             [game.constants :refer [show-potential-field-colors?
                                     show-cell-entities?
                                     show-cell-occupied?]]))

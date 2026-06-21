@@ -1,4 +1,4 @@
-(ns gdx.tiled-map.add-creatures-layer
+(ns tiled-map.add-creatures-layer
   (:require [com.badlogic.gdx.maps.tiled.tiled-map.add-layer :as add-layer]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]))
 

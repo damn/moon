@@ -1,4 +1,4 @@
-(ns gdx.tiled-map.property-value
+(ns tiled-map.property-value
   (:require [com.badlogic.gdx.maps.properties.get :refer [props-get]]
             [com.badlogic.gdx.maps.get-properties :refer [get-properties]]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]

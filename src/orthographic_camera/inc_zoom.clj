@@ -1,4 +1,4 @@
-(ns gdx.orthographic-camera.inc-zoom
+(ns orthographic-camera.inc-zoom
   (:require [com.badlogic.gdx.graphics.orthographic-camera.get-zoom :refer [get-zoom]]
             [com.badlogic.gdx.graphics.orthographic-camera.set-zoom :refer [set-zoom!]]))
 
