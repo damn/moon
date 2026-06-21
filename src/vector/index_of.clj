@@ -1,7 +1,7 @@
-(ns clojure.lang.persistent-vector
+(ns vector.index-of
   (:import (clojure.lang PersistentVector)))
 
-(defn index-of [^PersistentVector v k]
+(defn f [^PersistentVector v k]
   (let [idx (.indexOf v k)]
     (if (= -1 idx)
       nil
