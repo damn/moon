@@ -1,4 +1,4 @@
-package clojure.math;
+package clojure;
 
 public class RayCaster {
 
