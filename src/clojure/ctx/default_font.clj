@@ -5,10 +5,10 @@
             [clojure.bitmap-font-data.enable-markup :refer [enable-markup!]]
             [clojure.bitmap-font-data.set-scale :as set-scale]
             [clojure.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
-            [clojure.font-generator :as font-generator]
+            [clojure.file.font-generator :as font-generator]
             [clojure.font-generator.generate-font :as generate-font]
             [clojure.font-generator.dispose :refer [dispose!]]
-            [clojure.font-generator-parameter :as parameter]))
+            [clojure.map.font-generator-parameter :as parameter]))
 
 (defn step
   [{:keys [ctx/files]}]
@@ -19,7 +19,7 @@
                                           :size 16
                                           :quality-scaling 2
                                           :use-integer-positions? false}
-        generator (font-generator/create (files/internal files path))
+        generator (font-generator/f (files/internal files path))
         font (generate-font/f generator
                               (parameter/create
                                {:size (* size quality-scaling)
