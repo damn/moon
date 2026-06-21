@@ -1,22 +1,23 @@
 (ns editor.window
-  (:require [clojure.input.key-just-pressed :as key-just-pressed?]
+  (:require [clojure.actor :as actor]
+            [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.actor.get-stage :refer [get-stage]]
             [clojure.actor.set-name :refer [set-name!]]
-            [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.group.add-actor :refer [add-actors!]]
-            [clojure.event.get-stage :as event]
-            [clojure.ui.table.scroll-pane-cell :as scroll-pane-cell]
-            [moon.schema.create-widget :as create-widget]
-            [moon.schema.widget-value :as widget-value]
-            [editor.window.with-window-close :as with-window-close]
-            [clojure.actor :as actor]
-            [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.ui.text-button :as text-button]
-            [gdx.scenes.scene2d.ui.window :as window]
             [clojure.change-listener :as change-listener]
+            [clojure.event.get-stage :as event]
+            [clojure.group.add-actor :refer [add-actors!]]
+            [clojure.input.key-just-pressed :as key-just-pressed?]
+            [clojure.ui.table.scroll-pane-cell :as scroll-pane-cell]
+            [clojure.ui.text-button :as text-button]
+            [clojure.window.set-modal :as set-modal]
+            [editor.window.with-window-close :as with-window-close]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.ui.window :as window]
             [moon.db.delete :refer [delete!]]
             [moon.db.update :refer [update!]]
-            [moon.property.type :refer [property->type]]))
+            [moon.property.type :refer [property->type]]
+            [moon.schema.create-widget :as create-widget]
+            [moon.schema.widget-value :as widget-value]))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -53,7 +54,6 @@
            {:title "[SKY]Property[]"
             :skin skin
             :window/close-button? skin
-            :window/modal? true
             :table/cell-defaults {:pad 5}
             :table/rows [[(scroll-pane-cell/create
                            (table/create {:table/cell-defaults {:pad 5}
@@ -61,6 +61,7 @@
                            skin
                            scroll-pane-height
                            50)]]})
+      (set-modal/f! true)
       (add-actors! [(actor/create
                      {:act! (fn [this delta]
                               (when-let [stage (get-stage this)]

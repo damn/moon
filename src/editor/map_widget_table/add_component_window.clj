@@ -8,6 +8,7 @@
             [clojure.ui.text-button :as text-button]
             [clojure.layout.pack :refer [pack!]]
             [clojure.change-listener :as change-listener]
+            [clojure.window.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas.default-value :refer [default-value]]
             [moon.schemas.map-keys :refer [map-keys]]
@@ -15,12 +16,12 @@
 
 (defn f
   [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (window/create
-                {:title "Choose"
-                 :skin skin
-                 :window/close-button? skin
-                 :window/modal? true
-                 :table/cell-defaults {:pad 5}})
+  (let [window (doto (window/create
+                      {:title "Choose"
+                       :skin skin
+                       :window/close-button? skin
+                       :table/cell-defaults {:pad 5}})
+                 (set-modal/f! true))
         remaining-ks (sort (remove (set (keys (widget-value/f schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
     (add-rows!

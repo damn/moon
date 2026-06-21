@@ -1,6 +1,7 @@
 (ns moon.ui.error-window
   (:require [clojure.ui.label :as label]
             [gdx.scenes.scene2d.ui.window :as window]
+            [clojure.window.set-modal :as set-modal]
             [clojure.repl :as repl]))
 
 (defmacro ^:private with-err-str [& body]
@@ -14,11 +15,11 @@
   (let [label-text (binding [*print-level* 3]
                      (with-err-str
                        (repl/pst throwable)))]
-    (window/create
-     {:title "Error"
-      :skin skin
-      :window/close-button? skin
-      :table/rows [[{:actor (label/create
-                             {:text label-text
-                              :skin skin})}]]
-      :window/modal? true})))
+    (doto (window/create
+           {:title "Error"
+            :skin skin
+            :window/close-button? skin
+            :table/rows [[{:actor (label/create
+                                   {:text label-text
+                                    :skin skin})}]]})
+      (set-modal/f! true))))

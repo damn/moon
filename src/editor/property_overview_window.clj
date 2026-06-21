@@ -3,6 +3,7 @@
             [editor.property-overview-window.table-rows :refer [overview-table-rows*]]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db.all-raw :refer [all-raw]]
+            [clojure.window.set-modal :as set-modal]
             [moon.property :as property]
             [moon.textures :as textures]))
 
@@ -12,22 +13,23 @@
            skin
            property-type
            clicked-id-fn]}]
-  (window/create
-   {:title "Edit"
-    :skin skin
-    :window/close-button? skin
-    :window/modal? true
-    :table/rows (let [{:keys [sort-by-fn
-                              extra-info-text
-                              columns
-                              image-scale]} (get property-type->overview-table-props property-type)]
-                  (->> (all-raw db property-type)
-                       (sort-by sort-by-fn)
-                       (map (fn [property]
-                              {:texture-region (textures/texture-region textures (property/image property))
-                               :on-clicked (fn [actor ctx]
-                                             (clicked-id-fn actor (:property/id property) ctx))
-                               :tooltip (property/tooltip property)
-                               :extra-info-text (extra-info-text property)}))
-                       (partition-all columns)
-                       (overview-table-rows* skin image-scale)))}))
+  (doto (window/create
+         {:title "Edit"
+          :skin skin
+          :window/close-button? skin
+          :table/rows (let [{:keys [sort-by-fn
+                                    extra-info-text
+                                    columns
+                                    image-scale]} (get property-type->overview-table-props property-type)]
+                        (->> (all-raw db property-type)
+                             (sort-by sort-by-fn)
+                             (map (fn [property]
+                                    {:texture-region (textures/texture-region textures (property/image property))
+                                     :on-clicked (fn [actor ctx]
+                                                   (clicked-id-fn actor (:property/id property) ctx))
+                                     :tooltip (property/tooltip property)
+                                     :extra-info-text (extra-info-text property)}))
+                             (partition-all columns)
+                             (overview-table-rows* skin image-scale)))})
+
+    (set-modal/f! true)))
