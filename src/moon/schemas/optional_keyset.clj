@@ -1,6 +1,6 @@
 (ns moon.schemas.optional-keyset
   (:require [clojure.malli-form :refer [malli-form]]
-            [malli.utils :as mu]))
+            [malli.optional-keyset :as optional-keyset]))
 
 (defn optional-keyset [schemas schema]
-  (mu/optional-keyset (malli-form schema schemas)))
+  (optional-keyset/f (malli-form schema schemas)))
