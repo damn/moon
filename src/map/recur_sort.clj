@@ -1,4 +1,4 @@
-(ns clojure.m.recur-sort)
+(ns map.recur-sort)
 
 (defn recur-sort [m]
   (into (sorted-map)

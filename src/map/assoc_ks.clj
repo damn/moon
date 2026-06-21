@@ -1,4 +1,4 @@
-(ns clojure.m.assoc-ks)
+(ns map.assoc-ks)
 
 (defn assoc-ks [m ks v]
   (if (empty? ks)

@@ -1,5 +1,5 @@
 (ns moon.db.save
-  (:require [clojure.m.recur-sort :refer [recur-sort]]
+  (:require [map.recur-sort :refer [recur-sort]]
             [moon.property.type :refer [property->type]]
             [clojure.pprint :as pprint]))
 

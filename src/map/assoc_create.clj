@@ -1,4 +1,4 @@
-(ns clojure.m.assoc-create)
+(ns map.assoc-create)
 
 (defn f [m k f]
   (assoc m k (f m)))
