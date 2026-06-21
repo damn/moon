@@ -1,7 +1,7 @@
 (ns create.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [file-handle.pixmap :as file-handle->pixmap]
+            [clojure.file.pixmap :as file-handle->pixmap]
             [pixmap.dispose :as dispose]
             [clojure.files :as files]
             [clojure.graphics.new-cursor :as new-cursor]))
