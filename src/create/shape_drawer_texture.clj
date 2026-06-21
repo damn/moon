@@ -1,10 +1,14 @@
 (ns create.shape-drawer-texture
-  (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]))
+  (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]
+            [pixmap.set-color :as set-color]
+            [pixmap.draw-pixel :as draw-pixel]
+            [pixmap.texture :as pixmap->texture]
+            [pixmap.dispose :as dispose]))
 
 (defn step [_ctx]
   (let [pixmap (doto (pixmap/create 1 1)
-                 (pixmap/set-color! 1 1 1 1)
-                 (pixmap/draw-pixel! 0 0))
-        texture (pixmap/texture pixmap)]
-    (pixmap/dispose! pixmap)
+                 (set-color/f! 1 1 1 1)
+                 (draw-pixel/f! 0 0))
+        texture (pixmap->texture/f pixmap)]
+    (dispose/f! pixmap)
     texture))
