@@ -1,5 +1,5 @@
 (ns editor.app.dispose
-  (:require [clojure.utils.dispose :as disposable]))
+  (:require [clojure.dispose :as disposable]))
 
 (defn dispose!
   [{:keys [ctx/skin

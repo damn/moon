@@ -1,6 +1,6 @@
 (ns create.stage
   (:require [clojure.input.set-processor :as set-processor!]
-            [clojure.utils.fit-viewport :as fit-viewport]
+            [clojure.fit-viewport :as fit-viewport]
             [clojure.scenes.scene2d.stage :as stage]))
 
 (defn step

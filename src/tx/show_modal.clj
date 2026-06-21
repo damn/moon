@@ -1,5 +1,5 @@
 (ns tx.show-modal
-  (:require [clojure.utils.align :as align]
+  (:require [clojure.align :as align]
             [clojure.scenes.scene2d.actor.set-position :refer [set-position!]]
             [clojure.scenes.scene2d.actor.remove :refer [remove!]]
             [clojure.scenes.scene2d.actor.set-name :refer [set-name!]]

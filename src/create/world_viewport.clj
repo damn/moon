@@ -1,6 +1,6 @@
 (ns create.world-viewport
   (:require [clojure.orthographic-camera :as camera]
-            [clojure.utils.fit-viewport :as fit-viewport]))
+            [clojure.fit-viewport :as fit-viewport]))
 
 (defn step
   [{:keys [ctx/world-unit-scale]}]

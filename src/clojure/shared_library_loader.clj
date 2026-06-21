@@ -1,4 +1,4 @@
-(ns clojure.utils.shared-library-loader
+(ns clojure.shared-library-loader
   (:import (com.badlogic.gdx.utils SharedLibraryLoader)))
 
 (defn os []

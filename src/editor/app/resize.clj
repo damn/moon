@@ -1,5 +1,5 @@
 (ns editor.app.resize
-  (:require [clojure.utils.viewport.update :as update!]))
+  (:require [clojure.viewport.update :as update!]))
 
 (defn resize!
   [{:keys [ctx/stage]} width height]

@@ -1,5 +1,5 @@
 (ns levelgen-test.resize
-  (:require [clojure.utils.viewport.update :as update!]))
+  (:require [clojure.viewport.update :as update!]))
 
 (defn f!
   [{:keys [ctx/stage

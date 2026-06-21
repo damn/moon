@@ -1,6 +1,6 @@
 (ns moon.application.use-glfw-async
-  (:require [clojure.utils.shared-library-loader :as shared-library-loader]
-            [clojure.utils.os :as os]
+  (:require [clojure.shared-library-loader :as shared-library-loader]
+            [clojure.os :as os]
             [lwjgl.system.configuration :as configuration]))
 
 (defn f! []

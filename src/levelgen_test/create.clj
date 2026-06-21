@@ -2,7 +2,7 @@
   (:require [clojure.files :as files]
             [clojure.rgba.float-bits :refer [float-bits]]
             [clojure.input.set-processor :as set-processor!]
-            [clojure.utils.fit-viewport :as fit-viewport]
+            [clojure.fit-viewport :as fit-viewport]
             [clojure.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.scenes.scene2d.stage :as stage]

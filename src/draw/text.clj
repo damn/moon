@@ -4,7 +4,7 @@
             [clojure.bitmap-font.get-scale-x :as get-scale-x]
             [clojure.bitmap-font.get-line-height :as get-line-height]
             [clojure.bitmap-font.set-scale :as set-scale]
-            [clojure.utils.align :as align]))
+            [clojure.align :as align]))
 
 (defn f
   [{:keys [ctx/batch
