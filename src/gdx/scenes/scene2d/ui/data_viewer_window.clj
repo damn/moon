@@ -4,6 +4,7 @@
             [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.ui.label :as label]
             [clojure.ui.scroll-pane :as scroll-pane]
+            [clojure.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -55,8 +56,8 @@
                             ; (- (:viewport/world-height viewport) 200)
                             ; (- (:viewport/world-height viewport) 50) #_(min (- (:height viewport) 50) (height table))
                             })]
-    (window/create
-     {:title title
-      :skin skin
-      :table/rows [[scroll-pane-cell]]
-      :window/close-button? skin})))
+    (doto (window/create
+           {:title title
+            :skin skin
+            :table/rows [[scroll-pane-cell]]})
+      (add-close-button/f! skin))))

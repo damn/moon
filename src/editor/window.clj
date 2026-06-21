@@ -9,6 +9,7 @@
             [clojure.input.key-just-pressed :as key-just-pressed?]
             [clojure.ui.table.scroll-pane-cell :as scroll-pane-cell]
             [clojure.ui.text-button :as text-button]
+            [clojure.window.add-close-button :as add-close-button]
             [clojure.window.set-modal :as set-modal]
             [editor.window.with-window-close :as with-window-close]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -53,7 +54,6 @@
     (doto (window/create
            {:title "[SKY]Property[]"
             :skin skin
-            :window/close-button? skin
             :table/cell-defaults {:pad 5}
             :table/rows [[(scroll-pane-cell/create
                            (table/create {:table/cell-defaults {:pad 5}
@@ -61,6 +61,7 @@
                            skin
                            scroll-pane-height
                            50)]]})
+      (add-close-button/f! skin)
       (set-modal/f! true)
       (add-actors! [(actor/create
                      {:act! (fn [this delta]

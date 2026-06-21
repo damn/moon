@@ -4,6 +4,7 @@
             [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.event.get-stage :refer [get-stage]]
             [clojure.ui.scroll-pane :as scroll-pane]
+            [clojure.window.add-close-button :as add-close-button]
             [clojure.window.set-modal :as set-modal]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [game.ctx.do :refer [do!]]
@@ -21,7 +22,6 @@
                 (doto (window/create
                        {:title "Choose"
                         :skin skin
-                        :window/close-button? skin
                         :table/rows
                         [[(let [table (table/create
                                        {:table/cell-defaults {:pad 5}
@@ -45,4 +45,5 @@
                              :width  (+ (get-width table) 50)
                              :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
                                           (get-height table))})]]})
+                  (add-close-button/f! skin)
                   (set-modal/f! true)))))

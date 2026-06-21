@@ -3,6 +3,7 @@
             [editor.property-overview-window.table-rows :refer [overview-table-rows*]]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db.all-raw :refer [all-raw]]
+            [clojure.window.add-close-button :as add-close-button]
             [clojure.window.set-modal :as set-modal]
             [moon.property :as property]
             [moon.textures :as textures]))
@@ -16,7 +17,6 @@
   (doto (window/create
          {:title "Edit"
           :skin skin
-          :window/close-button? skin
           :table/rows (let [{:keys [sort-by-fn
                                     extra-info-text
                                     columns
@@ -31,5 +31,5 @@
                                      :extra-info-text (extra-info-text property)}))
                              (partition-all columns)
                              (overview-table-rows* skin image-scale)))})
-
+    (add-close-button/f! skin)
     (set-modal/f! true)))
