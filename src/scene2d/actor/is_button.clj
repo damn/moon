@@ -1,5 +1,5 @@
 (ns scene2d.actor.is-button
-  (:require [clojure.scenes.scene2d.actor.get-parent :refer [get-parent]]
+  (:require [clojure.actor.get-parent :refer [get-parent]]
             [clojure.scenes.scene2d.ui.button :as button]))
 
 (let [button-class? (fn [actor]

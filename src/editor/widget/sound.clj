@@ -1,5 +1,5 @@
 (ns editor.widget.sound
-  (:require [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+  (:require [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]

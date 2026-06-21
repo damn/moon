@@ -1,6 +1,6 @@
 (ns stage.action-bar
-  (:require [clojure.scenes.scene2d.actor.set-name :refer [set-name!]]
-            [clojure.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
+  (:require [clojure.actor.set-name :refer [set-name!]]
+            [clojure.actor.set-user-object :refer [set-user-object!]]
             [clojure.scenes.scene2d.ui.button-group :as button-group]
             [clojure.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [clojure.scenes.scene2d.utils.layout.set-fill-parent :refer [set-fill-parent!]]

@@ -1,4 +1,4 @@
-(ns clojure.scenes.scene2d.actor.hit
+(ns clojure.actor.hit
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn hit [^Actor actor [x y] touchable?]

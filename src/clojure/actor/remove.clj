@@ -1,4 +1,4 @@
-(ns clojure.scenes.scene2d.actor.remove
+(ns clojure.actor.remove
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn remove! [^Actor actor]

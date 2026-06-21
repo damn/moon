@@ -1,7 +1,7 @@
 (ns editor.window.with-window-close
-  (:require [clojure.scenes.scene2d.actor.get-stage :refer [get-stage]]
-            [clojure.scenes.scene2d.actor.remove :refer [remove!]]
-            [clojure.scenes.scene2d.actor.find-ancestor :refer [find-ancestor]]
+  (:require [clojure.actor.get-stage :refer [get-stage]]
+            [clojure.actor.remove :refer [remove!]]
+            [clojure.actor.find-ancestor :refer [find-ancestor]]
             [clojure.scenes.scene2d.stage.set-ctx :refer [set-ctx!]]
             [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]

@@ -1,9 +1,9 @@
 (ns editor.widget.one-to-many.add-one-to-many-rows
-  (:require [clojure.scenes.scene2d.actor.find-ancestor :refer [find-ancestor]]
+  (:require [clojure.actor.find-ancestor :refer [find-ancestor]]
             [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
-            [clojure.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
-            [clojure.scenes.scene2d.actor.remove :refer [remove!]]
-            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.actor.set-user-object :refer [set-user-object!]]
+            [clojure.actor.remove :refer [remove!]]
+            [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.scenes.scene2d.group.clear-children :refer [clear-children!]]
             [clojure.scenes.scene2d.ui.table.add-rows :refer [add-rows!]]
             [clojure.scenes.scene2d.ui.text-button :as text-button]

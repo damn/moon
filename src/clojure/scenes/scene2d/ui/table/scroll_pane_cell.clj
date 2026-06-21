@@ -1,7 +1,7 @@
 (ns clojure.scenes.scene2d.ui.table.scroll-pane-cell
   (:require [clojure.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [clojure.scenes.scene2d.actor.get-height :refer [get-height]]
-            [clojure.scenes.scene2d.actor.get-width :refer [get-width]]))
+            [clojure.actor.get-height :refer [get-height]]
+            [clojure.actor.get-width :refer [get-width]]))
 
 (defn create [table skin scroll-pane-height buffer]
   {:actor (scroll-pane/create

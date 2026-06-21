@@ -1,9 +1,9 @@
 (ns tx.show-modal
   (:require [clojure.align :as align]
-            [clojure.scenes.scene2d.actor.set-position :refer [set-position!]]
-            [clojure.scenes.scene2d.actor.remove :refer [remove!]]
-            [clojure.scenes.scene2d.actor.set-name :refer [set-name!]]
-            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.actor.set-position :refer [set-position!]]
+            [clojure.actor.remove :refer [remove!]]
+            [clojure.actor.set-name :refer [set-name!]]
+            [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.scenes.scene2d.ui.label :as label]
             [clojure.scenes.scene2d.ui.text-button :as text-button]
             [clojure.scenes.scene2d.utils.change-listener :as change-listener]

@@ -1,4 +1,4 @@
-(ns clojure.scenes.scene2d.actor.set-visible
+(ns clojure.actor.set-visible
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn set-visible! [^Actor actor visible?]

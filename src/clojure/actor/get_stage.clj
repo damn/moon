@@ -1,4 +1,4 @@
-(ns clojure.scenes.scene2d.actor.get-stage
+(ns clojure.actor.get-stage
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn get-stage [^Actor actor]

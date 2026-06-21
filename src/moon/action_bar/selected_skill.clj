@@ -1,5 +1,5 @@
 (ns moon.action-bar.selected-skill
-  (:require [clojure.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
+  (:require [clojure.actor.get-user-object :refer [get-user-object]]
             [clojure.scenes.scene2d.ui.button-group :as button-group]
             [moon.action-bar.get-data :as get-data]))
 

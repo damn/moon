@@ -1,6 +1,6 @@
 (ns editor.property-overview-window.table-rows
-  (:require [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.scenes.scene2d.actor.set-touchable :refer [set-touchable!]]
+  (:require [clojure.actor.add-listener :refer [add-listener!]]
+            [clojure.actor.set-touchable :refer [set-touchable!]]
             [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
             [clojure.scenes.scene2d.group.add-actor :refer [add-actors!]]
             [clojure.scenes.scene2d.touchable :as touchable]

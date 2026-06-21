@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
-  (:require [clojure.scenes.scene2d.actor.create :as actor]
-            [clojure.scenes.scene2d.actor.set-touchable :refer [set-touchable!]]
-            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+  (:require [clojure.actor.create :as actor]
+            [clojure.actor.set-touchable :refer [set-touchable!]]
+            [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
             [clojure.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]

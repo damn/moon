@@ -1,6 +1,6 @@
 (ns editor.rebuild
   (:require [editor.map-widget-table.get-value :as get-value]
-            [clojure.scenes.scene2d.actor.remove :refer [remove!]]
+            [clojure.actor.remove :refer [remove!]]
             [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
             [editor.window]
             [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]))

@@ -1,4 +1,4 @@
-(ns clojure.scenes.scene2d.actor.add-listener
+(ns clojure.actor.add-listener
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn add-listener! [^Actor actor listener]

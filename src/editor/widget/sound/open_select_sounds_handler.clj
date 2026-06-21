@@ -1,7 +1,7 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [clojure.scenes.scene2d.actor.get-height :refer [get-height]]
-            [clojure.scenes.scene2d.actor.get-width :refer [get-width]]
-            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+  (:require [clojure.actor.get-height :refer [get-height]]
+            [clojure.actor.get-width :refer [get-width]]
+            [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
             [clojure.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]

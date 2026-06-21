@@ -1,5 +1,5 @@
 (ns tx.show-message
-  (:require [clojure.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
+  (:require [clojure.actor.set-user-object :refer [set-user-object!]]
             [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]))
 
 (defn f

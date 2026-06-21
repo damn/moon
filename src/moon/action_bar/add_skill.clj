@@ -1,6 +1,6 @@
 (ns moon.action-bar.add-skill
-  (:require [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
-            [clojure.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
+  (:require [clojure.actor.add-listener :refer [add-listener!]]
+            [clojure.actor.set-user-object :refer [set-user-object!]]
             [clojure.scenes.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.scenes.scene2d.ui.button-group :as button-group]
             [clojure.scenes.scene2d.ui.image-button :as image-button]

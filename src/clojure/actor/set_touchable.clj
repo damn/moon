@@ -1,4 +1,4 @@
-(ns clojure.scenes.scene2d.actor.set-touchable
+(ns clojure.actor.set-touchable
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn set-touchable! [^Actor actor touchable]

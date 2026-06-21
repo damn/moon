@@ -1,8 +1,8 @@
 (ns editor.widget.sound.rebuild
-  (:require [clojure.scenes.scene2d.actor.get-user-object :refer [get-user-object]]
-            [clojure.scenes.scene2d.actor.remove :refer [remove!]]
-            [clojure.scenes.scene2d.actor.set-user-object :refer [set-user-object!]]
-            [clojure.scenes.scene2d.actor.find-ancestor :refer [find-ancestor]]
+  (:require [clojure.actor.get-user-object :refer [get-user-object]]
+            [clojure.actor.remove :refer [remove!]]
+            [clojure.actor.set-user-object :refer [set-user-object!]]
+            [clojure.actor.find-ancestor :refer [find-ancestor]]
             [clojure.scenes.scene2d.group.clear-children :refer [clear-children!]]
             [clojure.scenes.scene2d.utils.layout.pack :refer [pack!]]
             [scene2d.actor.is-window :as window?]

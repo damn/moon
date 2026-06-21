@@ -1,5 +1,5 @@
 (ns editor.widget.string
-  (:require [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+  (:require [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.scenes.scene2d.ui.text-field :as text-field]
             [clojure.scenes.scene2d.ui.text-tooltip :as text-tooltip]))
 

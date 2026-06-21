@@ -1,4 +1,4 @@
-(ns clojure.scenes.scene2d.actor.get-parent
+(ns clojure.actor.get-parent
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn get-parent [^Actor actor]

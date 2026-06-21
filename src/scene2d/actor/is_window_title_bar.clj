@@ -1,5 +1,5 @@
 (ns scene2d.actor.is-window-title-bar
-  (:require [clojure.scenes.scene2d.actor.get-parent :refer [get-parent]]
+  (:require [clojure.actor.get-parent :refer [get-parent]]
             [clojure.scenes.scene2d.ui.label :as label]
             [clojure.scenes.scene2d.ui.window :as window]))
 

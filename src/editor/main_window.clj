@@ -1,6 +1,6 @@
 (ns editor.main-window
   (:require [clojure.string :as str]
-            [clojure.scenes.scene2d.actor.add-listener :refer [add-listener!]]
+            [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
             [editor.window]
             [clojure.scenes.scene2d.ui.text-button :as text-button]

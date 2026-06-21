@@ -1,5 +1,5 @@
 (ns handle-input.player-idle.interaction-state-txs
-  (:require [clojure.scenes.scene2d.actor.visible :refer [visible?]]
+  (:require [clojure.actor.visible :refer [visible?]]
             [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
             [moon.inventory :as inventory]))
 

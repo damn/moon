@@ -3,8 +3,8 @@
             [clojure.input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.scenes.scene2d.actor.set-visible :refer [set-visible!]]
-            [clojure.scenes.scene2d.actor.toggle-visible :refer [toggle-visible!]]
+            [clojure.actor.set-visible :refer [set-visible!]]
+            [clojure.actor.toggle-visible :refer [toggle-visible!]]
             [clojure.scenes.scene2d.group.children :refer [children]]))
 
 (defn step
