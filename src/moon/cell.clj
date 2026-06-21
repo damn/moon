@@ -1,12 +1,6 @@
 (ns moon.cell
   (:require [moon.cell.is-blocked :as blocked?]))
 
-(defn blocks-vision? [{:keys [movement]}]
-  (= movement :none))
-
-(defn occupied-by-other? [{:keys [occupied]} eid]
-  (some #(not= % eid) occupied))
-
 (defn nearest-entity [this faction]
   (-> this faction :eid))
 

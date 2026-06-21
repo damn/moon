@@ -1,5 +1,6 @@
 (ns moon.grid.npc-pathing.filter-viable-cells
   (:require [moon.cell :as cell]
+            [moon.cell.is-occupied-by-other :as occupied-by-other?]
             [moon.grid.npc-pathing.remove-not-allowed-diagonals :as remove-not-allowed-diagonals]))
 
 ; not using filter because nil cells considered @ remove-not-allowed-diagonals
@@ -8,6 +9,6 @@
 (defn f [eid adjacent-cells]
   (remove-not-allowed-diagonals/f
    (mapv #(when-not (or (cell/pf-blocked? @%)
-                        (cell/occupied-by-other? @% eid))
+                        (occupied-by-other?/f @% eid))
             %)
          adjacent-cells)))
