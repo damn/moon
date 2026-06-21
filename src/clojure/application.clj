@@ -1,4 +1,4 @@
-(ns clojure.lwjgl.application
+(ns clojure.application
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)))
 
 (defn create [listener config]
