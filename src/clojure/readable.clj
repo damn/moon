@@ -2,7 +2,7 @@
   (:require [moon.number :refer [approx-numbers
                                  round-n-decimals]]))
 
-(defn readable [^double x]
+(defn f [^double x]
   {:pre [(number? x)]}
   (if (or
        (> x 5)
