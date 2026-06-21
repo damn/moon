@@ -1,8 +1,8 @@
 [
  (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
- (application.use-glfw-async/f!)
- (application.start/f!
-  {:listener (application.listener/f
+ (moon.application.use-glfw-async/f!)
+ (moon.application.start/f!
+  {:listener (moon.application.listener/f
               {:state-var levelgen-test.app/state
                :create-pipeline [
                                  (create.gdx-context/f)

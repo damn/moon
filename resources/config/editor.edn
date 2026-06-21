@@ -29,9 +29,9 @@
                           :s/val-max editor.widget.val-max/value
                           }
                          )
- (application.use-glfw-async/f!)
- (application.start/f!
-  {:listener (application.listener/f
+ (moon.application.use-glfw-async/f!)
+ (moon.application.start/f!
+  {:listener (moon.application.listener/f
               {
                :state-var editor.app/state
                :create-pipeline [

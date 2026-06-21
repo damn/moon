@@ -1,4 +1,4 @@
-(ns application.use-glfw-async
+(ns moon.application.use-glfw-async
   (:require [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
             [com.badlogic.gdx.utils.os :as os]
             [lwjgl.system.configuration :as configuration]))
