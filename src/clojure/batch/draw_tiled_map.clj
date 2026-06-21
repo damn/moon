@@ -1,6 +1,6 @@
 (ns clojure.batch.draw-tiled-map
   (:require [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.batch.draw-tiled-map.render-tile-layer :refer [render-tile-layer!]])
+            [clojure.batch.render-tile-layer :refer [render-tile-layer!]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer)

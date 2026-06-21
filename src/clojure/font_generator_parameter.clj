@@ -1,4 +1,4 @@
-(ns clojure.font-generator.parameter
+(ns clojure.font-generator-parameter
   (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator$FreeTypeFontParameter)))
 
 (defn create

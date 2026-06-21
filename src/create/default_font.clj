@@ -8,7 +8,7 @@
             [clojure.font-generator :as font-generator]
             [clojure.font-generator.generate-font :as generate-font]
             [clojure.font-generator.dispose :refer [dispose!]]
-            [clojure.font-generator.parameter :as parameter]))
+            [clojure.font-generator-parameter :as parameter]))
 
 (defn step
   [{:keys [ctx/files]}]

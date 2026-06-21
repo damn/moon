@@ -1,5 +1,5 @@
 (ns clojure.input.key-just-pressed
-  (:require [clojure.input.keys :as input.keys])
+  (:require [clojure.input-keys :as input.keys])
   (:import (com.badlogic.gdx Input)))
 
 (defn f [^Input input k]
