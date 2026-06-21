@@ -2,7 +2,6 @@
   (:require [com.badlogic.gdx.input.key-just-pressed :as key-just-pressed?]
             [com.badlogic.gdx.input.key-pressed :as key-pressed?]
             [gdx.orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [game.constants :refer [zoom-speed]]
             [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
             [com.badlogic.gdx.scenes.scene2d.actor.set-visible :refer [set-visible!]]
             [com.badlogic.gdx.scenes.scene2d.actor.toggle-visible :refer [toggle-visible!]]
@@ -12,7 +11,8 @@
   [{:keys [ctx/input
            ctx/controls
            ctx/stage
-           ctx/world-viewport]
+           ctx/world-viewport
+           ctx/zoom-speed]
     :as ctx}]
   (when (key-pressed?/f input (:zoom-in controls))
     (inc-zoom! (:viewport/camera world-viewport) zoom-speed))

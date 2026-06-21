@@ -20,5 +20,3 @@
 (def mouseover-ellipse-width 5)
 
 (def reaction-time-multiplier 0.016)
-
-(def zoom-speed 0.025)
