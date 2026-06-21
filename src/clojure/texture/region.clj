@@ -1,4 +1,4 @@
-(ns clojure.graphics.texture.region
+(ns clojure.texture.region
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
 

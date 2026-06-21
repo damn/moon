@@ -1,6 +1,6 @@
 (ns create.default-font
   (:require [clojure.files :as files]
-            [clojure.graphics.texture.filter :as texture.filter]
+            [clojure.texture.filter :as texture.filter]
             [clojure.bitmap-font.enable-markup :as enable-markup]
             [clojure.bitmap-font.set-scale :as set-scale]
             [clojure.bitmap-font.set-use-integer-positions :as set-use-integer-positions]

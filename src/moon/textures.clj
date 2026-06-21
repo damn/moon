@@ -1,5 +1,5 @@
 (ns moon.textures
-  (:require [clojure.graphics.texture.region :as region]))
+  (:require [clojure.texture.region :as region]))
 
 (defn texture-region [textures {:keys [image/file image/bounds]}]
   (assert file)
