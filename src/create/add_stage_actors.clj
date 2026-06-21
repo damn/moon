@@ -1,5 +1,5 @@
 (ns create.add-stage-actors
-  (:require [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
+  (:require [clojure.stage.add-actor :refer [add-actor!]]))
 
 (defn f!
   [{:keys [ctx/stage]

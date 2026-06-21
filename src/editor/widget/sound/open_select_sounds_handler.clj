@@ -2,15 +2,15 @@
   (:require [clojure.actor.get-height :refer [get-height]]
             [clojure.actor.get-width :refer [get-width]]
             [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
-            [clojure.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.event.get-stage :refer [get-stage]]
+            [clojure.ui.scroll-pane :as scroll-pane]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [game.ctx.do :refer [do!]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.scenes.scene2d.utils.change-listener :as change-listener]
-            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
+            [clojure.utils.change-listener :as change-listener]
+            [clojure.stage.add-actor :refer [add-actor!]]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin

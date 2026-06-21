@@ -2,10 +2,10 @@
   (:require [clojure.input.key-just-pressed :as key-just-pressed?]
             [clojure.input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
+            [clojure.group.find-actor :refer [find-actor]]
             [clojure.actor.set-visible :refer [set-visible!]]
             [clojure.actor.toggle-visible :refer [toggle-visible!]]
-            [clojure.scenes.scene2d.group.children :refer [children]]))
+            [clojure.group.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/input

@@ -4,12 +4,12 @@
             [clojure.actor.remove :refer [remove!]]
             [clojure.actor.set-name :refer [set-name!]]
             [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.scenes.scene2d.ui.label :as label]
-            [clojure.scenes.scene2d.ui.text-button :as text-button]
-            [clojure.scenes.scene2d.utils.change-listener :as change-listener]
+            [clojure.ui.label :as label]
+            [clojure.ui.text-button :as text-button]
+            [clojure.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
+            [clojure.group.find-actor :refer [find-actor]]
+            [clojure.stage.add-actor :refer [add-actor!]]))
 
 (defn f
   [{:keys [ctx/skin

@@ -1,6 +1,6 @@
 (ns moon.action-bar.get-data
   (:require [clojure.actor.get-user-object :refer [get-user-object]]
-            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]))
+            [clojure.group.find-actor :refer [find-actor]]))
 
 (defn f
   [action-bar]

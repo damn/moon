@@ -5,8 +5,8 @@
             [clojure.fit-viewport :as fit-viewport]
             [clojure.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.scenes.scene2d.stage :as stage]
-            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]
+            [clojure.stage :as stage]
+            [clojure.stage.add-actor :refer [add-actor!]]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]))
 

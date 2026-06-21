@@ -1,9 +1,9 @@
 (ns moon.inventory-window.set-item
   (:require [clojure.actor.get-user-object :refer [get-user-object]]
             [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
-            [clojure.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [clojure.scenes.scene2d.ui.image :as image]
+            [clojure.group.find-actor :refer [find-actor]]
+            [clojure.ui.text-tooltip :as text-tooltip]
+            [clojure.ui.image :as image]
             [clojure.map.texture-region-drawable :as texture-region-drawable]
             [moon.inventory-window.get-cell :as get-cell]))
 

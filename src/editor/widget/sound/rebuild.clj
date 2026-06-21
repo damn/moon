@@ -3,10 +3,10 @@
             [clojure.actor.remove :refer [remove!]]
             [clojure.actor.set-user-object :refer [set-user-object!]]
             [clojure.actor.find-ancestor :refer [find-ancestor]]
-            [clojure.scenes.scene2d.group.clear-children :refer [clear-children!]]
-            [clojure.scenes.scene2d.utils.layout.pack :refer [pack!]]
+            [clojure.group.clear-children :refer [clear-children!]]
+            [clojure.utils.layout.pack :refer [pack!]]
             [scene2d.actor.is-window :as window?]
-            [clojure.scenes.scene2d.ui.table.add-rows :refer [add-rows!]]))
+            [clojure.ui.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]

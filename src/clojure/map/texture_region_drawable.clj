@@ -2,7 +2,7 @@
   (:require [clojure.rgba.color :refer [rgba->Color]]
             [clojure.texture-region.get-region-height :refer [get-region-height]]
             [clojure.texture-region.get-region-width :refer [get-region-width]]
-            [clojure.scenes.scene2d.utils.texture-region-drawable :as drawable]))
+            [clojure.utils.texture-region-drawable :as drawable]))
 
 (defn create
   [{:keys [drawable/texture-region

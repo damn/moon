@@ -1,7 +1,7 @@
 (ns scene2d.actor.is-window-title-bar
   (:require [clojure.actor.get-parent :refer [get-parent]]
-            [clojure.scenes.scene2d.ui.label :as label]
-            [clojure.scenes.scene2d.ui.window :as window]))
+            [clojure.ui.label :as label]
+            [clojure.ui.window :as window]))
 
 ; FIXME does not work
 (defn f [actor]

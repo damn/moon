@@ -1,6 +1,6 @@
 (ns editor.widget.one-to-many
   (:require [clojure.actor.get-user-object :refer [get-user-object]]
-            [clojure.scenes.scene2d.group.children :refer [children]]
+            [clojure.group.children :refer [children]]
             [editor.widget.one-to-many.add-one-to-many-rows :refer [add-one-to-many-rows]]
             [gdx.scenes.scene2d.ui.table :as table]))
 

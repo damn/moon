@@ -2,8 +2,8 @@
   (:require [clojure.actor.get-stage :refer [get-stage]]
             [clojure.actor.remove :refer [remove!]]
             [clojure.actor.find-ancestor :refer [find-ancestor]]
-            [clojure.scenes.scene2d.stage.set-ctx :refer [set-ctx!]]
-            [clojure.scenes.scene2d.stage.add-actor :refer [add-actor!]]
+            [clojure.stage.set-ctx :refer [set-ctx!]]
+            [clojure.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
             [scene2d.actor.is-window :as window?]))

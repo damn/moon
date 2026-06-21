@@ -1,5 +1,5 @@
 (ns editor.widget.boolean
-  (:require [clojure.scenes.scene2d.ui.check-box :as check-box]))
+  (:require [clojure.ui.check-box :as check-box]))
 
 (defn create
   [_ checked? {:keys [ctx/skin]}]

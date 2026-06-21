@@ -1,14 +1,14 @@
 (ns editor.property-overview-window.table-rows
   (:require [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.actor.set-touchable :refer [set-touchable!]]
-            [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]
-            [clojure.scenes.scene2d.group.add-actor :refer [add-actors!]]
-            [clojure.scenes.scene2d.touchable :as touchable]
-            [clojure.scenes.scene2d.ui.stack :as stack]
-            [clojure.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [clojure.scenes.scene2d.utils.change-listener :as change-listener]
-            [clojure.scenes.scene2d.ui.image-button :as image-button]
-            [clojure.scenes.scene2d.ui.label :as label]
+            [clojure.event.get-stage :refer [get-stage]]
+            [clojure.group.add-actor :refer [add-actors!]]
+            [clojure.touchable :as touchable]
+            [clojure.ui.stack :as stack]
+            [clojure.ui.text-tooltip :as text-tooltip]
+            [clojure.utils.change-listener :as change-listener]
+            [clojure.ui.image-button :as image-button]
+            [clojure.ui.label :as label]
             [clojure.map.texture-region-drawable :as texture-region-drawable]))
 
 (defn overview-table-rows* [skin image-scale rows]

@@ -1,5 +1,5 @@
 (ns tx.toggle-inventory-visible
-  (:require [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
+  (:require [clojure.group.find-actor :refer [find-actor]]
             [clojure.actor.toggle-visible :refer [toggle-visible!]]))
 
 (defn f
