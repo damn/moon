@@ -6,10 +6,10 @@
               {:state-var levelgen-test.app/state
                :create-pipeline [
                                  (create.gdx-context/f)
-                                 (map.assoc-create/f :ctx/db create.db/step)
-                                 (map.assoc-create/f :ctx/textures create.textures/step)
-                                 (map.assoc-create/f :ctx/sprite-batch create.batch/step)
-                                 (map.assoc-create/f :ctx/skin create.skin/step)
+                                 (clojure.map.assoc-create/f :ctx/db create.db/step)
+                                 (clojure.map.assoc-create/f :ctx/textures create.textures/step)
+                                 (clojure.map.assoc-create/f :ctx/sprite-batch create.batch/step)
+                                 (clojure.map.assoc-create/f :ctx/skin create.skin/step)
                                  (levelgen-test.create/f!)
                                  ]
                :dispose! levelgen-test.dispose/f!
