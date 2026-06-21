@@ -1,14 +1,10 @@
 (ns com.badlogic.gdx.graphics.pixmap
-  (:import (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Pixmap
+  (:import (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format
                                       Texture)))
 
-(defn create
-  ([^FileHandle file-handle]
-   (Pixmap. file-handle))
-  ([width height]
-   (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888)))
+(defn create [width height]
+  (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))
 
 (defn dispose! [^Pixmap pixmap]
   (.dispose pixmap))
