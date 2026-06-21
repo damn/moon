@@ -1,4 +1,4 @@
-(ns scene2d.actor.is-button
+(ns clojure.actor.is-button
   (:require [clojure.actor.get-parent :refer [get-parent]]
             [clojure.ui.button :as button]))
 

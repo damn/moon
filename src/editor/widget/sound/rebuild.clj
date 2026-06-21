@@ -5,7 +5,7 @@
             [clojure.actor.find-ancestor :refer [find-ancestor]]
             [clojure.group.clear-children :refer [clear-children!]]
             [clojure.layout.pack :refer [pack!]]
-            [scene2d.actor.is-window :as window?]
+            [clojure.actor.is-window :as window?]
             [clojure.ui.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]

@@ -10,7 +10,7 @@
             [clojure.ui.text-tooltip :as text-tooltip]
             [clojure.layout.pack :refer [pack!]]
             [clojure.change-listener :as change-listener]
-            [scene2d.actor.is-window :as window?]
+            [clojure.actor.is-window :as window?]
             [clojure.ui.image :as image]
             [clojure.stage.add-actor :refer [add-actor!]]
             [moon.db.get-raw :refer [get-raw]]

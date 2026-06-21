@@ -2,8 +2,8 @@
   (:require [clojure.actor.get-user-object :refer [get-user-object]]
             [clojure.actor.get-name :refer [get-name]]
             [clojure.actor.get-parent :refer [get-parent]]
-            [scene2d.actor.is-button :as button?]
-            [scene2d.actor.is-window-title-bar :as window-title-bar?]))
+            [clojure.actor.is-button :as button?]
+            [clojure.actor.is-window-title-bar :as window-title-bar?]))
 
 (defn mouseover-actor-info [actor]
   (let [inventory-slot (and (get-parent actor)
