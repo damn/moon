@@ -1,8 +1,8 @@
 (ns clojure.tiled-map.spawn-positions
-  (:require [clojure.maps.layers.get-layer :refer [get-layer]]
-            [clojure.maps.properties.get :refer [props-get]]
+  (:require [clojure.map-layers.get-layer :refer [get-layer]]
+            [clojure.map-properties.get :refer [props-get]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]
-            [clojure.maps.get-properties :refer [get-properties]]
+            [clojure.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-width :refer [get-width]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-height :refer [get-height]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]

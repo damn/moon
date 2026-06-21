@@ -1,6 +1,6 @@
 (ns clojure.tiled-map.tile-movement-property
-  (:require [clojure.maps.properties.get :refer [props-get]]
-            [clojure.maps.get-properties :refer [get-properties]]
+  (:require [clojure.map-properties.get :refer [props-get]]
+            [clojure.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [clojure.maps.tiled.tiled-map-tile-layer.cell :as cell]))

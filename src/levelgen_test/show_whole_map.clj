@@ -1,6 +1,6 @@
 (ns levelgen-test.show-whole-map
-  (:require [clojure.maps.properties.get :refer [props-get]]
-            [clojure.maps.get-properties :refer [get-properties]]
+  (:require [clojure.map-properties.get :refer [props-get]]
+            [clojure.get-properties :refer [get-properties]]
             [clojure.orthographic-camera.set-position :refer [set-position!]]
             [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
             [clojure.orthographic-camera.set-zoom :refer [set-zoom!]]))

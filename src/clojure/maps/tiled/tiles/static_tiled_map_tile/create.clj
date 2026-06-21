@@ -1,6 +1,6 @@
 (ns clojure.maps.tiled.tiles.static-tiled-map-tile.create
-  (:require [clojure.maps.properties.put :refer [put!]]
-            [clojure.maps.get-properties :refer [get-properties]]
+  (:require [clojure.map-properties.put :refer [put!]]
+            [clojure.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f

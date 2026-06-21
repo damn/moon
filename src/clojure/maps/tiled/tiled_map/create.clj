@@ -1,6 +1,6 @@
 (ns clojure.maps.tiled.tiled-map.create
-  (:require [clojure.maps.properties.put :refer [put!]]
-            [clojure.maps.get-properties :refer [get-properties]]
+  (:require [clojure.map-properties.put :refer [put!]]
+            [clojure.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map.add-layer :as add-layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
