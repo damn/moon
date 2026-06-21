@@ -1,5 +1,4 @@
-(ns moon.content-grid
-  (:require [clojure.math.position.get-8-neighbours :refer [get-8-neighbours]]))
+(ns moon.content-grid)
 
 (defn- update-entity! [{:keys [grid cell-w cell-h]} eid]
   (let [{:keys [moon.content-grid/content-cell
@@ -23,12 +22,3 @@
 
 (defn position-changed! [this eid]
   (update-entity! this eid))
-
-(defn active-entities [{:keys [grid]} center-entity]
-  (->> (let [idx (-> center-entity
-                     :moon.content-grid/content-cell
-                     deref
-                     :idx)]
-         (cons idx (get-8-neighbours idx)))
-       (keep grid)
-       (mapcat (comp :entities deref))))
