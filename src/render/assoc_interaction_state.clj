@@ -4,7 +4,7 @@
             [game.skill :as skill]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
             [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
-            [gdx.scenes.scene2d.ui.action-bar :as action-bar]
+            [moon.action-bar.selected-skill :as selected-skill]
             [moon.body :as body]))
 
 (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
@@ -40,7 +40,7 @@
      (if-let [skill-id (-> stage
                            :stage/root
                            (find-actor "moon.ui.action-bar")
-                           action-bar/selected-skill)]
+                           selected-skill/f)]
        (let [entity @player-eid
              skill (skill-id (:entity/skills entity))
              effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)

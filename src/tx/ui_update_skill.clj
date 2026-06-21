@@ -1,6 +1,6 @@
 (ns tx.ui-update-skill
   (:require [com.badlogic.gdx.scenes.scene2d.group.find-actor :refer [find-actor]]
-            [gdx.scenes.scene2d.ui.action-bar :as action-bar]
+            [moon.action-bar.add-skill :as add-skill]
             [moon.textures :as textures]
             [info.entity :refer [info-text]]))
 
@@ -13,8 +13,8 @@
   (-> stage
       :stage/root
       (find-actor "moon.ui.action-bar")
-      (action-bar/add-skill! {:skill-id (:property/id skill)
-                              :texture-region (textures/texture-region textures (:entity/image skill))
-                              :tooltip-text (info-text skill ctx)}
-                             skin))
+      (add-skill/f {:skill-id (:property/id skill)
+                    :texture-region (textures/texture-region textures (:entity/image skill))
+                    :tooltip-text (info-text skill ctx)}
+                   skin))
   nil)

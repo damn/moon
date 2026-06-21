@@ -7,17 +7,15 @@
                                         TiledMapTileLayer$Cell)
            (com.badlogic.gdx.math Rectangle)))
 
-(def ^:private num-vertices 20)
-
-(def ^:private vertices (float-array num-vertices))
-
 (defn render-tile-layer!
   [^TiledMapTileLayer layer
    ^Batch batch
    unit-scale
    ^Rectangle view-bounds
    color-setter]
-  (let [^Color batch-color (.getColor batch)
+  (let [num-vertices 20
+        vertices (float-array num-vertices)
+        ^Color batch-color (.getColor batch)
         layer-width (.getWidth layer)
         layer-height (.getHeight layer)
         layer-tile-width (* (.getTileWidth layer) unit-scale)
