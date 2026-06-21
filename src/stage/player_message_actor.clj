@@ -4,7 +4,7 @@
             [clojure.actor.get-stage :refer [get-stage]]
             [clojure.actor.set-name :refer [set-name!]]
             [clojure.actor.set-user-object :refer [set-user-object!]]
-            [clojure.actor.create :as actor]))
+            [clojure.actor :as actor]))
 
 (defn create [_ctx]
   (let [message-duration-seconds 0.5]

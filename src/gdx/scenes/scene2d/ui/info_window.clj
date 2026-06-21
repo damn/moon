@@ -3,7 +3,7 @@
             [clojure.actor.get-stage :refer [get-stage]]
             [clojure.actor.set-name :refer [set-name!]]
             [clojure.actor.set-visible :refer [set-visible!]]
-            [clojure.actor.create :as actor]
+            [clojure.actor :as actor]
             [clojure.scenes.scene2d.group.add-actor :refer [add-actor!]]
             [clojure.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]

@@ -9,7 +9,7 @@
             [moon.schema.create-widget :as create-widget]
             [moon.schema.widget-value :as widget-value]
             [editor.window.with-window-close :as with-window-close]
-            [clojure.actor.create :as actor]
+            [clojure.actor :as actor]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]

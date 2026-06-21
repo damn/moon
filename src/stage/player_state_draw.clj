@@ -2,7 +2,7 @@
   (:require [game.ctx.draw :refer [draw!]]
             [game.state :as state]
             [clojure.actor.get-stage :refer [get-stage]]
-            [clojure.actor.create :as actor]))
+            [clojure.actor :as actor]))
 
 (defn create [_ctx]
   (actor/create

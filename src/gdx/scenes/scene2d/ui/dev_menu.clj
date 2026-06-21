@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
-  (:require [clojure.actor.create :as actor]
+  (:require [clojure.actor :as actor]
             [clojure.actor.set-touchable :refer [set-touchable!]]
             [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.scenes.scene2d.event.get-stage :refer [get-stage]]

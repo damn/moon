@@ -1,4 +1,4 @@
-(ns clojure.actor.create
+(ns clojure.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn create
