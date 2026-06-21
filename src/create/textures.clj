@@ -1,6 +1,27 @@
 (ns create.textures
-  (:require [gdx.textures]))
+  (:require [clojure.string :as str]
+            [com.badlogic.gdx.files :as files]
+            [com.badlogic.gdx.files.file-handle :as file]
+            [com.badlogic.gdx.graphics.texture :as texture]))
+
+(def folder "resources/")
+(def extensions #{"png" "bmp"})
 
 (defn step
-  [ctx]
-  (gdx.textures/create (:ctx/files ctx)))
+  [{:keys [ctx/files]}]
+  (into {} (for [path (map (fn [path]
+                             (str/replace-first path folder ""))
+                           (loop [[file & remaining] (file/list (files/internal files folder))
+                                  result []]
+                             (cond (nil? file)
+                                   result
+
+                                   (file/directory? file)
+                                   (recur (concat remaining (file/list file)) result)
+
+                                   (extensions (file/extension file))
+                                   (recur remaining (conj result (file/path file)))
+
+                                   :else
+                                   (recur remaining result))))]
+             [path (texture/create (files/internal files path))])))
