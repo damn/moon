@@ -6,7 +6,7 @@
             [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
-            [gdx.scenes.scene2d.ui :as ui]))
+            [scene2d.actor.is-window :as window?]))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin
@@ -16,7 +16,7 @@
      (let [new-ctx (update ctx :ctx/db f)
            stage (get-stage actor)]
        (set-ctx! stage new-ctx))
-     (remove! (find-ancestor actor ui/window?))
+     (remove! (find-ancestor actor window?/f))
      (catch Throwable t
        (throwable/pretty-pst t)
        (add-actor! stage

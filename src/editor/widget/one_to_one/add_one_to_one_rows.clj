@@ -10,7 +10,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [com.badlogic.gdx.scenes.scene2d.utils.layout.pack :refer [pack!]]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [gdx.scenes.scene2d.ui :as ui]
+            [scene2d.actor.is-window :as window?]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
             [moon.db.get-raw :refer [get-raw]]
@@ -27,7 +27,7 @@
   (let [redo-rows (fn [ctx id]
                     (clear-children! table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (pack! (find-ancestor table ui/window?)))]
+                    (pack! (find-ancestor table window?/f)))]
     (add-rows!
      table
      [[(when-not property-id
@@ -48,7 +48,7 @@
                                           :skin skin
                                           :property-type property-type
                                           :clicked-id-fn (fn [actor id ctx]
-                                                           (remove! (find-ancestor actor ui/window?))
+                                                           (remove! (find-ancestor actor window?/f))
                                                            (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
