@@ -1,7 +1,6 @@
 (ns render.assoc-paused
   (:require [game.ctx.key-pressed :refer [key-pressed?]]
-            [game.ctx.key-just-pressed :refer [key-just-pressed?]]
-            [game.constants :refer [pausing?]]))
+            [game.ctx.key-just-pressed :refer [key-just-pressed?]]))
 
 (def state->pause-game?
   {
@@ -14,7 +13,8 @@
    })
 
 (defn step
-  [{:keys [ctx/controls
+  [{:keys [ctx/pausing?
+           ctx/controls
            ctx/player-eid]
     :as ctx}]
   (assoc ctx :ctx/paused?

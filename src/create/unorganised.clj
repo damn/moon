@@ -9,6 +9,7 @@
 
 (defn step [ctx]
   (assoc ctx
+         :ctx/pausing? true
          :ctx/info (edn-resource "config/info.edn")
          :ctx/fsms {:npc (load-fsm "config/npc-fsm.edn")
                     :player (load-fsm "config/player-fsm.edn")}
