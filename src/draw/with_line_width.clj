@@ -1,7 +1,7 @@
 (ns draw.with-line-width
   (:require [game.ctx.draw :refer [draw!]]
-            [space.earlygrey.shape-drawer.default-line-width :refer [default-line-width]]
-            [space.earlygrey.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
+            [moon.shape-drawer.default-line-width :refer [default-line-width]]
+            [moon.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]

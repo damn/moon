@@ -1,4 +1,4 @@
-(ns space.earlygrey.shape-drawer
+(ns moon.shape-drawer
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn shape-drawer [batch texture-region]

@@ -1,6 +1,6 @@
 (ns create.shape-drawer
   (:require [com.badlogic.gdx.graphics.texture.region :as region]
-            [space.earlygrey.shape-drawer :refer [shape-drawer]]))
+            [moon.shape-drawer :refer [shape-drawer]]))
 
 (defn step
   [{:keys [ctx/batch

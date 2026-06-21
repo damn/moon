@@ -2,8 +2,8 @@
   (:require [game.ctx.draw :refer [draw!]]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.graphics.orthographic-camera.get-combined :refer [get-combined]]
-            [space.earlygrey.shape-drawer.default-line-width :refer [default-line-width]]
-            [space.earlygrey.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
+            [moon.shape-drawer.default-line-width :refer [default-line-width]]
+            [moon.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
 
 (defn step
   [{:keys [ctx/batch

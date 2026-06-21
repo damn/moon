@@ -1,6 +1,6 @@
 (ns draw.ellipse
-  (:require [space.earlygrey.shape-drawer.ellipse :refer [ellipse!]]
-            [space.earlygrey.shape-drawer.set-color :refer [set-color!]]))
+  (:require [moon.shape-drawer.ellipse :refer [ellipse!]]
+            [moon.shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]

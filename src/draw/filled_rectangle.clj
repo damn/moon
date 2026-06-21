@@ -1,6 +1,6 @@
 (ns draw.filled-rectangle
-  (:require [space.earlygrey.shape-drawer.filled-rectangle :refer [filled-rectangle!]]
-            [space.earlygrey.shape-drawer.set-color :refer [set-color!]]))
+  (:require [moon.shape-drawer.filled-rectangle :refer [filled-rectangle!]]
+            [moon.shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
