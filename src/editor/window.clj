@@ -6,7 +6,8 @@
             [com.badlogic.gdx.scenes.scene2d.group.add-actor :refer [add-actors!]]
             [com.badlogic.gdx.scenes.scene2d.event.get-stage :as event]
             [com.badlogic.gdx.scenes.scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
-            [editor.widget :as widget]
+            [moon.schema.create-widget :as create-widget]
+            [moon.schema.widget-value :as widget-value]
             [editor.window.with-window-close :as with-window-close]
             [com.badlogic.gdx.scenes.scene2d.actor.create :as actor]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -25,9 +26,9 @@
                 ctx/stage]} ctx
         schemas (:db/schemas db)
         schema (get schemas (property->type property))
-        widget (widget/create schema property ctx) ; FIXME here no set user object k v ? (widget/build)
+        widget (create-widget/f schema property ctx) ; FIXME here no set user object k v ? (widget/build)
         scroll-pane-height (:viewport/world-height (:stage/viewport stage))
-        get-widget-value #(widget/value schema widget schemas)
+        get-widget-value #(widget-value/f schema widget schemas)
         property-id (:property/id property)
         clicked-delete-fn (with-window-close/f (fn [db]
                                                  (delete! db property-id)))

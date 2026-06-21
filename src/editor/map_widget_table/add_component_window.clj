@@ -1,6 +1,7 @@
 (ns editor.map-widget-table.add-component-window
   (:require [com.badlogic.gdx.scenes.scene2d.event.get-stage :refer [get-stage]]
-            [editor.widget :as widget]
+            [moon.schema.build-widget :as build-widget]
+            [moon.schema.widget-value :as widget-value]
             [com.badlogic.gdx.scenes.scene2d.actor.remove :refer [remove!]]
             [com.badlogic.gdx.scenes.scene2d.actor.add-listener :refer [add-listener!]]
             [com.badlogic.gdx.scenes.scene2d.ui.table.add-rows :refer [add-rows!]]
@@ -20,7 +21,7 @@
                  :window/close-button? skin
                  :window/modal? true
                  :table/cell-defaults {:pad 5}})
-        remaining-ks (sort (remove (set (keys (widget/value schema map-widget-table schemas)))
+        remaining-ks (sort (remove (set (keys (widget-value/f schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
     (add-rows!
      window
@@ -34,10 +35,10 @@
                                     (let [ctx (:stage/ctx (get-stage event))]
                                       (add-rows! map-widget-table [((:ctx/create-component-row ctx)
                                                                     {:skin skin
-                                                                     :editor-widget (widget/build ctx
-                                                                                                  (get schemas k)
-                                                                                                  k
-                                                                                                  (default-value schemas k))
+                                                                     :editor-widget (build-widget/f ctx
+                                                                                                    (get schemas k)
+                                                                                                    k
+                                                                                                    (default-value schemas k))
                                                                      :k k
                                                                      :display-remove-component-button? (optional? schemas schema k)
                                                                      :table map-widget-table})])

@@ -2,7 +2,7 @@
   (:require [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.set :as set]
             [editor.map-widget-table.get-value :as get-value]
-            [editor.widget :as widget]
+            [moon.schema.build-widget :as build-widget]
             [moon.schemas.optional-keyset :refer [optional-keyset]]
             [moon.schemas.optional :refer [optional?]]))
 
@@ -23,7 +23,7 @@
       :schema schema
       :k->widget (into {}
                        (for [[k v] m]
-                         [k (widget/build ctx (get schemas k) k v)]))
+                         [k (build-widget/f ctx (get schemas k) k v)]))
       :k->optional? #(optional? schemas schema %)
       :ks-sorted (map first (sort-by-k-order property-k-sort-order m))
       :opt? (seq (set/difference (optional-keyset schemas schema)
