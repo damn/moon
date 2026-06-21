@@ -1,16 +1,5 @@
 (ns moon.content-grid
-  (:require [clojure.grid2d :as g2d]
-            [clojure.math.position.get-8-neighbours :refer [get-8-neighbours]]))
-
-(defn create [width height cell-size]
-  {:grid (g2d/create-grid
-          (inc (int (/ width  cell-size)))
-          (inc (int (/ height cell-size)))
-          (fn [idx]
-            (atom {:idx idx,
-                   :entities #{}})))
-   :cell-w cell-size
-   :cell-h cell-size})
+  (:require [clojure.math.position.get-8-neighbours :refer [get-8-neighbours]]))
 
 (defn- update-entity! [{:keys [grid cell-w cell-h]} eid]
   (let [{:keys [moon.content-grid/content-cell
