@@ -1,7 +1,7 @@
 (ns create.grid
   (:require [clojure.maps.properties.get :refer [props-get]]
             [clojure.maps.get-properties :refer [get-properties]]
-            [tiled-map.movement-property :as movement-property]
+            [clojure.tiled-map.movement-property :as movement-property]
             [moon.cell :as cell]
             [clojure.grid2d :as g2d]))
 

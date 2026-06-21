@@ -1,4 +1,4 @@
-(ns tiled-map.tile-movement-property
+(ns clojure.tiled-map.tile-movement-property
   (:require [clojure.maps.properties.get :refer [props-get]]
             [clojure.maps.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-name :refer [get-name]]

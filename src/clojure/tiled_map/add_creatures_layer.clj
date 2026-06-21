@@ -1,4 +1,4 @@
-(ns tiled-map.add-creatures-layer
+(ns clojure.tiled-map.add-creatures-layer
   (:require [clojure.maps.tiled.tiled-map.add-layer :as add-layer]
             [clojure.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]))
 

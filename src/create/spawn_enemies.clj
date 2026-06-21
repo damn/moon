@@ -1,7 +1,7 @@
 (ns create.spawn-enemies
   (:require [game.ctx.do :refer [do!]]
             [moon.db.build :refer [build]]
-            [tiled-map.spawn-positions :as spawn-positions]))
+            [clojure.tiled-map.spawn-positions :as spawn-positions]))
 
 (defn step
   [{:keys [ctx/db

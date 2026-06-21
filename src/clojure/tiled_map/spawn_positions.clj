@@ -1,4 +1,4 @@
-(ns tiled-map.spawn-positions
+(ns clojure.tiled-map.spawn-positions
   (:require [clojure.maps.layers.get-layer :refer [get-layer]]
             [clojure.maps.properties.get :refer [props-get]]
             [clojure.maps.tiled.tiled-map.get-layers :refer [get-layers]]

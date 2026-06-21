@@ -1,4 +1,4 @@
-(ns vector.index-of
+(ns clojure.vector.index-of
   (:import (clojure.lang PersistentVector)))
 
 (defn f [^PersistentVector v k]

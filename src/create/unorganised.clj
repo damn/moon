@@ -1,6 +1,6 @@
 (ns create.unorganised
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [malli.create-schema :refer [create-schema]]
+            [clojure.malli.create-schema :refer [create-schema]]
             [reduce-fsm :as fsm]))
 
 (defn- load-fsm [path]

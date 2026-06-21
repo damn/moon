@@ -1,4 +1,4 @@
-(ns malli.map-keys)
+(ns clojure.malli.map-keys)
 
 (defn f [map-schema]
   (let [[_m _p & ks] map-schema]

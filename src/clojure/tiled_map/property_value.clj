@@ -1,4 +1,4 @@
-(ns tiled-map.property-value
+(ns clojure.tiled-map.property-value
   (:require [clojure.maps.properties.get :refer [props-get]]
             [clojure.maps.get-properties :refer [get-properties]]
             [clojure.maps.tiled.tiled-map-tile-layer.get-cell :refer [get-cell]]

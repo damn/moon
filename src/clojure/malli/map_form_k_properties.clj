@@ -1,4 +1,4 @@
-(ns malli.map-form-k-properties)
+(ns clojure.malli.map-form-k-properties)
 
 (defn map-form-k->properties
   "Given a map schema gives a map of key to key properties (like :optional)."
