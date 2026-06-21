@@ -1,4 +1,4 @@
-(ns start
+(ns moon.start
   (:require [clojure.run-executions :refer [run-executions!]])
   (:gen-class))
 

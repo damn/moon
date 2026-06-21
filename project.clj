@@ -30,7 +30,7 @@
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {
-            "dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'start/-main))"]
+            "dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'moon.start/-main))"]
             "levelgen" ["run" "-m" "dev.loop" "((requiring-resolve 'levelgen-test.start/-main))"]
             "editor"   ["run" "-m" "dev.loop" "((requiring-resolve 'editor.start/-main))"]
 
@@ -53,6 +53,6 @@
                 ;*unchecked-math* :warn-on-boxed
                 ;*assert* false
                 *print-level* 3}
-  :profiles {:uberjar {:aot [start]}}
+  :profiles {:uberjar {:aot [moon.start]}}
   :uberjar-name "moon.jar"
-  :main start)
+  :main moon.start)
