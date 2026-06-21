@@ -1,7 +1,7 @@
 (ns create.textures
   (:require [clojure.string :as str]
             [clojure.files :as files]
-            [clojure.files.file-handle :as file]
+            [clojure.file-handle :as file]
             [clojure.graphics.texture :as texture]))
 
 (def folder "resources/")
