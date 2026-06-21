@@ -4,10 +4,10 @@
             [clojure.bitmap-font.enable-markup :as enable-markup]
             [clojure.bitmap-font.set-scale :as set-scale]
             [clojure.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
-            [clojure.graphics.g2d.freetype.font-generator :as font-generator]
-            [clojure.graphics.g2d.freetype.font-generator.generate-font :as generate-font]
-            [clojure.graphics.g2d.freetype.font-generator.dispose :refer [dispose!]]
-            [clojure.graphics.g2d.freetype.font-generator.parameter :as parameter]))
+            [clojure.font-generator :as font-generator]
+            [clojure.font-generator.generate-font :as generate-font]
+            [clojure.font-generator.dispose :refer [dispose!]]
+            [clojure.font-generator.parameter :as parameter]))
 
 (defn step
   [{:keys [ctx/files]}]

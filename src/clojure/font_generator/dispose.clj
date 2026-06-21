@@ -1,4 +1,4 @@
-(ns clojure.graphics.g2d.freetype.font-generator.dispose
+(ns clojure.font-generator.dispose
   (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
 
 (defn dispose! [^FreeTypeFontGenerator generator]
