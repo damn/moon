@@ -4,7 +4,7 @@
             [clojure.scenes.scene2d.group.find-actor :refer [find-actor]]
             [clojure.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.scenes.scene2d.ui.image :as image]
-            [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [clojure.map.texture-region-drawable :as texture-region-drawable]
             [moon.inventory-window.get-cell :as get-cell]))
 
 (defn f [inventory-window cell {:keys [texture-region tooltip-text]} skin]

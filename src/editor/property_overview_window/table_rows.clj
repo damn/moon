@@ -9,7 +9,7 @@
             [clojure.scenes.scene2d.utils.change-listener :as change-listener]
             [clojure.scenes.scene2d.ui.image-button :as image-button]
             [clojure.scenes.scene2d.ui.label :as label]
-            [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
+            [clojure.map.texture-region-drawable :as texture-region-drawable]))
 
 (defn overview-table-rows* [skin image-scale rows]
   (for [row rows]
