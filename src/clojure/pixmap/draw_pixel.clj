@@ -1,4 +1,4 @@
-(ns pixmap.draw-pixel
+(ns clojure.pixmap.draw-pixel
   (:import (com.badlogic.gdx.graphics Pixmap)))
 
 (defn f! [^Pixmap pixmap x y]

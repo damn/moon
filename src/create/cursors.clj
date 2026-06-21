@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.file.pixmap :as file-handle->pixmap]
-            [pixmap.dispose :as dispose]
+            [clojure.pixmap.dispose :as dispose]
             [clojure.files :as files]
             [clojure.graphics.new-cursor :as new-cursor]))
 

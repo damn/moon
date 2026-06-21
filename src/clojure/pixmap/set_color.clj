@@ -1,4 +1,4 @@
-(ns pixmap.set-color
+(ns clojure.pixmap.set-color
   (:import (com.badlogic.gdx.graphics Pixmap)))
 
 (defn f! [^Pixmap pixmap r g b a]

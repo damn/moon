@@ -1,4 +1,4 @@
-(ns pixmap.texture
+(ns clojure.pixmap.texture
   (:import (com.badlogic.gdx.graphics Pixmap
                                       Texture)))
 

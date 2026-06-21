@@ -1,6 +1,6 @@
 (ns clojure.graphics.clear
   (:require [clojure.graphics.get-gl20 :as get-gl20]
-            [moon.gl20 :as gl20]))
+            [clojure.gl20 :as gl20]))
 
 (defn f!
   [graphics r g b a]

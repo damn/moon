@@ -1,5 +1,5 @@
-(ns moon.batch.draw-tiled-map.render-tile-layer
-  (:require [moon.batch.draw-tiled-map.render-tile-layer.draw-tile :as draw-tile])
+(ns clojure.batch.draw-tiled-map.render-tile-layer
+  (:require [clojure.batch.draw-tiled-map.render-tile-layer.draw-tile :as draw-tile])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTile

@@ -1,5 +1,5 @@
 (ns levelgen-test.draw-tiled-map
-  (:require [moon.batch.draw-tiled-map :as batch]))
+  (:require [clojure.batch.draw-tiled-map :as batch]))
 
 (defn f
   [{:keys [ctx/sprite-batch

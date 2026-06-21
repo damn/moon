@@ -1,4 +1,4 @@
-(ns moon.batch.draw-tiled-map.render-tile-layer.draw-tile
+(ns clojure.batch.draw-tiled-map.render-tile-layer.draw-tile
   (:import (com.badlogic.gdx.graphics.g2d Batch
                                           TextureRegion)
            (com.badlogic.gdx.maps.tiled TiledMapTile
