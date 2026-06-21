@@ -1,5 +1,5 @@
-(ns clojure.audio.sound.play
+(ns clojure.sound.play
   (:import (com.badlogic.gdx.audio Sound)))
 
-(defn play! [^Sound sound]
+(defn f! [^Sound sound]
   (.play sound))

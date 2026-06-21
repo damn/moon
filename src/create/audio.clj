@@ -1,7 +1,7 @@
 (ns create.audio
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.audio :as audio]
+            [clojure.audio.new-sound :as new-sound]
             [clojure.files :as files]))
 
 (defn step
@@ -11,5 +11,5 @@
         (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
               :let [path (format "sounds/%s.wav" sound-name)]]
           [sound-name
-           (audio/new-sound audio
-                            (files/internal files path))])))
+           (new-sound/f audio
+                        (files/internal files path))])))
