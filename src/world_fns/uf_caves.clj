@@ -1,5 +1,5 @@
 (ns world-fns.uf-caves
-  (:require [com.badlogic.gdx.graphics.texture :as texture]
+  (:require [com.badlogic.gdx.graphics.texture.region :as region]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile.create :as create-tile]
             [world-fns.uf-caves.initial-grid]
             [world-fns.uf-caves.fix-nads]
@@ -29,11 +29,11 @@
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
                                    (create-tile/f
-                                    (texture/region texture
-                                                    (* (sprite-idx 0) tile-size)
-                                                    (* (sprite-idx 1) tile-size)
-                                                    tile-size
-                                                    tile-size)
+                                    (region/f texture
+                                              (* (sprite-idx 0) tile-size)
+                                              (* (sprite-idx 1) tile-size)
+                                              tile-size
+                                              tile-size)
                                     "movement" movement))))
            :level/spawn-rate spawn-rate
            :level/scaling scaling

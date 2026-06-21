@@ -10,7 +10,7 @@
 ; make tree view from folders, etc. .. !! all creatures animations showing...
 #_(defn- texture-rows [ctx]
     (for [file (sort (assets/all-of-type assets :texture))]
-      [(image-button/create {:texture-region (texture/region (assets file))
+      [(image-button/create {:texture-region (region/f (assets file))
                              :skin skin})]
       #_[(text-button/create file
                              (fn [_actor _ctx]))]))
