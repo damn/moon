@@ -39,6 +39,8 @@
                          )
  (clojure.add-methods/f! game.effect/useful?
                          {
+                          :default               effects.useful.default/f
+
                           :effects/audiovisual   effects.useful.audiovisual/f
                           :effects/projectile    effects.useful.projectile/f
                           :effects/target-all    effects.useful.target-all/f
@@ -66,6 +68,8 @@
                          )
  (clojure.add-methods/f! game.effect/render
                          {
+                          :default               effects.render.default/f
+
                           :effects/target-all    effects.render.target-all/f
                           :effects/target-entity effects.render.target-entity/f
                           }

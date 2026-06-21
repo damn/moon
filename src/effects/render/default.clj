@@ -1,0 +1,5 @@
+(ns effects.render.default)
+
+(defn f
+  [_ _effect-ctx _ctx]
+  nil)

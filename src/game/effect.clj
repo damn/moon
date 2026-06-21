@@ -12,14 +12,6 @@
   (fn [[k _v] _effect-ctx _ctx]
     k))
 
-(defmethod useful? :default
-  [_ _effect-ctx _ctx]
-  true)
-
 (defmulti render
   (fn [[k _v] _effect-ctx _ctx]
     k))
-
-(defmethod render :default
-  [_ _effect-ctx _ctx]
-  nil)
