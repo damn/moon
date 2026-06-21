@@ -1,4 +1,4 @@
-(ns clojure.graphics.g2d.bitmap-font.draw
+(ns clojure.bitmap-font.draw
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
 
 (defn f! [^BitmapFont font batch text x y target-width align wrap?]

@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-tile-grid
-  (:require [clojure.graphics.color.float-bits :refer [float-bits]]
+  (:require [clojure.rgba.float-bits :refer [float-bits]]
             [orthographic-camera.frustum :refer [frustum]]))
 
 (defn f

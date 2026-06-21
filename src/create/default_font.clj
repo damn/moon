@@ -1,9 +1,9 @@
 (ns create.default-font
   (:require [clojure.files :as files]
             [clojure.graphics.texture.filter :as texture.filter]
-            [clojure.graphics.g2d.bitmap-font.enable-markup :as enable-markup]
-            [clojure.graphics.g2d.bitmap-font.set-scale :as set-scale]
-            [clojure.graphics.g2d.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
+            [clojure.bitmap-font.enable-markup :as enable-markup]
+            [clojure.bitmap-font.set-scale :as set-scale]
+            [clojure.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
             [clojure.graphics.g2d.freetype.font-generator :as font-generator]
             [clojure.graphics.g2d.freetype.font-generator.generate-font :as generate-font]
             [clojure.graphics.g2d.freetype.font-generator.dispose :refer [dispose!]]

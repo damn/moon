@@ -1,9 +1,9 @@
 (ns draw.text
   (:require [clojure.string :as str]
-            [clojure.graphics.g2d.bitmap-font.draw :as draw]
-            [clojure.graphics.g2d.bitmap-font.get-scale-x :as get-scale-x]
-            [clojure.graphics.g2d.bitmap-font.get-line-height :as get-line-height]
-            [clojure.graphics.g2d.bitmap-font.set-scale :as set-scale]
+            [clojure.bitmap-font.draw :as draw]
+            [clojure.bitmap-font.get-scale-x :as get-scale-x]
+            [clojure.bitmap-font.get-line-height :as get-line-height]
+            [clojure.bitmap-font.set-scale :as set-scale]
             [clojure.utils.align :as align]))
 
 (defn f

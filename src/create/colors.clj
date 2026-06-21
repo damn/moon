@@ -1,6 +1,6 @@
 (ns create.colors
   (:require [clojure.color :refer [black white gray red]]
-            [clojure.graphics.color.float-bits :refer [float-bits]]))
+            [clojure.rgba.float-bits :refer [float-bits]]))
 
 (def outline-alpha 0.4)
 

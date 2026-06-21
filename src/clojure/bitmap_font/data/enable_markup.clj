@@ -1,4 +1,4 @@
-(ns clojure.graphics.g2d.bitmap-font.data.enable-markup
+(ns clojure.bitmap-font.data.enable-markup
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData)))
 
 (defn enable-markup! [^BitmapFont$BitmapFontData data]
