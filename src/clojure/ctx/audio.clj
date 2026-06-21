@@ -1,4 +1,4 @@
-(ns create.audio
+(ns clojure.ctx.audio
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.audio.new-sound :as new-sound]

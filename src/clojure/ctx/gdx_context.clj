@@ -1,4 +1,4 @@
-(ns create.gdx-context
+(ns clojure.ctx.gdx-context
   (:require [clojure.gdx :as gdx]))
 
 (defn f [ctx]

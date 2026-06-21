@@ -1,4 +1,4 @@
-(ns create.add-stage-actors
+(ns clojure.ctx.add-stage-actors
   (:require [clojure.stage.add-actor :refer [add-actor!]]))
 
 (defn f!

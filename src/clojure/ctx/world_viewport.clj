@@ -1,4 +1,4 @@
-(ns create.world-viewport
+(ns clojure.ctx.world-viewport
   (:require [clojure.orthographic-camera :as camera]
             [clojure.fit-viewport :as fit-viewport]))
 

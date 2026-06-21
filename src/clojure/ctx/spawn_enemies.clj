@@ -1,4 +1,4 @@
-(ns create.spawn-enemies
+(ns clojure.ctx.spawn-enemies
   (:require [game.ctx.do :refer [do!]]
             [moon.db.build :refer [build]]
             [clojure.tiled-map.spawn-positions :as spawn-positions]))

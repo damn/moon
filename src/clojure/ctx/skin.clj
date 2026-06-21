@@ -1,4 +1,4 @@
-(ns create.skin
+(ns clojure.ctx.skin
   (:require [clojure.files :as files]
             [clojure.bitmap-font.get-data :refer [get-data]]
             [clojure.bitmap-font-data.enable-markup :refer [enable-markup!]]

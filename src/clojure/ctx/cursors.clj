@@ -1,4 +1,4 @@
-(ns create.cursors
+(ns clojure.ctx.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.file.pixmap :as file-handle->pixmap]

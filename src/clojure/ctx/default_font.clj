@@ -1,4 +1,4 @@
-(ns create.default-font
+(ns clojure.ctx.default-font
   (:require [clojure.files :as files]
             [clojure.texture.filter :as texture.filter]
             [clojure.bitmap-font.get-data :refer [get-data]]

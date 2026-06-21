@@ -1,4 +1,4 @@
-(ns create.content-grid
+(ns clojure.ctx.content-grid
   (:require [clojure.map-properties.get :refer [props-get]]
             [clojure.get-properties :refer [get-properties]]
             [clojure.grid2d :as g2d]))

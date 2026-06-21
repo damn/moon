@@ -1,4 +1,4 @@
-(ns create.raycaster
+(ns clojure.ctx.raycaster
   (:require [moon.raycaster :as raycaster]))
 
 (defn step

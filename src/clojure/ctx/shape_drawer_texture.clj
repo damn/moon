@@ -1,4 +1,4 @@
-(ns create.shape-drawer-texture
+(ns clojure.ctx.shape-drawer-texture
   (:require [clojure.pixmap :as pixmap]
             [clojure.pixmap.set-color :as set-color]
             [clojure.pixmap.draw-pixel :as draw-pixel]

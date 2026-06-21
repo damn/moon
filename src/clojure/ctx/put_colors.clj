@@ -1,4 +1,4 @@
-(ns create.put-colors
+(ns clojure.ctx.put-colors
   (:require [clojure.colors :as colors]))
 
 (defn step [_ctx]

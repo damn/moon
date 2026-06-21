@@ -1,4 +1,4 @@
-(ns create.colors
+(ns clojure.ctx.colors
   (:require [clojure.color :refer [black white gray red]]
             [clojure.rgba.float-bits :refer [float-bits]]))
 

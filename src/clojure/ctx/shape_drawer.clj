@@ -1,4 +1,4 @@
-(ns create.shape-drawer
+(ns clojure.ctx.shape-drawer
   (:require [clojure.texture.region :as region]
             [clojure.shape-drawer :refer [shape-drawer]]))
 

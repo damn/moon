@@ -1,4 +1,4 @@
-(ns create.tooltip-manager-opts
+(ns clojure.ctx.tooltip-manager-opts
   (:require [clojure.ui.tooltip-manager :as tooltip-manager]))
 
 (defn step [_ctx]

@@ -1,4 +1,4 @@
-(ns create.textures
+(ns clojure.ctx.textures
   (:require [clojure.string :as str]
             [clojure.files :as files]
             [clojure.file-handle :as file]

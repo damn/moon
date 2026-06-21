@@ -1,4 +1,4 @@
-(ns create.stage
+(ns clojure.ctx.stage
   (:require [clojure.input.set-processor :as set-processor!]
             [clojure.fit-viewport :as fit-viewport]
             [clojure.stage :as stage]))
