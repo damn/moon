@@ -7,16 +7,8 @@
             [com.badlogic.gdx.scenes.scene2d.ui.table.add-rows :refer [add-rows!]]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]))
-
-(defn- horiz-sep [colspan]
-  (fn []
-    [{:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
-      :pad-top 2
-      :pad-bottom 2
-      :colspan colspan
-      :fill-x? true
-      :expand-x? true}]))
+            [com.badlogic.gdx.scenes.scene2d.stage.add-actor :refer [add-actor!]]
+            [editor.horiz-sep :as horiz-sep]))
 
 (defn create
   [{:keys [create-component-row
@@ -30,7 +22,7 @@
                      {:table/cell-defaults {:pad 5}})
                 (set-name! "moon.db.schema.map.ui.widget"))
         colspan 3
-        component-rows (interpose-f (horiz-sep colspan)
+        component-rows (interpose-f (horiz-sep/f colspan)
                                     (map (fn [k]
                                            (create-component-row
                                             {:skin skin
