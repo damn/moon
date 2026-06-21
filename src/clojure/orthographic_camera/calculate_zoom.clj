@@ -1,4 +1,4 @@
-(ns orthographic-camera.calculate-zoom
+(ns clojure.orthographic-camera.calculate-zoom
   (:require [clojure.orthographic-camera.get-position :refer [get-position]]
             [clojure.orthographic-camera.get-viewport-width :refer [get-viewport-width]]
             [clojure.orthographic-camera.get-viewport-height :refer [get-viewport-height]]))

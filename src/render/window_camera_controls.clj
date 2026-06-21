@@ -1,7 +1,7 @@
 (ns render.window-camera-controls
   (:require [clojure.input.key-just-pressed :as key-just-pressed?]
             [clojure.input.key-pressed :as key-pressed?]
-            [orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [clojure.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [clojure.group.find-actor :refer [find-actor]]
             [clojure.actor.set-visible :refer [set-visible!]]
             [clojure.actor.toggle-visible :refer [toggle-visible!]]
