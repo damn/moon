@@ -5,7 +5,7 @@
             [gdl.enable-markup :refer [enable-markup!]]
             [gdl.set-scale :as set-scale]
             [gdl.set-use-integer-positions :as set-use-integer-positions]
-            [gdl.file.font-generator :as font-generator]
+            [gdl.font-generator :as font-generator]
             [gdl.font-generator.generate-font :as generate-font]
             [gdl.font-generator.dispose :refer [dispose!]]
             [gdl.font-generator-parameter :as parameter]))

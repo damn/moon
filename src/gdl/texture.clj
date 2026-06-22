@@ -1,4 +1,4 @@
-(ns gdl.file.texture
+(ns gdl.texture
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Texture)))
 

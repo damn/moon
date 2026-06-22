@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [gdl.files.internal :as internal]
             [gdl.file-handle :as file]
-            [gdl.file.texture :as texture]))
+            [gdl.texture :as texture]))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})
