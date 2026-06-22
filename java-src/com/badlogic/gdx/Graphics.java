@@ -180,9 +180,6 @@ public interface Graphics {
 	/** @return the height of the framebuffer in physical pixels */
 	int getBackBufferHeight ();
 
-	/** @return amount of pixels per logical pixel (point) */
-	float getBackBufferScale ();
-
 	/** @return the inset from the left which avoids display cutouts in logical pixels */
 	int getSafeInsetLeft ();
 
@@ -205,11 +202,6 @@ public interface Graphics {
 	/** @return the time span between the current frame and the last frame in seconds. */
 	float getDeltaTime ();
 
-	/** @return the time span between the current frame and the last frame in seconds, without smoothing
-	 * @deprecated use {@link #getDeltaTime()} instead. */
-	@Deprecated
-	float getRawDeltaTime ();
-
 	/** @return the average number of frames per second */
 	int getFramesPerSecond ();
 
@@ -230,18 +222,6 @@ public interface Graphics {
 
 	/** @return the pixels per centimeter on the y-axis. */
 	float getPpcY ();
-
-	/** This is a scaling factor for the Density Independent Pixel unit, following the same conventions as
-	 * android.util.DisplayMetrics#density, where one DIP is one pixel on an approximately 160 dpi screen. Thus on a 160dpi screen
-	 * this density value will be 1; on a 120 dpi screen it would be .75; etc.
-	 *
-	 * If the density could not be determined, this returns a default value of 1.
-	 *
-	 * Depending on the underlying platform implementation this might be a relatively expensive operation. Therefore it should not
-	 * be called continously on each frame.
-	 *
-	 * @return the Density Independent Pixel factor of the display. */
-	float getDensity ();
 
 	/** Whether the given backend supports a display mode change via calling {@link Graphics#setFullscreenMode(DisplayMode)}
 	 *

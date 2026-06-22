@@ -18,7 +18,7 @@ package com.badlogic.gdx.backends.lwjgl3;
 
 import java.nio.IntBuffer;
 
-import com.badlogic.gdx.AbstractGraphics;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Application;
 
 import com.badlogic.gdx.math.GridPoint2;
@@ -41,7 +41,7 @@ import com.badlogic.gdx.utils.Disposable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.Configuration;
 
-public class Lwjgl3Graphics extends AbstractGraphics implements Disposable {
+public class Lwjgl3Graphics implements Disposable, Graphics {
 	final Lwjgl3Window window;
 	GL20 gl20;
 	private GL30 gl30;
