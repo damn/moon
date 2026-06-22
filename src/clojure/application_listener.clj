@@ -9,8 +9,8 @@
            pause!
            resume!]}]
   (reify ApplicationListener
-    (create [_]
-      (create!))
+    (create [_ application]
+      (create! application))
 
     (dispose [_]
       (dispose!))

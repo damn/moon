@@ -1,7 +1,6 @@
 {
  :state-var game.app/state
  :create-pipeline [
-                   (clojure.ctx.gdx-context/f)
                    (clojure.ctx.unorganised/step)
                    (clojure.map.assoc-create/f :ctx/batch clojure.ctx.batch/step)
                    (clojure.map.assoc-create/f :ctx/audio clojure.ctx.audio/step)

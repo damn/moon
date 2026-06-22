@@ -5,7 +5,6 @@
   {:listener (moon.application.listener/f
               {:state-var levelgen-test.app/state
                :create-pipeline [
-                                 (clojure.ctx.gdx-context/f)
                                  (clojure.map.assoc-create/f :ctx/db clojure.ctx.db/step)
                                  (clojure.map.assoc-create/f :ctx/textures clojure.ctx.textures/step)
                                  (clojure.map.assoc-create/f :ctx/sprite-batch clojure.ctx.batch/step)

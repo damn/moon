@@ -35,7 +35,6 @@
               {
                :state-var clojure.editor.app/state
                :create-pipeline [
-                                 (clojure.ctx.gdx-context/f)
                                  (clojure.map.assoc-create/f :ctx/batch clojure.ctx.batch/step)
                                  (clojure.map.assoc-create/f :ctx/skin clojure.ctx.skin/step)
                                  (clojure.map.assoc-create/f :ctx/db clojure.ctx.db/step)

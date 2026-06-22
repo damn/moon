@@ -1,5 +1,6 @@
 (ns moon.application.listener
-  (:require [clojure.application-listener :refer [application-listener]]))
+  (:require [clojure.application-listener :refer [application-listener]])
+  (:import (com.badlogic.gdx Application)))
 
 (defn f
   [{:keys [state-var
@@ -9,10 +10,13 @@
            resize!]}]
   (application-listener
    (let [state @state-var]
-     {:create! (fn []
+     {:create! (fn [^Application app]
                  (reset! state (reduce (fn [ctx [f & params]]
                                          (apply f ctx params))
-                                       {}
+                                       {:ctx/audio    (.getAudio app)
+                                        :ctx/files    (.getFiles app)
+                                        :ctx/graphics (.getGraphics app)
+                                        :ctx/input    (.getInput app)}
                                        create-pipeline)))
 
       :dispose! (fn []
