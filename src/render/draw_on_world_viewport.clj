@@ -2,8 +2,8 @@
   (:require [game.ctx.draw :refer [draw!]]
             [gdl.batch :as batch]
             [gdl.orthographic-camera.get-combined :refer [get-combined]]
-            [gdl.shape-drawer.default-line-width :refer [default-line-width]]
-            [gdl.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
+            [gdl.default-line-width :refer [default-line-width]]
+            [gdl.set-default-line-width :refer [set-default-line-width!]]))
 
 (defn step
   [{:keys [ctx/batch

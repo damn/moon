@@ -1,12 +1,12 @@
 (ns moon.geom-test)
 ;(ns game.render.clojure.draw-on-world-viewport.geom-test)
-;(:require [gdl.rgba.color :as color])
+;(:require [gdl.color :as color])
 ; [moon.grid.circle-to-cells :refer [circle->cells]]
 ;
 ;(comment
 ; (require '[moon.grid :as grid])
 ; (require '[clojure.math.circle :as circle])
-; [gdl.rgba.float-bits :refer [float-bits]]
+; [gdl.float-bits :refer [float-bits]]
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/grid

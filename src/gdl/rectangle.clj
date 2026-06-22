@@ -1,4 +1,4 @@
-(ns gdl.shape-drawer.rectangle
+(ns gdl.rectangle
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn rectangle! [^ShapeDrawer this x y w h]

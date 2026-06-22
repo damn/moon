@@ -1,4 +1,4 @@
-(ns gdl.shape-drawer.set-color
+(ns gdl.set-color
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn set-color! [^ShapeDrawer this float-bits]

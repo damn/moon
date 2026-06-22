@@ -1,6 +1,6 @@
 (ns clojure.draw.rectangle
-  (:require [gdl.shape-drawer.rectangle :refer [rectangle!]]
-            [gdl.shape-drawer.set-color :refer [set-color!]]))
+  (:require [gdl.rectangle :refer [rectangle!]]
+            [gdl.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} x y w h color-float-bits]

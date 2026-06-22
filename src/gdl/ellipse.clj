@@ -1,4 +1,4 @@
-(ns gdl.shape-drawer.ellipse
+(ns gdl.ellipse
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn ellipse! [^ShapeDrawer this x y radius-x radius-y]

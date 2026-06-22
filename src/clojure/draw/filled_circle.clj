@@ -1,6 +1,6 @@
 (ns clojure.draw.filled-circle
-  (:require [gdl.shape-drawer.filled-circle :refer [filled-circle!]]
-            [gdl.shape-drawer.set-color :refer [set-color!]]))
+  (:require [gdl.filled-circle :refer [filled-circle!]]
+            [gdl.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
