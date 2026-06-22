@@ -1,12 +1,5 @@
 (ns entity.create.body
-  (:require [qrecord.core :as q]))
-
-(q/defrecord Body [body/position
-                   body/width
-                   body/height
-                   body/collides?
-                   body/z-order
-                   body/rotation-angle])
+  (:require [moon.records.body :as body]))
 
 (defn f
   [{[x y] :position
@@ -27,7 +20,7 @@
   (assert ((set z-orders) z-order))
   (assert (or (nil? rotation-angle)
               (<= 0 rotation-angle 360)))
-  (map->Body
+  (body/map->R
    {:position (mapv float position)
     :width  (float width)
     :height (float height)

@@ -1,10 +1,8 @@
 (ns tx.spawn-entity
-  (:require [qrecord.core :as q]
+  (:require [moon.records.entity :as entity]
             [game.ctx.create-component :refer [create-component]]
             [game.ctx.after-create-component :refer [after-create-component]]
             [game.ctx.register-eid :as register-eid]))
-
-(q/defrecord Entity [entity/body])
 
 (defn do!
   [ctx entity]
@@ -12,7 +10,7 @@
                          (assoc m k (create-component ctx k v)))
                        {}
                        entity)
-        entity (merge (map->Entity {}) entity)
+        entity (merge (entity/map->R {}) entity)
         eid (atom entity)]
     (register-eid/do! ctx eid)
     (mapcat (fn [component]

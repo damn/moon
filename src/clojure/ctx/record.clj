@@ -1,7 +1,5 @@
 (ns clojure.ctx.record
-  (:require [qrecord.core :as q]))
-
-(q/defrecord Context [])
+  (:require [moon.records.context :as context]))
 
 (defn step [ctx]
-  (merge (map->Context {}) ctx))
+  (merge (context/map->R {}) ctx))
