@@ -1,4 +1,4 @@
-package clojure;
+package gdl;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.viewport.Viewport;

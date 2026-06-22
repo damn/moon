@@ -1,5 +1,5 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [clojure.math.vector2 :refer [->clj]]
+  (:require [gdl.vector2 :refer [->clj]]
             [gdl.actor.hit :refer [hit]]
             [gdl.actor.stage-local-coordinates :refer [stage->local-coordinates]]
             [gdl.actor.get-x :refer [get-x]]
@@ -19,7 +19,7 @@
             [gdl.click-listener :as click-listener]
             [gdl.ui.image :as image]
             [gdl.ui.stack :as stack]
-            [clojure.math.vector2 :as vector2]))
+            [gdl.vector2 :as vector2]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]

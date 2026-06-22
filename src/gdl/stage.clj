@@ -1,6 +1,6 @@
 (ns gdl.stage
-  (:import (clojure Stage)
-           (clojure.lang ILookup)))
+  (:import (clojure.lang ILookup)
+           (gdl Stage)))
 
 (defn create [viewport batch]
   (proxy [Stage ILookup] [viewport batch]

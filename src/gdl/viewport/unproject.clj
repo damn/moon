@@ -1,5 +1,5 @@
 (ns gdl.viewport.unproject
-  (:require [clojure.math.vector2 :refer [->clj]])
+  (:require [gdl.vector2 :refer [->clj]])
   (:import (com.badlogic.gdx.utils.viewport Viewport)
            (com.badlogic.gdx.math Vector2)))
 

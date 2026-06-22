@@ -1,4 +1,4 @@
-(ns clojure.math.vector3.clojurize
+(ns gdl.vector3.clojurize
   (:import (com.badlogic.gdx.math Vector3)))
 
 (defn f [^Vector3 v3]
