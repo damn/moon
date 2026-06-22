@@ -1,4 +1,4 @@
-(ns gdl.tiled-map-tile-layer.create
+(ns gdl.tiled-map-tile-layer
   (:require [gdl.put :refer [put!]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map-tile-layer.set-visible :refer [set-visible!]])
