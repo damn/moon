@@ -1,6 +1,6 @@
 (ns clojure.editor.widget.one-to-many.add-one-to-many-rows
   (:require [gdl.find-ancestor :refer [find-ancestor]]
-            [gdl.event.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [gdl.set-user-object :refer [set-user-object!]]
             [gdl.remove :refer [remove!]]
             [gdl.add-listener :refer [add-listener!]]

@@ -2,7 +2,7 @@
   (:require [gdl.get-user-object :refer [get-user-object]]
             [gdl.remove :refer [remove!]]
             [gdl.add-listener :refer [add-listener!]]
-            [gdl.event.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [clojure.editor.map-widget-table.k-label-text :as k-label-text]
             [gdl.group.children :refer [children]]
             [gdl.label :as label]

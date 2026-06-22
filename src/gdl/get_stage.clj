@@ -1,5 +1,5 @@
 (ns gdl.get-stage
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:import (com.badlogic.gdx.scenes.scene2d Event)))
 
-(defn get-stage [^Actor actor]
-  (.getStage actor))
+(defn get-stage [^Event event]
+  (.getStage event))

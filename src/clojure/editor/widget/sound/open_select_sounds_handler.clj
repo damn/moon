@@ -2,7 +2,7 @@
   (:require [gdl.get-height :refer [get-height]]
             [gdl.get-width :refer [get-width]]
             [gdl.add-listener :refer [add-listener!]]
-            [gdl.event.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [gdl.scroll-pane :as scroll-pane]
             [gdl.window.add-close-button :as add-close-button]
             [gdl.window.set-modal :as set-modal]

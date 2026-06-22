@@ -1,7 +1,7 @@
 (ns levelgen-test.create.edit-window
   (:require [gdl.get-stage :refer [get-stage]]
             [gdl.add-listener :refer [add-listener!]]
-            [gdl.event.get-stage :as event]
+            [gdl.get-stage :as event]
             [gdl.text-button :as text-button]
             [gdl.change-listener :as change-listener]
             [gdl.stage.set-ctx :refer [set-ctx!]]

@@ -1,6 +1,6 @@
 (ns clojure.editor.widget.sound
   (:require [gdl.add-listener :refer [add-listener!]]
-            [gdl.event.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [clojure.editor.widget.sound.columns :refer [sound-columns]]
             [clojure.editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]

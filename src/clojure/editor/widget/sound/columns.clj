@@ -1,6 +1,6 @@
 (ns clojure.editor.widget.sound.columns
   (:require [gdl.add-listener :refer [add-listener!]]
-            [gdl.event.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [clojure.editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [game.ctx.do :refer [do!]]
             [gdl.text-button :as text-button]

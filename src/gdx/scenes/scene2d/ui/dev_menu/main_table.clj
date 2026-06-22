@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
   (:require [gdl.add-listener :refer [add-listener!]]
             [gdl.change-listener :as change-listener]
-            [gdl.event.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [gdl.stage.add-actor :refer [add-actor!]]
             [gdl.text-button :as text-button]
             [gdl.window.add-close-button :as add-close-button]

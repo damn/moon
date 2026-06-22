@@ -1,5 +1,5 @@
 (ns clojure.editor.map-widget-table.add-component-window
-  (:require [gdl.event.get-stage :refer [get-stage]]
+  (:require [gdl.get-stage :refer [get-stage]]
             [moon.schema.build-widget :as build-widget]
             [moon.schema.widget-value :as widget-value]
             [gdl.remove :refer [remove!]]

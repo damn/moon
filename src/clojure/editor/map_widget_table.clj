@@ -1,6 +1,6 @@
 (ns clojure.editor.map-widget-table
   (:require [clojure.interpose-f :refer [interpose-f]]
-            [gdl.event.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdl.set-name :refer [set-name!]]
             [gdl.add-listener :refer [add-listener!]]
