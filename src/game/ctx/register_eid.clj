@@ -1,5 +1,5 @@
 (ns game.ctx.register-eid
-  (:require [moon.content-grid :as content-grid]
+  (:require [moon.content-grid.update-entity :as update-entity]
             [moon.grid.set-occupied-cells :refer [set-occupied-cells!]]
             [moon.grid.set-touched-cells :refer [set-touched-cells!]]
             [moon.grid.valid-position :refer [valid-position?]]))
@@ -12,7 +12,7 @@
     (swap! (:ctx/entity-ids ctx) assoc id eid))
 
   (assert (:entity/body @eid)) ; -< inside content grid
-  (content-grid/add-entity! (:ctx/content-grid ctx) eid)
+  (update-entity/f! (:ctx/content-grid ctx) eid)
 
   (assert (:entity/body @eid)) ; <- inside the grid add fn ?
   (when (:body/collides? (:entity/body @eid))
