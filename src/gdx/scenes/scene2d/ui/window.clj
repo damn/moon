@@ -3,7 +3,7 @@
             [gdl.window :as window]))
 
 (defn create
-  [{:keys [title skin] :as opts}]
-  (let [window (window/create title skin)]
+  [opts]
+  (let [window (window/f opts)]
     (set-opts! window opts)
     window))
