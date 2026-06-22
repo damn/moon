@@ -1,6 +1,6 @@
 (ns levelgen-test.camera-zoom-controls
-  (:require [clojure.input.key-pressed :as key-pressed?]
-            [clojure.orthographic-camera.inc-zoom :refer [inc-zoom!]]))
+  (:require [gdl.input.key-pressed :as key-pressed?]
+            [gdl.orthographic-camera.inc-zoom :refer [inc-zoom!]]))
 
 (defn f
   [{:keys [ctx/input

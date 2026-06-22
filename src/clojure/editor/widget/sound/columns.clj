@@ -1,10 +1,10 @@
 (ns clojure.editor.widget.sound.columns
-  (:require [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.event.get-stage :refer [get-stage]]
+  (:require [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.event.get-stage :refer [get-stage]]
             [clojure.editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [game.ctx.do :refer [do!]]
-            [clojure.ui.text-button :as text-button]
-            [clojure.change-listener :as change-listener]))
+            [gdl.ui.text-button :as text-button]
+            [gdl.change-listener :as change-listener]))
 
 (defn sound-columns [skin table sound-name]
   [{:actor (doto (text-button/create

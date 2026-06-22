@@ -1,6 +1,6 @@
 (ns clojure.draw.line
-  (:require [clojure.shape-drawer.line :refer [line!]]
-            [clojure.shape-drawer.set-color :refer [set-color!]]))
+  (:require [gdl.shape-drawer.line :refer [line!]]
+            [gdl.shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]

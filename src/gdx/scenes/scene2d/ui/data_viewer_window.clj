@@ -1,16 +1,16 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
   (:require [gdx.scenes.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
-            [clojure.actor.get-stage :refer [get-stage]]
-            [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.ui.label :as label]
-            [clojure.ui.scroll-pane :as scroll-pane]
-            [clojure.window.add-close-button :as add-close-button]
+            [gdl.actor.get-stage :refer [get-stage]]
+            [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.ui.label :as label]
+            [gdl.ui.scroll-pane :as scroll-pane]
+            [gdl.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.ui.text-button :as text-button]
+            [gdl.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.change-listener :as change-listener]
+            [gdl.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]
-            [clojure.stage.add-actor :refer [add-actor!]]))
+            [gdl.stage.add-actor :refer [add-actor!]]))
 
 (defn create
   [{:keys [title

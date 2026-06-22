@@ -1,6 +1,6 @@
 (ns world-fns.modules.place-step
-  (:require [clojure.map-properties.get :refer [props-get]]
-            [clojure.get-properties :refer [get-properties]]
+  (:require [gdl.map-properties.get :refer [props-get]]
+            [gdl.get-properties :refer [get-properties]]
             [world-fns.modules.place-step.place-star :refer [place-module*]]))
 
 (defn f

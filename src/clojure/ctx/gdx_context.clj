@@ -1,8 +1,8 @@
 (ns clojure.ctx.gdx-context
-  (:require [clojure.audio :as audio]
-            [clojure.files :as files]
-            [clojure.graphics :as graphics]
-            [clojure.input :as input]))
+  (:require [gdl.audio :as audio]
+            [gdl.files :as files]
+            [gdl.graphics :as graphics]
+            [gdl.input :as input]))
 
 (defn f [ctx]
   (assoc ctx

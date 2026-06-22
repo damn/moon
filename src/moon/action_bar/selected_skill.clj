@@ -1,6 +1,6 @@
 (ns moon.action-bar.selected-skill
-  (:require [clojure.actor.get-user-object :refer [get-user-object]]
-            [clojure.ui.button-group :as button-group]
+  (:require [gdl.actor.get-user-object :refer [get-user-object]]
+            [gdl.ui.button-group :as button-group]
             [moon.action-bar.get-data :as get-data]))
 
 (defn f [action-bar]

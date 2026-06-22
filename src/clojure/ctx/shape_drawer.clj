@@ -1,6 +1,6 @@
 (ns clojure.ctx.shape-drawer
-  (:require [clojure.texture.region :as region]
-            [clojure.shape-drawer :refer [shape-drawer]]))
+  (:require [gdl.texture.region :as region]
+            [gdl.shape-drawer :refer [shape-drawer]]))
 
 (defn step
   [{:keys [ctx/batch

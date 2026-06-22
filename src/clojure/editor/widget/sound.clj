@@ -1,12 +1,12 @@
 (ns clojure.editor.widget.sound
-  (:require [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.event.get-stage :refer [get-stage]]
+  (:require [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.event.get-stage :refer [get-stage]]
             [clojure.editor.widget.sound.columns :refer [sound-columns]]
             [clojure.editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [clojure.ui.table.add-rows :refer [add-rows!]]
-            [clojure.ui.text-button :as text-button]
-            [clojure.change-listener :as change-listener]))
+            [gdl.ui.table.add-rows :refer [add-rows!]]
+            [gdl.ui.text-button :as text-button]
+            [gdl.change-listener :as change-listener]))
 
 (defn create
   [_  sound-name {:keys [ctx/skin]}]

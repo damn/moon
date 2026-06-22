@@ -1,13 +1,13 @@
 (ns world-fns.modules.last-steps
-  (:require [clojure.map-layers.get-layer :refer [get-layer]]
-            [clojure.tiled-map.property-value :refer [property-value]]
-            [clojure.tiled-map.get-layers :refer [get-layers]]
+  (:require [gdl.map-layers.get-layer :refer [get-layer]]
+            [gdl.tiled-map.property-value :refer [property-value]]
+            [gdl.tiled-map.get-layers :refer [get-layers]]
             [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d.scale-grid :as scale-grid]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.flood-fill :as flood-fill]
-            [clojure.tiled-map.movement-property :as movement-property]
-            [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
+            [gdl.tiled-map.movement-property :as movement-property]
+            [gdl.tiled-map.add-creatures-layer :as add-creatures-layer]
             [world-fns.modules.area-level-grid :as area-level-grid]))
 
 (defn step

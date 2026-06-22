@@ -1,10 +1,10 @@
 (ns moon.action-bar.add-skill
-  (:require [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.actor.set-user-object :refer [set-user-object!]]
-            [clojure.group.add-actor :refer [add-actor!]]
-            [clojure.ui.button-group :as button-group]
-            [clojure.ui.image-button :as image-button]
-            [clojure.ui.text-tooltip :as text-tooltip]
+  (:require [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.actor.set-user-object :refer [set-user-object!]]
+            [gdl.group.add-actor :refer [add-actor!]]
+            [gdl.ui.button-group :as button-group]
+            [gdl.ui.image-button :as image-button]
+            [gdl.ui.text-tooltip :as text-tooltip]
             [clojure.map.texture-region-drawable :as texture-region-drawable]
             [moon.action-bar.get-data :as get-data]))
 

@@ -1,5 +1,5 @@
 (ns clojure.ctx.add-stage-actors
-  (:require [clojure.stage.add-actor :refer [add-actor!]]))
+  (:require [gdl.stage.add-actor :refer [add-actor!]]))
 
 (defn f!
   [{:keys [ctx/stage]

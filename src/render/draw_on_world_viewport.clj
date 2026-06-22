@@ -1,9 +1,9 @@
 (ns render.draw-on-world-viewport
   (:require [game.ctx.draw :refer [draw!]]
-            [clojure.batch :as batch]
-            [clojure.orthographic-camera.get-combined :refer [get-combined]]
-            [clojure.shape-drawer.default-line-width :refer [default-line-width]]
-            [clojure.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
+            [gdl.batch :as batch]
+            [gdl.orthographic-camera.get-combined :refer [get-combined]]
+            [gdl.shape-drawer.default-line-width :refer [default-line-width]]
+            [gdl.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
 
 (defn step
   [{:keys [ctx/batch

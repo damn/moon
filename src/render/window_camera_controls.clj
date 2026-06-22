@@ -1,11 +1,11 @@
 (ns render.window-camera-controls
-  (:require [clojure.input.key-just-pressed :as key-just-pressed?]
-            [clojure.input.key-pressed :as key-pressed?]
-            [clojure.orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [clojure.group.find-actor :refer [find-actor]]
-            [clojure.actor.set-visible :refer [set-visible!]]
-            [clojure.actor.toggle-visible :refer [toggle-visible!]]
-            [clojure.group.children :refer [children]]))
+  (:require [gdl.input.key-just-pressed :as key-just-pressed?]
+            [gdl.input.key-pressed :as key-pressed?]
+            [gdl.orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [gdl.group.find-actor :refer [find-actor]]
+            [gdl.actor.set-visible :refer [set-visible!]]
+            [gdl.actor.toggle-visible :refer [toggle-visible!]]
+            [gdl.group.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/input

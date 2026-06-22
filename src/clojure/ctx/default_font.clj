@@ -1,14 +1,14 @@
 (ns clojure.ctx.default-font
-  (:require [clojure.files.internal :as internal]
-            [clojure.texture.filter :as texture.filter]
-            [clojure.bitmap-font.get-data :refer [get-data]]
-            [clojure.bitmap-font-data.enable-markup :refer [enable-markup!]]
-            [clojure.bitmap-font-data.set-scale :as set-scale]
-            [clojure.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
-            [clojure.file.font-generator :as font-generator]
-            [clojure.font-generator.generate-font :as generate-font]
-            [clojure.font-generator.dispose :refer [dispose!]]
-            [clojure.map.font-generator-parameter :as parameter]))
+  (:require [gdl.files.internal :as internal]
+            [gdl.texture.filter :as texture.filter]
+            [gdl.bitmap-font.get-data :refer [get-data]]
+            [gdl.bitmap-font-data.enable-markup :refer [enable-markup!]]
+            [gdl.bitmap-font-data.set-scale :as set-scale]
+            [gdl.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
+            [gdl.file.font-generator :as font-generator]
+            [gdl.font-generator.generate-font :as generate-font]
+            [gdl.font-generator.dispose :refer [dispose!]]
+            [gdl.font-generator-parameter :as parameter]))
 
 (defn step
   [{:keys [ctx/files]}]

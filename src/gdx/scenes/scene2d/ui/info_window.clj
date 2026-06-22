@@ -1,14 +1,14 @@
 (ns gdx.scenes.scene2d.ui.info-window
-  (:require [clojure.actor.set-position :refer [set-position!]]
-            [clojure.actor.get-stage :refer [get-stage]]
-            [clojure.actor.set-name :refer [set-name!]]
-            [clojure.actor.set-visible :refer [set-visible!]]
-            [clojure.actor :as actor]
-            [clojure.group.add-actor :refer [add-actor!]]
-            [clojure.ui.label :as label]
+  (:require [gdl.actor.set-position :refer [set-position!]]
+            [gdl.actor.get-stage :refer [get-stage]]
+            [gdl.actor.set-name :refer [set-name!]]
+            [gdl.actor.set-visible :refer [set-visible!]]
+            [gdl.actor :as actor]
+            [gdl.group.add-actor :refer [add-actor!]]
+            [gdl.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.layout.pack :refer [pack!]]))
+            [gdl.layout.pack :refer [pack!]]))
 
 (defn create
   [{:keys [title

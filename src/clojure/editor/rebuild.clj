@@ -1,9 +1,9 @@
 (ns clojure.editor.rebuild
   (:require [clojure.editor.map-widget-table.get-value :as get-value]
-            [clojure.actor.remove :refer [remove!]]
-            [clojure.group.find-actor :refer [find-actor]]
+            [gdl.actor.remove :refer [remove!]]
+            [gdl.group.find-actor :refer [find-actor]]
             [clojure.editor.window]
-            [clojure.stage.add-actor :refer [add-actor!]]))
+            [gdl.stage.add-actor :refer [add-actor!]]))
 
 (defn f!
   [{:keys [ctx/db

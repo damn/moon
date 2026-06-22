@@ -1,16 +1,16 @@
 (ns tx.show-modal
-  (:require [clojure.align :as align]
-            [clojure.actor.set-position :refer [set-position!]]
-            [clojure.actor.remove :refer [remove!]]
-            [clojure.actor.set-name :refer [set-name!]]
-            [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.ui.label :as label]
-            [clojure.ui.text-button :as text-button]
-            [clojure.change-listener :as change-listener]
-            [clojure.window.set-modal :as set-modal]
+  (:require [gdl.align :as align]
+            [gdl.actor.set-position :refer [set-position!]]
+            [gdl.actor.remove :refer [remove!]]
+            [gdl.actor.set-name :refer [set-name!]]
+            [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.ui.label :as label]
+            [gdl.ui.text-button :as text-button]
+            [gdl.change-listener :as change-listener]
+            [gdl.window.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.group.find-actor :refer [find-actor]]
-            [clojure.stage.add-actor :refer [add-actor!]]))
+            [gdl.group.find-actor :refer [find-actor]]
+            [gdl.stage.add-actor :refer [add-actor!]]))
 
 (defn f
   [{:keys [ctx/skin

@@ -1,7 +1,7 @@
 (ns clojure.ctx.stage
-  (:require [clojure.input.set-processor :as set-processor!]
-            [clojure.fit-viewport :as fit-viewport]
-            [clojure.stage :as stage]))
+  (:require [gdl.input.set-processor :as set-processor!]
+            [gdl.fit-viewport :as fit-viewport]
+            [gdl.stage :as stage]))
 
 (defn step
   [{:keys [ctx/input

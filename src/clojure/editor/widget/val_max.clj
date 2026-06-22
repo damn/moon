@@ -1,9 +1,9 @@
 (ns clojure.editor.widget.val-max
   (:require [clojure.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
-            [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.ui.text-field :as text-field]
-            [clojure.ui.text-tooltip :as text-tooltip]))
+            [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.ui.text-field :as text-field]
+            [gdl.ui.text-tooltip :as text-tooltip]))
 
 (defn create
   [schema v {:keys [ctx/skin]}]

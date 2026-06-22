@@ -1,5 +1,5 @@
 (ns clojure.draw-on-world-viewport.draw-cell-debug
-  (:require [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
+  (:require [gdl.orthographic-camera.visible-tiles :refer [visible-tiles]]
             [game.constants :refer [show-potential-field-colors?
                                     show-cell-entities?
                                     show-cell-occupied?]]))

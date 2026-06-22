@@ -1,6 +1,6 @@
 (ns world-fns.uf-caves
-  (:require [clojure.texture.region :as region]
-            [clojure.create-static-tiled-map-tile :as create-tile]
+  (:require [gdl.texture.region :as region]
+            [gdl.create-static-tiled-map-tile :as create-tile]
             [world-fns.uf-caves.initial-grid]
             [world-fns.uf-caves.fix-nads]
             [world-fns.uf-caves.last-steps]))

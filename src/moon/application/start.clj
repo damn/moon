@@ -1,6 +1,6 @@
 (ns moon.application.start
-  (:require [clojure.application :as application]
-            [clojure.application-config :as config]))
+  (:require [gdl.application :as application]
+            [gdl.application-config :as config]))
 
 (defn f!
   [{:keys [listener]

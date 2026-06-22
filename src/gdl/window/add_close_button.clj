@@ -1,0 +1,14 @@
+(ns gdl.window.add-close-button
+  (:require [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.actor.remove :refer [remove!]]
+            [gdl.change-listener :as change-listener]
+            [gdl.ui.table.add-cell :refer [add-cell!]]
+            [gdl.ui.text-button :as text-button]
+            [gdl.window.get-title-table :as get-title-table]))
+
+(defn f! [window skin]
+  (add-cell! (get-title-table/f window)
+             {:actor (doto (text-button/create {:text "X" :skin skin})
+                       (add-listener! (change-listener/create
+                                       (fn [_event _actor]
+                                         (remove! window)))))}))

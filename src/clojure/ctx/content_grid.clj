@@ -1,6 +1,6 @@
 (ns clojure.ctx.content-grid
-  (:require [clojure.map-properties.get :refer [props-get]]
-            [clojure.get-properties :refer [get-properties]]
+  (:require [gdl.map-properties.get :refer [props-get]]
+            [gdl.get-properties :refer [get-properties]]
             [clojure.grid2d :as g2d]))
 
 (defn step

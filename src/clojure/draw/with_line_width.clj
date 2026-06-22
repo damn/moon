@@ -1,7 +1,7 @@
 (ns clojure.draw.with-line-width
   (:require [game.ctx.draw :refer [draw!]]
-            [clojure.shape-drawer.default-line-width :refer [default-line-width]]
-            [clojure.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
+            [gdl.shape-drawer.default-line-width :refer [default-line-width]]
+            [gdl.shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]

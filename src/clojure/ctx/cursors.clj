@@ -1,10 +1,10 @@
 (ns clojure.ctx.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.file.pixmap :as file-handle->pixmap]
-            [clojure.pixmap.dispose :as dispose]
-            [clojure.files.internal :as internal]
-            [clojure.graphics.new-cursor :as new-cursor]))
+            [gdl.file.pixmap :as file-handle->pixmap]
+            [gdl.pixmap.dispose :as dispose]
+            [gdl.files.internal :as internal]
+            [gdl.graphics.new-cursor :as new-cursor]))
 
 (defn step
   [{:keys [ctx/files

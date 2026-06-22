@@ -1,11 +1,11 @@
 (ns clojure.draw.text
   (:require [clojure.string :as str]
-            [clojure.bitmap-font.draw :as draw]
-            [clojure.bitmap-font.get-line-height :as get-line-height]
-            [clojure.bitmap-font.get-data :refer [get-data]]
-            [clojure.bitmap-font-data.set-scale :as set-scale]
-            [clojure.bitmap-font-data.scale-x :as scale-x]
-            [clojure.align :as align]))
+            [gdl.bitmap-font.draw :as draw]
+            [gdl.bitmap-font.get-line-height :as get-line-height]
+            [gdl.bitmap-font.get-data :refer [get-data]]
+            [gdl.bitmap-font-data.set-scale :as set-scale]
+            [gdl.bitmap-font-data.scale-x :as scale-x]
+            [gdl.align :as align]))
 
 (defn f
   [{:keys [ctx/batch

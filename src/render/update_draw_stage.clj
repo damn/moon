@@ -1,7 +1,7 @@
 (ns render.update-draw-stage
-  (:require [clojure.stage.draw :refer [draw!]]
-            [clojure.stage.set-ctx :refer [set-ctx!]]
-            [clojure.stage.act :refer [act!]]))
+  (:require [gdl.stage.draw :refer [draw!]]
+            [gdl.stage.set-ctx :refer [set-ctx!]]
+            [gdl.stage.act :refer [act!]]))
 
 (defn step
   [{:keys [ctx/stage] :as ctx}]

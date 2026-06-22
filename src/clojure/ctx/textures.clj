@@ -1,8 +1,8 @@
 (ns clojure.ctx.textures
   (:require [clojure.string :as str]
-            [clojure.files.internal :as internal]
-            [clojure.file-handle :as file]
-            [clojure.file.texture :as texture]))
+            [gdl.files.internal :as internal]
+            [gdl.file-handle :as file]
+            [gdl.file.texture :as texture]))
 
 (def folder "resources/")
 (def extensions #{"png" "bmp"})

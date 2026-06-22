@@ -1,9 +1,9 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
   (:require [gdx.scenes.scene2d.ui.dev-menu.main-table :as main-table]
-            [clojure.actor.set-touchable :refer [set-touchable!]]
-            [clojure.layout.set-fill-parent :refer [set-fill-parent!]]
-            [clojure.touchable :as touchable]
-            [clojure.ui.label :as label]
+            [gdl.actor.set-touchable :refer [set-touchable!]]
+            [gdl.layout.set-fill-parent :refer [set-fill-parent!]]
+            [gdl.touchable :as touchable]
+            [gdl.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create

@@ -1,7 +1,7 @@
 (ns moon.ui.inventory-window.create
-  (:require [clojure.actor.set-position :refer [set-position!]]
-            [clojure.actor.set-name :refer [set-name!]]
-            [clojure.actor.set-visible :refer [set-visible!]]
+  (:require [gdl.actor.set-position :refer [set-position!]]
+            [gdl.actor.set-name :refer [set-name!]]
+            [gdl.actor.set-visible :refer [set-visible!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [clojure.map.texture-region-drawable :as texture-region-drawable]

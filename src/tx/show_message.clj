@@ -1,6 +1,6 @@
 (ns tx.show-message
-  (:require [clojure.actor.set-user-object :refer [set-user-object!]]
-            [clojure.group.find-actor :refer [find-actor]]))
+  (:require [gdl.actor.set-user-object :refer [set-user-object!]]
+            [gdl.group.find-actor :refer [find-actor]]))
 
 (defn f
   [{:keys [ctx/stage] :as ctx} message]

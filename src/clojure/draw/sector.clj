@@ -1,6 +1,6 @@
 (ns clojure.draw.sector
-  (:require [clojure.shape-drawer.sector :refer [sector!]]
-            [clojure.shape-drawer.set-color :refer [set-color!]]))
+  (:require [gdl.shape-drawer.sector :refer [sector!]]
+            [gdl.shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]

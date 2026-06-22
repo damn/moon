@@ -1,10 +1,10 @@
 (ns stage.player-message-actor
   (:require [game.ctx.draw :refer [draw!]]
-            [clojure.actor.get-user-object :refer [get-user-object]]
-            [clojure.actor.get-stage :refer [get-stage]]
-            [clojure.actor.set-name :refer [set-name!]]
-            [clojure.actor.set-user-object :refer [set-user-object!]]
-            [clojure.actor :as actor]))
+            [gdl.actor.get-user-object :refer [get-user-object]]
+            [gdl.actor.get-stage :refer [get-stage]]
+            [gdl.actor.set-name :refer [set-name!]]
+            [gdl.actor.set-user-object :refer [set-user-object!]]
+            [gdl.actor :as actor]))
 
 (defn create [_ctx]
   (let [message-duration-seconds 0.5]

@@ -1,12 +1,12 @@
 (ns clojure.editor.widget.sound.rebuild
-  (:require [clojure.actor.get-user-object :refer [get-user-object]]
-            [clojure.actor.remove :refer [remove!]]
-            [clojure.actor.set-user-object :refer [set-user-object!]]
-            [clojure.actor.find-ancestor :refer [find-ancestor]]
-            [clojure.group.clear-children :refer [clear-children!]]
-            [clojure.layout.pack :refer [pack!]]
-            [clojure.actor.is-window :as window?]
-            [clojure.ui.table.add-rows :refer [add-rows!]]))
+  (:require [gdl.actor.get-user-object :refer [get-user-object]]
+            [gdl.actor.remove :refer [remove!]]
+            [gdl.actor.set-user-object :refer [set-user-object!]]
+            [gdl.actor.find-ancestor :refer [find-ancestor]]
+            [gdl.group.clear-children :refer [clear-children!]]
+            [gdl.layout.pack :refer [pack!]]
+            [gdl.actor.is-window :as window?]
+            [gdl.ui.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]

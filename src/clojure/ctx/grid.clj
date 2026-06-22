@@ -1,7 +1,7 @@
 (ns clojure.ctx.grid
-  (:require [clojure.map-properties.get :refer [props-get]]
-            [clojure.get-properties :refer [get-properties]]
-            [clojure.tiled-map.movement-property :as movement-property]
+  (:require [gdl.map-properties.get :refer [props-get]]
+            [gdl.get-properties :refer [get-properties]]
+            [gdl.tiled-map.movement-property :as movement-property]
             [moon.cell :as cell]
             [clojure.grid2d :as g2d]))
 

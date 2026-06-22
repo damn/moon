@@ -1,10 +1,10 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
-  (:require [clojure.actor.add-listener :refer [add-listener!]]
-            [clojure.change-listener :as change-listener]
-            [clojure.event.get-stage :refer [get-stage]]
-            [clojure.stage.add-actor :refer [add-actor!]]
-            [clojure.ui.text-button :as text-button]
-            [clojure.window.add-close-button :as add-close-button]
+  (:require [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.change-listener :as change-listener]
+            [gdl.event.get-stage :refer [get-stage]]
+            [gdl.stage.add-actor :refer [add-actor!]]
+            [gdl.ui.text-button :as text-button]
+            [gdl.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]))

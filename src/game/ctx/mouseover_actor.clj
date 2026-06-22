@@ -1,6 +1,6 @@
 (ns game.ctx.mouseover-actor
-  (:require [clojure.stage.hit :refer [hit]]
-            [clojure.viewport.unproject :as unproject]
+  (:require [gdl.stage.hit :refer [hit]]
+            [gdl.viewport.unproject :as unproject]
             [game.ctx.mouse-position :refer [mouse-position]]))
 
 (defn mouseover-actor

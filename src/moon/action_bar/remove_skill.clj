@@ -1,6 +1,6 @@
 (ns moon.action-bar.remove-skill
-  (:require [clojure.actor.remove :refer [remove!]]
-            [clojure.ui.button-group :as button-group]
+  (:require [gdl.actor.remove :refer [remove!]]
+            [gdl.ui.button-group :as button-group]
             [moon.action-bar.get-data :as get-data]))
 
 (defn f [action-bar skill-id]

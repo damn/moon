@@ -1,5 +1,5 @@
 (ns moon.application.listener
-  (:require [clojure.application-listener :refer [application-listener]]))
+  (:require [gdl.application-listener :refer [application-listener]]))
 
 (defn f
   [{:keys [state-var

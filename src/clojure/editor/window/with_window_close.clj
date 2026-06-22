@@ -1,12 +1,12 @@
 (ns clojure.editor.window.with-window-close
-  (:require [clojure.actor.get-stage :refer [get-stage]]
-            [clojure.actor.remove :refer [remove!]]
-            [clojure.actor.find-ancestor :refer [find-ancestor]]
-            [clojure.stage.set-ctx :refer [set-ctx!]]
-            [clojure.stage.add-actor :refer [add-actor!]]
+  (:require [gdl.actor.get-stage :refer [get-stage]]
+            [gdl.actor.remove :refer [remove!]]
+            [gdl.actor.find-ancestor :refer [find-ancestor]]
+            [gdl.stage.set-ctx :refer [set-ctx!]]
+            [gdl.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
-            [clojure.actor.is-window :as window?]))
+            [gdl.actor.is-window :as window?]))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin
