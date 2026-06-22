@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [gdl.new-sound :as new-sound]
-            [gdl.files.internal :as internal]))
+            [gdl.internal :as internal]))
 
 (defn step
   [{:keys [ctx/audio

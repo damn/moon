@@ -1,4 +1,4 @@
-(ns gdl.files.internal
+(ns gdl.internal
   (:import (com.badlogic.gdx Files)))
 
 (defn f [^Files files path]

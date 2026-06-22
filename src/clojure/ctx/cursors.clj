@@ -3,7 +3,7 @@
             [clojure.java.io :as io]
             [gdl.pixmap :as pixmap]
             [gdl.pixmap.dispose :as dispose]
-            [gdl.files.internal :as internal]
+            [gdl.internal :as internal]
             [gdl.graphics.new-cursor :as new-cursor]))
 
 (defn step

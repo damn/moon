@@ -1,5 +1,5 @@
 (ns clojure.ctx.skin
-  (:require [gdl.files.internal :as internal]
+  (:require [gdl.internal :as internal]
             [gdl.get-data :refer [get-data]]
             [gdl.get-font :as get-font]
             [gdl.enable-markup :refer [enable-markup!]]
