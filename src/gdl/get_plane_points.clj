@@ -1,4 +1,4 @@
-(ns gdl.frustum.get-plane-points
+(ns gdl.get-plane-points
   (:import (com.badlogic.gdx.math Frustum)))
 
 (defn get-plane-points [^Frustum frustum]
