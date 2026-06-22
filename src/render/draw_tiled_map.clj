@@ -1,5 +1,5 @@
 (ns render.draw-tiled-map
-  (:require [gdl.orthographic-camera.get-position :refer [get-position]]
+  (:require [gdl.get-position :as get-position]
             [gdl.draw-tiled-map :refer [draw-tiled-map!]]
             [render.draw-tiled-map.color-setter :refer [tile-color-setter*]]
             [moon.raycaster.is-blocked :as blocked?]))
@@ -12,7 +12,7 @@
   (tile-color-setter*
    {:ray-blocked? (partial blocked?/f raycaster)
     :explored-tile-corners explored-tile-corners
-    :light-position (get-position (:viewport/camera world-viewport))
+    :light-position (get-position/f (:viewport/camera world-viewport))
     :see-all-tiles? false
     :explored-tile-color  (:colors/explored-tile colors)
     :visible-tile-color   (:colors/visible-tile colors)

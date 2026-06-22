@@ -1,5 +1,5 @@
 (ns gdl.orthographic-camera.calculate-zoom
-  (:require [gdl.orthographic-camera.get-position :refer [get-position]]
+  (:require [gdl.get-position :as get-position]
             [gdl.orthographic-camera.get-viewport-width :refer [get-viewport-width]]
             [gdl.orthographic-camera.get-viewport-height :refer [get-viewport-height]]))
 
@@ -8,7 +8,7 @@
   [camera {:keys [left top right bottom]}]
   (let [viewport-width  (get-viewport-width  camera)
         viewport-height (get-viewport-height camera)
-        [px py] (get-position camera)
+        [px py] (get-position/f camera)
         px (float px)
         py (float py)
         leftx (float (left 0))

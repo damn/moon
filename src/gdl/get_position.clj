@@ -1,6 +1,18 @@
 (ns gdl.get-position
-  (:import (com.badlogic.gdx Input)))
+  (:require [gdl.vector3.clojurize :as clojurize])
+  (:import (com.badlogic.gdx Input)
+           (com.badlogic.gdx.graphics OrthographicCamera)))
 
-(defn f [^Input input]
-  [(.getX input)
-   (.getY input)])
+(defprotocol P
+  (f [_]))
+
+(extend-type Input
+  P
+  (f [input]
+    [(.getX input)
+     (.getY input)]))
+
+(extend-type OrthographicCamera
+  P
+  (f [camera]
+    (clojurize/f (.position camera))))
