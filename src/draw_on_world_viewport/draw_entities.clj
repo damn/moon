@@ -1,12 +1,11 @@
 (ns draw-on-world-viewport.draw-entities
   (:require [clojure.order :refer [sort-by-order]]
+            [game.constants :refer [show-body-bounds?]]
             [game.ctx.draw :refer [draw!]]
             [game.ctx.draw-component :refer [draw-component]]
             [moon.body :as body]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]))
-
-(def ^:dbg-flag show-body-bounds? false)
 
 (defn- draw-body-rect [{:keys [body/position body/width body/height]} color-float-bits]
   (let [[x y] [(- (position 0) (/ width  2))

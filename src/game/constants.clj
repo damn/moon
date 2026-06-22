@@ -8,6 +8,7 @@
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)
 (def ^:dbg-flag show-cell-occupied? false)
+(def ^:dbg-flag show-body-bounds? false)
 
 (def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
 (def spiderweb-duration 5)
