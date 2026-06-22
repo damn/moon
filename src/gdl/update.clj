@@ -1,4 +1,4 @@
-(ns gdl.viewport.update
+(ns gdl.update
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
 (defn f [^Viewport viewport screen-width screen-height center-camera?]

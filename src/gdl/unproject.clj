@@ -1,4 +1,4 @@
-(ns gdl.viewport.unproject
+(ns gdl.unproject
   (:require [gdl.vector2 :as vector2]
             [gdl.vector2.clojurize :as clojurize])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
