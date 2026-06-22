@@ -3,10 +3,6 @@
             [clojure.get-properties :refer [get-properties]]
             [world-fns.modules.place-step.place-star :refer [place-module*]]))
 
-(def ^:private module-offset-tiles 1)
-(def ^:private number-modules-x 8)
-(def ^:private number-modules-y 4)
-
 (defn f
   [modules-tiled-map
    modules-scale
@@ -14,7 +10,10 @@
    unscaled-grid
    unscaled-floor-positions
    unscaled-transition-positions]
-  (let [[modules-width modules-height] modules-scale
+  (let [module-offset-tiles 1
+        number-modules-x 8
+        number-modules-y 4
+        [modules-width modules-height] modules-scale
         _ (assert (and (= (props-get (get-properties modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
                        (= (props-get (get-properties modules-tiled-map) "height")
