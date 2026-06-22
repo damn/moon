@@ -6,8 +6,8 @@
             [gdl.set-scale :as set-scale]
             [gdl.set-use-integer-positions :as set-use-integer-positions]
             [gdl.font-generator :as font-generator]
-            [gdl.font-generator.generate-font :as generate-font]
-            [gdl.font-generator.dispose :refer [dispose!]]
+            [gdl.generate-font :as generate-font]
+            [gdl.dispose :refer [dispose!]]
             [gdl.font-generator-parameter :as parameter]))
 
 (defn step
