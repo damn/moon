@@ -7,7 +7,7 @@
             [gdl.label :as label]
             [gdl.text-button :as text-button]
             [gdl.change-listener :as change-listener]
-            [gdl.window.set-modal :as set-modal]
+            [gdl.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdl.find-actor :refer [find-actor]]
             [gdl.stage.add-actor :refer [add-actor!]]))

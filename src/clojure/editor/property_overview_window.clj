@@ -3,8 +3,8 @@
             [clojure.editor.property-overview-window.table-rows :refer [overview-table-rows*]]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db.all-raw :refer [all-raw]]
-            [gdl.window.add-close-button :as add-close-button]
-            [gdl.window.set-modal :as set-modal]
+            [gdl.add-close-button :as add-close-button]
+            [gdl.set-modal :as set-modal]
             [moon.property :as property]
             [moon.textures :as textures]))
 

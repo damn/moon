@@ -1,10 +1,10 @@
-(ns gdl.window.add-close-button
+(ns gdl.add-close-button
   (:require [gdl.add-listener :refer [add-listener!]]
             [gdl.remove :refer [remove!]]
             [gdl.change-listener :as change-listener]
             [gdl.add-cell :refer [add-cell!]]
             [gdl.text-button :as text-button]
-            [gdl.window.get-title-table :as get-title-table]))
+            [gdl.get-title-table :as get-title-table]))
 
 (defn f! [window skin]
   (add-cell! (get-title-table/f window)
