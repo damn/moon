@@ -12,13 +12,12 @@
              [0 -1] 4 })
 
 ; so the idxvalues-order corresponds to the following values for a neighbour tile:
-(def ^:private idxvalues [2 8 1 4])
-
-(defn idx-value [position position->transition?]
-  (->> position
-       get-4-neighbours
-       (map-indexed (fn [idx position]
-                      (if (position->transition? position)
-                        (idxvalues idx)
-                        0)))
-       (apply +)))
+(let [idxvalues [2 8 1 4]]
+  (defn idx-value [position position->transition?]
+    (->> position
+         get-4-neighbours
+         (map-indexed (fn [idx position]
+                        (if (position->transition? position)
+                          (idxvalues idx)
+                          0)))
+         (apply +))))
