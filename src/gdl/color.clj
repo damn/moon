@@ -1,4 +1,4 @@
-(ns gdl.rgba.color
+(ns gdl.color
   (:import (com.badlogic.gdx.graphics Color)))
 
 (defn rgba->Color [[r g b a]]

@@ -1,5 +1,5 @@
 (ns clojure.map.texture-region-drawable
-  (:require [gdl.rgba.color :refer [rgba->Color]]
+  (:require [gdl.color :refer [rgba->Color]]
             [gdl.texture-region.get-region-height :refer [get-region-height]]
             [gdl.texture-region.get-region-width :refer [get-region-width]]
             [gdl.texture-region-drawable :as drawable]))
