@@ -3,7 +3,7 @@
             [gdl.get-layers :refer [get-layers]]
             [gdl.tiled-map-tile-layer.visible :refer [visible?]]
             [gdl.get-properties :refer [get-properties]]
-            [gdl.tiled-map-tile-layer.cell :as cell]
+            [gdl.get-tile :as get-tile]
             [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [gdl.tiled-map-tile-layer.get-name :refer [get-name]]
             [gdl.static-tiled-map-tile :as static-tiled-map-tile]
@@ -31,4 +31,4 @@
                            :when local-position]
                        (when (vector? local-position)
                          (when-let [cell (get-cell layer local-position)]
-                           [position (copy-tile (cell/tile cell))])))})})
+                           [position (copy-tile (get-tile/f cell))])))})})

@@ -2,11 +2,11 @@
   (:require [gdl.get-layer :refer [get-layer]]
             [gdl.get :refer [props-get]]
             [gdl.get-layers :refer [get-layers]]
+            [gdl.get-tile :as get-tile]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map-tile-layer.get-width :refer [get-width]]
             [gdl.tiled-map-tile-layer.get-height :refer [get-height]]
-            [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [gdl.tiled-map-tile-layer.cell :as cell]))
+            [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]))
 
 (defn f [tiled-map]
   (let [layer-name "creatures"
@@ -18,7 +18,7 @@
                 cell (get-cell layer position)]
           :when cell
           :let [value (-> cell
-                          cell/tile
+                          get-tile/f
                           get-properties
                           (props-get property-key))]
           :when value]

@@ -28,7 +28,7 @@
             (let [layer (.get (get-layers this) "creatures")]
               (when-let [cell (get-cell layer tile)]
                 (when-let [id (-> cell
-                                  cell/tile
+                                  get-tile/f
                                   get-properties
                                   (.get "id"))]
                   (str "Creature id: " id)))))
