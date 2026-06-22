@@ -57,9 +57,9 @@
                    [render.clear-screen/step]
                    [render.draw-tiled-map/step]
                    [render.draw-on-world-viewport/step [
-                                                        #_(draw-on-world-viewport.draw-tile-grid/f)
-                                                        (draw-on-world-viewport.draw-cell-debug/f)
-                                                        (draw-on-world-viewport.draw-entities/do! [#{:entity/mouseover?
+                                                        #_(clojure.draw-on-world-viewport.draw-tile-grid/f)
+                                                        (clojure.draw-on-world-viewport.draw-cell-debug/f)
+                                                        (clojure.draw-on-world-viewport.draw-entities/do! [#{:entity/mouseover?
                                                                                                      :stunned
                                                                                                      :player-item-on-cursor}
                                                                                                    #{:entity/clickable
@@ -73,7 +73,7 @@
                                                                                                      :active-skill}]
                                                                                                   )
                                                         #_(moon.geom-test)
-                                                        (draw-on-world-viewport.highlight-mouseover-tile/f)
+                                                        (clojure.draw-on-world-viewport.highlight-mouseover-tile/f)
                                                         ]]
                    (clojure.map.assoc-create/f :ctx/interaction-state render.assoc-interaction-state/create)
                    [render.set-cursor/step]

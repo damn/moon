@@ -1,13 +1,13 @@
 {
- :draw/circle           draw.circle/f
- :draw/ellipse          draw.ellipse/f
- :draw/filled-circle    draw.filled-circle/f
- :draw/filled-rectangle draw.filled-rectangle/f
- :draw/grid             draw.grid/f
- :draw/line             draw.line/f
- :draw/rectangle        draw.rectangle/f
- :draw/sector           draw.sector/f
- :draw/text             draw.text/f
- :draw/texture-region   draw.texture-region/f!
- :draw/with-line-width  draw.with-line-width/f
+ :draw/circle           clojure.draw.circle/f
+ :draw/ellipse          clojure.draw.ellipse/f
+ :draw/filled-circle    clojure.draw.filled-circle/f
+ :draw/filled-rectangle clojure.draw.filled-rectangle/f
+ :draw/grid             clojure.draw.grid/f
+ :draw/line             clojure.draw.line/f
+ :draw/rectangle        clojure.draw.rectangle/f
+ :draw/sector           clojure.draw.sector/f
+ :draw/text             clojure.draw.text/f
+ :draw/texture-region   clojure.draw.texture-region/f!
+ :draw/with-line-width  clojure.draw.with-line-width/f
  }
