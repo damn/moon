@@ -53,11 +53,11 @@
            to-ns))
 
 (comment
- (let [suffix "touchable"
+ (let [suffix "actor"
        prefix-a "clojure."
        prefix-b "gdl."]
-   (rename! (str prefix-a suffix)
-            (str prefix-b suffix)))
+   (rename! "gdl.actor."
+            "gdl."))
  (move-and-rename! "moon.scene2d.group"
                    "gdx.scenes.scene2d.group")
 

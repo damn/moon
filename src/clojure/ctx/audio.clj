@@ -1,7 +1,7 @@
 (ns clojure.ctx.audio
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [gdl.audio.new-sound :as new-sound]
+            [gdl.new-sound :as new-sound]
             [gdl.files.internal :as internal]))
 
 (defn step
