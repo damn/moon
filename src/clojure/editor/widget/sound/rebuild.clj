@@ -3,7 +3,7 @@
             [gdl.remove :refer [remove!]]
             [gdl.set-user-object :refer [set-user-object!]]
             [gdl.find-ancestor :refer [find-ancestor]]
-            [gdl.group.clear-children :refer [clear-children!]]
+            [gdl.clear-children :refer [clear-children!]]
             [gdl.layout.pack :refer [pack!]]
             [gdl.is-window :as window?]
             [gdl.table.add-rows :refer [add-rows!]]))

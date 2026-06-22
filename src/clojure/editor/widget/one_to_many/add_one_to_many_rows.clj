@@ -4,7 +4,7 @@
             [gdl.set-user-object :refer [set-user-object!]]
             [gdl.remove :refer [remove!]]
             [gdl.add-listener :refer [add-listener!]]
-            [gdl.group.clear-children :refer [clear-children!]]
+            [gdl.clear-children :refer [clear-children!]]
             [gdl.table.add-rows :refer [add-rows!]]
             [gdl.text-button :as text-button]
             [gdl.text-tooltip :as text-tooltip]

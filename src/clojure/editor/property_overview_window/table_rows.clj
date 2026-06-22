@@ -2,7 +2,7 @@
   (:require [gdl.add-listener :refer [add-listener!]]
             [gdl.set-touchable :refer [set-touchable!]]
             [gdl.get-stage :refer [get-stage]]
-            [gdl.group.add-actors :refer [add-actors!]]
+            [gdl.add-actors :refer [add-actors!]]
             [gdl.touchable :as touchable]
             [gdl.stack :as stack]
             [gdl.text-tooltip :as text-tooltip]

@@ -9,7 +9,7 @@
             [gdl.change-listener :as change-listener]
             [gdl.window.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdl.group.find-actor :refer [find-actor]]
+            [gdl.find-actor :refer [find-actor]]
             [gdl.stage.add-actor :refer [add-actor!]]))
 
 (defn f

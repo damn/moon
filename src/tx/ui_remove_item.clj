@@ -1,5 +1,5 @@
 (ns tx.ui-remove-item
-  (:require [gdl.group.find-actor :refer [find-actor]]
+  (:require [gdl.find-actor :refer [find-actor]]
             [moon.inventory-window.remove-item :as remove-item]))
 
 (defn f

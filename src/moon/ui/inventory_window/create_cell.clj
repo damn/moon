@@ -10,7 +10,7 @@
             [gdl.set-name :refer [set-name!]]
             [gdl.add-listener :refer [add-listener!]]
             [gdl.set-user-object :refer [set-user-object!]]
-            [gdl.group.add-actors :refer [add-actors!]]
+            [gdl.add-actors :refer [add-actors!]]
             [gdl.get-stage :as event]
             [gdl.widget :as widget]
             [game.ctx.do :refer [do!]]

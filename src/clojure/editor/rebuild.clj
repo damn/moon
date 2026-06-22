@@ -1,7 +1,7 @@
 (ns clojure.editor.rebuild
   (:require [clojure.editor.map-widget-table.get-value :as get-value]
             [gdl.remove :refer [remove!]]
-            [gdl.group.find-actor :refer [find-actor]]
+            [gdl.find-actor :refer [find-actor]]
             [clojure.editor.window]
             [gdl.stage.add-actor :refer [add-actor!]]))
 

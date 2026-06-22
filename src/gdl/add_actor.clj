@@ -1,4 +1,4 @@
-(ns gdl.group.add-actor
+(ns gdl.add-actor
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn add-actor! [^Group group actor]

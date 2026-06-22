@@ -1,5 +1,5 @@
-(ns gdl.group.create
+(ns gdl.group
   (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
-(defn create-group []
+(defn f []
   (Group.))

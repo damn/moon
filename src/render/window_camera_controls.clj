@@ -2,10 +2,10 @@
   (:require [gdl.input.key-just-pressed :as key-just-pressed?]
             [gdl.input.key-pressed :as key-pressed?]
             [gdl.orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [gdl.group.find-actor :refer [find-actor]]
+            [gdl.find-actor :refer [find-actor]]
             [gdl.set-visible :refer [set-visible!]]
             [gdl.toggle-visible :refer [toggle-visible!]]
-            [gdl.group.children :refer [children]]))
+            [gdl.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/input

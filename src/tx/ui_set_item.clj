@@ -1,5 +1,5 @@
 (ns tx.ui-set-item
-  (:require [gdl.group.find-actor :refer [find-actor]]
+  (:require [gdl.find-actor :refer [find-actor]]
             [moon.inventory-window.set-item :as set-item]
             [moon.textures :as textures]
             [info.item :refer [info-text]]))

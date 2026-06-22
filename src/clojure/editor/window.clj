@@ -5,7 +5,7 @@
             [gdl.set-name :refer [set-name!]]
             [gdl.change-listener :as change-listener]
             [gdl.get-stage :as event]
-            [gdl.group.add-actors :refer [add-actors!]]
+            [gdl.add-actors :refer [add-actors!]]
             [gdl.input.key-just-pressed :as key-just-pressed?]
             [gdl.table.scroll-pane-cell :as scroll-pane-cell]
             [gdl.text-button :as text-button]
