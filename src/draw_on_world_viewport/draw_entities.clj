@@ -4,37 +4,16 @@
             [game.ctx.draw :refer [draw!]]
             [game.ctx.draw-component :refer [draw-component]]
             [moon.body :as body]
+            [moon.body.draw-rectangle :as draw-rectangle]
             [moon.raycaster :as raycaster]
             [moon.throwable :as throwable]))
 
-(defn- draw-body-rect [{:keys [body/position body/width body/height]} color-float-bits]
-  (let [[x y] [(- (position 0) (/ width  2))
-               (- (position 1) (/ height 2))]]
-    [[:draw/rectangle x y width height color-float-bits]]))
-
-(defn- draw-entity
-  [{:keys [ctx/colors
-           ctx/k->render]
-    :as ctx}
-   entity
-   render-layer]
-  (try (do
-        (when show-body-bounds?
-          (draw! ctx (draw-body-rect (:entity/body entity)
-                                     (if (:body/collides? (:entity/body entity))
-                                       (:colors/debug-body-outline-collides colors)
-                                       (:colors/debug-body-outline colors)))))
-        (doseq [[k v] entity
-                :when (get render-layer k)]
-          (draw! ctx (draw-component ctx entity k v))))
-       (catch Throwable t
-         (draw! ctx (draw-body-rect (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
-         (throwable/pretty-pst t))))
-
 (defn do!
   [{:keys [ctx/active-entities
+           ctx/colors
            ctx/player-eid
            ctx/raycaster
+           ctx/k->render
            ctx/render-z-order]
     :as ctx}
    render-layers]
@@ -49,4 +28,15 @@
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]
-      (draw-entity ctx entity render-layer))))
+      (try (do
+            (when show-body-bounds?
+              (draw! ctx (draw-rectangle/f (:entity/body entity)
+                                           (if (:body/collides? (:entity/body entity))
+                                             (:colors/debug-body-outline-collides colors)
+                                             (:colors/debug-body-outline colors)))))
+            (doseq [[k v] entity
+                    :when (get render-layer k)]
+              (draw! ctx (draw-component ctx entity k v))))
+           (catch Throwable t
+             (draw! ctx (draw-rectangle/f (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
+             (throwable/pretty-pst t))))))
