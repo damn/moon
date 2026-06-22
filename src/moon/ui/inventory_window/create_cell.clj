@@ -1,5 +1,5 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [gdl.vector2 :refer [->clj]]
+  (:require [gdl.vector2.clojurize :as clojurize]
             [gdl.actor.hit :refer [hit]]
             [gdl.actor.stage-local-coordinates :refer [stage->local-coordinates]]
             [gdl.actor.get-x :refer [get-x]]
@@ -37,9 +37,9 @@
                                                            (get-x this)
                                                            (get-y this)
                                                            (hit this
-                                                                (->clj
+                                                                (clojurize/f
                                                                  (stage->local-coordinates this
-                                                                                           (vector2/create ui-mouse-position)))
+                                                                                           (vector2/f ui-mouse-position)))
                                                                 true)
                                                            (get-user-object (get-parent this)))))))})
                      (doto (image/create background-drawable)
