@@ -1,5 +1,5 @@
 (ns world-fns.uf-caves
-  (:require [gdl.texture.region :as region]
+  (:require [gdl.texture-region :as texture-region]
             [gdl.create-static-tiled-map-tile :as create-tile]
             [world-fns.uf-caves.initial-grid]
             [world-fns.uf-caves.fix-nads]
@@ -29,11 +29,11 @@
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
                                    (create-tile/f
-                                    (region/f texture
-                                              (* (sprite-idx 0) tile-size)
-                                              (* (sprite-idx 1) tile-size)
-                                              tile-size
-                                              tile-size)
+                                    (texture-region/f texture
+                                                      (* (sprite-idx 0) tile-size)
+                                                      (* (sprite-idx 1) tile-size)
+                                                      tile-size
+                                                      tile-size)
                                     "movement" movement))))
            :level/spawn-rate spawn-rate
            :level/scaling scaling

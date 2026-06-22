@@ -1,5 +1,5 @@
-(ns gdl.tiled-map.movement-property-layers
-  (:require [gdl.tiled-map.get-layers :refer [get-layers]]
+(ns gdl.movement-property-layers
+  (:require [gdl.get-layers :refer [get-layers]]
             [gdl.get :refer [props-get]]
             [gdl.get-properties :refer [get-properties]]))
 

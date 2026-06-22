@@ -2,15 +2,15 @@
   (:require [clojure.grid2d.flood-fill :as flood-fill]
             [world-fns.uf-caves.position-tile-fn :as position-tile-fn]
             [world-fns.uf-caves.assoc-transition-cells :as assoc-transition-cells]
-            [gdl.tiled-map.movement-property :as movement-property]
+            [gdl.movement-property :as movement-property]
             [clojure.grid2d.height :refer [->height]]
             [clojure.grid2d.width :refer [->width]]
             [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d.posis :as posis]
             [clojure.grid2d.printgrid :as printgrid]
             [clojure.grid2d.scalegrid :as scalegrid]
-            [gdl.tiled-map.create :as create-tiled-map]
-            [gdl.tiled-map.add-creatures-layer :as add-creatures-layer]))
+            [gdl.tiled-map :as tiled-map]
+            [gdl.add-creatures-layer :as add-creatures-layer]))
 
 (defn- scale-grid [grid start scale]
   (let [grid (scalegrid/f grid scale)]
@@ -35,7 +35,7 @@
   (let [{:keys [start-position grid]} (scale-grid grid start scaling)
         grid (assoc-transition-cells/f grid)
         position->tile (position-tile-fn/f grid)
-        tiled-map (create-tiled-map/f
+        tiled-map (tiled-map/f
                    {:properties {"width"  (->width  grid)
                                  "height" (->height grid)
                                  "tilewidth"  tile-size

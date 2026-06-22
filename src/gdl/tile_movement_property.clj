@@ -1,4 +1,4 @@
-(ns gdl.tiled-map.tile-movement-property
+(ns gdl.tile-movement-property
   (:require [gdl.get :refer [props-get]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map-tile-layer.get-name :refer [get-name]]

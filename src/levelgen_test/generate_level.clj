@@ -2,7 +2,7 @@
   (:require [clojure.edn-resource :refer [edn-resource]]
             [gdl.texture-region :as texture-region]
             [gdl.get-layer :refer [get-layer]]
-            [gdl.tiled-map.get-layers :refer [get-layers]]
+            [gdl.get-layers :refer [get-layers]]
             [gdl.tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [gdl.dispose :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]

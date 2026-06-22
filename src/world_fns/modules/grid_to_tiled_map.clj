@@ -1,6 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require [gdl.to-clj :refer [->clj]]
-            [gdl.tiled-map.get-layers :refer [get-layers]]
+            [gdl.get-layers :refer [get-layers]]
             [gdl.tiled-map-tile-layer.visible :refer [visible?]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map-tile-layer.cell :as cell]
