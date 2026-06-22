@@ -17,6 +17,7 @@
 package com.badlogic.gdx.backends.lwjgl3;
 
 import com.badlogic.gdx.input.NativeInputConfiguration;
+import com.badlogic.gdx.utils.IntSet;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
@@ -24,14 +25,18 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 
-import com.badlogic.gdx.AbstractInput;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputEventQueue;
 import com.badlogic.gdx.InputProcessor;
 
-public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
+public class DefaultLwjgl3Input implements Lwjgl3Input, Input {
+	protected final boolean[] pressedKeys;
+	protected final boolean[] justPressedKeys;
 	final Lwjgl3Window window;
+	private final IntSet keysToCatch = new IntSet();
+	protected int pressedKeyCount;
+	protected boolean keyJustPressed;
 	private InputProcessor inputProcessor;
 	final InputEventQueue eventQueue = new InputEventQueue();
 
@@ -128,6 +133,8 @@ public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 	};
 
 	public DefaultLwjgl3Input (Lwjgl3Window window) {
+		pressedKeys = new boolean[Keys.MAX_KEYCODE + 1];
+		justPressedKeys = new boolean[Keys.MAX_KEYCODE + 1];
 		this.window = window;
 		windowHandleChanged(window.getWindowHandle());
 	}
@@ -723,5 +730,41 @@ public class DefaultLwjgl3Input extends AbstractInput implements Lwjgl3Input {
 	@Override
 	public float getGyroscopeZ () {
 		return 0;
+	}
+
+	@Override
+	public boolean isKeyPressed (int key) {
+		if (key == Keys.ANY_KEY) {
+			return pressedKeyCount > 0;
+		}
+		if (key < 0 || key > Keys.MAX_KEYCODE) {
+			return false;
+		}
+		return pressedKeys[key];
+	}
+
+	@Override
+	public boolean isKeyJustPressed (int key) {
+		if (key == Keys.ANY_KEY) {
+			return keyJustPressed;
+		}
+		if (key < 0 || key > Keys.MAX_KEYCODE) {
+			return false;
+		}
+		return justPressedKeys[key];
+	}
+
+	@Override
+	public void setCatchKey (int keycode, boolean catchKey) {
+		if (!catchKey) {
+			keysToCatch.remove(keycode);
+		} else {
+			keysToCatch.add(keycode);
+		}
+	}
+
+	@Override
+	public boolean isCatchKey (int keycode) {
+		return keysToCatch.contains(keycode);
 	}
 }
