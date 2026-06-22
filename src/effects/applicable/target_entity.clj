@@ -1,7 +1,7 @@
 (ns effects.applicable.target-entity
-  (:require [game.effect :as effect]))
+  (:require [moon.effect.is-applicable :as applicable?]))
 
 (defn f
   [[_ {:keys [entity-effects]}] {:keys [effect/target] :as effect-ctx}]
   (and target
-       (seq (filter #(effect/applicable? % effect-ctx) entity-effects))))
+       (seq (filter #(applicable?/f % effect-ctx) entity-effects))))

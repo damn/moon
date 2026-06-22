@@ -1,5 +1,5 @@
 (ns entity.tick.active-skill
-  (:require [game.effect :as effect]
+  (:require [moon.effect.is-applicable :as applicable?]
             [moon.raycaster :as raycaster]
             [clojure.timer.stopped :refer [stopped?]]))
 
@@ -18,7 +18,7 @@
            ctx/raycaster]}]
   (let [effect-ctx (update-effect-ctx raycaster effect-ctx)]
     (cond
-     (not (seq (filter #(effect/applicable? % effect-ctx)
+     (not (seq (filter #(applicable?/f % effect-ctx)
                        (:skill/effects skill))))
      [[:tx/event eid :action-done]]
 

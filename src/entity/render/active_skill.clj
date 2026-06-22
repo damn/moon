@@ -1,6 +1,6 @@
 (ns entity.render.active-skill
   (:require [clojure.math :as math]
-            [game.effect :as effect]
+            [moon.effect.render :as render]
             [moon.timer :as timer]
             [game.constants :refer [skill-image-radius-world-units]]
             [moon.textures :as textures]))
@@ -29,5 +29,5 @@
                 (math/to-radians (* (float action-counter-ratio) 360)) ; degree
                 (:colors/active-skill-sector colors)]
                [:draw/texture-region texture-region [(- (float x) radius) y]]])
-            (mapcat #(effect/render % effect-ctx ctx)  ; update-effect-ctx here too ?
+            (mapcat #(render/f % effect-ctx ctx)  ; update-effect-ctx here too ?
                     effects))))

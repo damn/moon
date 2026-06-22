@@ -1,5 +1,5 @@
 (ns game.skill
-  (:require [game.effect :as effect]
+  (:require [moon.effect.is-applicable :as applicable?]
             [moon.stats.not-enough-mana :as not-enough-mana?]))
 
 (defn valid? [skill]
@@ -25,7 +25,7 @@
    (not-enough-mana?/f (:entity/stats entity) skill)
    :not-enough-mana
 
-   (not (seq (filter #(effect/applicable? % effect-ctx) effects)))
+   (not (seq (filter #(applicable?/f % effect-ctx) effects)))
    :invalid-params
 
    :else

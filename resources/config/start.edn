@@ -20,7 +20,7 @@
                           :player-item-on-cursor entity.state.draw-ui-view.player-item-on-cursor/f
                           }
                          )
- (clojure.add-methods/f! game.effect/applicable?
+ (clojure.add-methods/f! moon.effect.is-applicable/f
                          {
                           :effects/audiovisual   effects.applicable.audiovisual/f
                           :effects/projectile    effects.applicable.projectile/f
@@ -37,7 +37,7 @@
                           :effects.target/stun         effects-target.applicable.stun/f
                           }
                          )
- (clojure.add-methods/f! game.effect/useful?
+ (clojure.add-methods/f! moon.effect.is-useful/f
                          {
                           :default               effects.useful.default/f
 
@@ -49,7 +49,7 @@
                           :effects.target/audiovisual effects-target.useful.audiovisual/f
                           }
                          )
- (clojure.add-methods/f! game.effect/handle
+ (clojure.add-methods/f! moon.effect.handle/f
                          {
                           :effects/audiovisual   effects.handle.audiovisual/f
                           :effects/projectile    effects.handle.projectile/f
@@ -66,7 +66,7 @@
                           :effects.target/stun         effects-target.handle.stun/f
                           }
                          )
- (clojure.add-methods/f! game.effect/render
+ (clojure.add-methods/f! moon.effect.render/f
                          {
                           :default               effects.render.default/f
 
