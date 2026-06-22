@@ -1,6 +1,6 @@
 (ns info.skill.cooling-down
   (:require [clojure.readable :as readable]
-            [moon.timer :as timer]))
+            [clojure.timer.ratio :as ratio]))
 
 (defn f [counter {:keys [ctx/elapsed-time]}]
-  (str "Cooldown: " (readable/f (timer/ratio elapsed-time counter)) "/1"))
+  (str "Cooldown: " (readable/f (ratio/f elapsed-time counter)) "/1"))

@@ -1,7 +1,7 @@
 (ns entity.render.active-skill
   (:require [clojure.math :as math]
             [moon.effect.render :as render]
-            [moon.timer :as timer]
+            [clojure.timer.ratio :as ratio]
             [game.constants :refer [skill-image-radius-world-units]]
             [moon.textures :as textures]))
 
@@ -13,7 +13,7 @@
            ctx/textures]
     :as ctx}]
   (let [{:keys [entity/image skill/effects]} skill]
-    (concat (let [action-counter-ratio (timer/ratio elapsed-time counter)
+    (concat (let [action-counter-ratio (ratio/f elapsed-time counter)
                   texture-region (textures/texture-region textures image)
                   radius skill-image-radius-world-units
                   [x y] (:body/position (:entity/body entity))
