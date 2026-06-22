@@ -1,5 +1,5 @@
 (ns tx.sound
-  (:require [gdl.sound.play :as play]))
+  (:require [gdl.play :as play]))
 
 (defn f
   [{:keys [ctx/audio] :as ctx} sound-name]

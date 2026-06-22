@@ -4,7 +4,7 @@
             [clojure.editor.widget.sound.columns :refer [sound-columns]]
             [clojure.editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdl.table.add-rows :refer [add-rows!]]
+            [gdl.add-rows :refer [add-rows!]]
             [gdl.text-button :as text-button]
             [gdl.change-listener :as change-listener]))
 

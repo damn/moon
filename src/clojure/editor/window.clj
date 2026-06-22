@@ -7,7 +7,7 @@
             [gdl.get-stage :as event]
             [gdl.add-actors :refer [add-actors!]]
             [gdl.key-just-pressed :as key-just-pressed?]
-            [gdl.table.scroll-pane-cell :as scroll-pane-cell]
+            [gdl.scroll-pane-cell :as scroll-pane-cell]
             [gdl.text-button :as text-button]
             [gdl.window.add-close-button :as add-close-button]
             [gdl.window.set-modal :as set-modal]

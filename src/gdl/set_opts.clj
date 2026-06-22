@@ -1,6 +1,6 @@
-(ns gdl.table.set-opts
+(ns gdl.set-opts
   (:require [gdl.cell :as cell]
-            [gdl.table.add-rows :refer [add-rows!]]
+            [gdl.add-rows :refer [add-rows!]]
             [gdl.pack :refer [pack!]])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 

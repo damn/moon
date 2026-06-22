@@ -4,7 +4,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [gdl.set-name :refer [set-name!]]
             [gdl.add-listener :refer [add-listener!]]
-            [gdl.table.add-rows :refer [add-rows!]]
+            [gdl.add-rows :refer [add-rows!]]
             [gdl.text-button :as text-button]
             [gdl.change-listener :as change-listener]
             [gdl.stage.add-actor :refer [add-actor!]]

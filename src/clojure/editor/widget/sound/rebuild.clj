@@ -6,7 +6,7 @@
             [gdl.clear-children :refer [clear-children!]]
             [gdl.pack :refer [pack!]]
             [gdl.is-window :as window?]
-            [gdl.table.add-rows :refer [add-rows!]]))
+            [gdl.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]

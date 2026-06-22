@@ -2,7 +2,7 @@
   (:require [gdl.add-listener :refer [add-listener!]]
             [gdl.remove :refer [remove!]]
             [gdl.change-listener :as change-listener]
-            [gdl.table.add-cell :refer [add-cell!]]
+            [gdl.add-cell :refer [add-cell!]]
             [gdl.text-button :as text-button]
             [gdl.window.get-title-table :as get-title-table]))
 

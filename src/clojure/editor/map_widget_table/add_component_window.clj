@@ -4,7 +4,7 @@
             [moon.schema.widget-value :as widget-value]
             [gdl.remove :refer [remove!]]
             [gdl.add-listener :refer [add-listener!]]
-            [gdl.table.add-rows :refer [add-rows!]]
+            [gdl.add-rows :refer [add-rows!]]
             [gdl.text-button :as text-button]
             [gdl.pack :refer [pack!]]
             [gdl.change-listener :as change-listener]

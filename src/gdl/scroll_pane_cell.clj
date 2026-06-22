@@ -1,4 +1,4 @@
-(ns gdl.table.scroll-pane-cell
+(ns gdl.scroll-pane-cell
   (:require [gdl.scroll-pane :as scroll-pane]
             [gdl.get-height :refer [get-height]]
             [gdl.get-width :refer [get-width]]))
