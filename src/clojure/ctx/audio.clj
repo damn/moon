@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.audio.new-sound :as new-sound]
-            [clojure.files :as files]))
+            [clojure.files.internal :as internal]))
 
 (defn step
   [{:keys [ctx/audio
@@ -12,4 +12,4 @@
               :let [path (format "sounds/%s.wav" sound-name)]]
           [sound-name
            (new-sound/f audio
-                        (files/internal files path))])))
+                        (internal/f files path))])))

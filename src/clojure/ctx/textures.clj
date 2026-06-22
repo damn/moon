@@ -1,6 +1,6 @@
 (ns clojure.ctx.textures
   (:require [clojure.string :as str]
-            [clojure.files :as files]
+            [clojure.files.internal :as internal]
             [clojure.file-handle :as file]
             [clojure.file.texture :as texture]))
 
@@ -11,7 +11,7 @@
   [{:keys [ctx/files]}]
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
-                           (loop [[file & remaining] (file/list (files/internal files folder))
+                           (loop [[file & remaining] (file/list (internal/f files folder))
                                   result []]
                              (cond (nil? file)
                                    result
@@ -24,4 +24,4 @@
 
                                    :else
                                    (recur remaining result))))]
-             [path (texture/f (files/internal files path))])))
+             [path (texture/f (internal/f files path))])))

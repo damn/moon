@@ -1,5 +1,5 @@
 (ns clojure.ctx.default-font
-  (:require [clojure.files :as files]
+  (:require [clojure.files.internal :as internal]
             [clojure.texture.filter :as texture.filter]
             [clojure.bitmap-font.get-data :refer [get-data]]
             [clojure.bitmap-font-data.enable-markup :refer [enable-markup!]]
@@ -19,7 +19,7 @@
                                           :size 16
                                           :quality-scaling 2
                                           :use-integer-positions? false}
-        generator (font-generator/f (files/internal files path))
+        generator (font-generator/f (internal/f files path))
         font (generate-font/f generator
                               (parameter/create
                                {:size (* size quality-scaling)

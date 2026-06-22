@@ -1,5 +1,5 @@
-(ns clojure.files
+(ns clojure.graphics
   (:import (com.badlogic.gdx Gdx)))
 
 (defn f []
-  Gdx/files)
+  Gdx/graphics)
