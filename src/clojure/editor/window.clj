@@ -6,7 +6,7 @@
             [gdl.change-listener :as change-listener]
             [gdl.get-stage :as event]
             [gdl.add-actors :refer [add-actors!]]
-            [gdl.input.key-just-pressed :as key-just-pressed?]
+            [gdl.key-just-pressed :as key-just-pressed?]
             [gdl.table.scroll-pane-cell :as scroll-pane-cell]
             [gdl.text-button :as text-button]
             [gdl.window.add-close-button :as add-close-button]

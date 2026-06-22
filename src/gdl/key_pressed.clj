@@ -1,4 +1,4 @@
-(ns gdl.input.key-pressed
+(ns gdl.key-pressed
   (:require [gdl.input-keys :as input.keys])
   (:import (com.badlogic.gdx Input)))
 

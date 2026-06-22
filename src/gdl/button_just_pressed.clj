@@ -1,4 +1,4 @@
-(ns gdl.input.button-just-pressed
+(ns gdl.button-just-pressed
   (:require [gdl.input-buttons :as input.buttons])
   (:import (com.badlogic.gdx Input)))
 

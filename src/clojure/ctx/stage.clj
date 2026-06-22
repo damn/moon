@@ -1,5 +1,5 @@
 (ns clojure.ctx.stage
-  (:require [gdl.input.set-processor :as set-processor!]
+  (:require [gdl.set-processor :as set-processor!]
             [gdl.fit-viewport :as fit-viewport]
             [gdl.stage :as stage]))
 

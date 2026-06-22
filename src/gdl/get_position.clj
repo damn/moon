@@ -1,4 +1,4 @@
-(ns gdl.input.get-position
+(ns gdl.get-position
   (:import (com.badlogic.gdx Input)))
 
 (defn f [^Input input]

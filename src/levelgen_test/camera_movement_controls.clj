@@ -1,5 +1,5 @@
 (ns levelgen-test.camera-movement-controls
-  (:require [gdl.input.key-pressed :as key-pressed?]
+  (:require [gdl.key-pressed :as key-pressed?]
             [gdl.orthographic-camera.get-position :refer [get-position]]
             [gdl.orthographic-camera.set-position :refer [set-position!]]))
 

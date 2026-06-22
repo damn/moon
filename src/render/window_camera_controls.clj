@@ -1,6 +1,6 @@
 (ns render.window-camera-controls
-  (:require [gdl.input.key-just-pressed :as key-just-pressed?]
-            [gdl.input.key-pressed :as key-pressed?]
+  (:require [gdl.key-just-pressed :as key-just-pressed?]
+            [gdl.key-pressed :as key-pressed?]
             [gdl.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [gdl.find-actor :refer [find-actor]]
             [gdl.set-visible :refer [set-visible!]]
