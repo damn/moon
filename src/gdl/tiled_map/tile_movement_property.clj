@@ -1,5 +1,5 @@
 (ns gdl.tiled-map.tile-movement-property
-  (:require [gdl.map-properties.get :refer [props-get]]
+  (:require [gdl.get :refer [props-get]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map-tile-layer.get-name :refer [get-name]]
             [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]

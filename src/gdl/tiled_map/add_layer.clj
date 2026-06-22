@@ -1,6 +1,6 @@
 (ns gdl.tiled-map.add-layer
-  (:require [gdl.map-layers.add :refer [add!]]
-            [gdl.map-properties.get :refer [props-get]]
+  (:require [gdl.add :refer [add!]]
+            [gdl.get :refer [props-get]]
             [gdl.tiled-map.get-layers :refer [get-layers]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map-tile-layer.create :as create-layer]))

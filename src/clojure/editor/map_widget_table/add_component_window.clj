@@ -6,7 +6,7 @@
             [gdl.add-listener :refer [add-listener!]]
             [gdl.table.add-rows :refer [add-rows!]]
             [gdl.text-button :as text-button]
-            [gdl.layout.pack :refer [pack!]]
+            [gdl.pack :refer [pack!]]
             [gdl.change-listener :as change-listener]
             [gdl.window.add-close-button :as add-close-button]
             [gdl.window.set-modal :as set-modal]

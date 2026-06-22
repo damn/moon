@@ -1,4 +1,4 @@
-(ns gdl.layout.set-fill-parent
+(ns gdl.set-fill-parent
   (:import (com.badlogic.gdx.scenes.scene2d.utils Layout)))
 
 (defn set-fill-parent! [^Layout layout bool]

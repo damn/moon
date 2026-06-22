@@ -1,5 +1,5 @@
 (ns world-fns.modules.place-step
-  (:require [gdl.map-properties.get :refer [props-get]]
+  (:require [gdl.get :refer [props-get]]
             [gdl.get-properties :refer [get-properties]]
             [world-fns.modules.place-step.place-star :refer [place-module*]]))
 

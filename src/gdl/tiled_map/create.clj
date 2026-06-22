@@ -1,5 +1,5 @@
 (ns gdl.tiled-map.create
-  (:require [gdl.map-properties.put :refer [put!]]
+  (:require [gdl.put :refer [put!]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map.add-layer :as add-layer])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))

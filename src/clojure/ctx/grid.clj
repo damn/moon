@@ -1,5 +1,5 @@
 (ns clojure.ctx.grid
-  (:require [gdl.map-properties.get :refer [props-get]]
+  (:require [gdl.get :refer [props-get]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map.movement-property :as movement-property]
             [moon.cell :as cell]

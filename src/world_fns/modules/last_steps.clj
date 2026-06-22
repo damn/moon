@@ -1,5 +1,5 @@
 (ns world-fns.modules.last-steps
-  (:require [gdl.map-layers.get-layer :refer [get-layer]]
+  (:require [gdl.get-layer :refer [get-layer]]
             [gdl.tiled-map.property-value :refer [property-value]]
             [gdl.tiled-map.get-layers :refer [get-layers]]
             [clojure.grid2d.cells :refer [->cells]]

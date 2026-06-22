@@ -1,5 +1,5 @@
 (ns levelgen-test.show-whole-map
-  (:require [gdl.map-properties.get :refer [props-get]]
+  (:require [gdl.get :refer [props-get]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.orthographic-camera.set-position :refer [set-position!]]
             [gdl.orthographic-camera.calculate-zoom :refer [calculate-zoom]]

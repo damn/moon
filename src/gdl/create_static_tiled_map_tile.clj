@@ -1,5 +1,5 @@
 (ns gdl.create-static-tiled-map-tile
-  (:require [gdl.map-properties.put :refer [put!]]
+  (:require [gdl.put :refer [put!]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.static-tiled-map-tile :as static-tiled-map-tile]))
 

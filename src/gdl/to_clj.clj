@@ -1,4 +1,4 @@
-(ns gdl.map-properties.to-clj
+(ns gdl.to-clj
   (:import (com.badlogic.gdx.maps MapProperties)))
 
 (defn ->clj [^MapProperties props]

@@ -8,7 +8,7 @@
             [gdl.table.add-rows :refer [add-rows!]]
             [gdl.text-button :as text-button]
             [gdl.text-tooltip :as text-tooltip]
-            [gdl.layout.pack :refer [pack!]]
+            [gdl.pack :refer [pack!]]
             [gdl.change-listener :as change-listener]
             [gdl.is-window :as window?]
             [gdl.image :as image]

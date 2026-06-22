@@ -1,4 +1,4 @@
-(ns gdl.map-layers.add
+(ns gdl.add
   (:import (com.badlogic.gdx.maps MapLayer
                                   MapLayers)))
 

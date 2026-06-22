@@ -8,7 +8,7 @@
             [gdl.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdl.layout.pack :refer [pack!]]))
+            [gdl.pack :refer [pack!]]))
 
 (defn create
   [{:keys [title

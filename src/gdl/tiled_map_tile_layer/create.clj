@@ -1,5 +1,5 @@
 (ns gdl.tiled-map-tile-layer.create
-  (:require [gdl.map-properties.put :refer [put!]]
+  (:require [gdl.put :refer [put!]]
             [gdl.get-properties :refer [get-properties]]
             [gdl.tiled-map-tile-layer.set-visible :refer [set-visible!]])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
