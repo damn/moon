@@ -1,5 +1,5 @@
 (ns clojure.editor.map-widget-table.get-value
-  (:require [gdl.actor.get-user-object :refer [get-user-object]]
+  (:require [gdl.get-user-object :refer [get-user-object]]
             [gdl.group.children :refer [children]]
             [moon.schema.widget-value :as widget-value]))
 

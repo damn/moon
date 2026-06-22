@@ -1,7 +1,7 @@
 (ns clojure.editor.widget.sound.open-select-sounds-handler
-  (:require [gdl.actor.get-height :refer [get-height]]
-            [gdl.actor.get-width :refer [get-width]]
-            [gdl.actor.add-listener :refer [add-listener!]]
+  (:require [gdl.get-height :refer [get-height]]
+            [gdl.get-width :refer [get-width]]
+            [gdl.add-listener :refer [add-listener!]]
             [gdl.event.get-stage :refer [get-stage]]
             [gdl.scroll-pane :as scroll-pane]
             [gdl.window.add-close-button :as add-close-button]

@@ -1,5 +1,5 @@
 (ns moon.action-bar.remove-skill
-  (:require [gdl.actor.remove :refer [remove!]]
+  (:require [gdl.remove :refer [remove!]]
             [gdl.button-group :as button-group]
             [moon.action-bar.get-data :as get-data]))
 

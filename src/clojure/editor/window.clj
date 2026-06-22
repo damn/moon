@@ -1,8 +1,8 @@
 (ns clojure.editor.window
   (:require [gdl.actor :as actor]
-            [gdl.actor.add-listener :refer [add-listener!]]
-            [gdl.actor.get-stage :refer [get-stage]]
-            [gdl.actor.set-name :refer [set-name!]]
+            [gdl.add-listener :refer [add-listener!]]
+            [gdl.get-stage :refer [get-stage]]
+            [gdl.set-name :refer [set-name!]]
             [gdl.change-listener :as change-listener]
             [gdl.event.get-stage :as event]
             [gdl.group.add-actors :refer [add-actors!]]

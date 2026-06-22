@@ -1,11 +1,11 @@
 (ns clojure.editor.widget.sound.rebuild
-  (:require [gdl.actor.get-user-object :refer [get-user-object]]
-            [gdl.actor.remove :refer [remove!]]
-            [gdl.actor.set-user-object :refer [set-user-object!]]
-            [gdl.actor.find-ancestor :refer [find-ancestor]]
+  (:require [gdl.get-user-object :refer [get-user-object]]
+            [gdl.remove :refer [remove!]]
+            [gdl.set-user-object :refer [set-user-object!]]
+            [gdl.find-ancestor :refer [find-ancestor]]
             [gdl.group.clear-children :refer [clear-children!]]
             [gdl.layout.pack :refer [pack!]]
-            [gdl.actor.is-window :as window?]
+            [gdl.is-window :as window?]
             [gdl.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]

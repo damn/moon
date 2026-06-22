@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor
-  (:require [gdl.actor.get-stage :refer [get-stage]]
+  (:require [gdl.get-stage :refer [get-stage]]
             [gdl.actor :as actor]
             [gdl.label :as label]))
 

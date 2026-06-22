@@ -1,8 +1,8 @@
 (ns gdx.scenes.scene2d.ui.info-window
-  (:require [gdl.actor.set-position :refer [set-position!]]
-            [gdl.actor.get-stage :refer [get-stage]]
-            [gdl.actor.set-name :refer [set-name!]]
-            [gdl.actor.set-visible :refer [set-visible!]]
+  (:require [gdl.set-position :refer [set-position!]]
+            [gdl.get-stage :refer [get-stage]]
+            [gdl.set-name :refer [set-name!]]
+            [gdl.set-visible :refer [set-visible!]]
             [gdl.actor :as actor]
             [gdl.group.add-actor :refer [add-actor!]]
             [gdl.label :as label]

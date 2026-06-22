@@ -1,4 +1,4 @@
-(ns gdl.actor.get-y
+(ns gdl.get-y
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn get-y [^Actor actor]

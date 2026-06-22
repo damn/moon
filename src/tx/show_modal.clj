@@ -1,9 +1,9 @@
 (ns tx.show-modal
   (:require [gdl.align :as align]
-            [gdl.actor.set-position :refer [set-position!]]
-            [gdl.actor.remove :refer [remove!]]
-            [gdl.actor.set-name :refer [set-name!]]
-            [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.set-position :refer [set-position!]]
+            [gdl.remove :refer [remove!]]
+            [gdl.set-name :refer [set-name!]]
+            [gdl.add-listener :refer [add-listener!]]
             [gdl.label :as label]
             [gdl.text-button :as text-button]
             [gdl.change-listener :as change-listener]

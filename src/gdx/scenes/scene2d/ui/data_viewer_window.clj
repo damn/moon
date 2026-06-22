@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
   (:require [gdx.scenes.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
-            [gdl.actor.get-stage :refer [get-stage]]
-            [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.get-stage :refer [get-stage]]
+            [gdl.add-listener :refer [add-listener!]]
             [gdl.label :as label]
             [gdl.scroll-pane :as scroll-pane]
             [gdl.window.add-close-button :as add-close-button]

@@ -1,4 +1,4 @@
-(ns gdl.actor.get-parent
+(ns gdl.get-parent
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn get-parent [^Actor actor]

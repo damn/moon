@@ -1,5 +1,5 @@
 (ns clojure.editor.widget.string
-  (:require [gdl.actor.add-listener :refer [add-listener!]]
+  (:require [gdl.add-listener :refer [add-listener!]]
             [gdl.text-field :as text-field]
             [gdl.text-tooltip :as text-tooltip]))
 

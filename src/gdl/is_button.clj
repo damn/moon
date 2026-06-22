@@ -1,5 +1,5 @@
-(ns gdl.actor.is-button
-  (:require [gdl.actor.get-parent :refer [get-parent]]
+(ns gdl.is-button
+  (:require [gdl.get-parent :refer [get-parent]]
             [gdl.button :as button]))
 
 (let [button-class? (fn [actor]

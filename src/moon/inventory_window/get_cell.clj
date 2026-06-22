@@ -1,5 +1,5 @@
 (ns moon.inventory-window.get-cell
-  (:require [gdl.actor.get-user-object :refer [get-user-object]]
+  (:require [gdl.get-user-object :refer [get-user-object]]
             [gdl.group.children :refer [children]]
             [gdl.group.find-actor :refer [find-actor]]))
 

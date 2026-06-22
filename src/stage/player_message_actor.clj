@@ -1,9 +1,9 @@
 (ns stage.player-message-actor
   (:require [game.ctx.draw :refer [draw!]]
-            [gdl.actor.get-user-object :refer [get-user-object]]
-            [gdl.actor.get-stage :refer [get-stage]]
-            [gdl.actor.set-name :refer [set-name!]]
-            [gdl.actor.set-user-object :refer [set-user-object!]]
+            [gdl.get-user-object :refer [get-user-object]]
+            [gdl.get-stage :refer [get-stage]]
+            [gdl.set-name :refer [set-name!]]
+            [gdl.set-user-object :refer [set-user-object!]]
             [gdl.actor :as actor]))
 
 (defn create [_ctx]

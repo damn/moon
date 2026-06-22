@@ -1,4 +1,4 @@
-(ns gdl.actor.remove
+(ns gdl.remove
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn remove! [^Actor actor]

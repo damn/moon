@@ -1,4 +1,4 @@
-(ns gdl.actor.set-position
+(ns gdl.set-position
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn set-position!

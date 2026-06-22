@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
-  (:require [gdl.actor.add-listener :refer [add-listener!]]
+  (:require [gdl.add-listener :refer [add-listener!]]
             [gdl.change-listener :as change-listener]
             [gdl.event.get-stage :refer [get-stage]]
             [gdl.stage.add-actor :refer [add-actor!]]

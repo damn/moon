@@ -1,6 +1,6 @@
 (ns moon.action-bar.add-skill
-  (:require [gdl.actor.add-listener :refer [add-listener!]]
-            [gdl.actor.set-user-object :refer [set-user-object!]]
+  (:require [gdl.add-listener :refer [add-listener!]]
+            [gdl.set-user-object :refer [set-user-object!]]
             [gdl.group.add-actor :refer [add-actor!]]
             [gdl.button-group :as button-group]
             [gdl.image-button :as image-button]

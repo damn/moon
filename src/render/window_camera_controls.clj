@@ -3,8 +3,8 @@
             [gdl.input.key-pressed :as key-pressed?]
             [gdl.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [gdl.group.find-actor :refer [find-actor]]
-            [gdl.actor.set-visible :refer [set-visible!]]
-            [gdl.actor.toggle-visible :refer [toggle-visible!]]
+            [gdl.set-visible :refer [set-visible!]]
+            [gdl.toggle-visible :refer [toggle-visible!]]
             [gdl.group.children :refer [children]]))
 
 (defn step

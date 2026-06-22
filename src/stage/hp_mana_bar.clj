@@ -1,6 +1,6 @@
 (ns stage.hp-mana-bar
   (:require [game.ctx.draw :refer [draw!]]
-            [gdl.actor.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [gdl.actor :as actor]
             [clojure.readable :as readable]
             [moon.stats.get-hitpoints :as get-hitpoints]

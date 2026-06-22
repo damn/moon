@@ -1,5 +1,5 @@
-(ns gdl.actor.find-ancestor
-  (:require [gdl.actor.get-parent :refer [get-parent]]))
+(ns gdl.find-ancestor
+  (:require [gdl.get-parent :refer [get-parent]]))
 
 (defn find-ancestor [actor pred]
   (if-let [p (get-parent actor)]

@@ -1,5 +1,5 @@
 (ns clojure.editor.widget.one-to-one
-  (:require [gdl.actor.get-user-object :refer [get-user-object]]
+  (:require [gdl.get-user-object :refer [get-user-object]]
             [clojure.editor.widget.one-to-one.add-one-to-one-rows :refer [add-one-to-one-rows]]
             [gdl.group.children :refer [children]]
             [gdx.scenes.scene2d.ui.table :as table]))

@@ -1,6 +1,6 @@
 (ns clojure.editor.property-overview-window.table-rows
-  (:require [gdl.actor.add-listener :refer [add-listener!]]
-            [gdl.actor.set-touchable :refer [set-touchable!]]
+  (:require [gdl.add-listener :refer [add-listener!]]
+            [gdl.set-touchable :refer [set-touchable!]]
             [gdl.event.get-stage :refer [get-stage]]
             [gdl.group.add-actors :refer [add-actors!]]
             [gdl.touchable :as touchable]

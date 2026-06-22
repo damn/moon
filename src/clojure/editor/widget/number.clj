@@ -1,7 +1,7 @@
 (ns clojure.editor.widget.number
   (:require [clojure.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
-            [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.add-listener :refer [add-listener!]]
             [gdl.text-field :as text-field]
             [gdl.text-tooltip :as text-tooltip]))
 

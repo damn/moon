@@ -1,6 +1,6 @@
 (ns clojure.editor.main-window
   (:require [clojure.string :as str]
-            [gdl.actor.add-listener :refer [add-listener!]]
+            [gdl.add-listener :refer [add-listener!]]
             [gdl.event.get-stage :refer [get-stage]]
             [clojure.editor.window]
             [gdl.text-button :as text-button]

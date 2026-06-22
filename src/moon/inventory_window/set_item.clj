@@ -1,6 +1,6 @@
 (ns moon.inventory-window.set-item
-  (:require [gdl.actor.get-user-object :refer [get-user-object]]
-            [gdl.actor.add-listener :refer [add-listener!]]
+  (:require [gdl.get-user-object :refer [get-user-object]]
+            [gdl.add-listener :refer [add-listener!]]
             [gdl.group.find-actor :refer [find-actor]]
             [gdl.text-tooltip :as text-tooltip]
             [gdl.image :as image]

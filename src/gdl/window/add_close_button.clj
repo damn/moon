@@ -1,6 +1,6 @@
 (ns gdl.window.add-close-button
-  (:require [gdl.actor.add-listener :refer [add-listener!]]
-            [gdl.actor.remove :refer [remove!]]
+  (:require [gdl.add-listener :refer [add-listener!]]
+            [gdl.remove :refer [remove!]]
             [gdl.change-listener :as change-listener]
             [gdl.table.add-cell :refer [add-cell!]]
             [gdl.text-button :as text-button]

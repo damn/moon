@@ -1,5 +1,5 @@
 (ns stage.windows
-  (:require [gdl.actor.set-name :refer [set-name!]]
+  (:require [gdl.set-name :refer [set-name!]]
             [gdl.group.create :refer [create-group]]
             [gdl.group.add-actors :refer [add-actors!]]))
 

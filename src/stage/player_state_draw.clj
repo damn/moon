@@ -1,7 +1,7 @@
 (ns stage.player-state-draw
   (:require [game.ctx.draw :refer [draw!]]
             [game.state :as state]
-            [gdl.actor.get-stage :refer [get-stage]]
+            [gdl.get-stage :refer [get-stage]]
             [gdl.actor :as actor]))
 
 (defn create [_ctx]

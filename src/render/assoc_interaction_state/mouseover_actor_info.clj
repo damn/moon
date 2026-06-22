@@ -1,9 +1,9 @@
 (ns render.assoc-interaction-state.mouseover-actor-info
-  (:require [gdl.actor.get-user-object :refer [get-user-object]]
-            [gdl.actor.get-name :refer [get-name]]
-            [gdl.actor.get-parent :refer [get-parent]]
-            [gdl.actor.is-button :as button?]
-            [gdl.actor.is-window-title-bar :as window-title-bar?]))
+  (:require [gdl.get-user-object :refer [get-user-object]]
+            [gdl.get-name :refer [get-name]]
+            [gdl.get-parent :refer [get-parent]]
+            [gdl.is-button :as button?]
+            [gdl.is-window-title-bar :as window-title-bar?]))
 
 (defn mouseover-actor-info [actor]
   (let [inventory-slot (and (get-parent actor)
