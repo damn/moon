@@ -1,5 +1,5 @@
-(ns gdl.graphics.clear
-  (:require [gdl.graphics.get-gl20 :as get-gl20]
+(ns gdl.clear
+  (:require [gdl.get-gl20 :as get-gl20]
             [gdl.gl20 :as gl20]))
 
 (defn f!

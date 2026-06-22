@@ -1,6 +1,5 @@
-(ns gdl.graphics.delta-time
+(ns gdl.frames-per-second
   (:import (com.badlogic.gdx Graphics)))
 
 (defn f [^Graphics graphics]
-  (.getDeltaTime graphics))
-
+  (.getFramesPerSecond graphics))

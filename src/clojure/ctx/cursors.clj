@@ -4,7 +4,7 @@
             [gdl.pixmap :as pixmap]
             [gdl.pixmap.dispose :as dispose]
             [gdl.internal :as internal]
-            [gdl.graphics.new-cursor :as new-cursor]))
+            [gdl.new-cursor :as new-cursor]))
 
 (defn step
   [{:keys [ctx/files
