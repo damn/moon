@@ -26,7 +26,7 @@
         background-drawable (slot->drawable slot)]
     {:actor
      (doto (stack/create)
-       (add-actors! [(widget/create
+       (add-actors! [(widget/f
                       {:draw! (fn [this _batch _parent-alpha]
                                 (when-let [stage (get-stage this)]
                                   (let [{:keys [ctx/player-eid
