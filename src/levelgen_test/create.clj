@@ -10,19 +10,16 @@
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]))
 
-(def initial-level-fn "config/world_fns/uf_caves.edn")
-
-(def level-fns
-  ["config/world_fns/vampire.edn"
-   "config/world_fns/uf_caves.edn"
-   "config/world_fns/modules.edn"])
-
 (defn f!
   [{:keys [ctx/files
            ctx/input
            ctx/sprite-batch]
     :as ctx}]
-  (let [ui-viewport (fit-viewport/create 1440 900)
+  (let [initial-level-fn "config/world_fns/uf_caves.edn"
+        level-fns ["config/world_fns/vampire.edn"
+                   "config/world_fns/uf_caves.edn"
+                   "config/world_fns/modules.edn"]
+        ui-viewport (fit-viewport/create 1440 900)
         stage (stage/create ui-viewport sprite-batch)
         _  (set-processor!/f input stage)
         tile-size 48
