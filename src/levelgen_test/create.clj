@@ -1,6 +1,5 @@
 (ns levelgen-test.create
-  (:require [clojure.files :as files]
-            [clojure.rgba.float-bits :refer [float-bits]]
+  (:require [clojure.rgba.float-bits :refer [float-bits]]
             [clojure.input.set-processor :as set-processor!]
             [clojure.fit-viewport :as fit-viewport]
             [clojure.orthographic-camera :as camera]
