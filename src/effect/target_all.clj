@@ -1,5 +1,5 @@
 (ns effect.target-all
-  (:require [moon.raycaster :as raycaster]))
+  (:require [moon.raycaster.line-of-sight :as line-of-sight?]))
 
 (comment
  ; TODO applicable targets? e.g. projectiles/effect s/???item entiteis ??? check
@@ -17,5 +17,5 @@
 (defn affected-targets [active-entities raycaster entity]
   (->> active-entities
        (filter #(:entity/species @%))
-       (filter #(raycaster/line-of-sight? raycaster entity @%))
+       (filter #(line-of-sight?/f raycaster entity @%))
        (remove #(:entity/player? @%))))

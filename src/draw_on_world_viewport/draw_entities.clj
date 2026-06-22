@@ -5,7 +5,7 @@
             [game.ctx.draw-component :refer [draw-component]]
             [moon.body :as body]
             [moon.body.draw-rectangle :as draw-rectangle]
-            [moon.raycaster :as raycaster]
+            [moon.raycaster.line-of-sight :as line-of-sight?]
             [moon.throwable :as throwable]))
 
 (defn do!
@@ -21,7 +21,7 @@
         player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
-                           (raycaster/line-of-sight? raycaster player entity)))]
+                           (line-of-sight?/f raycaster player entity)))]
     (doseq [[z-order entities] (sort-by-order (group-by (comp :body/z-order :entity/body) entities)
                                               first
                                               render-z-order)

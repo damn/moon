@@ -1,7 +1,7 @@
 (ns entity.tick.npc-idle.create-effect-ctx
   (:require [moon.body :as body]
             [moon.grid.nearest-enemy :refer [nearest-enemy]]
-            [moon.raycaster :as raycaster]))
+            [moon.raycaster.line-of-sight :as line-of-sight?]))
 
 (defn f
   [{:keys [ctx/grid
@@ -10,7 +10,7 @@
   (let [entity @eid
         target (nearest-enemy grid entity)
         target (when (and target
-                          (raycaster/line-of-sight? raycaster entity @target))
+                          (line-of-sight?/f raycaster entity @target))
                  target)]
     {:effect/source eid
      :effect/target target

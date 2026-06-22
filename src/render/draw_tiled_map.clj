@@ -2,7 +2,7 @@
   (:require [clojure.orthographic-camera.get-position :refer [get-position]]
             [clojure.batch.draw-tiled-map :refer [draw-tiled-map!]]
             [render.draw-tiled-map.color-setter :refer [tile-color-setter*]]
-            [moon.raycaster :as raycaster]))
+            [moon.raycaster.is-blocked :as blocked?]))
 
 (defn- tile-color-setter
   [{:keys [ctx/colors
@@ -10,7 +10,7 @@
            ctx/raycaster
            ctx/world-viewport]}]
   (tile-color-setter*
-   {:ray-blocked? (partial raycaster/blocked? raycaster)
+   {:ray-blocked? (partial blocked?/f raycaster)
     :explored-tile-corners explored-tile-corners
     :light-position (get-position (:viewport/camera world-viewport))
     :see-all-tiles? false

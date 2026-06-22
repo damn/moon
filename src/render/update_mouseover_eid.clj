@@ -2,7 +2,7 @@
   (:require [clojure.order :refer [sort-by-order]]
             [game.ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.grid.point-to-entities :refer [point->entities]]
-            [moon.raycaster :as raycaster]))
+            [moon.raycaster.line-of-sight :as line-of-sight?]))
 
 (defn step
   [{:keys [ctx/mouseover-eid
@@ -21,7 +21,7 @@
                     (->> render-z-order
                          (sort-by-order hits #(:body/z-order (:entity/body @%)))
                          reverse
-                         (filter #(raycaster/line-of-sight? raycaster player @%))
+                         (filter #(line-of-sight?/f raycaster player @%))
                          first)))]
     (when mouseover-eid
       (swap! mouseover-eid dissoc :entity/mouseover?))
