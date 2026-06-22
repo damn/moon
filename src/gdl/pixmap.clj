@@ -1,8 +1,12 @@
 (ns gdl.pixmap
-  (:import (com.badlogic.gdx.graphics Pixmap
+  (:import (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format)))
 
-(defn create [width height]
-  (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))
+(defn f
+  ([^FileHandle file-handle]
+   (Pixmap. file-handle))
+  ([width height]
+   (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888)))
 
 
