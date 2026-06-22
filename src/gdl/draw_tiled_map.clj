@@ -1,6 +1,6 @@
-(ns gdl.batch.draw-tiled-map
+(ns gdl.draw-tiled-map
   (:require [gdl.tiled-map.get-layers :refer [get-layers]]
-            [gdl.batch.render-tile-layer :refer [render-tile-layer!]])
+            [gdl.render-tile-layer :refer [render-tile-layer!]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
