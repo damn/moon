@@ -1,5 +1,5 @@
 (ns gdl.actor.is-window
-  (:require [gdl.window :as window]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn f [actor]
-  (instance? window/class actor))
+  (instance? Window actor))
