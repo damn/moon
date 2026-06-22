@@ -1,7 +1,7 @@
 (ns clojure.ctx.skin
   (:require [gdl.files.internal :as internal]
-            [gdl.bitmap-font.get-data :refer [get-data]]
-            [gdl.bitmap-font-data.enable-markup :refer [enable-markup!]]
+            [gdl.get-data :refer [get-data]]
+            [gdl.enable-markup :refer [enable-markup!]]
             [gdl.file.skin :as skin]
             [gdl.skin :as skn]))
 

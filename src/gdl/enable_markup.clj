@@ -1,4 +1,4 @@
-(ns gdl.bitmap-font-data.enable-markup
+(ns gdl.enable-markup
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData)))
 
 (defn enable-markup! [^BitmapFont$BitmapFontData data]

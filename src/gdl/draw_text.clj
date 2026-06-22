@@ -1,4 +1,4 @@
-(ns gdl.bitmap-font.draw
+(ns gdl.draw-text
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
 
 (defn f! [^BitmapFont font batch text x y target-width align wrap?]

@@ -1,10 +1,10 @@
 (ns clojure.draw.text
   (:require [clojure.string :as str]
-            [gdl.bitmap-font.draw :as draw]
-            [gdl.bitmap-font.get-line-height :as get-line-height]
-            [gdl.bitmap-font.get-data :refer [get-data]]
-            [gdl.bitmap-font-data.set-scale :as set-scale]
-            [gdl.bitmap-font-data.scale-x :as scale-x]
+            [gdl.draw-text :as draw-text]
+            [gdl.get-line-height :as get-line-height]
+            [gdl.get-data :refer [get-data]]
+            [gdl.set-scale :as set-scale]
+            [gdl.scale-x :as scale-x]
             [gdl.align :as align]))
 
 (defn f
@@ -21,17 +21,17 @@
         scale (* (float unit-scale)
                  (float scale))]
     (set-scale/f (get-data font) (* old-scale scale))
-    (draw/f! font
-             batch
-             text
-             x
-             (+ y (if up?
-                    (-> text
-                        (str/split #"\n")
-                        count
-                        (* (get-line-height/f font)))
-                    0))
-             target-width
-             align/center
-             wrap?)
+    (draw-text/f! font
+                  batch
+                  text
+                  x
+                  (+ y (if up?
+                         (-> text
+                             (str/split #"\n")
+                             count
+                             (* (get-line-height/f font)))
+                         0))
+                  target-width
+                  align/center
+                  wrap?)
     (set-scale/f (get-data font) old-scale)))
