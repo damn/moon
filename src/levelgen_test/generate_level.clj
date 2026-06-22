@@ -1,6 +1,6 @@
 (ns levelgen-test.generate-level
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [gdl.texture.region :as region]
+            [gdl.texture-region :as texture-region]
             [gdl.get-layer :refer [get-layer]]
             [gdl.tiled-map.get-layers :refer [get-layers]]
             [gdl.tiled-map-tile-layer.set-visible :refer [set-visible!]]
@@ -25,8 +25,8 @@
                                                       (assert (contains? textures file))
                                                       (let [texture (get textures file)]
                                                         (if-let [[x y w h] bounds]
-                                                          (region/f texture x y w h)
-                                                          (region/f texture)))))
+                                                          (texture-region/f texture x y w h)
+                                                          (texture-region/f texture)))))
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
