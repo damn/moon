@@ -1,7 +1,7 @@
 (ns stage.windows
   (:require [clojure.actor.set-name :refer [set-name!]]
             [clojure.group.create :refer [create-group]]
-            [clojure.group.add-actor :refer [add-actors!]]))
+            [clojure.group.add-actors :refer [add-actors!]]))
 
 (defn create [ctx actor-fns]
   (doto (create-group)

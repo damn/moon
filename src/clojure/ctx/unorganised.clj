@@ -3,17 +3,16 @@
             [clojure.malli.create-schema :refer [create-schema]]
             [reduce-fsm :as fsm]))
 
-(defn- load-fsm [path]
-  (let [data (edn-resource path)]
-    (eval `(fsm/fsm-inc ~data))))
-
 (defn step [ctx]
   (assoc ctx
          :ctx/pausing? true
          :ctx/zoom-speed 0.025
          :ctx/info (edn-resource "config/info.edn")
-         :ctx/fsms {:npc (load-fsm "config/npc-fsm.edn")
-                    :player (load-fsm "config/player-fsm.edn")}
+         :ctx/fsms (let [load-fsm (fn [path]
+                                    (let [data (edn-resource path)]
+                                      (eval `(fsm/fsm-inc ~data))))]
+                     {:npc (load-fsm "config/npc-fsm.edn")
+                      :player (load-fsm "config/player-fsm.edn")})
          :ctx/txs-fn-map (edn-resource "config/txs-fn-map.edn")
          :ctx/k->tick (edn-resource "config/k-tick.edn")
          :ctx/k->render (edn-resource "config/k->render.edn")

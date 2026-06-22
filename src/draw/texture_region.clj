@@ -1,5 +1,5 @@
 (ns draw.texture-region
-  (:require [clojure.batch :as batch]
+  (:require [clojure.batch.draw :as draw]
             [clojure.texture-region.get-region-height :refer [get-region-height]]
             [clojure.texture-region.get-region-width :refer [get-region-width]]))
 
@@ -17,15 +17,15 @@
                   (mapv (comp float (partial * world-unit-scale))
                         dimensions)))]
     (if center?
-      (batch/draw! batch
-                   texture-region
-                   (- (float x) (/ (float w) 2))
-                   (- (float y) (/ (float h) 2))
-                   (/ (float w) 2)
-                   (/ (float h) 2)
-                   w
-                   h
-                   1
-                   1
-                   (or rotation 0))
-      (batch/draw! batch texture-region x y w h))))
+      (draw/f! batch
+               texture-region
+               (- (float x) (/ (float w) 2))
+               (- (float y) (/ (float h) 2))
+               (/ (float w) 2)
+               (/ (float h) 2)
+               w
+               h
+               1
+               1
+               (or rotation 0))
+      (draw/f! batch texture-region x y w h))))

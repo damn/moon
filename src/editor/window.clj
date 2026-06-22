@@ -5,7 +5,7 @@
             [clojure.actor.set-name :refer [set-name!]]
             [clojure.change-listener :as change-listener]
             [clojure.event.get-stage :as event]
-            [clojure.group.add-actor :refer [add-actors!]]
+            [clojure.group.add-actors :refer [add-actors!]]
             [clojure.input.key-just-pressed :as key-just-pressed?]
             [clojure.ui.table.scroll-pane-cell :as scroll-pane-cell]
             [clojure.ui.text-button :as text-button]

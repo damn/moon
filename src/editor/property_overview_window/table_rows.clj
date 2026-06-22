@@ -2,7 +2,7 @@
   (:require [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.actor.set-touchable :refer [set-touchable!]]
             [clojure.event.get-stage :refer [get-stage]]
-            [clojure.group.add-actor :refer [add-actors!]]
+            [clojure.group.add-actors :refer [add-actors!]]
             [clojure.touchable :as touchable]
             [clojure.ui.stack :as stack]
             [clojure.ui.text-tooltip :as text-tooltip]

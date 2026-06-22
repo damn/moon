@@ -10,7 +10,7 @@
             [clojure.actor.set-name :refer [set-name!]]
             [clojure.actor.add-listener :refer [add-listener!]]
             [clojure.actor.set-user-object :refer [set-user-object!]]
-            [clojure.group.add-actor :refer [add-actors!]]
+            [clojure.group.add-actors :refer [add-actors!]]
             [clojure.event.get-stage :as event]
             [clojure.ui.widget :as widget]
             [game.ctx.do :refer [do!]]
