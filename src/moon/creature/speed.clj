@@ -1,0 +1,6 @@
+(ns moon.creature.speed
+  (:require [moon.stats.get-stat-value :refer [get-stat-value]]))
+
+(defn f [{:keys [entity/stats]}]
+  (or (get-stat-value stats :stats/movement-speed)
+      0))

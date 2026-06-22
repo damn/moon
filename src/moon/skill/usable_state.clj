@@ -1,20 +1,8 @@
-(ns game.skill
+(ns moon.skill.usable-state
   (:require [moon.effect.is-applicable :as applicable?]
             [moon.stats.not-enough-mana :as not-enough-mana?]))
 
-(defn valid? [skill]
-  (= #{:property/id
-       :property/pretty-name
-       :entity/image
-       :skill/action-time-modifier-key
-       :skill/action-time
-       :skill/start-action-sound
-       :skill/effects
-       :skill/cooldown
-       :skill/cost}
-     (set (keys skill))))
-
-(defn usable-state
+(defn f
   [{:keys [skill/cooling-down? skill/effects] :as skill}
    entity
    effect-ctx]

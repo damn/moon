@@ -1,7 +1,7 @@
 (ns render.assoc-interaction-state
   (:require [clojure.math.vector2.direction :as direction]
             [game.ctx.mouseover-actor :refer [mouseover-actor]]
-            [game.skill :as skill]
+            [moon.skill.usable-state :as usable-state]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
             [clojure.group.find-actor :refer [find-actor]]
             [moon.action-bar.selected-skill :as selected-skill]
@@ -44,7 +44,7 @@
        (let [entity @player-eid
              skill (skill-id (:entity/skills entity))
              effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
-             state (skill/usable-state skill entity effect-ctx)]
+             state (usable-state/f skill entity effect-ctx)]
          (if (= state :usable)
            [:interaction-state.skill/usable [skill effect-ctx]]
            [:interaction-state.skill/not-usable state]))
