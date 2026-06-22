@@ -3,7 +3,7 @@
             [gdl.actor.set-touchable :refer [set-touchable!]]
             [gdl.layout.set-fill-parent :refer [set-fill-parent!]]
             [gdl.touchable :as touchable]
-            [gdl.ui.label :as label]
+            [gdl.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create

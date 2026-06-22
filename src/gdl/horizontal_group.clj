@@ -1,4 +1,4 @@
-(ns gdl.ui.horizontal-group
+(ns gdl.horizontal-group
   (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
 (defn create

@@ -1,7 +1,7 @@
 (ns clojure.editor.widget.enum
   (:require [clojure.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
-            [gdl.ui.select-box :as select-box]))
+            [gdl.select-box :as select-box]))
 
 (defn create [schema v {:keys [ctx/skin]}]
   (select-box/create

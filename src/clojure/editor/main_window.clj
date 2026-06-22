@@ -3,7 +3,7 @@
             [gdl.actor.add-listener :refer [add-listener!]]
             [gdl.event.get-stage :refer [get-stage]]
             [clojure.editor.window]
-            [gdl.ui.text-button :as text-button]
+            [gdl.text-button :as text-button]
             [gdl.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdl.stage.add-actor :refer [add-actor!]]

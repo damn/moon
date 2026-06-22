@@ -1,7 +1,7 @@
 (ns gdl.actor.is-window-title-bar
   (:require [gdl.actor.get-parent :refer [get-parent]]
-            [gdl.ui.label :as label]
-            [gdl.ui.window :as window]
+            [gdl.label :as label]
+            [gdl.window :as window]
             [gdl.window.get-title-label :as get-title-label]))
 
 ; FIXME does not work

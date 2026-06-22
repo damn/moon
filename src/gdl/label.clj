@@ -1,4 +1,4 @@
-(ns gdl.ui.label
+(ns gdl.label
   (:refer-clojure :exclude [class])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label
                                                Skin)))

@@ -3,7 +3,7 @@
             [gdl.change-listener :as change-listener]
             [gdl.event.get-stage :refer [get-stage]]
             [gdl.stage.add-actor :refer [add-actor!]]
-            [gdl.ui.text-button :as text-button]
+            [gdl.text-button :as text-button]
             [gdl.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]
             [gdx.scenes.scene2d.ui.table :as table]

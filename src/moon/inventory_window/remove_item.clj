@@ -1,7 +1,7 @@
 (ns moon.inventory-window.remove-item
   (:require [gdl.actor.get-user-object :refer [get-user-object]]
             [gdl.group.find-actor :refer [find-actor]]
-            [gdl.ui.image :as image]
+            [gdl.image :as image]
             [moon.inventory-window.get-cell :as get-cell]))
 
 (defn f [inventory-window cell]

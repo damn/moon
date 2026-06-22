@@ -2,8 +2,8 @@
   (:require [clojure.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
             [gdl.actor.add-listener :refer [add-listener!]]
-            [gdl.ui.text-field :as text-field]
-            [gdl.ui.text-tooltip :as text-tooltip]))
+            [gdl.text-field :as text-field]
+            [gdl.text-tooltip :as text-tooltip]))
 
 (defn create
   [schema v {:keys [ctx/skin]}]

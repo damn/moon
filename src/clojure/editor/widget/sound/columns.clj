@@ -3,7 +3,7 @@
             [gdl.event.get-stage :refer [get-stage]]
             [clojure.editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [game.ctx.do :refer [do!]]
-            [gdl.ui.text-button :as text-button]
+            [gdl.text-button :as text-button]
             [gdl.change-listener :as change-listener]))
 
 (defn sound-columns [skin table sound-name]

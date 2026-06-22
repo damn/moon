@@ -1,5 +1,5 @@
-(ns gdl.ui.table.add-rows
-  (:require [gdl.ui.table.add-cell :refer [add-cell!]])
+(ns gdl.table.add-rows
+  (:require [gdl.table.add-cell :refer [add-cell!]])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
 

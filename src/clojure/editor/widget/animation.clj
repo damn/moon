@@ -1,5 +1,5 @@
 (ns clojure.editor.widget.animation
-  (:require [gdl.ui.image-button :as image-button]
+  (:require [gdl.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [clojure.map.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))

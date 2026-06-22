@@ -1,4 +1,4 @@
-(ns gdl.ui.table
+(ns gdl.table
   (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn create []

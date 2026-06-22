@@ -4,8 +4,8 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [gdl.actor.set-name :refer [set-name!]]
             [gdl.actor.add-listener :refer [add-listener!]]
-            [gdl.ui.table.add-rows :refer [add-rows!]]
-            [gdl.ui.text-button :as text-button]
+            [gdl.table.add-rows :refer [add-rows!]]
+            [gdl.text-button :as text-button]
             [gdl.change-listener :as change-listener]
             [gdl.stage.add-actor :refer [add-actor!]]
             [clojure.editor.horiz-sep :as horiz-sep]))

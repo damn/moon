@@ -12,13 +12,13 @@
             [gdl.actor.set-user-object :refer [set-user-object!]]
             [gdl.group.add-actors :refer [add-actors!]]
             [gdl.event.get-stage :as event]
-            [gdl.ui.widget :as widget]
+            [gdl.widget :as widget]
             [game.ctx.do :refer [do!]]
             [game.ctx.draw :refer [draw!]]
             [game.state :as state]
             [gdl.click-listener :as click-listener]
-            [gdl.ui.image :as image]
-            [gdl.ui.stack :as stack]
+            [gdl.image :as image]
+            [gdl.stack :as stack]
             [gdl.vector2 :as vector2]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]

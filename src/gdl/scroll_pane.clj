@@ -1,4 +1,4 @@
-(ns gdl.ui.scroll-pane
+(ns gdl.scroll-pane
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui ScrollPane
                                                Skin)))

@@ -1,4 +1,4 @@
-(ns gdl.ui.cell
+(ns gdl.cell
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defn set-opts! [^Cell cell opts]

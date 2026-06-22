@@ -1,5 +1,5 @@
-(ns gdl.ui.table.scroll-pane-cell
-  (:require [gdl.ui.scroll-pane :as scroll-pane]
+(ns gdl.table.scroll-pane-cell
+  (:require [gdl.scroll-pane :as scroll-pane]
             [gdl.actor.get-height :refer [get-height]]
             [gdl.actor.get-width :refer [get-width]]))
 

@@ -2,9 +2,9 @@
   (:require [gdl.actor.add-listener :refer [add-listener!]]
             [gdl.actor.set-user-object :refer [set-user-object!]]
             [gdl.group.add-actor :refer [add-actor!]]
-            [gdl.ui.button-group :as button-group]
-            [gdl.ui.image-button :as image-button]
-            [gdl.ui.text-tooltip :as text-tooltip]
+            [gdl.button-group :as button-group]
+            [gdl.image-button :as image-button]
+            [gdl.text-tooltip :as text-tooltip]
             [clojure.map.texture-region-drawable :as texture-region-drawable]
             [moon.action-bar.get-data :as get-data]))
 

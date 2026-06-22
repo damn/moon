@@ -2,8 +2,8 @@
   (:require [gdl.actor.add-listener :refer [add-listener!]]
             [gdl.actor.remove :refer [remove!]]
             [gdl.change-listener :as change-listener]
-            [gdl.ui.table.add-cell :refer [add-cell!]]
-            [gdl.ui.text-button :as text-button]
+            [gdl.table.add-cell :refer [add-cell!]]
+            [gdl.text-button :as text-button]
             [gdl.window.get-title-table :as get-title-table]))
 
 (defn f! [window skin]

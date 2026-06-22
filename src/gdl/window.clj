@@ -1,4 +1,4 @@
-(ns gdl.ui.window
+(ns gdl.window
   (:refer-clojure :exclude [class])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                Window)))

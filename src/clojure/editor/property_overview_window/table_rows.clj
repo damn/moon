@@ -4,11 +4,11 @@
             [gdl.event.get-stage :refer [get-stage]]
             [gdl.group.add-actors :refer [add-actors!]]
             [gdl.touchable :as touchable]
-            [gdl.ui.stack :as stack]
-            [gdl.ui.text-tooltip :as text-tooltip]
+            [gdl.stack :as stack]
+            [gdl.text-tooltip :as text-tooltip]
             [gdl.change-listener :as change-listener]
-            [gdl.ui.image-button :as image-button]
-            [gdl.ui.label :as label]
+            [gdl.image-button :as image-button]
+            [gdl.label :as label]
             [clojure.map.texture-region-drawable :as texture-region-drawable]))
 
 (defn overview-table-rows* [skin image-scale rows]

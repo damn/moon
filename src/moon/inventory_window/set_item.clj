@@ -2,8 +2,8 @@
   (:require [gdl.actor.get-user-object :refer [get-user-object]]
             [gdl.actor.add-listener :refer [add-listener!]]
             [gdl.group.find-actor :refer [find-actor]]
-            [gdl.ui.text-tooltip :as text-tooltip]
-            [gdl.ui.image :as image]
+            [gdl.text-tooltip :as text-tooltip]
+            [gdl.image :as image]
             [clojure.map.texture-region-drawable :as texture-region-drawable]
             [moon.inventory-window.get-cell :as get-cell]))
 
