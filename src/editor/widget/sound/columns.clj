@@ -4,7 +4,7 @@
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [ctx.do :refer [do!]]
             [ui.text-button :as text-button]
-            [gdl.change-listener :as change-listener]))
+            [scene2d.change-listener :as change-listener]))
 
 (defn sound-columns [skin table sound-name]
   [{:actor (doto (text-button/create

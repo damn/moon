@@ -1,5 +1,5 @@
 (ns gdl.is-button
-  (:require [gdl.get-parent :refer [get-parent]]
+  (:require [scene2d.actor.get-parent :refer [get-parent]]
             [gdl.button :as button]))
 
 (let [button-class? (fn [actor]

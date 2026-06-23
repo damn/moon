@@ -9,7 +9,7 @@
             [ui.text-button :as text-button]
             [ui.text-tooltip :as text-tooltip]
             [gdl.pack :refer [pack!]]
-            [gdl.change-listener :as change-listener]
+            [scene2d.change-listener :as change-listener]
             [gdl.is-window :as window?]
             [ui.image :as image]
             [scene2d.stage.add-actor :refer [add-actor!]]

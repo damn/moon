@@ -1,7 +1,7 @@
 (ns render.assoc-interaction-state.mouseover-actor-info
-  (:require [gdl.get-user-object :refer [get-user-object]]
-            [gdl.get-name :refer [get-name]]
-            [gdl.get-parent :refer [get-parent]]
+  (:require [scene2d.actor.get-user-object :refer [get-user-object]]
+            [scene2d.actor.get-name :refer [get-name]]
+            [scene2d.actor.get-parent :refer [get-parent]]
             [gdl.is-button :as button?]
             [gdl.is-window-title-bar :as window-title-bar?]))
 

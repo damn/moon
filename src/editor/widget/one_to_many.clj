@@ -1,5 +1,5 @@
 (ns editor.widget.one-to-many
-  (:require [gdl.get-user-object :refer [get-user-object]]
+  (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [scene2d.group.children :refer [children]]
             [editor.widget.one-to-many.add-one-to-many-rows :refer [add-one-to-many-rows]]
             [gdx.scenes.scene2d.ui.table :as table]))

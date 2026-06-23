@@ -58,8 +58,8 @@
    (rename! (str "clojure." suffix ".")
             (str suffix ".")))
 
- (rename! "ctx."
-          "ctx."
+ (rename! "gdl.get-user-object"
+          "scene2d.actor.get-user-object"
           )
 
 

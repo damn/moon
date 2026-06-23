@@ -1,6 +1,6 @@
 (ns stage.player-message-actor
   (:require [ctx.draw :refer [draw!]]
-            [gdl.get-user-object :refer [get-user-object]]
+            [scene2d.actor.get-user-object :refer [get-user-object]]
             [gdl.get-stage :refer [get-stage]]
             [gdl.set-name :refer [set-name!]]
             [gdl.set-user-object :refer [set-user-object!]]

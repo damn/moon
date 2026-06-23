@@ -6,7 +6,7 @@
             [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.label :as label]
             [ui.text-button :as text-button]
-            [gdl.change-listener :as change-listener]
+            [scene2d.change-listener :as change-listener]
             [gdl.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.group.find-actor :refer [find-actor]]

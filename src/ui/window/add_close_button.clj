@@ -1,7 +1,7 @@
 (ns ui.window.add-close-button
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.actor.remove :refer [remove!]]
-            [gdl.change-listener :as change-listener]
+            [scene2d.change-listener :as change-listener]
             [ui.table.add-cell :refer [add-cell!]]
             [ui.text-button :as text-button]
             [gdl.get-title-table :as get-title-table]))

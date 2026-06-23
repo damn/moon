@@ -1,5 +1,5 @@
 (ns editor.widget.sound.rebuild
-  (:require [gdl.get-user-object :refer [get-user-object]]
+  (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [scene2d.actor.remove :refer [remove!]]
             [gdl.set-user-object :refer [set-user-object!]]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]

@@ -1,5 +1,5 @@
 (ns editor.map-widget-table.component-row
-  (:require [gdl.get-user-object :refer [get-user-object]]
+  (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
@@ -8,7 +8,7 @@
             [ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [ui.text-button :as text-button]
-            [gdl.change-listener :as change-listener]))
+            [scene2d.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin

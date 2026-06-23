@@ -1,5 +1,5 @@
 (ns moon.action-bar.selected-skill
-  (:require [gdl.get-user-object :refer [get-user-object]]
+  (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [ui.button-group :as button-group]
             [moon.action-bar.get-data :as get-data]))
 

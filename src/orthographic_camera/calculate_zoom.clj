@@ -1,5 +1,5 @@
 (ns orthographic-camera.calculate-zoom
-  (:require [gdl.get-position :as get-position]
+  (:require [orthographic-camera.position :as get-position]
             [orthographic-camera.get-viewport-width :refer [get-viewport-width]]
             [orthographic-camera.get-viewport-height :refer [get-viewport-height]]))
 

@@ -1,7 +1,7 @@
 (ns orthographic-camera.frustum
   (:require [gdl.vector3.clojurize :as clojurize]
             [orthographic-camera.get-frustum :refer [get-frustum]]
-            [gdl.get-plane-points :refer [get-plane-points]]))
+            [frustum.get-plane-points :refer [get-plane-points]]))
 
 (defn frustum [camera]
   (let [plane-points (mapv clojurize/f (get-plane-points (get-frustum camera)))

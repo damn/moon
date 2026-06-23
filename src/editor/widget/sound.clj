@@ -6,7 +6,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
-            [gdl.change-listener :as change-listener]))
+            [scene2d.change-listener :as change-listener]))
 
 (defn create
   [_  sound-name {:keys [ctx/skin]}]

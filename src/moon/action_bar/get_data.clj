@@ -1,5 +1,5 @@
 (ns moon.action-bar.get-data
-  (:require [gdl.get-user-object :refer [get-user-object]]
+  (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [scene2d.group.find-actor :refer [find-actor]]))
 
 (defn f
