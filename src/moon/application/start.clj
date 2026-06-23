@@ -1,6 +1,6 @@
 (ns moon.application.start
-  (:require [gdl.application :as application]
-            [gdl.application-config :as config]))
+  (:require [lwjgl.application :as application]
+            [lwjgl.application-config :as config]))
 
 (defn f!
   [{:keys [listener]

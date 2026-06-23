@@ -1,5 +1,5 @@
 (ns draw.circle
-  (:require [gdl.circle :refer [circle!]]
+  (:require [shape-drawer.circle :refer [circle!]]
             [gdl.set-color :refer [set-color!]]))
 
 (defn f

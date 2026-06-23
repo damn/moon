@@ -5,7 +5,7 @@
             [gdl.find-actor :refer [find-actor]]
             [gdl.set-visible :refer [set-visible!]]
             [gdl.toggle-visible :refer [toggle-visible!]]
-            [gdl.children :refer [children]]))
+            [scene2d.group.children :refer [children]]))
 
 (defn step
   [{:keys [ctx/input

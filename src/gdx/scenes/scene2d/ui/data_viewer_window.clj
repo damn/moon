@@ -10,7 +10,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [gdl.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]
-            [gdl.stage.add-actor :refer [add-actor!]]))
+            [scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn create
   [{:keys [title

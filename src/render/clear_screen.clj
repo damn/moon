@@ -1,5 +1,5 @@
 (ns render.clear-screen
-  (:require [gdl.clear :as clear]))
+  (:require [graphics.clear :as clear]))
 
 (defn step
   [{:keys [ctx/graphics] :as ctx}]

@@ -1,4 +1,4 @@
-(ns gdl.clear
+(ns graphics.clear
   (:require [gdl.get-gl20 :as get-gl20]
             [gdl.gl20 :as gl20]))
 

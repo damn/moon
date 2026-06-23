@@ -3,7 +3,7 @@
             [gdl.remove :refer [remove!]]
             [gdl.find-actor :refer [find-actor]]
             [editor.window]
-            [gdl.stage.add-actor :refer [add-actor!]]))
+            [scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn f!
   [{:keys [ctx/db

@@ -4,7 +4,7 @@
             [gdl.get-stage :as event]
             [ui.text-button :as text-button]
             [gdl.change-listener :as change-listener]
-            [gdl.stage.set-ctx :refer [set-ctx!]]
+            [scene2d.stage.set-ctx :refer [set-ctx!]]
             [levelgen-test.generate-level :as generate-level]))
 
 (defn edit-window [skin level-fns]

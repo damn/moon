@@ -7,7 +7,7 @@
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
             [gdl.change-listener :as change-listener]
-            [gdl.stage.add-actor :refer [add-actor!]]
+            [scene2d.stage.add-actor :refer [add-actor!]]
             [editor.horiz-sep :as horiz-sep]))
 
 (defn create

@@ -4,7 +4,7 @@
             [gdl.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
-            [gdl.clear-children :refer [clear-children!]]
+            [scene2d.group.clear-children :refer [clear-children!]]
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
             [ui.text-tooltip :as text-tooltip]
@@ -12,7 +12,7 @@
             [gdl.change-listener :as change-listener]
             [gdl.is-window :as window?]
             [ui.image :as image]
-            [gdl.stage.add-actor :refer [add-actor!]]
+            [scene2d.stage.add-actor :refer [add-actor!]]
             [moon.db.get-raw :refer [get-raw]]
             [moon.property :as property]
             [moon.textures :as textures]))

@@ -12,7 +12,7 @@
             [ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdl.change-listener :as change-listener]
-            [gdl.stage.add-actor :refer [add-actor!]]))
+            [scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin

@@ -1,6 +1,6 @@
 (ns moon.inventory-window.get-cell
   (:require [gdl.get-user-object :refer [get-user-object]]
-            [gdl.children :refer [children]]
+            [scene2d.group.children :refer [children]]
             [gdl.find-actor :refer [find-actor]]))
 
 (defn- find-inventory-window-cell [group cell]

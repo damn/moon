@@ -3,7 +3,7 @@
             [gdl.remove :refer [remove!]]
             [gdl.set-user-object :refer [set-user-object!]]
             [gdl.find-ancestor :refer [find-ancestor]]
-            [gdl.clear-children :refer [clear-children!]]
+            [scene2d.group.clear-children :refer [clear-children!]]
             [gdl.pack :refer [pack!]]
             [gdl.is-window :as window?]
             [ui.table.add-rows :refer [add-rows!]]))

@@ -1,4 +1,4 @@
-(ns gdl.application-config
+(ns lwjgl.application-config
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
 
 (defn create

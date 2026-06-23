@@ -1,7 +1,7 @@
 (ns editor.app.render
-  (:require [gdl.stage.set-ctx :refer [set-ctx!]]
-            [gdl.stage.act :refer [act!]]
-            [gdl.stage.draw :refer [draw!]]))
+  (:require [scene2d.stage.set-ctx :refer [set-ctx!]]
+            [scene2d.stage.act :refer [act!]]
+            [scene2d.stage.draw :refer [draw!]]))
 
 (defn render!
   [{:keys [ctx/stage]

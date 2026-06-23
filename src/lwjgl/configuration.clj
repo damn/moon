@@ -1,4 +1,4 @@
-(ns gdl.lwjgl
+(ns lwjgl.configuration
   (:import (org.lwjgl.system Configuration)))
 
 (defn set-glfw-library-name! [name]

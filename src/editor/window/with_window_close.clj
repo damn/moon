@@ -2,8 +2,8 @@
   (:require [gdl.get-stage :refer [get-stage]]
             [gdl.remove :refer [remove!]]
             [gdl.find-ancestor :refer [find-ancestor]]
-            [gdl.stage.set-ctx :refer [set-ctx!]]
-            [gdl.stage.add-actor :refer [add-actor!]]
+            [scene2d.stage.set-ctx :refer [set-ctx!]]
+            [scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
             [gdl.is-window :as window?]))

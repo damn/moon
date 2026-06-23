@@ -2,7 +2,7 @@
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.change-listener :as change-listener]
             [gdl.get-stage :refer [get-stage]]
-            [gdl.stage.add-actor :refer [add-actor!]]
+            [scene2d.stage.add-actor :refer [add-actor!]]
             [ui.text-button :as text-button]
             [ui.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]

@@ -4,7 +4,7 @@
             [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
             [editor.map-widget-table.k-label-text :as k-label-text]
-            [gdl.children :refer [children]]
+            [scene2d.group.children :refer [children]]
             [ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [ui.text-button :as text-button]

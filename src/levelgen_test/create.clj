@@ -6,7 +6,7 @@
             [gdl.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdl.stage :as stage]
-            [gdl.stage.add-actor :refer [add-actor!]]
+            [scene2d.stage.add-actor :refer [add-actor!]]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]))
 
