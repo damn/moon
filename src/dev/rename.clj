@@ -58,6 +58,10 @@
    (rename! (str "clojure." suffix ".")
             (str suffix ".")))
 
+ (rename! "gdl.add-listener"
+          "scene2d.actor.add-listener"
+          )
+
 
      (doseq [ns-string [
                         "button-group"

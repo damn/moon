@@ -5,7 +5,7 @@
             [gdl.get-data :refer [get-data]]
             [gdl.set-scale :as set-scale]
             [gdl.scale-x :as scale-x]
-            [gdl.align :as align]))
+            [utils.align :as align]))
 
 (defn f
   [{:keys [ctx/batch

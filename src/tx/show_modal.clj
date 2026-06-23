@@ -1,5 +1,5 @@
 (ns tx.show-modal
-  (:require [gdl.align :as align]
+  (:require [utils.align :as align]
             [gdl.set-position :refer [set-position!]]
             [gdl.remove :refer [remove!]]
             [gdl.set-name :refer [set-name!]]
