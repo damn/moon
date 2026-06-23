@@ -1,5 +1,5 @@
 (ns tx.set-cooldown
-  (:require [clojure.timer.create :refer [create-timer]]))
+  (:require [timer.create :refer [create-timer]]))
 
 (defn do! [{:keys [ctx/elapsed-time]} eid skill]
   (swap! eid assoc-in [:entity/skills

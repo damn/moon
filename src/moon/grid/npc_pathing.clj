@@ -1,5 +1,5 @@
 (ns moon.grid.npc-pathing
-  (:require [clojure.math.vector2.direction :as direction]
+  (:require [math.vector2.direction :as direction]
             [moon.cell.is-occupied-by-other :as occupied-by-other?]
             [moon.grid.npc-pathing.find-next-cell :as find-next-cell]
             [moon.grid.npc-pathing.inside-cell :as inside-cell?]))

@@ -1,5 +1,5 @@
 (ns moon.body.rectangle
-  (:require [clojure.math.rectangle :as rectangle]))
+  (:require [math.rectangle :as rectangle]))
 
 (defn ->rectangle
   [{:keys [body/position

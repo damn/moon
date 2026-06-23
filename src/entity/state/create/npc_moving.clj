@@ -1,7 +1,7 @@
 (ns entity.state.create.npc-moving
   (:require [game.constants :refer [reaction-time-multiplier]]
             [moon.stats.get-stat-value :refer [get-stat-value]]
-            [clojure.timer.create :refer [create-timer]]))
+            [timer.create :refer [create-timer]]))
 
 (defn f
   [[_k movement-vector] eid {:keys [ctx/elapsed-time]}]

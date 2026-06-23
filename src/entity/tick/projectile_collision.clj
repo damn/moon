@@ -3,7 +3,7 @@
             [moon.body.touched-tiles :refer [touched-tiles]]
             [moon.cell.is-blocked :as blocked?]
             [moon.grid.cells-entities :as cells->entities]
-            [clojure.grid2d.get-cells :refer [get-cells]]))
+            [grid2d.get-cells :refer [get-cells]]))
 
 (defn f
   [{:keys [entity-effects already-hit-bodies piercing?]}

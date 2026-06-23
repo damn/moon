@@ -1,5 +1,5 @@
 (ns moon.val-max.schema
-  (:require [clojure.malli.create-schema :refer [create-schema]]))
+  (:require [malli.create-schema :refer [create-schema]]))
 
 (def v
   (create-schema

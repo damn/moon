@@ -1,5 +1,5 @@
 (ns render.assoc-interaction-state
-  (:require [clojure.math.vector2.direction :as direction]
+  (:require [math.vector2.direction :as direction]
             [game.ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.skill.usable-state :as usable-state]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]

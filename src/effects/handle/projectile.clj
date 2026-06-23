@@ -1,6 +1,6 @@
 (ns effects.handle.projectile
-  (:require [clojure.math.vector2.add :as add]
-            [clojure.math.vector2.scale :as scale]))
+  (:require [math.vector2.add :as add]
+            [math.vector2.scale :as scale]))
 
 (defn- proj-start-point [body direction size]
   (add/f (:body/position body)

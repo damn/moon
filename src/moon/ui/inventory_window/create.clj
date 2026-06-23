@@ -4,7 +4,7 @@
             [gdl.set-visible :refer [set-visible!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [clojure.map.texture-region-drawable :as texture-region-drawable]
+            [map.texture-region-drawable :as texture-region-drawable]
             [moon.inventory :as inventory]
             [moon.ui.inventory-window.create-cell :refer [->cell]]))
 

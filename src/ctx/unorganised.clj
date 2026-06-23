@@ -1,6 +1,6 @@
 (ns ctx.unorganised
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [clojure.malli.create-schema :refer [create-schema]]
+            [malli.create-schema :refer [create-schema]]
             [reduce-fsm :as fsm]))
 
 (defn step [ctx]

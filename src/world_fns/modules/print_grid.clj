@@ -1,5 +1,5 @@
 (ns world-fns.modules.print-grid
-  (:require [clojure.grid2d.printgrid :as printgrid]))
+  (:require [grid2d.printgrid :as printgrid]))
 
 (defn print-grid [{:keys [grid] :as world-fn-ctx}]
   (printgrid/f grid)

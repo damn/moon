@@ -1,5 +1,5 @@
 (ns entity.tick.string-effect
-  (:require [clojure.timer.stopped :refer [stopped?]]))
+  (:require [timer.stopped :refer [stopped?]]))
 
 (defn f
   [{:keys [counter]}

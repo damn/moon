@@ -1,7 +1,7 @@
 (ns entity.tick.movement
   (:require [clojure.math :as math]
-            [clojure.math.vector2.angle-from-vector :as angle-from-vector]
-            [clojure.math.vector2.length :as length]
+            [math.vector2.angle-from-vector :as angle-from-vector]
+            [math.vector2.length :as length]
             [moon.grid.valid-position :refer [valid-position?]]
             [moon.number :as number]))
 

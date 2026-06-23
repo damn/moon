@@ -1,8 +1,8 @@
 (ns clojure.grid2d
-  (:require [clojure.grid2d.cells :as cells]
-            [clojure.grid2d.posis :as posis]
-            [clojure.grid2d.height :as height]
-            [clojure.grid2d.width :as width]))
+  (:require [grid2d.cells :as cells]
+            [grid2d.posis :as posis]
+            [grid2d.height :as height]
+            [grid2d.width :as width]))
 
 ; 2dimvector is 7x faster than a hashmap of [x y] to values
 ; like in rich hickey ant demo vectors of vectors:

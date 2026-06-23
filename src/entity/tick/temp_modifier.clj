@@ -1,5 +1,5 @@
 (ns entity.tick.temp-modifier
-  (:require [clojure.timer.stopped :refer [stopped?]]
+  (:require [timer.stopped :refer [stopped?]]
             [moon.stats.remove-mods :as remove-mods]))
 
 (defn f

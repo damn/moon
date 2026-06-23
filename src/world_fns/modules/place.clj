@@ -1,5 +1,5 @@
 (ns world-fns.modules.place
-  (:require [clojure.grid2d.posis :as posis]
+  (:require [grid2d.posis :as posis]
             [world-fns.modules.place-step :as place-step]))
 
 (defn step

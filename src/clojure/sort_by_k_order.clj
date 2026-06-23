@@ -1,5 +1,5 @@
 (ns clojure.sort-by-k-order
-  (:require [clojure.vector.index-of :as index-of]))
+  (:require [vector.index-of :as index-of]))
 
 (comment
 

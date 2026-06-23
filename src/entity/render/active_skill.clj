@@ -1,7 +1,7 @@
 (ns entity.render.active-skill
   (:require [clojure.math :as math]
             [moon.effect.render :as render]
-            [clojure.timer.ratio :as ratio]
+            [timer.ratio :as ratio]
             [game.constants :refer [skill-image-radius-world-units]]
             [moon.textures :as textures]))
 

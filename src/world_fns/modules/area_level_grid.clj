@@ -1,5 +1,5 @@
 (ns world-fns.modules.area-level-grid
-  (:require [clojure.grid2d.cells :refer [->cells]]
+  (:require [grid2d.cells :refer [->cells]]
             [position.get-4-neighbours :refer [get-4-neighbours]]))
 
 ; can adjust:

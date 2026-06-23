@@ -1,6 +1,6 @@
 (ns entity.state.create.active-skill
   (:require [moon.stats.get-stat-value :refer [get-stat-value]]
-            [clojure.timer.create :refer [create-timer]]))
+            [timer.create :refer [create-timer]]))
 
 (defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
   (/ action-time

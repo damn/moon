@@ -1,9 +1,9 @@
 (ns effects.useful.projectile
-  (:require [clojure.math.vector2.normal-vectors :as normal-vectors]
-            [clojure.math.vector2.add :as add]
-            [clojure.math.vector2.direction :as direction]
-            [clojure.math.vector2.distance :as distance]
-            [clojure.math.vector2.scale :as scale]
+  (:require [math.vector2.normal-vectors :as normal-vectors]
+            [math.vector2.add :as add]
+            [math.vector2.direction :as direction]
+            [math.vector2.distance :as distance]
+            [math.vector2.scale :as scale]
             [moon.raycaster.is-blocked :as blocked?]))
 
 (defn- create-double-ray-endpositions

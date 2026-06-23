@@ -4,7 +4,7 @@
             [gdl.find-actor :refer [find-actor]]
             [ui.text-tooltip :as text-tooltip]
             [ui.image :as image]
-            [clojure.map.texture-region-drawable :as texture-region-drawable]
+            [map.texture-region-drawable :as texture-region-drawable]
             [moon.inventory-window.get-cell :as get-cell]))
 
 (defn f [inventory-window cell {:keys [texture-region tooltip-text]} skin]

@@ -1,5 +1,5 @@
 (ns entity.tick.npc-moving
-  (:require [clojure.timer.stopped :refer [stopped?]]))
+  (:require [timer.stopped :refer [stopped?]]))
 
 (defn f
   [{:keys [timer]} eid {:keys [ctx/elapsed-time]}]

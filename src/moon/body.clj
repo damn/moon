@@ -1,6 +1,6 @@
 (ns moon.body
-  (:require [clojure.math.vector2.direction :as direction]
-            [clojure.math.vector2.distance :as distance]))
+  (:require [math.vector2.direction :as direction]
+            [math.vector2.distance :as distance]))
 
 (defn distance [body other-body]
   (distance/f (:body/position body)

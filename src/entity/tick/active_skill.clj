@@ -1,7 +1,7 @@
 (ns entity.tick.active-skill
   (:require [moon.effect.is-applicable :as applicable?]
             [moon.raycaster.line-of-sight :as line-of-sight?]
-            [clojure.timer.stopped :refer [stopped?]]))
+            [timer.stopped :refer [stopped?]]))
 
 (defn- update-effect-ctx
   [raycaster {:keys [effect/source effect/target] :as effect-ctx}]

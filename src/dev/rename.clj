@@ -54,8 +54,9 @@
 
 (comment
 
- (rename! "gdl.add-rows"
-          "ui.table.add-rows")
+ (let [suffix "vector"]
+   (rename! (str "clojure." suffix ".")
+            (str suffix ".")))
 
 
      (doseq [ns-string [

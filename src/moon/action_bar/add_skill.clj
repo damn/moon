@@ -5,7 +5,7 @@
             [ui.button-group :as button-group]
             [ui.image-button :as image-button]
             [ui.text-tooltip :as text-tooltip]
-            [clojure.map.texture-region-drawable :as texture-region-drawable]
+            [map.texture-region-drawable :as texture-region-drawable]
             [moon.action-bar.get-data :as get-data]))
 
 (defn f

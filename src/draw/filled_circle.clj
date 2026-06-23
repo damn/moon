@@ -1,0 +1,8 @@
+(ns draw.filled-circle
+  (:require [gdl.filled-circle :refer [filled-circle!]]
+            [gdl.set-color :refer [set-color!]]))
+
+(defn f
+  [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
+  (set-color! shape-drawer color-float-bits)
+  (filled-circle! shape-drawer x y radius))

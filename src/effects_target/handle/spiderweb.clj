@@ -1,7 +1,7 @@
 (ns effects-target.handle.spiderweb
   (:require [moon.stats.add-mods :as add-mods]
             [game.constants :refer [spiderweb-modifiers spiderweb-duration]]
-            [clojure.timer.create :refer [create-timer]]))
+            [timer.create :refer [create-timer]]))
 
 (defn f
   [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]

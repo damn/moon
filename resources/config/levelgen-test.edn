@@ -6,21 +6,21 @@
               {:state-var levelgen-test.app/state
                :create-pipeline [
                                  (ctx.gdx-context/f)
-                                 (clojure.map.assoc-create/f :ctx/db ctx.db/step)
-                                 (clojure.map.assoc-create/f :ctx/textures ctx.textures/step)
-                                 (clojure.map.assoc-create/f :ctx/sprite-batch ctx.batch/step)
-                                 (clojure.map.assoc-create/f :ctx/skin ctx.skin/step)
+                                 (map.assoc-create/f :ctx/db ctx.db/step)
+                                 (map.assoc-create/f :ctx/textures ctx.textures/step)
+                                 (map.assoc-create/f :ctx/sprite-batch ctx.batch/step)
+                                 (map.assoc-create/f :ctx/skin ctx.skin/step)
                                  (levelgen-test.create/f!)
                                  ]
                :dispose! levelgen-test.dispose/f!
                :render-pipeline [(render.get-stage-ctx/step)
-                                 (clojure.pipeline.do/step
+                                 (pipeline.do/step
                                   (render.clear-screen/step))
-                                 (clojure.pipeline.do/step
+                                 (pipeline.do/step
                                   (levelgen-test.draw-tiled-map/f))
-                                 (clojure.pipeline.do/step
+                                 (pipeline.do/step
                                   (levelgen-test.camera-zoom-controls/f))
-                                 (clojure.pipeline.do/step
+                                 (pipeline.do/step
                                   (levelgen-test.camera-movement-controls/f))
                                  (render.update-draw-stage/step)]
                :resize! levelgen-test.resize/f!})

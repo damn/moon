@@ -32,7 +32,7 @@
   :aliases {
             "dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'moon.start/-main))"]
             "levelgen" ["run" "-m" "dev.loop" "((requiring-resolve 'levelgen-test.start/-main))"]
-            "editor"   ["run" "-m" "dev.loop" "((requiring-resolve 'clojure.editor.start/-main))"]
+            "editor"   ["run" "-m" "dev.loop" "((requiring-resolve 'editor.start/-main))"]
 
             "nsgraph"  ["run" "-m" "dev.loop" "((requiring-resolve 'ns-graph.core/-main))"]
             "app-test" ["run" "-m" "dev.loop" "((requiring-resolve 'moon.backends.lwjgl-test/-main))"]

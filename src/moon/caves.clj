@@ -3,8 +3,8 @@
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
-  (:require [clojure.map.assoc-ks :refer [assoc-ks]]
-            [clojure.grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
+  (:require [map.assoc-ks :refer [assoc-ks]]
+            [grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
             [moon.caves.helpers :as h]))
 
 ; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5

@@ -1,7 +1,7 @@
 (ns moon.grid.circle-to-cells
-  (:require [clojure.math.circle.outer-rectangle :refer [outer-rectangle]]
-            [clojure.math.rectangle.touched-tiles :refer [touched-tiles]]
-            [clojure.grid2d.get-cells :refer [get-cells]]))
+  (:require [math.circle.outer-rectangle :refer [outer-rectangle]]
+            [math.rectangle.touched-tiles :refer [touched-tiles]]
+            [grid2d.get-cells :refer [get-cells]]))
 
 (defn circle->cells [g2d circle]
   (->> circle

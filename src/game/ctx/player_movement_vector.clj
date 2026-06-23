@@ -1,7 +1,7 @@
 (ns game.ctx.player-movement-vector
-  (:require [clojure.math.vector2.add :as add]
-            [clojure.math.vector2.length :as length]
-            [clojure.math.vector2.normalise :as normalise]
+  (:require [math.vector2.add :as add]
+            [math.vector2.length :as length]
+            [math.vector2.normalise :as normalise]
             [gdl.key-pressed :as key-pressed?]))
 
 (defn player-movement-vector [{:keys [ctx/input]}]

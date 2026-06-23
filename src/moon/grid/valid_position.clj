@@ -1,5 +1,5 @@
 (ns moon.grid.valid-position
-  (:require [clojure.grid2d.get-cells :refer [get-cells]]
+  (:require [grid2d.get-cells :refer [get-cells]]
             [moon.body.touched-tiles :refer [touched-tiles]]
             [moon.body.overlaps :refer [overlaps?]]
             [moon.cell.is-blocked :as blocked?]

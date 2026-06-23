@@ -1,5 +1,5 @@
 (ns world-fns.uf-caves.position-tile-fn
-  (:require [clojure.rand.weighted :refer [get-rand-weighted-item]]))
+  (:require [rand.weighted :refer [get-rand-weighted-item]]))
 
 (defn f [grid]
   (let [uf-grounds (for [x [1 5]

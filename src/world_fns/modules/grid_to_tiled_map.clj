@@ -8,9 +8,9 @@
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [tiled-map-tile-layer.get-name :refer [get-name]]
             [gdl.static-tiled-map-tile :as static-tiled-map-tile]
-            [clojure.grid2d.posis :as posis]
-            [clojure.grid2d.width :refer [->width]]
-            [clojure.grid2d.height :refer [->height]]))
+            [grid2d.posis :as posis]
+            [grid2d.width :refer [->width]]
+            [grid2d.height :refer [->height]]))
 
 (def copy-tile
   (memoize
