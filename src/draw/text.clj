@@ -3,8 +3,8 @@
             [bitmap-font.draw-text :as draw-text]
             [bitmap-font.get-line-height :as get-line-height]
             [bitmap-font.get-data :refer [get-data]]
-            [gdl.set-scale :as set-scale]
-            [gdl.scale-x :as scale-x]
+            [bitmap-font-data.set-scale :as set-scale]
+            [bitmap-font-data.scale-x :as scale-x]
             [utils.align :as align]))
 
 (defn f

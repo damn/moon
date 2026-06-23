@@ -2,7 +2,7 @@
   (:require [files.internal :as internal]
             [bitmap-font.get-data :refer [get-data]]
             [ui.skin.get-font :as get-font]
-            [gdl.enable-markup :refer [enable-markup!]]
+            [bitmap-font-data.enable-markup :refer [enable-markup!]]
             [file-handle.skin :as skin]))
 
 (defn step
