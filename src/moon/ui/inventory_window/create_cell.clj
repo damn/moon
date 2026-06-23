@@ -6,12 +6,12 @@
             [scene2d.actor.get-y :refer [get-y]]
             [scene2d.actor.get-parent :refer [get-parent]]
             [scene2d.actor.get-user-object :refer [get-user-object]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.actor.get-stage :as actor-stage]
+            [scene2d.event.get-stage :as get-stage]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [group.add-actors :refer [add-actors!]]
-            [gdl.get-stage :as event]
             [ui.widget :as widget]
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
@@ -28,7 +28,7 @@
      (doto (stack/create)
        (add-actors! [(widget/f
                       {:draw! (fn [this _batch _parent-alpha]
-                                (when-let [stage (get-stage this)]
+                                (when-let [stage (actor-stage/f this)]
                                   (let [{:keys [ctx/player-eid
                                                 ctx/ui-mouse-position]
                                          :as ctx} (:stage/ctx stage)]
@@ -50,7 +50,7 @@
                        (fn [event _x _y]
                          (let [{:keys [ctx/player-eid
                                        ctx/k->clicked-inventory-cell]
-                                :as ctx} (:stage/ctx (event/get-stage event))
+                                :as ctx} (:stage/ctx (get-stage/f event))
                                entity @player-eid
                                state-k (:state (:entity/fsm entity))]
                            (do! ctx

@@ -1,6 +1,6 @@
 (ns editor.widget.sound
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.event.get-stage :as get-stage]
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -19,6 +19,6 @@
                             (add-listener! (change-listener/create
                                             (fn [event _actor]
                                               ((open-select-sounds-handler table)
-                                               (:stage/ctx (get-stage event))
+                                               (:stage/ctx (get-stage/f event))
                                                sound-columns)))))}])])
     table))

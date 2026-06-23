@@ -1,5 +1,5 @@
 (ns editor.window.with-window-close
-  (:require [gdl.get-stage :refer [get-stage]]
+  (:require [scene2d.actor.get-stage :as get-stage]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.stage.set-ctx :refer [set-ctx!]]
@@ -14,7 +14,7 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (get-stage actor)]
+           stage (get-stage/f actor)]
        (set-ctx! stage new-ctx))
      (remove! (find-ancestor actor window?/f))
      (catch Throwable t

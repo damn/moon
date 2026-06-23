@@ -1,7 +1,7 @@
 (ns levelgen-test.create.edit-window
-  (:require [gdl.get-stage :refer [get-stage]]
+  (:require [scene2d.event.get-stage :as get-stage]
+            [scene2d.actor.get-stage :as actor-stage]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [gdl.get-stage :as event]
             [ui.text-button :as text-button]
             [scene2d.change-listener :as change-listener]
             [scene2d.stage.set-ctx :refer [set-ctx!]]
@@ -12,10 +12,10 @@
    :skin skin
    :table/rows (for [level-fn level-fns
                      :let [on-clicked (fn [actor ctx]
-                                        (let [stage (get-stage actor)
+                                        (let [stage (actor-stage/f actor)
                                               new-ctx (generate-level/f ctx level-fn)]
                                           (set-ctx! stage new-ctx)))]]
                  [{:actor (doto (text-button/create {:text (str "Generate " level-fn) :skin skin})
                             (add-listener! (change-listener/create
                                             (fn [event actor]
-                                              (on-clicked actor (:stage/ctx (event/get-stage event)))))))}])})
+                                              (on-clicked actor (:stage/ctx (get-stage/f event)))))))}])})

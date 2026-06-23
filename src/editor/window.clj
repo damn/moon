@@ -1,10 +1,10 @@
 (ns editor.window
   (:require [scene2d.actor :as actor]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.actor.get-stage :as actor-stage]
+            [scene2d.event.get-stage :as get-stage]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.change-listener :as change-listener]
-            [gdl.get-stage :as event]
             [group.add-actors :refer [add-actors!]]
             [input.key-just-pressed :as key-just-pressed?]
             [gdl.scroll-pane-cell :as scroll-pane-cell]
@@ -42,14 +42,14 @@
                                            :skin skin})
                                      (add-listener! (change-listener/create
                                                      (fn [event actor]
-                                                       (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
+                                                       (clicked-save-fn actor (:stage/ctx (get-stage/f event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
                                      (add-listener! (change-listener/create
                                                      (fn [event actor]
-                                                       (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
+                                                       (clicked-delete-fn actor (:stage/ctx (get-stage/f event)))))))
                             :center? true}]]]
     (doto (window/create
            {:title "[SKY]Property[]"
@@ -65,7 +65,7 @@
       (set-modal/f! true)
       (add-actors! [(actor/f
                      {:act! (fn [this delta]
-                              (when-let [stage (get-stage this)]
+                              (when-let [stage (actor-stage/f this)]
                                 (let [ctx (:stage/ctx stage)]
                                   (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                     (clicked-save-fn this ctx)))))})])

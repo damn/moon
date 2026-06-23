@@ -1,5 +1,5 @@
 (ns editor.map-widget-table.add-component-window
-  (:require [gdl.get-stage :refer [get-stage]]
+  (:require [scene2d.event.get-stage :as get-stage]
             [moon.schema.build-widget :as build-widget]
             [moon.schema.widget-value :as widget-value]
             [scene2d.actor.remove :refer [remove!]]
@@ -34,7 +34,7 @@
                   (add-listener! (change-listener/create
                                   (fn [event _actor]
                                     (remove! window)
-                                    (let [ctx (:stage/ctx (get-stage event))]
+                                    (let [ctx (:stage/ctx (get-stage/f event))]
                                       (add-rows! map-widget-table [((:ctx/create-component-row ctx)
                                                                     {:skin skin
                                                                      :editor-widget (build-widget/f ctx

@@ -1,7 +1,7 @@
 (ns stage.player-message-actor
   (:require [ctx.draw :refer [draw!]]
             [scene2d.actor.get-user-object :refer [get-user-object]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.actor.get-stage :as get-stage]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.actor :as actor]))
@@ -10,7 +10,7 @@
   (let [message-duration-seconds 0.5]
     (doto (actor/f
            {:draw! (fn [this _batch _parent-alpha]
-                     (when-let [stage (get-stage this)]
+                     (when-let [stage (get-stage/f this)]
                        (draw! (:stage/ctx stage)
                               [(let [state (get-user-object this)
                                      vp-width (:viewport/world-width (:stage/viewport stage))

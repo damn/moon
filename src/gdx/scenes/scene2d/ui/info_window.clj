@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.info-window
   (:require [scene2d.actor.set-position :refer [set-position!]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.actor.get-stage :as get-stage]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.set-visible :refer [set-visible!]]
             [scene2d.actor :as actor]
@@ -29,7 +29,7 @@
                  (set-position! position))]
     (add-actor! window (actor/f
                         {:act! (fn [this delta]
-                                 (when-let [stage (get-stage this)]
+                                 (when-let [stage (get-stage/f this)]
                                    (label/set-text! label (set-label-text! (:stage/ctx stage))))
                                  (pack! window))}))
     window))

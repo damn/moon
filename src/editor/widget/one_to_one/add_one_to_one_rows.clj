@@ -3,7 +3,7 @@
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.event.get-stage :as get-stage]
             [scene2d.group.clear-children :refer [clear-children!]]
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
@@ -39,7 +39,7 @@
                                                    ctx/stage
                                                    ctx/textures
                                                    ctx/property-overview-window]
-                                            :as ctx} (:stage/ctx (get-stage event))]
+                                            :as ctx} (:stage/ctx (get-stage/f event))]
                                        (add-actor!
                                         stage
                                         (property-overview-window
@@ -61,5 +61,5 @@
                          :skin skin})
                    (add-listener! (change-listener/create
                                    (fn [event _actor]
-                                     (redo-rows (:stage/ctx (get-stage event))
+                                     (redo-rows (:stage/ctx (get-stage/f event))
                                                 nil)))))})]])))

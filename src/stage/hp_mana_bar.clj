@@ -1,6 +1,6 @@
 (ns stage.hp-mana-bar
   (:require [ctx.draw :refer [draw!]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.actor.get-stage :as get-stage]
             [scene2d.actor :as actor]
             [clojure.readable :as readable]
             [moon.stats.get-hitpoints :as get-hitpoints]
@@ -49,6 +49,6 @@
                           (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
     (actor/f
      {:draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (get-stage this)]
+               (when-let [stage (get-stage/f this)]
                  (draw! (:stage/ctx stage)
                         (create-draws (:stage/ctx stage)))))})))

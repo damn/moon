@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
   (:require [gdx.scenes.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.actor.get-stage :as get-stage]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.label :as label]
             [ui.scroll-pane :as scroll-pane]
@@ -24,7 +24,7 @@
                      (doto (text-button/create {:text "Map" :skin skin})
                        (add-listener! (change-listener/create
                                        (fn [_event actor]
-                                         (add-actor! (get-stage actor)
+                                         (add-actor! (get-stage/f actor)
                                                      (create
                                                       {:title "title"
                                                        :data v

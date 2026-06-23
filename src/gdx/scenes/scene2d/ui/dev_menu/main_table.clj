@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.change-listener :as change-listener]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.event.get-stage :as get-stage]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [ui.text-button :as text-button]
             [ui.window.add-close-button :as add-close-button]
@@ -16,7 +16,7 @@
                                 (doto (text-button/create {:text label :skin skin})
                                   (add-listener! (change-listener/create
                                                   (fn [event actor]
-                                                    (add-actor! (get-stage event)
+                                                    (add-actor! (get-stage/f event)
                                                                 (doto (window/create
                                                                        {:title label
                                                                         :skin skin
@@ -25,7 +25,7 @@
                                                                                         (doto (text-button/create {:text label :skin skin})
                                                                                           (add-listener! (change-listener/create
                                                                                                           (fn [event actor]
-                                                                                                            (on-click actor (:stage/ctx (get-stage event)))))))})]})
+                                                                                                            (on-click actor (:stage/ctx (get-stage/f event)))))))})]})
                                                                   (add-close-button/f! skin)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]

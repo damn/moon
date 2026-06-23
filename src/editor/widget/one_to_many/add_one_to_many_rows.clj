@@ -1,6 +1,6 @@
 (ns editor.widget.one-to-many.add-one-to-many-rows
   (:require [scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.event.get-stage :as get-stage]
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
@@ -40,7 +40,7 @@
                                                  ctx/stage
                                                  ctx/textures
                                                  ctx/property-overview-window]
-                                          :as ctx} (:stage/ctx (get-stage event))]
+                                          :as ctx} (:stage/ctx (get-stage/f event))]
                                      (add-actor!
                                       stage
                                       (property-overview-window
@@ -62,5 +62,5 @@
                         :skin skin})
                   (add-listener! (change-listener/create
                                   (fn [event _actor]
-                                    (redo-rows (:stage/ctx (get-stage event))
+                                    (redo-rows (:stage/ctx (get-stage/f event))
                                                (disj property-ids id))))))})])))

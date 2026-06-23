@@ -1,7 +1,7 @@
 (ns editor.property-overview-window.table-rows
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.actor.set-touchable :refer [set-touchable!]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.event.get-stage :as get-stage]
             [group.add-actors :refer [add-actors!]]
             [scene2d.touchable :as touchable]
             [ui.stack :as stack]
@@ -23,7 +23,7 @@
                                                            :drawable/scale image-scale}))
                                 (add-listener! (change-listener/create
                                                 (fn [event actor]
-                                                  (on-clicked actor (:stage/ctx (get-stage event))))))
+                                                  (on-clicked actor (:stage/ctx (get-stage/f event))))))
                                 (add-listener! (text-tooltip/create tooltip skin)))
                               (doto (label/create
                                      {:text extra-info-text

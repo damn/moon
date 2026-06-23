@@ -1,7 +1,7 @@
 (ns editor.main-window
   (:require [clojure.string :as str]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.event.get-stage :as get-stage]
             [editor.window]
             [ui.text-button :as text-button]
             [scene2d.change-listener :as change-listener]
@@ -27,7 +27,7 @@
                                                              ctx/stage
                                                              ctx/textures
                                                              ctx/property-overview-window]
-                                                      :as ctx} (:stage/ctx (get-stage event))]
+                                                      :as ctx} (:stage/ctx (get-stage/f event))]
                                                  (add-actor! stage
                                                              (property-overview-window
                                                               {:db db

@@ -2,7 +2,7 @@
   (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [gdl.get-stage :refer [get-stage]]
+            [scene2d.event.get-stage :as get-stage]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [scene2d.group.children :refer [children]]
             [ui.label :as label]
@@ -28,7 +28,7 @@
                                                                                    (and (get-user-object actor)
                                                                                         (= k ((get-user-object actor) 0))))
                                                                                  (children table))))
-                                                         (let [ctx (:stage/ctx (get-stage event))]
+                                                         (let [ctx (:stage/ctx (get-stage/f event))]
                                                            ((:ctx/rebuild-editor-window! ctx) ctx)))))))
                             :left? true}
                            {:actor (label/create
