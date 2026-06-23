@@ -2,8 +2,8 @@
   (:require [map-properties.get :as get]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map.get-properties :as tiled-map-get-properties]
-            [gdl.tiled-map-tile-layer.get-name :refer [get-name]]
-            [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [tiled-map-tile-layer.get-name :refer [get-name]]
+            [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [gdl.get-tile :as get-tile]))
 
 (defn f

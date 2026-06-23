@@ -1,7 +1,7 @@
 (ns gdl.tiled-map-tile-layer
   (:require [map-properties.put :as put!]
             [tiled-map-tile-layer.get-properties :as get-properties]
-            [gdl.tiled-map-tile-layer.set-visible :refer [set-visible!]])
+            [tiled-map-tile-layer.set-visible :refer [set-visible!]])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
                                         TiledMapTileLayer$Cell)))
 

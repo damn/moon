@@ -1,7 +1,7 @@
 (ns gdl.property-value
   (:require [map-properties.get :as get]
             [tiled-map-tile.get-properties :as get-properties]
-            [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [gdl.get-tile :as get-tile]))
 
 (defn property-value [layer xy property-key]

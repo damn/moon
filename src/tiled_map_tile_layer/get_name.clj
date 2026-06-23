@@ -1,4 +1,4 @@
-(ns gdl.tiled-map-tile-layer.get-name
+(ns tiled-map-tile-layer.get-name
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
 (defn get-name [^TiledMapTileLayer layer]

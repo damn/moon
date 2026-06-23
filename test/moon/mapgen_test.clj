@@ -3,8 +3,8 @@
             [clojure.pprint :refer [pprint]]
             [moon.db.build :refer [build]]
             [gdl.get-layers :refer [get-layers]]
-            [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [gdl.tiled-map-tile-layer.set-visible :refer [set-visible!]]
+            [tiled-map-tile-layer.get-cell :refer [get-cell]]
+            [tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [moon.utils.camera :as camera-utils]))
 
 (def ^:private infotext
