@@ -2,7 +2,7 @@
   (:require [map-layers.get-layer :refer [get-layer]]
             [map-properties.get :as get]
             [tiled-map.get-layers :refer [get-layers]]
-            [gdl.get-tile :as get-tile]
+            [tiled-map-tile-layer-cell.get-tile :as get-tile]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map-tile-layer.get-width :refer [get-width]]
             [tiled-map-tile-layer.get-height :refer [get-height]]

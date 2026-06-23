@@ -1,9 +1,11 @@
 (ns graphics.clear
   (:require [graphics.get-gl20 :as get-gl20]
-            [gdl.gl20 :as gl20]))
+            [gl20.clear :as clear]
+            [gl20.clear-color :as clear-color]
+            [gl20.color-buffer-bit :as color-buffer-bit]))
 
 (defn f!
   [graphics r g b a]
   (let [gl (get-gl20/f graphics)]
-    (gl20/clear-color! gl r g b a)
-    (gl20/clear! gl gl20/color-buffer-bit)))
+    (clear-color/f gl r g b a)
+    (clear/f gl color-buffer-bit/v)))

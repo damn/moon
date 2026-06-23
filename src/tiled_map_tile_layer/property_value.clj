@@ -2,7 +2,7 @@
   (:require [map-properties.get :as get]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [gdl.get-tile :as get-tile]))
+            [tiled-map-tile-layer-cell.get-tile :as get-tile]))
 
 (defn property-value [layer xy property-key]
   (if-let [cell (get-cell layer xy)]

@@ -4,7 +4,7 @@
             [tiled-map-tile-layer.visible :refer [visible?]]
             [tiled-map-tile-layer.get-properties :as get-properties]
             [tiled-map.get-properties :as tiled-map-get-properties]
-            [gdl.get-tile :as get-tile]
+            [tiled-map-tile-layer-cell.get-tile :as get-tile]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled.static-tiled-map-tile :as static-tiled-map-tile]

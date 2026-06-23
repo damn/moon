@@ -4,7 +4,7 @@
             [tiled-map.get-properties :as tiled-map-get-properties]
             [tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [gdl.get-tile :as get-tile]))
+            [tiled-map-tile-layer-cell.get-tile :as get-tile]))
 
 (defn f
   [tiled-map layer [x y]]

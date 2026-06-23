@@ -7,7 +7,7 @@
             [scene2d.change-listener :as change-listener]
             [group.add-actors :refer [add-actors!]]
             [input.key-just-pressed :as key-just-pressed?]
-            [gdl.scroll-pane-cell :as scroll-pane-cell]
+            [ui.table.scroll-pane-cell :as scroll-pane-cell]
             [ui.text-button :as text-button]
             [ui.window.add-close-button :as add-close-button]
             [ui.window.set-modal :as set-modal]
