@@ -1,6 +1,6 @@
 (ns world-fns.modules.place-step
-  (:require [gdl.get :refer [props-get]]
-            [gdl.get-properties :refer [get-properties]]
+  (:require [map-properties.get :as get]
+            [tiled-map.get-properties :as get-properties]
             [world-fns.modules.place-step.place-star :refer [place-module*]]))
 
 (defn f
@@ -14,9 +14,9 @@
         number-modules-x 8
         number-modules-y 4
         [modules-width modules-height] modules-scale
-        _ (assert (and (= (props-get (get-properties modules-tiled-map) "width")
+        _ (assert (and (= (get/f (get-properties/f modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (props-get (get-properties modules-tiled-map) "height")
+                       (= (get/f (get-properties/f modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* module-offset-tiles

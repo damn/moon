@@ -1,12 +1,12 @@
 (ns clojure.ctx.content-grid
-  (:require [gdl.get :refer [props-get]]
-            [gdl.get-properties :refer [get-properties]]
+  (:require [map-properties.get :as get]
+            [tiled-map.get-properties :as get-properties]
             [clojure.grid2d :as g2d]))
 
 (defn step
   [{:keys [ctx/tiled-map]}]
-  (let [width (props-get (get-properties tiled-map) "width")
-        height (props-get (get-properties tiled-map) "height")
+  (let [width (get/f (get-properties/f tiled-map) "width")
+        height (get/f (get-properties/f tiled-map) "height")
         cell-size 16]
     {:grid (g2d/create-grid
             (inc (int (/ width  cell-size)))

@@ -1,8 +1,9 @@
 (ns world-fns.modules.grid-to-tiled-map
-  (:require [gdl.to-clj :refer [->clj]]
+  (:require [map-properties.clojurize :as clojurize]
             [gdl.get-layers :refer [get-layers]]
             [gdl.tiled-map-tile-layer.visible :refer [visible?]]
-            [gdl.get-properties :refer [get-properties]]
+            [tiled-map-tile-layer.get-properties :as get-properties]
+            [tiled-map.get-properties :as tiled-map-get-properties]
             [gdl.get-tile :as get-tile]
             [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [gdl.tiled-map-tile-layer.get-name :refer [get-name]]
@@ -19,13 +20,13 @@
 
 (defn grid->tiled-map
   [schema-tiled-map grid]
-  {:properties (merge (->clj (get-properties schema-tiled-map))
+  {:properties (merge (clojurize/f (tiled-map-get-properties/f schema-tiled-map))
                       {"width" (->width grid)
                        "height" (->height grid)})
    :layers (for [layer (get-layers schema-tiled-map)]
              {:name (get-name layer)
               :visible? (visible? layer)
-              :properties (->clj (get-properties layer))
+              :properties (clojurize/f (get-properties/f layer))
               :tiles (for [position (posis/f grid)
                            :let [local-position (get grid position)]
                            :when local-position]

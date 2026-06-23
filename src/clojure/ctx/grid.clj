@@ -1,14 +1,14 @@
 (ns clojure.ctx.grid
-  (:require [gdl.get :refer [props-get]]
-            [gdl.get-properties :refer [get-properties]]
+  (:require [map-properties.get :as get]
+            [tiled-map.get-properties :as get-properties]
             [gdl.movement-property :as movement-property]
             [moon.cell :as cell]
             [clojure.grid2d :as g2d]))
 
 (defn step
   [{:keys [ctx/tiled-map]}]
-  (g2d/create-grid (props-get (get-properties tiled-map) "width")
-                   (props-get (get-properties tiled-map) "height")
+  (g2d/create-grid (get/f (get-properties/f tiled-map) "width")
+                   (get/f (get-properties/f tiled-map) "height")
                    (fn [position]
                      (atom (cell/create position
                                         (case (movement-property/f tiled-map position)

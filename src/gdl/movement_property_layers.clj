@@ -1,11 +1,11 @@
 (ns gdl.movement-property-layers
   (:require [gdl.get-layers :refer [get-layers]]
-            [gdl.get :refer [props-get]]
-            [gdl.get-properties :refer [get-properties]]))
+            [map-properties.get :as get]
+            [tiled-map-tile-layer.get-properties :as get-properties]))
 
 (defn f
   [tiled-map]
   (->> tiled-map
        get-layers
        reverse
-       (filter #(props-get (get-properties %) "movement-properties"))))
+       (filter #(get/f (get-properties/f %) "movement-properties"))))

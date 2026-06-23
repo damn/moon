@@ -1,8 +1,8 @@
 (ns gdl.add-layer
   (:require [gdl.add :refer [add!]]
-            [gdl.get :refer [props-get]]
+            [map-properties.get :as get]
             [gdl.get-layers :refer [get-layers]]
-            [gdl.get-properties :refer [get-properties]]
+            [tiled-map.get-properties :as get-properties]
             [gdl.tiled-map-tile-layer :as tiled-map-tile-layer]))
 
 (defn- create-layer*
@@ -10,12 +10,12 @@
                      visible?
                      properties
                      tiles]}]
-  (let [props (get-properties tiled-map)]
+  (let [props (get-properties/f tiled-map)]
     (tiled-map-tile-layer/f
-     {:width      (props-get props "width")
-      :height     (props-get props "height")
-      :tilewidth  (props-get props "tilewidth")
-      :tileheight (props-get props "tileheight")
+     {:width      (get/f props "width")
+      :height     (get/f props "height")
+      :tilewidth  (get/f props "tilewidth")
+      :tileheight (get/f props "tileheight")
       :name name
       :visible? visible?
       :map-properties properties

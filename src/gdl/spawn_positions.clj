@@ -1,9 +1,9 @@
 (ns gdl.spawn-positions
   (:require [gdl.get-layer :refer [get-layer]]
-            [gdl.get :refer [props-get]]
+            [map-properties.get :as get]
             [gdl.get-layers :refer [get-layers]]
             [gdl.get-tile :as get-tile]
-            [gdl.get-properties :refer [get-properties]]
+            [tiled-map-tile.get-properties :as get-properties]
             [gdl.tiled-map-tile-layer.get-width :refer [get-width]]
             [gdl.tiled-map-tile-layer.get-height :refer [get-height]]
             [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]))
@@ -19,7 +19,7 @@
           :when cell
           :let [value (-> cell
                           get-tile/f
-                          get-properties
-                          (props-get property-key))]
+                          get-properties/f
+                          (get/f property-key))]
           :when value]
       [position value])))

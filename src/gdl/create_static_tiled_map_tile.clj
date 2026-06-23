@@ -1,6 +1,6 @@
 (ns gdl.create-static-tiled-map-tile
-  (:require [gdl.put :refer [put!]]
-            [gdl.get-properties :refer [get-properties]]
+  (:require [map-properties.put :as put!]
+            [tiled-map-tile.get-properties :as get-properties]
             [gdl.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f
@@ -8,5 +8,5 @@
   {:pre [texture-region
          (string? property-name)]}
   (let [tile (static-tiled-map-tile/create texture-region)]
-    (put! (get-properties tile) property-name property-value)
+    (put!/f (get-properties/f tile) property-name property-value)
     tile))

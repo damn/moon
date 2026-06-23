@@ -1,12 +1,12 @@
 (ns gdl.property-value
-  (:require [gdl.get :refer [props-get]]
-            [gdl.get-properties :refer [get-properties]]
+  (:require [map-properties.get :as get]
+            [tiled-map-tile.get-properties :as get-properties]
             [gdl.tiled-map-tile-layer.get-cell :refer [get-cell]]
             [gdl.get-tile :as get-tile]))
 
 (defn property-value [layer xy property-key]
   (if-let [cell (get-cell layer xy)]
-    (if-let [value (props-get (get-properties (get-tile/f cell)) property-key)]
+    (if-let [value (get/f (get-properties/f (get-tile/f cell)) property-key)]
       value
       :undefined)
     :no-cell))
