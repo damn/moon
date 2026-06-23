@@ -1,4 +1,4 @@
-(ns clojure.string.remove-newlines
+(ns string.remove-newlines
   (:require [clojure.string :as str]))
 
 (defn remove-newlines [s]

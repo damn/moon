@@ -1,5 +1,5 @@
 (ns clojure.editor.widget.default
-  (:require [clojure.string.truncate :refer [truncate]]
+  (:require [string.truncate :refer [truncate]]
             [clojure.edn-str :refer [->edn-str]]
             [gdl.get-user-object :refer [get-user-object]]
             [gdl.label :as label]))

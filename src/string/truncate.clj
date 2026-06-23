@@ -1,4 +1,4 @@
-(ns clojure.string.truncate)
+(ns string.truncate)
 
 (defn truncate ^String [s limit]
   (if (> (count s) limit)
