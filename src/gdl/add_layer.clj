@@ -1,5 +1,5 @@
 (ns gdl.add-layer
-  (:require [gdl.add :refer [add!]]
+  (:require [map-layers.add :as add!]
             [map-properties.get :as get]
             [gdl.get-layers :refer [get-layers]]
             [tiled-map.get-properties :as get-properties]
@@ -22,5 +22,5 @@
       :tiles tiles})))
 
 (defn f [tiled-map layer]
-  (add! (get-layers tiled-map)
-        (create-layer* tiled-map layer)))
+  (add!/f (get-layers tiled-map)
+          (create-layer* tiled-map layer)))
