@@ -1,4 +1,4 @@
-(ns gdl.pack
+(ns scene2d.layout.pack
   (:import (com.badlogic.gdx.scenes.scene2d.utils Layout)))
 
 (defn pack! [^Layout layout]

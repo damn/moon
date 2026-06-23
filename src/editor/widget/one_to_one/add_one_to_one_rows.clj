@@ -8,7 +8,7 @@
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
             [ui.text-tooltip :as text-tooltip]
-            [gdl.pack :refer [pack!]]
+            [scene2d.layout.pack :refer [pack!]]
             [scene2d.change-listener :as change-listener]
             [scene2d.actor.is-window :as window?]
             [ui.image :as image]

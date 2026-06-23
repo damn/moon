@@ -3,7 +3,7 @@
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [ui.button-group :as button-group]
             [ui.horizontal-group :as horizontal-group]
-            [gdl.set-fill-parent :refer [set-fill-parent!]]
+            [scene2d.layout.set-fill-parent :refer [set-fill-parent!]]
             [gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create [_ctx]

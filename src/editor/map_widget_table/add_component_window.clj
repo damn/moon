@@ -6,7 +6,7 @@
             [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
-            [gdl.pack :refer [pack!]]
+            [scene2d.layout.pack :refer [pack!]]
             [scene2d.change-listener :as change-listener]
             [ui.window.add-close-button :as add-close-button]
             [ui.window.set-modal :as set-modal]
