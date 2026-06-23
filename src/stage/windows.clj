@@ -1,7 +1,7 @@
 (ns stage.windows
   (:require [gdl.set-name :refer [set-name!]]
             [gdl.group :as group]
-            [gdl.add-actors :refer [add-actors!]]))
+            [group.add-actors :refer [add-actors!]]))
 
 (defn create [ctx actor-fns]
   (doto (group/f)
