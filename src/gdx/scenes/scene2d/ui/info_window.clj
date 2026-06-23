@@ -3,7 +3,7 @@
             [gdl.get-stage :refer [get-stage]]
             [gdl.set-name :refer [set-name!]]
             [gdl.set-visible :refer [set-visible!]]
-            [gdl.actor :as actor]
+            [scene2d.actor :as actor]
             [gdl.add-actor :refer [add-actor!]]
             [gdl.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -27,7 +27,7 @@
                  (set-name! actor-name)
                  (set-visible! visible?)
                  (set-position! position))]
-    (add-actor! window (actor/create
+    (add-actor! window (actor/f
                         {:act! (fn [this delta]
                                  (when-let [stage (get-stage this)]
                                    (label/set-text! label (set-label-text! (:stage/ctx stage))))

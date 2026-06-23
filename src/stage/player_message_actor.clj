@@ -4,11 +4,11 @@
             [gdl.get-stage :refer [get-stage]]
             [gdl.set-name :refer [set-name!]]
             [gdl.set-user-object :refer [set-user-object!]]
-            [gdl.actor :as actor]))
+            [scene2d.actor :as actor]))
 
 (defn create [_ctx]
   (let [message-duration-seconds 0.5]
-    (doto (actor/create
+    (doto (actor/f
            {:draw! (fn [this _batch _parent-alpha]
                      (when-let [stage (get-stage this)]
                        (draw! (:stage/ctx stage)

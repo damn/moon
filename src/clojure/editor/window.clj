@@ -1,5 +1,5 @@
 (ns clojure.editor.window
-  (:require [gdl.actor :as actor]
+  (:require [scene2d.actor :as actor]
             [gdl.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
             [gdl.set-name :refer [set-name!]]
@@ -63,7 +63,7 @@
                            50)]]})
       (add-close-button/f! skin)
       (set-modal/f! true)
-      (add-actors! [(actor/create
+      (add-actors! [(actor/f
                      {:act! (fn [this delta]
                               (when-let [stage (get-stage this)]
                                 (let [ctx (:stage/ctx stage)]

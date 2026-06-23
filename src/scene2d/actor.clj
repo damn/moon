@@ -1,7 +1,7 @@
-(ns gdl.actor
+(ns scene2d.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn create
+(defn f
   [{:keys [act! draw!]}]
   (proxy [Actor] []
     (act [delta]

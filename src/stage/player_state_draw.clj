@@ -2,10 +2,10 @@
   (:require [game.ctx.draw :refer [draw!]]
             [game.state :as state]
             [gdl.get-stage :refer [get-stage]]
-            [gdl.actor :as actor]))
+            [scene2d.actor :as actor]))
 
 (defn create [_ctx]
-  (actor/create
+  (actor/f
    {:draw! (fn [this _batch _parent-alpha]
              (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (get-stage this))
                    entity @player-eid
