@@ -10,7 +10,7 @@
             [ui.text-tooltip :as text-tooltip]
             [gdl.pack :refer [pack!]]
             [scene2d.change-listener :as change-listener]
-            [gdl.is-window :as window?]
+            [scene2d.actor.is-window :as window?]
             [ui.image :as image]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [moon.db.get-raw :refer [get-raw]]

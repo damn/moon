@@ -5,7 +5,7 @@
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.group.clear-children :refer [clear-children!]]
             [gdl.pack :refer [pack!]]
-            [gdl.is-window :as window?]
+            [scene2d.actor.is-window :as window?]
             [ui.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]

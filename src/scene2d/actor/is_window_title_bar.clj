@@ -1,4 +1,4 @@
-(ns gdl.is-window-title-bar
+(ns scene2d.actor.is-window-title-bar
   (:require [scene2d.actor.get-parent :refer [get-parent]]
             [ui.label :as label]
             [ui.window.get-title-label :as get-title-label])

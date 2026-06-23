@@ -6,7 +6,7 @@
             [scene2d.stage.add-actor :refer [add-actor!]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
-            [gdl.is-window :as window?]))
+            [scene2d.actor.is-window :as window?]))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin

@@ -3,7 +3,7 @@
             [scene2d.actor.get-name :refer [get-name]]
             [scene2d.actor.get-parent :refer [get-parent]]
             [scene2d.actor.is-button :as button?]
-            [gdl.is-window-title-bar :as window-title-bar?]))
+            [scene2d.actor.is-window-title-bar :as window-title-bar?]))
 
 (defn mouseover-actor-info [actor]
   (let [inventory-slot (and (get-parent actor)
