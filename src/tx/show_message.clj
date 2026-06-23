@@ -1,5 +1,5 @@
 (ns tx.show-message
-  (:require [gdl.set-user-object :refer [set-user-object!]]
+  (:require [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.group.find-actor :refer [find-actor]]))
 
 (defn f

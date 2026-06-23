@@ -1,6 +1,6 @@
 (ns moon.action-bar.add-skill
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
-            [gdl.set-user-object :refer [set-user-object!]]
+            [scene2d.actor.set-user-object :refer [set-user-object!]]
             [group.add-actor :refer [add-actor!]]
             [ui.button-group :as button-group]
             [ui.image-button :as image-button]

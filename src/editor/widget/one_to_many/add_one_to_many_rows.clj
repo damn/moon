@@ -1,7 +1,7 @@
 (ns editor.widget.one-to-many.add-one-to-many-rows
   (:require [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [gdl.get-stage :refer [get-stage]]
-            [gdl.set-user-object :refer [set-user-object!]]
+            [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.group.clear-children :refer [clear-children!]]

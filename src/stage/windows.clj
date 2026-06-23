@@ -1,5 +1,5 @@
 (ns stage.windows
-  (:require [gdl.set-name :refer [set-name!]]
+  (:require [scene2d.actor.set-name :refer [set-name!]]
             [gdl.group :as group]
             [group.add-actors :refer [add-actors!]]))
 

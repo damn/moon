@@ -1,4 +1,4 @@
-(ns gdl.set-name
+(ns scene2d.actor.set-name
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn set-name! [^Actor actor name]

@@ -2,7 +2,7 @@
   (:require [scene2d.actor :as actor]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
-            [gdl.set-name :refer [set-name!]]
+            [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.change-listener :as change-listener]
             [gdl.get-stage :as event]
             [group.add-actors :refer [add-actors!]]

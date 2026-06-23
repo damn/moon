@@ -2,8 +2,8 @@
   (:require [ctx.draw :refer [draw!]]
             [scene2d.actor.get-user-object :refer [get-user-object]]
             [gdl.get-stage :refer [get-stage]]
-            [gdl.set-name :refer [set-name!]]
-            [gdl.set-user-object :refer [set-user-object!]]
+            [scene2d.actor.set-name :refer [set-name!]]
+            [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.actor :as actor]))
 
 (defn create [_ctx]

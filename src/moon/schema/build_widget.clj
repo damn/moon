@@ -1,5 +1,5 @@
 (ns moon.schema.build-widget
-  (:require [gdl.set-user-object :refer [set-user-object!]]
+  (:require [scene2d.actor.set-user-object :refer [set-user-object!]]
             [moon.schema.create-widget :as create-widget]))
 
 (defn f [ctx schema k v]

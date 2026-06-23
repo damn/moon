@@ -1,6 +1,6 @@
 (ns stage.action-bar
-  (:require [gdl.set-name :refer [set-name!]]
-            [gdl.set-user-object :refer [set-user-object!]]
+  (:require [scene2d.actor.set-name :refer [set-name!]]
+            [scene2d.actor.set-user-object :refer [set-user-object!]]
             [ui.button-group :as button-group]
             [ui.horizontal-group :as horizontal-group]
             [gdl.set-fill-parent :refer [set-fill-parent!]]

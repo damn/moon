@@ -2,7 +2,7 @@
   (:require [clojure.interpose-f :refer [interpose-f]]
             [gdl.get-stage :refer [get-stage]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdl.set-name :refer [set-name!]]
+            [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
