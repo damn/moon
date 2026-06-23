@@ -3,7 +3,7 @@
             [map-properties.get :as get]
             [tiled-map.get-layers :refer [get-layers]]
             [tiled-map.get-properties :as get-properties]
-            [gdl.tiled-map-tile-layer :as tiled-map-tile-layer]))
+            [tiled.tiled-map-tile-layer :as tiled-map-tile-layer]))
 
 (defn- create-layer*
   [tiled-map {:keys [name

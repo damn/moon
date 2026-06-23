@@ -1,6 +1,6 @@
 (ns levelgen-test.generate-level
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [gdl.texture-region :as texture-region]
+            [texture.texture-region :as texture-region]
             [map-layers.get-layer :refer [get-layer]]
             [tiled-map.get-layers :refer [get-layers]]
             [tiled-map-tile-layer.set-visible :refer [set-visible!]]

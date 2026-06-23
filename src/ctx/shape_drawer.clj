@@ -1,5 +1,5 @@
 (ns ctx.shape-drawer
-  (:require [gdl.texture-region :as texture-region]
+  (:require [texture.texture-region :as texture-region]
             [batch.shape-drawer :refer [shape-drawer]]))
 
 (defn step

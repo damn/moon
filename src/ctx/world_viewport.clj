@@ -1,6 +1,6 @@
 (ns ctx.world-viewport
   (:require [gdl.orthographic-camera :as camera]
-            [gdl.fit-viewport :as fit-viewport]))
+            [viewport.fit-viewport :as fit-viewport]))
 
 (defn step
   [{:keys [ctx/world-unit-scale]}]

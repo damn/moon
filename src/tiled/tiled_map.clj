@@ -1,4 +1,4 @@
-(ns gdl.tiled-map
+(ns tiled.tiled-map
   (:require [map-properties.put :as put!]
             [tiled-map.get-properties :as get-properties]
             [tiled-map.add-layer :as add-layer])

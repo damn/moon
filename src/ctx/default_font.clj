@@ -8,7 +8,7 @@
             [file-handle.font-generator :as font-generator]
             [font-generator.generate-font :as generate-font]
             [utils.dispose :refer [dispose!]]
-            [gdl.font-generator-parameter :as parameter]))
+            [freetype.font-generator-parameter :as parameter]))
 
 (defn step
   [{:keys [ctx/files]}]

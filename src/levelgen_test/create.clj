@@ -1,8 +1,8 @@
 (ns levelgen-test.create
   (:require [gdl.files :as files]
-            [gdl.float-bits :refer [float-bits]]
+            [color.float-bits :refer [float-bits]]
             [input.set-processor :as set-processor!]
-            [gdl.fit-viewport :as fit-viewport]
+            [viewport.fit-viewport :as fit-viewport]
             [gdl.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]

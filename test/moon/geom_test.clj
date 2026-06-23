@@ -6,7 +6,7 @@
 ;(comment
 ; (require '[moon.grid :as grid])
 ; (require '[math.circle :as circle])
-; [gdl.float-bits :refer [float-bits]]
+; [color.float-bits :refer [float-bits]]
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/grid

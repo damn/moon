@@ -1,4 +1,4 @@
-(ns gdl.property-value
+(ns tiled-map-tile-layer.property-value
   (:require [map-properties.get :as get]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]

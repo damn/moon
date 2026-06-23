@@ -9,7 +9,7 @@
             [grid2d.posis :as posis]
             [grid2d.printgrid :as printgrid]
             [grid2d.scalegrid :as scalegrid]
-            [gdl.tiled-map :as tiled-map]
+            [tiled.tiled-map :as tiled-map]
             [tiled-map.add-creatures-layer :as add-creatures-layer]))
 
 (defn- scale-grid [grid start scale]

@@ -1,7 +1,7 @@
-(ns gdl.create-static-tiled-map-tile
+(ns tiled.create-static-tiled-map-tile
   (:require [map-properties.put :as put!]
             [tiled-map-tile.get-properties :as get-properties]
-            [gdl.static-tiled-map-tile :as static-tiled-map-tile]))
+            [tiled.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f
   [texture-region property-name property-value]

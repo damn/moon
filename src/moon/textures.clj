@@ -1,5 +1,5 @@
 (ns moon.textures
-  (:require [gdl.texture-region :as texture-region]))
+  (:require [texture.texture-region :as texture-region]))
 
 (defn texture-region [textures {:keys [image/file image/bounds]}]
   (assert file)

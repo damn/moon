@@ -7,7 +7,7 @@
             [gdl.get-tile :as get-tile]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [tiled-map-tile-layer.get-name :refer [get-name]]
-            [gdl.static-tiled-map-tile :as static-tiled-map-tile]
+            [tiled.static-tiled-map-tile :as static-tiled-map-tile]
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
             [grid2d.height :refer [->height]]))
