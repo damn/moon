@@ -1,5 +1,5 @@
 (ns editor.property-overview-window.table-rows
-  (:require [gdl.add-listener :refer [add-listener!]]
+  (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.set-touchable :refer [set-touchable!]]
             [gdl.get-stage :refer [get-stage]]
             [group.add-actors :refer [add-actors!]]

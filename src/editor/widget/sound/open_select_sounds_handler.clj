@@ -1,7 +1,7 @@
 (ns editor.widget.sound.open-select-sounds-handler
   (:require [gdl.get-height :refer [get-height]]
             [gdl.get-width :refer [get-width]]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
             [ui.scroll-pane :as scroll-pane]
             [ui.window.add-close-button :as add-close-button]

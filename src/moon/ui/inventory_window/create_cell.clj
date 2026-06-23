@@ -8,7 +8,7 @@
             [gdl.get-user-object :refer [get-user-object]]
             [gdl.get-stage :refer [get-stage]]
             [gdl.set-name :refer [set-name!]]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.set-user-object :refer [set-user-object!]]
             [group.add-actors :refer [add-actors!]]
             [gdl.get-stage :as event]

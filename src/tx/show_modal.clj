@@ -3,7 +3,7 @@
             [gdl.set-position :refer [set-position!]]
             [gdl.remove :refer [remove!]]
             [gdl.set-name :refer [set-name!]]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.label :as label]
             [ui.text-button :as text-button]
             [gdl.change-listener :as change-listener]

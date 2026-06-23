@@ -1,7 +1,7 @@
 (ns editor.widget.val-max
   (:require [clojure.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.text-field :as text-field]
             [ui.text-tooltip :as text-tooltip]))
 

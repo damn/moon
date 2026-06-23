@@ -1,5 +1,5 @@
 (ns editor.widget.string
-  (:require [gdl.add-listener :refer [add-listener!]]
+  (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.text-field :as text-field]
             [ui.text-tooltip :as text-tooltip]))
 

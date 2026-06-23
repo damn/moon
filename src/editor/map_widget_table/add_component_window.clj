@@ -3,7 +3,7 @@
             [moon.schema.build-widget :as build-widget]
             [moon.schema.widget-value :as widget-value]
             [gdl.remove :refer [remove!]]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
             [gdl.pack :refer [pack!]]

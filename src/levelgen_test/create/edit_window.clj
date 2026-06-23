@@ -1,6 +1,6 @@
 (ns levelgen-test.create.edit-window
   (:require [gdl.get-stage :refer [get-stage]]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :as event]
             [ui.text-button :as text-button]
             [gdl.change-listener :as change-listener]

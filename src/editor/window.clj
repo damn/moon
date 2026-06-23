@@ -1,6 +1,6 @@
 (ns editor.window
   (:require [scene2d.actor :as actor]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
             [gdl.set-name :refer [set-name!]]
             [gdl.change-listener :as change-listener]

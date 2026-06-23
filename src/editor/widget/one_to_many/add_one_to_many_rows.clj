@@ -3,7 +3,7 @@
             [gdl.get-stage :refer [get-stage]]
             [gdl.set-user-object :refer [set-user-object!]]
             [gdl.remove :refer [remove!]]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.clear-children :refer [clear-children!]]
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]

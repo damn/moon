@@ -2,7 +2,7 @@
   (:require [gdl.find-ancestor :refer [find-ancestor]]
             [gdl.set-user-object :refer [set-user-object!]]
             [gdl.remove :refer [remove!]]
-            [gdl.add-listener :refer [add-listener!]]
+            [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
             [gdl.clear-children :refer [clear-children!]]
             [ui.table.add-rows :refer [add-rows!]]
