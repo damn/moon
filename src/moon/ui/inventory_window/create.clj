@@ -1,10 +1,11 @@
 (ns moon.ui.inventory-window.create
-  (:require [scene2d.actor.set-position :refer [set-position!]]
+  (:require [gdx.graphics.color :refer [rgba->Color]]
+            [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.set-visible :refer [set-visible!]]
+            [scene2d.utils.texture-region-drawable :as drawable]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [map.texture-region-drawable :as texture-region-drawable]
             [moon.inventory :as inventory]
             [moon.ui.inventory-window.create-cell :refer [->cell]]))
 
@@ -17,10 +18,9 @@
            slot->texture-region
            cell-size]}]
   (let [slot->drawable (fn [slot]
-                         (texture-region-drawable/create
-                          {:drawable/texture-region (slot->texture-region slot)
-                           :drawable/size cell-size
-                           :drawable/tint [1 1 1 0.4]}))
+                         (doto (drawable/create (slot->texture-region slot))
+                           (drawable/set-min-size! cell-size cell-size)
+                           (drawable/tint! (rgba->Color [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?
