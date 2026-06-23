@@ -1,4 +1,4 @@
-(ns clojure.ctx.explored-tile-corners
+(ns ctx.explored-tile-corners
   (:require [map-properties.get :as get]
             [tiled-map.get-properties :as get-properties]
             [clojure.grid2d :as g2d]))

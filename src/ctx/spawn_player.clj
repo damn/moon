@@ -1,4 +1,4 @@
-(ns clojure.ctx.spawn-player
+(ns ctx.spawn-player
   (:require [game.ctx.do :refer [do!]]
             [moon.db.build :refer [build]]))
 

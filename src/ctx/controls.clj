@@ -1,4 +1,4 @@
-(ns clojure.ctx.controls
+(ns ctx.controls
   (:require [clojure.string :as str]))
 
 (defn step [ctx]

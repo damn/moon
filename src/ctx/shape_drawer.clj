@@ -1,4 +1,4 @@
-(ns clojure.ctx.shape-drawer
+(ns ctx.shape-drawer
   (:require [gdl.texture-region :as texture-region]
             [gdl.shape-drawer :refer [shape-drawer]]))
 

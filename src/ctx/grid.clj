@@ -1,4 +1,4 @@
-(ns clojure.ctx.grid
+(ns ctx.grid
   (:require [map-properties.get :as get]
             [tiled-map.get-properties :as get-properties]
             [gdl.movement-property :as movement-property]

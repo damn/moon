@@ -1,4 +1,4 @@
-(ns clojure.ctx.record
+(ns ctx.record
   (:require [moon.records.context :as context]))
 
 (defn step [ctx]

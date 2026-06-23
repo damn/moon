@@ -1,4 +1,4 @@
-(ns clojure.ctx.textures
+(ns ctx.textures
   (:require [clojure.string :as str]
             [gdl.internal :as internal]
             [gdl.file-handle :as file]

@@ -1,4 +1,4 @@
-(ns clojure.ctx.skin
+(ns ctx.skin
   (:require [gdl.internal :as internal]
             [gdl.get-data :refer [get-data]]
             [gdl.get-font :as get-font]

@@ -1,4 +1,4 @@
-(ns clojure.ctx.gdx-context
+(ns ctx.gdx-context
   (:require [gdl.audio :as audio]
             [gdl.files :as files]
             [gdl.graphics :as graphics]

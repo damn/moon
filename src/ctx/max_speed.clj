@@ -1,4 +1,4 @@
-(ns clojure.ctx.max-speed)
+(ns ctx.max-speed)
 
 (defn step
   [{:keys [ctx/minimum-size

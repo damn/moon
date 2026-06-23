@@ -1,4 +1,4 @@
-(ns clojure.ctx.cursors
+(ns ctx.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [gdl.pixmap :as pixmap]

@@ -54,6 +54,9 @@
 
 (comment
 
+ (rename! "gdl.add-rows"
+          "ui.table.add-rows")
+
 
      (doseq [ns-string [
                         "button-group"

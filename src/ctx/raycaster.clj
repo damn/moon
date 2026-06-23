@@ -1,4 +1,4 @@
-(ns clojure.ctx.raycaster
+(ns ctx.raycaster
   (:require [clojure.grid2d.cells :refer [->cells]]
             [clojure.grid2d.width :refer [->width]]
             [clojure.grid2d.height :refer [->height]]

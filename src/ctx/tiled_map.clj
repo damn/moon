@@ -1,4 +1,4 @@
-(ns clojure.ctx.tiled-map
+(ns ctx.tiled-map
   (:require [moon.creature-tiles]
             [moon.db.all-raw :refer [all-raw]]
             [moon.textures :as textures]))

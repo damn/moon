@@ -1,4 +1,4 @@
-(ns clojure.ctx.content-grid
+(ns ctx.content-grid
   (:require [map-properties.get :as get]
             [tiled-map.get-properties :as get-properties]
             [clojure.grid2d :as g2d]))

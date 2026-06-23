@@ -1,4 +1,4 @@
-(ns clojure.ctx.spawn-enemies
+(ns ctx.spawn-enemies
   (:require [game.ctx.do :refer [do!]]
             [moon.db.build :refer [build]]
             [gdl.spawn-positions :as spawn-positions]))

@@ -1,4 +1,4 @@
-(ns clojure.ctx.world-viewport
+(ns ctx.world-viewport
   (:require [gdl.orthographic-camera :as camera]
             [gdl.fit-viewport :as fit-viewport]))
 

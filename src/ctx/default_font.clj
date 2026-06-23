@@ -1,4 +1,4 @@
-(ns clojure.ctx.default-font
+(ns ctx.default-font
   (:require [gdl.internal :as internal]
             [gdl.texture-filter :as texture.filter]
             [gdl.get-data :refer [get-data]]

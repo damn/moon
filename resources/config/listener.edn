@@ -1,48 +1,48 @@
 {
  :state-var game.app/state
  :create-pipeline [
-                   (clojure.ctx.gdx-context/f)
-                   (clojure.ctx.unorganised/step)
-                   (clojure.map.assoc-create/f :ctx/batch clojure.ctx.batch/step)
-                   (clojure.map.assoc-create/f :ctx/audio clojure.ctx.audio/step)
-                   (clojure.map.assoc-create/f :ctx/shape-drawer-texture clojure.ctx.shape-drawer-texture/step)
-                   (clojure.map.assoc-create/f :ctx/shape-drawer clojure.ctx.shape-drawer/step)
-                   (clojure.map.assoc-create/f :ctx/skin clojure.ctx.skin/step)
-                   (clojure.map.assoc-create/f :ctx/stage clojure.ctx.stage/step)
+                   (ctx.gdx-context/f)
+                   (ctx.unorganised/step)
+                   (clojure.map.assoc-create/f :ctx/batch ctx.batch/step)
+                   (clojure.map.assoc-create/f :ctx/audio ctx.audio/step)
+                   (clojure.map.assoc-create/f :ctx/shape-drawer-texture ctx.shape-drawer-texture/step)
+                   (clojure.map.assoc-create/f :ctx/shape-drawer ctx.shape-drawer/step)
+                   (clojure.map.assoc-create/f :ctx/skin ctx.skin/step)
+                   (clojure.map.assoc-create/f :ctx/stage ctx.stage/step)
                    (clojure.pipeline.do/step
-                    (clojure.ctx.tooltip-manager-opts/step))
+                    (ctx.tooltip-manager-opts/step))
                    (clojure.pipeline.do/step
-                    (clojure.ctx.put-colors/step))
-                   (clojure.map.assoc-create/f :ctx/cursors clojure.ctx.cursors/step)
-                   (clojure.map.assoc-create/f :ctx/textures clojure.ctx.textures/step)
-                   (clojure.map.assoc-create/f :ctx/world-viewport clojure.ctx.world-viewport/step)
-                   (clojure.map.assoc-create/f :ctx/default-font clojure.ctx.default-font/step)
-                   (clojure.ctx.record/step)
-                   (clojure.ctx.controls/step)
-                   (clojure.map.assoc-create/f :ctx/colors clojure.ctx.colors/step)
-                   (clojure.map.assoc-create/f :ctx/render-z-order clojure.ctx.render-z-order/step)
-                   (clojure.map.assoc-create/f :ctx/max-speed clojure.ctx.max-speed/step)
-                   (clojure.map.assoc-create/f :ctx/db clojure.ctx.db/step)
+                    (ctx.put-colors/step))
+                   (clojure.map.assoc-create/f :ctx/cursors ctx.cursors/step)
+                   (clojure.map.assoc-create/f :ctx/textures ctx.textures/step)
+                   (clojure.map.assoc-create/f :ctx/world-viewport ctx.world-viewport/step)
+                   (clojure.map.assoc-create/f :ctx/default-font ctx.default-font/step)
+                   (ctx.record/step)
+                   (ctx.controls/step)
+                   (clojure.map.assoc-create/f :ctx/colors ctx.colors/step)
+                   (clojure.map.assoc-create/f :ctx/render-z-order ctx.render-z-order/step)
+                   (clojure.map.assoc-create/f :ctx/max-speed ctx.max-speed/step)
+                   (clojure.map.assoc-create/f :ctx/db ctx.db/step)
                    (clojure.pipeline.do/step
-                    (clojure.ctx.add-stage-actors/f! [(stage.dev-menu/create)
+                    (ctx.add-stage-actors/f! [(stage.dev-menu/create)
                                                  (stage.action-bar/create)
                                                  (stage.hp-mana-bar/create)
                                                  (stage.windows/create [stage.info-window/create
                                                                         stage.inventory-window/create])
                                                  (stage.player-state-draw/create)
                                                  (stage.player-message-actor/create)]))
-                   (clojure.ctx.tiled-map/step #edn/resource
+                   (ctx.tiled-map/step #edn/resource
                                           ; "config/world_fns/modules.edn"
                                           "config/world_fns/vampire.edn"
                                           ; "config/world_fns/uf_caves.edn"
                                           )
-                   (clojure.map.assoc-create/f :ctx/grid clojure.ctx.grid/step)
-                   (clojure.map.assoc-create/f :ctx/content-grid clojure.ctx.content-grid/step)
-                   [clojure.map.assoc-create/f :ctx/explored-tile-corners clojure.ctx.explored-tile-corners/step]
-                   [clojure.map.assoc-create/f :ctx/raycaster clojure.ctx.raycaster/step]
-                   (clojure.ctx.spawn-player/step)
+                   (clojure.map.assoc-create/f :ctx/grid ctx.grid/step)
+                   (clojure.map.assoc-create/f :ctx/content-grid ctx.content-grid/step)
+                   [clojure.map.assoc-create/f :ctx/explored-tile-corners ctx.explored-tile-corners/step]
+                   [clojure.map.assoc-create/f :ctx/raycaster ctx.raycaster/step]
+                   (ctx.spawn-player/step)
                    (clojure.pipeline.do/step
-                    (clojure.ctx.spawn-enemies/step))
+                    (ctx.spawn-enemies/step))
                    (clojure.core/dissoc :ctx/files)
                    ]
  :dispose! game.ctx.dispose/do!
