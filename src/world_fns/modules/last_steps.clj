@@ -1,7 +1,7 @@
 (ns world-fns.modules.last-steps
-  (:require [gdl.get-layer :refer [get-layer]]
+  (:require [map-layers.get-layer :refer [get-layer]]
             [gdl.property-value :refer [property-value]]
-            [gdl.get-layers :refer [get-layers]]
+            [tiled-map.get-layers :refer [get-layers]]
             [grid2d.cells :refer [->cells]]
             [grid2d.scale-grid :as scale-grid]
             [grid2d.printgrid :as printgrid]

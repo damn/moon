@@ -1,7 +1,7 @@
 (ns gdl.spawn-positions
-  (:require [gdl.get-layer :refer [get-layer]]
+  (:require [map-layers.get-layer :refer [get-layer]]
             [map-properties.get :as get]
-            [gdl.get-layers :refer [get-layers]]
+            [tiled-map.get-layers :refer [get-layers]]
             [gdl.get-tile :as get-tile]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map-tile-layer.get-width :refer [get-width]]

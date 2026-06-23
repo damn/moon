@@ -1,7 +1,7 @@
 (ns tiled-map.add-layer
   (:require [map-layers.add :as add!]
             [map-properties.get :as get]
-            [gdl.get-layers :refer [get-layers]]
+            [tiled-map.get-layers :refer [get-layers]]
             [tiled-map.get-properties :as get-properties]
             [gdl.tiled-map-tile-layer :as tiled-map-tile-layer]))
 

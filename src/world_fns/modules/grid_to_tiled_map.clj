@@ -1,6 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require [map-properties.clojurize :as clojurize]
-            [gdl.get-layers :refer [get-layers]]
+            [tiled-map.get-layers :refer [get-layers]]
             [tiled-map-tile-layer.visible :refer [visible?]]
             [tiled-map-tile-layer.get-properties :as get-properties]
             [tiled-map.get-properties :as tiled-map-get-properties]
