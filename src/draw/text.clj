@@ -1,6 +1,6 @@
 (ns draw.text
   (:require [clojure.string :as str]
-            [gdl.draw-text :as draw-text]
+            [bitmap-font.draw-text :as draw-text]
             [bitmap-font.get-line-height :as get-line-height]
             [bitmap-font.get-data :refer [get-data]]
             [gdl.set-scale :as set-scale]

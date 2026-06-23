@@ -1,4 +1,4 @@
-(ns gdl.draw-tile
+(ns batch.draw-tile
   (:import (com.badlogic.gdx.graphics.g2d Batch
                                           TextureRegion)
            (com.badlogic.gdx.maps.tiled TiledMapTile

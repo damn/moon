@@ -1,4 +1,4 @@
-(ns gdl.batch
+(ns batch.setup-drawing
   (:import (com.badlogic.gdx.graphics.g2d Batch)))
 
 (defn setup-drawing! [^Batch batch projection-matrix f]

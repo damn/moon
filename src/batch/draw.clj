@@ -1,4 +1,4 @@
-(ns gdl.draw
+(ns batch.draw
   (:import (com.badlogic.gdx.graphics.g2d Batch
                                           TextureRegion)))
 

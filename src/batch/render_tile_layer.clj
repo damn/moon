@@ -1,5 +1,5 @@
-(ns gdl.render-tile-layer
-  (:require [gdl.draw-tile :as draw-tile])
+(ns batch.render-tile-layer
+  (:require [batch.draw-tile :as draw-tile])
   (:import (com.badlogic.gdx.graphics Color)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTile

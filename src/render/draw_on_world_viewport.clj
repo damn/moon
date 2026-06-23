@@ -1,6 +1,6 @@
 (ns render.draw-on-world-viewport
   (:require [ctx.draw :refer [draw!]]
-            [gdl.batch :as batch]
+            [batch.setup-drawing :as batch]
             [orthographic-camera.get-combined :refer [get-combined]]
             [shape-drawer.default-line-width :refer [default-line-width]]
             [shape-drawer.set-default-line-width :refer [set-default-line-width!]]))

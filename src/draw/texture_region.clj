@@ -1,5 +1,5 @@
 (ns draw.texture-region
-  (:require [gdl.draw :as draw]
+  (:require [batch.draw :as draw]
             [texture-region.get-region-height :refer [get-region-height]]
             [texture-region.get-region-width :refer [get-region-width]]))
 
