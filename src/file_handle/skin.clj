@@ -1,4 +1,4 @@
-(ns ui.skin
+(ns file-handle.skin
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 

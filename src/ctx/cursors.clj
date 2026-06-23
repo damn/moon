@@ -1,7 +1,7 @@
 (ns ctx.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [gdl.pixmap :as pixmap]
+            [file-handle.pixmap :as pixmap]
             [pixmap.dispose :as dispose]
             [files.internal :as internal]
             [graphics.new-cursor :as new-cursor]))

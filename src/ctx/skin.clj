@@ -3,7 +3,7 @@
             [bitmap-font.get-data :refer [get-data]]
             [ui.skin.get-font :as get-font]
             [gdl.enable-markup :refer [enable-markup!]]
-            [ui.skin :as skin]))
+            [file-handle.skin :as skin]))
 
 (defn step
   [{:keys [ctx/files]}]
