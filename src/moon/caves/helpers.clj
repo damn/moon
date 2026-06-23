@@ -2,7 +2,7 @@
   (:require [clojure.rand.sshuffle :refer [sshuffle]]
             [clojure.rand.srand :refer [srand]]
             [clojure.rand.srand-int :refer [srand-int]]
-            [clojure.math.position.get-4-neighbours :refer [get-4-neighbours]]))
+            [position.get-4-neighbours :refer [get-4-neighbours]]))
 
 (defn create-order [random]
   (sshuffle (range 4) random))

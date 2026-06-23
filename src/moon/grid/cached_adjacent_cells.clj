@@ -1,6 +1,6 @@
 (ns moon.grid.cached-adjacent-cells
   (:require [clojure.grid2d.get-cells :refer [get-cells]]
-            [clojure.math.position.get-8-neighbours :refer [get-8-neighbours]]))
+            [position.get-8-neighbours :refer [get-8-neighbours]]))
 
 (defn cached-adjacent-cells [g2d cell]
   (if-let [result (:adjacent-cells @cell)]

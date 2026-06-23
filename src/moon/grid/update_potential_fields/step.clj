@@ -1,7 +1,7 @@
 (ns moon.grid.update-potential-fields.step
   (:require [moon.cell :as cell]
             [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
-            [clojure.math.position.is-diagonal :refer [diagonal?]]))
+            [position.is-diagonal :refer [diagonal?]]))
 
 ; TODO performance
 ; * cached-adjacent-non-blocked-cells ? -> no need for cell blocked check?

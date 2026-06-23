@@ -1,6 +1,6 @@
 (ns world-fns.modules.area-level-grid
   (:require [clojure.grid2d.cells :refer [->cells]]
-            [clojure.math.position.get-4-neighbours :refer [get-4-neighbours]]))
+            [position.get-4-neighbours :refer [get-4-neighbours]]))
 
 ; can adjust:
 ; * split percentage , for higher level areas may scale faster (need to be more careful)
