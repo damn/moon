@@ -1,15 +1,19 @@
 (ns editor.widget.animation
   (:require [scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
-            [map.texture-region-drawable :as texture-region-drawable]
+            [texture-region.get-region-height :refer [get-region-height]]
+            [texture-region.get-region-width :refer [get-region-width]]
+            [scene2d.utils.texture-region-drawable :as drawable]
             [moon.textures :as textures]))
 
 (defn create
   [_ animation {:keys [ctx/textures]}]
   (table/create
    {:table/cell-defaults {:pad 1}
-    :table/rows [(for [image (:animation/frames animation)]
+    :table/rows [(for [image (:animation/frames animation)
+                       :let [texture-region (textures/texture-region textures image)
+                             scale 2]]
                    {:actor (image-button/create
-                            (texture-region-drawable/create*
-                             {:drawable/texture-region (textures/texture-region textures image)
-                              :drawable/scale 2}))})]}))
+                            (doto (drawable/create texture-region)
+                              (drawable/set-min-size! (* scale (get-region-width texture-region))
+                                                      (* scale (get-region-height texture-region)))))})]}))
