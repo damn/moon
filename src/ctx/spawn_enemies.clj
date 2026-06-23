@@ -1,5 +1,5 @@
 (ns ctx.spawn-enemies
-  (:require [game.ctx.do :refer [do!]]
+  (:require [ctx.do :refer [do!]]
             [moon.db.build :refer [build]]
             [gdl.spawn-positions :as spawn-positions]))
 

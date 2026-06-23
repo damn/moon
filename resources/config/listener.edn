@@ -45,7 +45,7 @@
                     (ctx.spawn-enemies/step))
                    (clojure.core/dissoc :ctx/files)
                    ]
- :dispose! game.ctx.dispose/do!
+ :dispose! ctx.dispose/do!
  :render-pipeline [
                    [render.get-stage-ctx/step]
                    [render.validate/step]
@@ -90,5 +90,5 @@
                    [render.update-draw-stage/step]
                    [render.validate/step]
                    ]
- :resize!  game.ctx.resize/do!
+ :resize!  ctx.resize/do!
  }

@@ -1,6 +1,6 @@
 (ns render.update-mouseover-eid
   (:require [clojure.order :refer [sort-by-order]]
-            [game.ctx.mouseover-actor :refer [mouseover-actor]]
+            [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.grid.point-to-entities :refer [point->entities]]
             [moon.raycaster.line-of-sight :as line-of-sight?]))
 

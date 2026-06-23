@@ -1,5 +1,5 @@
 (ns render.remove-destroyed-entities
-  (:require [game.ctx.do :refer [do!]]))
+  (:require [ctx.do :refer [do!]]))
 
 (defn step
   [{:keys [ctx/k->destroy]

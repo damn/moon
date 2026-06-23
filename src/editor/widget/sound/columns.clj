@@ -2,7 +2,7 @@
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
-            [game.ctx.do :refer [do!]]
+            [ctx.do :refer [do!]]
             [ui.text-button :as text-button]
             [gdl.change-listener :as change-listener]))
 

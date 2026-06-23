@@ -1,6 +1,6 @@
 (ns handle-input.player-item-on-cursor
-  (:require [game.ctx.button-just-pressed :refer [button-just-pressed?]]
-            [game.ctx.mouseover-actor :refer [mouseover-actor]]))
+  (:require [ctx.button-just-pressed :refer [button-just-pressed?]]
+            [ctx.mouseover-actor :refer [mouseover-actor]]))
 
 (defn f
   [eid ctx]

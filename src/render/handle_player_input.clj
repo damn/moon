@@ -1,5 +1,5 @@
 (ns render.handle-player-input
-  (:require [game.ctx.do :refer [do!]]))
+  (:require [ctx.do :refer [do!]]))
 
 (defn step
   [{:keys [ctx/k->handle-input

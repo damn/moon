@@ -1,6 +1,6 @@
 (ns render.assoc-interaction-state
   (:require [math.vector2.direction :as direction]
-            [game.ctx.mouseover-actor :refer [mouseover-actor]]
+            [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.skill.usable-state :as usable-state]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
             [scene2d.group.find-actor :refer [find-actor]]

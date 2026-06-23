@@ -1,6 +1,6 @@
 (ns render.update-mouse-positions
   (:require [viewport.unproject :as unproject]
-            [game.ctx.mouse-position :refer [mouse-position]]))
+            [ctx.mouse-position :refer [mouse-position]]))
 
 (defn step
   [{:keys [ctx/stage

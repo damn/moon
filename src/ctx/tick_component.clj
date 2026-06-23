@@ -1,4 +1,4 @@
-(ns game.ctx.tick-component)
+(ns ctx.tick-component)
 
 (defn tick-component
   [{:keys [ctx/k->tick] :as ctx} eid [k v]]

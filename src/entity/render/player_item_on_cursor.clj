@@ -1,6 +1,6 @@
 (ns entity.render.player-item-on-cursor
-  (:require [game.ctx.item-place-position :refer [item-place-position]]
-            [game.ctx.mouseover-actor :refer [mouseover-actor]]
+  (:require [ctx.item-place-position :refer [item-place-position]]
+            [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.textures :as textures]))
 
 (defn f

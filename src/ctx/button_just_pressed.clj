@@ -1,4 +1,4 @@
-(ns game.ctx.button-just-pressed
+(ns ctx.button-just-pressed
   (:require [input.button-just-pressed :as button-just-pressed?]))
 
 (defn button-just-pressed?

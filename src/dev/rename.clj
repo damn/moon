@@ -58,8 +58,8 @@
    (rename! (str "clojure." suffix ".")
             (str suffix ".")))
 
- (rename! "gdl.stage."
-          "scene2d.stage."
+ (rename! "ctx."
+          "ctx."
           )
 
 

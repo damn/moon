@@ -1,4 +1,4 @@
-(ns game.ctx.after-create-component)
+(ns ctx.after-create-component)
 
 (defn after-create-component
   [{:keys [ctx/k->after-create] :as ctx} eid [k v]]

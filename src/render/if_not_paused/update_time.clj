@@ -1,5 +1,5 @@
 (ns render.if-not-paused.update-time
-  (:require [game.ctx.graphics-delta-time :refer [graphics-delta-time]]))
+  (:require [ctx.graphics-delta-time :refer [graphics-delta-time]]))
 
 (defn f
   [{:keys [ctx/max-delta]

@@ -1,4 +1,4 @@
-(ns game.ctx.resize
+(ns ctx.resize
   (:require [viewport.update :as update!]))
 
 (defn do!

@@ -1,5 +1,5 @@
 (ns stage.player-state-draw
-  (:require [game.ctx.draw :refer [draw!]]
+  (:require [ctx.draw :refer [draw!]]
             [game.state :as state]
             [gdl.get-stage :refer [get-stage]]
             [scene2d.actor :as actor]))

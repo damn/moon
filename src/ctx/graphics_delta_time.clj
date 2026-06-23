@@ -1,4 +1,4 @@
-(ns game.ctx.graphics-delta-time
+(ns ctx.graphics-delta-time
   (:require [graphics.delta-time :as delta-time]))
 
 (defn graphics-delta-time

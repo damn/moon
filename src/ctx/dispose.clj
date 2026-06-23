@@ -1,4 +1,4 @@
-(ns game.ctx.dispose
+(ns ctx.dispose
   (:require [utils.dispose :as disposable]))
 
 (defn do!

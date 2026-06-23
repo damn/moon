@@ -1,5 +1,5 @@
 (ns entity.state.exit.player-item-on-cursor
-  (:require [game.ctx.item-place-position :refer [item-place-position]]))
+  (:require [ctx.item-place-position :refer [item-place-position]]))
 
 (defn f
   [_ eid ctx]

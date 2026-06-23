@@ -1,6 +1,6 @@
 (ns handle-input.player-idle
-  (:require [game.ctx.button-just-pressed :refer [button-just-pressed?]]
-            [game.ctx.player-movement-vector :refer [player-movement-vector]]
+  (:require [ctx.button-just-pressed :refer [button-just-pressed?]]
+            [ctx.player-movement-vector :refer [player-movement-vector]]
             [handle-input.player-idle.interaction-state-txs :refer [interaction-state->txs]]))
 
 (defn f

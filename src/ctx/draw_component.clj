@@ -1,4 +1,4 @@
-(ns game.ctx.draw-component)
+(ns ctx.draw-component)
 
 (defn draw-component
   [{:keys [ctx/k->render] :as ctx} entity k v]

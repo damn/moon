@@ -1,5 +1,5 @@
 (ns draw.with-line-width
-  (:require [game.ctx.draw :refer [draw!]]
+  (:require [ctx.draw :refer [draw!]]
             [shape-drawer.default-line-width :refer [default-line-width]]
             [shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
 

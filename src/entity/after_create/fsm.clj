@@ -1,5 +1,5 @@
 (ns entity.after-create.fsm
-  (:require [game.ctx.create-fsm :refer [create-fsm]]
+  (:require [ctx.create-fsm :refer [create-fsm]]
             [game.state :as state]))
 
 (defn f

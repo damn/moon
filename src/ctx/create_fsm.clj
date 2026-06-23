@@ -1,4 +1,4 @@
-(ns game.ctx.create-fsm)
+(ns ctx.create-fsm)
 
 (defn create-fsm
   [{:keys [ctx/fsms]

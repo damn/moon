@@ -1,5 +1,5 @@
 (ns draw.grid
-  (:require [game.ctx.draw :refer [draw!]]))
+  (:require [ctx.draw :refer [draw!]]))
 
 (defn f
   [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]

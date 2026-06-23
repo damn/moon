@@ -1,5 +1,5 @@
 (ns entity.state.draw-ui-view.player-item-on-cursor
-  (:require [game.ctx.mouseover-actor :refer [mouseover-actor]]
+  (:require [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.textures :as textures]))
 
 (defn f

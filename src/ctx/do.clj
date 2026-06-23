@@ -1,4 +1,4 @@
-(ns game.ctx.do
+(ns ctx.do
   (:require [clojure.actions :refer [actions!]]))
 
 (defn do!

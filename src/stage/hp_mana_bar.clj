@@ -1,5 +1,5 @@
 (ns stage.hp-mana-bar
-  (:require [game.ctx.draw :refer [draw!]]
+  (:require [ctx.draw :refer [draw!]]
             [gdl.get-stage :refer [get-stage]]
             [scene2d.actor :as actor]
             [clojure.readable :as readable]

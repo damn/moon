@@ -1,8 +1,8 @@
 (ns tx.spawn-entity
   (:require [moon.records.entity :as entity]
-            [game.ctx.create-component :refer [create-component]]
-            [game.ctx.after-create-component :refer [after-create-component]]
-            [game.ctx.register-eid :as register-eid]))
+            [ctx.create-component :refer [create-component]]
+            [ctx.after-create-component :refer [after-create-component]]
+            [ctx.register-eid :as register-eid]))
 
 (defn do!
   [ctx entity]

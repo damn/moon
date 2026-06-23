@@ -1,8 +1,8 @@
 (ns draw-on-world-viewport.draw-entities
   (:require [clojure.order :refer [sort-by-order]]
             [game.constants :refer [show-body-bounds?]]
-            [game.ctx.draw :refer [draw!]]
-            [game.ctx.draw-component :refer [draw-component]]
+            [ctx.draw :refer [draw!]]
+            [ctx.draw-component :refer [draw-component]]
             [moon.body :as body]
             [moon.body.draw-rectangle :as draw-rectangle]
             [moon.raycaster.line-of-sight :as line-of-sight?]

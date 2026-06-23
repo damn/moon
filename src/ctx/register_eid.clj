@@ -1,4 +1,4 @@
-(ns game.ctx.register-eid
+(ns ctx.register-eid
   (:require [moon.content-grid.update-entity :as update-entity]
             [moon.grid.set-occupied-cells :refer [set-occupied-cells!]]
             [moon.grid.set-touched-cells :refer [set-touched-cells!]]

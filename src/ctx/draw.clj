@@ -1,4 +1,4 @@
-(ns game.ctx.draw)
+(ns ctx.draw)
 
 (defn draw! [{:keys [ctx/draw-fns] :as ctx} draws]
   (doseq [{k 0 :as component} draws

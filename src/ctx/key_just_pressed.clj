@@ -1,4 +1,4 @@
-(ns game.ctx.key-just-pressed
+(ns ctx.key-just-pressed
   (:require [gdl.key-just-pressed :as key-just-pressed?]))
 
 (defn key-just-pressed? [{:keys [ctx/input]} input-key]

@@ -1,4 +1,4 @@
-(ns game.ctx.item-place-position
+(ns ctx.item-place-position
   (:require [math.vector2.add :as add]
             [math.vector2.direction :as direction]
             [math.vector2.distance :as distance]
