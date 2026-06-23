@@ -1,5 +1,5 @@
 (ns levelgen-test.resize
-  (:require [gdl.update :as update!]))
+  (:require [viewport.update :as update!]))
 
 (defn f!
   [{:keys [ctx/stage

@@ -1,4 +1,4 @@
-(ns gdl.get-font
+(ns ui.skin.get-font
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
 (defn f [^Skin skin name]

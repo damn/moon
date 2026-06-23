@@ -1,5 +1,5 @@
 (ns render.update-mouse-positions
-  (:require [gdl.unproject :as unproject]
+  (:require [viewport.unproject :as unproject]
             [game.ctx.mouse-position :refer [mouse-position]]))
 
 (defn step

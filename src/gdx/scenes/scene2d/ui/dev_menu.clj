@@ -2,7 +2,7 @@
   (:require [gdx.scenes.scene2d.ui.dev-menu.main-table :as main-table]
             [gdl.set-touchable :refer [set-touchable!]]
             [gdl.set-fill-parent :refer [set-fill-parent!]]
-            [gdl.touchable :as touchable]
+            [scene2d.touchable :as touchable]
             [ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]))
 

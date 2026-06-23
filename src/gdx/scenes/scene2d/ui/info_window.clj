@@ -2,7 +2,7 @@
   (:require [gdl.set-position :refer [set-position!]]
             [gdl.get-stage :refer [get-stage]]
             [gdl.set-name :refer [set-name!]]
-            [gdl.set-visible :refer [set-visible!]]
+            [scene2d.actor.set-visible :refer [set-visible!]]
             [scene2d.actor :as actor]
             [group.add-actor :refer [add-actor!]]
             [ui.label :as label]

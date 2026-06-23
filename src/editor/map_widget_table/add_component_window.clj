@@ -2,7 +2,7 @@
   (:require [gdl.get-stage :refer [get-stage]]
             [moon.schema.build-widget :as build-widget]
             [moon.schema.widget-value :as widget-value]
-            [gdl.remove :refer [remove!]]
+            [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]

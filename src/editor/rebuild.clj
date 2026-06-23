@@ -1,6 +1,6 @@
 (ns editor.rebuild
   (:require [editor.map-widget-table.get-value :as get-value]
-            [gdl.remove :refer [remove!]]
+            [scene2d.actor.remove :refer [remove!]]
             [scene2d.group.find-actor :refer [find-actor]]
             [editor.window]
             [scene2d.stage.add-actor :refer [add-actor!]]))

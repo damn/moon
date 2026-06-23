@@ -1,5 +1,5 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [gdl.get-height :refer [get-height]]
+  (:require [scene2d.actor.get-height :refer [get-height]]
             [gdl.get-width :refer [get-width]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]

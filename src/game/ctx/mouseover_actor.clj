@@ -1,6 +1,6 @@
 (ns game.ctx.mouseover-actor
   (:require [scene2d.stage.hit :refer [hit]]
-            [gdl.unproject :as unproject]
+            [viewport.unproject :as unproject]
             [game.ctx.mouse-position :refer [mouse-position]]))
 
 (defn mouseover-actor

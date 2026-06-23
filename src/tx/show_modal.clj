@@ -1,7 +1,7 @@
 (ns tx.show-modal
   (:require [utils.align :as align]
             [gdl.set-position :refer [set-position!]]
-            [gdl.remove :refer [remove!]]
+            [scene2d.actor.remove :refer [remove!]]
             [gdl.set-name :refer [set-name!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [ui.label :as label]

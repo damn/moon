@@ -1,7 +1,7 @@
 (ns ctx.skin
   (:require [gdl.internal :as internal]
-            [gdl.get-data :refer [get-data]]
-            [gdl.get-font :as get-font]
+            [bitmap-font.get-data :refer [get-data]]
+            [ui.skin.get-font :as get-font]
             [gdl.enable-markup :refer [enable-markup!]]
             [ui.skin :as skin]))
 

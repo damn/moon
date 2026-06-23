@@ -3,7 +3,7 @@
             [gdl.set-touchable :refer [set-touchable!]]
             [gdl.get-stage :refer [get-stage]]
             [group.add-actors :refer [add-actors!]]
-            [gdl.touchable :as touchable]
+            [scene2d.touchable :as touchable]
             [ui.stack :as stack]
             [ui.text-tooltip :as text-tooltip]
             [gdl.change-listener :as change-listener]

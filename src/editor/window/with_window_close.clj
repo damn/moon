@@ -1,6 +1,6 @@
 (ns editor.window.with-window-close
   (:require [gdl.get-stage :refer [get-stage]]
-            [gdl.remove :refer [remove!]]
+            [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.stage.set-ctx :refer [set-ctx!]]
             [scene2d.stage.add-actor :refer [add-actor!]]

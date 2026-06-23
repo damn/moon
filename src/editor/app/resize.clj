@@ -1,5 +1,5 @@
 (ns editor.app.resize
-  (:require [gdl.update :as update!]))
+  (:require [viewport.update :as update!]))
 
 (defn resize!
   [{:keys [ctx/stage]} width height]

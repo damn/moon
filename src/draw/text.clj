@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [gdl.draw-text :as draw-text]
             [gdl.get-line-height :as get-line-height]
-            [gdl.get-data :refer [get-data]]
+            [bitmap-font.get-data :refer [get-data]]
             [gdl.set-scale :as set-scale]
             [gdl.scale-x :as scale-x]
             [utils.align :as align]))

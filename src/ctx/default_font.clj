@@ -1,12 +1,12 @@
 (ns ctx.default-font
   (:require [gdl.internal :as internal]
             [gdl.texture-filter :as texture.filter]
-            [gdl.get-data :refer [get-data]]
+            [bitmap-font.get-data :refer [get-data]]
             [gdl.enable-markup :refer [enable-markup!]]
             [gdl.set-scale :as set-scale]
             [gdl.set-use-integer-positions :as set-use-integer-positions]
             [gdl.font-generator :as font-generator]
-            [gdl.generate-font :as generate-font]
+            [font-generator.generate-font :as generate-font]
             [utils.dispose :refer [dispose!]]
             [gdl.font-generator-parameter :as parameter]))
 

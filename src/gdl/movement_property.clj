@@ -1,6 +1,6 @@
 (ns gdl.movement-property
   (:require [gdl.movement-property-layers :as movement-property-layers]
-            [gdl.tile-movement-property :as tile-movement-property]))
+            [tiled-map.tile-movement-property :as tile-movement-property]))
 
 (defn f [tiled-map position]
   (or (->> tiled-map

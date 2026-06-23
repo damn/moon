@@ -1,6 +1,6 @@
 (ns editor.map-widget-table.component-row
   (:require [gdl.get-user-object :refer [get-user-object]]
-            [gdl.remove :refer [remove!]]
+            [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
             [editor.map-widget-table.k-label-text :as k-label-text]

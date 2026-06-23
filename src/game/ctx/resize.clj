@@ -1,5 +1,5 @@
 (ns game.ctx.resize
-  (:require [gdl.update :as update!]))
+  (:require [viewport.update :as update!]))
 
 (defn do!
   [{:keys [ctx/stage

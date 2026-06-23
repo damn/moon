@@ -1,7 +1,7 @@
 (ns moon.ui.inventory-window.create
   (:require [gdl.set-position :refer [set-position!]]
             [gdl.set-name :refer [set-name!]]
-            [gdl.set-visible :refer [set-visible!]]
+            [scene2d.actor.set-visible :refer [set-visible!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [map.texture-region-drawable :as texture-region-drawable]
