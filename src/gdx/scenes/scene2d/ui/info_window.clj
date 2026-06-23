@@ -6,6 +6,7 @@
             [scene2d.actor :as actor]
             [scene2d.group.add-actor :refer [add-actor!]]
             [scene2d.ui.label :as label]
+            [scene2d.ui.label.set-text :as set-text!]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.utils.layout.pack :refer [pack!]]))
@@ -30,6 +31,6 @@
     (add-actor! window (actor/f
                         {:act! (fn [this delta]
                                  (when-let [stage (get-stage/f this)]
-                                   (label/set-text! label (set-label-text! (:stage/ctx stage))))
+                                   (set-text!/f label (set-label-text! (:stage/ctx stage))))
                                  (pack! window))}))
     window))
