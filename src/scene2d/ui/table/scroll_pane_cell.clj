@@ -1,5 +1,5 @@
-(ns ui.table.scroll-pane-cell
-  (:require [ui.scroll-pane :as scroll-pane]
+(ns scene2d.ui.table.scroll-pane-cell
+  (:require [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.actor.get-height :refer [get-height]]
             [scene2d.actor.get-width :refer [get-width]]))
 

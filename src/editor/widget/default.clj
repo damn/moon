@@ -2,7 +2,7 @@
   (:require [string.truncate :refer [truncate]]
             [clojure.edn-str :refer [->edn-str]]
             [scene2d.actor.get-user-object :refer [get-user-object]]
-            [ui.label :as label]))
+            [scene2d.ui.label :as label]))
 
 (defn create
   [_ v {:keys [ctx/skin]}]

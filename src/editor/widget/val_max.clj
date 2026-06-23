@@ -2,8 +2,8 @@
   (:require [clojure.edn-str :refer [->edn-str]]
             [clojure.edn :as edn]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [ui.text-field :as text-field]
-            [ui.text-tooltip :as text-tooltip]))
+            [scene2d.ui.text-field :as text-field]
+            [scene2d.ui.text-tooltip :as text-tooltip]))
 
 (defn create
   [schema v {:keys [ctx/skin]}]

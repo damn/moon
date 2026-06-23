@@ -1,5 +1,5 @@
 (ns editor.widget.animation
-  (:require [ui.image-button :as image-button]
+  (:require [scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [map.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))

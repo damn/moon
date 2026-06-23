@@ -3,8 +3,8 @@
             [scene2d.change-listener :as change-listener]
             [scene2d.event.get-stage :as get-stage]
             [scene2d.stage.add-actor :refer [add-actor!]]
-            [ui.text-button :as text-button]
-            [ui.window.add-close-button :as add-close-button]
+            [scene2d.ui.text-button :as text-button]
+            [scene2d.ui.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]))

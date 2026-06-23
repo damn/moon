@@ -2,8 +2,8 @@
   (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.group.find-actor :refer [find-actor]]
-            [ui.text-tooltip :as text-tooltip]
-            [ui.image :as image]
+            [scene2d.ui.text-tooltip :as text-tooltip]
+            [scene2d.ui.image :as image]
             [map.texture-region-drawable :as texture-region-drawable]
             [moon.inventory-window.get-cell :as get-cell]))
 

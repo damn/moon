@@ -1,7 +1,7 @@
 (ns ctx.skin
   (:require [files.internal :as internal]
             [bitmap-font.get-data :refer [get-data]]
-            [ui.skin.get-font :as get-font]
+            [scene2d.ui.skin.get-font :as get-font]
             [bitmap-font-data.enable-markup :refer [enable-markup!]]
             [file-handle.skin :as skin]))
 

@@ -4,10 +4,10 @@
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [ui.label :as label]
-            [ui.text-button :as text-button]
+            [scene2d.ui.label :as label]
+            [scene2d.ui.text-button :as text-button]
             [scene2d.change-listener :as change-listener]
-            [ui.window.set-modal :as set-modal]
+            [scene2d.ui.window.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.group.find-actor :refer [find-actor]]
             [scene2d.stage.add-actor :refer [add-actor!]]))

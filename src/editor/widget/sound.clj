@@ -4,8 +4,8 @@
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [ui.table.add-rows :refer [add-rows!]]
-            [ui.text-button :as text-button]
+            [scene2d.ui.table.add-rows :refer [add-rows!]]
+            [scene2d.ui.text-button :as text-button]
             [scene2d.change-listener :as change-listener]))
 
 (defn create

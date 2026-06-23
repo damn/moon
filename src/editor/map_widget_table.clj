@@ -4,8 +4,8 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [ui.table.add-rows :refer [add-rows!]]
-            [ui.text-button :as text-button]
+            [scene2d.ui.table.add-rows :refer [add-rows!]]
+            [scene2d.ui.text-button :as text-button]
             [scene2d.change-listener :as change-listener]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [editor.horiz-sep :as horiz-sep]))

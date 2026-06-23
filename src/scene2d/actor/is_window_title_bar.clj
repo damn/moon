@@ -1,7 +1,7 @@
 (ns scene2d.actor.is-window-title-bar
   (:require [scene2d.actor.get-parent :refer [get-parent]]
-            [ui.label :as label]
-            [ui.window.get-title-label :as get-title-label])
+            [scene2d.ui.label :as label]
+            [scene2d.ui.window.get-title-label :as get-title-label])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 ; FIXME does not work

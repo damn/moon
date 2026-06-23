@@ -6,7 +6,7 @@
             [scene2d.group.clear-children :refer [clear-children!]]
             [scene2d.layout.pack :refer [pack!]]
             [scene2d.actor.is-window :as window?]
-            [ui.table.add-rows :refer [add-rows!]]))
+            [scene2d.ui.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]

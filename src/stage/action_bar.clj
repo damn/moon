@@ -1,8 +1,8 @@
 (ns stage.action-bar
   (:require [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.set-user-object :refer [set-user-object!]]
-            [ui.button-group :as button-group]
-            [ui.horizontal-group :as horizontal-group]
+            [scene2d.ui.button-group :as button-group]
+            [scene2d.ui.horizontal-group :as horizontal-group]
             [scene2d.layout.set-fill-parent :refer [set-fill-parent!]]
             [gdx.scenes.scene2d.ui.table :as table]))
 

@@ -1,8 +1,8 @@
 (ns moon.ui.error-window
-  (:require [ui.label :as label]
+  (:require [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.window :as window]
-            [ui.window.set-modal :as set-modal]
-            [ui.window.add-close-button :as add-close-button]
+            [scene2d.ui.window.set-modal :as set-modal]
+            [scene2d.ui.window.add-close-button :as add-close-button]
             [clojure.repl :as repl]))
 
 (defmacro ^:private with-err-str [& body]

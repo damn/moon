@@ -2,7 +2,7 @@
   (:require [scene2d.event.get-stage :as get-stage]
             [scene2d.actor.get-stage :as actor-stage]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [ui.text-button :as text-button]
+            [scene2d.ui.text-button :as text-button]
             [scene2d.change-listener :as change-listener]
             [scene2d.stage.set-ctx :refer [set-ctx!]]
             [levelgen-test.generate-level :as generate-level]))

@@ -2,9 +2,9 @@
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.group.add-actor :refer [add-actor!]]
-            [ui.button-group :as button-group]
-            [ui.image-button :as image-button]
-            [ui.text-tooltip :as text-tooltip]
+            [scene2d.ui.button-group :as button-group]
+            [scene2d.ui.image-button :as image-button]
+            [scene2d.ui.text-tooltip :as text-tooltip]
             [map.texture-region-drawable :as texture-region-drawable]
             [moon.action-bar.get-data :as get-data]))
 

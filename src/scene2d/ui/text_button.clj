@@ -1,4 +1,4 @@
-(ns ui.text-button
+(ns scene2d.ui.text-button
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextButton)))
 

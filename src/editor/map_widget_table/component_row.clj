@@ -5,9 +5,9 @@
             [scene2d.event.get-stage :as get-stage]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [scene2d.group.children :refer [children]]
-            [ui.label :as label]
+            [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [ui.text-button :as text-button]
+            [scene2d.ui.text-button :as text-button]
             [scene2d.change-listener :as change-listener]))
 
 (defn create

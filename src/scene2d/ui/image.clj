@@ -1,4 +1,4 @@
-(ns ui.image
+(ns scene2d.ui.image
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d.ui Image)

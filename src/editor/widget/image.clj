@@ -1,7 +1,7 @@
 (ns editor.widget.image
-  (:require [ui.scroll-pane :as scroll-pane]
-            [ui.image-button :as image-button]
-            [ui.text-button :as text-button]
+  (:require [scene2d.ui.scroll-pane :as scroll-pane]
+            [scene2d.ui.image-button :as image-button]
+            [scene2d.ui.text-button :as text-button]
             [map.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
 

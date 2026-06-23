@@ -1,4 +1,4 @@
-(ns ui.text-field
+(ns scene2d.ui.text-field
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextField)))
 

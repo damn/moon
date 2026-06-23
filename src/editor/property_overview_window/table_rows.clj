@@ -4,11 +4,11 @@
             [scene2d.event.get-stage :as get-stage]
             [scene2d.group.add-actors :refer [add-actors!]]
             [scene2d.touchable :as touchable]
-            [ui.stack :as stack]
-            [ui.text-tooltip :as text-tooltip]
+            [scene2d.ui.stack :as stack]
+            [scene2d.ui.text-tooltip :as text-tooltip]
             [scene2d.change-listener :as change-listener]
-            [ui.image-button :as image-button]
-            [ui.label :as label]
+            [scene2d.ui.image-button :as image-button]
+            [scene2d.ui.label :as label]
             [map.texture-region-drawable :as texture-region-drawable]))
 
 (defn overview-table-rows* [skin image-scale rows]

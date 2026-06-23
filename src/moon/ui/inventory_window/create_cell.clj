@@ -12,13 +12,13 @@
             [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.group.add-actors :refer [add-actors!]]
-            [ui.widget :as widget]
+            [scene2d.ui.widget :as widget]
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
             [game.state :as state]
             [scene2d.click-listener :as click-listener]
-            [ui.image :as image]
-            [ui.stack :as stack]
+            [scene2d.ui.image :as image]
+            [scene2d.ui.stack :as stack]
             [gdx.math.vector2 :as vector2]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
