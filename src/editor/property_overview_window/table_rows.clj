@@ -9,7 +9,9 @@
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.image-button :as image-button]
             [scene2d.ui.label :as label]
-            [map.texture-region-drawable :as texture-region-drawable]))
+            [scene2d.utils.texture-region-drawable :as drawable]
+            [texture-region.get-region-height :refer [get-region-height]]
+            [texture-region.get-region-width :refer [get-region-width]]))
 
 (defn overview-table-rows* [skin image-scale rows]
   (for [row rows]
@@ -18,9 +20,10 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (doto (stack/create)
-                (add-actors! [(doto (image-button/create (texture-region-drawable/create*
-                                                          {:drawable/texture-region texture-region
-                                                           :drawable/scale image-scale}))
+                (add-actors! [(doto (image-button/create
+                                     (doto (drawable/create texture-region)
+                                       (drawable/set-min-size! (* image-scale (get-region-width texture-region))
+                                                               (* image-scale (get-region-height texture-region)))))
                                 (add-listener! (change-listener/create
                                                 (fn [event actor]
                                                   (on-clicked actor (:stage/ctx (get-stage/f event))))))
