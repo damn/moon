@@ -30,12 +30,12 @@
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {
-            "dev"      ["run" "-m" "clojure.dev.loop" "((requiring-resolve 'moon.start/-main))"]
-            "levelgen" ["run" "-m" "clojure.dev.loop" "((requiring-resolve 'levelgen-test.start/-main))"]
-            "editor"   ["run" "-m" "clojure.dev.loop" "((requiring-resolve 'clojure.editor.start/-main))"]
+            "dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'moon.start/-main))"]
+            "levelgen" ["run" "-m" "dev.loop" "((requiring-resolve 'levelgen-test.start/-main))"]
+            "editor"   ["run" "-m" "dev.loop" "((requiring-resolve 'clojure.editor.start/-main))"]
 
-            "nsgraph"  ["run" "-m" "clojure.dev.loop" "((requiring-resolve 'ns-graph.core/-main))"]
-            "app-test" ["run" "-m" "clojure.dev.loop" "((requiring-resolve 'moon.backends.lwjgl-test/-main))"]
+            "nsgraph"  ["run" "-m" "dev.loop" "((requiring-resolve 'ns-graph.core/-main))"]
+            "app-test" ["run" "-m" "dev.loop" "((requiring-resolve 'moon.backends.lwjgl-test/-main))"]
             "ns"       ["hiera" ":layout" ":horizontal"]
 
             }
