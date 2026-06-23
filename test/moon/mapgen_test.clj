@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.pprint :refer [pprint]]
             [moon.db.build :refer [build]]
-            [gdl.get-layers :refer [get-layers]]
+            [tiled-map.get-layers :refer [get-layers]]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [moon.utils.camera :as camera-utils]))
