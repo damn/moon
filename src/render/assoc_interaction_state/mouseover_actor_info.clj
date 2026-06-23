@@ -2,7 +2,7 @@
   (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [scene2d.actor.get-name :refer [get-name]]
             [scene2d.actor.get-parent :refer [get-parent]]
-            [gdl.is-button :as button?]
+            [scene2d.actor.is-button :as button?]
             [gdl.is-window-title-bar :as window-title-bar?]))
 
 (defn mouseover-actor-info [actor]

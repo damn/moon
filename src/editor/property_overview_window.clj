@@ -4,7 +4,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db.all-raw :refer [all-raw]]
             [ui.window.add-close-button :as add-close-button]
-            [gdl.set-modal :as set-modal]
+            [ui.window.set-modal :as set-modal]
             [moon.property :as property]
             [moon.textures :as textures]))
 

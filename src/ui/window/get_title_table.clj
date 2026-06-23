@@ -1,5 +1,5 @@
-(ns gdl.get-title-label
+(ns ui.window.get-title-table
   (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn f [^Window window]
-  (.getTitleLabel window))
+  (.getTitleTable window))

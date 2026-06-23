@@ -1,6 +1,6 @@
 (ns stage.windows
   (:require [scene2d.actor.set-name :refer [set-name!]]
-            [gdl.group :as group]
+            [scene2d.group :as group]
             [group.add-actors :refer [add-actors!]]))
 
 (defn create [ctx actor-fns]

@@ -1,7 +1,7 @@
 (ns ctx.stage
-  (:require [gdl.set-processor :as set-processor!]
+  (:require [input.set-processor :as set-processor!]
             [gdl.fit-viewport :as fit-viewport]
-            [gdl.stage :as stage]))
+            [scene2d.stage :as stage]))
 
 (defn step
   [{:keys [ctx/input

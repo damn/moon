@@ -1,11 +1,11 @@
 (ns editor.widget.sound.open-select-sounds-handler
   (:require [scene2d.actor.get-height :refer [get-height]]
-            [gdl.get-width :refer [get-width]]
+            [scene2d.actor.get-width :refer [get-width]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [gdl.get-stage :refer [get-stage]]
             [ui.scroll-pane :as scroll-pane]
             [ui.window.add-close-button :as add-close-button]
-            [gdl.set-modal :as set-modal]
+            [ui.window.set-modal :as set-modal]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [ctx.do :refer [do!]]
             [gdx.scenes.scene2d.ui.table :as table]

@@ -9,7 +9,7 @@
             [gdl.pack :refer [pack!]]
             [scene2d.change-listener :as change-listener]
             [ui.window.add-close-button :as add-close-button]
-            [gdl.set-modal :as set-modal]
+            [ui.window.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas.default-value :refer [default-value]]
             [moon.schemas.map-keys :refer [map-keys]]

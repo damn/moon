@@ -1,6 +1,6 @@
 (ns render.window-camera-controls
-  (:require [gdl.key-just-pressed :as key-just-pressed?]
-            [gdl.key-pressed :as key-pressed?]
+  (:require [input.key-just-pressed :as key-just-pressed?]
+            [input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [scene2d.group.find-actor :refer [find-actor]]
             [scene2d.actor.set-visible :refer [set-visible!]]

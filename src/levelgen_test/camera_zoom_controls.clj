@@ -1,5 +1,5 @@
 (ns levelgen-test.camera-zoom-controls
-  (:require [gdl.key-pressed :as key-pressed?]
+  (:require [input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]))
 
 (defn f

@@ -1,6 +1,6 @@
 (ns moon.application.use-glfw-async
-  (:require [gdl.shared-library-loader :as shared-library-loader]
-            [gdl.os :as os]
+  (:require [utils.shared-library-loader :as shared-library-loader]
+            [utils.os :as os]
             [lwjgl.configuration :as lwjgl]))
 
 (defn f! []

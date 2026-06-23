@@ -1,11 +1,11 @@
 (ns levelgen-test.create
   (:require [gdl.files :as files]
             [gdl.float-bits :refer [float-bits]]
-            [gdl.set-processor :as set-processor!]
+            [input.set-processor :as set-processor!]
             [gdl.fit-viewport :as fit-viewport]
             [gdl.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdl.stage :as stage]
+            [scene2d.stage :as stage]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]))

@@ -1,9 +1,9 @@
 (ns moon.ui.inventory-window.create-cell
   (:require [gdl.vector2.clojurize :as clojurize]
-            [gdl.hit :refer [hit]]
+            [scene2d.actor.hit :refer [hit]]
             [scene2d.actor.stage-local-coordinates :refer [stage->local-coordinates]]
-            [gdl.get-x :refer [get-x]]
-            [gdl.get-y :refer [get-y]]
+            [scene2d.actor.get-x :refer [get-x]]
+            [scene2d.actor.get-y :refer [get-y]]
             [scene2d.actor.get-parent :refer [get-parent]]
             [scene2d.actor.get-user-object :refer [get-user-object]]
             [gdl.get-stage :refer [get-stage]]

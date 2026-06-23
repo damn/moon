@@ -58,8 +58,8 @@
    (rename! (str "clojure." suffix ".")
             (str suffix ".")))
 
- (rename! "gdl.get-user-object"
-          "scene2d.actor.get-user-object"
+ (rename! "gdl.get-region-width"
+          "texture-region.get-region-width"
           )
 
 

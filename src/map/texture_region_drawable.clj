@@ -1,7 +1,7 @@
 (ns map.texture-region-drawable
   (:require [gdl.color :refer [rgba->Color]]
-            [gdl.get-region-height :refer [get-region-height]]
-            [gdl.get-region-width :refer [get-region-width]]
+            [texture-region.get-region-height :refer [get-region-height]]
+            [texture-region.get-region-width :refer [get-region-width]]
             [gdl.texture-region-drawable :as drawable]))
 
 (defn create

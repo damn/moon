@@ -1,4 +1,4 @@
-(ns gdl.set-opts
+(ns ui.table.set-opts
   (:require [ui.cell :as cell]
             [ui.table.add-rows :refer [add-rows!]]
             [gdl.pack :refer [pack!]])

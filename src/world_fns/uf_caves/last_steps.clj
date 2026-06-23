@@ -2,7 +2,7 @@
   (:require [grid2d.flood-fill :as flood-fill]
             [world-fns.uf-caves.position-tile-fn :as position-tile-fn]
             [world-fns.uf-caves.assoc-transition-cells :as assoc-transition-cells]
-            [gdl.movement-property :as movement-property]
+            [tiled-map.movement-property :as movement-property]
             [grid2d.height :refer [->height]]
             [grid2d.width :refer [->width]]
             [grid2d.cells :refer [->cells]]

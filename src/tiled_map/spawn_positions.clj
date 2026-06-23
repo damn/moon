@@ -1,4 +1,4 @@
-(ns gdl.spawn-positions
+(ns tiled-map.spawn-positions
   (:require [map-layers.get-layer :refer [get-layer]]
             [map-properties.get :as get]
             [tiled-map.get-layers :refer [get-layers]]

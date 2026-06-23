@@ -1,4 +1,4 @@
-(ns gdl.stage
+(ns scene2d.stage
   (:import (clojure.lang ILookup)
            (gdl Stage)))
 

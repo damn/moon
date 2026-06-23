@@ -1,4 +1,4 @@
-(ns gdl.is-button
+(ns scene2d.actor.is-button
   (:require [scene2d.actor.get-parent :refer [get-parent]]
             [gdl.button :as button]))
 

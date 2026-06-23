@@ -1,7 +1,7 @@
 (ns moon.ui.error-window
   (:require [ui.label :as label]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdl.set-modal :as set-modal]
+            [ui.window.set-modal :as set-modal]
             [ui.window.add-close-button :as add-close-button]
             [clojure.repl :as repl]))
 

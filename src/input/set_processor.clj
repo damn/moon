@@ -1,4 +1,4 @@
-(ns gdl.set-processor
+(ns input.set-processor
   (:import (com.badlogic.gdx Input)))
 
 (defn f [^Input input processor]

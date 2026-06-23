@@ -1,8 +1,8 @@
 (ns ctx.audio
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [gdl.new-sound :as new-sound]
-            [gdl.internal :as internal]))
+            [audio.new-sound :as new-sound]
+            [files.internal :as internal]))
 
 (defn step
   [{:keys [ctx/audio
