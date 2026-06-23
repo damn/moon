@@ -1,18 +1,12 @@
 (ns effects.handle.projectile
-  (:require [math.vector2.add :as add]
-            [math.vector2.scale :as scale]))
-
-(defn- proj-start-point [body direction size]
-  (add/f (:body/position body)
-         (scale/f direction
-                  (+ (/ (:body/width body) 2) size 0.1))))
+  (:require [moon.body.projectile-start-point :as projectile-start-point]))
 
 (defn f
   [[_ projectile] {:keys [effect/source effect/target-direction]} _ctx]
   [[:tx/spawn-projectile
-    {:position (proj-start-point (:entity/body @source)
-                                 target-direction
-                                 (:projectile/size projectile))
+    {:position (projectile-start-point/f (:entity/body @source)
+                                         target-direction
+                                         (:projectile/size projectile))
      :direction target-direction
      :faction (:entity/faction @source)}
     projectile]])
