@@ -1,9 +1,9 @@
 (ns clojure.ctx.shape-drawer-texture
   (:require [gdl.pixmap :as pixmap]
-            [gdl.pixmap.set-color :as set-color]
-            [gdl.pixmap.draw-pixel :as draw-pixel]
-            [gdl.pixmap.texture :as pixmap->texture]
-            [gdl.pixmap.dispose :as dispose]))
+            [pixmap.set-color :as set-color]
+            [pixmap.draw-pixel :as draw-pixel]
+            [pixmap.texture :as pixmap->texture]
+            [pixmap.dispose :as dispose]))
 
 (defn step [_ctx]
   (let [pixmap (doto (pixmap/f 1 1)

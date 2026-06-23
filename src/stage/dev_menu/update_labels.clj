@@ -1,6 +1,6 @@
 (ns stage.dev-menu.update-labels
   (:require [gdl.frames-per-second :as frames-per-second]
-            [gdl.orthographic-camera.get-zoom :refer [get-zoom]]
+            [orthographic-camera.get-zoom :refer [get-zoom]]
             [clojure.readable :as readable]))
 
 (def v

@@ -1,6 +1,6 @@
 (ns clojure.draw-on-world-viewport.draw-tile-grid
   (:require [gdl.float-bits :refer [float-bits]]
-            [gdl.orthographic-camera.frustum :refer [frustum]]))
+            [orthographic-camera.frustum :refer [frustum]]))
 
 (defn f
   [{:keys [ctx/world-viewport]}]

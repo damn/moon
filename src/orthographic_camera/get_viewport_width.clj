@@ -1,4 +1,4 @@
-(ns gdl.orthographic-camera.get-viewport-width
+(ns orthographic-camera.get-viewport-width
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn get-viewport-width [^OrthographicCamera camera]

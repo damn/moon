@@ -1,7 +1,7 @@
 (ns render.draw-on-world-viewport
   (:require [game.ctx.draw :refer [draw!]]
             [gdl.batch :as batch]
-            [gdl.orthographic-camera.get-combined :refer [get-combined]]
+            [orthographic-camera.get-combined :refer [get-combined]]
             [gdl.default-line-width :refer [default-line-width]]
             [gdl.set-default-line-width :refer [set-default-line-width!]]))
 

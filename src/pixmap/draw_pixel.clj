@@ -1,4 +1,4 @@
-(ns gdl.pixmap.draw-pixel
+(ns pixmap.draw-pixel
   (:import (com.badlogic.gdx.graphics Pixmap)))
 
 (defn f! [^Pixmap pixmap x y]

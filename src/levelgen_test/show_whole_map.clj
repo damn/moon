@@ -1,9 +1,9 @@
 (ns levelgen-test.show-whole-map
   (:require [map-properties.get :as get]
             [tiled-map.get-properties :as get-properties]
-            [gdl.orthographic-camera.set-position :refer [set-position!]]
-            [gdl.orthographic-camera.calculate-zoom :refer [calculate-zoom]]
-            [gdl.orthographic-camera.set-zoom :refer [set-zoom!]]))
+            [orthographic-camera.set-position :refer [set-position!]]
+            [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
+            [orthographic-camera.set-zoom :refer [set-zoom!]]))
 
 (defn f!
   [{:keys [ctx/camera

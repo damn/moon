@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [gdl.pixmap :as pixmap]
-            [gdl.pixmap.dispose :as dispose]
+            [pixmap.dispose :as dispose]
             [gdl.internal :as internal]
             [gdl.new-cursor :as new-cursor]))
 

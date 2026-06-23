@@ -1,7 +1,7 @@
-(ns gdl.orthographic-camera.calculate-zoom
+(ns orthographic-camera.calculate-zoom
   (:require [gdl.get-position :as get-position]
-            [gdl.orthographic-camera.get-viewport-width :refer [get-viewport-width]]
-            [gdl.orthographic-camera.get-viewport-height :refer [get-viewport-height]]))
+            [orthographic-camera.get-viewport-width :refer [get-viewport-width]]
+            [orthographic-camera.get-viewport-height :refer [get-viewport-height]]))
 
 (defn calculate-zoom
   "calculates the zoom value for camera to see all the 4 points."

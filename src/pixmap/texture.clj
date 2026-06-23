@@ -1,4 +1,4 @@
-(ns gdl.pixmap.texture
+(ns pixmap.texture
   (:import (com.badlogic.gdx.graphics Pixmap
                                       Texture)))
 
