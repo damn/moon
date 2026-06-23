@@ -1,8 +1,8 @@
 (ns ctx.gdx-context
-  (:require [gdl.audio :as audio]
-            [gdl.files :as files]
-            [gdl.graphics :as graphics]
-            [gdl.input :as input]))
+  (:require [gdx.audio :as audio]
+            [gdx.files :as files]
+            [gdx.graphics :as graphics]
+            [gdx.input :as input]))
 
 (defn f [ctx]
   (assoc ctx

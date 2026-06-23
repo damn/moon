@@ -1,4 +1,4 @@
-(ns gdl.input-buttons
+(ns gdx.input-buttons
   (:import (com.badlogic.gdx Input$Buttons)))
 
 (defn k->value [k]

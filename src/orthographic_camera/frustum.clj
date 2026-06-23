@@ -1,5 +1,5 @@
 (ns orthographic-camera.frustum
-  (:require [gdl.vector3.clojurize :as clojurize]
+  (:require [gdx.vector3.clojurize :as clojurize]
             [orthographic-camera.get-frustum :refer [get-frustum]]
             [frustum.get-plane-points :refer [get-plane-points]]))
 

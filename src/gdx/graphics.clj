@@ -1,5 +1,5 @@
-(ns gdl.files
+(ns gdx.graphics
   (:import (com.badlogic.gdx Gdx)))
 
 (defn f []
-  Gdx/files)
+  Gdx/graphics)

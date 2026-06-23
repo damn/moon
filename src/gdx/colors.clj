@@ -1,5 +1,5 @@
-(ns gdl.colors
-  (:require [gdl.color :refer [rgba->Color]])
+(ns gdx.colors
+  (:require [gdx.color :refer [rgba->Color]])
   (:import (com.badlogic.gdx.graphics Colors)))
 
 (defn put! [colors]

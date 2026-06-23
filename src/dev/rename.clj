@@ -58,7 +58,7 @@
    (rename! (str "clojure." suffix ".")
             (str suffix ".")))
 
- (rename! "gdl.get-region-width"
+ (rename! "gdx.get-region-width"
           "texture-region.get-region-width"
           )
 
@@ -82,16 +82,16 @@
                         "tooltip-manager"
                         "widget"
                         "window"]]
-       (rename! (str "gdl." ns-string)
+       (rename! (str "gdx." ns-string)
                 (str "ui." ns-string))
        )
 
 
  (let [suffix "actor"
        prefix-a "clojure."
-       prefix-b "gdl."]
-   (rename! "gdl.actor."
-            "gdl."))
+       prefix-b "gdx."]
+   (rename! "gdx.actor."
+            "gdx."))
  (move-and-rename! "moon.scene2d.group"
                    "gdx.scenes.scene2d.group")
 

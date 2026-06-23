@@ -1,5 +1,5 @@
 (ns orthographic-camera.position
-  (:require [gdl.vector3.clojurize :as clojurize])
+  (:require [gdx.vector3.clojurize :as clojurize])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn f [camera]

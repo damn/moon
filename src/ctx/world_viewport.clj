@@ -1,5 +1,5 @@
 (ns ctx.world-viewport
-  (:require [gdl.orthographic-camera :as camera]
+  (:require [gdx.orthographic-camera :as camera]
             [viewport.fit-viewport :as fit-viewport]))
 
 (defn step

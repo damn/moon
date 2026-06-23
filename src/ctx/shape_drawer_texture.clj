@@ -1,5 +1,5 @@
 (ns ctx.shape-drawer-texture
-  (:require [gdl.pixmap :as pixmap]
+  (:require [gdx.pixmap :as pixmap]
             [pixmap.set-color :as set-color]
             [pixmap.draw-pixel :as draw-pixel]
             [pixmap.texture :as pixmap->texture]

@@ -1,4 +1,4 @@
-(ns gdl.application-listener
+(ns gdx.application-listener
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn application-listener

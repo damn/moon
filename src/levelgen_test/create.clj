@@ -1,9 +1,9 @@
 (ns levelgen-test.create
-  (:require [gdl.files :as files]
+  (:require [gdx.files :as files]
             [color.float-bits :refer [float-bits]]
             [input.set-processor :as set-processor!]
             [viewport.fit-viewport :as fit-viewport]
-            [gdl.orthographic-camera :as camera]
+            [gdx.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
             [scene2d.stage.add-actor :refer [add-actor!]]

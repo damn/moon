@@ -1,5 +1,5 @@
-(ns gdl.audio
+(ns gdx.input
   (:import (com.badlogic.gdx Gdx)))
 
 (defn f []
-  Gdx/audio)
+  Gdx/input)

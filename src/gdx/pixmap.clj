@@ -1,4 +1,4 @@
-(ns gdl.pixmap
+(ns gdx.pixmap
   (:import (com.badlogic.gdx.graphics Pixmap
                                       Pixmap$Format)))
 

@@ -1,6 +1,6 @@
 (ns scene2d.stage
   (:import (clojure.lang ILookup)
-           (gdl Stage)))
+           (scene2d Stage)))
 
 (defn create [viewport batch]
   (proxy [Stage ILookup] [viewport batch]
