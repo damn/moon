@@ -1,4 +1,4 @@
-(ns scene2d.click-listener
+(ns scene2d.utils.click-listener
   (:import (com.badlogic.gdx.scenes.scene2d.utils ClickListener)))
 
 (defn create [f]

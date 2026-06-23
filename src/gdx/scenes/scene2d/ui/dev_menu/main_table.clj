@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
-            [scene2d.change-listener :as change-listener]
+            [scene2d.utils.change-listener :as change-listener]
             [scene2d.event.get-stage :as get-stage]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [scene2d.ui.text-button :as text-button]

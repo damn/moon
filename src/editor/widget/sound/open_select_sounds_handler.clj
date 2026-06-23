@@ -11,7 +11,7 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [scene2d.change-listener :as change-listener]
+            [scene2d.utils.change-listener :as change-listener]
             [scene2d.stage.add-actor :refer [add-actor!]]))
 
 (defn open-select-sounds-handler [table ->sound-columns]

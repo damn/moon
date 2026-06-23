@@ -16,7 +16,7 @@
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
             [game.state :as state]
-            [scene2d.click-listener :as click-listener]
+            [scene2d.utils.click-listener :as click-listener]
             [scene2d.ui.image :as image]
             [scene2d.ui.stack :as stack]
             [gdx.math.vector2 :as vector2]))

@@ -4,7 +4,7 @@
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.group.clear-children :refer [clear-children!]]
-            [scene2d.layout.pack :refer [pack!]]
+            [scene2d.utils.layout.pack :refer [pack!]]
             [scene2d.actor.is-window :as window?]
             [scene2d.ui.table.add-rows :refer [add-rows!]]))
 

@@ -6,7 +6,7 @@
             [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
-            [scene2d.change-listener :as change-listener]
+            [scene2d.utils.change-listener :as change-listener]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [editor.horiz-sep :as horiz-sep]))
 

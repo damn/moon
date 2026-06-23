@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
   (:require [gdx.scenes.scene2d.ui.dev-menu.main-table :as main-table]
             [scene2d.actor.set-touchable :refer [set-touchable!]]
-            [scene2d.layout.set-fill-parent :refer [set-fill-parent!]]
+            [scene2d.utils.layout.set-fill-parent :refer [set-fill-parent!]]
             [scene2d.touchable :as touchable]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]))

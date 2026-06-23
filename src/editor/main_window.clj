@@ -4,7 +4,7 @@
             [scene2d.event.get-stage :as get-stage]
             [editor.window]
             [scene2d.ui.text-button :as text-button]
-            [scene2d.change-listener :as change-listener]
+            [scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [moon.db.property-types :refer [property-types]]

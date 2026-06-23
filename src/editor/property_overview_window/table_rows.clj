@@ -6,7 +6,7 @@
             [scene2d.touchable :as touchable]
             [scene2d.ui.stack :as stack]
             [scene2d.ui.text-tooltip :as text-tooltip]
-            [scene2d.change-listener :as change-listener]
+            [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.image-button :as image-button]
             [scene2d.ui.label :as label]
             [map.texture-region-drawable :as texture-region-drawable]))
