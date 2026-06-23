@@ -1,9 +1,9 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.add-upd-label
-  (:require [gdl.label :as label]
+  (:require [ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [group.add-actor :refer [add-actor!]]
             [gdl.add-cell :refer [add-cell!]]
-            [gdl.image :as image]
+            [ui.image :as image]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
 
 (defn add-upd-label!

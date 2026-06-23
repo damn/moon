@@ -1,4 +1,4 @@
-(ns gdl.text-tooltip
+(ns ui.text-tooltip
   (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
                                                TextTooltip)))
 

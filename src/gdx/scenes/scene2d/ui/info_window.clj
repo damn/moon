@@ -5,7 +5,7 @@
             [gdl.set-visible :refer [set-visible!]]
             [scene2d.actor :as actor]
             [group.add-actor :refer [add-actor!]]
-            [gdl.label :as label]
+            [ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdl.pack :refer [pack!]]))

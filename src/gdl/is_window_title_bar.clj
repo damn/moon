@@ -1,6 +1,6 @@
 (ns gdl.is-window-title-bar
   (:require [gdl.get-parent :refer [get-parent]]
-            [gdl.label :as label]
+            [ui.label :as label]
             [gdl.get-title-label :as get-title-label])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 

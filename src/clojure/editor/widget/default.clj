@@ -2,7 +2,7 @@
   (:require [string.truncate :refer [truncate]]
             [clojure.edn-str :refer [->edn-str]]
             [gdl.get-user-object :refer [get-user-object]]
-            [gdl.label :as label]))
+            [ui.label :as label]))
 
 (defn create
   [_ v {:keys [ctx/skin]}]

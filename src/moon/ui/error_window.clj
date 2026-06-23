@@ -1,5 +1,5 @@
 (ns moon.ui.error-window
-  (:require [gdl.label :as label]
+  (:require [ui.label :as label]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdl.set-modal :as set-modal]
             [gdl.add-close-button :as add-close-button]

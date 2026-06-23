@@ -1,5 +1,5 @@
 (ns clojure.editor.widget.boolean
-  (:require [gdl.check-box :as check-box]))
+  (:require [ui.check-box :as check-box]))
 
 (defn create
   [_ checked? {:keys [ctx/skin]}]

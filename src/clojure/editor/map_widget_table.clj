@@ -5,7 +5,7 @@
             [gdl.set-name :refer [set-name!]]
             [gdl.add-listener :refer [add-listener!]]
             [gdl.add-rows :refer [add-rows!]]
-            [gdl.text-button :as text-button]
+            [ui.text-button :as text-button]
             [gdl.change-listener :as change-listener]
             [gdl.stage.add-actor :refer [add-actor!]]
             [clojure.editor.horiz-sep :as horiz-sep]))

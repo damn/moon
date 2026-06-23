@@ -1,4 +1,4 @@
-(ns gdl.button-group
+(ns ui.button-group
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button
                                                ButtonGroup)))
 

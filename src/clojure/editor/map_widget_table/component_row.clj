@@ -5,9 +5,9 @@
             [gdl.get-stage :refer [get-stage]]
             [clojure.editor.map-widget-table.k-label-text :as k-label-text]
             [gdl.children :refer [children]]
-            [gdl.label :as label]
+            [ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdl.text-button :as text-button]
+            [ui.text-button :as text-button]
             [gdl.change-listener :as change-listener]))
 
 (defn create

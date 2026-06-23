@@ -5,7 +5,7 @@
             [gdl.remove :refer [remove!]]
             [gdl.add-listener :refer [add-listener!]]
             [gdl.add-rows :refer [add-rows!]]
-            [gdl.text-button :as text-button]
+            [ui.text-button :as text-button]
             [gdl.pack :refer [pack!]]
             [gdl.change-listener :as change-listener]
             [gdl.add-close-button :as add-close-button]

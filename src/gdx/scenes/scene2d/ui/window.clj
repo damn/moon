@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.window
   (:require [gdl.set-opts :refer [set-opts!]]
-            [gdl.window :as window]))
+            [ui.window :as window]))
 
 (defn create
   [opts]

@@ -1,6 +1,6 @@
 (ns moon.action-bar.remove-skill
   (:require [gdl.remove :refer [remove!]]
-            [gdl.button-group :as button-group]
+            [ui.button-group :as button-group]
             [moon.action-bar.get-data :as get-data]))
 
 (defn f [action-bar skill-id]

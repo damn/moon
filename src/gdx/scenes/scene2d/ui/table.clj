@@ -1,5 +1,5 @@
 (ns gdx.scenes.scene2d.ui.table
-  (:require [gdl.table :as table]
+  (:require [ui.table :as table]
             [gdl.set-opts :refer [set-opts!]]))
 
 (defn create [opts]

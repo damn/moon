@@ -1,7 +1,7 @@
 (ns clojure.editor.widget.image
-  (:require [gdl.scroll-pane :as scroll-pane]
-            [gdl.image-button :as image-button]
-            [gdl.text-button :as text-button]
+  (:require [ui.scroll-pane :as scroll-pane]
+            [ui.image-button :as image-button]
+            [ui.text-button :as text-button]
             [clojure.map.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
 

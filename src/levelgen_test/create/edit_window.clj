@@ -2,7 +2,7 @@
   (:require [gdl.get-stage :refer [get-stage]]
             [gdl.add-listener :refer [add-listener!]]
             [gdl.get-stage :as event]
-            [gdl.text-button :as text-button]
+            [ui.text-button :as text-button]
             [gdl.change-listener :as change-listener]
             [gdl.stage.set-ctx :refer [set-ctx!]]
             [levelgen-test.generate-level :as generate-level]))

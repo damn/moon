@@ -1,5 +1,5 @@
 (ns gdl.add-cell
-  (:require [gdl.cell :refer [set-opts!]])
+  (:require [ui.cell :refer [set-opts!]])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
 

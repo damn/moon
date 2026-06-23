@@ -3,7 +3,7 @@
             [gdl.remove :refer [remove!]]
             [gdl.change-listener :as change-listener]
             [gdl.add-cell :refer [add-cell!]]
-            [gdl.text-button :as text-button]
+            [ui.text-button :as text-button]
             [gdl.get-title-table :as get-title-table]))
 
 (defn f! [window skin]
