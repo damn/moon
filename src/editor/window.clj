@@ -5,7 +5,7 @@
             [scene2d.event.get-stage :as get-stage]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.change-listener :as change-listener]
-            [group.add-actors :refer [add-actors!]]
+            [scene2d.group.add-actors :refer [add-actors!]]
             [input.key-just-pressed :as key-just-pressed?]
             [ui.table.scroll-pane-cell :as scroll-pane-cell]
             [ui.text-button :as text-button]

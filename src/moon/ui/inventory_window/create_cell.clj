@@ -11,7 +11,7 @@
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.actor.set-user-object :refer [set-user-object!]]
-            [group.add-actors :refer [add-actors!]]
+            [scene2d.group.add-actors :refer [add-actors!]]
             [ui.widget :as widget]
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]

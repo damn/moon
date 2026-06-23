@@ -2,7 +2,7 @@
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.actor.set-touchable :refer [set-touchable!]]
             [scene2d.event.get-stage :as get-stage]
-            [group.add-actors :refer [add-actors!]]
+            [scene2d.group.add-actors :refer [add-actors!]]
             [scene2d.touchable :as touchable]
             [ui.stack :as stack]
             [ui.text-tooltip :as text-tooltip]
