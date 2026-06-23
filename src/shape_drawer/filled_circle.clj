@@ -1,4 +1,4 @@
-(ns gdl.filled-circle
+(ns shape-drawer.filled-circle
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn filled-circle! [^ShapeDrawer this x y radius]

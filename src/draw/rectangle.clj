@@ -1,6 +1,6 @@
 (ns draw.rectangle
-  (:require [gdl.rectangle :refer [rectangle!]]
-            [gdl.set-color :refer [set-color!]]))
+  (:require [shape-drawer.rectangle :refer [rectangle!]]
+            [shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} x y w h color-float-bits]

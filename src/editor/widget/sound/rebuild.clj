@@ -2,7 +2,7 @@
   (:require [gdl.get-user-object :refer [get-user-object]]
             [gdl.remove :refer [remove!]]
             [gdl.set-user-object :refer [set-user-object!]]
-            [gdl.find-ancestor :refer [find-ancestor]]
+            [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.group.clear-children :refer [clear-children!]]
             [gdl.pack :refer [pack!]]
             [gdl.is-window :as window?]

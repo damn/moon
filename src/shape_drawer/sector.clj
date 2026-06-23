@@ -1,4 +1,4 @@
-(ns gdl.sector
+(ns shape-drawer.sector
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn sector! [^ShapeDrawer this center-x center-y radius start-radians radians]

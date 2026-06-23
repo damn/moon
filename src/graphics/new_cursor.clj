@@ -1,4 +1,4 @@
-(ns gdl.new-cursor
+(ns graphics.new-cursor
   (:import (com.badlogic.gdx Graphics)))
 
 (defn f [^Graphics graphics pixmap hotspot-x hotspot-y]

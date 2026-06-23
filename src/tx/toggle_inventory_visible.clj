@@ -1,5 +1,5 @@
 (ns tx.toggle-inventory-visible
-  (:require [gdl.find-actor :refer [find-actor]]
+  (:require [scene2d.group.find-actor :refer [find-actor]]
             [gdl.toggle-visible :refer [toggle-visible!]]))
 
 (defn f

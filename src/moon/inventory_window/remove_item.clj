@@ -1,6 +1,6 @@
 (ns moon.inventory-window.remove-item
   (:require [gdl.get-user-object :refer [get-user-object]]
-            [gdl.find-actor :refer [find-actor]]
+            [scene2d.group.find-actor :refer [find-actor]]
             [ui.image :as image]
             [moon.inventory-window.get-cell :as get-cell]))
 

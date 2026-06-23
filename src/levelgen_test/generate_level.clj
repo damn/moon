@@ -4,7 +4,7 @@
             [gdl.get-layer :refer [get-layer]]
             [gdl.get-layers :refer [get-layers]]
             [tiled-map-tile-layer.set-visible :refer [set-visible!]]
-            [gdl.dispose :as disposable]
+            [utils.dispose :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
             [moon.db.all-raw :refer [all-raw]]))

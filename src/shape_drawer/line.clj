@@ -1,4 +1,4 @@
-(ns gdl.line
+(ns shape-drawer.line
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn line! [^ShapeDrawer this sx sy ex ey]

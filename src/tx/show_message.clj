@@ -1,6 +1,6 @@
 (ns tx.show-message
   (:require [gdl.set-user-object :refer [set-user-object!]]
-            [gdl.find-actor :refer [find-actor]]))
+            [scene2d.group.find-actor :refer [find-actor]]))
 
 (defn f
   [{:keys [ctx/stage] :as ctx} message]

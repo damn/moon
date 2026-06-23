@@ -1,5 +1,5 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
-  (:require [gdl.find-ancestor :refer [find-ancestor]]
+  (:require [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [gdl.set-user-object :refer [set-user-object!]]
             [gdl.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]

@@ -7,7 +7,7 @@
             [gdl.set-use-integer-positions :as set-use-integer-positions]
             [gdl.font-generator :as font-generator]
             [gdl.generate-font :as generate-font]
-            [gdl.dispose :refer [dispose!]]
+            [utils.dispose :refer [dispose!]]
             [gdl.font-generator-parameter :as parameter]))
 
 (defn step

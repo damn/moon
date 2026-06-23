@@ -1,6 +1,6 @@
 (ns draw.sector
-  (:require [gdl.sector :refer [sector!]]
-            [gdl.set-color :refer [set-color!]]))
+  (:require [shape-drawer.sector :refer [sector!]]
+            [shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]

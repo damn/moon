@@ -1,7 +1,7 @@
 (ns moon.inventory-window.set-item
   (:require [gdl.get-user-object :refer [get-user-object]]
             [scene2d.actor.add-listener :refer [add-listener!]]
-            [gdl.find-actor :refer [find-actor]]
+            [scene2d.group.find-actor :refer [find-actor]]
             [ui.text-tooltip :as text-tooltip]
             [ui.image :as image]
             [map.texture-region-drawable :as texture-region-drawable]

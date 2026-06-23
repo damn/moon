@@ -1,4 +1,4 @@
-(ns gdl.find-ancestor
+(ns scene2d.actor.find-ancestor
   (:require [gdl.get-parent :refer [get-parent]]))
 
 (defn find-ancestor [actor pred]

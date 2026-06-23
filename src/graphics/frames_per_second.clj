@@ -1,4 +1,4 @@
-(ns gdl.frames-per-second
+(ns graphics.frames-per-second
   (:import (com.badlogic.gdx Graphics)))
 
 (defn f [^Graphics graphics]

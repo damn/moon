@@ -3,7 +3,7 @@
             [game.ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.skill.usable-state :as usable-state]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
-            [gdl.find-actor :refer [find-actor]]
+            [scene2d.group.find-actor :refer [find-actor]]
             [moon.action-bar.selected-skill :as selected-skill]
             [moon.body :as body]))
 

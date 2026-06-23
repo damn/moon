@@ -1,6 +1,5 @@
-(ns gdl.delta-time
+(ns graphics.get-gl20
   (:import (com.badlogic.gdx Graphics)))
 
 (defn f [^Graphics graphics]
-  (.getDeltaTime graphics))
-
+  (.getGL20 graphics))

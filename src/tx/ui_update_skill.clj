@@ -1,5 +1,5 @@
 (ns tx.ui-update-skill
-  (:require [gdl.find-actor :refer [find-actor]]
+  (:require [scene2d.group.find-actor :refer [find-actor]]
             [moon.action-bar.add-skill :as add-skill]
             [moon.textures :as textures]
             [info.entity :refer [info-text]]))

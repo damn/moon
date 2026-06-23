@@ -1,4 +1,4 @@
-(ns gdl.set-cursor
+(ns graphics.set-cursor
   (:import (com.badlogic.gdx Graphics)))
 
 (defn f [^Graphics graphics cursor]

@@ -1,5 +1,5 @@
 (ns render.set-cursor
-  (:require [gdl.set-cursor :as set-cursor!]))
+  (:require [graphics.set-cursor :as set-cursor!]))
 
 (defn step
   [{:keys [ctx/graphics

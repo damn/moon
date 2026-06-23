@@ -2,7 +2,7 @@
   (:require [gdl.key-just-pressed :as key-just-pressed?]
             [gdl.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [gdl.find-actor :refer [find-actor]]
+            [scene2d.group.find-actor :refer [find-actor]]
             [gdl.set-visible :refer [set-visible!]]
             [gdl.toggle-visible :refer [toggle-visible!]]
             [scene2d.group.children :refer [children]]))

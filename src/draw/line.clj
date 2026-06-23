@@ -1,6 +1,6 @@
 (ns draw.line
-  (:require [gdl.line :refer [line!]]
-            [gdl.set-color :refer [set-color!]]))
+  (:require [shape-drawer.line :refer [line!]]
+            [shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]

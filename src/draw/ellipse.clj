@@ -1,6 +1,6 @@
 (ns draw.ellipse
-  (:require [gdl.ellipse :refer [ellipse!]]
-            [gdl.set-color :refer [set-color!]]))
+  (:require [shape-drawer.ellipse :refer [ellipse!]]
+            [shape-drawer.set-color :refer [set-color!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
