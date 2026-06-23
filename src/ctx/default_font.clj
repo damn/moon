@@ -1,6 +1,6 @@
 (ns ctx.default-font
   (:require [files.internal :as internal]
-            [gdx.texture-filter :as texture.filter]
+            [gdx.graphics.texture.filter :as texture.filter]
             [bitmap-font.get-data :refer [get-data]]
             [bitmap-font-data.enable-markup :refer [enable-markup!]]
             [bitmap-font-data.set-scale :as set-scale]

@@ -1,5 +1,5 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [gdx.vector2.clojurize :as clojurize]
+  (:require [gdx.math.vector2.clojurize :as clojurize]
             [scene2d.actor.hit :refer [hit]]
             [scene2d.actor.stage-local-coordinates :refer [stage->local-coordinates]]
             [scene2d.actor.get-x :refer [get-x]]
@@ -19,7 +19,7 @@
             [scene2d.click-listener :as click-listener]
             [ui.image :as image]
             [ui.stack :as stack]
-            [gdx.vector2 :as vector2]))
+            [gdx.math.vector2 :as vector2]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]

@@ -1,4 +1,4 @@
-(ns gdx.orthographic-camera
+(ns gdx.graphics.orthographic-camera
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn create

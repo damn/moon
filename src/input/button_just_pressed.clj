@@ -1,5 +1,5 @@
 (ns input.button-just-pressed
-  (:require [gdx.input-buttons :as input.buttons])
+  (:require [gdx.input.buttons :as input.buttons])
   (:import (com.badlogic.gdx Input)))
 
 (defn f [^Input input k]

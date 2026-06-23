@@ -3,7 +3,7 @@
             [color.float-bits :refer [float-bits]]
             [input.set-processor :as set-processor!]
             [viewport.fit-viewport :as fit-viewport]
-            [gdx.orthographic-camera :as camera]
+            [gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
             [scene2d.stage.add-actor :refer [add-actor!]]

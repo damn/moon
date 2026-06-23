@@ -1,7 +1,7 @@
 (ns ctx.textures
   (:require [clojure.string :as str]
             [files.internal :as internal]
-            [gdx.file-handle :as file]
+            [gdx.files.file-handle :as file]
             [file-handle.texture :as texture]))
 
 (def folder "resources/")

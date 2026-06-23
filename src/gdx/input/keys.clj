@@ -1,4 +1,4 @@
-(ns gdx.input-keys
+(ns gdx.input.keys
   (:import (com.badlogic.gdx Input$Keys)))
 
 (defn k->value [k]

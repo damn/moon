@@ -1,4 +1,4 @@
-(ns gdx.vector2.clojurize
+(ns gdx.math.vector2.clojurize
   (:import (com.badlogic.gdx.math Vector2)))
 
 (defn f [^Vector2 v2]
