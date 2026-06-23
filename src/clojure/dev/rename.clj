@@ -53,6 +53,32 @@
            to-ns))
 
 (comment
+
+
+     (doseq [ns-string [
+                        "button-group"
+                        "cell"
+                        "check-box"
+                        "horizontal-group"
+                        "image"
+                        "image-button"
+                        "label"
+                        "scroll-pane"
+                        "select-box"
+                        "skin"
+                        "stack"
+                        "table"
+                        "text-button"
+                        "text-field"
+                        "text-tooltip"
+                        "tooltip-manager"
+                        "widget"
+                        "window"]]
+       (rename! (str "gdl." ns-string)
+                (str "ui." ns-string))
+       )
+
+
  (let [suffix "actor"
        prefix-a "clojure."
        prefix-b "gdl."]

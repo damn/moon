@@ -2,7 +2,7 @@
   (:require [ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [group.add-actor :refer [add-actor!]]
-            [gdl.add-cell :refer [add-cell!]]
+            [ui.table.add-cell :refer [add-cell!]]
             [ui.image :as image]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]]))
 

@@ -5,7 +5,7 @@
             [gdl.remove :refer [remove!]]
             [gdl.add-listener :refer [add-listener!]]
             [gdl.clear-children :refer [clear-children!]]
-            [gdl.add-rows :refer [add-rows!]]
+            [ui.table.add-rows :refer [add-rows!]]
             [ui.text-button :as text-button]
             [ui.text-tooltip :as text-tooltip]
             [gdl.pack :refer [pack!]]
