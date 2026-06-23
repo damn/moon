@@ -4,7 +4,7 @@
             [gdl.get-stage :refer [get-stage]]
             [gdl.stage.add-actor :refer [add-actor!]]
             [ui.text-button :as text-button]
-            [gdl.add-close-button :as add-close-button]
+            [ui.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]))

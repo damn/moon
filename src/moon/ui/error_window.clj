@@ -2,7 +2,7 @@
   (:require [ui.label :as label]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdl.set-modal :as set-modal]
-            [gdl.add-close-button :as add-close-button]
+            [ui.window.add-close-button :as add-close-button]
             [clojure.repl :as repl]))
 
 (defmacro ^:private with-err-str [& body]

@@ -1,5 +1,5 @@
-(ns gdl.add-creatures-layer
-  (:require [gdl.add-layer :as add-layer]
+(ns tiled-map.add-creatures-layer
+  (:require [tiled-map.add-layer :as add-layer]
             [gdl.create-static-tiled-map-tile :as create-tile]))
 
 ; out of memory error -> each texture region is a new object

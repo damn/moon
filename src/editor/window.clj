@@ -9,7 +9,7 @@
             [gdl.key-just-pressed :as key-just-pressed?]
             [gdl.scroll-pane-cell :as scroll-pane-cell]
             [ui.text-button :as text-button]
-            [gdl.add-close-button :as add-close-button]
+            [ui.window.add-close-button :as add-close-button]
             [gdl.set-modal :as set-modal]
             [editor.window.with-window-close :as with-window-close]
             [gdx.scenes.scene2d.ui.table :as table]

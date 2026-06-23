@@ -8,7 +8,7 @@
             [ui.text-button :as text-button]
             [gdl.pack :refer [pack!]]
             [gdl.change-listener :as change-listener]
-            [gdl.add-close-button :as add-close-button]
+            [ui.window.add-close-button :as add-close-button]
             [gdl.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas.default-value :refer [default-value]]

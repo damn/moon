@@ -1,4 +1,4 @@
-(ns gdl.add-close-button
+(ns ui.window.add-close-button
   (:require [gdl.add-listener :refer [add-listener!]]
             [gdl.remove :refer [remove!]]
             [gdl.change-listener :as change-listener]

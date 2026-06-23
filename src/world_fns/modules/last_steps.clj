@@ -7,7 +7,7 @@
             [grid2d.printgrid :as printgrid]
             [grid2d.flood-fill :as flood-fill]
             [gdl.movement-property :as movement-property]
-            [gdl.add-creatures-layer :as add-creatures-layer]
+            [tiled-map.add-creatures-layer :as add-creatures-layer]
             [world-fns.modules.area-level-grid :as area-level-grid]))
 
 (defn step

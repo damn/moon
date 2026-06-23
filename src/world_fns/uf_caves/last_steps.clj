@@ -10,7 +10,7 @@
             [grid2d.printgrid :as printgrid]
             [grid2d.scalegrid :as scalegrid]
             [gdl.tiled-map :as tiled-map]
-            [gdl.add-creatures-layer :as add-creatures-layer]))
+            [tiled-map.add-creatures-layer :as add-creatures-layer]))
 
 (defn- scale-grid [grid start scale]
   (let [grid (scalegrid/f grid scale)]

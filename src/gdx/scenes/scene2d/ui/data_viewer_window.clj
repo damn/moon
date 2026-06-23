@@ -4,7 +4,7 @@
             [gdl.add-listener :refer [add-listener!]]
             [ui.label :as label]
             [ui.scroll-pane :as scroll-pane]
-            [gdl.add-close-button :as add-close-button]
+            [ui.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
