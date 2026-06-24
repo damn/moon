@@ -1,5 +1,5 @@
 (ns entity.tick.npc-idle.create-effect-ctx
-  (:require [moon.body :as body]
+  (:require [moon.body.direction :as direction]
             [moon.grid.nearest-enemy :refer [nearest-enemy]]
             [moon.raycaster.line-of-sight :as line-of-sight?]))
 
@@ -15,5 +15,5 @@
     {:effect/source eid
      :effect/target target
      :effect/target-direction (when target
-                                (body/direction (:entity/body entity)
-                                                (:entity/body @target)))}))
+                                (direction/f (:entity/body entity)
+                                             (:entity/body @target)))}))

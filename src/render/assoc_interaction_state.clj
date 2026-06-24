@@ -5,7 +5,7 @@
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
             [scene2d.group.find-actor :refer [find-actor]]
             [moon.action-bar.selected-skill :as selected-skill]
-            [moon.body :as body]))
+            [moon.body.distance :as distance]))
 
 (defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid
@@ -32,8 +32,8 @@
           (:entity/clickable @mouseover-eid))
      [:interaction-state/clickable-mouseover-eid
       {:clicked-eid mouseover-eid
-       :in-click-range? (< (body/distance (:entity/body @player-eid)
-                                          (:entity/body @mouseover-eid))
+       :in-click-range? (< (distance/f (:entity/body @player-eid)
+                                       (:entity/body @mouseover-eid))
                            (:entity/click-distance-tiles @player-eid))}]
 
      :else

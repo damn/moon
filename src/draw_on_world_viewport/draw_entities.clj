@@ -3,7 +3,6 @@
             [game.constants :refer [show-body-bounds?]]
             [ctx.draw :refer [draw!]]
             [ctx.draw-component :refer [draw-component]]
-            [moon.body :as body]
             [moon.body.draw-rectangle :as draw-rectangle]
             [moon.raycaster.line-of-sight :as line-of-sight?]
             [moon.throwable :as throwable]))
