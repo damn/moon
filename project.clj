@@ -33,11 +33,6 @@
             "dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'moon.start/-main))"]
             "levelgen" ["run" "-m" "dev.loop" "((requiring-resolve 'levelgen-test.start/-main))"]
             "editor"   ["run" "-m" "dev.loop" "((requiring-resolve 'editor.start/-main))"]
-
-            "nsgraph"  ["run" "-m" "dev.loop" "((requiring-resolve 'ns-graph.core/-main))"]
-            "app-test" ["run" "-m" "dev.loop" "((requiring-resolve 'moon.backends.lwjgl-test/-main))"]
-            "ns"       ["hiera" ":layout" ":horizontal"]
-
             }
   :plugins [[lein-hiera "2.0.0"]
             [lein-codox "0.10.8"]]
