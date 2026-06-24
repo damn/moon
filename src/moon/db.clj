@@ -19,6 +19,9 @@
      :db/file properties-file
      :db/schemas schemas}))
 
+(defmethod create-value :default [_ v _db]
+  v)
+
 (defmethod create-value :s/map [_ v db]
   (build-values (:db/schemas db) v db))
 
