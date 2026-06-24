@@ -3,7 +3,8 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [texture-region.get-region-height :refer [get-region-height]]
             [texture-region.get-region-width :refer [get-region-width]]
-            [scene2d.utils.texture-region-drawable :as drawable]
+            [scene2d.utils.drawable.set-min-size :as set-min-size!]
+            [scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
 
 (defn create
@@ -14,6 +15,6 @@
                        :let [texture-region (textures/texture-region textures image)
                              scale 2]]
                    {:actor (image-button/create
-                            (doto (drawable/create texture-region)
-                              (drawable/set-min-size! (* scale (get-region-width texture-region))
-                                                      (* scale (get-region-height texture-region)))))})]}))
+                            (doto (texture-region-drawable/f texture-region)
+                              (set-min-size!/f (* scale (get-region-width texture-region))
+                                               (* scale (get-region-height texture-region)))))})]}))
