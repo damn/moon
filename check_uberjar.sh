@@ -1,3 +1,3 @@
 lein uberjar
 cd target/uberjar
-java -jar cdq.jar
+java -jar moon.jar
