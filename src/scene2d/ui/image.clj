@@ -6,14 +6,11 @@
 
 (defmulti create class)
 
-(defmethod create Texture [texture] ; new TextureRegionDrawable(new TextureRegion(texture))
+(defmethod create Texture [texture]
   (Image. ^Texture texture))
 
-(defmethod create TextureRegion [texture-region] ; new TextureRegionDrawable(region), Scaling.stretch, Align.center
+(defmethod create TextureRegion [texture-region]
   (Image. ^TextureRegion texture-region))
 
-(defmethod create TextureRegionDrawable [drawable] ; this(drawable, Scaling.stretch, Align.center)
+(defmethod create TextureRegionDrawable [drawable]
   (Image. ^TextureRegionDrawable drawable))
-
-(defn set-drawable! [^Image image drawable]
-  (.setDrawable image drawable))
