@@ -1,6 +1,6 @@
 (ns moon.body.overlaps
   (:require [moon.body.rectangle :refer [->rectangle]]
-            [math.rectangle.overlaps :as rectangle]))
+            [gdx.math.rectangle.overlaps :as rectangle]))
 
 (defn overlaps? [body other-body]
   (rectangle/overlaps? (->rectangle body)

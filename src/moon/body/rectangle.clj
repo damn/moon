@@ -1,5 +1,5 @@
 (ns moon.body.rectangle
-  (:require [math.rectangle :as rectangle]))
+  (:require [gdx.math.rectangle :as rectangle]))
 
 (defn ->rectangle
   [{:keys [body/position

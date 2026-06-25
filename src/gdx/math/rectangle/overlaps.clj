@@ -1,4 +1,4 @@
-(ns math.rectangle.overlaps
+(ns gdx.math.rectangle.overlaps
   (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn overlaps? [a b]
