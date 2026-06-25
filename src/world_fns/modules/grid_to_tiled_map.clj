@@ -7,7 +7,7 @@
             [tiled-map-tile-layer-cell.get-tile :as get-tile]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [tiled-map-tile-layer.get-name :refer [get-name]]
-            [tiled.static-tiled-map-tile :as static-tiled-map-tile]
+            [tiled.static-tiled-map-tile.copy :as copy]
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
             [grid2d.height :refer [->height]]))
@@ -17,7 +17,7 @@
   (let [copy-tile (memoize
                    (fn [tile]
                      (assert tile)
-                     (static-tiled-map-tile/copy tile)))]
+                     (copy/f tile)))]
     {:properties (merge (clojurize/f (tiled-map-get-properties/f schema-tiled-map))
                         {"width" (->width grid)
                          "height" (->height grid)})

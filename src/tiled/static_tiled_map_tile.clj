@@ -4,6 +4,3 @@
 
 (defn create [texture-region]
   (StaticTiledMapTile. ^TextureRegion texture-region))
-
-(defn copy [^StaticTiledMapTile tile]
-  (StaticTiledMapTile. tile))
