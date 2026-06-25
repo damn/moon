@@ -5,7 +5,8 @@
             [moon.db.all-raw :refer [all-raw]]
             [scene2d.ui.window.add-close-button :as add-close-button]
             [scene2d.ui.window.set-modal :as set-modal]
-            [moon.property :as property]
+            [moon.property.tooltip :as tooltip]
+            [moon.property.image :as image]
             [moon.textures :as textures]))
 
 (defn create
@@ -24,10 +25,10 @@
                         (->> (all-raw db property-type)
                              (sort-by sort-by-fn)
                              (map (fn [property]
-                                    {:texture-region (textures/texture-region textures (property/image property))
+                                    {:texture-region (textures/texture-region textures (image/f property))
                                      :on-clicked (fn [actor ctx]
                                                    (clicked-id-fn actor (:property/id property) ctx))
-                                     :tooltip (property/tooltip property)
+                                     :tooltip (tooltip/f property)
                                      :extra-info-text (extra-info-text property)}))
                              (partition-all columns)
                              (overview-table-rows* skin image-scale)))})

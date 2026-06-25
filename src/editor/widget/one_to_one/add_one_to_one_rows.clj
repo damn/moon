@@ -14,7 +14,8 @@
             [scene2d.ui.image :as image]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [moon.db.get-raw :refer [get-raw]]
-            [moon.property :as property]
+            [moon.property.tooltip :as tooltip]
+            [moon.property.image :as property-image]
             [moon.textures :as textures]))
 
 (defn add-one-to-one-rows
@@ -52,8 +53,8 @@
                                                            (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
-           {:actor (doto (image/create (textures/texture-region textures (property/image property)))
-                     (add-listener! (text-tooltip/create (property/tooltip property) skin))
+           {:actor (doto (image/create (textures/texture-region textures (property-image/f property)))
+                     (add-listener! (text-tooltip/create (tooltip/f property) skin))
                      (set-user-object! property-id))}))]
       [(when property-id
          {:actor (doto (text-button/create
