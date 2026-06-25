@@ -7,6 +7,3 @@
   (doto (SelectBox. ^Skin skin)
     (.setItems ^"[Ljava.lang.Object;" (into-array items))
     (.setSelected selected)))
-
-(defn selected [^SelectBox select-box]
-  (.getSelected select-box))
