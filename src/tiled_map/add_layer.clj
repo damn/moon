@@ -1,26 +1,8 @@
 (ns tiled-map.add-layer
   (:require [map-layers.add :as add!]
-            [map-properties.get :as get]
             [tiled-map.get-layers :refer [get-layers]]
-            [tiled-map.get-properties :as get-properties]
-            [tiled.tiled-map-tile-layer :as tiled-map-tile-layer]))
-
-(defn- create-layer*
-  [tiled-map {:keys [name
-                     visible?
-                     properties
-                     tiles]}]
-  (let [props (get-properties/f tiled-map)]
-    (tiled-map-tile-layer/f
-     {:width      (get/f props "width")
-      :height     (get/f props "height")
-      :tilewidth  (get/f props "tilewidth")
-      :tileheight (get/f props "tileheight")
-      :name name
-      :visible? visible?
-      :map-properties properties
-      :tiles tiles})))
+            [tiled-map.create-layer :as create-layer]))
 
 (defn f [tiled-map layer]
   (add!/f (get-layers tiled-map)
-          (create-layer* tiled-map layer)))
+          (create-layer/f tiled-map layer)))
