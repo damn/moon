@@ -6,6 +6,15 @@
 
 [
  (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
+ (clojure.add-methods/f! moon.schemas.create-value/create-value
+                         {
+                          :default       moon.schemas.create-value.default/f
+
+                          :s/map         moon.schemas.create-value.map/f
+                          :s/one-to-many moon.schemas.create-value.one-to-many/f
+                          :s/one-to-one  moon.schemas.create-value.one-to-one/f
+                          }
+                         )
  (clojure.add-methods/f! game.state/create
                          {
                           :active-skill          entity.state.create.active-skill/f
