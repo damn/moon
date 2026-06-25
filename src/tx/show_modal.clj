@@ -36,19 +36,3 @@
                                 (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
                                align/center)))
   nil)
-
-; no window movable type cursor appears here like in player idle
-; inventory still working, other stuff not, because custom listener to keypresses ? use actor listeners?
-; => input events handling
-; hmmm interesting ... can disable @ item in cursor  / moving / etc.
-
-(comment
- (.postRunnable clojure.Gdx/app
-                (fn []
-                  (:tx/show-modal @dev.application/state
-                                  {:title "TestTitle"
-                                   :text "TextTEXT"
-                                   :button-text "testbuttonTEXT"
-                                   :on-click (fn [])})))
-
- )
