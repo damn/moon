@@ -2,7 +2,7 @@
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.actor.set-user-object :refer [set-user-object!]]
             [scene2d.group.add-actor :refer [add-actor!]]
-            [scene2d.ui.button-group :as button-group]
+            [scene2d.ui.button-group.add :as add]
             [scene2d.ui.image-button :as image-button]
             [scene2d.ui.text-tooltip :as text-tooltip]
             [scene2d.utils.drawable.set-min-size :as set-min-size!]
@@ -26,5 +26,5 @@
                  (add-listener! (text-tooltip/create tooltip-text skin))
                  (set-user-object! skill-id))]
     (add-actor! horizontal-group button)
-    (button-group/add! button-group button)
+    (add/f! button-group button)
     nil))
