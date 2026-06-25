@@ -4,6 +4,3 @@
 
 (defn create [text skin]
   (TextField. ^String text ^Skin skin))
-
-(defn text [^TextField text-field]
-  (.getText text-field))

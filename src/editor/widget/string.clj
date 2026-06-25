@@ -1,6 +1,7 @@
 (ns editor.widget.string
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.ui.text-field :as text-field]
+            [scene2d.ui.text-field.get-text :as get-text]
             [scene2d.ui.text-tooltip :as text-tooltip]))
 
 (defn create
@@ -10,4 +11,4 @@
 
 (defn value
   [_ widget _schemas]
-  (text-field/text widget))
+  (get-text/f widget))

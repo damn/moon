@@ -3,6 +3,7 @@
             [clojure.edn :as edn]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.ui.text-field :as text-field]
+            [scene2d.ui.text-field.get-text :as get-text]
             [scene2d.ui.text-tooltip :as text-tooltip]))
 
 (defn create
@@ -12,4 +13,4 @@
 
 (defn value
   [_  widget _schemas]
-  (edn/read-string (text-field/text widget)))
+  (edn/read-string (get-text/f widget)))
