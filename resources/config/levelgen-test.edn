@@ -7,7 +7,9 @@
                :create-pipeline [
                                  (ctx.gdx-context/f)
                                  (map.assoc-create/f :ctx/db ctx.db/step)
-                                 (map.assoc-create/f :ctx/textures ctx.textures/step)
+                                 (map.create/f :ctx/textures (ctx.textures/step
+                                                              {:folder "resources/"
+                                                               :extensions #{"png" "bmp"}}))
                                  (map.assoc-create/f :ctx/sprite-batch ctx.batch/step)
                                  (map.assoc-create/f :ctx/skin ctx.skin/step)
                                  (levelgen-test.create/f!)

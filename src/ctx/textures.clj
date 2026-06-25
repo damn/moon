@@ -4,11 +4,9 @@
             [gdx.files.file-handle :as file]
             [file-handle.texture :as texture]))
 
-(def folder "resources/")
-(def extensions #{"png" "bmp"})
-
 (defn step
-  [{:keys [ctx/files]}]
+  [{:keys [ctx/files]}
+   {:keys [folder extensions]}]
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
                            (loop [[file & remaining] (file/list (internal/f files folder))

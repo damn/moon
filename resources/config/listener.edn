@@ -14,7 +14,9 @@
                    (pipeline.do/step
                     (ctx.put-colors/step))
                    (map.assoc-create/f :ctx/cursors ctx.cursors/step)
-                   (map.assoc-create/f :ctx/textures ctx.textures/step)
+                   (map.create/f :ctx/textures (ctx.textures/step
+                                                {:folder "resources/"
+                                                 :extensions #{"png" "bmp"}}))
                    (map.assoc-create/f :ctx/world-viewport ctx.world-viewport/step)
                    (map.assoc-create/f :ctx/default-font ctx.default-font/step)
                    (ctx.record/step)
