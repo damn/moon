@@ -6,6 +6,3 @@
   [{:keys [skin checked?]}]
   (doto (CheckBox. "" ^Skin skin)
     (.setChecked checked?)))
-
-(defn checked? [^CheckBox this]
-  (.isChecked this))

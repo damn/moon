@@ -1,5 +1,6 @@
 (ns editor.widget.boolean
-  (:require [scene2d.ui.check-box :as check-box]))
+  (:require [scene2d.ui.check-box :as check-box]
+            [scene2d.ui.check-box.is-checked :as checked?]))
 
 (defn create
   [_ checked? {:keys [ctx/skin]}]
@@ -9,4 +10,4 @@
 
 (defn value
   [_ widget _schemas]
-  (check-box/checked? widget))
+  (checked?/f widget))
