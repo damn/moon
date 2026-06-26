@@ -3,9 +3,69 @@
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
-  (:require [map.assoc-ks :refer [assoc-ks]]
-            [grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
-            [moon.caves.helpers :as h]))
+  (:require [grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
+            [position.get-4-neighbours :refer [get-4-neighbours]]
+            [map.assoc-ks :refer [assoc-ks]]
+            [rand.sshuffle :refer [sshuffle]]
+            [rand.srand :refer [srand]]
+            [rand.srand-int :refer [srand-int]]))
+
+(defn- create-order [random]
+  (sshuffle (range 4) random))
+
+(defn- get-in-order [v order]
+  (map #(get v %) order))
+
+(def ^:private current-order (atom nil))
+
+(def ^:private turn-ratio 0.25)
+
+(defn- create-rand-4-neighbour-posis [posi n random] ; TODO does more than 1 thing
+  (when (< (srand random) turn-ratio)
+    (reset! current-order (create-order random)))
+  (take n
+        (get-in-order (get-4-neighbours posi)
+                      @current-order)))
+
+(defn- get-default-adj-num [open-paths random]
+  (if (= open-paths 1)
+    (case (int (srand-int 4 random))
+      0 1
+      1 1
+      2 1
+      3 2
+      1)
+    (case (int (srand-int 4 random))
+      0 0
+      1 1
+      2 1
+      3 2
+      1)))
+
+(defn- get-thin-adj-num [open-paths random]
+  (if (= open-paths 1)
+    1
+    (case (int (srand-int 7 random))
+      0 0
+      1 2
+      1)))
+
+(defn- get-wide-adj-num [open-paths random]
+  (if (= open-paths 1)
+    (case (int (srand-int 3 random))
+      0 1
+      2)
+    (case (int (srand-int 4 random))
+      0 1
+      1 2
+      2 3
+      3 4
+      1)))
+
+(def ^:private get-adj-num
+  {:wide    get-wide-adj-num
+   :thin    get-thin-adj-num    ; h�hle mit breite 1 �berall nur -> turn-ratio verringern besser
+   :default get-default-adj-num}) ; etwas breiter als 1 aber immernoch zu d�nn f�r m ein game -> turn-ratio verringern besser
 
 ; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5
 ; besser 150x150 anstatt 100x100 w h
@@ -13,7 +73,7 @@
 ; TODO max-tries wenn er nie �ber min-cells kommt? -> im let dazu definieren vlt max 30 sekunden -> in tries umgerechnet??
 (defn create [random min-cells max-cells adjnum-type]
   ; move up where its used only
-  (reset! h/current-order (h/create-order random))
+  (reset! current-order (create-order random))
   (let [start [0 0]
         start-grid (assoc {} start :ground) ; grid of posis to :ground or no entry for walls
         finished (fn [grid end cell-cnt]
@@ -33,9 +93,9 @@
         (finished grid
                   (last posi-seq)
                   cell-cnt)
-        (let [try-carve-posis (h/create-rand-4-neighbour-posis
+        (let [try-carve-posis (create-rand-4-neighbour-posis
                                (last posi-seq) ; TODO take random ! at corner ... hmm
-                               ((h/get-adj-num adjnum-type) (count posi-seq) random)
+                               ((get-adj-num adjnum-type) (count posi-seq) random)
                                random)
               carve-posis (filter #(nil? (get grid %)) try-carve-posis)
               new-pos-seq (concat (drop-last posi-seq) carve-posis)]
