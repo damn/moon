@@ -1,20 +1,18 @@
-(ns editor.widget.map
+(ns editor.create-widget.map
   (:require [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.set :as set]
-            [editor.map-widget-table.get-value :as get-value]
             [editor.build-widget :as build-widget]
             [moon.schemas.optional-keyset :refer [optional-keyset]]
             [moon.schemas.optional :refer [optional?]]))
 
-(defn create
+(defn f
   [schema
    m
    {:keys [ctx/db
            ctx/skin
            ctx/create-map-widget-table
            ctx/property-k-sort-order
-           ctx/create-component-row
-           ]
+           ctx/create-component-row]
     :as ctx}]
   (let [schemas (:db/schemas db)]
     (create-map-widget-table
@@ -28,7 +26,3 @@
       :ks-sorted (map first (sort-by-k-order property-k-sort-order m))
       :opt? (seq (set/difference (optional-keyset schemas schema)
                                  (set (keys m))))})))
-
-(defn value
-  [_ table schemas]
-  (get-value/f table schemas))

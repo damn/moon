@@ -1,4 +1,4 @@
-(ns editor.widget.animation
+(ns editor.create-widget.animation
   (:require [scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [texture-region.get-region-height :refer [get-region-height]]
@@ -7,7 +7,7 @@
             [scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.textures :as textures]))
 
-(defn create
+(defn f
   [_ animation {:keys [ctx/textures]}]
   (table/create
    {:table/cell-defaults {:pad 1}

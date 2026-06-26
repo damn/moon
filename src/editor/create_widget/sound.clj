@@ -1,4 +1,4 @@
-(ns editor.widget.sound
+(ns editor.create-widget.sound
   (:require [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.event.get-stage :as get-stage]
             [editor.widget.sound.columns :refer [sound-columns]]
@@ -8,7 +8,7 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]))
 
-(defn create
+(defn f
   [_  sound-name {:keys [ctx/skin]}]
   (let [table (table/create
                {:table/cell-defaults {:pad 5}})]

@@ -1,4 +1,4 @@
-(ns editor.widget.image
+(ns editor.create-widget.image
   (:require [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.image-button :as image-button]
             [scene2d.ui.text-button :as text-button]
@@ -17,7 +17,7 @@
       #_[(text-button/create file
                              (fn [_actor _ctx]))]))
 
-(defn create
+(defn f
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
   (image-button/create

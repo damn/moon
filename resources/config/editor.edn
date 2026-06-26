@@ -2,31 +2,31 @@
  (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
  (clojure.add-methods/f! editor.create-widget/f
                          {
-                          :default editor.create-widget.default/f
-                          :s/animation editor.widget.animation/create
-                          :s/boolean editor.widget.boolean/create
-                          :s/enum editor.widget.enum/create
-                          :s/image editor.widget.image/create
-                          :s/map editor.widget.map/create
-                          :s/number editor.widget.number/create
-                          :s/one-to-many editor.widget.one-to-many/create
-                          :s/one-to-one editor.widget.one-to-one/create
-                          :s/sound editor.widget.sound/create
-                          :s/string editor.widget.string/create
-                          :s/val-max editor.widget.val-max/create
+                          :default       editor.create-widget.default/f
+                          :s/animation   editor.create-widget.animation/f
+                          :s/boolean     editor.create-widget.boolean/f
+                          :s/enum        editor.create-widget.enum/f
+                          :s/image       editor.create-widget.image/f
+                          :s/map         editor.create-widget.map/f
+                          :s/number      editor.create-widget.number/f
+                          :s/one-to-many editor.create-widget.one-to-many/f
+                          :s/one-to-one  editor.create-widget.one-to-one/f
+                          :s/sound       editor.create-widget.sound/f
+                          :s/string      editor.create-widget.string/f
+                          :s/val-max     editor.create-widget.val-max/f
                           }
                          )
  (clojure.add-methods/f! editor.widget-value/f
                          {
-                          :default editor.widget-value.default/f
-                          :s/boolean editor.widget.boolean/value
-                          :s/enum editor.widget.enum/value
-                          :s/map editor.widget.map/value
-                          :s/number editor.widget.number/value
-                          :s/one-to-many editor.widget.one-to-many/value
-                          :s/one-to-one editor.widget.one-to-one/value
-                          :s/string editor.widget.string/value
-                          :s/val-max editor.widget.val-max/value
+                          :default       editor.widget-value.default/f
+                          :s/boolean     editor.widget-value.boolean/f
+                          :s/enum        editor.widget-value.enum/f
+                          :s/map         editor.widget-value.map/f
+                          :s/number      editor.widget-value.number/f
+                          :s/one-to-many editor.widget-value.one-to-many/f
+                          :s/one-to-one  editor.widget-value.one-to-one/f
+                          :s/string      editor.widget-value.string/f
+                          :s/val-max     editor.widget-value.val-max/f
                           }
                          )
  (moon.application.use-glfw-async/f!)
