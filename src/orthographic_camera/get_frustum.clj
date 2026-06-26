@@ -1,5 +1,5 @@
 (ns orthographic-camera.get-frustum
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]))
 
-(defn get-frustum [^OrthographicCamera camera]
-  (.frustum camera))
+(defn get-frustum [camera]
+  (camera/frustum camera))

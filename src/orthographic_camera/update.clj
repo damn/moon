@@ -1,5 +1,5 @@
 (ns orthographic-camera.update
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]))
 
-(defn update! [^OrthographicCamera camera]
-  (.update camera))
+(defn update! [camera]
+  (camera/update! camera))

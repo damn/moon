@@ -1,6 +1,6 @@
 (ns orthographic-camera.get-zoom
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]))
 
-(defn get-zoom [^OrthographicCamera camera]
-  (.zoom camera))
+(defn get-zoom [camera]
+  (camera/zoom camera))
 

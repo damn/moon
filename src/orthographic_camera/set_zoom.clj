@@ -1,7 +1,7 @@
 (ns orthographic-camera.set-zoom
-  (:require [orthographic-camera.update :refer [update!]])
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]
+            [orthographic-camera.update :refer [update!]]))
 
-(defn set-zoom! [^OrthographicCamera camera amount]
-  (set! (.zoom camera) amount)
+(defn set-zoom! [camera amount]
+  (camera/set-zoom! camera amount)
   (update! camera))
