@@ -1,5 +1,5 @@
 (ns file-handle.recursively-search
-  (:require [gdx.files.file-handle :as file]))
+  (:require [com.badlogic.gdx.files.file-handle :as file]))
 
 (defn f [file-handle extensions]
   (loop [[file & remaining] (file/list file-handle)
