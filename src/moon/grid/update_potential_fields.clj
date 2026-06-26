@@ -37,14 +37,11 @@
  (step/f :good *1)
  )
 
-(defn- tiles->entities [entities faction]
-  (let [entities (filter #(= (:entity/faction @%) faction)
-                         entities)]
-    (zipmap (map #(mapv int (:body/position (:entity/body @%))) entities)
-            entities)))
-
 (defn tick! [grid pf-cache faction entities max-iterations]
-  (let [tiles->entities (tiles->entities entities faction)
+  (let [tiles->entities (let [entities (filter #(= (:entity/faction @%) faction)
+                                               entities)]
+                          (zipmap (map #(mapv int (:body/position (:entity/body @%))) entities)
+                                  entities))
         last-state   [faction :tiles->entities]
         marked-cells [faction :marked-cells]]
     (when-not (= (get-in @pf-cache last-state) tiles->entities)
