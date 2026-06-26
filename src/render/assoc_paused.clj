@@ -2,20 +2,11 @@
   (:require [ctx.key-pressed :refer [key-pressed?]]
             [ctx.key-just-pressed :refer [key-just-pressed?]]))
 
-(def state->pause-game?
-  {
-   :active-skill false
-   :stunned false
-   :player-moving false
-   :player-idle true
-   :player-dead true
-   :player-item-on-cursor true
-   })
-
 (defn step
   [{:keys [ctx/pausing?
            ctx/controls
-           ctx/player-eid]
+           ctx/player-eid
+           ctx/state->pause-game?]
     :as ctx}]
   (assoc ctx :ctx/paused?
          (or #_error

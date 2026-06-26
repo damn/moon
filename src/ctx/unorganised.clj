@@ -24,6 +24,14 @@
          :ctx/k->handle-input (edn-resource "config/k->handle-input.edn")
          :ctx/k->cursor (edn-resource "config/k->cursor.edn")
          :ctx/k->clicked-inventory-cell (edn-resource "config/k->clicked-inventory-cell.edn")
+         :ctx/state->pause-game? {
+                                  :active-skill false
+                                  :stunned false
+                                  :player-moving false
+                                  :player-idle true
+                                  :player-dead true
+                                  :player-item-on-cursor true
+                                  }
          :ctx/draw-fns (edn-resource "config/draw-fns.edn")
          :ctx/world-unit-scale (float (/ 48))
          :ctx/unit-scale (atom 1)

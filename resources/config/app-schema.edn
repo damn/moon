@@ -1,4 +1,5 @@
 [:map {:closed true}
+ [:ctx/state->pause-game? :some]
  [:ctx/zoom-speed :some]
  [:ctx/pausing? :boolean]
  [:ctx/draw-fns :some]
