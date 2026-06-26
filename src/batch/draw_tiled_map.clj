@@ -1,19 +1,19 @@
 (ns batch.draw-tiled-map
-  (:require [tiled-map.get-layers :refer [get-layers]]
+  (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
+            [tiled-map.get-layers :refer [get-layers]]
             [batch.render-tile-layer :refer [render-tile-layer!]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
-           (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
            (com.badlogic.gdx.math Rectangle)))
 
 (defn draw-tiled-map!
-  [^Batch batch
+  [batch
    world-unit-scale
    ^OrthographicCamera camera
    tiled-map
    color-setter]
-  (.setProjectionMatrix batch (.combined camera))
-  (.begin batch)
+  (batch/set-projection-matrix! batch (.combined camera))
+  (batch/begin! batch)
   (let [width  (* (.viewportWidth  camera) (.zoom camera))
         height (* (.viewportHeight camera) (.zoom camera))
         w (+ (* width  (Math/abs (.y (.up camera))))
@@ -30,4 +30,4 @@
                           (float world-unit-scale)
                           viewBounds
                           color-setter)))
-  (.end batch))
+  (batch/end! batch))

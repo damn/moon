@@ -1,21 +1,20 @@
 (ns batch.render-tile-layer
-  (:require [batch.draw-tile :as draw-tile])
-  (:import (com.badlogic.gdx.graphics Color)
-           (com.badlogic.gdx.graphics.g2d Batch)
-           (com.badlogic.gdx.maps.tiled TiledMapTile
+  (:require [batch.draw-tile :as draw-tile]
+            [com.badlogic.gdx.graphics.g2d.batch :as batch])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTile
                                         TiledMapTileLayer
                                         TiledMapTileLayer$Cell)
            (com.badlogic.gdx.math Rectangle)))
 
 (defn render-tile-layer!
   [^TiledMapTileLayer layer
-   ^Batch batch
+   batch
    unit-scale
    ^Rectangle view-bounds
    color-setter]
   (let [num-vertices 20
         vertices (float-array num-vertices)
-        ^Color batch-color (.getColor batch)
+        batch-color (batch/color batch)
         layer-width (.getWidth layer)
         layer-height (.getHeight layer)
         layer-tile-width (* (.getTileWidth layer) unit-scale)
