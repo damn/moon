@@ -1,5 +1,6 @@
 (ns moon.grid.npc-pathing.find-next-cell
-  (:require [moon.cell :as cell]
+  (:require [moon.cell.nearest-entity :as nearest-entity]
+            [moon.cell.nearest-entity-distance :as nearest-entity-distance]
             [moon.faction :as faction]
             [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
             [moon.grid.npc-pathing.filter-viable-cells :as filter-viable-cells]
@@ -10,8 +11,8 @@
   "returns {:target-entity eid} or {:target-cell cell}. Cell can be nil."
   [grid eid own-cell]
   (let [faction (faction/enemy (:entity/faction @eid))
-        distance-to    #(cell/nearest-entity-distance @% faction)
-        nearest-entity #(cell/nearest-entity          @% faction)
+        distance-to    #(nearest-entity-distance/f @% faction)
+        nearest-entity #(nearest-entity/f          @% faction)
         own-dist (distance-to own-cell)
         adjacent-cells (cached-adjacent-cells grid own-cell)]
     (if (and own-dist (zero? (float own-dist)))

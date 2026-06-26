@@ -1,14 +1,4 @@
-(ns moon.cell
-  (:require [moon.cell.is-blocked :as blocked?]))
-
-(defn nearest-entity [this faction]
-  (-> this faction :eid))
-
-(defn nearest-entity-distance [this faction]
-  (-> this faction :distance))
-
-(defn pf-blocked? [this]
-  (blocked?/f this :z-order/ground))
+(ns moon.cell)
 
 (defrecord FieldData [distance eid])
 
