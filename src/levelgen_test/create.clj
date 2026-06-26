@@ -1,6 +1,5 @@
 (ns levelgen-test.create
-  (:require [gdx.files :as files]
-            [com.badlogic.gdx.graphics.color :refer [float-bits]]
+  (:require [com.badlogic.gdx.graphics.color :refer [float-bits]]
             [input.set-processor :as set-processor!]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.graphics.orthographic-camera :as camera]
