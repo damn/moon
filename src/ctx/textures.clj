@@ -1,8 +1,8 @@
 (ns ctx.textures
   (:require [clojure.string :as str]
+            [com.badlogic.gdx.graphics.texture :as texture]
             [files.internal :as internal]
-            [file-handle.recursively-search :as recursively-search]
-            [file-handle.texture :as texture]))
+            [file-handle.recursively-search :as recursively-search]))
 
 (defn step
   [{:keys [ctx/files]}
@@ -10,4 +10,4 @@
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
                            (recursively-search/f (internal/f files folder) extensions))]
-             [path (texture/f (internal/f files path))])))
+             [path (texture/create (internal/f files path))])))

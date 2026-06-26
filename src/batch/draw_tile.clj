@@ -1,7 +1,7 @@
 (ns batch.draw-tile
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region])
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d Batch)
+  (:require [com.badlogic.gdx.graphics.texture :as texture]
+            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region])
+  (:import (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTile
                                         TiledMapTileLayer$Cell)))
 
@@ -50,7 +50,7 @@
     (aset-float verts Batch/U4 u2)
     (aset-float verts Batch/V4 v1)
     (.draw batch
-           ^Texture (texture-region/texture region)
+           (texture/type-hint (texture-region/texture region))
            ^floats verts
            (int 0)
            (int num-vertices))))
