@@ -1,5 +1,6 @@
 (ns world-fns.uf-caves
-  (:require [texture.texture-region :as texture-region]
+  (:require [clojure.java.util.random :as random]
+            [texture.texture-region :as texture-region]
             [tiled.create-static-tiled-map-tile :as create-tile]
             [world-fns.uf-caves.initial-grid]
             [world-fns.uf-caves.fix-nads]
@@ -22,7 +23,7 @@
            :grid2d-fix-nads-fn grid2d-fix-nads-fn
            :size cave-size
            :cave-style cave-style
-           :random (java.util.Random.)
+           :random (random/create)
            :level/tile-size tile-size
            :level/create-tile (let [texture (get textures texture-path)]
                                 (memoize
