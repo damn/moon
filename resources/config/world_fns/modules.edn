@@ -1,6 +1,6 @@
 [world-fns.modules/create
  {:initial-grid-fn moon.caves/create
-  :grid2d-fix-nads-fn grid2d.nads/fix-nads
+  :grid2d-fix-nads-fn grid2d.fix-nads/f
   :world/map-size 5,
   :world/max-area-level 3,
   :world/spawn-rate 0.05}]
