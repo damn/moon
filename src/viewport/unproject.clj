@@ -1,9 +1,9 @@
 (ns viewport.unproject
-  (:require [gdx.math.vector2 :as vector2]
-            [gdx.math.vector2.clojurize :as clojurize])
-  (:import (com.badlogic.gdx.utils.viewport Viewport)))
+  (:require [com.badlogic.gdx.utils.viewport.viewport :as viewport]
+            [gdx.math.vector2 :as vector2]
+            [gdx.math.vector2.clojurize :as clojurize]))
 
-(defn f [^Viewport viewport xy]
+(defn f [viewport xy]
   (-> viewport
-      (.unproject (vector2/f xy))
+      (viewport/unproject (vector2/f xy))
       clojurize/f))

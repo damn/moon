@@ -1,5 +1,5 @@
 (ns tx.show-modal
-  (:require [utils.align :as align]
+  (:require [com.badlogic.gdx.utils.align :as align]
             [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.set-name :refer [set-name!]]

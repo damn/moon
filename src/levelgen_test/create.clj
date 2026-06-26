@@ -2,7 +2,7 @@
   (:require [gdx.files :as files]
             [com.badlogic.gdx.graphics.color :refer [float-bits]]
             [input.set-processor :as set-processor!]
-            [viewport.fit-viewport :as fit-viewport]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]

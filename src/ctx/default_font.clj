@@ -7,7 +7,7 @@
             [bitmap-font.set-use-integer-positions :as set-use-integer-positions]
             [file-handle.font-generator :as font-generator]
             [font-generator.generate-font :as generate-font]
-            [utils.dispose :refer [dispose!]]
+            [com.badlogic.gdx.utils.disposable :refer [dispose!]]
             [freetype.font-generator-parameter :as parameter]))
 
 (defn step

@@ -5,7 +5,7 @@
             [bitmap-font.get-data :refer [get-data]]
             [bitmap-font-data.set-scale :as set-scale]
             [bitmap-font-data.scale-x :as scale-x]
-            [utils.align :as align]))
+            [com.badlogic.gdx.utils.align :as align]))
 
 (defn f
   [{:keys [ctx/batch
