@@ -1,13 +1,12 @@
 (ns batch.render-tile-layer
   (:require [batch.draw-tile :as draw-tile]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTile
-                                        TiledMapTileLayer)
-           (com.badlogic.gdx.math Rectangle)))
+  (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn render-tile-layer!
-  [^TiledMapTileLayer layer
+  [layer
    batch
    unit-scale
    ^Rectangle view-bounds
@@ -15,13 +14,13 @@
   (let [num-vertices 20
         vertices (float-array num-vertices)
         batch-color (batch/color batch)
-        layer-width (.getWidth layer)
-        layer-height (.getHeight layer)
-        layer-tile-width (* (.getTileWidth layer) unit-scale)
-        layer-tile-height (* (.getTileHeight layer) unit-scale)
-        layer-offset-x (* (.getRenderOffsetX layer) unit-scale)
+        layer-width (layer/width layer)
+        layer-height (layer/height layer)
+        layer-tile-width (* (layer/tile-width layer) unit-scale)
+        layer-tile-height (* (layer/tile-height layer) unit-scale)
+        layer-offset-x (* (layer/render-offset-x layer) unit-scale)
         ; offset in tiled is y down, so we flip it
-        layer-offset-y (* (- (.getRenderOffsetY layer)) unit-scale)
+        layer-offset-y (* (- (layer/render-offset-y layer)) unit-scale)
         col1 (max 0
                   (int (/ (- (.x view-bounds) layer-offset-x)
                           layer-tile-width)))
@@ -42,7 +41,7 @@
                           layer-tile-height)))
         x-start (+ (* col1 layer-tile-width)
                    layer-offset-x)
-        ^floats verts (aclone ^floats vertices)]
+        verts (aclone vertices)]
     (loop [row row2
            y (+ (* row2 layer-tile-height)
                 layer-offset-y)]
@@ -50,8 +49,8 @@
         (loop [col col1
                x x-start]
           (when (< col col2)
-            (when-let [cell (.getCell layer col row)]
-              (when-let [^TiledMapTile tile (cell/tile cell)]
+            (when-let [cell (layer/cell layer col row)]
+              (when-let [tile (cell/tile cell)]
                 (draw-tile/f! x
                               y
                               tile

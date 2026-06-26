@@ -1,5 +1,5 @@
 (ns tiled-map-tile-layer.get-width
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]))
 
-(defn get-width [^TiledMapTileLayer layer]
-  (.getWidth layer))
+(defn get-width [layer]
+  (layer/width layer))

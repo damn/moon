@@ -1,5 +1,5 @@
 (ns tiled-map-tile-layer.get-height
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]))
 
-(defn get-height [^TiledMapTileLayer layer]
-  (.getHeight layer))
+(defn get-height [layer]
+  (layer/height layer))
