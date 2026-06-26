@@ -1,21 +1,11 @@
 (ns render.assoc-interaction-state
-  (:require [math.vector2.direction :as direction]
+  (:require [moon.player-effect-ctx :as player-effect-ctx]
             [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.skill.usable-state :as usable-state]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
             [scene2d.group.find-actor :refer [find-actor]]
             [moon.action-bar.selected-skill :as selected-skill]
             [moon.body.distance :as distance]))
-
-(defn- player-effect-ctx [mouseover-eid world-mouse-position player-eid]
-  (let [target-position (or (and mouseover-eid
-                                 (:body/position (:entity/body @mouseover-eid)))
-                            world-mouse-position)]
-    {:effect/source player-eid
-     :effect/target mouseover-eid
-     :effect/target-position target-position
-     :effect/target-direction (direction/f (:body/position (:entity/body @player-eid))
-                                           target-position)}))
 
 (defn create
   [{:keys [ctx/mouseover-eid
@@ -43,7 +33,7 @@
                            selected-skill/f)]
        (let [entity @player-eid
              skill (skill-id (:entity/skills entity))
-             effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
+             effect-ctx (player-effect-ctx/f mouseover-eid world-mouse-position player-eid)
              state (usable-state/f skill entity effect-ctx)]
          (if (= state :usable)
            [:interaction-state.skill/usable [skill effect-ctx]]
