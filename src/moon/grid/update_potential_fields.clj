@@ -1,6 +1,5 @@
 (ns moon.grid.update-potential-fields
-  (:require [moon.cell :as cell]
-            [moon.grid.update-potential-fields.generate :refer [generate-potential-field]]))
+  (:require [moon.grid.update-potential-fields.generate :refer [generate-potential-field]]))
 
 ; Assumption: The map contains no not-allowed diagonal cells, diagonal wall cells where both
 ; adjacent cells are walls and blocked.
@@ -51,7 +50,7 @@
     (when-not (= (get-in @pf-cache last-state) tiles->entities)
       (swap! pf-cache assoc-in last-state tiles->entities)
       (doseq [cell (get-in @pf-cache marked-cells)]
-        (swap! cell cell/remove-field-data faction))
+        (swap! cell dissoc faction))
       (swap! pf-cache assoc-in marked-cells (generate-potential-field
                                              grid
                                              faction

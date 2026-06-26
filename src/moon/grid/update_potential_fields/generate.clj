@@ -1,6 +1,5 @@
 (ns moon.grid.update-potential-fields.generate
-  (:require [moon.cell :as cell]
-            [moon.grid.update-potential-fields.step :as step]))
+  (:require [moon.grid.update-potential-fields.step :as step]))
 
 (defn generate-potential-field
   [grid faction tiles->entities max-iterations]
@@ -8,7 +7,8 @@
                           [eid (grid tile)])
         marked (map second entity-cell-seq)]
     (doseq [[eid cell] entity-cell-seq]
-      (swap! cell cell/add-field-data faction 0 eid))
+      (swap! cell assoc faction {:distance 0
+                                 :eid eid}))
     (loop [marked-cells     marked
            new-marked-cells marked
            iterations 0]

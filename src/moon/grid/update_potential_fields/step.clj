@@ -1,6 +1,5 @@
 (ns moon.grid.update-potential-fields.step
-  (:require [moon.cell :as cell]
-            [moon.cell.is-pf-blocked :as pf-blocked?]
+  (:require [moon.cell.is-pf-blocked :as pf-blocked?]
             [moon.cell.nearest-entity :as nearest-entity]
             [moon.cell.nearest-entity-distance :as nearest-entity-distance]
             [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
@@ -28,6 +27,7 @@
                                                           (:position adjacent-cell*))
                                              1.4 ; square root of 2 * 10
                                              1)))]]
-      (swap! adjacent-cell cell/add-field-data faction distance-value (nearest-entity cell*))
+      (swap! adjacent-cell assoc faction {:distance distance-value
+                                          :eid (nearest-entity cell*)})
       (conj! marked-cells adjacent-cell))
     (persistent! marked-cells)))

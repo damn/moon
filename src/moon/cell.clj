@@ -1,12 +1,5 @@
 (ns moon.cell)
 
-(defn add-field-data [cell faction distance eid]
-  (assoc cell faction {:distance distance
-                       :eid eid}))
-
-(defn remove-field-data [cell faction]
-  (assoc cell faction nil))
-
 (defrecord RCell [position
                   middle
                   adjacent-cells
