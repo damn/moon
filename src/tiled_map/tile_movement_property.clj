@@ -4,14 +4,14 @@
             [tiled-map.get-properties :as tiled-map-get-properties]
             [tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [tiled-map-tile-layer-cell.get-tile :as get-tile]))
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]))
 
 (defn f
   [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (get-cell layer position)]
       (let [value (-> cell
-                      get-tile/f
+                      cell/tile
                       get-properties/f
                       (get/f "movement"))]
         (assert value

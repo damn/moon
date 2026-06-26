@@ -1,9 +1,9 @@
 (ns batch.render-tile-layer
   (:require [batch.draw-tile :as draw-tile]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch])
+            [com.badlogic.gdx.graphics.g2d.batch :as batch]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTile
-                                        TiledMapTileLayer
-                                        TiledMapTileLayer$Cell)
+                                        TiledMapTileLayer)
            (com.badlogic.gdx.math Rectangle)))
 
 (defn render-tile-layer!
@@ -50,11 +50,10 @@
         (loop [col col1
                x x-start]
           (when (< col col2)
-            (when-let [^TiledMapTileLayer$Cell cell (.getCell layer col row)]
-              (when-let [^TiledMapTile tile (.getTile cell)]
+            (when-let [cell (.getCell layer col row)]
+              (when-let [^TiledMapTile tile (cell/tile cell)]
                 (draw-tile/f! x
                               y
-                              cell
                               tile
                               unit-scale
                               color-setter

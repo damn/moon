@@ -1,9 +1,9 @@
 (ns tiled.tiled-map-tile-layer
   (:require [map-properties.put :as put!]
             [tiled-map-tile-layer.get-properties :as get-properties]
-            [tiled-map-tile-layer.set-visible :refer [set-visible!]])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
-                                        TiledMapTileLayer$Cell)))
+            [tiled-map-tile-layer.set-visible :refer [set-visible!]]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
 (defn f
   [{:keys [width
@@ -24,6 +24,6 @@
       (put!/f (get-properties/f layer) k v))
     (doseq [[[x y] tile] tiles
             :when tile]
-      (.setCell layer x y (doto (TiledMapTileLayer$Cell.)
-                            (.setTile tile))))
+      (.setCell layer x y (doto (cell/create)
+                            (cell/set-tile! tile))))
     layer))

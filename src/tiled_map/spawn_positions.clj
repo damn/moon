@@ -2,7 +2,7 @@
   (:require [map-layers.get-layer :refer [get-layer]]
             [map-properties.get :as get]
             [tiled-map.get-layers :refer [get-layers]]
-            [tiled-map-tile-layer-cell.get-tile :as get-tile]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map-tile-layer.get-width :refer [get-width]]
             [tiled-map-tile-layer.get-height :refer [get-height]]
@@ -18,7 +18,7 @@
                 cell (get-cell layer position)]
           :when cell
           :let [value (-> cell
-                          get-tile/f
+                          cell/tile
                           get-properties/f
                           (get/f property-key))]
           :when value]

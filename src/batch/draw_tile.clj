@@ -2,13 +2,11 @@
   (:require [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTile
-                                        TiledMapTileLayer$Cell)))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTile)))
 
 (defn f!
   [x
    y
-   ^TiledMapTileLayer$Cell cell
    ^TiledMapTile tile
    unit-scale
    color-setter
