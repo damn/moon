@@ -1,22 +1,14 @@
 (ns entity.tick.active-skill
   (:require [moon.effect.is-applicable :as applicable?]
-            [moon.raycaster.line-of-sight :as line-of-sight?]
+            [moon.update-effect-ctx :as update-effect-ctx]
             [timer.stopped :refer [stopped?]]))
-
-(defn- update-effect-ctx
-  [raycaster {:keys [effect/source effect/target] :as effect-ctx}]
-  (if (and target
-           (not (:entity/destroyed? @target))
-           (line-of-sight?/f raycaster @source @target))
-    effect-ctx
-    (dissoc effect-ctx :effect/target)))
 
 (defn f
   [{:keys [skill effect-ctx counter]}
    eid
    {:keys [ctx/elapsed-time
            ctx/raycaster]}]
-  (let [effect-ctx (update-effect-ctx raycaster effect-ctx)]
+  (let [effect-ctx (update-effect-ctx/f raycaster effect-ctx)]
     (cond
      (not (seq (filter #(applicable?/f % effect-ctx)
                        (:skill/effects skill))))
