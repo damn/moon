@@ -1,22 +1,22 @@
 (ns batch.draw-tile
   (:require [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTile)))
+            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]))
 
 (defn f!
   [x
    y
-   ^TiledMapTile tile
+   tile
    unit-scale
    color-setter
    batch-color
    verts
    batch
    num-vertices]
-  (let [region (.getTextureRegion tile)
-        x1 (+ x (* (.getOffsetX tile) unit-scale))
-        y1 (+ y (* (.getOffsetY tile) unit-scale))
+  (let [region (tile/texture-region tile)
+        x1 (+ x (* (tile/offset-x tile) unit-scale))
+        y1 (+ y (* (tile/offset-y tile) unit-scale))
         x2 (+ x1 (* (texture-region/width region) unit-scale))
         y2 (+ y1 (* (texture-region/height region) unit-scale))
         u1 (texture-region/u region)
