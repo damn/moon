@@ -1,5 +1,5 @@
 (ns scene2d.utils.texture-region-drawable.tint
-  (:import (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
-(defn f [^TextureRegionDrawable drawable color]
-  (.tint drawable color))
+(defn f [drawable color]
+  (texture-region-drawable/tint drawable color))

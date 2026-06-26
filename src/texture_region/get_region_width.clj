@@ -1,5 +1,5 @@
 (ns texture-region.get-region-width
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)))
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
-(defn get-region-width [^TextureRegion texture-region]
-  (.getRegionWidth texture-region))
+(defn get-region-width [texture-region]
+  (texture-region/width texture-region))

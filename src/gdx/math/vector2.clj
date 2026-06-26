@@ -1,5 +1,5 @@
 (ns gdx.math.vector2
-  (:import (com.badlogic.gdx.math Vector2)))
+  (:require [com.badlogic.gdx.math.vector2 :as vector2]))
 
 (defn f [[x y]]
-  (Vector2. x y))
+  (vector2/create x y))

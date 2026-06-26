@@ -1,5 +1,5 @@
 (ns pixmap.draw-pixel
-  (:import (com.badlogic.gdx.graphics Pixmap)))
+  (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 
-(defn f! [^Pixmap pixmap x y]
-  (.drawPixel pixmap x y))
+(defn f! [pixmap x y]
+  (pixmap/draw-pixel! pixmap x y))

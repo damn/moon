@@ -1,4 +1,4 @@
 (ns gl20.color-buffer-bit
-  (:import (com.badlogic.gdx.graphics GL20)))
+  (:require [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
-(def v GL20/GL_COLOR_BUFFER_BIT)
+(def v gl20/color-buffer-bit)

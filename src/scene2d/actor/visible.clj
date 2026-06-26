@@ -1,5 +1,5 @@
 (ns scene2d.actor.visible
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
-(defn visible? [^Actor actor]
-  (.isVisible actor))
+(defn visible? [actor]
+  (actor/visible? actor))

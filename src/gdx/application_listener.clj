@@ -1,5 +1,5 @@
 (ns gdx.application-listener
-  (:import (com.badlogic.gdx ApplicationListener)))
+  (:require [com.badlogic.gdx.application-listener :as application-listener]))
 
 (defn application-listener
   [{:keys [create!
@@ -8,21 +8,10 @@
            resize!
            pause!
            resume!]}]
-  (reify ApplicationListener
-    (create [_]
-      (create!))
-
-    (dispose [_]
-      (dispose!))
-
-    (render [_]
-      (render!))
-
-    (resize [_ width height]
-      (resize! width height))
-
-    (pause [_]
-      (pause!))
-
-    (resume [_]
-      (resume!))))
+  (application-listener/reify-application-listener
+   {:create! create!
+    :dispose! dispose!
+    :render! render!
+    :resize! resize!
+    :pause! pause!
+    :resume! resume!}))

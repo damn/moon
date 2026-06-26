@@ -1,5 +1,5 @@
 (ns scene2d.group.find-actor
-  (:import (com.badlogic.gdx.scenes.scene2d Group)))
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]))
 
-(defn find-actor [^Group group name]
-  (.findActor group name))
+(defn find-actor [group name]
+  (group/find-actor group name))

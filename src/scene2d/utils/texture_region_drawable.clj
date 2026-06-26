@@ -1,6 +1,5 @@
 (ns scene2d.utils.texture-region-drawable
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region])
-  (:import (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn f [texture-region]
-  (TextureRegionDrawable. (texture-region/type-hint texture-region)))
+  (texture-region-drawable/create texture-region))

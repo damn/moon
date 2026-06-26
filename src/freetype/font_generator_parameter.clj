@@ -1,12 +1,11 @@
 (ns freetype.font-generator-parameter
-  (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator$FreeTypeFontParameter)))
+  (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator.free-type-font-parameter :as params]))
 
 (defn create
   [{:keys [size
            min-filter
            mag-filter]}]
-  (let [params (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-    (set! (.size params) size)
-    (set! (.minFilter params) min-filter)
-    (set! (.magFilter params) mag-filter)
-    params))
+  (doto (params/create)
+    (params/set-size! size)
+    (params/set-min-filter! min-filter)
+    (params/set-mag-filter! mag-filter)))

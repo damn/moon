@@ -1,9 +1,9 @@
 (ns texture.texture-region
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)))
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [com.badlogic.gdx.graphics.texture :as texture]))
 
 (defn f
-  ([^Texture texture]
-   (TextureRegion. texture))
-  ([^Texture texture x y w h]
-   (TextureRegion. texture (int x) (int y) (int w) (int h))))
+  ([texture]
+   (texture-region/create texture))
+  ([texture x y w h]
+   (texture-region/create-sub texture x y w h)))

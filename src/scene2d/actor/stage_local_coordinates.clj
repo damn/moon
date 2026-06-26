@@ -1,5 +1,5 @@
 (ns scene2d.actor.stage-local-coordinates
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
-(defn stage->local-coordinates [^Actor actor vector2]
-  (.stageToLocalCoordinates actor vector2))
+(defn stage->local-coordinates [actor vector2]
+  (actor/stage->local-coordinates actor vector2))

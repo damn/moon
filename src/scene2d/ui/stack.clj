@@ -1,5 +1,5 @@
 (ns scene2d.ui.stack
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Stack)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]))
 
 (defn create []
-  (Stack.))
+  (stack/create))

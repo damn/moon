@@ -1,5 +1,5 @@
 (ns gdx.math.rectangle
-  (:import (com.badlogic.gdx.math Rectangle)))
+  (:require [com.badlogic.gdx.math.rectangle :as rectangle]))
 
 (defn create [x y width height]
-  (Rectangle. x y width height))
+  (rectangle/create x y width height))

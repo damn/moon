@@ -1,5 +1,5 @@
 (ns map-properties.put
-  (:import (com.badlogic.gdx.maps MapProperties)))
+  (:require [com.badlogic.gdx.maps.map-properties :as map-properties]))
 
-(defn f [^MapProperties props k v]
-  (.put props k v))
+(defn f [props k v]
+  (map-properties/put! props k v))

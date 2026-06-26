@@ -1,5 +1,5 @@
 (ns scene2d.utils.layout.set-fill-parent
-  (:import (com.badlogic.gdx.scenes.scene2d.utils Layout)))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
 
-(defn set-fill-parent! [^Layout layout bool]
-  (.setFillParent layout bool))
+(defn set-fill-parent! [layout bool]
+  (layout/set-fill-parent! layout bool))

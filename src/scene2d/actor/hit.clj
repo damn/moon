@@ -1,5 +1,5 @@
 (ns scene2d.actor.hit
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
-(defn hit [^Actor actor [x y] touchable?]
-  (.hit actor x y touchable?))
+(defn hit [actor x y touchable?]
+  (actor/hit actor x y touchable?))

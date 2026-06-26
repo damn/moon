@@ -1,5 +1,5 @@
 (ns scene2d.actor.set-name
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
-(defn set-name! [^Actor actor name]
-  (.setName actor name))
+(defn set-name! [actor name]
+  (actor/set-name! actor name))

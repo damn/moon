@@ -1,8 +1,6 @@
 (ns scene2d.ui.widget
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Widget)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]))
 
 (defn f
   [{:keys [draw!]}]
-  (proxy [Widget] []
-    (draw [batch parent-alpha]
-      (draw! this batch parent-alpha))))
+  (widget/proxy-widget {:draw! draw!}))

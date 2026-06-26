@@ -1,8 +1,8 @@
 (ns scene2d.actor.set-position
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn set-position!
-  ([^Actor actor [x y]]
-   (.setPosition actor x y))
-  ([^Actor actor [x y] align]
-   (.setPosition actor x y align)))
+  ([actor [x y]]
+   (actor/set-position! actor x y))
+  ([actor [x y] align]
+   (actor/set-position-with-align! actor x y align)))

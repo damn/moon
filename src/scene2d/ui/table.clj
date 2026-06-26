@@ -1,5 +1,5 @@
 (ns scene2d.ui.table
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create []
-  (Table.))
+  (table/create))

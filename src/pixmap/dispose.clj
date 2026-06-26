@@ -1,5 +1,5 @@
 (ns pixmap.dispose
-  (:import (com.badlogic.gdx.graphics Pixmap)))
+  (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 
-(defn f! [^Pixmap pixmap]
-  (.dispose pixmap))
+(defn f! [pixmap]
+  (pixmap/dispose pixmap))

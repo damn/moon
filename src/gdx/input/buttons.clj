@@ -1,7 +1,7 @@
 (ns gdx.input.buttons
-  (:import (com.badlogic.gdx Input$Buttons)))
+  (:require [com.badlogic.gdx.input.buttons :as buttons]))
 
 (defn k->value [k]
   (case k
-    :input.buttons/left  Input$Buttons/LEFT
-    :input.buttons/right Input$Buttons/RIGHT))
+    :input.buttons/left buttons/left
+    :input.buttons/right buttons/right))

@@ -1,7 +1,5 @@
 (ns scene2d.utils.click-listener
-  (:import (com.badlogic.gdx.scenes.scene2d.utils ClickListener)))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]))
 
 (defn create [f]
-  (proxy [ClickListener] []
-    (clicked [event x y]
-      (f event x y))))
+  (click-listener/proxy-click-listener f))

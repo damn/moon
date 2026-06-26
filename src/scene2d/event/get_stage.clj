@@ -1,5 +1,5 @@
 (ns scene2d.event.get-stage
-  (:import (com.badlogic.gdx.scenes.scene2d Event)))
+  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]))
 
-(defn f [^Event event]
-  (.getStage event))
+(defn f [event]
+  (event/get-stage event))

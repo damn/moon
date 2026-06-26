@@ -1,4 +1,4 @@
 (ns scene2d.ui.button-group.get-checked
-  (:import (com.badlogic.gdx.scenes.scene2d.ui ButtonGroup)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))
 
-(def f ButtonGroup/.getChecked)
+(def f button-group/get-checked)

@@ -1,5 +1,5 @@
 (ns lwjgl.application
-  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application)))
+  (:require [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]))
 
 (defn create [listener config]
-  (Lwjgl3Application. listener config))
+  (lwjgl3-application/create listener config))

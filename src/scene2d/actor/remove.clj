@@ -1,5 +1,5 @@
 (ns scene2d.actor.remove
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
-(defn remove! [^Actor actor]
-  (.remove actor))
+(defn remove! [actor]
+  (actor/remove! actor))

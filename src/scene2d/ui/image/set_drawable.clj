@@ -1,5 +1,5 @@
 (ns scene2d.ui.image.set-drawable
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Image)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]))
 
-(defn f [^Image image drawable]
-  (.setDrawable image drawable))
+(defn f [image drawable]
+  (image/set-drawable! image drawable))

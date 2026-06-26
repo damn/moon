@@ -1,5 +1,5 @@
 (ns map-properties.get
-  (:import (com.badlogic.gdx.maps MapProperties)))
+  (:require [com.badlogic.gdx.maps.map-properties :as map-properties]))
 
-(defn f [^MapProperties props k]
-  (.get props k))
+(defn f [props k]
+  (map-properties/get props k))

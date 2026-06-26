@@ -1,5 +1,5 @@
 (ns map-layers.get-layer
-  (:import (com.badlogic.gdx.maps MapLayers)))
+  (:require [com.badlogic.gdx.maps.map-layers :as map-layers]))
 
-(defn get-layer [^MapLayers layers ^String layer-name]
-  (.get layers layer-name))
+(defn get-layer [layers layer-name]
+  (map-layers/get layers layer-name))

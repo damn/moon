@@ -1,6 +1,5 @@
 (ns scene2d.ui.image-button
-  (:import (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]))
 
-(defn create [^Drawable image-up]
-  (ImageButton. image-up))
+(defn create [image-up]
+  (image-button/create image-up))

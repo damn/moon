@@ -1,6 +1,5 @@
 (ns scene2d.ui.window
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin
-                                               Window)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]))
 
 (defn f [{:keys [title skin]}]
-  (Window. ^String title ^Skin skin))
+  (window/create title skin))

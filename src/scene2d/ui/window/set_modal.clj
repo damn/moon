@@ -1,5 +1,5 @@
 (ns scene2d.ui.window.set-modal
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]))
 
-(defn f! [^Window window modal?]
-  (.setModal window modal?))
+(defn f! [window modal?]
+  (window/set-modal! window modal?))

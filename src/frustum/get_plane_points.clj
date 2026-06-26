@@ -1,5 +1,5 @@
 (ns frustum.get-plane-points
-  (:import (com.badlogic.gdx.math Frustum)))
+  (:require [com.badlogic.gdx.math.frustum :as frustum]))
 
-(defn get-plane-points [^Frustum frustum]
-  (.planePoints frustum))
+(defn get-plane-points [frustum]
+  (frustum/plane-points frustum))

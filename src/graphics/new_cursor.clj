@@ -1,5 +1,5 @@
 (ns graphics.new-cursor
-  (:import (com.badlogic.gdx Graphics)))
+  (:require [com.badlogic.gdx.graphics :as graphics]))
 
-(defn f [^Graphics graphics pixmap hotspot-x hotspot-y]
-  (.newCursor graphics pixmap hotspot-x hotspot-y))
+(defn f [graphics pixmap hotspot-x hotspot-y]
+  (graphics/new-cursor graphics pixmap hotspot-x hotspot-y))

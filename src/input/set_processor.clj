@@ -1,5 +1,5 @@
 (ns input.set-processor
-  (:import (com.badlogic.gdx Input)))
+  (:require [com.badlogic.gdx.input :as input]))
 
-(defn f [^Input input processor]
-  (.setInputProcessor input processor))
+(defn f [input processor]
+  (input/set-input-processor! input processor))

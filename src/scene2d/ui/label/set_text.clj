@@ -1,5 +1,5 @@
 (ns scene2d.ui.label.set-text
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Label)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.label :as label]))
 
-(defn f [^Label label text]
-  (.setText label ^String text))
+(defn f [label text]
+  (label/set-text! label text))

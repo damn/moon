@@ -1,5 +1,5 @@
 (ns scene2d.ui.check-box.is-checked
-  (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]))
 
-(defn f [^CheckBox this]
-  (.isChecked this))
+(defn f [check-box]
+  (check-box/checked? check-box))

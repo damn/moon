@@ -1,6 +1,5 @@
 (ns file-handle.skin
-  (:import (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
-(defn f [^FileHandle file-handle]
-  (Skin. file-handle))
+(defn f [file-handle]
+  (skin/create file-handle))

@@ -1,5 +1,5 @@
 (ns texture-region.get-region-height
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)))
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
-(defn get-region-height [^TextureRegion texture-region]
-  (.getRegionHeight texture-region))
+(defn get-region-height [texture-region]
+  (texture-region/height texture-region))

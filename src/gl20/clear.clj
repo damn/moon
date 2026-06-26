@@ -1,5 +1,5 @@
 (ns gl20.clear
-  (:import (com.badlogic.gdx.graphics GL20)))
+  (:require [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
-(defn f [^GL20 gl bit-mask]
-  (.glClear gl bit-mask))
+(defn f [gl bit-mask]
+  (gl20/clear gl bit-mask))

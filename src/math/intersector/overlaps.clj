@@ -1,10 +1,5 @@
 (ns math.intersector.overlaps
-  (:import (com.badlogic.gdx.math Circle
-                                  Intersector
-                                  Rectangle)))
+  (:require [com.badlogic.gdx.math.intersector :as intersector]))
 
-(defn overlaps?
-  [^Circle circle
-   ^Rectangle rectangle]
-  (Intersector/overlaps circle
-                        rectangle))
+(defn overlaps? [circle rectangle]
+  (intersector/overlaps? circle rectangle))

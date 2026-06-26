@@ -1,5 +1,5 @@
 (ns scene2d.actor.add-listener
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
-(defn add-listener! [^Actor actor listener]
-  (.addListener actor listener))
+(defn add-listener! [actor listener]
+  (actor/add-listener! actor listener))

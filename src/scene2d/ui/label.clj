@@ -1,7 +1,6 @@
 (ns scene2d.ui.label
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Label
-                                               Skin)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.label :as label]))
 
 (defn create
   [{:keys [text skin]}]
-  (Label. ^String text ^Skin skin))
+  (label/create text skin))

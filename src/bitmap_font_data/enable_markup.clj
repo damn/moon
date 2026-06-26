@@ -1,5 +1,5 @@
 (ns bitmap-font-data.enable-markup
-  (:import (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData)))
+  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font.bitmap-font-data :as bitmap-font-data]))
 
-(defn enable-markup! [^BitmapFont$BitmapFontData data]
-  (set! (.markupEnabled data) true))
+(defn enable-markup! [data]
+  (bitmap-font-data/enable-markup! data))

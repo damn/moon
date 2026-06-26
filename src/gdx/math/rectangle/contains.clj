@@ -1,6 +1,6 @@
 (ns gdx.math.rectangle.contains
   (:refer-clojure :exclude [contains?])
-  (:import (com.badlogic.gdx.math Rectangle)))
+  (:require [com.badlogic.gdx.math.rectangle :as rectangle]))
 
-(defn contains? [^Rectangle rectangle [x y]]
-  (.contains rectangle x y))
+(defn contains? [rectangle [x y]]
+  (rectangle/contains? rectangle x y))
