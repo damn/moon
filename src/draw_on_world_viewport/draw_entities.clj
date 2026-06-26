@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-entities
-  (:require [clojure.order :refer [sort-by-order]]
+  (:require [clojure.sort-by-order :as sort-by-order]
             [game.constants :refer [show-body-bounds?]]
             [ctx.draw :refer [draw!]]
             [ctx.draw-component :refer [draw-component]]
@@ -21,9 +21,9 @@
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
                            (line-of-sight?/f raycaster player entity)))]
-    (doseq [[z-order entities] (sort-by-order (group-by (comp :body/z-order :entity/body) entities)
-                                              first
-                                              render-z-order)
+    (doseq [[z-order entities] (sort-by-order/f (group-by (comp :body/z-order :entity/body) entities)
+                                                first
+                                                render-z-order)
             render-layer render-layers
             entity entities
             :when (should-draw? entity z-order)]

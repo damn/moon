@@ -1,5 +1,5 @@
 (ns render.update-mouseover-eid
-  (:require [clojure.order :refer [sort-by-order]]
+  (:require [clojure.sort-by-order :as sort-by-order]
             [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.grid.point-to-entities :refer [point->entities]]
             [moon.raycaster.line-of-sight :as line-of-sight?]))
@@ -19,7 +19,7 @@
                         hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
                                      (point->entities grid position))]
                     (->> render-z-order
-                         (sort-by-order hits #(:body/z-order (:entity/body @%)))
+                         (sort-by-order/f hits #(:body/z-order (:entity/body @%)))
                          reverse
                          (filter #(line-of-sight?/f raycaster player @%))
                          first)))]
