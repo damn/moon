@@ -1,5 +1,5 @@
-(ns batch.shape-drawer
+(ns space.earlygrey.shapedrawer.shape-drawer
   (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
-(defn shape-drawer [batch texture-region]
+(defn create [batch texture-region]
   (ShapeDrawer. batch texture-region))

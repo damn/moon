@@ -1,8 +1,8 @@
 (ns ctx.shape-drawer
   (:require [texture.texture-region :as texture-region]
-            [batch.shape-drawer :refer [shape-drawer]]))
+            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 
 (defn step
   [{:keys [ctx/batch
            ctx/shape-drawer-texture]}]
-  (shape-drawer batch (texture-region/f shape-drawer-texture 1 0 1 1)))
+  (shape-drawer/create batch (texture-region/f shape-drawer-texture 1 0 1 1)))
