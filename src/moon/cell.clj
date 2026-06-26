@@ -1,12 +1,11 @@
 (ns moon.cell)
 
-(defrecord FieldData [distance eid])
-
 (defn add-field-data [cell faction distance eid]
-  (assoc cell faction (->FieldData distance eid)))
+  (assoc cell faction {:distance distance
+                       :eid eid}))
 
 (defn remove-field-data [cell faction]
-  (assoc cell faction nil)) ; don't dissoc - will lose the Cell record type
+  (assoc cell faction nil))
 
 (defrecord RCell [position
                   middle
