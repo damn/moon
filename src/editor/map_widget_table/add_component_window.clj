@@ -1,7 +1,7 @@
 (ns editor.map-widget-table.add-component-window
   (:require [scene2d.event.get-stage :as get-stage]
-            [moon.schema.build-widget :as build-widget]
-            [moon.schema.widget-value :as widget-value]
+            [editor.build-widget :as build-widget]
+            [editor.widget-value :as widget-value]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]

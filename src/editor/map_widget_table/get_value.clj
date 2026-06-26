@@ -1,7 +1,7 @@
 (ns editor.map-widget-table.get-value
   (:require [scene2d.actor.get-user-object :refer [get-user-object]]
             [scene2d.group.children :refer [children]]
-            [moon.schema.widget-value :as widget-value]))
+            [editor.widget-value :as widget-value]))
 
 (defn f [table schemas]
   (into {}

@@ -17,8 +17,8 @@
             [moon.db.delete :refer [delete!]]
             [moon.db.update :refer [update!]]
             [moon.property.type :refer [property->type]]
-            [moon.schema.create-widget :as create-widget]
-            [moon.schema.widget-value :as widget-value]))
+            [editor.create-widget :as create-widget]
+            [editor.widget-value :as widget-value]))
 
 (defn property-editor-window
   [{:keys [ctx

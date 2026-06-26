@@ -1,6 +1,6 @@
-(ns moon.schema.build-widget
+(ns editor.build-widget
   (:require [scene2d.actor.set-user-object :refer [set-user-object!]]
-            [moon.schema.create-widget :as create-widget]))
+            [editor.create-widget :as create-widget]))
 
 (defn f [ctx schema k v]
   (let [widget (create-widget/f schema v ctx)] ; - wait its used also somewhere else w/o this widget/create?

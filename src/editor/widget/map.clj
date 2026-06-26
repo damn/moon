@@ -2,7 +2,7 @@
   (:require [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.set :as set]
             [editor.map-widget-table.get-value :as get-value]
-            [moon.schema.build-widget :as build-widget]
+            [editor.build-widget :as build-widget]
             [moon.schemas.optional-keyset :refer [optional-keyset]]
             [moon.schemas.optional :refer [optional?]]))
 

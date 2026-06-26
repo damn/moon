@@ -1,6 +1,6 @@
 [
  (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
- (clojure.add-methods/f! moon.schema.create-widget/f
+ (clojure.add-methods/f! editor.create-widget/f
                          {
                           :default editor.widget.default/create
                           :s/animation editor.widget.animation/create
@@ -16,7 +16,7 @@
                           :s/val-max editor.widget.val-max/create
                           }
                          )
- (clojure.add-methods/f! moon.schema.widget-value/f
+ (clojure.add-methods/f! editor.widget-value/f
                          {
                           :default editor.widget.default/value
                           :s/boolean editor.widget.boolean/value

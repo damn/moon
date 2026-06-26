@@ -13,7 +13,7 @@
 (comment
 
  (spit "config/sounds.edn"
-       (vec (list-files "wav/" ".wav")))
+       (vec (dev.create-assets-edn/list-files "wav/" ".wav")))
 
 
  )
