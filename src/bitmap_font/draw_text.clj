@@ -1,12 +1,12 @@
 (ns bitmap-font.draw-text
-  (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
+  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]))
 
-(defn f! [^BitmapFont font batch text x y target-width align wrap?]
-  (.draw font
-         batch
-         text
-         (float x)
-         (float y)
-         (float target-width)
-         align
-         wrap?))
+(defn f! [font batch text x y target-width align wrap?]
+  (bitmap-font/draw! font
+                     batch
+                     text
+                     x
+                     y
+                     target-width
+                     align
+                     wrap?))

@@ -1,6 +1,6 @@
 (ns clojure.add-methods
-  (:import (clojure.lang MultiFn)))
+  (:require [clojure.lang.multifn :as multifn]))
 
 (defn f! [multifn-var k->f]
   (doseq [[k fn-var] k->f]
-    (MultiFn/.addMethod @multifn-var k fn-var)))
+    (multifn/add-method! @multifn-var k fn-var)))
