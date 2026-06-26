@@ -3,18 +3,13 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.ui.window.set-modal :as set-modal]
             [scene2d.ui.window.add-close-button :as add-close-button]
-            [clojure.repl :as repl]))
-
-(defmacro ^:private with-err-str [& body]
-  `(let [s# (new java.io.StringWriter)]
-     (binding [*err* s#]
-       ~@body
-       (str s#))))
+            [clojure.repl :as repl]
+            [clojure.with-err-str :as with-err-str]))
 
 (defn create
   [{:keys [skin throwable]}]
   (let [label-text (binding [*print-level* 3]
-                     (with-err-str
+                     (with-err-str/m
                        (repl/pst throwable)))]
     (doto (window/create
            {:title "Error"
