@@ -4,22 +4,11 @@
             [render.draw-tiled-map.color-setter :refer [tile-color-setter*]]
             [moon.raycaster.is-blocked :as blocked?]))
 
-(defn- tile-color-setter
-  [{:keys [ctx/colors
-           ctx/explored-tile-corners
-           ctx/raycaster
-           ctx/world-viewport]}]
-  (tile-color-setter*
-   {:ray-blocked? (partial blocked?/f raycaster)
-    :explored-tile-corners explored-tile-corners
-    :light-position (get-position/f (:viewport/camera world-viewport))
-    :see-all-tiles? false
-    :explored-tile-color  (:colors/explored-tile colors)
-    :visible-tile-color   (:colors/visible-tile colors)
-    :invisible-tile-color (:colors/invisible-tile colors)}))
-
 (defn step
   [{:keys [ctx/batch
+           ctx/colors
+           ctx/explored-tile-corners
+           ctx/raycaster
            ctx/tiled-map
            ctx/world-unit-scale
            ctx/world-viewport]
@@ -28,5 +17,12 @@
                    world-unit-scale
                    (:viewport/camera world-viewport)
                    tiled-map
-                   (tile-color-setter ctx))
+                   (tile-color-setter*
+                    {:ray-blocked? (partial blocked?/f raycaster)
+                     :explored-tile-corners explored-tile-corners
+                     :light-position (get-position/f (:viewport/camera world-viewport))
+                     :see-all-tiles? false
+                     :explored-tile-color  (:colors/explored-tile colors)
+                     :visible-tile-color   (:colors/visible-tile colors)
+                     :invisible-tile-color (:colors/invisible-tile colors)}))
   ctx)
