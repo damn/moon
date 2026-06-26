@@ -1,11 +1,6 @@
 (ns entity.state.create.active-skill
-  (:require [moon.stats.get-stat-value :refer [get-stat-value]]
+  (:require [moon.creature.apply-action-speed-modifier :as apply-action-speed-modifier]
             [timer.create :refer [create-timer]]))
-
-(defn- apply-action-speed-modifier [{:keys [entity/stats]} skill action-time]
-  (/ action-time
-     (or (get-stat-value stats (:skill/action-time-modifier-key skill))
-         1)))
 
 (defn f
   [[_k [skill effect-ctx]] eid {:keys [ctx/elapsed-time]}]
@@ -13,5 +8,5 @@
    :effect-ctx effect-ctx
    :counter (->> skill
                  :skill/action-time
-                 (apply-action-speed-modifier @eid skill)
+                 (apply-action-speed-modifier/f @eid skill)
                  (create-timer elapsed-time))})
