@@ -6,7 +6,7 @@
             [grid2d.flood-fill :as flood-fill]))
 
 (comment
- (let [{:keys [start grid]} (caves/create (java.util.Random.) 15 15 :wide)
+ (let [{:keys [start grid]} (caves/create (clojure.java.util.random/create) 15 15 :wide)
        _ (println "BASE GRID:\n")
        _ (printgrid/f grid)
        ;_ (println)

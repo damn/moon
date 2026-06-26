@@ -3,8 +3,7 @@
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
             [tiled-map.get-layers :refer [get-layers]]
-            [batch.render-tile-layer :refer [render-tile-layer!]])
-  (:import (com.badlogic.gdx.math Rectangle)))
+            [batch.render-tile-layer :refer [render-tile-layer!]]))
 
 (defn draw-tiled-map!
   [batch
@@ -20,10 +19,10 @@
              (* height (Math/abs (.x (camera/up camera)))))
         h (+ (* height (Math/abs (.y (camera/up camera))))
              (* width  (Math/abs (.x (camera/up camera)))))
-        viewBounds (Rectangle. (- (.x (camera/position camera)) (/ w 2))
-                               (- (.y (camera/position camera)) (/ h 2))
-                               w
-                               h)]
+        viewBounds {:x (- (.x (camera/position camera)) (/ w 2))
+                    :y (- (.y (camera/position camera)) (/ h 2))
+                    :width w
+                    :height h}]
     (doseq [layer (filter layer/visible? (get-layers tiled-map))]
       (render-tile-layer! layer
                           batch

@@ -2,14 +2,13 @@
   (:require [batch.draw-tile :as draw-tile]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell])
-  (:import (com.badlogic.gdx.math Rectangle)))
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]))
 
 (defn render-tile-layer!
   [layer
    batch
    unit-scale
-   ^Rectangle view-bounds
+   view-bounds
    color-setter]
   (let [num-vertices 20
         vertices (float-array num-vertices)
@@ -22,20 +21,20 @@
         ; offset in tiled is y down, so we flip it
         layer-offset-y (* (- (layer/render-offset-y layer)) unit-scale)
         col1 (max 0
-                  (int (/ (- (.x view-bounds) layer-offset-x)
+                  (int (/ (- (:x view-bounds) layer-offset-x)
                           layer-tile-width)))
         col2 (min layer-width
-                  (int (/ (+ (.x view-bounds)
-                             (.width view-bounds)
+                  (int (/ (+ (:x view-bounds)
+                             (:width view-bounds)
                              layer-tile-width
                              (- layer-offset-x))
                           layer-tile-width)))
         row1 (max 0
-                  (int (/ (- (.y view-bounds) layer-offset-y)
+                  (int (/ (- (:y view-bounds) layer-offset-y)
                           layer-tile-height)))
         row2 (min layer-height
-                  (int (/ (+ (.y view-bounds)
-                             (.height view-bounds)
+                  (int (/ (+ (:y view-bounds)
+                             (:height view-bounds)
                              layer-tile-height
                              (- layer-offset-y))
                           layer-tile-height)))
