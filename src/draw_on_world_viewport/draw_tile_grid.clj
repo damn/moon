@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-tile-grid
-  (:require [color.float-bits :refer [float-bits]]
+  (:require [com.badlogic.gdx.graphics.color :refer [float-bits]]
             [orthographic-camera.frustum :refer [frustum]]))
 
 (defn f

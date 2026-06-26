@@ -1,12 +1,12 @@
 (ns moon.geom-test)
 ;(ns game.render.draw-on-world-viewport.geom-test)
-;(:require [gdx.graphics.color :as color])
+;(:require [com.badlogic.gdx.graphics.color :as color])
 ; [moon.grid.circle-to-cells :refer [circle->cells]]
 ;
 ;(comment
 ; (require '[moon.grid :as grid])
 ; (require '[math.circle :as circle])
-; [color.float-bits :refer [float-bits]]
+; [com.badlogic.gdx.graphics.color :refer [float-bits]]
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/grid

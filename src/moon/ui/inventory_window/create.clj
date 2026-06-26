@@ -1,5 +1,5 @@
 (ns moon.ui.inventory-window.create
-  (:require [gdx.graphics.color :refer [rgba->Color]]
+  (:require [com.badlogic.gdx.graphics.color :as color]
             [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.set-visible :refer [set-visible!]]
@@ -22,7 +22,7 @@
   (let [slot->drawable (fn [slot]
                          (doto (texture-region-drawable/f (slot->texture-region slot))
                            (set-min-size!/f cell-size cell-size)
-                           (tint/f (rgba->Color [1 1 1 0.4]))))
+                           (tint/f (color/create [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?
