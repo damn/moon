@@ -1,6 +1,15 @@
 (ns scene2d.actor
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn f
   [{:keys [act! draw!]}]
-  (actor/proxy-actor {:act! act! :draw! draw!}))
+  (proxy [Actor] []
+    (act [delta]
+      (when act!
+        (act! this delta))
+      (let [^Actor this this]
+        (proxy-super act delta)))
+
+    (draw [batch parent-alpha]
+      (when draw!
+        (draw! this batch parent-alpha)))))
