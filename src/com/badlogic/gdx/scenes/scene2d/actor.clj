@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.actor
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(def java-class Actor)
-
 (defn proxy-actor
   [{:keys [act! draw!]}]
   (proxy [Actor] []
