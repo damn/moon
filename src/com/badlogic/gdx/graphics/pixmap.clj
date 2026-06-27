@@ -1,10 +1,10 @@
 (ns com.badlogic.gdx.graphics.pixmap
-  (:require [com.badlogic.gdx.graphics.pixmap$format :as format]
-            [com.badlogic.gdx.files.file-handle :as file-handle])
-  (:import (com.badlogic.gdx.graphics Pixmap)))
+  (:require [com.badlogic.gdx.files.file-handle :as file-handle])
+  (:import (com.badlogic.gdx.graphics Pixmap
+                                      Pixmap$Format)))
 
 (defn create [width height]
-  (Pixmap. (int width) (int height) format/rgba8888))
+  (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))
 
 (defn create-from-file [file-handle]
   (Pixmap. (file-handle/type-hint file-handle)))
