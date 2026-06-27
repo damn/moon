@@ -1,5 +1,5 @@
 (ns gdx.input.buttons
-  (:require [com.badlogic.gdx.input.buttons :as buttons]))
+  (:require [com.badlogic.gdx.input$buttons :as buttons]))
 
 (defn k->value [k]
   (case k

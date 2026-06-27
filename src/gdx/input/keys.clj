@@ -1,5 +1,5 @@
 (ns gdx.input.keys
-  (:require [com.badlogic.gdx.input.keys :as keys]))
+  (:require [com.badlogic.gdx.input$keys :as keys]))
 
 (defn k->value [k]
   (case k
