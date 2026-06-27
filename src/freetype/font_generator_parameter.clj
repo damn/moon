@@ -1,5 +1,5 @@
 (ns freetype.font-generator-parameter
-  (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator.free-type-font-parameter :as params]))
+  (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator$free-type-font-parameter :as params]))
 
 (defn create
   [{:keys [size

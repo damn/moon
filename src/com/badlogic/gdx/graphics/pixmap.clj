@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.graphics.pixmap
-  (:require [com.badlogic.gdx.graphics.pixmap.format :as format]
+  (:require [com.badlogic.gdx.graphics.pixmap$format :as format]
             [com.badlogic.gdx.files.file-handle :as file-handle])
   (:import (com.badlogic.gdx.graphics Pixmap)))
 

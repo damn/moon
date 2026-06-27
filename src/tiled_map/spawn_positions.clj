@@ -2,7 +2,7 @@
   (:require [map-layers.get-layer :refer [get-layer]]
             [map-properties.get :as get]
             [tiled-map.get-layers :refer [get-layers]]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map-tile-layer.get-width :refer [get-width]]
             [tiled-map-tile-layer.get-height :refer [get-height]]

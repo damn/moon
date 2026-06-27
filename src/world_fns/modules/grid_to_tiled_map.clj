@@ -4,7 +4,7 @@
             [tiled-map-tile-layer.visible :refer [visible?]]
             [tiled-map-tile-layer.get-properties :as get-properties]
             [tiled-map.get-properties :as tiled-map-get-properties]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled.static-tiled-map-tile.copy :as copy]

@@ -2,7 +2,7 @@
   (:require [batch.draw-tile :as draw-tile]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]))
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]))
 
 (defn render-tile-layer!
   [layer

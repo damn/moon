@@ -1,6 +1,6 @@
 (ns com.badlogic.gdx.math.intersector
   (:import (com.badlogic.gdx.math Circle
-                                  Intersector
+                                  Intersector ; FIXME type hints
                                   Rectangle)))
 
 (defn overlaps? [^Circle circle ^Rectangle rectangle]

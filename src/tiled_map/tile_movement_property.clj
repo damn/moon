@@ -4,7 +4,7 @@
             [tiled-map.get-properties :as tiled-map-get-properties]
             [tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]))
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]))
 
 (defn f
   [tiled-map layer [x y]]

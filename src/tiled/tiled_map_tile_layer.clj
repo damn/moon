@@ -3,7 +3,7 @@
             [tiled-map-tile-layer.get-properties :as get-properties]
             [tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]))
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]))
 
 (defn f
   [{:keys [width

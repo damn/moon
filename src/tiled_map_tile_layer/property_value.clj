@@ -2,7 +2,7 @@
   (:require [map-properties.get :as get]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer-cell :as cell]))
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]))
 
 (defn property-value [layer xy property-key]
   (if-let [cell (get-cell layer xy)]
