@@ -1,6 +1,5 @@
 (ns stage.dev-menu.update-labels
   (:require [graphics.frames-per-second :as frames-per-second]
-            [orthographic-camera.get-zoom :refer [get-zoom]]
             [clojure.readable :as readable]))
 
 (def v
@@ -28,6 +27,6 @@
                  (mapv int world-mouse-position))}
    {:label "Zoom"
     :update-fn (fn [{:keys [ctx/world-viewport]}]
-                 (get-zoom (:viewport/camera world-viewport)))
+                 (.zoom (:viewport/camera world-viewport)))
     :icon "images/zoom.png"}
    ])
