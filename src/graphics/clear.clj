@@ -1,11 +1,9 @@
 (ns graphics.clear
-  (:require [graphics.get-gl20 :as get-gl20]
-            [gl20.clear :as clear]
-            [gl20.clear-color :as clear-color]
-            [gl20.color-buffer-bit :as color-buffer-bit]))
+  (:require [graphics.get-gl20 :as get-gl20])
+  (:import (com.badlogic.gdx.graphics GL20)))
 
 (defn f!
   [graphics r g b a]
   (let [gl (get-gl20/f graphics)]
-    (clear-color/f gl r g b a)
-    (clear/f gl color-buffer-bit/v)))
+    (GL20/.glClearColor gl r g b a)
+    (GL20/.glClear gl GL20/GL_COLOR_BUFFER_BIT)))
