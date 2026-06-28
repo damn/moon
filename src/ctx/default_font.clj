@@ -1,6 +1,6 @@
 (ns ctx.default-font
-  (:require [gdx.graphics.texture.filter :as texture.filter])
   (:import (com.badlogic.gdx Files)
+           (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
@@ -17,8 +17,8 @@
         font (.generateFont generator
                             (let [parameter (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                               (set! (.size parameter) (* size quality-scaling))
-                              (set! (.minFilter parameter) texture.filter/linear)
-                              (set! (.magFilter parameter) texture.filter/linear)
+                              (set! (.minFilter parameter) Texture$TextureFilter/Linear)
+                              (set! (.magFilter parameter) Texture$TextureFilter/Linear)
                               parameter))]
     (.dispose generator)
     (.setScale (.getData font) (/ quality-scaling))
