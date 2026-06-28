@@ -1,8 +1,8 @@
 (ns moon.application.use-glfw-async
-  (:require [org.lwjgl.system.configuration :as configuration])
   (:import (com.badlogic.gdx.utils Os
-                                    SharedLibraryLoader)))
+                                    SharedLibraryLoader)
+           (org.lwjgl.system Configuration)))
 
 (defn f! []
   (when (= SharedLibraryLoader/os Os/MacOsX)
-    (configuration/set! configuration/glfw-library-name "glfw_async")))
+    (.set Configuration/GLFW_LIBRARY_NAME "glfw_async")))
