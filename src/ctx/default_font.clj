@@ -1,10 +1,10 @@
 (ns ctx.default-font
   (:require [files.internal :as internal]
             [gdx.graphics.texture.filter :as texture.filter]
-            [file-handle.font-generator :as font-generator]
             [font-generator.generate-font :as generate-font]
             [freetype.font-generator-parameter :as parameter])
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)
            (com.badlogic.gdx.utils Disposable)))
 
 (defn step
@@ -16,7 +16,7 @@
                                           :size 16
                                           :quality-scaling 2
                                           :use-integer-positions? false}
-        generator (font-generator/f (internal/f files path))
+        generator (FreeTypeFontGenerator. (internal/f files path))
         font (generate-font/f generator
                               (parameter/create
                                {:size (* size quality-scaling)
