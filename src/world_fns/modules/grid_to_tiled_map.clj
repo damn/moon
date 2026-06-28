@@ -4,13 +4,13 @@
             [tiled-map-tile-layer.visible :refer [visible?]]
             [tiled-map-tile-layer.get-properties :as get-properties]
             [tiled-map.get-properties :as tiled-map-get-properties]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]
             [tiled-map-tile-layer.get-cell :refer [get-cell]]
             [tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled.static-tiled-map-tile.copy :as copy]
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
-            [grid2d.height :refer [->height]]))
+            [grid2d.height :refer [->height]])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
 (defn grid->tiled-map
   [schema-tiled-map grid]
@@ -30,4 +30,4 @@
                              :when local-position]
                          (when (vector? local-position)
                            (when-let [cell (get-cell layer local-position)]
-                             [position (copy-tile (cell/tile cell))])))})}))
+                             [position (copy-tile (.getTile ^TiledMapTileLayer$Cell cell))])))})}))

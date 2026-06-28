@@ -1,5 +1,5 @@
 (ns scene2d.actor.set-visible
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn set-visible! [actor visible?]
-  (actor/set-visible! actor visible?))
+(defn set-visible! [^Actor actor visible?]
+  (.setVisible actor visible?))

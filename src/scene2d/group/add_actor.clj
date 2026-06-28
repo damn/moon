@@ -1,5 +1,5 @@
 (ns scene2d.group.add-actor
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
-(defn add-actor! [group actor]
-  (group/add-actor! group actor))
+(defn add-actor! [^Group group ^Actor actor]
+  (.addActor group actor))

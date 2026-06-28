@@ -3,17 +3,15 @@
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map.get-properties :as tiled-map-get-properties]
             [tiled-map-tile-layer.get-name :refer [get-name]]
-            [tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]))
+            [tiled-map-tile-layer.get-cell :refer [get-cell]])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
 (defn f
   [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (get-cell layer position)]
-      (let [value (-> cell
-                      cell/tile
-                      get-properties/f
-                      (get/f "movement"))]
+      (let [value (get/f (get-properties/f (.getTile ^TiledMapTileLayer$Cell cell))
+                         "movement")]
         (assert value
                 (str "Value for :movement at position "
                      position  " / mapeditor inverted position: " [(position 0)

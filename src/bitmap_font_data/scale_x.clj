@@ -1,5 +1,5 @@
 (ns bitmap-font-data.scale-x
-  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]))
+  (:import (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData)))
 
-(defn f [data]
-  (bitmap-font-data/scale-x data))
+(defn f [^BitmapFont$BitmapFontData data]
+  (.scaleX data))

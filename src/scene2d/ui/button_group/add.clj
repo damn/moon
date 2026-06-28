@@ -1,5 +1,5 @@
 (ns scene2d.ui.button-group.add
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup)))
 
-(defn f! [button-group button]
-  (button-group/add! button-group button))
+(defn f! [^ButtonGroup button-group ^Button button]
+  (ButtonGroup/.add button-group button))

@@ -1,5 +1,6 @@
 (ns gdx.graphics.pixmap
-  (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]))
+  (:import (com.badlogic.gdx.graphics Pixmap
+                                      Pixmap$Format)))
 
 (defn f [width height]
-  (pixmap/create width height))
+  (Pixmap. (int width) (int height) Pixmap$Format/RGBA8888))

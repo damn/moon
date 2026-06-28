@@ -1,5 +1,5 @@
 (ns gl20.clear-color
-  (:require [com.badlogic.gdx.graphics.gl20 :as gl20]))
+  (:import (com.badlogic.gdx.graphics GL20)))
 
 (defn f [gl r g b a]
-  (gl20/clear-color gl r g b a))
+  (.glClearColor ^GL20 gl r g b a))

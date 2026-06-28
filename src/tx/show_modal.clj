@@ -1,6 +1,5 @@
 (ns tx.show-modal
-  (:require [com.badlogic.gdx.utils.align :as align]
-            [scene2d.actor.set-position :refer [set-position!]]
+  (:require [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor.remove :refer [remove!]]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.add-listener :refer [add-listener!]]
@@ -10,7 +9,8 @@
             [scene2d.ui.window.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.group.find-actor :refer [find-actor]]
-            [scene2d.stage.add-actor :refer [add-actor!]]))
+            [scene2d.stage.add-actor :refer [add-actor!]])
+  (:import (com.badlogic.gdx.utils Align)))
 
 (defn f
   [{:keys [ctx/skin
@@ -34,5 +34,5 @@
                 (set-name! "moon.ui.modal-window")
                 (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                 (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
-                               align/center)))
+                               Align/center)))
   nil)

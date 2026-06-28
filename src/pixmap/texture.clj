@@ -1,6 +1,6 @@
 (ns pixmap.texture
-  (:require [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.graphics.pixmap :as pixmap]))
+  (:import (com.badlogic.gdx.graphics Pixmap
+                                      Texture)))
 
-(defn f [pixmap]
-  (texture/create-from-pixmap pixmap))
+(defn f [^Pixmap pixmap]
+  (Texture. pixmap))

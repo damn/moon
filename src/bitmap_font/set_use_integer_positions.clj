@@ -1,5 +1,5 @@
 (ns bitmap-font.set-use-integer-positions
-  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]))
+  (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
 
-(defn f! [font use-integer-positions?]
-  (bitmap-font/set-use-integer-positions! font use-integer-positions?))
+(defn f! [^BitmapFont font use-integer-positions?]
+  (.setUseIntegerPositions font use-integer-positions?))

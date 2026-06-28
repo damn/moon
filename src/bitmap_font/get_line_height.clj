@@ -1,5 +1,5 @@
 (ns bitmap-font.get-line-height
-  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]))
+  (:import (com.badlogic.gdx.graphics.g2d BitmapFont)))
 
-(defn f [font]
-  (bitmap-font/line-height font))
+(defn f [^BitmapFont font]
+  (.getLineHeight font))

@@ -1,6 +1,6 @@
 (ns map-layers.add
-  (:require [com.badlogic.gdx.maps.map-layers :as map-layers]
-            [com.badlogic.gdx.maps.map-layer :as map-layer]))
+  (:import (com.badlogic.gdx.maps MapLayer
+                                  MapLayers)))
 
-(defn f [layers layer]
-  (map-layers/add! layers (map-layer/type-hint layer)))
+(defn f [^MapLayers layers ^MapLayer layer]
+  (.add layers layer))

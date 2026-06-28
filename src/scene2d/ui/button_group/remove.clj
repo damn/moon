@@ -1,5 +1,5 @@
 (ns scene2d.ui.button-group.remove
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup)))
 
-(defn f! [button-group button]
-  (button-group/remove! button-group button))
+(defn f! [^ButtonGroup button-group ^Button button]
+  (ButtonGroup/.remove button-group button))

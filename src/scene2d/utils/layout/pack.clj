@@ -1,5 +1,5 @@
 (ns scene2d.utils.layout.pack
-  (:require [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
+  (:import (com.badlogic.gdx.scenes.scene2d.utils Layout)))
 
-(defn pack! [layout]
-  (layout/pack layout))
+(defn pack! [^Layout layout]
+  (.pack layout))

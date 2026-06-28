@@ -1,5 +1,5 @@
 (ns scene2d.actor.is-window
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn f [actor]
-  (instance? window/java-class actor))
+  (instance? Window actor))

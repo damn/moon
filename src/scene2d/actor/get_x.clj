@@ -1,5 +1,5 @@
 (ns scene2d.actor.get-x
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn get-x [actor]
-  (actor/get-x actor))
+(defn get-x [^Actor actor]
+  (.getX actor))

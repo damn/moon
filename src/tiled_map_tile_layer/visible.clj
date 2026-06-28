@@ -1,5 +1,5 @@
 (ns tiled-map-tile-layer.visible
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
-(defn visible? [layer]
-  (layer/visible? layer))
+(defn visible? [^TiledMapTileLayer layer]
+  (.isVisible layer))

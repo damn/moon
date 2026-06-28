@@ -1,6 +1,5 @@
 (ns graphics.delta-time
-  (:require [com.badlogic.gdx.graphics :as graphics]))
+  (:import (com.badlogic.gdx Graphics)))
 
 (defn f [graphics]
-  (graphics/delta-time graphics))
-
+  (.getDeltaTime ^Graphics graphics))

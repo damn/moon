@@ -1,8 +1,9 @@
 (ns scene2d.ui.table.add-rows
-  (:require [scene2d.ui.table.add-cell :refer [add-cell!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]))
+  (:require [scene2d.ui.table.add-cell :refer [add-cell!]])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
-(defn add-rows! [table rows]
+(defn add-rows! [^Table table rows]
   (doseq [row rows]
     (doseq [props-or-actor row]
       (cond
@@ -10,6 +11,6 @@
         (add-cell! table props-or-actor)
 
         ; TODO Remove else case
-        :else (table/add table props-or-actor)))
-    (table/row table))
+        :else (Table/.add table ^Actor props-or-actor)))
+    (Table/.row table))
   table)

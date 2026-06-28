@@ -4,17 +4,17 @@
             [map-layers.get-layer :refer [get-layer]]
             [tiled-map.get-layers :refer [get-layers]]
             [tiled-map-tile-layer.set-visible :refer [set-visible!]]
-            [com.badlogic.gdx.utils.disposable :as disposable]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
-            [moon.db.all-raw :refer [all-raw]]))
+            [moon.db.all-raw :refer [all-raw]])
+  (:import (com.badlogic.gdx.utils Disposable)))
 
 (defn f
   [{:keys [ctx/db
            ctx/textures
            ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
-    (disposable/dispose! tiled-map))
+    (Disposable/.dispose tiled-map))
   (let [level (let [[f params] (edn-resource level-fn)]
                 (f
                  (assoc params

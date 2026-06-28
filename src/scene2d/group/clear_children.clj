@@ -1,5 +1,5 @@
 (ns scene2d.group.clear-children
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]))
+  (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
-(defn clear-children! [group]
-  (group/clear-children! group))
+(defn clear-children! [^Group group]
+  (.clearChildren group))

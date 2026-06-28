@@ -1,5 +1,5 @@
 (ns scene2d.actor.get-user-object
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn get-user-object [actor]
-  (actor/get-user-object actor))
+(defn get-user-object [^Actor actor]
+  (.getUserObject actor))

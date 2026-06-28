@@ -1,5 +1,5 @@
 (ns scene2d.ui.text-tooltip
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextTooltip)))
 
 (defn create [tooltip skin]
-  (text-tooltip/create tooltip skin))
+  (TextTooltip. ^String tooltip ^Skin skin))

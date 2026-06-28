@@ -1,5 +1,5 @@
 (ns graphics.frames-per-second
-  (:require [com.badlogic.gdx.graphics :as graphics]))
+  (:import (com.badlogic.gdx Graphics)))
 
 (defn f [graphics]
-  (graphics/frames-per-second graphics))
+  (.getFramesPerSecond ^Graphics graphics))

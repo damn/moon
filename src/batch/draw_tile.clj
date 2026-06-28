@@ -1,28 +1,28 @@
 (ns batch.draw-tile
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile])
   (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d Batch)))
+           (com.badlogic.gdx.graphics.g2d Batch)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps.tiled TiledMapTile)))
 
 (defn f!
   [x
    y
-   tile
+   ^TiledMapTile tile
    unit-scale
    color-setter
    batch-color
    verts
    batch
    num-vertices]
-  (let [region (tile/texture-region tile)
-        x1 (+ x (* (tile/offset-x tile) unit-scale))
-        y1 (+ y (* (tile/offset-y tile) unit-scale))
-        x2 (+ x1 (* (texture-region/width region) unit-scale))
-        y2 (+ y1 (* (texture-region/height region) unit-scale))
-        u1 (texture-region/u region)
-        v1 (texture-region/v2 region)
-        u2 (texture-region/u2 region)
-        v2 (texture-region/v region)
+  (let [^TextureRegion region (.getTextureRegion tile)
+        x1 (+ x (* (.getOffsetX tile) unit-scale))
+        y1 (+ y (* (.getOffsetY tile) unit-scale))
+        x2 (+ x1 (* (.getRegionWidth region) unit-scale))
+        y2 (+ y1 (* (.getRegionHeight region) unit-scale))
+        u1 (.getU region)
+        v1 (.getV2 region)
+        u2 (.getU2 region)
+        v2 (.getV region)
         color11 (float (color-setter batch-color x1 y1))
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
@@ -48,7 +48,7 @@
     (aset-float verts Batch/U4 u2)
     (aset-float verts Batch/V4 v1)
     (Batch/.draw batch
-                 ^Texture (texture-region/texture region)
+                 ^Texture (.getTexture region)
                  ^floats verts
                  (int 0)
                  (int num-vertices))))

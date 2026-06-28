@@ -1,8 +1,8 @@
 (ns scene2d.ui.horizontal-group
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
 (defn create
   [{:keys [space pad]}]
-  (doto (horizontal-group/create)
-    (horizontal-group/set-space! space)
-    (horizontal-group/set-pad! pad)))
+  (doto (HorizontalGroup.)
+    (.space space)
+    (.pad pad)))

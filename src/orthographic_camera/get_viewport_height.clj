@@ -1,5 +1,5 @@
 (ns orthographic-camera.get-viewport-height
-  (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]))
+  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
-(defn get-viewport-height [camera]
-  (camera/viewport-height camera))
+(defn get-viewport-height [^OrthographicCamera camera]
+  (.viewportHeight camera))

@@ -1,5 +1,6 @@
 (ns scene2d.stage.add-actor
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (scene2d Stage)))
 
-(defn add-actor! [stage actor]
-  (stage/add-actor! stage actor))
+(defn add-actor! [^Stage stage ^Actor actor]
+  (.addActor stage actor))

@@ -1,5 +1,5 @@
 (ns scene2d.actor.get-parent
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn get-parent [actor]
-  (actor/get-parent actor))
+(defn get-parent [^Actor actor]
+  (.getParent actor))

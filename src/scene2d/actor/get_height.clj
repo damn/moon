@@ -1,5 +1,5 @@
 (ns scene2d.actor.get-height
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn get-height [actor]
-  (actor/get-height actor))
+(defn get-height [^Actor actor]
+  (.getHeight actor))

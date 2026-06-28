@@ -1,5 +1,5 @@
 (ns tiled-map-tile-layer.get-cell
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
-(defn get-cell [layer [x y]]
-  (layer/cell layer x y))
+(defn get-cell [^TiledMapTileLayer layer [x y]]
+  (.getCell layer x y))

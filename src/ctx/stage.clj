@@ -1,7 +1,7 @@
 (ns ctx.stage
   (:require [input.set-processor :as set-processor!]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [scene2d.stage :as stage]))
+            [scene2d.stage :as stage]
+            [viewport.fit-viewport :as fit-viewport]))
 
 (defn step
   [{:keys [ctx/input

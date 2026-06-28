@@ -1,5 +1,5 @@
 (ns tiled-map.get-layers
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]))
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
-(defn get-layers [tiled-map]
-  (tiled-map/get-layers tiled-map))
+(defn get-layers [^TiledMap tiled-map]
+  (.getLayers tiled-map))

@@ -1,5 +1,5 @@
 (ns scene2d.actor.get-width
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn get-width [actor]
-  (actor/get-width actor))
+(defn get-width [^Actor actor]
+  (.getWidth actor))

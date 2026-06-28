@@ -1,5 +1,5 @@
 (ns scene2d.actor.set-user-object
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn set-user-object! [actor user-object]
-  (actor/set-user-object! actor user-object))
+(defn set-user-object! [^Actor actor user-object]
+  (.setUserObject actor user-object))

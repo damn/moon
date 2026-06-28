@@ -4,8 +4,8 @@
             [bitmap-font.get-line-height :as get-line-height]
             [bitmap-font.get-data :refer [get-data]]
             [bitmap-font-data.set-scale :as set-scale]
-            [bitmap-font-data.scale-x :as scale-x]
-            [com.badlogic.gdx.utils.align :as align]))
+            [bitmap-font-data.scale-x :as scale-x])
+  (:import (com.badlogic.gdx.utils Align)))
 
 (defn f
   [{:keys [ctx/batch
@@ -32,6 +32,6 @@
                              (* (get-line-height/f font)))
                          0))
                   target-width
-                  align/center
+                  Align/center
                   wrap?)
     (set-scale/f (get-data font) old-scale)))

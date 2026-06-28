@@ -1,6 +1,6 @@
 (ns gdx.math.vector2.clojurize
-  (:require [com.badlogic.gdx.math.vector2 :as vector2]))
+  (:import (com.badlogic.gdx.math Vector2)))
 
-(defn f [v2]
-  [(vector2/x v2)
-   (vector2/y v2)])
+(defn f [^Vector2 v2]
+  [(.x v2)
+   (.y v2)])

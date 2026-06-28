@@ -1,6 +1,6 @@
 (ns ctx.world-viewport
   (:require [gdx.graphics.orthographic-camera :as camera]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]))
+            [viewport.fit-viewport :as fit-viewport]))
 
 (defn step
   [{:keys [ctx/world-unit-scale]}]

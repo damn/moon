@@ -1,6 +1,5 @@
 (ns moon.ui.inventory-window.create
-  (:require [com.badlogic.gdx.graphics.color :as color]
-            [scene2d.actor.set-position :refer [set-position!]]
+  (:require [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor.set-name :refer [set-name!]]
             [scene2d.actor.set-visible :refer [set-visible!]]
             [scene2d.utils.drawable.set-min-size :as set-min-size!]
@@ -9,7 +8,8 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.inventory :as inventory]
-            [moon.ui.inventory-window.create-cell :refer [->cell]]))
+            [moon.ui.inventory-window.create-cell :refer [->cell]]
+            [gdx.graphics.color :as color]))
 
 (defn f
   [{:keys [item-rect-color

@@ -1,13 +1,13 @@
 (ns tiled.tiled-map
   (:require [map-properties.put :as put!]
             [tiled-map.get-properties :as get-properties]
-            [tiled-map.add-layer :as add-layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]))
+            [tiled-map.add-layer :as add-layer])
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn f
   [{:keys [properties
            layers]}]
-  (let [tiled-map (tiled-map/create)]
+  (let [tiled-map (TiledMap.)]
     (doseq [[k v] properties]
       (assert (string? k))
       (put!/f (get-properties/f tiled-map) k v))

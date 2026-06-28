@@ -1,5 +1,5 @@
 (ns ctx.batch
-  (:require [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]))
+  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch)))
 
 (defn step [_ctx]
-  (sprite-batch/create))
+  (SpriteBatch.))

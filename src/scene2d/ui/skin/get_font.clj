@@ -1,5 +1,5 @@
 (ns scene2d.ui.skin.get-font
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
-(defn f [skin name]
-  (skin/get-font skin name))
+(defn f [^Skin skin name]
+  (.getFont skin name))

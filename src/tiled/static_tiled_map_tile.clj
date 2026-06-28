@@ -1,5 +1,6 @@
 (ns tiled.static-tiled-map-tile
-  (:require [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
-(defn create [texture-region]
-  (static-tiled-map-tile/create texture-region))
+(defn create [^TextureRegion texture-region]
+  (StaticTiledMapTile. texture-region))

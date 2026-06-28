@@ -1,5 +1,5 @@
 (ns scene2d.ui.select-box.get-selected
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox)))
 
-(defn f [select-box]
-  (select-box/get-selected select-box))
+(defn f [^SelectBox select-box]
+  (.getSelected select-box))

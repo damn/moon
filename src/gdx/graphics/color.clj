@@ -1,4 +1,4 @@
-(ns com.badlogic.gdx.graphics.color
+(ns gdx.graphics.color
   (:import (com.badlogic.gdx.graphics Color)))
 
 (defn create [[r g b a]]

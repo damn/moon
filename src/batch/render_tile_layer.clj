@@ -1,25 +1,25 @@
 (ns batch.render-tile-layer
-  (:require [batch.draw-tile :as draw-tile]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]))
+  (:require [batch.draw-tile :as draw-tile])
+  (:import (com.badlogic.gdx.graphics.g2d Batch)
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer
+                                       TiledMapTileLayer$Cell)))
 
 (defn render-tile-layer!
-  [layer
-   batch
+  [^TiledMapTileLayer layer
+   ^Batch batch
    unit-scale
    view-bounds
    color-setter]
   (let [num-vertices 20
         vertices (float-array num-vertices)
-        batch-color (batch/color batch)
-        layer-width (layer/width layer)
-        layer-height (layer/height layer)
-        layer-tile-width (* (layer/tile-width layer) unit-scale)
-        layer-tile-height (* (layer/tile-height layer) unit-scale)
-        layer-offset-x (* (layer/render-offset-x layer) unit-scale)
+        batch-color (.getColor batch)
+        layer-width (.getWidth layer)
+        layer-height (.getHeight layer)
+        layer-tile-width (* (.getTileWidth layer) unit-scale)
+        layer-tile-height (* (.getTileHeight layer) unit-scale)
+        layer-offset-x (* (.getRenderOffsetX layer) unit-scale)
         ; offset in tiled is y down, so we flip it
-        layer-offset-y (* (- (layer/render-offset-y layer)) unit-scale)
+        layer-offset-y (* (- (.getRenderOffsetY layer)) unit-scale)
         col1 (max 0
                   (int (/ (- (:x view-bounds) layer-offset-x)
                           layer-tile-width)))
@@ -48,8 +48,8 @@
         (loop [col col1
                x x-start]
           (when (< col col2)
-            (when-let [cell (layer/cell layer col row)]
-              (when-let [tile (cell/tile cell)]
+            (when-let [^TiledMapTileLayer$Cell cell (.getCell layer col row)]
+              (when-let [tile (.getTile cell)]
                 (draw-tile/f! x
                               y
                               tile

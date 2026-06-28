@@ -1,5 +1,5 @@
 (ns graphics.get-gl20
-  (:require [com.badlogic.gdx.graphics :as graphics]))
+  (:import (com.badlogic.gdx Graphics)))
 
 (defn f [graphics]
-  (graphics/get-gl20 graphics))
+  (.getGL20 ^Graphics graphics))

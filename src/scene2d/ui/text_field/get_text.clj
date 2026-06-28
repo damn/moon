@@ -1,5 +1,5 @@
 (ns scene2d.ui.text-field.get-text
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TextField)))
 
-(defn f [text-field]
-  (text-field/get-text text-field))
+(defn f [^TextField text-field]
+  (.getText text-field))

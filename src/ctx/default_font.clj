@@ -7,8 +7,8 @@
             [bitmap-font.set-use-integer-positions :as set-use-integer-positions]
             [file-handle.font-generator :as font-generator]
             [font-generator.generate-font :as generate-font]
-            [com.badlogic.gdx.utils.disposable :refer [dispose!]]
-            [freetype.font-generator-parameter :as parameter]))
+            [freetype.font-generator-parameter :as parameter])
+  (:import (com.badlogic.gdx.utils Disposable)))
 
 (defn step
   [{:keys [ctx/files]}]
@@ -26,7 +26,7 @@
                                 ; texture.filter/linear because scaling to world-units
                                 :min-filter texture.filter/linear
                                 :mag-filter texture.filter/linear}))]
-    (dispose! generator)
+    (Disposable/.dispose generator)
     (set-scale/f (get-data font) (/ quality-scaling))
     (enable-markup! (get-data font))
     (set-use-integer-positions/f! font use-integer-positions?)

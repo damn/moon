@@ -1,5 +1,5 @@
 (ns graphics.set-cursor
-  (:require [com.badlogic.gdx.graphics :as graphics]))
+  (:import (com.badlogic.gdx Graphics)))
 
 (defn f [graphics cursor]
-  (graphics/set-cursor! graphics cursor))
+  (.setCursor ^Graphics graphics cursor))

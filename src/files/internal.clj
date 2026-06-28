@@ -1,5 +1,5 @@
 (ns files.internal
-  (:require [com.badlogic.gdx.files :as files]))
+  (:import (com.badlogic.gdx Files)))
 
-(defn f [files path]
-  (files/internal files path))
+(defn f [^Files files path]
+  (.internal files path))

@@ -1,5 +1,6 @@
 (ns font-generator.generate-font
-  (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as font-generator]))
+  (:import (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
-(defn f [generator parameter]
-  (font-generator/generate-font generator parameter))
+(defn f [^FreeTypeFontGenerator generator ^FreeTypeFontGenerator$FreeTypeFontParameter parameter]
+  (.generateFont generator parameter))

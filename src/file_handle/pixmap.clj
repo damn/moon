@@ -1,5 +1,6 @@
 (ns file-handle.pixmap
-  (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]))
+  (:import (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Pixmap)))
 
-(defn f [file-handle]
-  (pixmap/create-from-file file-handle))
+(defn f [^FileHandle file-handle]
+  (Pixmap. file-handle))

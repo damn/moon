@@ -1,6 +1,6 @@
 (ns input.key-pressed
-  (:require [com.badlogic.gdx.input :as input]
-            [gdx.input.keys :as input.keys]))
+  (:require [gdx.input.keys :as input.keys])
+  (:import (com.badlogic.gdx Input)))
 
 (defn f [input k]
-  (input/key-pressed? input (input.keys/k->value k)))
+  (.isKeyPressed ^Input input (input.keys/k->value k)))

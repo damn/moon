@@ -1,5 +1,5 @@
 (ns scene2d.actor.set-touchable
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn set-touchable! [actor touchable]
-  (actor/set-touchable! actor touchable))
+(defn set-touchable! [^Actor actor touchable]
+  (.setTouchable actor touchable))

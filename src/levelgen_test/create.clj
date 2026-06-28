@@ -1,13 +1,13 @@
 (ns levelgen-test.create
-  (:require [com.badlogic.gdx.graphics.color :refer [float-bits]]
-            [input.set-processor :as set-processor!]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+  (:require [input.set-processor :as set-processor!]
+            [gdx.graphics.color :refer [float-bits]]
             [gdx.graphics.orthographic-camera :as camera]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
             [scene2d.stage.add-actor :refer [add-actor!]]
             [levelgen-test.create.edit-window :refer [edit-window]]
-            [levelgen-test.generate-level :as generate-level]))
+            [levelgen-test.generate-level :as generate-level]
+            [viewport.fit-viewport :as fit-viewport]))
 
 (defn f!
   [{:keys [ctx/files

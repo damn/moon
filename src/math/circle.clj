@@ -1,7 +1,7 @@
 (ns math.circle
-  (:require [com.badlogic.gdx.math.circle :as circle]))
+  (:import (com.badlogic.gdx.math Circle)))
 
 (defn create [{:keys [position radius]}]
-  (circle/create (position 0)
-                 (position 1)
-                 radius))
+  (Circle. (position 0)
+           (position 1)
+           radius))

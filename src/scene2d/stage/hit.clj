@@ -1,5 +1,5 @@
 (ns scene2d.stage.hit
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
+  (:import (scene2d Stage)))
 
-(defn hit [stage [x y]]
-  (stage/hit stage x y true))
+(defn hit [^Stage stage [x y]]
+  (.hit stage x y true))

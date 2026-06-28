@@ -1,7 +1,7 @@
 (ns gdx.graphics.colors
-  (:require [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.graphics.colors :as colors]))
+  (:require [gdx.graphics.color :as color])
+  (:import (com.badlogic.gdx.graphics Colors)))
 
 (defn put! [colors-map]
-  (doseq [[name color] colors-map]
-    (colors/put! name (color/create color))))
+  (doseq [[name rgba] colors-map]
+    (Colors/put name (color/create rgba))))

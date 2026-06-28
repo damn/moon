@@ -1,5 +1,5 @@
 (ns orthographic-camera.get-combined
-  (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]))
+  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
-(defn get-combined [camera]
-  (camera/combined camera))
+(defn get-combined [^OrthographicCamera camera]
+  (.combined camera))

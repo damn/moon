@@ -1,5 +1,5 @@
 (ns tiled-map-tile-layer.set-visible
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as layer]))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
-(defn set-visible! [layer bool]
-  (layer/set-visible! layer bool))
+(defn set-visible! [^TiledMapTileLayer layer bool]
+  (.setVisible layer bool))

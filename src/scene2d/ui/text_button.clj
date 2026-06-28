@@ -1,6 +1,6 @@
 (ns scene2d.ui.text-button
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
 
 (defn create
   [{:keys [text skin]}]
-  (text-button/create text skin))
+  (TextButton. ^String text ^Skin skin))

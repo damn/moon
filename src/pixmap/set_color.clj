@@ -1,5 +1,5 @@
 (ns pixmap.set-color
-  (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]))
+  (:import (com.badlogic.gdx.graphics Pixmap)))
 
-(defn f! [pixmap r g b a]
-  (pixmap/set-color! pixmap r g b a))
+(defn f! [^Pixmap pixmap r g b a]
+  (.setColor pixmap r g b a))

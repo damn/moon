@@ -1,5 +1,5 @@
 (ns tiled-map-tile.get-properties
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tile]))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTile)))
 
-(defn f [tile]
-  (tile/properties tile))
+(defn f [^TiledMapTile tile]
+  (.getProperties tile))
