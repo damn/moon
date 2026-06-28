@@ -1,7 +1,5 @@
 (ns draw.text
-  (:require [clojure.string :as str]
-            [bitmap-font-data.set-scale :as set-scale]
-            [bitmap-font-data.scale-x :as scale-x])
+  (:require [clojure.string :as str])
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont)
            (com.badlogic.gdx.utils Align)))
 
@@ -10,16 +8,16 @@
            ctx/unit-scale
            ctx/default-font]}
    {:keys [font scale x y text up?]}]
-  (let [font (or font default-font)
+  (let [^BitmapFont font (or font default-font)
         unit-scale @unit-scale
         scale (or scale 1)
-        old-scale (scale-x/f (.getData ^BitmapFont font))
+        old-scale (.scaleX (.getData font))
         target-width 0
         wrap? false
         scale (* (float unit-scale)
                  (float scale))]
-    (set-scale/f (.getData ^BitmapFont font) (* old-scale scale))
-    (.draw ^BitmapFont font
+    (.setScale (.getData font) (* old-scale scale))
+    (.draw font
            batch
            text
            (float x)
@@ -27,9 +25,9 @@
                          (-> text
                              (str/split #"\n")
                              count
-                             (* (.getLineHeight ^BitmapFont font)))
+                             (* (.getLineHeight font)))
                          0)))
            (float target-width)
            Align/center
            wrap?)
-    (set-scale/f (.getData ^BitmapFont font) old-scale)))
+    (.setScale (.getData font) old-scale)))

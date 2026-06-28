@@ -1,8 +1,6 @@
 (ns ctx.default-font
   (:require [files.internal :as internal]
             [gdx.graphics.texture.filter :as texture.filter]
-            [bitmap-font-data.enable-markup :refer [enable-markup!]]
-            [bitmap-font-data.set-scale :as set-scale]
             [file-handle.font-generator :as font-generator]
             [font-generator.generate-font :as generate-font]
             [freetype.font-generator-parameter :as parameter])
@@ -26,7 +24,7 @@
                                 :min-filter texture.filter/linear
                                 :mag-filter texture.filter/linear}))]
     (Disposable/.dispose generator)
-    (set-scale/f (.getData ^BitmapFont font) (/ quality-scaling))
-    (enable-markup! (.getData ^BitmapFont font))
+    (.setScale (.getData ^BitmapFont font) (/ quality-scaling))
+    (set! (.markupEnabled (.getData ^BitmapFont font)) true)
     (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
     font))
