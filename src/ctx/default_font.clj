@@ -1,11 +1,8 @@
 (ns ctx.default-font
-  (:require [gdx.graphics.texture.filter :as texture.filter]
-            [font-generator.generate-font :as generate-font]
-            [freetype.font-generator-parameter :as parameter])
+  (:require [gdx.graphics.texture.filter :as texture.filter])
   (:import (com.badlogic.gdx Files)
-           (com.badlogic.gdx.graphics.g2d BitmapFont)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)
-           (com.badlogic.gdx.utils Disposable)))
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
 
 (defn step
   [{:keys [ctx/files]}]
@@ -17,14 +14,14 @@
                                           :quality-scaling 2
                                           :use-integer-positions? false}
         generator (FreeTypeFontGenerator. (Files/.internal files path))
-        font (generate-font/f generator
-                              (parameter/create
-                               {:size (* size quality-scaling)
-                                ; texture.filter/linear because scaling to world-units
-                                :min-filter texture.filter/linear
-                                :mag-filter texture.filter/linear}))]
-    (Disposable/.dispose generator)
-    (.setScale (.getData ^BitmapFont font) (/ quality-scaling))
-    (set! (.markupEnabled (.getData ^BitmapFont font)) true)
-    (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
+        font (.generateFont generator
+                            (let [parameter (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                              (set! (.size parameter) (* size quality-scaling))
+                              (set! (.minFilter parameter) texture.filter/linear)
+                              (set! (.magFilter parameter) texture.filter/linear)
+                              parameter))]
+    (.dispose generator)
+    (.setScale (.getData font) (/ quality-scaling))
+    (set! (.markupEnabled (.getData font)) true)
+    (.setUseIntegerPositions font use-integer-positions?)
     font))
