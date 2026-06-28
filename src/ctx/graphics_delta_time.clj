@@ -1,6 +1,6 @@
 (ns ctx.graphics-delta-time
-  (:require [graphics.delta-time :as delta-time]))
+  (:import (com.badlogic.gdx Graphics)))
 
 (defn graphics-delta-time
   [{:keys [ctx/graphics]}]
-  (delta-time/f graphics))
+  (Graphics/.getDeltaTime graphics))

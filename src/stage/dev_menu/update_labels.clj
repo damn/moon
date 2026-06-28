@@ -1,6 +1,6 @@
 (ns stage.dev-menu.update-labels
-  (:require [graphics.frames-per-second :as frames-per-second]
-            [clojure.readable :as readable]))
+  (:require [clojure.readable :as readable])
+  (:import (com.badlogic.gdx Graphics)))
 
 (def v
   [
@@ -10,7 +10,7 @@
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn (fn [{:keys [ctx/graphics]}]
-                 (frames-per-second/f graphics))
+                 (Graphics/.getFramesPerSecond graphics))
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
     :update-fn (fn [{:keys [ctx/mouseover-eid]}]

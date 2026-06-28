@@ -1,10 +1,10 @@
 (ns ctx.cursors
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [pixmap.dispose :as dispose]
-            [graphics.new-cursor :as new-cursor])
+            [pixmap.dispose :as dispose])
   (:import (com.badlogic.gdx Files)
-           (com.badlogic.gdx.graphics Pixmap)))
+           (com.badlogic.gdx.graphics Pixmap)
+           (com.badlogic.gdx Graphics)))
 
 (defn step
   [{:keys [ctx/files
@@ -14,6 +14,6 @@
                  (fn [[path-segment [hotspot-x hotspot-y]]]
                    (let [path (format path-format path-segment)
                          pixmap (Pixmap. (Files/.internal files path))
-                         cursor (new-cursor/f graphics pixmap hotspot-x hotspot-y)]
+                         cursor (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y)]
                      (dispose/f! pixmap)
                      cursor)))))
