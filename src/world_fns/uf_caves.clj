@@ -1,10 +1,10 @@
 (ns world-fns.uf-caves
   (:require [clojure.java.util.random :as random]
-            [texture.texture-region :as texture-region]
             [tiled.create-static-tiled-map-tile :as create-tile]
             [world-fns.uf-caves.initial-grid]
             [world-fns.uf-caves.fix-nads]
-            [world-fns.uf-caves.last-steps]))
+            [world-fns.uf-caves.last-steps])
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 (defn create
   [{:keys [initial-grid-create-fn
@@ -30,11 +30,11 @@
                                  (fn [& {:keys [sprite-idx movement]}]
                                    {:pre [#{"all" "air" "none"} movement]}
                                    (create-tile/f
-                                    (texture-region/f texture
-                                                      (* (sprite-idx 0) tile-size)
-                                                      (* (sprite-idx 1) tile-size)
-                                                      tile-size
-                                                      tile-size)
+                                    (TextureRegion. texture
+                                                    (int (* (sprite-idx 0) tile-size))
+                                                    (int (* (sprite-idx 1) tile-size))
+                                                    (int tile-size)
+                                                    (int tile-size))
                                     "movement" movement))))
            :level/spawn-rate spawn-rate
            :level/scaling scaling
