@@ -1,6 +1,6 @@
 (ns rand.srand
-  (:require [clojure.java.util.random :as random]))
+  (:import (java.util Random)))
 
 (defn srand
-  ([random] (random/next-float random))
+  ([^Random random] (.nextFloat random))
   ([n random] (* n (srand random))))

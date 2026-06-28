@@ -1,7 +1,5 @@
 (ns editor.app.render
-  (:require [scene2d.stage.set-ctx :refer [set-ctx!]]
-            [scene2d.stage.act :refer [act!]]
-            [scene2d.stage.draw :refer [draw!]]))
+  (:import (scene2d Stage)))
 
 (defn render!
   [{:keys [ctx/stage]
@@ -9,7 +7,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (set-ctx! stage ctx)
-    (act! stage)
-    (draw! stage)
+    (set! (.ctx stage) ctx)
+    (Stage/.act stage)
+    (Stage/.draw stage)
     (:stage/ctx stage)))

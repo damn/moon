@@ -1,11 +1,11 @@
 (ns tx.ui-remove-item
-  (:require [scene2d.group.find-actor :refer [find-actor]]
-            [moon.inventory-window.remove-item :as remove-item]))
+  (:require [moon.inventory-window.remove-item :as remove-item])
+  (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn f
   [{:keys [ctx/stage] :as ctx} eid cell]
   (-> stage
       :stage/root
-      (find-actor "moon.ui.windows.inventory")
+      (#(Group/.findActor % "moon.ui.windows.inventory"))
       (remove-item/f cell))
   nil)

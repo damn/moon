@@ -1,13 +1,13 @@
 (ns levelgen-test.create
-  (:require [input.set-processor :as set-processor!]
-            [gdx.graphics.color :refer [float-bits]]
-            [gdx.graphics.orthographic-camera :as camera]
+  (:require [gdx.graphics.color :refer [float-bits]]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
-            [scene2d.stage.add-actor :refer [add-actor!]]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]
-            [viewport.fit-viewport :as fit-viewport]))
+            [viewport.fit-viewport :as fit-viewport])
+  (:import (com.badlogic.gdx Input)
+           (com.badlogic.gdx.graphics OrthographicCamera)
+           (scene2d Stage)))
 
 (defn f!
   [{:keys [ctx/files
@@ -20,7 +20,7 @@
                    "config/world_fns/modules.edn"]
         ui-viewport (fit-viewport/create 1440 900)
         stage (stage/create ui-viewport sprite-batch)
-        _  (set-processor!/f input stage)
+        _  (.setInputProcessor ^Input input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
         ctx (assoc ctx :ctx/stage stage)
@@ -28,10 +28,8 @@
                              world-height (* 900  world-unit-scale)]
                          (fit-viewport/create world-width
                                               world-height
-                                              (camera/create
-                                               {:y-down? false
-                                                :world-width world-width
-                                                :world-height world-height})))
+                                              (doto (OrthographicCamera.)
+                                                (.setToOrtho false world-width world-height))))
         ctx (assoc ctx
                    :ctx/world-viewport world-viewport
                    :ctx/camera (:viewport/camera world-viewport)
@@ -40,5 +38,5 @@
                    :ctx/camera-movement-speed 1
                    :ctx/world-unit-scale world-unit-scale)
         ctx (generate-level/f ctx initial-level-fn)]
-    (add-actor! (:ctx/stage ctx) (window/create (edit-window (:ctx/skin ctx) level-fns)))
+    (Stage/.addActor (:ctx/stage ctx) (window/create (edit-window (:ctx/skin ctx) level-fns)))
     ctx))

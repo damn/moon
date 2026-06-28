@@ -1,7 +1,5 @@
 (ns moon.ui.inventory-window.create
   (:require [scene2d.actor.set-position :refer [set-position!]]
-            [scene2d.actor.set-name :refer [set-name!]]
-            [scene2d.actor.set-visible :refer [set-visible!]]
             [scene2d.utils.drawable.set-min-size :as set-min-size!]
             [scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [scene2d.utils.texture-region-drawable.tint :as tint]
@@ -9,7 +7,8 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.inventory :as inventory]
             [moon.ui.inventory-window.create-cell :refer [->cell]]
-            [gdx.graphics.color :as color]))
+            [gdx.graphics.color :as color])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn f
   [{:keys [item-rect-color
@@ -55,8 +54,8 @@
                                                               (for [y (range 4)]
                                                                 (for [x (range 6)]
                                                                   (->cell :inventory.slot/bag :position [x y]))))})
-                                    (set-name! "inventory-cell-table"))
+                                    (Actor/.setName "inventory-cell-table"))
                            :pad 4}]]})
-      (set-name! "moon.ui.windows.inventory")
-      (set-visible! false)
+      (Actor/.setName "moon.ui.windows.inventory")
+      (Actor/.setVisible false)
       (set-position! position))))

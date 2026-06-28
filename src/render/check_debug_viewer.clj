@@ -1,7 +1,7 @@
 (ns render.check-debug-viewer
-  (:require [scene2d.stage.add-actor :refer [add-actor!]]
-            [ctx.button-just-pressed :refer [button-just-pressed?]]
-            [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]))
+  (:require [ctx.button-just-pressed :refer [button-just-pressed?]]
+            [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window])
+  (:import (scene2d Stage)))
 
 (defn step
   [{:keys [ctx/controls
@@ -14,11 +14,11 @@
   (when (button-just-pressed? ctx (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
-      (add-actor! stage
-                  (data-viewer-window/create
-                   {:title "Data View"
-                    :data data
-                    :width 500
-                    :height 500
-                    :skin skin}))))
+      (Stage/.addActor stage
+                       (data-viewer-window/create
+                        {:title "Data View"
+                         :data data
+                         :width 500
+                         :height 500
+                         :skin skin}))))
   ctx)

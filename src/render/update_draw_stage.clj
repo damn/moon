@@ -1,11 +1,9 @@
 (ns render.update-draw-stage
-  (:require [scene2d.stage.draw :refer [draw!]]
-            [scene2d.stage.set-ctx :refer [set-ctx!]]
-            [scene2d.stage.act :refer [act!]]))
+  (:import (scene2d Stage)))
 
 (defn step
   [{:keys [ctx/stage] :as ctx}]
-  (set-ctx! stage ctx)
-  (act! stage)
-  (draw! stage)
+  (set! (.ctx stage) ctx)
+  (Stage/.act stage)
+  (Stage/.draw stage)
   (:stage/ctx stage))

@@ -1,11 +1,11 @@
 (ns ctx.stage
-  (:require [input.set-processor :as set-processor!]
-            [scene2d.stage :as stage]
-            [viewport.fit-viewport :as fit-viewport]))
+  (:require [scene2d.stage :as stage]
+            [viewport.fit-viewport :as fit-viewport])
+  (:import (com.badlogic.gdx Input)))
 
 (defn step
   [{:keys [ctx/input
            ctx/batch]}]
   (let [stage (stage/create (fit-viewport/create 1440 900) batch)]
-    (set-processor!/f input stage)
+    (.setInputProcessor ^Input input stage)
     stage))

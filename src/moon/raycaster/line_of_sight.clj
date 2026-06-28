@@ -1,7 +1,11 @@
 (ns moon.raycaster.line-of-sight
-  (:require [math.raycaster :as raycaster]))
+  (:import (clojure RayCaster)))
 
 (defn f [this source target]
-  (not (raycaster/blocked? this
-                           (:body/position (:entity/body source))
-                           (:body/position (:entity/body target)))))
+  (not (RayCaster/rayBlocked (double (first (:body/position (:entity/body source))))
+                             (double (second (:body/position (:entity/body source))))
+                             (double (first (:body/position (:entity/body target))))
+                             (double (second (:body/position (:entity/body target))))
+                             (this 1)
+                             (this 2)
+                             (this 0))))

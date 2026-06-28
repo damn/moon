@@ -1,6 +1,6 @@
 (ns ctx.world-viewport
-  (:require [gdx.graphics.orthographic-camera :as camera]
-            [viewport.fit-viewport :as fit-viewport]))
+  (:require [viewport.fit-viewport :as fit-viewport])
+  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn step
   [{:keys [ctx/world-unit-scale]}]
@@ -8,7 +8,5 @@
         world-height (* 900  world-unit-scale)]
     (fit-viewport/create world-width
                          world-height
-                         (camera/create
-                          {:y-down? false
-                           :world-width world-width
-                           :world-height world-height}))))
+                         (doto (OrthographicCamera.)
+                           (.setToOrtho false world-width world-height)))))

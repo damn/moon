@@ -3,10 +3,11 @@
             [grid2d.height :refer [->height]]
             [grid2d.width :refer [->width]]
             [grid2d.printgrid :as printgrid]
-            [grid2d.flood-fill :as flood-fill]))
+            [grid2d.flood-fill :as flood-fill])
+  (:import (java.util Random)))
 
 (comment
- (let [{:keys [start grid]} (caves/create (clojure.java.util.random/create) 15 15 :wide)
+ (let [{:keys [start grid]} (caves/create (Random.) 15 15 :wide)
        _ (println "BASE GRID:\n")
        _ (printgrid/f grid)
        ;_ (println)

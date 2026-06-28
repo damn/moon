@@ -1,12 +1,17 @@
 (ns editor.window.with-window-close
-  (:require [scene2d.actor.get-stage :as get-stage]
-            [scene2d.actor.remove :refer [remove!]]
-            [scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [scene2d.stage.set-ctx :refer [set-ctx!]]
-            [scene2d.stage.add-actor :refer [add-actor!]]
-            [moon.throwable :as throwable]
-            [moon.ui.error-window :as error-window]
-            [scene2d.actor.is-window :as window?]))
+  (:require [moon.throwable :as throwable]
+            [moon.ui.error-window :as error-window])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Window)
+           (scene2d Stage)))
+
+(defn- find-window-ancestor [actor]
+  (loop [a actor]
+    (if-let [p (Actor/.getParent a)]
+      (if (instance? Window p)
+        p
+        (recur p))
+      (throw (Error. (str "Actor has no parent window " actor))))))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin
@@ -14,13 +19,13 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (get-stage/f actor)]
-       (set-ctx! stage new-ctx))
-     (remove! (find-ancestor actor window?/f))
+           stage (Actor/.getStage actor)]
+       (set! (.ctx stage) new-ctx))
+     (Actor/.remove (find-window-ancestor actor))
      (catch Throwable t
        (throwable/pretty-pst t)
-       (add-actor! stage
-                   (error-window/create
-                    {:type :ui/error-window
-                     :skin skin
-                     :throwable t}))))))
+       (Stage/.addActor stage
+                        (error-window/create
+                         {:type :ui/error-window
+                          :skin skin
+                          :throwable t}))))))

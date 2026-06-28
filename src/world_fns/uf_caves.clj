@@ -1,10 +1,10 @@
 (ns world-fns.uf-caves
-  (:require [clojure.java.util.random :as random]
-            [tiled.create-static-tiled-map-tile :as create-tile]
+  (:require [tiled.create-static-tiled-map-tile :as create-tile]
             [world-fns.uf-caves.initial-grid]
             [world-fns.uf-caves.fix-nads]
             [world-fns.uf-caves.last-steps])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)))
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (java.util Random)))
 
 (defn create
   [{:keys [initial-grid-create-fn
@@ -23,7 +23,7 @@
            :grid2d-fix-nads-fn grid2d-fix-nads-fn
            :size cave-size
            :cave-style cave-style
-           :random (random/create)
+           :random (Random.)
            :level/tile-size tile-size
            :level/create-tile (let [texture (get textures texture-path)]
                                 (memoize

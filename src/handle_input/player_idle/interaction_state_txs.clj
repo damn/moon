@@ -1,7 +1,6 @@
 (ns handle-input.player-idle.interaction-state-txs
-  (:require [scene2d.actor.visible :refer [visible?]]
-            [scene2d.group.find-actor :refer [find-actor]]
-            [moon.inventory :as inventory]))
+  (:require [moon.inventory :as inventory])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
 (defn interaction-state->txs [[k params] stage player-eid]
   (case k
@@ -20,8 +19,8 @@
             (cond
              (-> stage
                  :stage/root
-                 (find-actor "moon.ui.windows.inventory")
-                 visible?)
+                 (#(Group/.findActor % "moon.ui.windows.inventory"))
+                 Actor/.isVisible)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]

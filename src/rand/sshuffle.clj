@@ -1,5 +1,5 @@
 (ns rand.sshuffle
-  (:require [clojure.java.util.random :as random]))
+  (:import (java.util Random)))
 
 ;; rename to 'shuffle', rand and rand-int without the 's'-> just use with require :as.
 ;; maybe even remove the when coll pred?
@@ -12,4 +12,4 @@
         (java.util.Collections/shuffle al random)
         (clojure.lang.RT/vector (.toArray al)))))
   ([coll]
-    (sshuffle coll (random/create))))
+    (sshuffle coll (Random.))))

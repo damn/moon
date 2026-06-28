@@ -1,9 +1,10 @@
 (ns ctx.add-stage-actors
-  (:require [scene2d.stage.add-actor :refer [add-actor!]]))
+  (:import (scene2d Stage)
+           (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn f!
   [{:keys [ctx/stage]
     :as ctx}
    actor-fns]
   (doseq [[f & params] actor-fns]
-    (add-actor! stage (apply f ctx params))))
+    (Stage/.addActor stage (apply f ctx params))))

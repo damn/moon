@@ -1,11 +1,8 @@
 (ns render.window-camera-controls
   (:require [input.key-just-pressed :as key-just-pressed?]
             [input.key-pressed :as key-pressed?]
-            [orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [scene2d.group.find-actor :refer [find-actor]]
-            [scene2d.actor.set-visible :refer [set-visible!]]
-            [scene2d.actor.toggle-visible :refer [toggle-visible!]]
-            [scene2d.group.children :refer [children]]))
+            [orthographic-camera.inc-zoom :refer [inc-zoom!]])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
 (defn step
   [{:keys [ctx/input
@@ -21,19 +18,15 @@
     (inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
 
   (when (key-just-pressed?/f input (:close-windows-key controls))
-    (->> (find-actor (:stage/root stage) "moon.ui.windows")
-         children
-         (run! #(set-visible! % false))))
+    (->> (Group/.findActor (:stage/root stage) "moon.ui.windows")
+         Group/.getChildren
+         (run! #(Actor/.setVisible % false))))
 
   (when (key-just-pressed?/f input (:toggle-inventory controls))
-    (-> stage
-        :stage/root
-        (find-actor "moon.ui.windows.inventory")
-        toggle-visible!))
+    (let [inventory (Group/.findActor (:stage/root stage) "moon.ui.windows.inventory")]
+      (Actor/.setVisible inventory (not (Actor/.isVisible inventory)))))
 
   (when (key-just-pressed?/f input (:toggle-entity-info controls))
-    (-> stage
-        :stage/root
-        (find-actor "moon.ui.windows.entity-info")
-        toggle-visible!))
+    (let [entity-info (Group/.findActor (:stage/root stage) "moon.ui.windows.entity-info")]
+      (Actor/.setVisible entity-info (not (Actor/.isVisible entity-info)))))
   ctx)

@@ -1,12 +1,12 @@
 (ns stage.hp-mana-bar
   (:require [ctx.draw :refer [draw!]]
-            [scene2d.actor.get-stage :as get-stage]
             [scene2d.actor :as actor]
             [clojure.readable :as readable]
             [moon.stats.get-hitpoints :as get-hitpoints]
             [moon.stats.get-mana :as get-mana]
             [moon.textures :as textures]
-            [moon.val-max.ratio :as ratio]))
+            [moon.val-max.ratio :as ratio])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn create
   [{:keys [ctx/textures
@@ -49,6 +49,6 @@
                           (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
     (actor/f
      {:draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (get-stage/f this)]
+               (when-let [stage (Actor/.getStage this)]
                  (draw! (:stage/ctx stage)
                         (create-draws (:stage/ctx stage)))))})))

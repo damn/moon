@@ -1,6 +1,6 @@
 (ns editor.widget-value.default
-  (:require [scene2d.actor.get-user-object :refer [get-user-object]]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn f
   [_  widget _schemas]
-  ((get-user-object widget) 1))
+  ((Actor/.getUserObject widget) 1))

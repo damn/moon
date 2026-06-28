@@ -1,9 +1,8 @@
 (ns editor.widget-value.one-to-many
-  (:require [scene2d.actor.get-user-object :refer [get-user-object]]
-            [scene2d.group.children :refer [children]]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
 (defn f
   [_  widget _schemas]
-  (->> (children widget)
-       (keep get-user-object)
+  (->> (Group/.getChildren widget)
+       (keep Actor/.getUserObject)
        set))

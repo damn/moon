@@ -1,9 +1,8 @@
 (ns editor.rebuild
   (:require [editor.map-widget-table.get-value :as get-value]
-            [scene2d.actor.remove :refer [remove!]]
-            [scene2d.group.find-actor :refer [find-actor]]
-            [editor.window]
-            [scene2d.stage.add-actor :refer [add-actor!]]))
+            [editor.window])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)
+           (scene2d Stage)))
 
 (defn f!
   [{:keys [ctx/db
@@ -11,11 +10,11 @@
     :as ctx}]
   (let [window (-> stage
                    :stage/root
-                   (find-actor "moon.ui.editor.window"))
-        map-widget-table (find-actor window "moon.db.schema.map.ui.widget")
+                   (#(Group/.findActor % "moon.ui.editor.window")))
+        map-widget-table (Group/.findActor window "moon.db.schema.map.ui.widget")
         property (get-value/f map-widget-table (:db/schemas db))]
-    (remove! window)
-    (add-actor! stage
-                (editor.window/property-editor-window
-                 {:ctx ctx
-                  :property property}))))
+    (Actor/.remove window)
+    (Stage/.addActor stage
+                     (editor.window/property-editor-window
+                      {:ctx ctx
+                       :property property}))))

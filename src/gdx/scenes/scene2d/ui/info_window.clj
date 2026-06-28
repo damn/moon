@@ -1,15 +1,12 @@
 (ns gdx.scenes.scene2d.ui.info-window
   (:require [scene2d.actor.set-position :refer [set-position!]]
-            [scene2d.actor.get-stage :as get-stage]
-            [scene2d.actor.set-name :refer [set-name!]]
-            [scene2d.actor.set-visible :refer [set-visible!]]
             [scene2d.actor :as actor]
-            [scene2d.group.add-actor :refer [add-actor!]]
             [scene2d.ui.label :as label]
             [scene2d.ui.label.set-text :as set-text!]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [scene2d.utils.layout.pack :refer [pack!]]))
+            [scene2d.utils.layout.pack :refer [pack!]])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
 (defn create
   [{:keys [title
@@ -25,12 +22,12 @@
                       {:title title
                        :skin skin
                        :table/rows [[{:actor label :expand? true}]]})
-                 (set-name! actor-name)
-                 (set-visible! visible?)
+                 (Actor/.setName actor-name)
+                 (Actor/.setVisible visible?)
                  (set-position! position))]
-    (add-actor! window (actor/f
-                        {:act! (fn [this delta]
-                                 (when-let [stage (get-stage/f this)]
-                                   (set-text!/f label (set-label-text! (:stage/ctx stage))))
-                                 (pack! window))}))
+    (Group/.addActor window (actor/f
+                             {:act! (fn [this delta]
+                                      (when-let [stage (Actor/.getStage this)]
+                                        (set-text!/f label (set-label-text! (:stage/ctx stage))))
+                                      (pack! window))}))
     window))

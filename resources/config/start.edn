@@ -83,7 +83,6 @@
                           :effects/target-entity effects.render.target-entity/f
                           }
                          )
- (moon.application.use-glfw-async/f!)
  (moon.application.start/f!
   {:listener (moon.application.listener/f #edn/resource "config/listener.edn")
    :title "Moon"

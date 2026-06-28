@@ -1,9 +1,6 @@
 (ns editor.map-widget-table.add-component-window
-  (:require [scene2d.event.get-stage :as get-stage]
-            [editor.build-widget :as build-widget]
+  (:require [editor.build-widget :as build-widget]
             [editor.widget-value :as widget-value]
-            [scene2d.actor.remove :refer [remove!]]
-            [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.layout.pack :refer [pack!]]
@@ -13,7 +10,8 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas.default-value :refer [default-value]]
             [moon.schemas.map-keys :refer [map-keys]]
-            [moon.schemas.optional :refer [optional?]]))
+            [moon.schemas.optional :refer [optional?]])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)))
 
 (defn f
   [{:keys [schemas schema map-widget-table skin]}]
@@ -31,20 +29,20 @@
        [{:actor (doto (text-button/create
                        {:skin skin
                         :text (name k)})
-                  (add-listener! (change-listener/create
-                                  (fn [event _actor]
-                                    (remove! window)
-                                    (let [ctx (:stage/ctx (get-stage/f event))]
-                                      (add-rows! map-widget-table [((:ctx/create-component-row ctx)
-                                                                    {:skin skin
-                                                                     :editor-widget (build-widget/f ctx
-                                                                                                    (get schemas k)
-                                                                                                    k
-                                                                                                    (default-value schemas k))
-                                                                     :k k
-                                                                     :display-remove-component-button? (optional? schemas schema k)
-                                                                     :table map-widget-table})])
-                                      ((:ctx/rebuild-editor-window! ctx) ctx)))))
+                  (Actor/.addListener (change-listener/create
+                                       (fn [event _actor]
+                                         (Actor/.remove window)
+                                         (let [ctx (:stage/ctx (Event/.getStage event))]
+                                           (add-rows! map-widget-table [((:ctx/create-component-row ctx)
+                                                                          {:skin skin
+                                                                           :editor-widget (build-widget/f ctx
+                                                                                                          (get schemas k)
+                                                                                                          k
+                                                                                                          (default-value schemas k))
+                                                                           :k k
+                                                                           :display-remove-component-button? (optional? schemas schema k)
+                                                                           :table map-widget-table})])
+                                           ((:ctx/rebuild-editor-window! ctx) ctx)))))
                   )}]))
     (pack! window)
     window))

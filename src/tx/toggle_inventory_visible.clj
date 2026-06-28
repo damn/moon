@@ -1,11 +1,8 @@
 (ns tx.toggle-inventory-visible
-  (:require [scene2d.group.find-actor :refer [find-actor]]
-            [scene2d.actor.toggle-visible :refer [toggle-visible!]]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
 (defn f
   [{:keys [ctx/stage] :as ctx}]
-  (-> stage
-      :stage/root
-      (find-actor "moon.ui.windows.inventory")
-      toggle-visible!)
+  (let [inventory (Group/.findActor (:stage/root stage) "moon.ui.windows.inventory")]
+    (Actor/.setVisible inventory (not (Actor/.isVisible inventory))))
   nil)

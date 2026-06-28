@@ -29,7 +29,6 @@
                           :s/val-max     editor.widget-value.val-max/f
                           }
                          )
- (moon.application.use-glfw-async/f!)
  (moon.application.start/f!
   {:listener (moon.application.listener/f
               {

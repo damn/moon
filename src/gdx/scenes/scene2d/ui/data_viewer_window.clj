@@ -1,7 +1,5 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
   (:require [gdx.scenes.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
-            [scene2d.actor.get-stage :as get-stage]
-            [scene2d.actor.add-listener :refer [add-listener!]]
             [scene2d.ui.label :as label]
             [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.window.add-close-button :as add-close-button]
@@ -9,8 +7,9 @@
             [scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.utils.change-listener :as change-listener]
-            [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]
-            [scene2d.stage.add-actor :refer [add-actor!]]))
+            [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (scene2d Stage)))
 
 (defn create
   [{:keys [title
@@ -22,15 +21,15 @@
   (let [v->actor (fn [v skin]
                    (if (map? v)
                      (doto (text-button/create {:text "Map" :skin skin})
-                       (add-listener! (change-listener/create
-                                       (fn [_event actor]
-                                         (add-actor! (get-stage/f actor)
-                                                     (create
-                                                      {:title "title"
-                                                       :data v
-                                                       :width 500
-                                                       :height 500
-                                                       :skin skin}))))))
+                       (Actor/.addListener (change-listener/create
+                                            (fn [_event actor]
+                                              (Stage/.addActor (Actor/.getStage actor)
+                                                               (create
+                                                                {:title "title"
+                                                                 :data v
+                                                                 :width 500
+                                                                 :height 500
+                                                                 :skin skin}))))))
                      (label/create
                       {:text (v->text v)
                        :skin skin})))
