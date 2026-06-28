@@ -1,10 +1,12 @@
 (ns moon.application.start
-  (:require [lwjgl.application :as application]
-            [lwjgl.application-config :as config]))
+  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)))
 
 (defn f!
-  [{:keys [listener]
-    :as config}]
-  (application/create (let [[f params] listener]
+  [{:keys [listener title windowed-mode foreground-fps]}]
+  (Lwjgl3Application. (let [[f params] listener]
                         (f params))
-                      (config/create config)))
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle title)
+                        (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
+                        (.setForegroundFPS foreground-fps))))
