@@ -4,9 +4,8 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [scene2d.utils.drawable.set-min-size :as set-min-size!]
-            [texture-region.get-region-height :refer [get-region-height]]
-            [texture-region.get-region-width :refer [get-region-width]]
-            [moon.textures :as textures]))
+            [moon.textures :as textures])
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 ; too many ! too big ! scroll ... only show files first & preview?
 ; make tree view from folders, etc. .. !! all creatures animations showing...
@@ -24,8 +23,8 @@
    (let [texture-region (textures/texture-region textures image)
          scale 2]
      (doto (texture-region-drawable/f texture-region)
-       (set-min-size!/f (* scale (get-region-width texture-region))
-                        (* scale (get-region-height texture-region))))))
+       (set-min-size!/f (* scale (TextureRegion/.getRegionWidth texture-region))
+                        (* scale (TextureRegion/.getRegionHeight texture-region))))))
   #_(ui/image-button image
                      (fn [_actor ctx]
                        (c/add-actor! ctx (scroll-pane/choose-window (texture-rows ctx))))
