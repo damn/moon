@@ -1,11 +1,11 @@
 (ns tiled-map.spawn-positions
-  (:require [map-properties.get :as get]
-            [tiled-map.get-layers :refer [get-layers]]
+  (:require [tiled-map.get-layers :refer [get-layers]]
             [tiled-map-tile.get-properties :as get-properties]
             [tiled-map-tile-layer.get-width :refer [get-width]]
             [tiled-map-tile-layer.get-height :refer [get-height]]
             [tiled-map-tile-layer.get-cell :refer [get-cell]])
-  (:import (com.badlogic.gdx.maps MapLayers)
+  (:import (com.badlogic.gdx.maps MapLayers
+                                  MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
 
 (defn f [tiled-map]
@@ -17,7 +17,7 @@
           :let [position [x y]
                 cell (get-cell layer position)]
           :when cell
-          :let [value (get/f (get-properties/f (.getTile ^TiledMapTileLayer$Cell cell))
-                             property-key)]
+          :let [value (MapProperties/.get (get-properties/f (.getTile ^TiledMapTileLayer$Cell cell))
+                                          property-key)]
           :when value]
       [position value])))

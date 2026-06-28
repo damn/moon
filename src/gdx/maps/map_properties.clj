@@ -1,6 +1,6 @@
-(ns map-properties.clojurize
+(ns gdx.maps.map-properties
   (:import (com.badlogic.gdx.maps MapProperties)))
 
-(defn f [^MapProperties props]
+(defn clojurize [^MapProperties props]
   (zipmap (.getKeys props)
           (.getValues props)))
