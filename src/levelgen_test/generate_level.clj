@@ -1,13 +1,13 @@
 (ns levelgen-test.generate-level
   (:require [clojure.edn-resource :refer [edn-resource]]
             [texture.texture-region :as texture-region]
-            [map-layers.get-layer :refer [get-layer]]
             [tiled-map.get-layers :refer [get-layers]]
             [tiled-map-tile-layer.set-visible :refer [set-visible!]]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
             [moon.db.all-raw :refer [all-raw]])
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:import (com.badlogic.gdx.maps MapLayers)
+           (com.badlogic.gdx.utils Disposable)))
 
 (defn f
   [{:keys [ctx/db
@@ -33,7 +33,7 @@
     (assert tiled-map)
     (-> tiled-map
         get-layers
-        (get-layer "creatures")
+        (MapLayers/.get "creatures")
         (set-visible! true))
     (show-whole-map/f! ctx)
     ctx))
