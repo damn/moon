@@ -1,8 +1,7 @@
 (ns draw.sector
-  (:require [shape-drawer.sector :refer [sector!]]
-            [shape-drawer.set-color :refer [set-color!]]))
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
-  (set-color! shape-drawer color-float-bits)
-  (sector! shape-drawer center-x center-y radius start-radians radians))
+  (ShapeDrawer/.setColor shape-drawer (float color-float-bits))
+  (ShapeDrawer/.sector shape-drawer center-x center-y radius start-radians radians))

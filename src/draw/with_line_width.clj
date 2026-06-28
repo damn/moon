@@ -1,14 +1,13 @@
 (ns draw.with-line-width
-  (:require [ctx.draw :refer [draw!]]
-            [shape-drawer.default-line-width :refer [default-line-width]]
-            [shape-drawer.set-default-line-width :refer [set-default-line-width!]]))
+  (:require [ctx.draw :refer [draw!]])
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn f
   [{:keys [ctx/shape-drawer]
     :as ctx}
    width
    draws]
-  (let [old-line-width (default-line-width shape-drawer)]
-    (set-default-line-width! shape-drawer (* width old-line-width))
+  (let [old-line-width (ShapeDrawer/.getDefaultLineWidth shape-drawer)]
+    (ShapeDrawer/.setDefaultLineWidth shape-drawer (* width old-line-width))
     (draw! ctx draws)
-    (set-default-line-width! shape-drawer old-line-width)))
+    (ShapeDrawer/.setDefaultLineWidth shape-drawer old-line-width)))

@@ -1,8 +1,7 @@
 (ns draw.rectangle
-  (:require [shape-drawer.rectangle :refer [rectangle!]]
-            [shape-drawer.set-color :refer [set-color!]]))
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn f
   [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-  (set-color! shape-drawer color-float-bits)
-  (rectangle! shape-drawer x y w h))
+  (ShapeDrawer/.setColor shape-drawer (float color-float-bits))
+  (ShapeDrawer/.rectangle shape-drawer x y w h))

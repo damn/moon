@@ -1,8 +1,7 @@
 (ns draw.filled-circle
-  (:require [shape-drawer.filled-circle :refer [filled-circle!]]
-            [shape-drawer.set-color :refer [set-color!]]))
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-  (set-color! shape-drawer color-float-bits)
-  (filled-circle! shape-drawer x y radius))
+  (ShapeDrawer/.setColor shape-drawer (float color-float-bits))
+  (ShapeDrawer/.filledCircle shape-drawer (float x) (float y) (float radius)))
