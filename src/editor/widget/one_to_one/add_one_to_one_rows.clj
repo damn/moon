@@ -1,5 +1,6 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
-  (:require [scene2d.ui.table.add-rows :refer [add-rows!]]
+  (:require [scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.text-tooltip :as text-tooltip]
             [scene2d.utils.layout.pack :refer [pack!]]
@@ -13,14 +14,6 @@
            (com.badlogic.gdx.scenes.scene2d.ui Window)
            (scene2d Stage)))
 
-(defn- find-window-ancestor [actor]
-  (loop [a actor]
-    (if-let [p (Actor/.getParent a)]
-      (if (instance? Window p)
-        p
-        (recur p))
-      (throw (Error. (str "Actor has no parent window " actor))))))
-
 (defn add-one-to-one-rows
   [{:keys [ctx/db
            ctx/skin
@@ -31,7 +24,7 @@
   (let [redo-rows (fn [ctx id]
                     (Group/.clearChildren table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (pack! (find-window-ancestor table)))]
+                    (pack! (find-ancestor table #(instance? Window %))))]
     (add-rows!
      table
      [[(when-not property-id
@@ -52,7 +45,7 @@
                                                :skin skin
                                                :property-type property-type
                                                :clicked-id-fn (fn [actor id ctx]
-                                                                (Actor/.remove (find-window-ancestor actor))
+                                                                (Actor/.remove (find-ancestor actor #(instance? Window %)))
                                                                 (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
