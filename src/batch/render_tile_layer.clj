@@ -2,7 +2,7 @@
   (:require [batch.draw-tile :as draw-tile])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer
-                                       TiledMapTileLayer$Cell)))
+                                        TiledMapTileLayer$Cell)))
 
 (defn render-tile-layer!
   [^TiledMapTileLayer layer
