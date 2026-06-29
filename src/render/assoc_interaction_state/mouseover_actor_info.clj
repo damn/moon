@@ -1,35 +1,20 @@
 (ns render.assoc-interaction-state.mouseover-actor-info
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Button Label Window)))
+  (:require [scene2d.actor.is-button :as button?]
+            [scene2d.actor.is-window-title-bar :as window-title-bar?])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(def ^:private button-class?
-  (fn [actor]
-    (some #(= Button %) (supers (class actor)))))
-
-(defn- button? [actor]
-  (or (button-class? actor)
-      (when-let [parent (Actor/.getParent actor)]
-        (button-class? parent))))
-
-(defn- window-title-bar? [actor]
-  (when (instance? Label actor)
-    (when-let [p (Actor/.getParent actor)]
-      (when-let [p (Actor/.getParent p)]
-        (and (instance? Window actor)
-             (= (Window/.getTitleLabel p) actor))))))
-
-(defn mouseover-actor-info [actor]
-  (let [inventory-slot (and (Actor/.getParent actor)
-                            (= "inventory-cell" (Actor/.getName (Actor/.getParent actor)))
-                            (Actor/.getUserObject (Actor/.getParent actor)))]
+(defn mouseover-actor-info [^Actor actor]
+  (let [inventory-slot (and (.getParent actor)
+                            (= "inventory-cell" (.getName (.getParent actor)))
+                            (.getUserObject (.getParent actor)))]
     (cond
      inventory-slot
      [:mouseover-actor/inventory-cell inventory-slot]
 
-     (window-title-bar? actor)
+     (window-title-bar?/f actor)
      [:mouseover-actor/window-title-bar]
 
-     (button? actor)
+     (button?/f actor)
      [:mouseover-actor/button]
 
      :else
