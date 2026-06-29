@@ -1,6 +1,6 @@
 (ns ctx.add-stage-actors
-  (:import (scene2d Stage)
-           (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)))
 
 (defn f!
   [{:keys [ctx/stage]
