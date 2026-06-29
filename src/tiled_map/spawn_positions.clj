@@ -1,8 +1,5 @@
 (ns tiled-map.spawn-positions
-  (:require [tiled-map.get-layers :refer [get-layers]]
-            [tiled-map-tile-layer.get-width :refer [get-width]]
-            [tiled-map-tile-layer.get-height :refer [get-height]]
-            [tiled-map-tile-layer.get-cell :refer [get-cell]])
+  (:require [tiled-map.get-layers :refer [get-layers]])
   (:import (com.badlogic.gdx.maps MapLayers
                                   MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
@@ -11,10 +8,10 @@
   (let [layer-name "creatures"
         property-key "id"
         layer (MapLayers/.get (get-layers tiled-map) layer-name)]
-    (for [x (range (get-width layer))
-          y (range (get-height layer))
+    (for [x (range (.getWidth layer))
+          y (range (.getHeight layer))
           :let [position [x y]
-                cell (get-cell layer position)]
+                cell (.getCell layer x y)]
           :when cell
           :let [value (MapProperties/.get (.getProperties (.getTile ^TiledMapTileLayer$Cell cell))
                                           property-key)]

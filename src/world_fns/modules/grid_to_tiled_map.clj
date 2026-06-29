@@ -1,10 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require [gdx.maps.map-properties :as map-properties]
             [tiled-map.get-layers :refer [get-layers]]
-            [tiled-map-tile-layer.visible :refer [visible?]]
-            [tiled-map-tile-layer.get-properties :as get-properties]
-            [tiled-map-tile-layer.get-cell :refer [get-cell]]
-            [tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled.static-tiled-map-tile.copy :as copy]
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
@@ -22,12 +18,12 @@
                         {"width" (->width grid)
                          "height" (->height grid)})
      :layers (for [layer (get-layers schema-tiled-map)]
-               {:name (get-name layer)
-                :visible? (visible? layer)
-                :properties (map-properties/clojurize (get-properties/f layer))
+               {:name (.getName layer)
+                :visible? (.isVisible layer)
+                :properties (map-properties/clojurize (.getProperties layer))
                 :tiles (for [position (posis/f grid)
                              :let [local-position (get grid position)]
                              :when local-position]
                          (when (vector? local-position)
-                           (when-let [cell (get-cell layer local-position)]
+                           (when-let [cell (.getCell layer (local-position 0) (local-position 1))]
                              [position (copy-tile (.getTile ^TiledMapTileLayer$Cell cell))])))})}))

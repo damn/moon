@@ -1,10 +1,9 @@
 (ns tiled-map-tile-layer.property-value
-  (:require [tiled-map-tile-layer.get-cell :refer [get-cell]])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell)))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
-(defn property-value [layer xy property-key]
-  (if-let [cell (get-cell layer xy)]
-    (if-let [value (.get (.getProperties (.getTile ^TiledMapTileLayer$Cell cell)) property-key)]
+(defn property-value [^TiledMapTileLayer layer [x y] property-key]
+  (if-let [cell (.getCell layer x y)]
+    (if-let [value (.get (.getProperties (.getTile cell)) property-key)]
       value
       :undefined)
     :no-cell))
