@@ -26,11 +26,10 @@
                                     (draw-cell-rect @player-eid
                                                     (Actor/.getX this)
                                                     (Actor/.getY this)
-                                                    (Actor/.hit this
-                                                                (clojurize/f
+                                                    (let [[x y] (clojurize/f
                                                                  (Actor/.stageToLocalCoordinates this
-                                                                                                 (vector2/f ui-mouse-position)))
-                                                                true)
+                                                                                                 (vector2/f ui-mouse-position)))]
+                                                      (Actor/.hit this x y true))
                                                     (Actor/.getUserObject (Actor/.getParent this)))))))})
               (doto (image/create background-drawable)
                 (Actor/.setName "image-widget")
