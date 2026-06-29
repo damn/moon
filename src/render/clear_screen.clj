@@ -1,7 +1,7 @@
 (ns render.clear-screen
-  (:require [gdx.graphics.clear :refer [clear!]]))
+  (:require [clojure.gdx.clear-color-buffer :as clear-color-buffer]))
 
 (defn step
   [{:keys [ctx/graphics] :as ctx}]
-  (clear! graphics 0 0 0 0)
+  (clear-color-buffer/f! graphics 0 0 0 0)
   ctx)
