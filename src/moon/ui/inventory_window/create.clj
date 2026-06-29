@@ -4,7 +4,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.inventory :as inventory]
             [moon.ui.inventory-window.create-cell :refer [->cell]]
-            [gdx.color.create :as color])
+            [clojure.gdx.new-color :as new-color])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
@@ -20,7 +20,7 @@
   (let [slot->drawable (fn [slot]
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
-                           (.tint (color/create [1 1 1 0.4]))))
+                           (.tint (new-color/f [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?
