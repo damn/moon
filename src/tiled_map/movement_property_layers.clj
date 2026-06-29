@@ -1,10 +1,9 @@
 (ns tiled-map.movement-property-layers
-  (:require [tiled-map.get-layers :refer [get-layers]])
-  (:import (com.badlogic.gdx.maps MapProperties)))
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn f
-  [tiled-map]
+  [^TiledMap tiled-map]
   (->> tiled-map
-       get-layers
+       .getLayers
        reverse
-       (filter #(MapProperties/.get (.getProperties %) "movement-properties"))))
+       (filter #(.get (.getProperties %) "movement-properties"))))

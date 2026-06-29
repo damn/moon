@@ -1,15 +1,15 @@
 (ns batch.draw-tiled-map
-  (:require [tiled-map.get-layers :refer [get-layers]]
-            [batch.render-tile-layer :refer [render-tile-layer!]])
+  (:require [batch.render-tile-layer :refer [render-tile-layer!]])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch)
-           (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
+           (com.badlogic.gdx.maps.tiled TiledMap
+                                        TiledMapTileLayer)))
 
 (defn draw-tiled-map!
   [^Batch batch
    world-unit-scale
    ^OrthographicCamera camera
-   tiled-map
+   ^TiledMap tiled-map
    color-setter]
   (.setProjectionMatrix batch (.combined camera))
   (.begin batch)
@@ -23,7 +23,7 @@
                     :y (- (.y (.position camera)) (/ h 2))
                     :width w
                     :height h}]
-    (doseq [^TiledMapTileLayer layer (filter #(.isVisible ^TiledMapTileLayer %) (get-layers tiled-map))]
+    (doseq [^TiledMapTileLayer layer (filter TiledMapTileLayer/.isVisible (.getLayers tiled-map))]
       (render-tile-layer! layer
                           batch
                           (float world-unit-scale)

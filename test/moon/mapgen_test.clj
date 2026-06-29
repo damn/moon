@@ -2,7 +2,6 @@
   (:require [clojure.string :as str]
             [clojure.pprint :refer [pprint]]
             [moon.db.build :refer [build]]
-            [tiled-map.get-layers :refer [get-layers]]
             [moon.utils.camera :as camera-utils]))
 
 (def ^:private infotext
@@ -23,7 +22,7 @@
                                  (g/world-mouse-position ctx)
                                  [modules/width modules/height])))
           (when area-level-grid
-            (let [layer (.get (get-layers this) "creatures")]
+            (let [layer (.get (.getLayers this) "creatures")]
               (when-let [cell (.getCell layer tile)]
                 (when-let [id (-> cell
                                   get-tile/f

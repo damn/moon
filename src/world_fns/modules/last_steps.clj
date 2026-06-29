@@ -1,6 +1,5 @@
 (ns world-fns.modules.last-steps
   (:require [tiled-map-tile-layer.property-value :refer [property-value]]
-            [tiled-map.get-layers :refer [get-layers]]
             [grid2d.cells :refer [->cells]]
             [grid2d.scale-grid :as scale-grid]
             [grid2d.printgrid :as printgrid]
@@ -44,7 +43,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (MapLayers/.get (get-layers tiled-map) "creatures")
+                                                    (property-value (MapLayers/.get (.getLayers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

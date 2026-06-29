@@ -1,6 +1,5 @@
 (ns levelgen-test.generate-level
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [tiled-map.get-layers :refer [get-layers]]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
             [moon.db.all-raw :refer [all-raw]])
@@ -32,7 +31,7 @@
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
     (-> tiled-map
-        get-layers
+        .getLayers
         (MapLayers/.get "creatures")
         (.setVisible true))
     (show-whole-map/f! ctx)
