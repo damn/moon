@@ -2,11 +2,11 @@
   (:require [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor :as actor]
             [scene2d.ui.label :as label]
-            [scene2d.ui.label.set-text :as set-text!]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.utils.layout.pack :refer [pack!]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)
+           (com.badlogic.gdx.scenes.scene2d.ui Label)))
 
 (defn create
   [{:keys [title
@@ -28,6 +28,6 @@
     (Group/.addActor window (actor/f
                              {:act! (fn [this delta]
                                       (when-let [stage (Actor/.getStage this)]
-                                        (set-text!/f label (set-label-text! (:stage/ctx stage))))
+                                        (Label/.setText label ^String (set-label-text! (:stage/ctx stage))))
                                       (pack! window))}))
     window))
