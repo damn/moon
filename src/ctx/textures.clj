@@ -1,6 +1,6 @@
 (ns ctx.textures
   (:require [clojure.string :as str]
-            [file-handle.recursively-search :as recursively-search])
+            [clojure.gdx.recursively-search :as recursively-search])
   (:import (com.badlogic.gdx Files)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Texture)))

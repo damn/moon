@@ -1,4 +1,4 @@
-(ns file-handle.recursively-search
+(ns clojure.gdx.recursively-search
   (:import (com.badlogic.gdx.files FileHandle)))
 
 (defn f [^FileHandle file-handle extensions]
