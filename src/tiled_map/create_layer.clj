@@ -1,19 +1,19 @@
 (ns tiled-map.create-layer
-  (:require [tiled-map.get-properties :as get-properties]
-            [tiled.tiled-map-tile-layer :as tiled-map-tile-layer])
-  (:import (com.badlogic.gdx.maps MapProperties)))
+  (:require [tiled.tiled-map-tile-layer :as tiled-map-tile-layer])
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn f
-  [tiled-map {:keys [name
-                     visible?
-                     properties
-                     tiles]}]
-  (let [props (get-properties/f tiled-map)]
+  [^TiledMap tiled-map
+   {:keys [name
+           visible?
+           properties
+           tiles]}]
+  (let [props (.getProperties tiled-map)]
     (tiled-map-tile-layer/f
-     {:width      (MapProperties/.get props "width")
-      :height     (MapProperties/.get props "height")
-      :tilewidth  (MapProperties/.get props "tilewidth")
-      :tileheight (MapProperties/.get props "tileheight")
+     {:width      (.get props "width")
+      :height     (.get props "height")
+      :tilewidth  (.get props "tilewidth")
+      :tileheight (.get props "tileheight")
       :name name
       :visible? visible?
       :map-properties properties
