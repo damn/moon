@@ -1,5 +1,5 @@
 (ns tx.event
-  (:require [game.state :as state]
+  (:require [moon.create-entity-state :as create-entity-state]
             [reduce-fsm :as fsm]))
 
 (defn do!
@@ -14,7 +14,7 @@
      (when-not (= old-state-k new-state-k)
        (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
                              [k (k @eid)])
-             new-state-obj [new-state-k (state/create [new-state-k params] eid ctx)]]
+             new-state-obj [new-state-k (create-entity-state/f [new-state-k params] eid ctx)]]
          [[:tx/assoc       eid :entity/fsm new-fsm]
           [:tx/assoc       eid new-state-k (new-state-obj 1)]
           [:tx/dissoc      eid old-state-k]

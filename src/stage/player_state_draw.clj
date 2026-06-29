@@ -1,6 +1,6 @@
 (ns stage.player-state-draw
   (:require [ctx.draw :refer [draw!]]
-            [game.state :as state]
+            [moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
             [scene2d.actor :as actor])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
@@ -10,4 +10,4 @@
              (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (Actor/.getStage this))
                    entity @player-eid
                    state-k (:state (:entity/fsm entity))]
-               (draw! ctx (state/draw-ui-view [state-k (state-k entity)] player-eid ctx))))}))
+               (draw! ctx (entity-state-draw-ui-view/f [state-k (state-k entity)] player-eid ctx))))}))

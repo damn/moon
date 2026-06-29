@@ -15,7 +15,7 @@
                           :s/one-to-one  moon.schemas.create-value.one-to-one/f
                           }
                          )
- (clojure.add-methods/f! game.state/create
+ (clojure.add-methods/f! moon.create-entity-state/f
                          {
                           :default               entity.state.create.default/f
 
@@ -26,7 +26,7 @@
                           :player-item-on-cursor entity.state.create.player-item-on-cursor/f
                           }
                          )
- (clojure.add-methods/f! game.state/draw-ui-view
+ (clojure.add-methods/f! moon.entity-state-draw-ui-view/f
                          {
                           :default               entity.state.draw-ui-view.default/f
 
