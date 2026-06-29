@@ -1,6 +1,5 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require [gdx.maps.map-properties :as map-properties]
-            [tiled.static-tiled-map-tile.copy :as copy]
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
             [grid2d.height :refer [->height]])
@@ -12,7 +11,7 @@
   (let [copy-tile (memoize
                    (fn [tile]
                      (assert tile)
-                     (copy/f tile)))]
+                     (StaticTiledMapTile. ^StaticTiledMapTile tile)))]
     {:properties (merge (map-properties/clojurize (.getProperties schema-tiled-map))
                         {"width" (->width grid)
                          "height" (->height grid)})
