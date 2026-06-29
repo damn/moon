@@ -3,7 +3,7 @@
             [math.vector2.angle-from-vector :as angle-from-vector]
             [math.vector2.length :as length]
             [moon.grid.valid-position :refer [valid-position?]]
-            [moon.number :as number]))
+            [clojure.number.is-nearly-equal :as nearly-equal?]))
 
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))
@@ -36,7 +36,7 @@
           (pr-str speed))
   (assert (vector? direction))
   (assert (or (zero? (length/f direction))
-              (number/nearly-equal? 1 (length/f direction)))
+              (nearly-equal?/f 1 (length/f direction)))
           (str "cannot understand direction: " (pr-str direction)))
   (when-not (or (zero? (length/f direction))
                 (nil? speed)

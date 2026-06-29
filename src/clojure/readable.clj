@@ -1,11 +1,11 @@
 (ns clojure.readable
-  (:require [moon.number :refer [approx-numbers
-                                 round-n-decimals]]))
+  (:require [clojure.number.is-nearly-equal :as nearly-equal?]
+            [clojure.number.round-n-decimals :as round-n-decimals]))
 
 (defn f [^double x]
   {:pre [(number? x)]}
   (if (or
        (> x 5)
-       (approx-numbers x (int x) 0.001))
+       (nearly-equal?/f x (int x) 0.001))
     (int x)
-    (round-n-decimals x 2)))
+    (round-n-decimals/f x 2)))
