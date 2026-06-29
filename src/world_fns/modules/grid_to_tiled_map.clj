@@ -4,7 +4,8 @@
             [grid2d.width :refer [->width]]
             [grid2d.height :refer [->height]])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
-                                        TiledMapTileLayer$Cell)))
+                                        TiledMapTileLayer$Cell)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn grid->tiled-map
   [^TiledMap schema-tiled-map grid]
