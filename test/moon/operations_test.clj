@@ -1,5 +1,6 @@
 (ns moon.operations-test
-  (:require [moon.ops.add :as add]
+  (:require [moon.ops.apply :as apply]
+            [moon.ops.add :as add]
             [moon.ops.remove :as remove]
             [clojure.test :refer :all]))
 

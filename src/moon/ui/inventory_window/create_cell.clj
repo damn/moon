@@ -5,7 +5,7 @@
             [ctx.draw :refer [draw!]]
             [scene2d.utils.click-listener :as click-listener]
             [scene2d.ui.stack :as stack]
-            [gdx.math.vector2 :as vector2])
+            [clojure.gdx.new-vector2 :as new-vector2])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)
            (com.badlogic.gdx.scenes.scene2d.ui Image)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
@@ -28,7 +28,7 @@
                                                     (Actor/.getY this)
                                                     (let [[x y] (clojurize/f
                                                                  (Actor/.stageToLocalCoordinates this
-                                                                                                 (vector2/f ui-mouse-position)))]
+                                                                                                 (new-vector2/f ui-mouse-position)))]
                                                       (Actor/.hit this x y true))
                                                     (Actor/.getUserObject (Actor/.getParent this)))))))})
               (doto (Image. ^Drawable background-drawable)
