@@ -4,13 +4,13 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.text-tooltip :as text-tooltip]
             [scene2d.utils.change-listener :as change-listener]
-            [scene2d.ui.image :as image]
             [moon.db.get-raw :refer [get-raw]]
             [moon.property.tooltip :as tooltip]
             [moon.property.image :as property-image]
             [moon.textures :as textures])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)
-           (com.badlogic.gdx.scenes.scene2d.ui Window)
+           (com.badlogic.gdx.scenes.scene2d.ui Image
+                                               Window)
            (scene2d Stage)))
 
 (defn add-one-to-one-rows
@@ -48,9 +48,9 @@
                                                                 (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
-           {:actor (doto (image/create (textures/texture-region textures (property-image/f property)))
-                     (Actor/.addListener (text-tooltip/create (tooltip/f property) skin))
-                     (Actor/.setUserObject property-id))}))]
+           {:actor (doto (Image. (textures/texture-region textures (property-image/f property)))
+                     (.addListener (text-tooltip/create (tooltip/f property) skin))
+                     (.setUserObject property-id))}))]
       [(when property-id
          {:actor (doto (text-button/create
                         {:text "-"

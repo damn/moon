@@ -2,7 +2,9 @@
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
-(defn texture-region [textures {:keys [image/file image/bounds]}]
+(defn texture-region
+  ^TextureRegion
+  [textures {:keys [image/file image/bounds]}]
   (assert file)
   (assert (contains? textures file))
   (let [^Texture texture (get textures file)]

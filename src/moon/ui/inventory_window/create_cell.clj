@@ -5,10 +5,11 @@
             [ctx.draw :refer [draw!]]
             [game.state :as state]
             [scene2d.utils.click-listener :as click-listener]
-            [scene2d.ui.image :as image]
             [scene2d.ui.stack :as stack]
             [gdx.math.vector2 :as vector2])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)
+           (com.badlogic.gdx.scenes.scene2d.ui Image)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -31,10 +32,10 @@
                                                                                                  (vector2/f ui-mouse-position)))]
                                                       (Actor/.hit this x y true))
                                                     (Actor/.getUserObject (Actor/.getParent this)))))))})
-              (doto (image/create background-drawable)
-                (Actor/.setName "image-widget")
-                (Actor/.setUserObject {:background-drawable background-drawable
-                                       :cell-size cell-size}))])
+              (doto (Image. ^Drawable background-drawable)
+                (.setName "image-widget")
+                (.setUserObject {:background-drawable background-drawable
+                                 :cell-size cell-size}))])
        (doto stack
          (Actor/.addListener (click-listener/create
                               (fn [event _x _y]

@@ -2,9 +2,10 @@
   (:require [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.table.add-cell :refer [add-cell!]]
-            [scene2d.ui.image :as image]
             [gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor :refer [set-label-text-actor]])
-  (:import (com.badlogic.gdx.scenes.scene2d Group)))
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.scenes.scene2d Group)
+           (com.badlogic.gdx.scenes.scene2d.ui Image)))
 
 (defn add-upd-label!
   ([skin table text-fn icon]
@@ -12,7 +13,7 @@
                 {:text ""
                  :skin skin})
          sub-table (table/create
-                    {:table/rows [[{:actor (image/create icon)}
+                    {:table/rows [[{:actor (Image. ^Texture icon)}
                                    label]]})]
      (Group/.addActor table (set-label-text-actor label text-fn))
      (add-cell! table {:actor sub-table
