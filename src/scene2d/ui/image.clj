@@ -14,8 +14,3 @@
 
 (defmethod create TextureRegionDrawable [drawable]
   (Image. drawable))
-
-(comment
- (defn f [drawable scaling align]
-   (Image. drawable scaling align))
- )
