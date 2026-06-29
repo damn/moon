@@ -1,6 +1,5 @@
 (ns tiled-map.tile-movement-property
-  (:require [tiled-map-tile.get-properties :as get-properties]
-            [tiled-map.get-properties :as tiled-map-get-properties]
+  (:require [tiled-map.get-properties :as tiled-map-get-properties]
             [tiled-map-tile-layer.get-name :refer [get-name]]
             [tiled-map-tile-layer.get-cell :refer [get-cell]])
   (:import (com.badlogic.gdx.maps MapProperties)
@@ -10,7 +9,7 @@
   [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (get-cell layer position)]
-      (let [value (MapProperties/.get (get-properties/f (.getTile ^TiledMapTileLayer$Cell cell))
+      (let [value (MapProperties/.get (.getProperties (.getTile ^TiledMapTileLayer$Cell cell))
                                       "movement")]
         (assert value
                 (str "Value for :movement at position "
