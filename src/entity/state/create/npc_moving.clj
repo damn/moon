@@ -1,6 +1,5 @@
 (ns entity.state.create.npc-moving
-  (:require [game.constants :refer [reaction-time-multiplier]]
-            [moon.stats.get-stat-value :refer [get-stat-value]]
+  (:require [moon.stats.get-stat-value :refer [get-stat-value]]
             [timer.create :refer [create-timer]]))
 
 (defn f
@@ -8,4 +7,4 @@
   {:movement-vector movement-vector
    :timer (create-timer elapsed-time
                         (* (get-stat-value (:entity/stats @eid) :stats/reaction-time)
-                           reaction-time-multiplier))})
+                           0.016))})

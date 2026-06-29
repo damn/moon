@@ -1,6 +1,5 @@
 (ns entity.render.mouseover
-  (:require [moon.faction :as faction]
-            [game.constants :refer [mouseover-ellipse-width]]))
+  (:require [moon.faction :as faction]))
 
 (defn f
   [_
@@ -9,7 +8,7 @@
    {:keys [ctx/colors
            ctx/player-eid]}]
   (let [player @player-eid]
-    [[:draw/with-line-width mouseover-ellipse-width
+    [[:draw/with-line-width 5
       [[:draw/ellipse
         (:body/position body)
         (/ (:body/width  body) 2)
