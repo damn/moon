@@ -59,10 +59,10 @@
                            50)]]})
       (add-close-button/f! skin)
       (set-modal/f! true)
-      (#(run! Group/.addActor % [(actor/f
-                                  {:act! (fn [this delta]
-                                           (when-let [stage (Actor/.getStage this)]
-                                             (let [ctx (:stage/ctx stage)]
-                                               (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
-                                                 (clicked-save-fn this ctx)))))})]))
+      (Group/.addActor (actor/f
+                        {:act! (fn [this delta]
+                                 (when-let [stage (Actor/.getStage this)]
+                                   (let [ctx (:stage/ctx stage)]
+                                     (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
+                                       (clicked-save-fn this ctx)))))}))
       (Actor/.setName "moon.ui.editor.window"))))
