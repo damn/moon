@@ -1,7 +1,7 @@
 (ns moon.ops.info
   (:require [clojure.math :as math]
             [clojure.string :as str]
-            [moon.ops :as ops]))
+            [moon.ops.sort :as sort]))
 
 (defn f [ops modifier-k]
   (str/join "\n"
@@ -17,4 +17,4 @@
                         :op/mult (str v "%"))
                       " "
                       (str/capitalize (name modifier-k)))))
-             (ops/sort ops))))
+             (sort/f ops))))
