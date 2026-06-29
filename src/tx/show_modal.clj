@@ -3,7 +3,6 @@
             [scene2d.ui.label :as label]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
-            [scene2d.ui.window.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window])
   (:import (com.badlogic.gdx.utils Align)
            (com.badlogic.gdx.scenes.scene2d Actor)
@@ -28,7 +27,7 @@
                                                                         (fn [_event _actor]
                                                                           (Actor/.remove (Group/.findActor (:stage/root stage) "moon.ui.modal-window"))
                                                                           (on-click)))))}]]})
-                     (set-modal/f! true)
+                     (.setModal true)
                      (Actor/.setName "moon.ui.modal-window")
                      (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                      (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]

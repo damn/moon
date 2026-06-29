@@ -5,7 +5,6 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.window.add-close-button :as add-close-button]
-            [scene2d.ui.window.set-modal :as set-modal]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas.default-value :refer [default-value]]
             [moon.schemas.map-keys :refer [map-keys]]
@@ -19,7 +18,7 @@
                        :skin skin
                        :table/cell-defaults {:pad 5}})
                  (add-close-button/f! skin)
-                 (set-modal/f! true))
+                 (.setModal true))
         remaining-ks (sort (remove (set (keys (widget-value/f schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
     (add-rows!

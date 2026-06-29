@@ -4,7 +4,6 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db.all-raw :refer [all-raw]]
             [scene2d.ui.window.add-close-button :as add-close-button]
-            [scene2d.ui.window.set-modal :as set-modal]
             [moon.property.tooltip :as tooltip]
             [moon.property.image :as image]
             [moon.textures :as textures]))
@@ -33,4 +32,4 @@
                              (partition-all columns)
                              (overview-table-rows* skin image-scale)))})
     (add-close-button/f! skin)
-    (set-modal/f! true)))
+    (.setModal true)))

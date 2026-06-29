@@ -5,7 +5,6 @@
             [scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.window.add-close-button :as add-close-button]
-            [scene2d.ui.window.set-modal :as set-modal]
             [editor.window.with-window-close :as with-window-close]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -58,7 +57,7 @@
                            scroll-pane-height
                            50)]]})
       (add-close-button/f! skin)
-      (set-modal/f! true)
+      (.setModal true)
       (Group/.addActor (actor/f
                         {:act! (fn [this delta]
                                  (when-let [stage (Actor/.getStage this)]

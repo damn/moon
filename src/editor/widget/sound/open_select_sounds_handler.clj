@@ -1,7 +1,6 @@
 (ns editor.widget.sound.open-select-sounds-handler
   (:require [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.window.add-close-button :as add-close-button]
-            [scene2d.ui.window.set-modal :as set-modal]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [ctx.do :refer [do!]]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -43,4 +42,4 @@
                                :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
                                             (Actor/.getHeight table))})]]})
                        (add-close-button/f! skin)
-                       (set-modal/f! true)))))
+                       (.setModal true)))))

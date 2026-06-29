@@ -1,5 +1,4 @@
 (ns render.assoc-interaction-state.mouseover-actor-info
-  (:require [scene2d.ui.window.get-title-label :as get-title-label])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Button Label Window)))
 
@@ -17,7 +16,7 @@
     (when-let [p (Actor/.getParent actor)]
       (when-let [p (Actor/.getParent p)]
         (and (instance? Window actor)
-             (= (get-title-label/f p) actor))))))
+             (= (Window/.getTitleLabel p) actor))))))
 
 (defn mouseover-actor-info [actor]
   (let [inventory-slot (and (Actor/.getParent actor)
