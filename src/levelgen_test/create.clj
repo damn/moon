@@ -1,5 +1,5 @@
 (ns levelgen-test.create
-  (:require [gdx.color.float-bits :refer [float-bits]]
+  (:require [clojure.gdx.float-bits :as float-bits]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
             [levelgen-test.create.edit-window :refer [edit-window]]
@@ -33,7 +33,7 @@
         ctx (assoc ctx
                    :ctx/world-viewport world-viewport
                    :ctx/camera (:viewport/camera world-viewport)
-                   :ctx/color-setter (constantly (float-bits [1 1 1 1]))
+                   :ctx/color-setter (constantly (float-bits/f [1 1 1 1]))
                    :ctx/zoom-speed 0.1
                    :ctx/camera-movement-speed 1
                    :ctx/world-unit-scale world-unit-scale)

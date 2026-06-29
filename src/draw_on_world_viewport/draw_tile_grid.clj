@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-tile-grid
-  (:require [gdx.color.float-bits :refer [float-bits]]
+  (:require [clojure.gdx.float-bits :as float-bits]
             [orthographic-camera.frustum :refer [frustum]]))
 
 (defn f
@@ -12,4 +12,4 @@
       (+ 2 (int (:viewport/world-height world-viewport)))
       1
       1
-      (float-bits [1 1 1 0.8])]]))
+      (float-bits/f [1 1 1 0.8])]]))
