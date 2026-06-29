@@ -1,6 +1,5 @@
 (ns stage.action-bar
-  (:require [scene2d.utils.layout.set-fill-parent :refer [set-fill-parent!]]
-            [gdx.scenes.scene2d.ui.table :as table])
+  (:require [gdx.scenes.scene2d.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui ButtonGroup
                                                HorizontalGroup)))
@@ -17,5 +16,5 @@
                                                     (.setMinCheckCount 0))))
                          :expand? true
                          :bottom? true}]]})
-    (set-fill-parent! true)
+    (.setFillParent true)
     (Actor/.setName "moon.ui.action-bar")))

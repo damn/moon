@@ -1,6 +1,5 @@
 (ns moon.ui.inventory-window.create
   (:require [scene2d.actor.set-position :refer [set-position!]]
-            [scene2d.utils.drawable.set-min-size :as set-min-size!]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.inventory :as inventory]
@@ -20,7 +19,7 @@
            cell-size]}]
   (let [slot->drawable (fn [slot]
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
-                           (set-min-size!/f cell-size cell-size)
+                           (.setMinSize cell-size cell-size)
                            (.tint (color/create [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]

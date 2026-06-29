@@ -2,8 +2,7 @@
   (:require [scene2d.ui.stack :as stack]
             [scene2d.ui.text-tooltip :as text-tooltip]
             [scene2d.utils.change-listener :as change-listener]
-            [scene2d.ui.label :as label]
-            [scene2d.utils.drawable.set-min-size :as set-min-size!])
+            [scene2d.ui.label :as label])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor Event Group Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
@@ -19,8 +18,8 @@
                 (run! #(Group/.addActor stack %)
                       [(doto (ImageButton.
                               (doto (TextureRegionDrawable. texture-region)
-                                (set-min-size!/f (* image-scale (.getRegionWidth texture-region))
-                                                 (* image-scale (.getRegionHeight texture-region)))))
+                                (.setMinSize (* image-scale (.getRegionWidth texture-region))
+                                             (* image-scale (.getRegionHeight texture-region)))))
                         (Actor/.addListener (change-listener/create
                                             (fn [event actor]
                                               (on-clicked actor (:stage/ctx (Event/.getStage event))))))

@@ -3,7 +3,6 @@
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.text-tooltip :as text-tooltip]
-            [scene2d.utils.layout.pack :refer [pack!]]
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.image :as image]
             [moon.db.get-raw :refer [get-raw]]
@@ -24,7 +23,7 @@
   (let [redo-rows (fn [ctx property-ids]
                     (Group/.clearChildren table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (pack! (find-ancestor table #(instance? Window %))))]
+                    (.pack (find-ancestor table #(instance? Window %))))]
     (add-rows!
      table
      [[{:actor (doto (text-button/create

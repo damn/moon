@@ -3,7 +3,6 @@
             [editor.widget-value :as widget-value]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.layout.pack :refer [pack!]]
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.window.add-close-button :as add-close-button]
             [scene2d.ui.window.set-modal :as set-modal]
@@ -44,5 +43,5 @@
                                                                            :table map-widget-table})])
                                            ((:ctx/rebuild-editor-window! ctx) ctx)))))
                   )}]))
-    (pack! window)
+    (.pack window)
     window))

@@ -1,6 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
   (:require [gdx.scenes.scene2d.ui.dev-menu.main-table :as main-table]
-            [scene2d.utils.layout.set-fill-parent :refer [set-fill-parent!]]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Touchable)))
@@ -19,4 +18,4 @@
                          :expand? true
                          :fill-x? true
                          :fill-y? true}]]})
-    (set-fill-parent! true)))
+    (.setFillParent true)))

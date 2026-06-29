@@ -3,8 +3,7 @@
             [scene2d.actor :as actor]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.window :as window]
-            [scene2d.utils.layout.pack :refer [pack!]])
+            [gdx.scenes.scene2d.ui.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Group)
            (com.badlogic.gdx.scenes.scene2d.ui Label)))
 
@@ -29,5 +28,5 @@
                              {:act! (fn [this delta]
                                       (when-let [stage (Actor/.getStage this)]
                                         (Label/.setText label ^String (set-label-text! (:stage/ctx stage))))
-                                      (pack! window))}))
+                                      (.pack window))}))
     window))
