@@ -1,10 +1,10 @@
-(ns batch.render-tile-layer
-  (:require [batch.draw-tile :as draw-tile])
+(ns clojure.gdx.draw-tiled-map-tile-layer
+  (:require [clojure.gdx.draw-tiled-map-tile :as draw-tile])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer
                                         TiledMapTileLayer$Cell)))
 
-(defn render-tile-layer!
+(defn f!
   [^TiledMapTileLayer layer
    ^Batch batch
    unit-scale

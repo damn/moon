@@ -1,11 +1,11 @@
-(ns batch.draw-tiled-map
-  (:require [batch.render-tile-layer :refer [render-tile-layer!]])
+(ns clojure.gdx.draw-tiled-map
+  (:require [clojure.gdx.draw-tiled-map-tile-layer :as draw-tiled-map-tile-layer])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer)))
 
-(defn draw-tiled-map!
+(defn f!
   [^Batch batch
    world-unit-scale
    ^OrthographicCamera camera
@@ -24,9 +24,9 @@
                     :width w
                     :height h}]
     (doseq [^TiledMapTileLayer layer (filter TiledMapTileLayer/.isVisible (.getLayers tiled-map))]
-      (render-tile-layer! layer
-                          batch
-                          (float world-unit-scale)
-                          viewBounds
-                          color-setter)))
+      (draw-tiled-map-tile-layer/f! layer
+                                    batch
+                                    (float world-unit-scale)
+                                    viewBounds
+                                    color-setter)))
   (.end batch))
