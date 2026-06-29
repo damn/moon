@@ -1,5 +1,5 @@
 (ns ctx.tooltip-manager-opts
-  (:require [scene2d.ui.tooltip-manager :as tooltip-manager]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
 
 (defn step [_ctx]
-  (tooltip-manager/set-initial-time! 0))
+  (set! (.initialTime (TooltipManager/getInstance)) 0))
