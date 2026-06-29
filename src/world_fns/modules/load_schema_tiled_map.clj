@@ -1,5 +1,5 @@
 (ns world-fns.modules.load-schema-tiled-map
-  (:require [tiled.tmx-map-loader :as tmx-map-loader]))
+  (:import (com.badlogic.gdx.maps.tiled TmxMapLoader)))
 
 (defn f [w]
-  (assoc w :schema-tiled-map (tmx-map-loader/load! "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")))
