@@ -1,5 +1,5 @@
 (ns levelgen-test.create
-  (:require [gdx.graphics.color :refer [float-bits]]
+  (:require [gdx.color.float-bits :refer [float-bits]]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
             [levelgen-test.create.edit-window :refer [edit-window]]

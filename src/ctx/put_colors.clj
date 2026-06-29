@@ -1,5 +1,5 @@
 (ns ctx.put-colors
-  (:require [gdx.graphics.color :as color])
+  (:require [gdx.color.create :as color])
   (:import (com.badlogic.gdx.graphics Colors)))
 
 (defn step [_ctx]

@@ -6,7 +6,7 @@
 ;(comment
 ; (require '[moon.grid :as grid])
 ; (require '[math.circle :as circle])
-; [com.badlogic.gdx.graphics.color :refer [float-bits]]
+; [gdx.color.float-bits :refer [float-bits]]
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/grid
