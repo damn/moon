@@ -1,4 +1,4 @@
-(ns viewport.fit-viewport
+(ns clojure.gdx.fit-viewport
   (:import (clojure.lang ILookup)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 

@@ -1,5 +1,5 @@
 (ns ctx.world-viewport
-  (:require [viewport.fit-viewport :as fit-viewport])
+  (:require [clojure.gdx.fit-viewport :as fit-viewport])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)))
 
 (defn step
