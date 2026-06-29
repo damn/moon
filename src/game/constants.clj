@@ -5,6 +5,7 @@
 ; sets it to old one
 ; even if I use postRunnable
 ; so we need a solution
+; _. just postRunnable set! .ctx stage ...
 (def ^:dbg-flag show-potential-field-colors? false) ; :good, :evil
 (def ^:dbg-flag show-cell-entities? false)
 (def ^:dbg-flag show-cell-occupied? false)
