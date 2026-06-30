@@ -30,8 +30,9 @@
   clojure.lang.ILookup
   (valAt [this p]  ; {x 0 y 1} or [x y] is much slower
     (-> data
-        (nth (nth p 0) nil)
-        (nth (nth p 1) nil)))
+        ; nil because can be out of bounds
+        (nth (p 0) nil)
+        (nth (p 1) nil)))
 
   clojure.lang.IFn
   (invoke [this p] (.valAt this p))
