@@ -2,7 +2,7 @@
   (:require [scene2d.actor.set-position :refer [set-position!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [moon.inventory :as inventory]
+            [moon.inventory.is-valid-slot :as valid-slot?]
             [moon.ui.inventory-window.create-cell :refer [->cell]]
             [clojure.gdx.new-color :as new-color])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
@@ -26,7 +26,7 @@
                           (when (and mouseover?
                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                             (let [item (:entity/item-on-cursor player-entity)
-                                  color (if (inventory/valid-slot? cell item)
+                                  color (if (valid-slot?/f cell item)
                                           droppable-item-color
                                           not-allowed-drop-item-color)]
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])

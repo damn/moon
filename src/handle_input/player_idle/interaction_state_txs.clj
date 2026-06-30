@@ -1,5 +1,5 @@
 (ns handle-input.player-idle.interaction-state-txs
-  (:require [moon.inventory :as inventory])
+  (:require [moon.inventory.can-pickup-item :as can-pickup-item])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
 (defn interaction-state->txs [[k params] stage player-eid]
@@ -25,7 +25,7 @@
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]
 
-             (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
+             (can-pickup-item/f? (:entity/inventory @player-eid) item)
              [[:tx/sound "bfxr_pickup"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/pickup-item player-eid item]]
