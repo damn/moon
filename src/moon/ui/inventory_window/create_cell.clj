@@ -1,6 +1,5 @@
 (ns moon.ui.inventory-window.create-cell
   (:require [clojure.gdx :as gdx]
-            [gdx.math.vector2.clojurize :as clojurize]
             [scene2d.ui.widget :as widget]
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
@@ -23,7 +22,7 @@
                                     (draw-cell-rect @player-eid
                                                     (gdx/get-x this)
                                                     (gdx/get-y this)
-                                                    (let [[x y] (clojurize/f
+                                                    (let [[x y] (gdx/vector2-clojurize
                                                                  (gdx/stage-to-local-coordinates this
                                                                                                  (gdx/vector2 ui-mouse-position)))]
                                                       (gdx/actor-hit this x y true))
