@@ -13,6 +13,8 @@
            (com.badlogic.gdx.scenes.scene2d Actor
                                             Group
                                             Stage)
+           (com.badlogic.gdx.scenes.scene2d.ui Cell)
+           (com.badlogic.gdx.maps MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTile
                                         TiledMapTileLayer
@@ -224,3 +226,69 @@
 
 (defn group []
   (Group.))
+
+(defn tiled-map-tile-layer
+  [{:keys [width
+           height
+           tilewidth
+           tileheight
+           name
+           visible?
+           map-properties
+           tiles]}]
+  {:pre [(string? name)
+         (boolean? visible?)]}
+  (let [layer (doto (TiledMapTileLayer. width height tilewidth tileheight)
+                (.setName name)
+                (.setVisible visible?))]
+    (doseq [[k v] map-properties]
+      (assert (string? k))
+      (MapProperties/.put (.getProperties layer) k v))
+    (doseq [[[x y] tile] tiles
+            :when tile]
+      (.setCell ^TiledMapTileLayer layer
+                x
+                y
+                (doto (TiledMapTileLayer$Cell.)
+                  (.setTile tile))))
+    layer))
+
+(defn create-layer
+  [^TiledMap tiled-map
+   {:keys [name
+           visible?
+           properties
+           tiles]}]
+  (let [props (.getProperties tiled-map)]
+    (tiled-map-tile-layer
+     {:width      (.get props "width")
+      :height     (.get props "height")
+      :tilewidth  (.get props "tilewidth")
+      :tileheight (.get props "tileheight")
+      :name name
+      :visible? visible?
+      :map-properties properties
+      :tiles tiles})))
+
+(defn add-layer! [^TiledMap tiled-map layer]
+  (.add (.getLayers tiled-map)
+        (create-layer tiled-map layer)))
+
+(defn set-opts! [^Cell cell opts]
+  (doseq [[option arg] opts]
+    (case option
+      :fill-x?    (.fillX cell)
+      :fill-y?    (.fillY cell)
+      :expand?    (.expand cell)
+      :expand-x?  (.expandX cell)
+      :expand-y?  (.expandY cell)
+      :bottom?    (.bottom cell)
+      :colspan    (.colspan cell (int arg))
+      :pad        (.pad cell (float arg))
+      :pad-top    (.padTop cell (float arg))
+      :pad-bottom (.padBottom cell (float arg))
+      :width      (.width cell (float arg))
+      :height     (.height cell (float arg))
+      :center?    (.center cell)
+      :right?     (.right cell)
+      :left?      (.left cell))))

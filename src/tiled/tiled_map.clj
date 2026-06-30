@@ -1,5 +1,5 @@
 (ns tiled.tiled-map
-  (:require [tiled-map.add-layer :as add-layer])
+  (:require [clojure.gdx :as gdx])
   (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn f
@@ -10,5 +10,5 @@
       (assert (string? k))
       (.put (.getProperties tiled-map) k v))
     (doseq [layer layers]
-      (add-layer/f tiled-map layer))
+      (gdx/add-layer! tiled-map layer))
     tiled-map))
