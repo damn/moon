@@ -424,21 +424,17 @@
 (defn input-set-input-processor! [^Input input processor]
   (Input/.setInputProcessor input processor))
 
-;; --- Graphics ---
-
-(defn graphics-set-cursor! [^Graphics graphics cursor]
+(defn set-cursor! [^Graphics graphics cursor]
   (Graphics/.setCursor graphics cursor))
 
-(defn graphics-new-cursor [^Graphics graphics ^Pixmap pixmap hotspot-x hotspot-y]
+(defn new-cursor [^Graphics graphics ^Pixmap pixmap hotspot-x hotspot-y]
   (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y))
 
-(defn graphics-get-delta-time [^Graphics graphics]
+(defn get-delta-time [^Graphics graphics]
   (Graphics/.getDeltaTime graphics))
 
-(defn graphics-get-frames-per-second [^Graphics graphics]
+(defn get-frames-per-second [^Graphics graphics]
   (Graphics/.getFramesPerSecond graphics))
-
-;; --- Viewport ---
 
 (defn unproject [^Viewport viewport xy]
   (-> viewport
@@ -447,8 +443,6 @@
 
 (defn viewport-update [^Viewport viewport width height center?]
   (.update viewport width height center?))
-
-;; --- Files ---
 
 (defn recursively-search [^FileHandle file-handle extensions]
   (loop [[file & remaining] (.list file-handle)
@@ -496,16 +490,16 @@
 (defn texture-region-drawable-tint! [drawable color]
   (.tint ^TextureRegionDrawable drawable color))
 
-(defn batch-set-color! [^Batch batch r g b a]
+(defn set-color! [^Batch batch r g b a]
   (Batch/.setColor batch r g b a))
 
-(defn batch-set-projection-matrix! [^Batch batch matrix]
+(defn set-projection-matrix! [^Batch batch matrix]
   (Batch/.setProjectionMatrix batch matrix))
 
-(defn batch-begin! [^Batch batch] (Batch/.begin batch))
-(defn batch-end! [^Batch batch] (Batch/.end batch))
+(defn begin! [^Batch batch] (Batch/.begin batch))
+(defn end! [^Batch batch] (Batch/.end batch))
 
-(defn batch-draw-texture-region!
+(defn draw-texture-region!
   [^Batch batch ^TextureRegion texture-region x y & {:keys [center? rotation w h]}]
   (let [w (float (or w (.getRegionWidth texture-region)))
         h (float (or h (.getRegionHeight texture-region)))]
@@ -626,7 +620,7 @@
 (defn stage-to-local-coordinates [^Actor actor coords]
   (Actor/.stageToLocalCoordinates actor coords))
 
-(defn actor-hit [^Actor actor x y touchable?]
+(defn hit [^Actor actor x y touchable?]
   (Actor/.hit actor x y touchable?))
 
 (defn set-position!

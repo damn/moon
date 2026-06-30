@@ -14,8 +14,8 @@
                   dimensions
                   (mapv (comp float (partial * world-unit-scale))
                         dimensions)))]
-    (gdx/batch-draw-texture-region! batch texture-region x y
-                                    :center? center?
-                                    :rotation rotation
-                                    :w w
-                                    :h h)))
+    (gdx/draw-texture-region! batch texture-region x y
+                              :center? center?
+                              :rotation rotation
+                              :w w
+                              :h h)))

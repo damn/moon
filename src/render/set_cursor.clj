@@ -15,5 +15,5 @@
                      f
                      (f eid ctx))]
     (assert (contains? cursors cursor-key))
-    (gdx/graphics-set-cursor! graphics (get cursors cursor-key)))
+    (gdx/set-cursor! graphics (get cursors cursor-key)))
   ctx)

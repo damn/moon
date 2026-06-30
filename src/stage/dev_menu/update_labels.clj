@@ -10,7 +10,7 @@
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn (fn [{:keys [ctx/graphics]}]
-                 (gdx/graphics-get-frames-per-second graphics))
+                 (gdx/get-frames-per-second graphics))
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
     :update-fn (fn [{:keys [ctx/mouseover-eid]}]

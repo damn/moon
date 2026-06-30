@@ -25,7 +25,7 @@
                                                     (let [[x y] (gdx/vector2-clojurize
                                                                  (gdx/stage-to-local-coordinates this
                                                                                                  (gdx/vector2 ui-mouse-position)))]
-                                                      (gdx/actor-hit this x y true))
+                                                      (gdx/hit this x y true))
                                                     (gdx/get-user-object (gdx/get-parent this)))))))})
               (doto (gdx/image background-drawable)
                 (gdx/image-set-name! "image-widget")

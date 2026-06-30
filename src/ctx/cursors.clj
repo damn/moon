@@ -11,6 +11,6 @@
                  (fn [[path-segment [hotspot-x hotspot-y]]]
                    (let [path (format path-format path-segment)
                          pixmap (gdx/pixmap (gdx/internal files path))
-                         cursor (gdx/graphics-new-cursor graphics pixmap hotspot-x hotspot-y)]
+                         cursor (gdx/new-cursor graphics pixmap hotspot-x hotspot-y)]
                      (gdx/pixmap-dispose! pixmap)
                      cursor)))))
