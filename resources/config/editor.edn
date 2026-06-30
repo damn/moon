@@ -3,6 +3,7 @@
  (clojure.add-methods/f! editor.create-widget/f
                          {
                           :default       editor.create-widget.default/f
+
                           :s/animation   editor.create-widget.animation/f
                           :s/boolean     editor.create-widget.boolean/f
                           :s/enum        editor.create-widget.enum/f
@@ -19,6 +20,7 @@
  (clojure.add-methods/f! editor.widget-value/f
                          {
                           :default       editor.widget-value.default/f
+
                           :s/boolean     editor.widget-value.boolean/f
                           :s/enum        editor.widget-value.enum/f
                           :s/map         editor.widget-value.map/f
