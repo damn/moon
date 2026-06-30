@@ -1,7 +1,12 @@
 (ns render.clear-screen
-  (:require [clojure.gdx :as gdx]))
+  (:require [clojure.gdx :refer [get-gl20
+                                 clear-color!
+                                 clear!
+                                 color-buffer-bit]]))
 
 (defn step
   [{:keys [ctx/graphics] :as ctx}]
-  (gdx/clear! graphics 0 0 0 0)
+  (let [gl (get-gl20 graphics)]
+    (clear-color! gl 0 0 0 0)
+    (clear! gl color-buffer-bit))
   ctx)

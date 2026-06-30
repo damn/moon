@@ -76,10 +76,16 @@
                                             Viewport)
            (org.lwjgl.system Configuration)))
 
-(defn clear! [graphics r g b a]
-  (let [gl (Graphics/.getGL20 graphics)]
-    (GL20/.glClearColor gl r g b a)
-    (GL20/.glClear gl GL20/GL_COLOR_BUFFER_BIT)))
+(defn get-gl20 [graphics]
+  (Graphics/.getGL20 graphics))
+
+(defn clear-color! [gl20 r g b a]
+  (GL20/.glClearColor gl20 r g b a))
+
+(defn clear! [gl20 mask]
+  (GL20/.glClear gl20 mask))
+
+(def color-buffer-bit GL20/GL_COLOR_BUFFER_BIT)
 
 (defn draw-tiled-map-tile!
   [x
