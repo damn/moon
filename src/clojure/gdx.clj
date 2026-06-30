@@ -347,15 +347,17 @@
       :right?     (.right cell)
       :left?      (.left cell))))
 
-;; --- Gdx singleton ---
+(defn audio []
+  Gdx/audio)
 
-(defn gdx-audio [] Gdx/audio)
-(defn gdx-files [] Gdx/files)
-(defn gdx-graphics [] Gdx/graphics)
-(defn gdx-input [] Gdx/input)
-(defn gdx-app [] Gdx/app)
+(defn files []
+  Gdx/files)
 
-;; --- Math ---
+(defn graphics []
+  Gdx/graphics)
+
+(defn input []
+  Gdx/input)
 
 (defn vector2 [[x y]] (Vector2. x y))
 

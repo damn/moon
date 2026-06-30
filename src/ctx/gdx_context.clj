@@ -3,7 +3,7 @@
 
 (defn f [ctx]
   (assoc ctx
-         :ctx/audio    (gdx/gdx-audio)
-         :ctx/files    (gdx/gdx-files)
-         :ctx/graphics (gdx/gdx-graphics)
-         :ctx/input    (gdx/gdx-input)))
+         :ctx/audio    (gdx/audio)
+         :ctx/files    (gdx/files)
+         :ctx/graphics (gdx/graphics)
+         :ctx/input    (gdx/input)))
