@@ -1,7 +1,7 @@
 (ns tiled.tiled-map-tile-layer
   (:import (com.badlogic.gdx.maps MapProperties)
            (com.badlogic.gdx.maps.tiled TiledMapTileLayer
-                                       TiledMapTileLayer$Cell)))
+                                        TiledMapTileLayer$Cell)))
 
 (defn f
   [{:keys [width
