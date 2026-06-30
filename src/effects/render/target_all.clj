@@ -1,5 +1,5 @@
 (ns effects.render.target-all
-  (:require [effect.target-all]))
+  (:require [moon.target-all :as target-all]))
 
 (defn f
   [_
@@ -8,7 +8,7 @@
            ctx/colors
            ctx/raycaster]}]
   (let [source* @source]
-    (for [target* (map deref (effect.target-all/affected-targets active-entities raycaster source*))]
+    (for [target* (map deref (target-all/affected-targets active-entities raycaster source*))]
       [:draw/line
        (:body/position (:entity/body source*)) #_(start-point source* target*)
        (:body/position (:entity/body target*))

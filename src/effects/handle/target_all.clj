@@ -1,5 +1,5 @@
 (ns effects.handle.target-all
-  (:require [effect.target-all]))
+  (:require [moon.target-all :as target-all]))
 
 (defn f
   [[_ {:keys [entity-effects]}]
@@ -9,7 +9,7 @@
            ctx/raycaster]}]
   (let [source* @source]
     (apply concat
-           (for [target (effect.target-all/affected-targets active-entities raycaster source*)]
+           (for [target (target-all/affected-targets active-entities raycaster source*)]
              [[:tx/spawn-line
                {:start (:body/position (:entity/body source*)) #_(start-point source* target*)
                 :end (:body/position (:entity/body @target))

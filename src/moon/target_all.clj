@@ -1,4 +1,4 @@
-(ns effect.target-all
+(ns moon.target-all
   (:require [moon.raycaster.line-of-sight :as line-of-sight?]))
 
 (defn affected-targets [active-entities raycaster entity]
