@@ -11,6 +11,7 @@
                                           SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
+                                            Group
                                             Stage)
            (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTile
@@ -165,8 +166,18 @@
                      (float b)
                      (float a)))
 
-(defn add-actor! [stage actor]
-  (Stage/.addActor stage actor))
+(defprotocol AddActor
+  (add-actor! [_ actor]))
+
+(extend-type Group
+  AddActor
+  (add-actor! [group actor]
+    (.addActor group actor)))
+
+(extend-type Stage
+  AddActor
+  (add-actor! [stage actor]
+    (.addActor stage actor)))
 
 (defn new-sound [audio file-handle]
   (Audio/.newSound audio file-handle))
@@ -201,3 +212,15 @@
 
 (defn dispose! [disposable]
   (Disposable/.dispose disposable))
+
+(defn get-children [group]
+  (Group/.getChildren group))
+
+(defn find-actor [group name]
+  (Group/.findActor group name))
+
+(defn clear-children! [group]
+  (Group/.clearChildren group))
+
+(defn group []
+  (Group.))

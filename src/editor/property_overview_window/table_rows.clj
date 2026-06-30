@@ -1,10 +1,11 @@
 (ns editor.property-overview-window.table-rows
-  (:require [scene2d.ui.stack :as stack]
+  (:require [clojure.gdx :as gdx]
+            [scene2d.ui.stack :as stack]
             [scene2d.ui.text-tooltip :as text-tooltip]
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.label :as label])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor Event Group Touchable)
+           (com.badlogic.gdx.scenes.scene2d Actor Event Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
@@ -15,7 +16,7 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (let [stack (stack/create)]
-                (run! #(Group/.addActor stack %)
+                (run! #(gdx/add-actor! stack %)
                       [(doto (ImageButton.
                               (doto (TextureRegionDrawable. texture-region)
                                 (.setMinSize (* image-scale (.getRegionWidth texture-region))

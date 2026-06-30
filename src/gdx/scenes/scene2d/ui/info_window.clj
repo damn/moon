@@ -1,10 +1,11 @@
 (ns gdx.scenes.scene2d.ui.info-window
-  (:require [scene2d.actor.set-position :refer [set-position!]]
+  (:require [clojure.gdx :as gdx]
+            [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor :as actor]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label)))
 
 (defn create
@@ -24,9 +25,9 @@
                  (Actor/.setName actor-name)
                  (Actor/.setVisible visible?)
                  (set-position! position))]
-    (Group/.addActor window (actor/f
-                             {:act! (fn [this delta]
-                                      (when-let [stage (Actor/.getStage this)]
-                                        (Label/.setText label ^String (set-label-text! (:stage/ctx stage))))
-                                      (.pack window))}))
+    (gdx/add-actor! window (actor/f
+                            {:act! (fn [this delta]
+                                     (when-let [stage (Actor/.getStage this)]
+                                       (Label/.setText label ^String (set-label-text! (:stage/ctx stage))))
+                                     (.pack window))}))
     window))

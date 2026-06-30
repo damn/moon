@@ -1,5 +1,6 @@
 (ns editor.window
-  (:require [scene2d.actor :as actor]
+  (:require [clojure.gdx :as gdx]
+            [scene2d.actor :as actor]
             [scene2d.utils.change-listener :as change-listener]
             [input.key-just-pressed :as key-just-pressed?]
             [scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
@@ -13,7 +14,7 @@
             [moon.property.type :refer [property->type]]
             [editor.create-widget :as create-widget]
             [editor.widget-value :as widget-value])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -58,10 +59,10 @@
                            50)]]})
       (add-close-button/f! skin)
       (.setModal true)
-      (Group/.addActor (actor/f
-                        {:act! (fn [this delta]
-                                 (when-let [stage (Actor/.getStage this)]
-                                   (let [ctx (:stage/ctx stage)]
-                                     (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
-                                       (clicked-save-fn this ctx)))))}))
+      (gdx/add-actor! (actor/f
+                       {:act! (fn [this delta]
+                                (when-let [stage (Actor/.getStage this)]
+                                  (let [ctx (:stage/ctx stage)]
+                                    (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
+                                      (clicked-save-fn this ctx)))))}))
       (Actor/.setName "moon.ui.editor.window"))))

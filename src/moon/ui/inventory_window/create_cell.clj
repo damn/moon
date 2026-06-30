@@ -1,12 +1,13 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [gdx.math.vector2.clojurize :as clojurize]
+  (:require [clojure.gdx :as gdx]
+            [gdx.math.vector2.clojurize :as clojurize]
             [scene2d.ui.widget :as widget]
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
             [scene2d.utils.click-listener :as click-listener]
             [scene2d.ui.stack :as stack]
             [clojure.gdx.new-vector2 :as new-vector2])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)
            (com.badlogic.gdx.scenes.scene2d.ui Image)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
@@ -15,7 +16,7 @@
         background-drawable (slot->drawable slot)]
     {:actor
      (let [stack (stack/create)]
-       (run! #(Group/.addActor stack %)
+       (run! #(gdx/add-actor! stack %)
              [(widget/f
                {:draw! (fn [this _batch _parent-alpha]
                          (when-let [stage (Actor/.getStage this)]

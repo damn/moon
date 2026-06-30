@@ -6,15 +6,14 @@
             [scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window])
   (:import (com.badlogic.gdx.utils Align)
-           (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d Group)))
+           (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn f
   [{:keys [ctx/skin
            ctx/stage]
     :as ctx}
    {:keys [title text button-text on-click]}]
-  (assert (not (Group/.findActor (:stage/root stage) "moon.ui.modal-window")))
+  (assert (not (gdx/find-actor (:stage/root stage) "moon.ui.modal-window")))
   (gdx/add-actor! stage
                   (doto (window/create
                          {:title title
@@ -25,7 +24,7 @@
                                        [{:actor (doto (text-button/create {:text button-text :skin skin})
                                                   (Actor/.addListener (change-listener/create
                                                                        (fn [_event _actor]
-                                                                         (Actor/.remove (Group/.findActor (:stage/root stage) "moon.ui.modal-window"))
+                                                                         (Actor/.remove (gdx/find-actor (:stage/root stage) "moon.ui.modal-window"))
                                                                          (on-click)))))}]]})
                     (.setModal true)
                     (Actor/.setName "moon.ui.modal-window")

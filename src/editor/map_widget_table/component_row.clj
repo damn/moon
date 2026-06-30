@@ -1,10 +1,11 @@
 (ns editor.map-widget-table.component-row
-  (:require [editor.map-widget-table.k-label-text :as k-label-text]
+  (:require [clojure.gdx :as gdx]
+            [editor.map-widget-table.k-label-text :as k-label-text]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)))
 
 (defn create
   [{:keys [skin
@@ -23,7 +24,7 @@
                                                               (Actor/.remove (first (filter (fn [actor]
                                                                                               (and (Actor/.getUserObject actor)
                                                                                                    (= k ((Actor/.getUserObject actor) 0))))
-                                                                                            (Group/.getChildren table))))
+                                                                                            (gdx/get-children table))))
                                                               (let [ctx (:stage/ctx (Event/.getStage event))]
                                                                 ((:ctx/rebuild-editor-window! ctx) ctx)))))))
                             :left? true}

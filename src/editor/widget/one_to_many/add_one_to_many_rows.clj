@@ -9,7 +9,7 @@
             [moon.property.tooltip :as tooltip]
             [moon.property.image :as property-image]
             [moon.textures :as textures])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Window)))
 
@@ -21,7 +21,7 @@
    property-type
    property-ids]
   (let [redo-rows (fn [ctx property-ids]
-                    (Group/.clearChildren table)
+                    (gdx/clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
                     (.pack (find-ancestor table #(instance? Window %))))]
     (add-rows!

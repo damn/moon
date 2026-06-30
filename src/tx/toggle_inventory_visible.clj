@@ -1,8 +1,8 @@
 (ns tx.toggle-inventory-visible
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn f
   [{:keys [ctx/stage] :as ctx}]
-  (let [inventory (Group/.findActor (:stage/root stage) "moon.ui.windows.inventory")]
+  (let [inventory (gdx/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
     (Actor/.setVisible inventory (not (Actor/.isVisible inventory))))
   nil)
