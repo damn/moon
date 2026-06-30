@@ -8,11 +8,8 @@
 (defn- move-position [position {:keys [direction speed delta-time]}]
   (mapv #(+ %1 (* %2 speed delta-time)) position direction))
 
-(defn- move-body [body movement]
-  (update body :body/position move-position movement))
-
 (defn- try-move [grid body entity-id movement]
-  (let [new-body (move-body body movement)]
+  (let [new-body (update body :body/position move-position movement)]
     (when (valid-position? grid new-body entity-id)
       new-body)))
 
@@ -45,7 +42,7 @@
           body (:entity/body @eid)]
       (when-let [body (if (:body/collides? body)
                         (try-move-solid-body grid body (:entity/id @eid) movement)
-                        (move-body body movement))]
+                        (update body :body/position move-position movement))]
         [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
          (when rotate-in-movement-direction?
            [:tx/assoc-in eid [:entity/body :body/rotation-angle] (angle-from-vector/f direction)])
