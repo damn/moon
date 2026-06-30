@@ -8,8 +8,7 @@
             [scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.utils.change-listener :as change-listener]
-            [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+            [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]]))
 
 (defn create
   [{:keys [title
@@ -21,15 +20,15 @@
   (let [v->actor (fn [v skin]
                    (if (map? v)
                      (doto (text-button/create {:text "Map" :skin skin})
-                       (Actor/.addListener (change-listener/create
-                                            (fn [_event actor]
-                                              (gdx/add-actor! (Actor/.getStage actor)
-                                                              (create
-                                                               {:title "title"
-                                                                :data v
-                                                                :width 500
-                                                                :height 500
-                                                                :skin skin}))))))
+                       (gdx/add-listener! (change-listener/create
+                                           (fn [_event actor]
+                                             (gdx/add-actor! (gdx/get-stage actor)
+                                                             (create
+                                                              {:title "title"
+                                                               :data v
+                                                               :width 500
+                                                               :height 500
+                                                               :skin skin}))))))
                      (label/create
                       {:text (v->text v)
                        :skin skin})))

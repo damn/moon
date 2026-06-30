@@ -10,11 +10,13 @@
            (com.badlogic.gdx.graphics.g2d Batch
                                           SpriteBatch
                                           TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Stage)
+           (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)
            (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTile
                                         TiledMapTileLayer
                                         TiledMapTileLayer$Cell)
+           (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn clear! [graphics r g b a]
@@ -190,3 +192,12 @@
          :viewport/camera       (FitViewport/.getCamera      this)
          :viewport/world-width  (FitViewport/.getWorldWidth  this)
          :viewport/world-height (FitViewport/.getWorldHeight this))))))
+
+(defn add-listener! [actor listener]
+  (Actor/.addListener actor listener))
+
+(defn get-stage [actor]
+  (Actor/.getStage actor))
+
+(defn dispose! [disposable]
+  (Disposable/.dispose disposable))

@@ -1,5 +1,5 @@
 (ns ctx.dispose
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn do!
   [{:keys [ctx/audio
@@ -10,11 +10,11 @@
            ctx/skin
            ctx/textures
            ctx/tiled-map]}]
-  (run! Disposable/.dispose (vals audio))
-  (Disposable/.dispose batch)
-  (run! Disposable/.dispose (vals cursors))
-  (Disposable/.dispose default-font)
-  (Disposable/.dispose shape-drawer-texture)
-  (Disposable/.dispose skin)
-  (run! Disposable/.dispose (vals textures))
-  (Disposable/.dispose tiled-map))
+  (run! gdx/dispose! (vals audio))
+  (gdx/dispose! batch)
+  (run! gdx/dispose! (vals cursors))
+  (gdx/dispose! default-font)
+  (gdx/dispose! shape-drawer-texture)
+  (gdx/dispose! skin)
+  (run! gdx/dispose! (vals textures))
+  (gdx/dispose! tiled-map))
