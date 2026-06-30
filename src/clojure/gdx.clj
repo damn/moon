@@ -359,7 +359,8 @@
 (defn input []
   Gdx/input)
 
-(defn vector2 [[x y]] (Vector2. x y))
+(defn vector2 ^Vector2 [[x y]]
+  (Vector2. x y))
 
 (defn vector2-clojurize [^Vector2 v2]
   [(.x v2) (.y v2)])
@@ -579,7 +580,7 @@
 (defn tiled-map-get-properties [^TiledMap tiled-map] (.getProperties tiled-map))
 (defn tiled-map-get-layers [^TiledMap tiled-map] (.getLayers tiled-map))
 
-(defn map-layers-get [^MapLayers layers name] (.get layers name))
+(defn map-layers-get [^MapLayers layers name] (.get layers ^String name))
 
 (defn map-properties-get [^MapProperties props key] (MapProperties/.get props key))
 (defn map-properties-put! [^MapProperties props key value] (MapProperties/.put props key value))
@@ -596,7 +597,8 @@
 (defn tiled-map-tile-layer-set-visible! [^TiledMapTileLayer layer visible?] (.setVisible layer visible?))
 
 (defn cell-get-tile [^TiledMapTileLayer$Cell cell] (.getTile cell))
-(defn tile-get-properties [tile] (.getProperties tile))
+(defn tile-get-properties [^TiledMapTile tile]
+  (.getProperties tile))
 
 (defn static-tiled-map-tile [^TextureRegion texture-region]
   (StaticTiledMapTile. texture-region))
@@ -688,6 +690,7 @@
   (if (instance? Texture drawable-or-texture)
     (Image. ^Texture drawable-or-texture)
     (Image. ^Drawable drawable-or-texture)))
+
 (defn image-set-drawable! [^Image image drawable] (Image/.setDrawable image drawable))
 (defn image-set-min-size! [^Image image w h] (Image/.setMinSize image w h))
 (defn image-tint! [^Image image color] (Image/.tint image color))
