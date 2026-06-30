@@ -1,12 +1,9 @@
 (ns scene2d.actor.is-window-title-bar
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Button
-                                               Label
-                                               Window)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn f [actor]
-  (when (instance? Label actor)
-    (when-let [p (Actor/.getParent actor)]
-      (when-let [p (Actor/.getParent p)]
-        (and (instance? Window actor)
-             (= (Window/.getTitleLabel p) actor))))))
+  (when (gdx/label? actor)
+    (when-let [p (gdx/get-parent actor)]
+      (when-let [p (gdx/get-parent p)]
+        (and (gdx/window? p)
+             (= (gdx/window-get-title-label p) actor))))))

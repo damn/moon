@@ -1,8 +1,5 @@
 (ns ctx.default-font
-  (:import (com.badlogic.gdx Files)
-           (com.badlogic.gdx.graphics Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
-                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn step
   [{:keys [ctx/files]}]
@@ -13,15 +10,14 @@
                                           :size 16
                                           :quality-scaling 2
                                           :use-integer-positions? false}
-        generator (FreeTypeFontGenerator. (Files/.internal files path))
-        font (.generateFont generator
-                            (let [parameter (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                              (set! (.size parameter) (* size quality-scaling))
-                              (set! (.minFilter parameter) Texture$TextureFilter/Linear)
-                              (set! (.magFilter parameter) Texture$TextureFilter/Linear)
-                              parameter))]
-    (.dispose generator)
-    (.setScale (.getData font) (/ quality-scaling))
-    (set! (.markupEnabled (.getData font)) true)
-    (.setUseIntegerPositions font use-integer-positions?)
+        generator (gdx/freetype-font-generator (gdx/internal files path))
+        parameter (gdx/freetype-font-parameter)
+        _ (gdx/freetype-font-parameter-set-size! parameter (* size quality-scaling))
+        _ (gdx/freetype-font-parameter-set-min-filter! parameter gdx/texture-filter-linear)
+        _ (gdx/freetype-font-parameter-set-mag-filter! parameter gdx/texture-filter-linear)
+        font (gdx/freetype-font-generator-generate-font generator parameter)]
+    (gdx/freetype-font-generator-dispose! generator)
+    (gdx/font-set-scale! font (/ quality-scaling))
+    (gdx/font-set-markup-enabled! font true)
+    (gdx/font-set-use-integer-positions! font use-integer-positions?)
     font))

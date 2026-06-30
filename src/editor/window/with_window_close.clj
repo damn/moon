@@ -2,9 +2,7 @@
   (:require [clojure.gdx :as gdx]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
-            [scene2d.actor.find-ancestor :refer [find-ancestor]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Window)))
+            [scene2d.actor.find-ancestor :refer [find-ancestor]]))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin
@@ -12,9 +10,9 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (Actor/.getStage actor)]
+           stage (gdx/get-stage actor)]
        (set! (.ctx stage) new-ctx))
-     (Actor/.remove (find-ancestor actor #(instance? Window %)))
+     (gdx/remove! (find-ancestor actor gdx/window?))
      (catch Throwable t
        (throwable/pretty-pst t)
        (gdx/add-actor! stage

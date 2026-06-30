@@ -3,10 +3,7 @@
             [clojure.gdx :as gdx]
             [levelgen-test.show-whole-map :as show-whole-map]
             [moon.creature-tiles]
-            [moon.db.all-raw :refer [all-raw]])
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps MapLayers)))
+            [moon.db.all-raw :refer [all-raw]]))
 
 (defn f
   [{:keys [ctx/db
@@ -22,17 +19,15 @@
                                                     (fn [{:keys [image/file image/bounds]}]
                                                       (assert file)
                                                       (assert (contains? textures file))
-                                                      (let [^Texture texture (get textures file)]
+                                                      (let [texture (get textures file)]
                                                         (if-let [[x y w h] bounds]
-                                                          (TextureRegion. texture (int x) (int y) (int w) (int h))
-                                                          (TextureRegion. texture)))))
+                                                          (gdx/texture-region texture (int x) (int y) (int w) (int h))
+                                                          (gdx/texture-region texture)))))
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
-    (-> tiled-map
-        .getLayers
-        (MapLayers/.get "creatures")
-        (.setVisible true))
+    (-> (gdx/map-layers-get (gdx/tiled-map-get-layers tiled-map) "creatures")
+        (gdx/tiled-map-tile-layer-set-visible! true))
     (show-whole-map/f! ctx)
     ctx))

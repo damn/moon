@@ -1,5 +1,6 @@
 (ns editor.map-widget-table.add-component-window
-  (:require [editor.build-widget :as build-widget]
+  (:require [clojure.gdx :as gdx]
+            [editor.build-widget :as build-widget]
             [editor.widget-value :as widget-value]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
@@ -8,8 +9,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas.default-value :refer [default-value]]
             [moon.schemas.map-keys :refer [map-keys]]
-            [moon.schemas.optional :refer [optional?]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)))
+            [moon.schemas.optional :refer [optional?]]))
 
 (defn f
   [{:keys [schemas schema map-widget-table skin]}]
@@ -18,7 +18,7 @@
                        :skin skin
                        :table/cell-defaults {:pad 5}})
                  (add-close-button/f! skin)
-                 (.setModal true))
+                 (gdx/window-set-modal! true))
         remaining-ks (sort (remove (set (keys (widget-value/f schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
     (add-rows!
@@ -27,20 +27,20 @@
        [{:actor (doto (text-button/create
                        {:skin skin
                         :text (name k)})
-                  (Actor/.addListener (change-listener/create
-                                       (fn [event _actor]
-                                         (Actor/.remove window)
-                                         (let [ctx (:stage/ctx (Event/.getStage event))]
-                                           (add-rows! map-widget-table [((:ctx/create-component-row ctx)
-                                                                          {:skin skin
-                                                                           :editor-widget (build-widget/f ctx
-                                                                                                          (get schemas k)
-                                                                                                          k
-                                                                                                          (default-value schemas k))
-                                                                           :k k
-                                                                           :display-remove-component-button? (optional? schemas schema k)
-                                                                           :table map-widget-table})])
-                                           ((:ctx/rebuild-editor-window! ctx) ctx)))))
+                  (gdx/add-listener! (change-listener/create
+                                      (fn [event _actor]
+                                        (gdx/remove! window)
+                                        (let [ctx (:stage/ctx (gdx/event-get-stage event))]
+                                          (add-rows! map-widget-table [((:ctx/create-component-row ctx)
+                                                                         {:skin skin
+                                                                          :editor-widget (build-widget/f ctx
+                                                                                                         (get schemas k)
+                                                                                                         k
+                                                                                                         (default-value schemas k))
+                                                                          :k k
+                                                                          :display-remove-component-button? (optional? schemas schema k)
+                                                                          :table map-widget-table})])
+                                          ((:ctx/rebuild-editor-window! ctx) ctx)))))
                   )}]))
-    (.pack window)
+    (gdx/pack! window)
     window))

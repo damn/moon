@@ -1,20 +1,19 @@
 (ns stage.action-bar
-  (:require [gdx.scenes.scene2d.ui.table :as table])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui ButtonGroup
-                                               HorizontalGroup)))
+  (:require [clojure.gdx :as gdx]
+            [gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create [_ctx]
   (doto (table/create
          {:table/cell-defaults {:pad 2}
-          :table/rows [[{:actor (doto (HorizontalGroup.)
-                                  (.space 2)
-                                  (.pad 2)
-                                  (.setName "moon.ui.action-bar.horizontal-group")
-                                  (.setUserObject (doto (ButtonGroup.)
-                                                    (.setMaxCheckCount 1)
-                                                    (.setMinCheckCount 0))))
+          :table/rows [[{:actor (doto (gdx/horizontal-group)
+                                  (gdx/horizontal-group-space! 2)
+                                  (gdx/horizontal-group-pad! 2)
+                                  (gdx/set-name! "moon.ui.action-bar.horizontal-group")
+                                  (gdx/set-user-object!
+                                   (doto (gdx/button-group)
+                                     (gdx/button-group-set-max-check-count! 1)
+                                     (gdx/button-group-set-min-check-count! 0))))
                          :expand? true
                          :bottom? true}]]})
-    (.setFillParent true)
-    (Actor/.setName "moon.ui.action-bar")))
+    (gdx/table-set-fill-parent! true)
+    (gdx/set-name! "moon.ui.action-bar")))

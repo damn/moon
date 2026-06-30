@@ -1,9 +1,9 @@
 (ns ctx.gdx-context
-  (:import (com.badlogic.gdx Gdx)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn f [ctx]
   (assoc ctx
-         :ctx/audio    Gdx/audio
-         :ctx/files    Gdx/files
-         :ctx/graphics Gdx/graphics
-         :ctx/input    Gdx/input))
+         :ctx/audio    (gdx/gdx-audio)
+         :ctx/files    (gdx/gdx-files)
+         :ctx/graphics (gdx/gdx-graphics)
+         :ctx/input    (gdx/gdx-input)))

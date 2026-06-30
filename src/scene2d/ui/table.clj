@@ -1,5 +1,5 @@
 (ns scene2d.ui.table
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn create []
-  (Table.))
+  (gdx/table))

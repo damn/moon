@@ -1,13 +1,10 @@
 (ns moon.ui.inventory-window.create
-  (:require [scene2d.actor.set-position :refer [set-position!]]
+  (:require [clojure.gdx :as gdx]
+            [scene2d.actor.set-position :refer [set-position!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.inventory.is-valid-slot :as valid-slot?]
-            [moon.ui.inventory-window.create-cell :refer [->cell]]
-            [clojure.gdx.new-color :as new-color])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
+            [moon.ui.inventory-window.create-cell :refer [->cell]]))
 
 (defn f
   [{:keys [item-rect-color
@@ -18,9 +15,9 @@
            slot->texture-region
            cell-size]}]
   (let [slot->drawable (fn [slot]
-                         (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
-                           (.setMinSize cell-size cell-size)
-                           (.tint (new-color/f [1 1 1 0.4]))))
+                         (doto (gdx/texture-region-drawable (slot->texture-region slot))
+                           (gdx/texture-region-drawable-set-min-size! cell-size cell-size)
+                           (gdx/texture-region-drawable-tint! (gdx/color [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?
@@ -53,8 +50,8 @@
                                                               (for [y (range 4)]
                                                                 (for [x (range 6)]
                                                                   (->cell :inventory.slot/bag :position [x y]))))})
-                                    (Actor/.setName "inventory-cell-table"))
+                                    (gdx/set-name! "inventory-cell-table"))
                            :pad 4}]]})
-      (Actor/.setName "moon.ui.windows.inventory")
-      (Actor/.setVisible false)
+      (gdx/set-name! "moon.ui.windows.inventory")
+      (gdx/set-visible! false)
       (set-position! position))))

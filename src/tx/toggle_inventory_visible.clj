@@ -4,5 +4,5 @@
 (defn f
   [{:keys [ctx/stage] :as ctx}]
   (let [inventory (gdx/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-    (com.badlogic.gdx.scenes.scene2d.Actor/.setVisible inventory (not (com.badlogic.gdx.scenes.scene2d.Actor/.isVisible inventory))))
+    (gdx/set-visible! inventory (not (gdx/visible? inventory))))
   nil)

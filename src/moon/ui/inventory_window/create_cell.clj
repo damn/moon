@@ -5,11 +5,7 @@
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
             [scene2d.utils.click-listener :as click-listener]
-            [scene2d.ui.stack :as stack]
-            [clojure.gdx.new-vector2 :as new-vector2])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Image)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+            [scene2d.ui.stack :as stack]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -19,34 +15,34 @@
        (run! #(gdx/add-actor! stack %)
              [(widget/f
                {:draw! (fn [this _batch _parent-alpha]
-                         (when-let [stage (Actor/.getStage this)]
+                         (when-let [stage (gdx/get-stage this)]
                            (let [{:keys [ctx/player-eid
                                          ctx/ui-mouse-position]
                                   :as ctx} (:stage/ctx stage)]
                              (draw! ctx
                                     (draw-cell-rect @player-eid
-                                                    (Actor/.getX this)
-                                                    (Actor/.getY this)
+                                                    (gdx/get-x this)
+                                                    (gdx/get-y this)
                                                     (let [[x y] (clojurize/f
-                                                                 (Actor/.stageToLocalCoordinates this
-                                                                                                 (new-vector2/f ui-mouse-position)))]
-                                                      (Actor/.hit this x y true))
-                                                    (Actor/.getUserObject (Actor/.getParent this)))))))})
-              (doto (Image. ^Drawable background-drawable)
-                (.setName "image-widget")
-                (.setUserObject {:background-drawable background-drawable
-                                 :cell-size cell-size}))])
+                                                                 (gdx/stage-to-local-coordinates this
+                                                                                                 (gdx/vector2 ui-mouse-position)))]
+                                                      (gdx/actor-hit this x y true))
+                                                    (gdx/get-user-object (gdx/get-parent this)))))))})
+              (doto (gdx/image background-drawable)
+                (gdx/image-set-name! "image-widget")
+                (gdx/image-set-user-object! {:background-drawable background-drawable
+                                             :cell-size cell-size}))])
        (doto stack
-         (Actor/.addListener (click-listener/create
-                              (fn [event _x _y]
-                                (let [{:keys [ctx/player-eid
-                                              ctx/k->clicked-inventory-cell]
-                                       :as ctx} (:stage/ctx (Event/.getStage event))
-                                      entity @player-eid
-                                      state-k (:state (:entity/fsm entity))]
-                                  (do! ctx
-                                       (if-let [f (k->clicked-inventory-cell state-k)]
-                                         (f player-eid cell)
-                                         nil))))))
-         (Actor/.setName "inventory-cell")
-         (Actor/.setUserObject cell)))}))
+         (gdx/add-listener! (click-listener/create
+                             (fn [event _x _y]
+                               (let [{:keys [ctx/player-eid
+                                             ctx/k->clicked-inventory-cell]
+                                      :as ctx} (:stage/ctx (gdx/event-get-stage event))
+                                     entity @player-eid
+                                     state-k (:state (:entity/fsm entity))]
+                                 (do! ctx
+                                      (if-let [f (k->clicked-inventory-cell state-k)]
+                                        (f player-eid cell)
+                                        nil))))))
+         (gdx/set-name! "inventory-cell")
+         (gdx/set-user-object! cell)))}))

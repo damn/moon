@@ -1,6 +1,6 @@
 (ns input.position
-  (:import (com.badlogic.gdx Input)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn f [input]
-  [(.getX ^Input input)
-   (.getY ^Input input)])
+  [(gdx/input-get-x input)
+   (gdx/input-get-y input)])

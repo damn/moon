@@ -1,7 +1,6 @@
 (ns orthographic-camera.set-position
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [clojure.gdx :as gdx]))
 
-(defn set-position! [^OrthographicCamera camera [x y]]
-  (set! (.x (.position camera)) x)
-  (set! (.y (.position camera)) y)
-  (.update camera))
+(defn set-position! [camera [x y]]
+  (gdx/camera-set-position! camera x y)
+  (gdx/camera-update! camera))

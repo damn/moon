@@ -1,11 +1,10 @@
 (ns scene2d.ui.table.set-opts
   (:require [clojure.gdx :as gdx]
-            [scene2d.ui.table.add-rows :refer [add-rows!]])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Table)))
+            [scene2d.ui.table.add-rows :refer [add-rows!]]))
 
-(defn set-opts! [^Table table opts]
+(defn set-opts! [table opts]
   (when-let [rows (:table/rows opts)]
     (add-rows! table rows)
-    (.pack table))
+    (gdx/pack! table))
   (when-let [defaults (:table/cell-defaults opts)]
-    (gdx/set-opts! (.defaults table) defaults)))
+    (gdx/set-opts! (gdx/table-defaults table) defaults)))

@@ -1,11 +1,11 @@
 (ns ctx.content-grid
-  (:require [clojure.grid2d :as g2d])
-  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
+  (:require [clojure.gdx :as gdx]
+            [clojure.grid2d :as g2d]))
 
 (defn step
   [{:keys [ctx/tiled-map]}]
-  (let [width  (.get (TiledMap/.getProperties tiled-map) "width")
-        height (.get (TiledMap/.getProperties tiled-map) "height")
+  (let [width  (gdx/map-properties-get (gdx/tiled-map-get-properties tiled-map) "width")
+        height (gdx/map-properties-get (gdx/tiled-map-get-properties tiled-map) "height")
         cell-size 16]
     {:grid (g2d/create-grid
             (inc (int (/ width  cell-size)))

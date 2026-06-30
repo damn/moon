@@ -1,6 +1,6 @@
 (ns stage.dev-menu.update-labels
-  (:require [clojure.readable :as readable])
-  (:import (com.badlogic.gdx Graphics)))
+  (:require [clojure.gdx :as gdx]
+            [clojure.readable :as readable]))
 
 (def v
   [
@@ -10,7 +10,7 @@
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn (fn [{:keys [ctx/graphics]}]
-                 (Graphics/.getFramesPerSecond graphics))
+                 (gdx/graphics-get-frames-per-second graphics))
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
     :update-fn (fn [{:keys [ctx/mouseover-eid]}]
@@ -27,6 +27,6 @@
                  (mapv int world-mouse-position))}
    {:label "Zoom"
     :update-fn (fn [{:keys [ctx/world-viewport]}]
-                 (.zoom (:viewport/camera world-viewport)))
+                 (gdx/camera-zoom (:viewport/camera world-viewport)))
     :icon "images/zoom.png"}
    ])

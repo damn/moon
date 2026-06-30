@@ -4,9 +4,7 @@
             [scene2d.ui.label :as label]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
-            [gdx.scenes.scene2d.ui.window :as window])
-  (:import (com.badlogic.gdx.utils Align)
-           (com.badlogic.gdx.scenes.scene2d Actor)))
+            [gdx.scenes.scene2d.ui.window :as window]))
 
 (defn f
   [{:keys [ctx/skin
@@ -22,13 +20,13 @@
                                                  {:text text
                                                   :skin skin})}]
                                        [{:actor (doto (text-button/create {:text button-text :skin skin})
-                                                  (Actor/.addListener (change-listener/create
-                                                                       (fn [_event _actor]
-                                                                         (Actor/.remove (gdx/find-actor (:stage/root stage) "moon.ui.modal-window"))
-                                                                         (on-click)))))}]]})
-                    (.setModal true)
-                    (Actor/.setName "moon.ui.modal-window")
+                                                  (gdx/add-listener! (change-listener/create
+                                                                      (fn [_event _actor]
+                                                                        (gdx/remove! (gdx/find-actor (:stage/root stage) "moon.ui.modal-window"))
+                                                                        (on-click)))))}]]})
+                    (gdx/window-set-modal! true)
+                    (gdx/set-name! "moon.ui.modal-window")
                     (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                     (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
-                                   Align/center)))
+                                   gdx/align-center)))
   nil)

@@ -1,8 +1,8 @@
 (comment
 
  (require '[moon.db.build :refer [build]]
-          '[com.badlogic.gdx Gdx])
- (.postRunnable (Gdx/app)
+          '[clojure.gdx :as gdx])
+ (.postRunnable (gdx/gdx-app)
                 (fn []
                   (let [{:keys [ctx/db]
                          :as ctx} @state]

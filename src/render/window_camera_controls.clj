@@ -2,8 +2,7 @@
   (:require [clojure.gdx :as gdx]
             [input.key-just-pressed :as key-just-pressed?]
             [input.key-pressed :as key-pressed?]
-            [orthographic-camera.inc-zoom :refer [inc-zoom!]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+            [orthographic-camera.inc-zoom :refer [inc-zoom!]]))
 
 (defn step
   [{:keys [ctx/input
@@ -21,13 +20,13 @@
   (when (key-just-pressed?/f input (:close-windows-key controls))
     (->> (gdx/find-actor (:stage/root stage) "moon.ui.windows")
          gdx/get-children
-         (run! #(Actor/.setVisible % false))))
+         (run! #(gdx/set-visible! % false))))
 
   (when (key-just-pressed?/f input (:toggle-inventory controls))
     (let [inventory (gdx/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-      (Actor/.setVisible inventory (not (Actor/.isVisible inventory)))))
+      (gdx/set-visible! inventory (not (gdx/visible? inventory)))))
 
   (when (key-just-pressed?/f input (:toggle-entity-info controls))
     (let [entity-info (gdx/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
-      (Actor/.setVisible entity-info (not (Actor/.isVisible entity-info)))))
+      (gdx/set-visible! entity-info (not (gdx/visible? entity-info)))))
   ctx)

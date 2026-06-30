@@ -3,10 +3,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
             [levelgen-test.create.edit-window :refer [edit-window]]
-            [levelgen-test.generate-level :as generate-level]
-            [clojure.gdx :as gdx])
-  (:import (com.badlogic.gdx Input)
-           (com.badlogic.gdx.graphics OrthographicCamera)))
+            [levelgen-test.generate-level :as generate-level]))
 
 (defn f!
   [{:keys [ctx/files
@@ -19,7 +16,7 @@
                    "config/world_fns/modules.edn"]
         ui-viewport (gdx/fit-viewport 1440 900)
         stage (stage/create ui-viewport sprite-batch)
-        _  (.setInputProcessor ^Input input stage)
+        _  (gdx/input-set-input-processor! input stage)
         tile-size 48
         world-unit-scale (float (/ tile-size))
         ctx (assoc ctx :ctx/stage stage)
@@ -27,8 +24,8 @@
                              world-height (* 900  world-unit-scale)]
                          (gdx/fit-viewport world-width
                                            world-height
-                                           (doto (OrthographicCamera.)
-                                             (.setToOrtho false world-width world-height))))
+                                           (doto (gdx/orthographic-camera)
+                                             (gdx/camera-set-to-ortho! false world-width world-height))))
         ctx (assoc ctx
                    :ctx/world-viewport world-viewport
                    :ctx/camera (:viewport/camera world-viewport)

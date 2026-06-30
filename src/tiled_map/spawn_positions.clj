@@ -1,17 +1,16 @@
 (ns tiled-map.spawn-positions
-  (:import (com.badlogic.gdx.maps.tiled TiledMap
-                                        TiledMapTileLayer$Cell)))
+  (:require [clojure.gdx :as gdx]))
 
-(defn f [^TiledMap tiled-map]
+(defn f [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (.get (.getLayers tiled-map) layer-name)]
-    (for [x (range (.getWidth layer))
-          y (range (.getHeight layer))
+        layer (gdx/map-layers-get (gdx/tiled-map-get-layers tiled-map) layer-name)]
+    (for [x (range (gdx/tiled-map-tile-layer-get-width layer))
+          y (range (gdx/tiled-map-tile-layer-get-height layer))
           :let [position [x y]
-                cell (.getCell layer x y)]
+                cell (gdx/tiled-map-tile-layer-get-cell layer x y)]
           :when cell
-          :let [value (.get (.getProperties (.getTile cell))
-                            property-key)]
+          :let [value (gdx/map-properties-get (gdx/tile-get-properties (gdx/cell-get-tile cell))
+                                               property-key)]
           :when value]
       [position value])))

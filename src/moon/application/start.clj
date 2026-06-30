@@ -1,17 +1,12 @@
 (ns moon.application.start
-  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
-                                             Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.utils Os
-                                   SharedLibraryLoader)
-           (org.lwjgl.system Configuration)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn f!
   [{:keys [listener title windowed-mode foreground-fps]}]
-  (when (= SharedLibraryLoader/os Os/MacOsX)
-    (.set Configuration/GLFW_LIBRARY_NAME "glfw_async"))
-  (Lwjgl3Application. (let [[f params] listener]
-                        (f params))
-                      (doto (Lwjgl3ApplicationConfiguration.)
-                        (.setTitle title)
-                        (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
-                        (.setForegroundFPS foreground-fps))))
+  (gdx/macos-glfw-async!)
+  (gdx/lwjgl3-application! (let [[f params] listener]
+                             (f params))
+                           (doto (gdx/lwjgl3-application-configuration)
+                             (gdx/lwjgl3-config-set-title! title)
+                             (gdx/lwjgl3-config-set-windowed-mode! (:width windowed-mode) (:height windowed-mode))
+                             (gdx/lwjgl3-config-set-foreground-fps! foreground-fps))))

@@ -4,9 +4,7 @@
             [scene2d.actor :as actor]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label)))
+            [gdx.scenes.scene2d.ui.window :as window]))
 
 (defn create
   [{:keys [title
@@ -22,12 +20,12 @@
                       {:title title
                        :skin skin
                        :table/rows [[{:actor label :expand? true}]]})
-                 (Actor/.setName actor-name)
-                 (Actor/.setVisible visible?)
+                 (gdx/set-name! actor-name)
+                 (gdx/set-visible! visible?)
                  (set-position! position))]
     (gdx/add-actor! window (actor/f
                             {:act! (fn [this delta]
-                                     (when-let [stage (Actor/.getStage this)]
-                                       (Label/.setText label ^String (set-label-text! (:stage/ctx stage))))
-                                     (.pack window))}))
+                                     (when-let [stage (gdx/get-stage this)]
+                                       (gdx/label-set-text! label ^String (set-label-text! (:stage/ctx stage))))
+                                     (gdx/pack! window))}))
     window))

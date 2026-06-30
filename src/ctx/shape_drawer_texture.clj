@@ -1,12 +1,10 @@
 (ns ctx.shape-drawer-texture
-  (:import (com.badlogic.gdx.graphics Pixmap
-                                      Pixmap$Format
-                                      Texture)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn step [_ctx]
-  (let [pixmap (doto (Pixmap. 1 1 Pixmap$Format/RGBA8888)
-                 (Pixmap/.setColor 1 1 1 1)
-                 (Pixmap/.drawPixel 0 0))
-        texture (Texture. pixmap)]
-    (Pixmap/.dispose pixmap)
+  (let [pixmap (doto (gdx/pixmap-create 1 1 gdx/pixmap-format-rgba8888)
+                 (gdx/pixmap-set-color! 1 1 1 1)
+                 (gdx/pixmap-draw-pixel! 0 0))
+        texture (gdx/pixmap->texture pixmap)]
+    (gdx/pixmap-dispose! pixmap)
     texture))

@@ -1,6 +1,5 @@
 (ns input.button-just-pressed
-  (:require [clojure.gdx.k-to-input-button :as k-to-input-button])
-  (:import (com.badlogic.gdx Input)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn f [input k]
-  (.isButtonJustPressed ^Input input (k-to-input-button/f k)))
+  (gdx/input-is-button-just-pressed input k))

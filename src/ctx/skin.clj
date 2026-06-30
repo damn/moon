@@ -1,9 +1,8 @@
 (ns ctx.skin
-  (:import (com.badlogic.gdx Files)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn step
   [{:keys [ctx/files]}]
-  (let [skin (Skin. (Files/.internal files "skin/uiskin.json"))]
-    (set! (.markupEnabled (.getData (.getFont skin "default-font"))) true)
+  (let [skin (gdx/skin (gdx/internal files "skin/uiskin.json"))]
+    (gdx/font-set-markup-enabled! (gdx/skin-get-font skin "default-font") true)
     skin))

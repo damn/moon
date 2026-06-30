@@ -1,7 +1,7 @@
 (ns moon.body.overlaps
-  (:require [moon.body.rectangle :refer [->rectangle]])
-  (:import (com.badlogic.gdx.math Rectangle)))
+  (:require [clojure.gdx :as gdx]
+            [moon.body.rectangle :refer [->rectangle]]))
 
 (defn overlaps? [body other-body]
-  (.overlaps ^Rectangle (->rectangle body)
-             ^Rectangle (->rectangle other-body)))
+  (gdx/rectangle-overlaps? (->rectangle body)
+                           (->rectangle other-body)))

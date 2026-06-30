@@ -1,12 +1,12 @@
 (ns render.update-mouse-positions
-  (:require [clojure.gdx.unproject :as unproject]
+  (:require [clojure.gdx :as gdx]
             [ctx.mouse-position :refer [mouse-position]]))
 
 (defn step
   [{:keys [ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (let [mp (mouse-position ctx)]
-    (-> ctx
-        (assoc :ctx/world-mouse-position (unproject/f world-viewport mp))
-        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (unproject/f mp))))))
+  (assoc ctx
+         :ctx/ui-mouse-position (mouse-position ctx)
+         :ctx/world-mouse-position (gdx/unproject (:stage/viewport stage)
+                                                   (mouse-position ctx))))

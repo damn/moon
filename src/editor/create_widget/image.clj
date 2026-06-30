@@ -1,10 +1,8 @@
 (ns editor.create-widget.image
-  (:require [scene2d.ui.scroll-pane :as scroll-pane]
+  (:require [clojure.gdx :as gdx]
+            [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.text-button :as text-button]
-            [moon.textures :as textures])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
-           (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
+            [moon.textures :as textures]))
 
 ; too many ! too big ! scroll ... only show files first & preview?
 ; make tree view from folders, etc. .. !! all creatures animations showing...
@@ -18,12 +16,13 @@
 (defn f
   [schema image {:keys [ctx/skin
                         ctx/textures]}]
-  (ImageButton.
-   (let [^TextureRegion texture-region (textures/texture-region textures image)
+  (gdx/image-button
+   (let [texture-region (textures/texture-region textures image)
          scale 2]
-     (doto (TextureRegionDrawable. texture-region)
-       (.setMinSize (* scale (.getRegionWidth texture-region))
-                    (* scale (.getRegionHeight texture-region))))))
+     (doto (gdx/texture-region-drawable texture-region)
+       (gdx/texture-region-drawable-set-min-size!
+        (* scale (gdx/texture-region-get-region-width texture-region))
+        (* scale (gdx/texture-region-get-region-height texture-region))))))
   #_(ui/image-button image
                      (fn [_actor ctx]
                        (c/add-actor! ctx (scroll-pane/choose-window (texture-rows ctx))))

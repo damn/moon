@@ -1,10 +1,7 @@
 (ns scene2d.actor.is-button
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Button)))
+  (:require [clojure.gdx :as gdx]))
 
-(let [button-class? (fn [actor]
-                      (some #(= Button %) (supers (class actor))))]
-  (defn f [actor]
-    (or (button-class? actor)
-        (when-let [parent (Actor/.getParent actor)]
-          (button-class? parent)))))
+(defn f [actor]
+  (or (gdx/button-class? actor)
+      (when-let [parent (gdx/get-parent actor)]
+        (gdx/button-class? parent))))

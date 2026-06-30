@@ -1,5 +1,5 @@
 (ns scene2d.ui.window
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin Window)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn f [{:keys [title skin]}]
-  (Window. ^String title ^Skin skin))
+  (gdx/window ^String title ^Skin skin))

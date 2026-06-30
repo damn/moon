@@ -1,10 +1,10 @@
 (ns scene2d.actor.find-ancestor
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn find-ancestor [actor pred?]
   (loop [a actor]
-    (if-let [p (Actor/.getParent a)]
+    (if-let [p (gdx/get-parent a)]
       (if (pred? p)
         p
         (recur p))
-      (throw (Error. (str "Actor has no matching ancestor " actor))))))
+      nil)))

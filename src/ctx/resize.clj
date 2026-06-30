@@ -1,9 +1,9 @@
 (ns ctx.resize
-  (:import (com.badlogic.gdx.utils.viewport Viewport)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn do!
   [{:keys [ctx/stage
            ctx/world-viewport]}
    width height]
-  (.update ^Viewport (:stage/viewport stage) width height true)
-  (.update ^Viewport world-viewport width height false))
+  (gdx/viewport-update (:stage/viewport stage) width height true)
+  (gdx/viewport-update world-viewport width height false))

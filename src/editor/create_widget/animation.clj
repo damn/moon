@@ -1,18 +1,17 @@
 (ns editor.create-widget.animation
-  (:require [gdx.scenes.scene2d.ui.table :as table]
-            [moon.textures :as textures])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
-           (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
+  (:require [clojure.gdx :as gdx]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [moon.textures :as textures]))
 
 (defn f
   [_ animation {:keys [ctx/textures]}]
   (table/create
    {:table/cell-defaults {:pad 1}
     :table/rows [(for [image (:animation/frames animation)
-                       :let [^TextureRegion texture-region (textures/texture-region textures image)
+                       :let [texture-region (textures/texture-region textures image)
                              scale 2]]
-                   {:actor (ImageButton.
-                            (doto (TextureRegionDrawable. texture-region)
-                              (.setMinSize (* scale (.getRegionWidth texture-region))
-                                           (* scale (.getRegionHeight texture-region)))))})]}))
+                   {:actor (gdx/image-button
+                            (doto (gdx/texture-region-drawable texture-region)
+                              (gdx/texture-region-drawable-set-min-size!
+                               (* scale (gdx/texture-region-get-region-width texture-region))
+                               (* scale (gdx/texture-region-get-region-height texture-region)))))})]}))

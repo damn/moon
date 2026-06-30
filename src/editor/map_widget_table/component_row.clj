@@ -4,8 +4,7 @@
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)))
+            [scene2d.utils.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin
@@ -19,14 +18,14 @@
                                      (doto (text-button/create
                                             {:text "-"
                                              :skin skin})
-                                       (Actor/.addListener (change-listener/create
-                                                            (fn [event _actor]
-                                                              (Actor/.remove (first (filter (fn [actor]
-                                                                                              (and (Actor/.getUserObject actor)
-                                                                                                   (= k ((Actor/.getUserObject actor) 0))))
-                                                                                            (gdx/get-children table))))
-                                                              (let [ctx (:stage/ctx (Event/.getStage event))]
-                                                                ((:ctx/rebuild-editor-window! ctx) ctx)))))))
+                                       (gdx/add-listener! (change-listener/create
+                                                           (fn [event _actor]
+                                                             (gdx/remove! (first (filter (fn [actor]
+                                                                                          (and (gdx/get-user-object actor)
+                                                                                               (= k ((gdx/get-user-object actor) 0))))
+                                                                                        (gdx/get-children table))))
+                                                             (let [ctx (:stage/ctx (gdx/event-get-stage event))]
+                                                               ((:ctx/rebuild-editor-window! ctx) ctx)))))))
                             :left? true}
                            {:actor (label/create
                                     {:text (k-label-text/f k)

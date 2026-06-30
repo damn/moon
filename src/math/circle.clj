@@ -1,7 +1,7 @@
 (ns math.circle
-  (:import (com.badlogic.gdx.math Circle)))
+  (:require [clojure.gdx :as gdx]))
 
 (defn create [{:keys [position radius]}]
-  (Circle. (position 0)
-           (position 1)
-           radius))
+  (gdx/circle (position 0)
+              (position 1)
+              radius))

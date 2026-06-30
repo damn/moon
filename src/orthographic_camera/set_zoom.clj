@@ -1,6 +1,6 @@
 (ns orthographic-camera.set-zoom
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [clojure.gdx :as gdx]))
 
-(defn set-zoom! [^OrthographicCamera camera amount]
-  (set! (.zoom camera) amount)
-  (.update camera))
+(defn set-zoom! [camera amount]
+  (gdx/camera-set-zoom! camera amount)
+  (gdx/camera-update! camera))

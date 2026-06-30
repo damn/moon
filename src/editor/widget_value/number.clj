@@ -1,7 +1,7 @@
 (ns editor.widget-value.number
-  (:require [clojure.edn :as edn])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui TextField)))
+  (:require [clojure.edn :as edn]
+            [clojure.gdx :as gdx]))
 
 (defn f
   [_  widget _schemas]
-  (edn/read-string (TextField/.getText widget)))
+  (edn/read-string (gdx/text-field-get-text widget)))

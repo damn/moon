@@ -1,7 +1,5 @@
 (ns gdx.math.vector3.clojurize
-  (:import (com.badlogic.gdx.math Vector3)))
+  (:require [clojure.gdx :as gdx]))
 
-(defn f [^Vector3 v3]
-  [(.x v3)
-   (.y v3)
-   (.z v3)])
+(defn f [v3]
+  (gdx/vector3-clojurize v3))

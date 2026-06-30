@@ -13,8 +13,7 @@
             [moon.db.update :refer [update!]]
             [moon.property.type :refer [property->type]]
             [editor.create-widget :as create-widget]
-            [editor.widget-value :as widget-value])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)))
+            [editor.widget-value :as widget-value]))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -36,16 +35,16 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (Actor/.addListener (change-listener/create
-                                                          (fn [event actor]
-                                                            (clicked-save-fn actor (:stage/ctx (Event/.getStage event)))))))
+                                     (gdx/add-listener! (change-listener/create
+                                                         (fn [event actor]
+                                                           (clicked-save-fn actor (:stage/ctx (gdx/event-get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (Actor/.addListener (change-listener/create
-                                                          (fn [event actor]
-                                                            (clicked-delete-fn actor (:stage/ctx (Event/.getStage event)))))))
+                                     (gdx/add-listener! (change-listener/create
+                                                         (fn [event actor]
+                                                           (clicked-delete-fn actor (:stage/ctx (gdx/event-get-stage event)))))))
                             :center? true}]]]
     (doto (window/create
            {:title "[SKY]Property[]"
@@ -58,11 +57,11 @@
                            scroll-pane-height
                            50)]]})
       (add-close-button/f! skin)
-      (.setModal true)
+      (gdx/window-set-modal! true)
       (gdx/add-actor! (actor/f
                        {:act! (fn [this delta]
-                                (when-let [stage (Actor/.getStage this)]
+                                (when-let [stage (gdx/get-stage this)]
                                   (let [ctx (:stage/ctx stage)]
                                     (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                       (clicked-save-fn this ctx)))))}))
-      (Actor/.setName "moon.ui.editor.window"))))
+      (gdx/set-name! "moon.ui.editor.window"))))
