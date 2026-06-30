@@ -6,7 +6,7 @@
 ;(comment
 ; (require '[moon.grid :as grid])
 ; (require '[math.circle :as circle])
-; [clojure.gdx.float-bits :as float-bits]
+; [clojure.gdx :as gdx]
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/grid
@@ -15,10 +15,10 @@
 ;         radius 0.8
 ;         circle {:position position
 ;                 :radius radius}]
-;     (conj (cons [:draw/circle position radius (float-bits/f [1 0 0 0.5])]
+;     (conj (cons [:draw/circle position radius (gdx/float-bits [1 0 0 0.5])]
 ;                 (for [[x y] (map #(:position @%) (circle->cells grid circle))]
-;                   [:draw/rectangle x y 1 1 (float-bits/f [1 0 0 0.5])]))
+;                   [:draw/rectangle x y 1 1 (gdx/float-bits [1 0 0 0.5])]))
 ;           (let [{:keys [x y width height]} (circle/outer-rectangle circle)]
-;             [:draw/rectangle x y width height (float-bits/f [0 0 1 1])]))))
+;             [:draw/rectangle x y width height (gdx/float-bits [0 0 1 1])]))))
 ;
 ; )

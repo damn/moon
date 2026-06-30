@@ -1,9 +1,9 @@
 (ns render.if-not-paused.tick-entities
-  (:require [ctx.do :refer [do!]]
+  (:require [clojure.gdx :as gdx]
+            [ctx.do :refer [do!]]
             [ctx.tick-component :refer [tick-component]]
             [moon.throwable :as throwable]
-            [moon.ui.error-window :as error-window])
-  (:import (scene2d Stage)))
+            [moon.ui.error-window :as error-window]))
 
 (defn f
   [{:keys [ctx/active-entities
@@ -21,8 +21,8 @@
                 active-entities))
    (catch Throwable t
      (throwable/pretty-pst t)
-     (Stage/.addActor stage
-                      (error-window/create
-                       {:skin skin
-                        :throwable t}))))
+     (gdx/add-actor! stage
+                     (error-window/create
+                      {:skin skin
+                       :throwable t}))))
   ctx)

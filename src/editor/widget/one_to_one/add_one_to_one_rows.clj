@@ -1,5 +1,6 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
-  (:require [scene2d.actor.find-ancestor :refer [find-ancestor]]
+  (:require [clojure.gdx :as gdx]
+            [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.text-tooltip :as text-tooltip]
@@ -10,8 +11,7 @@
             [moon.textures :as textures])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)
            (com.badlogic.gdx.scenes.scene2d.ui Image
-                                               Window)
-           (scene2d Stage)))
+                                               Window)))
 
 (defn add-one-to-one-rows
   [{:keys [ctx/db
@@ -36,7 +36,7 @@
                                                         ctx/textures
                                                         ctx/property-overview-window]
                                                  :as ctx} (:stage/ctx (Event/.getStage event))]
-                                            (Stage/.addActor
+                                            (gdx/add-actor!
                                              stage
                                              (property-overview-window
                                               {:db db
