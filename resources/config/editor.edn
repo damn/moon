@@ -1,5 +1,4 @@
 [
- (clojure.add-methods/f! clojure.malli-form/malli-form #edn/resource "config/k->malli_form.edn")
  (clojure.add-methods/f! editor.create-widget/f
                          {
                           :default       editor.create-widget.default/f
