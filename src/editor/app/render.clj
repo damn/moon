@@ -1,5 +1,5 @@
 (ns editor.app.render
-  (:import (scene2d Stage)))
+  (:import (moon Stage)))
 
 (defn render!
   [{:keys [ctx/stage]

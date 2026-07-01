@@ -1,5 +1,5 @@
 (ns render.update-draw-stage
-  (:import (scene2d Stage)))
+  (:import (moon Stage)))
 
 (defn step
   [{:keys [ctx/stage] :as ctx}]
