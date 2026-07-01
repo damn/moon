@@ -1,9 +1,9 @@
 (ns clojure.gdx.unproject
   (:require [clojure.gdx.vector2.new :as new-vector2]
-            [gdx.math.vector2.clojurize :as clojurize])
-  (:import (com.badlogic.gdx.utils.viewport Viewport)))
+            [clojure.gdx.viewport.unproject :as unproject]
+            [gdx.math.vector2.clojurize :as clojurize]))
 
-(defn f [^Viewport viewport xy]
+(defn f [viewport xy]
   (-> viewport
-      (.unproject (new-vector2/f xy))
+      (unproject/f (new-vector2/f xy))
       clojurize/f))
