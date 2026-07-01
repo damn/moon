@@ -5,7 +5,7 @@
             [ctx.draw :refer [draw!]]
             [scene2d.utils.click-listener :as click-listener]
             [scene2d.ui.stack :as stack]
-            [clojure.gdx.new-vector2 :as new-vector2])
+            [clojure.gdx.vector2.new :as new-vector2])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)
            (com.badlogic.gdx.scenes.scene2d.ui Image)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable)))

@@ -1,5 +1,5 @@
 (ns clojure.gdx.unproject
-  (:require [clojure.gdx.new-vector2 :as new-vector2]
+  (:require [clojure.gdx.vector2.new :as new-vector2]
             [gdx.math.vector2.clojurize :as clojurize])
   (:import (com.badlogic.gdx.utils.viewport Viewport)))
 
