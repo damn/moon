@@ -1,5 +1,5 @@
 (ns levelgen-test.create
-  (:require [clojure.gdx.float-bits :as float-bits]
+  (:require [clojure.gdx.color.float-bits :as float-bits]
             [clojure.gdx.orthographic-camera.new :as new-camera]
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
             [gdx.scenes.scene2d.ui.window :as window]

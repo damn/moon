@@ -4,7 +4,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.inventory.is-valid-slot :as valid-slot?]
             [moon.ui.inventory-window.create-cell :refer [->cell]]
-            [clojure.gdx.new-color :as new-color])
+            [clojure.gdx.color.new :as new-color])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))

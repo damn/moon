@@ -1,4 +1,4 @@
-(ns clojure.gdx.float-bits
+(ns clojure.gdx.color.float-bits
   (:import (com.badlogic.gdx.graphics Color)))
 
 (defn f [[r g b a]]

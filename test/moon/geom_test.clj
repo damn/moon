@@ -6,7 +6,7 @@
 ;(comment
 ; (require '[moon.grid :as grid])
 ; (require '[math.circle :as circle])
-; [clojure.gdx.float-bits :as float-bits]
+; [clojure.gdx.color.float-bits :as float-bits]
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/grid

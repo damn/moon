@@ -1,6 +1,6 @@
 (ns ctx.colors
   (:require [clojure.color :refer [black white gray red]]
-            [clojure.gdx.float-bits :as float-bits]))
+            [clojure.gdx.color.float-bits :as float-bits]))
 
 (defn step [_ctx]
   (let [outline-alpha 0.4]
