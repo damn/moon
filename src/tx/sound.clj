@@ -1,9 +1,9 @@
 (ns tx.sound
-  (:import (com.badlogic.gdx.audio Sound)))
+  (:require [clojure.gdx.sound.play! :as play!]))
 
 (defn f
   [{:keys [ctx/audio] :as ctx} sound-name]
   (let [sounds audio]
     (assert (contains? sounds sound-name) (str sound-name))
-    (Sound/.play (get sounds sound-name)))
+    (play!/f (get sounds sound-name)))
   nil)
