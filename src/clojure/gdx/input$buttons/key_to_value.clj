@@ -1,4 +1,4 @@
-(ns clojure.gdx.k-to-input-button
+(ns clojure.gdx.input$buttons.key-to-value
   (:import (com.badlogic.gdx Input$Buttons)))
 
 (defn f [k]
