@@ -6,7 +6,7 @@
             [scene2d.stage :as stage]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]
-            [clojure.gdx.fit-viewport :as fit-viewport])
+            [clojure.gdx.fit-viewport.new :as fit-viewport])
   (:import (com.badlogic.gdx Input)
            (com.badlogic.gdx.scenes.scene2d Stage)))
 

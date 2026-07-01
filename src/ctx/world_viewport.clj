@@ -1,5 +1,5 @@
 (ns ctx.world-viewport
-  (:require [clojure.gdx.fit-viewport :as fit-viewport]
+  (:require [clojure.gdx.fit-viewport.new :as fit-viewport]
             [clojure.gdx.orthographic-camera.new :as new-camera]
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]))
 
