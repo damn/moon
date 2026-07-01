@@ -1,5 +1,6 @@
 (ns levelgen-test.start
-  (:require [clojure.run-executions :refer [run-executions!]]))
+  (:require [moon.application.start]
+            [clojure.edn-resource :refer [edn-resource]]))
 
 (defn -main []
-  (run-executions! "config/levelgen-test.edn"))
+  (moon.application.start/f! (edn-resource "config/levelgen-test.edn")))
