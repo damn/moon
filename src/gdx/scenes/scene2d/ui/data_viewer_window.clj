@@ -8,8 +8,8 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.data-viewer-window.k-label-str :refer [k->label-str]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)))
 
 (defn create
   [{:keys [title

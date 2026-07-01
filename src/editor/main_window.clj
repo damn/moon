@@ -6,8 +6,9 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db.property-types :refer [property-types]]
             [moon.db.get-raw :refer [get-raw]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)
-           (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event
+                                            Stage)))
 
 (defn create
   [{:keys [ctx/db

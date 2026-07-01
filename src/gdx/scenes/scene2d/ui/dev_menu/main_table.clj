@@ -5,8 +5,9 @@
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)
-           (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event
+                                            Stage)))
 
 (defn f [skin menus update-labels]
   (let [table (table/create

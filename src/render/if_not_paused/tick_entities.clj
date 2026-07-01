@@ -3,7 +3,7 @@
             [ctx.tick-component :refer [tick-component]]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window])
-  (:import (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn f
   [{:keys [ctx/active-entities

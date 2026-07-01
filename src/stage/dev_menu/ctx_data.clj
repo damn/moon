@@ -1,6 +1,6 @@
 (ns stage.dev-menu.ctx-data
   (:require [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window])
-  (:import (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (def item
   {:label "Ctx Data"

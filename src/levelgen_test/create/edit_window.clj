@@ -2,8 +2,8 @@
   (:require [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
             [levelgen-test.generate-level :as generate-level])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)
-           (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event)))
 
 (defn edit-window [skin level-fns]
   {:title "Edit"

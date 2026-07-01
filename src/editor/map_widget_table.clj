@@ -5,8 +5,9 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
             [editor.horiz-sep :as horiz-sep])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)
-           (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event
+                                            Stage)))
 
 (defn create
   [{:keys [create-component-row

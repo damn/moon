@@ -1,8 +1,9 @@
 (ns editor.rebuild
   (:require [editor.map-widget-table.get-value :as get-value]
             [editor.window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)
-           (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Group
+                                            Stage)))
 
 (defn f!
   [{:keys [ctx/db

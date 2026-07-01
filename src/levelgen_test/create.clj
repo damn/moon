@@ -7,7 +7,7 @@
             [clojure.gdx.fit-viewport :as fit-viewport])
   (:import (com.badlogic.gdx Input)
            (com.badlogic.gdx.graphics OrthographicCamera)
-           (scene2d Stage)))
+           (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn f!
   [{:keys [ctx/files

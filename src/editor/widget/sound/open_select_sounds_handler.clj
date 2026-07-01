@@ -7,8 +7,9 @@
             [scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.utils.change-listener :as change-listener])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event)
-           (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event
+                                            Stage)))
 
 (defn open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin

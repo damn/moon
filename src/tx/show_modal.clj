@@ -5,9 +5,9 @@
             [scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window])
   (:import (com.badlogic.gdx.utils Align)
-           (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d Group)
-           (scene2d Stage)))
+           (com.badlogic.gdx.scenes.scene2d Actor
+                                            Group
+                                            Stage)))
 
 (defn f
   [{:keys [ctx/skin

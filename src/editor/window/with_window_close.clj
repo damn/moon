@@ -2,9 +2,9 @@
   (:require [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
             [scene2d.actor.find-ancestor :refer [find-ancestor]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Window)
-           (scene2d Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Stage)
+           (com.badlogic.gdx.scenes.scene2d.ui Window)))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin

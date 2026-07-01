@@ -8,10 +8,12 @@
             [moon.property.tooltip :as tooltip]
             [moon.property.image :as property-image]
             [moon.textures :as textures])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)
+  (:import (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event
+                                            Group
+                                            Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Image
-                                               Window)
-           (scene2d Stage)))
+                                               Window)))
 
 (defn add-one-to-one-rows
   [{:keys [ctx/db
