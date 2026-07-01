@@ -1,5 +1,6 @@
 (ns render.draw-on-world-viewport
-  (:require [ctx.draw :refer [draw!]])
+  (:require [clojure.gdx.orthographic-camera.combined :as combined]
+            [ctx.draw :refer [draw!]])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
            (space.earlygrey.shapedrawer ShapeDrawer)))
 
@@ -15,7 +16,7 @@
   ; _everything_ flickers with TextToolTip!
   ; it changes batch color somehow and does not change it back ! FIXME
   (Batch/.setColor batch 1 1 1 1)
-  (Batch/.setProjectionMatrix batch (.combined (:viewport/camera world-viewport)))
+  (Batch/.setProjectionMatrix batch (combined/f (:viewport/camera world-viewport)))
   (Batch/.begin batch)
   (let [old-line-width (ShapeDrawer/.getDefaultLineWidth shape-drawer)]
     (ShapeDrawer/.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))

@@ -1,12 +1,13 @@
 (ns levelgen-test.create
   (:require [clojure.gdx.float-bits :as float-bits]
+            [clojure.gdx.orthographic-camera.new :as new-camera]
+            [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
             [levelgen-test.create.edit-window :refer [edit-window]]
             [levelgen-test.generate-level :as generate-level]
             [clojure.gdx.fit-viewport :as fit-viewport])
   (:import (com.badlogic.gdx Input)
-           (com.badlogic.gdx.graphics OrthographicCamera)
            (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn f!
@@ -28,8 +29,8 @@
                              world-height (* 900  world-unit-scale)]
                          (fit-viewport/create world-width
                                               world-height
-                                              (doto (OrthographicCamera.)
-                                                (.setToOrtho false world-width world-height))))
+                                              (doto (new-camera/f)
+                                                (set-to-ortho!/f! false world-width world-height))))
         ctx (assoc ctx
                    :ctx/world-viewport world-viewport
                    :ctx/camera (:viewport/camera world-viewport)
