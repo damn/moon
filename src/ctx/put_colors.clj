@@ -1,6 +1,6 @@
 (ns ctx.put-colors
-  (:require [clojure.gdx.new-color :as new-color])
-  (:import (com.badlogic.gdx.graphics Colors)))
+  (:require [clojure.gdx.colors.put! :as colors-put!]
+            [clojure.gdx.new-color :as new-color]))
 
 (defn step [_ctx]
-  (Colors/put "PRETTY_NAME" (new-color/f [0.84 0.8 0.52 1])))
+  (colors-put!/f "PRETTY_NAME" (new-color/f [0.84 0.8 0.52 1])))
