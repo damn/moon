@@ -1,8 +1,8 @@
 (ns clojure.gdx.draw-tiled-map-tile-layer
-  (:require [clojure.gdx.draw-tiled-map-tile :as draw-tile])
+  (:require [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]
+            [clojure.gdx.draw-tiled-map-tile :as draw-tile])
   (:import (com.badlogic.gdx.graphics.g2d Batch)
-           (com.badlogic.gdx.maps.tiled TiledMapTileLayer
-                                        TiledMapTileLayer$Cell)))
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
 (defn f!
   [^TiledMapTileLayer layer
@@ -48,8 +48,8 @@
         (loop [col col1
                x x-start]
           (when (< col col2)
-            (when-let [^TiledMapTileLayer$Cell cell (.getCell layer col row)]
-              (when-let [tile (.getTile cell)]
+            (when-let [cell (.getCell layer col row)]
+              (when-let [tile (get-tile/f cell)]
                 (draw-tile/f! x
                               y
                               tile
