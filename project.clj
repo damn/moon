@@ -2,6 +2,13 @@
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
                  ; libgdx java libs
+                 ; =>>
+                 ; 1. the java layer is rotten to the core
+                 ; 2. go deeper
+                 ; 3. own your lifecycle / take responsibility
+                 ; 4. this was the whole reason clojure was created to fix those stateful objects!
+                 ; => operate on plain data structures, immutable persistent
+                 ; => stateless
                  [com.badlogicgames.gdx/gdx                   "1.14.2"]
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.2"]
                  [com.badlogicgames.gdx/gdx-freetype          "1.14.2"]
