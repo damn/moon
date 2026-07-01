@@ -1,6 +1,6 @@
 (ns clojure.gdx.draw-tiled-map-tile
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d Batch)
+  (:require [clojure.gdx.batch.draw! :as draw!])
+  (:import (com.badlogic.gdx.graphics.g2d Batch)
            (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps.tiled TiledMapTile)))
 
@@ -47,8 +47,8 @@
     (aset-float verts Batch/C4 color21)
     (aset-float verts Batch/U4 u2)
     (aset-float verts Batch/V4 v1)
-    (Batch/.draw batch
-                 ^Texture (.getTexture region)
-                 ^floats verts
-                 (int 0)
-                 (int num-vertices))))
+    (draw!/f batch
+             (.getTexture region)
+             verts
+             0
+             num-vertices)))
