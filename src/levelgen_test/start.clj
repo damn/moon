@@ -1,5 +1,14 @@
 (ns levelgen-test.start
-  (:require [clojure.gdx.application-listener.new :as create-listener]
+  (:require [clojure.edn-resource :refer [edn-resource]]
+            [moon.creature-tiles]
+            [input.key-pressed :as key-pressed?]
+            [orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [orthographic-camera.position :as get-position]
+            [orthographic-camera.set-position :refer [set-position!]]
+            [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
+            [orthographic-camera.set-zoom :refer [set-zoom!]]
+            [moon.db.all-raw :refer [all-raw]]
+            [clojure.gdx.application-listener.new :as create-listener]
             [clojure.gdx.lwjgl3-application.new :as lwjgl3-application]
             [clojure.gdx.lwjgl3-application-configuration.new :as create-config]
             [clojure.gdx.use-glfw-async :as use-glfw-async!]
@@ -9,24 +18,31 @@
             [moon.db :as db]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
-            [levelgen-test.create.edit-window :refer [edit-window]]
-            [levelgen-test.generate-level :as generate-level]
+            [scene2d.ui.text-button :as text-button]
+            [scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.fit-viewport.new :as fit-viewport]
             [moon.application.listener]
+
+            ; CTX:
             [ctx.textures]
             [render.get-stage-ctx]
             [pipeline.do]
             [render.clear-screen]
-            [levelgen-test.draw-tiled-map]
-            [levelgen-test.camera-zoom-controls]
-            [levelgen-test.camera-movement-controls]
-            [render.update-draw-stage])
+            [render.update-draw-stage]
+
+            [clojure.gdx.draw-tiled-map :as draw-tiled-map])
   (:import (com.badlogic.gdx Input
                              Files
                              Gdx)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch)
-           (com.badlogic.gdx.scenes.scene2d Stage)
+           (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch
+                                          TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d Actor
+                                            Event)
+           (scene2d Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Skin)
+           (com.badlogic.gdx.maps MapLayers)
+           (com.badlogic.gdx.maps.tiled TiledMap)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
@@ -40,6 +56,94 @@
 (def ui-viewport-height 900)
 
 (def tile-size 48)
+
+(defn camera-zoom-controls!
+  [{:keys [ctx/input
+           ctx/camera
+           ctx/zoom-speed]}]
+  (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
+  (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed))))
+
+(defn camera-movement-controls!
+  [{:keys [ctx/input
+           ctx/camera
+           ctx/camera-movement-speed]}]
+  (let [apply-position (fn [idx f]
+                         (set-position! camera
+                                        (update (get-position/f camera)
+                                                idx
+                                                #(f % camera-movement-speed))))]
+    (if (key-pressed?/f input :input.keys/left)  (apply-position 0 -))
+    (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
+    (if (key-pressed?/f input :input.keys/up)    (apply-position 1 +))
+    (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -))))
+
+(defn draw-tiled-map!
+  [{:keys [ctx/sprite-batch
+           ctx/color-setter
+           ctx/tiled-map
+           ctx/world-unit-scale
+           ctx/world-viewport]}]
+  (draw-tiled-map/f! sprite-batch
+                     world-unit-scale
+                     (:viewport/camera world-viewport)
+                     tiled-map
+                     color-setter))
+
+(defn show-whole-map!
+  [{:keys [ctx/camera
+           ctx/tiled-map]}]
+  (set-position! camera
+                 [(/ (.get (TiledMap/.getProperties tiled-map) "width") 2)
+                  (/ (.get (TiledMap/.getProperties tiled-map) "height") 2)])
+  (set-zoom! camera
+             (calculate-zoom camera
+                             {:left [0 0]
+                              :top [0 (.get (TiledMap/.getProperties tiled-map) "height")]
+                              :right [(.get (TiledMap/.getProperties tiled-map) "width") 0]
+                              :bottom [0 0]})))
+
+(defn generate-level
+  [{:keys [ctx/db
+           ctx/textures
+           ctx/tiled-map] :as ctx} level-fn]
+  (when tiled-map
+    (Disposable/.dispose tiled-map))
+  (let [level (let [[f params] (edn-resource level-fn)]
+                (f
+                 (assoc params
+                        :level/creature-properties (moon.creature-tiles/prepare
+                                                    (all-raw db :properties/creatures)
+                                                    (fn [{:keys [image/file image/bounds]}]
+                                                      (assert file)
+                                                      (assert (contains? textures file))
+                                                      (let [^Texture texture (get textures file)]
+                                                        (if-let [[x y w h] bounds]
+                                                          (TextureRegion. texture (int x) (int y) (int w) (int h))
+                                                          (TextureRegion. texture)))))
+                        :textures textures)))
+        tiled-map (:tiled-map level)
+        ctx (assoc ctx :ctx/tiled-map tiled-map)]
+    (assert tiled-map)
+    (-> tiled-map
+        .getLayers
+        (MapLayers/.get "creatures")
+        (.setVisible true))
+    (show-whole-map! ctx)
+    ctx))
+
+(defn edit-window [skin level-fns]
+  {:title "Edit"
+   :skin skin
+   :table/rows (for [level-fn level-fns
+                     :let [on-clicked (fn [actor ctx]
+                                        (let [stage (Actor/.getStage actor)
+                                              new-ctx (generate-level ctx level-fn)]
+                                          (set! (.ctx stage) new-ctx)))]]
+                 [{:actor (doto (text-button/create {:text (str "Generate " level-fn) :skin skin})
+                            (Actor/.addListener (change-listener/create
+                                                 (fn [event actor]
+                                                   (on-clicked actor (:stage/ctx (Event/.getStage event)))))))}])})
 
 (defn create!
   [_ctx]
@@ -73,7 +177,7 @@
              :ctx/zoom-speed 0.1
              :ctx/camera-movement-speed 1
              :ctx/world-unit-scale world-unit-scale}
-        ctx (generate-level/f ctx initial-level-fn)]
+        ctx (generate-level ctx initial-level-fn)]
     (.setInputProcessor ^Input input stage)
     (Stage/.addActor (:ctx/stage ctx)
                      (window/create (edit-window skin level-fns)))
@@ -105,14 +209,19 @@
                            :create-pipeline [[create!]]
                            :dispose! dispose!
                            :render-pipeline [[render.get-stage-ctx/step]
+
                                              [pipeline.do/step
                                               [render.clear-screen/step]]
+
                                              [pipeline.do/step
-                                              [levelgen-test.draw-tiled-map/f]]
+                                              [draw-tiled-map!]]
+
                                              [pipeline.do/step
-                                              [levelgen-test.camera-zoom-controls/f]]
+                                              [camera-zoom-controls!]]
+
                                              [pipeline.do/step
-                                              [levelgen-test.camera-movement-controls/f]]
+                                              [camera-movement-controls!]]
+
                                              [render.update-draw-stage/step]]
                            :resize! resize!}))
                         (create-config/f
