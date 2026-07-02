@@ -43,6 +43,11 @@
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
+(def lwjgl-app-config
+  {:title "Levelgen Test"
+   :windowed-mode {:width 1440 :height 900}
+   :foreground-fps 60})
+
 (def initial-level-fn "config/world_fns/uf_caves.edn")
 
 (def level-fns ["config/world_fns/vampire.edn"
@@ -162,7 +167,7 @@
                                  {:text (str "Generate " level-fn)
                                   :skin skin})
                             (Actor/.addListener (change-listener/create
-                                                 (fn [event actor]
+                                                 (fn [_event actor]
                                                    (let [stage (Actor/.getStage actor)
                                                          ctx (:stage/ctx stage)
                                                          new-ctx (generate-level ctx level-fn)]
@@ -226,23 +231,26 @@
     (clear-color!/f gl 0 0 0 0)
     (clear!/f gl color-buffer-bit/v)))
 
+(def lwjgl3-application-configuration
+  (create-config/f lwjgl-app-config))
+
+(defn application-listener [state-var]
+  (create-listener/f
+   (listener/f
+    {:state-var state-var
+     :create-pipeline [[create!]]
+     :dispose! dispose!
+     :render-pipeline [[get-stage-ctx]
+                       [do-steps [clear-screen
+                                  draw-tiled-map!
+                                  camera-zoom-controls!
+                                  camera-movement-controls!]]
+                       [update-draw-stage]]
+     :resize! resize!})))
+
 (def state (atom nil))
 
 (defn -main []
   (use-glfw-async!/f)
-  (lwjgl3-application/f (create-listener/f
-                         (listener/f
-                          {:state-var #'state
-                           :create-pipeline [[create!]]
-                           :dispose! dispose!
-                           :render-pipeline [[get-stage-ctx]
-                                             [do-steps [clear-screen
-                                                        draw-tiled-map!
-                                                        camera-zoom-controls!
-                                                        camera-movement-controls!]]
-                                             [update-draw-stage]]
-                           :resize! resize!}))
-                        (create-config/f
-                         {:title "Levelgen Test"
-                          :windowed-mode {:width 1440 :height 900}
-                          :foreground-fps 60})))
+  (lwjgl3-application/f (application-listener #'state)
+                        lwjgl3-application-configuration))
