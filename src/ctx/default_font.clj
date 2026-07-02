@@ -1,6 +1,6 @@
 (ns ctx.default-font
-  (:import (com.badlogic.gdx Files)
-           (com.badlogic.gdx.graphics Texture$TextureFilter)
+  (:require [clojure.gdx.files.internal :as internal])
+  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
@@ -13,7 +13,7 @@
                                           :size 16
                                           :quality-scaling 2
                                           :use-integer-positions? false}
-        generator (FreeTypeFontGenerator. (Files/.internal files path))
+        generator (FreeTypeFontGenerator. (internal/f files path))
         font (.generateFont generator
                             (let [parameter (FreeTypeFontGenerator$FreeTypeFontParameter.)]
                               (set! (.size parameter) (* size quality-scaling))

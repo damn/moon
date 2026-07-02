@@ -10,6 +10,7 @@
             [moon.db.all-raw :refer [all-raw]]
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.application-listener.new :as create-listener]
+            [clojure.gdx.files.internal :as internal]
             [clojure.gdx.lwjgl3-application.new :as lwjgl3-application]
             [clojure.gdx.lwjgl3-application-configuration.new :as create-config]
             [clojure.gdx.use-glfw-async :as use-glfw-async!]
@@ -28,8 +29,7 @@
             [clojure.gdx.graphics.get-gl20 :as get-gl20]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
             [moon.create-textures :as create-textures])
-  (:import (com.badlogic.gdx Files
-                             Gdx)
+  (:import (com.badlogic.gdx Gdx)
            (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
@@ -181,7 +181,7 @@
         sprite-batch (SpriteBatch.)
         ui-viewport (fit-viewport/create ui-viewport-width ui-viewport-height)
         stage (stage/create ui-viewport sprite-batch)
-        skin (Skin. (Files/.internal files ui-skin-path))
+        skin (Skin. (internal/f files ui-skin-path))
         world-viewport (let [world-width  (* world-viewport-width world-unit-scale)
                              world-height (* world-viewport-height  world-unit-scale)]
                          (fit-viewport/create world-width
