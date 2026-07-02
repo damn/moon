@@ -1,5 +1,6 @@
 (ns editor.map-widget-table.add-component-window
-  (:require [clojure.gdx.window.set-modal :as set-modal]
+  (:require [clojure.gdx.layout.pack :as pack]
+            [clojure.gdx.window.set-modal :as set-modal]
             [editor.build-widget :as build-widget]
             [editor.widget-value :as widget-value]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
@@ -43,5 +44,5 @@
                                                                            :table map-widget-table})])
                                            ((:ctx/rebuild-editor-window! ctx) ctx)))))
                   )}]))
-    (.pack window)
+    (pack/f window)
     window))

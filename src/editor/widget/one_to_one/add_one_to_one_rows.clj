@@ -1,5 +1,6 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
-  (:require [scene2d.actor.find-ancestor :refer [find-ancestor]]
+  (:require [clojure.gdx.layout.pack :as pack]
+            [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.text-tooltip :as text-tooltip]
@@ -25,7 +26,7 @@
   (let [redo-rows (fn [ctx id]
                     (Group/.clearChildren table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (.pack (find-ancestor table #(instance? Window %))))]
+                    (pack/f (find-ancestor table #(instance? Window %))))]
     (add-rows!
      table
      [[(when-not property-id

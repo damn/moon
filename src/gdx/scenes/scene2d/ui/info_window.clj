@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.info-window
-  (:require [scene2d.actor.set-position :refer [set-position!]]
+  (:require [clojure.gdx.layout.pack :as pack]
+            [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor :as actor]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -28,5 +29,5 @@
                              {:act! (fn [this delta]
                                       (when-let [stage (Actor/.getStage this)]
                                         (Label/.setText label ^String (set-label-text! (:stage/ctx stage))))
-                                      (.pack window))}))
+                                      (pack/f window))}))
     window))
