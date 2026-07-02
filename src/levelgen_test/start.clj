@@ -43,6 +43,34 @@
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
+(def initial-level-fn "config/world_fns/uf_caves.edn")
+
+(def level-fns ["config/world_fns/vampire.edn"
+                "config/world_fns/uf_caves.edn"
+                "config/world_fns/modules.edn"])
+
+(def ui-viewport-width 1440)
+(def ui-viewport-height 900)
+
+(def world-viewport-width 1440)
+(def world-viewport-height 900)
+
+(def tile-size 48)
+
+(def world-unit-scale (float (/ tile-size)))
+
+(def ui-skin-path "skin/uiskin.json")
+
+(def textures-config
+  {:folder "resources/"
+   :extensions #{"png" "bmp"}})
+
+(def zoom-speed 0.1)
+
+(def camera-movement-speed 1)
+
+(def color-setter (constantly (float-bits/f [1 1 1 1])))
+
 (defn update-draw-stage
   [{:keys [ctx/stage] :as ctx}]
   (set! (.ctx stage) ctx)
@@ -55,28 +83,15 @@
     (f! ctx))
   ctx)
 
-(def initial-level-fn "config/world_fns/uf_caves.edn")
-
-(def level-fns ["config/world_fns/vampire.edn"
-                "config/world_fns/uf_caves.edn"
-                "config/world_fns/modules.edn"])
-
-(def ui-viewport-width 1440)
-(def ui-viewport-height 900)
-
-(def tile-size 48)
-
 (defn camera-zoom-controls!
   [{:keys [ctx/input
-           ctx/camera
-           ctx/zoom-speed]}]
+           ctx/camera]}]
   (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
   (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed))))
 
 (defn camera-movement-controls!
   [{:keys [ctx/input
-           ctx/camera
-           ctx/camera-movement-speed]}]
+           ctx/camera]}]
   (let [apply-position (fn [idx f]
                          (set-position! camera
                                         (update (get-position/f camera)
@@ -89,9 +104,7 @@
 
 (defn draw-tiled-map!
   [{:keys [ctx/sprite-batch
-           ctx/color-setter
            ctx/tiled-map
-           ctx/world-unit-scale
            ctx/world-viewport]}]
   (draw-tiled-map/f! sprite-batch
                      world-unit-scale
@@ -162,29 +175,22 @@
         sprite-batch (SpriteBatch.)
         ui-viewport (fit-viewport/create ui-viewport-width ui-viewport-height)
         stage (stage/create ui-viewport sprite-batch)
-        skin (Skin. (Files/.internal files "skin/uiskin.json"))
-        world-unit-scale (float (/ tile-size))
-        world-viewport (let [world-width  (* 1440 world-unit-scale)
-                             world-height (* 900  world-unit-scale)]
+        skin (Skin. (Files/.internal files ui-skin-path))
+        world-viewport (let [world-width  (* world-viewport-width world-unit-scale)
+                             world-height (* world-viewport-height  world-unit-scale)]
                          (fit-viewport/create world-width
                                               world-height
                                               (doto (new-camera/f)
                                                 (set-to-ortho!/f! false world-width world-height))))
-        ctx {:ctx/files files
-             :ctx/input input
+        ctx {:ctx/input input
              :ctx/graphics graphics
              :ctx/stage stage
              :ctx/db (db/create)
-             :ctx/textures (create-textures/f files {:folder "resources/"
-                                                     :extensions #{"png" "bmp"}})
+             :ctx/textures (create-textures/f files textures-config)
              :ctx/sprite-batch sprite-batch
              :ctx/skin skin
              :ctx/world-viewport world-viewport
-             :ctx/camera (:viewport/camera world-viewport)
-             :ctx/color-setter (constantly (float-bits/f [1 1 1 1]))
-             :ctx/zoom-speed 0.1
-             :ctx/camera-movement-speed 1
-             :ctx/world-unit-scale world-unit-scale}
+             :ctx/camera (:viewport/camera world-viewport)}
         ctx (generate-level ctx initial-level-fn)]
     (.setInputProcessor ^Input input stage)
     (Stage/.addActor (:ctx/stage ctx)
