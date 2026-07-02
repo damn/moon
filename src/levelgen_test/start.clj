@@ -2,6 +2,8 @@
   (:require [clojure.edn-resource :refer [edn-resource]]
             [moon.creature-tiles :as creature-tiles]
             [input.key-pressed :as key-pressed?]
+            [clojure.gdx.stage.draw :as draw]
+            [clojure.gdx.stage.add-actor :as add-actor]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [orthographic-camera.position :as get-position]
             [orthographic-camera.set-position :refer [set-position!]]
@@ -11,9 +13,13 @@
             [clojure.gdx.gdx.files :as files]
             [clojure.gdx.gdx.input :as input]
             [clojure.gdx.gdx.graphics :as graphics]
+            [clojure.gdx.skin.new :as skin]
+            [clojure.gdx.stage.act :as act]
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]
+            [clojure.gdx.sprite-batch.new :as sprite-batch]
             [clojure.gdx.application-listener.new :as create-listener]
             [clojure.gdx.files.internal :as internal]
+            [clojure.gdx.texture-region.new :as texture-region]
             [clojure.gdx.lwjgl3-application.new :as lwjgl3-application]
             [clojure.gdx.lwjgl3-application-configuration.new :as create-config]
             [clojure.gdx.use-glfw-async :as use-glfw-async!]
@@ -21,6 +27,7 @@
             [clojure.gdx.orthographic-camera.new :as new-camera]
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
             [moon.db :as db]
+            [clojure.gdx.actor.get-stage :as get-stage]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.stage :as stage]
             [scene2d.ui.text-button :as text-button]
@@ -31,15 +38,9 @@
             [clojure.gdx.gl20.color-buffer-bit :as color-buffer-bit]
             [clojure.gdx.graphics.get-gl20 :as get-gl20]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
+            [clojure.gdx.actor.add-listener :as add-listener]
             [moon.create-textures :as create-textures])
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d SpriteBatch
-                                          TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event)
-           (scene2d Stage)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)
-           (com.badlogic.gdx.maps MapLayers)
+  (:import (com.badlogic.gdx.maps MapLayers)
            (com.badlogic.gdx.maps.tiled TiledMap)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport Viewport)))
@@ -80,8 +81,8 @@
 (defn update-draw-stage
   [{:keys [ctx/stage] :as ctx}]
   (set! (.ctx stage) ctx)
-  (Stage/.act stage)
-  (Stage/.draw stage)
+  (act/f stage)
+  (draw/f stage)
   (:stage/ctx stage))
 
 (defn camera-zoom-controls!
@@ -146,10 +147,10 @@
                                                     (fn [{:keys [image/file image/bounds]}]
                                                       (assert file)
                                                       (assert (contains? textures file))
-                                                      (let [^Texture texture (get textures file)]
+                                                      (let [texture (get textures file)]
                                                         (if-let [[x y w h] bounds]
-                                                          (TextureRegion. texture (int x) (int y) (int w) (int h))
-                                                          (TextureRegion. texture)))))
+                                                          (texture-region/f texture x y w h)
+                                                          (texture-region/f texture)))))
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
@@ -168,22 +169,22 @@
                  [{:actor (doto (text-button/create
                                  {:text (str "Generate " level-fn)
                                   :skin skin})
-                            (Actor/.addListener (change-listener/create
-                                                 (fn [_event actor]
-                                                   (let [stage (Actor/.getStage actor)
-                                                         ctx (:stage/ctx stage)
-                                                         new-ctx (generate-level ctx level-fn)]
-                                                     (set! (.ctx stage) new-ctx))))))}])})
+                            (add-listener/f (change-listener/create
+                                             (fn [_event actor]
+                                               (let [stage (get-stage/f actor)
+                                                     ctx (:stage/ctx stage)
+                                                     new-ctx (generate-level ctx level-fn)]
+                                                 (set! (.ctx stage) new-ctx))))))}])})
 
 (defn create!
   []
   (let [files (files/f)
         input (input/f)
         graphics (graphics/f)
-        sprite-batch (SpriteBatch.)
+        sprite-batch (sprite-batch/f)
         ui-viewport (fit-viewport/create ui-viewport-width ui-viewport-height)
         stage (stage/create ui-viewport sprite-batch)
-        skin (Skin. (internal/f files ui-skin-path))
+        skin (skin/f (internal/f files ui-skin-path))
         world-viewport (let [world-width  (* world-viewport-width world-unit-scale)
                              world-height (* world-viewport-height  world-unit-scale)]
                          (fit-viewport/create world-width
@@ -201,8 +202,8 @@
              :ctx/camera (:viewport/camera world-viewport)}
         ctx (generate-level ctx initial-level-fn)]
     (set-input-processor!/f input stage)
-    (Stage/.addActor (:ctx/stage ctx)
-                     (window/create (edit-window skin level-fns)))
+    (add-actor/f (:ctx/stage ctx)
+                 (window/create (edit-window skin level-fns)))
     ctx))
 
 (defn dispose!
