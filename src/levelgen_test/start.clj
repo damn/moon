@@ -97,19 +97,30 @@
                            :bottom [0 0]})
     ctx))
 
+(defn apply-ctx [stage f]
+  (set-ctx/f stage (f (:stage/ctx stage))))
+
+(defn app-event! [f]
+  (fn [_event actor]
+    (apply-ctx (get-stage/f actor)
+               f)))
+
+(defn change-listener [f]
+  (change-listener/create
+   (app-event! f)))
+
+(defn on-change [actor f]
+  (add-listener/f actor (change-listener f)))
+
 (defn edit-window [skin level-fns]
   {:title "Edit"
    :skin skin
-   :table/rows (for [level-fn level-fns]
+   :table/rows (for [level-fn level-fns
+                     :let [on-click #(generate-level % level-fn)]]
                  [{:actor (doto (text-button/create
                                  {:text (str "Generate " level-fn)
                                   :skin skin})
-                            (add-listener/f (change-listener/create
-                                             (fn [_event actor]
-                                               (let [stage (get-stage/f actor)
-                                                     ctx (:stage/ctx stage)
-                                                     new-ctx (generate-level ctx level-fn)]
-                                                 (set-ctx/f stage new-ctx))))))}])})
+                            (on-change on-click))}])})
 
 ; TODO we want to know the application state actually .....
 
