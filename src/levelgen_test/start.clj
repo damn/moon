@@ -2,6 +2,8 @@
   (:require [clojure.edn-resource :refer [edn-resource]]
             [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.get-stage :as get-stage]
+            [clojure.gdx.map-properties.get :as pget]
+            [clojure.gdx.stage.set-ctx :as set-ctx]
             [clojure.gdx.application-listener.new :as create-listener]
             [clojure.gdx.color.float-bits :as float-bits]
             [clojure.gdx.disposable.dispose :as dispose]
@@ -82,7 +84,7 @@
 
 (defn update-draw-stage
   [{:keys [ctx/stage] :as ctx}]
-  (set! (.ctx stage) ctx)
+  (set-ctx/f stage ctx)
   (act/f stage)
   (draw/f stage)
   (:stage/ctx stage))
@@ -126,13 +128,13 @@
   [{:keys [ctx/camera
            ctx/tiled-map]}]
   (set-position! camera
-                 [(/ (.get (get-properties/f tiled-map) "width") 2)
-                  (/ (.get (get-properties/f tiled-map) "height") 2)])
+                 [(/ (pget/f (get-properties/f tiled-map) "width") 2)
+                  (/ (pget/f (get-properties/f tiled-map) "height") 2)])
   (set-zoom! camera
              (calculate-zoom camera
                              {:left [0 0]
-                              :top [0 (.get (get-properties/f tiled-map) "height")]
-                              :right [(.get (get-properties/f tiled-map) "width") 0]
+                              :top [0 (pget/f (get-properties/f tiled-map) "height")]
+                              :right [(pget/f (get-properties/f tiled-map) "width") 0]
                               :bottom [0 0]})))
 
 (defn generate-level
@@ -176,7 +178,7 @@
                                                (let [stage (get-stage/f actor)
                                                      ctx (:stage/ctx stage)
                                                      new-ctx (generate-level ctx level-fn)]
-                                                 (set! (.ctx stage) new-ctx))))))}])})
+                                                 (set-ctx/f stage new-ctx))))))}])})
 
 (defn create!
   []
