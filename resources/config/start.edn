@@ -80,7 +80,8 @@
                           :effects/target-entity effects.render.target-entity/f
                           }
                          )
- (moon.application.start/f!
+ (clojure.gdx.use-glfw-async/f)
+ (clojure.gdx.application/f!
   {:listener (moon.application.listener/f #edn/resource "config/listener.edn")
    :title "Moon"
    :windowed-mode {:width 1440
