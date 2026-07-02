@@ -1,5 +1,15 @@
+
+; Aufgabe:
+; complete externalize this application so we can understand it
+
+; this is together because it is the complete application
+; so we have an overview
+; === pass constants per config ??? part of 'ctx' == 'state' ?
+; == only functions !?
 (ns levelgen-test.start
-  (:require [clojure.edn-resource :refer [edn-resource]]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [clojure.edn-resource :refer [edn-resource]]
             [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.get-stage :as get-stage]
             [clojure.gdx.application-listener.new :as create-listener]
@@ -49,37 +59,6 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]))
 
-(def lwjgl-app-config
-  {:title "Levelgen Test"
-   :windowed-mode {:width 1440 :height 900}
-   :foreground-fps 60})
-
-(def initial-level-fn "config/world_fns/uf_caves.edn")
-
-(def level-fns ["config/world_fns/vampire.edn"
-                "config/world_fns/uf_caves.edn"
-                "config/world_fns/modules.edn"])
-
-(def ui-viewport-width 1440)
-(def ui-viewport-height 900)
-
-(def world-viewport-width 1440)
-(def world-viewport-height 900)
-
-(def tile-size 48)
-
-(def world-unit-scale (float (/ tile-size)))
-
-(def ui-skin-path "skin/uiskin.json")
-
-(def textures-config
-  {:folder "resources/"
-   :extensions #{"png" "bmp"}})
-
-(def zoom-speed 0.1)
-
-(def camera-movement-speed 1)
-
 (def color-setter (constantly (float-bits/f [1 1 1 1])))
 
 (defn update-draw-stage
@@ -91,7 +70,9 @@
 
 (defn camera-zoom-controls!
   [{:keys [ctx/input
-           ctx/camera]
+           ctx/camera
+           ctx/zoom-speed
+           ]
     :as ctx}]
   (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
   (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed)))
@@ -99,6 +80,7 @@
 
 (defn camera-movement-controls!
   [{:keys [ctx/input
+           ctx/camera-movement-speed
            ctx/camera]
     :as ctx}]
   (let [apply-position (fn [idx f]
@@ -115,7 +97,8 @@
 (defn draw-tiled-map!
   [{:keys [ctx/sprite-batch
            ctx/tiled-map
-           ctx/world-viewport]
+           ctx/world-viewport
+           ctx/world-unit-scale]
     :as ctx}]
   (draw-tiled-map/f! sprite-batch
                      world-unit-scale
@@ -175,16 +158,18 @@
                                                  (set-ctx/f stage new-ctx))))))}])})
 
 (defn create!
-  []
+  [config]
   (let [files (files/f)
         input (input/f)
         graphics (graphics/f)
         sprite-batch (sprite-batch/f)
-        ui-viewport (fit-viewport/create ui-viewport-width ui-viewport-height)
+        ui-viewport (fit-viewport/create (:ui-viewport-width config)
+                                         (:ui-viewport-height config))
+        world-unit-scale (float (/ (:tile-size config)))
         stage (stage/create ui-viewport sprite-batch)
-        skin (skin/f (internal/f files ui-skin-path))
-        world-viewport (let [world-width  (* world-viewport-width world-unit-scale)
-                             world-height (* world-viewport-height  world-unit-scale)]
+        skin (skin/f (internal/f files (:ui-skin-path config)))
+        world-viewport (let [world-width  (* (:world-viewport-width config) world-unit-scale)
+                             world-height (* (:world-viewport-height config)  world-unit-scale)]
                          (fit-viewport/create world-width
                                               world-height
                                               (doto (new-camera/f)
@@ -192,16 +177,19 @@
         ctx {:ctx/input input
              :ctx/graphics graphics
              :ctx/stage stage
+             :ctx/zoom-speed (:zoom-speed config)
+             :ctx/camera-movement-speed (:camera-movement-speed config)
+             :ctx/world-unit-scale world-unit-scale
              :ctx/db (db/create)
-             :ctx/textures (create-textures/f files textures-config)
+             :ctx/textures (create-textures/f files (:textures-config config))
              :ctx/sprite-batch sprite-batch
              :ctx/skin skin
              :ctx/world-viewport world-viewport
              :ctx/camera (:viewport/camera world-viewport)}
-        ctx (generate-level ctx initial-level-fn)]
+        ctx (generate-level ctx (:initial-level-fn config))]
     (set-input-processor!/f input stage)
     (add-actor/f (:ctx/stage ctx)
-                 (window/create (edit-window skin level-fns)))
+                 (window/create (edit-window skin (:level-fns config))))
     ctx))
 
 (defn dispose!
@@ -233,12 +221,9 @@
     (clear!/f gl color-buffer-bit/v))
   ctx)
 
-(def lwjgl3-application-configuration
-  (create-config/f lwjgl-app-config))
-
-(defn application-listener [state]
+(defn application-listener [state config]
   {:create! (fn []
-              (reset! state (create!)))
+              (reset! state (create! config)))
 
    :dispose! (fn []
                (dispose! @state))
@@ -264,6 +249,10 @@
 
 (defn -main []
   (use-glfw-async!/f)
-  (lwjgl3-application/f (create-listener/f
-                         (application-listener state))
-                        lwjgl3-application-configuration))
+  (let [config (-> "config/levelgen_test.edn"
+                   io/resource
+                   slurp
+                   edn/read-string)]
+    (lwjgl3-application/f (create-listener/f
+                           (application-listener state config))
+                          (create-config/f (:lwjgl-app-config config)))))
