@@ -28,13 +28,13 @@
             [clojure.gdx.stage.act :as act]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.stage.draw :as draw]
-            [clojure.gdx.texture-region.new :as texture-region]
             [clojure.gdx.tiled-map-tile-layer.set-visible :as set-visible]
             [clojure.gdx.tiled-map.get-layers :as get-layers]
             [clojure.gdx.tiled-map.get-properties :as get-properties]
             [clojure.gdx.use-glfw-async :as use-glfw-async!]
             [clojure.gdx.viewport.update :as update]
             [gdx.scenes.scene2d.ui.window :as window]
+            [moon.textures :as textures]
             [input.key-pressed :as key-pressed?]
             [moon.create-textures :as create-textures]
             [moon.creature-tiles :as creature-tiles]
@@ -148,13 +148,7 @@
                  (assoc params
                         :level/creature-properties (creature-tiles/prepare
                                                     (all-raw db :properties/creatures)
-                                                    (fn [{:keys [image/file image/bounds]}]
-                                                      (assert file)
-                                                      (assert (contains? textures file))
-                                                      (let [texture (get textures file)]
-                                                        (if-let [[x y w h] bounds]
-                                                          (texture-region/f texture x y w h)
-                                                          (texture-region/f texture)))))
+                                                    #(textures/texture-region textures %))
                         :textures textures)))
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
