@@ -8,6 +8,9 @@
             [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
             [orthographic-camera.set-zoom :refer [set-zoom!]]
             [moon.db.all-raw :refer [all-raw]]
+            [clojure.gdx.gdx.files :as files]
+            [clojure.gdx.gdx.input :as input]
+            [clojure.gdx.gdx.graphics :as graphics]
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.application-listener.new :as create-listener]
             [clojure.gdx.files.internal :as internal]
@@ -29,8 +32,7 @@
             [clojure.gdx.graphics.get-gl20 :as get-gl20]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
             [moon.create-textures :as create-textures])
-  (:import (com.badlogic.gdx Gdx)
-           (com.badlogic.gdx.graphics Texture)
+  (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
                                           TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor
@@ -175,9 +177,9 @@
 
 (defn create!
   []
-  (let [files Gdx/files
-        input Gdx/input
-        graphics Gdx/graphics
+  (let [files (files/f)
+        input (input/f)
+        graphics (graphics/f)
         sprite-batch (SpriteBatch.)
         ui-viewport (fit-viewport/create ui-viewport-width ui-viewport-height)
         stage (stage/create ui-viewport sprite-batch)
