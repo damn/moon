@@ -1,49 +1,51 @@
 (ns levelgen-test.start
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [moon.creature-tiles :as creature-tiles]
-            [input.key-pressed :as key-pressed?]
-            [clojure.gdx.stage.draw :as draw]
-            [clojure.gdx.stage.add-actor :as add-actor]
-            [orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [orthographic-camera.position :as get-position]
-            [orthographic-camera.set-position :refer [set-position!]]
-            [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
-            [orthographic-camera.set-zoom :refer [set-zoom!]]
-            [moon.db.all-raw :refer [all-raw]]
-            [clojure.gdx.gdx.files :as files]
-            [clojure.gdx.gdx.input :as input]
-            [clojure.gdx.gdx.graphics :as graphics]
-            [clojure.gdx.skin.new :as skin]
-            [clojure.gdx.stage.act :as act]
-            [clojure.gdx.input.set-input-processor! :as set-input-processor!]
-            [clojure.gdx.sprite-batch.new :as sprite-batch]
-            [clojure.gdx.application-listener.new :as create-listener]
-            [clojure.gdx.files.internal :as internal]
-            [clojure.gdx.texture-region.new :as texture-region]
-            [clojure.gdx.lwjgl3-application.new :as lwjgl3-application]
-            [clojure.gdx.lwjgl3-application-configuration.new :as create-config]
-            [clojure.gdx.use-glfw-async :as use-glfw-async!]
-            [clojure.gdx.color.float-bits :as float-bits]
-            [clojure.gdx.orthographic-camera.new :as new-camera]
-            [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
-            [moon.db :as db]
+            [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.get-stage :as get-stage]
-            [gdx.scenes.scene2d.ui.window :as window]
-            [scene2d.stage :as stage]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener]
+            [clojure.gdx.application-listener.new :as create-listener]
+            [clojure.gdx.color.float-bits :as float-bits]
+            [clojure.gdx.disposable.dispose :as dispose]
+            [clojure.gdx.draw-tiled-map :as draw-tiled-map]
+            [clojure.gdx.files.internal :as internal]
             [clojure.gdx.fit-viewport.new :as fit-viewport]
+            [clojure.gdx.gdx.files :as files]
+            [clojure.gdx.gdx.graphics :as graphics]
+            [clojure.gdx.gdx.input :as input]
             [clojure.gdx.gl20.clear :as clear!]
             [clojure.gdx.gl20.clear-color :as clear-color!]
             [clojure.gdx.gl20.color-buffer-bit :as color-buffer-bit]
             [clojure.gdx.graphics.get-gl20 :as get-gl20]
-            [clojure.gdx.draw-tiled-map :as draw-tiled-map]
-            [clojure.gdx.actor.add-listener :as add-listener]
-            [moon.create-textures :as create-textures])
-  (:import (com.badlogic.gdx.maps MapLayers)
-           (com.badlogic.gdx.maps.tiled TiledMap)
-           (com.badlogic.gdx.utils Disposable)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+            [clojure.gdx.input.set-input-processor! :as set-input-processor!]
+            [clojure.gdx.lwjgl3-application-configuration.new :as create-config]
+            [clojure.gdx.lwjgl3-application.new :as lwjgl3-application]
+            [clojure.gdx.map-layers.get :as get]
+            [clojure.gdx.orthographic-camera.new :as new-camera]
+            [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
+            [clojure.gdx.skin.new :as skin]
+            [clojure.gdx.sprite-batch.new :as sprite-batch]
+            [clojure.gdx.stage.act :as act]
+            [clojure.gdx.stage.add-actor :as add-actor]
+            [clojure.gdx.stage.draw :as draw]
+            [clojure.gdx.texture-region.new :as texture-region]
+            [clojure.gdx.tiled-map-tile-layer.set-visible :as set-visible]
+            [clojure.gdx.tiled-map.get-layers :as get-layers]
+            [clojure.gdx.tiled-map.get-properties :as get-properties]
+            [clojure.gdx.use-glfw-async :as use-glfw-async!]
+            [clojure.gdx.viewport.update :as update]
+            [gdx.scenes.scene2d.ui.window :as window]
+            [input.key-pressed :as key-pressed?]
+            [moon.create-textures :as create-textures]
+            [moon.creature-tiles :as creature-tiles]
+            [moon.db :as db]
+            [moon.db.all-raw :refer [all-raw]]
+            [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
+            [orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [orthographic-camera.position :as get-position]
+            [orthographic-camera.set-position :refer [set-position!]]
+            [orthographic-camera.set-zoom :refer [set-zoom!]]
+            [scene2d.stage :as stage]
+            [scene2d.ui.text-button :as text-button]
+            [scene2d.utils.change-listener :as change-listener]))
 
 (def lwjgl-app-config
   {:title "Levelgen Test"
@@ -124,13 +126,13 @@
   [{:keys [ctx/camera
            ctx/tiled-map]}]
   (set-position! camera
-                 [(/ (.get (TiledMap/.getProperties tiled-map) "width") 2)
-                  (/ (.get (TiledMap/.getProperties tiled-map) "height") 2)])
+                 [(/ (.get (get-properties/f tiled-map) "width") 2)
+                  (/ (.get (get-properties/f tiled-map) "height") 2)])
   (set-zoom! camera
              (calculate-zoom camera
                              {:left [0 0]
-                              :top [0 (.get (TiledMap/.getProperties tiled-map) "height")]
-                              :right [(.get (TiledMap/.getProperties tiled-map) "width") 0]
+                              :top [0 (.get (get-properties/f tiled-map) "height")]
+                              :right [(.get (get-properties/f tiled-map) "width") 0]
                               :bottom [0 0]})))
 
 (defn generate-level
@@ -138,7 +140,7 @@
            ctx/textures
            ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
-    (Disposable/.dispose tiled-map))
+    (dispose/f tiled-map))
   (let [level (let [[f params] (edn-resource level-fn)]
                 (f
                  (assoc params
@@ -156,9 +158,9 @@
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
     (-> tiled-map
-        .getLayers
-        (MapLayers/.get "creatures")
-        (.setVisible true))
+        get-layers/f
+        (get/f "creatures")
+        (set-visible/f true))
     (show-whole-map! ctx)
     ctx))
 
@@ -211,16 +213,16 @@
            ctx/sprite-batch
            ctx/tiled-map]}]
   ; TODO TEXTURES NOT DISPOSED
-  (Disposable/.dispose skin)
-  (Disposable/.dispose sprite-batch)
-  (Disposable/.dispose tiled-map))
+  (dispose/f skin)
+  (dispose/f sprite-batch)
+  (dispose/f tiled-map))
 
 (defn resize!
   [{:keys [ctx/stage
            ctx/world-viewport]}
    width height]
-  (.update ^Viewport (:stage/viewport stage) width height true)
-  (.update ^Viewport world-viewport width height false))
+  (update/f (:stage/viewport stage) width height true)
+  (update/f world-viewport width height false))
 
 (defn get-stage-ctx
   [{:keys [ctx/stage]
