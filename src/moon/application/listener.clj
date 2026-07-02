@@ -1,5 +1,4 @@
-(ns moon.application.listener
-  (:import (com.badlogic.gdx ApplicationListener)))
+(ns moon.application.listener)
 
 (defn f
   [{:keys [state-var
@@ -8,26 +7,29 @@
            render-pipeline
            resize!]}]
   (let [state @state-var]
-    (reify ApplicationListener
-      (create [_]
-        (reset! state (reduce (fn [ctx [f & params]]
+    {:create!
+     (fn []
+       (reset! state (reduce (fn [ctx [f & params]]
+                               (apply f ctx params))
+                             {}
+                             create-pipeline)))
+
+     :dispose!
+     (fn []
+       (dispose! @state))
+
+     :render!
+     (fn []
+       (swap! state (fn [ctx]
+                      (reduce (fn [ctx [f & params]]
                                 (apply f ctx params))
-                              {}
-                              create-pipeline)))
+                              ctx
+                              render-pipeline))))
 
-      (dispose [_]
-        (dispose! @state))
+     :resize!
+     (fn [width height]
+       (resize! @state width height))
 
-      (render [_]
-        (swap! state (fn [ctx]
-                       (reduce (fn [ctx [f & params]]
-                                 (apply f ctx params))
-                               ctx
-                               render-pipeline))))
+     :pause! (fn [])
 
-      (resize [_ width height]
-        (resize! @state width height))
-
-      (pause [_])
-
-      (resume [_]))))
+     :resume! (fn [])}))
