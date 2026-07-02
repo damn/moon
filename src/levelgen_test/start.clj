@@ -22,15 +22,14 @@
             [scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.fit-viewport.new :as fit-viewport]
             [moon.application.listener]
+            [clojure.gdx.gl20.clear :as clear!]
+            [clojure.gdx.gl20.clear-color :as clear-color!]
+            [clojure.gdx.gl20.color-buffer-bit :as color-buffer-bit]
+            [clojure.gdx.graphics.get-gl20 :as get-gl20]
+            [clojure.gdx.draw-tiled-map :as draw-tiled-map]
 
-            ; CTX:
             [ctx.textures]
-            [render.get-stage-ctx]
-            [pipeline.do]
-            [render.clear-screen]
-            [render.update-draw-stage]
-
-            [clojure.gdx.draw-tiled-map :as draw-tiled-map])
+            )
   (:import (com.badlogic.gdx Input
                              Files
                              Gdx)
@@ -45,6 +44,18 @@
            (com.badlogic.gdx.maps.tiled TiledMap)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport Viewport)))
+
+(defn update-draw-stage
+  [{:keys [ctx/stage] :as ctx}]
+  (set! (.ctx stage) ctx)
+  (Stage/.act stage)
+  (Stage/.draw stage)
+  (:stage/ctx stage))
+
+(defn do-steps [ctx steps]
+  (doseq [f! steps]
+    (f! ctx))
+  ctx)
 
 (def initial-level-fn "config/world_fns/uf_caves.edn")
 
@@ -199,6 +210,18 @@
   (.update ^Viewport (:stage/viewport stage) width height true)
   (.update ^Viewport world-viewport width height false))
 
+(defn get-stage-ctx
+  [{:keys [ctx/stage]
+    :as ctx}]
+  (or (:stage/ctx stage)
+      ctx)) ; first render stage does not have ctx set.
+
+(defn clear-screen
+  [{:keys [ctx/graphics]}]
+  (let [gl (get-gl20/f graphics)]
+    (clear-color!/f gl 0 0 0 0)
+    (clear!/f gl color-buffer-bit/v)))
+
 (def state (atom nil))
 
 (defn -main []
@@ -208,21 +231,12 @@
                           {:state-var #'state
                            :create-pipeline [[create!]]
                            :dispose! dispose!
-                           :render-pipeline [[render.get-stage-ctx/step]
-
-                                             [pipeline.do/step
-                                              [render.clear-screen/step]]
-
-                                             [pipeline.do/step
-                                              [draw-tiled-map!]]
-
-                                             [pipeline.do/step
-                                              [camera-zoom-controls!]]
-
-                                             [pipeline.do/step
-                                              [camera-movement-controls!]]
-
-                                             [render.update-draw-stage/step]]
+                           :render-pipeline [[get-stage-ctx]
+                                             [do-steps [clear-screen
+                                                        draw-tiled-map!
+                                                        camera-zoom-controls!
+                                                        camera-movement-controls!]]
+                                             [update-draw-stage]]
                            :resize! resize!}))
                         (create-config/f
                          {:title "Levelgen Test"
