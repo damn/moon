@@ -21,7 +21,6 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.fit-viewport.new :as fit-viewport]
-            [moon.application.listener :as listener]
             [clojure.gdx.gl20.clear :as clear!]
             [clojure.gdx.gl20.clear-color :as clear-color!]
             [clojure.gdx.gl20.color-buffer-bit :as color-buffer-bit]
@@ -83,20 +82,18 @@
   (Stage/.draw stage)
   (:stage/ctx stage))
 
-(defn do-steps [ctx steps]
-  (doseq [f! steps]
-    (f! ctx))
-  ctx)
-
 (defn camera-zoom-controls!
   [{:keys [ctx/input
-           ctx/camera]}]
+           ctx/camera]
+    :as ctx}]
   (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
-  (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed))))
+  (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed)))
+  ctx)
 
 (defn camera-movement-controls!
   [{:keys [ctx/input
-           ctx/camera]}]
+           ctx/camera]
+    :as ctx}]
   (let [apply-position (fn [idx f]
                          (set-position! camera
                                         (update (get-position/f camera)
@@ -105,17 +102,20 @@
     (if (key-pressed?/f input :input.keys/left)  (apply-position 0 -))
     (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
     (if (key-pressed?/f input :input.keys/up)    (apply-position 1 +))
-    (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -))))
+    (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -)))
+  ctx)
 
 (defn draw-tiled-map!
   [{:keys [ctx/sprite-batch
            ctx/tiled-map
-           ctx/world-viewport]}]
+           ctx/world-viewport]
+    :as ctx}]
   (draw-tiled-map/f! sprite-batch
                      world-unit-scale
                      (:viewport/camera world-viewport)
                      tiled-map
-                     color-setter))
+                     color-setter)
+  ctx)
 
 (defn show-whole-map!
   [{:keys [ctx/camera
@@ -174,7 +174,7 @@
                                                      (set! (.ctx stage) new-ctx))))))}])})
 
 (defn create!
-  [_ctx]
+  []
   (let [files Gdx/files
         input Gdx/input
         graphics Gdx/graphics
@@ -225,32 +225,44 @@
   (or (:stage/ctx stage)
       ctx)) ; first render stage does not have ctx set.
 
-(defn clear-screen
-  [{:keys [ctx/graphics]}]
+(defn clear-screen!
+  [{:keys [ctx/graphics] :as ctx}]
   (let [gl (get-gl20/f graphics)]
     (clear-color!/f gl 0 0 0 0)
-    (clear!/f gl color-buffer-bit/v)))
+    (clear!/f gl color-buffer-bit/v))
+  ctx)
 
 (def lwjgl3-application-configuration
   (create-config/f lwjgl-app-config))
 
-(defn application-listener [state-var]
-  (create-listener/f
-   (listener/f
-    {:state-var state-var
-     :create-pipeline [[create!]]
-     :dispose! dispose!
-     :render-pipeline [[get-stage-ctx]
-                       [do-steps [clear-screen
-                                  draw-tiled-map!
-                                  camera-zoom-controls!
-                                  camera-movement-controls!]]
-                       [update-draw-stage]]
-     :resize! resize!})))
+(defn application-listener [state]
+  {:create! (fn []
+              (reset! state (create!)))
+
+   :dispose! (fn []
+               (dispose! @state))
+
+   :render! (fn []
+              (swap! state (fn [ctx]
+                             (-> ctx
+                                 get-stage-ctx
+                                 clear-screen!
+                                 draw-tiled-map!
+                                 camera-zoom-controls!
+                                 camera-movement-controls!
+                                 update-draw-stage))))
+
+   :resize! (fn [width height]
+              (resize! @state width height))
+
+   :pause! (fn [])
+
+   :resume! (fn [])})
 
 (def state (atom nil))
 
 (defn -main []
   (use-glfw-async!/f)
-  (lwjgl3-application/f (application-listener #'state)
+  (lwjgl3-application/f (create-listener/f
+                         (application-listener state))
                         lwjgl3-application-configuration))
