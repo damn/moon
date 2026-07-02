@@ -1,5 +1,5 @@
 (ns clojure.gdx.stage.set-ctx
-  (:import (scene2d Stage)))
+  (:import (moon Stage)))
 
 (defn f [stage ctx]
-  (set! (.ctx stage) ctx))
+  (set! (.ctx ^Stage stage) ctx))

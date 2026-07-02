@@ -1,5 +1,7 @@
 (ns editor.app.render
-  (:import (moon Stage)))
+  (:require [clojure.gdx.stage.act :as act]
+            [clojure.gdx.stage.draw :as draw]
+            [clojure.gdx.stage.set-ctx :as set-ctx]))
 
 (defn render!
   [{:keys [ctx/stage]
@@ -7,7 +9,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (set! (.ctx stage) ctx)
-    (Stage/.act stage)
-    (Stage/.draw stage)
+    (set-ctx/f stage ctx)
+    (act/f stage)
+    (draw/f stage)
     (:stage/ctx stage)))
