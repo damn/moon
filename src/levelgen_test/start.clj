@@ -59,52 +59,6 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]))
 
-(defn update-draw-stage
-  [{:keys [ctx/stage] :as ctx}]
-  (set-ctx/f stage ctx)
-  (act/f stage)
-  (draw/f stage)
-  (:stage/ctx stage))
-
-(defn camera-zoom-controls!
-  [{:keys [ctx/input
-           ctx/camera
-           ctx/zoom-speed
-           ]
-    :as ctx}]
-  (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
-  (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed)))
-  ctx)
-
-(defn camera-movement-controls!
-  [{:keys [ctx/input
-           ctx/camera-movement-speed
-           ctx/camera]
-    :as ctx}]
-  (let [apply-position (fn [idx f]
-                         (set-position! camera
-                                        (update (get-position/f camera)
-                                                idx
-                                                #(f % camera-movement-speed))))]
-    (if (key-pressed?/f input :input.keys/left)  (apply-position 0 -))
-    (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
-    (if (key-pressed?/f input :input.keys/up)    (apply-position 1 +))
-    (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -)))
-  ctx)
-
-(defn draw-tiled-map!
-  [{:keys [ctx/sprite-batch
-           ctx/tiled-map
-           ctx/world-viewport
-           ctx/world-unit-scale]
-    :as ctx}]
-  (draw-tiled-map/f! sprite-batch
-                     world-unit-scale
-                     (:viewport/camera world-viewport)
-                     tiled-map
-                     (constantly (float-bits/f [1 1 1 1])))
-  ctx)
-
 (defn show-whole-map!
   [{:keys [ctx/camera
            ctx/tiled-map]}]
@@ -208,18 +162,46 @@
   (update/f (:stage/viewport stage) width height true)
   (update/f world-viewport width height false))
 
-(defn get-stage-ctx
-  [{:keys [ctx/stage]
-    :as ctx}]
-  (or (:stage/ctx stage)
-      ctx)) ; first render stage does not have ctx set.
-
 (defn clear-screen!
-  [{:keys [ctx/graphics] :as ctx}]
+  [graphics]
   (let [gl (get-gl20/f graphics)]
     (clear-color!/f gl 0 0 0 0)
-    (clear!/f gl color-buffer-bit/v))
-  ctx)
+    (clear!/f gl color-buffer-bit/v)))
+
+(defn render!
+  [{:keys [ctx/input
+           ctx/camera
+           ctx/zoom-speed
+           ctx/camera-movement-speed
+           ctx/sprite-batch
+           ctx/tiled-map
+           ctx/world-viewport
+           ctx/world-unit-scale
+           ctx/graphics
+           ctx/stage] :as ctx}]
+  (let [ctx (or (:stage/ctx stage)
+                ctx)] ; first render stage does not have ctx set. ( TODO: just set it ?  )
+    (set-ctx/f stage ctx))
+  (clear-screen! graphics)
+  (draw-tiled-map/f! sprite-batch
+                     world-unit-scale
+                     (:viewport/camera world-viewport)
+                     tiled-map
+                     (constantly (float-bits/f [1 1 1 1])))
+  (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
+  (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed)))
+  (let [apply-position (fn [idx f]
+                         (set-position! camera
+                                        (update (get-position/f camera)
+                                                idx
+                                                #(f % camera-movement-speed))))]
+    (if (key-pressed?/f input :input.keys/left)  (apply-position 0 -))
+    (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
+    (if (key-pressed?/f input :input.keys/up)    (apply-position 1 +))
+    (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -)))
+  (act/f stage)
+  (draw/f stage)
+  (:stage/ctx stage))
 
 (defn application-listener [state config]
   {:create! (fn []
@@ -229,14 +211,7 @@
                (dispose! @state))
 
    :render! (fn []
-              (swap! state (fn [ctx]
-                             (-> ctx
-                                 get-stage-ctx
-                                 clear-screen!
-                                 draw-tiled-map!
-                                 camera-zoom-controls!
-                                 camera-movement-controls!
-                                 update-draw-stage))))
+              (swap! state render!))
 
    :resize! (fn [width height]
               (resize! @state width height))
