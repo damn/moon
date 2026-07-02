@@ -1,13 +1,15 @@
 (ns tx.show-modal
-  (:require [clojure.gdx.window.set-modal :as set-modal]
+  (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.actor.remove :as remove]
+            [clojure.gdx.actor.set-name :as set-name]
+            [clojure.gdx.window.set-modal :as set-modal]
             [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.ui.label :as label]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window])
   (:import (com.badlogic.gdx.utils Align)
-           (com.badlogic.gdx.scenes.scene2d Actor
-                                            Group
+           (com.badlogic.gdx.scenes.scene2d Group
                                             Stage)))
 
 (defn f
@@ -24,12 +26,12 @@
                                                   {:text text
                                                    :skin skin})}]
                                         [{:actor (doto (text-button/create {:text button-text :skin skin})
-                                                   (Actor/.addListener (change-listener/create
-                                                                        (fn [_event _actor]
-                                                                          (Actor/.remove (Group/.findActor (:stage/root stage) "moon.ui.modal-window"))
-                                                                          (on-click)))))}]]})
+                                                   (add-listener/f (change-listener/create
+                                                                    (fn [_event _actor]
+                                                                      (remove/f (Group/.findActor (:stage/root stage) "moon.ui.modal-window"))
+                                                                      (on-click)))))}]]})
                      (set-modal/f true)
-                     (Actor/.setName "moon.ui.modal-window")
+                     (set-name/f "moon.ui.modal-window")
                      (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                      (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
                                     Align/center)))

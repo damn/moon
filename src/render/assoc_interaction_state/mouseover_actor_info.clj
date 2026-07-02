@@ -1,12 +1,15 @@
 (ns render.assoc-interaction-state.mouseover-actor-info
-  (:require [scene2d.actor.is-button :as button?]
+  (:require [clojure.gdx.actor.get-name :as get-name]
+            [clojure.gdx.actor.get-parent :as get-parent]
+            [clojure.gdx.actor.get-user-object :as get-user-object]
+            [scene2d.actor.is-button :as button?]
             [scene2d.actor.is-window-title-bar :as window-title-bar?])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn mouseover-actor-info [^Actor actor]
-  (let [inventory-slot (and (.getParent actor)
-                            (= "inventory-cell" (.getName (.getParent actor)))
-                            (.getUserObject (.getParent actor)))]
+  (let [inventory-slot (and (get-parent/f actor)
+                            (= "inventory-cell" (get-name/f (get-parent/f actor)))
+                            (get-user-object/f (get-parent/f actor)))]
     (cond
      inventory-slot
      [:mouseover-actor/inventory-cell inventory-slot]

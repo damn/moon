@@ -1,9 +1,9 @@
 (ns editor.build-widget
-  (:require [editor.create-widget :as create-widget])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [clojure.gdx.actor.set-user-object :as set-user-object]
+            [editor.create-widget :as create-widget]))
 
 (defn f [ctx schema k v]
   (let [widget (create-widget/f schema v ctx)] ; - wait its used also somewhere else w/o this widget/create?
     ; FIXME assert no user object !
-    (Actor/.setUserObject widget [k v])
+    (set-user-object/f widget [k v])
     widget))

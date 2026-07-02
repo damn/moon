@@ -1,8 +1,8 @@
 (ns editor.rebuild
-  (:require [editor.map-widget-table.get-value :as get-value]
+  (:require [clojure.gdx.actor.remove :as remove]
+            [editor.map-widget-table.get-value :as get-value]
             [editor.window])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Group
+  (:import (com.badlogic.gdx.scenes.scene2d Group
                                             Stage)))
 
 (defn f!
@@ -14,7 +14,7 @@
                    (#(Group/.findActor % "moon.ui.editor.window")))
         map-widget-table (Group/.findActor window "moon.db.schema.map.ui.widget")
         property (get-value/f map-widget-table (:db/schemas db))]
-    (Actor/.remove window)
+    (remove/f window)
     (Stage/.addActor stage
                      (editor.window/property-editor-window
                       {:ctx ctx

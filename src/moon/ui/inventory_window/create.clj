@@ -1,12 +1,13 @@
 (ns moon.ui.inventory-window.create
-  (:require [scene2d.actor.set-position :refer [set-position!]]
+  (:require [clojure.gdx.actor.set-name :as set-name]
+            [clojure.gdx.actor.set-visible :as set-visible]
+            [scene2d.actor.set-position :refer [set-position!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.inventory.is-valid-slot :as valid-slot?]
             [moon.ui.inventory-window.create-cell :refer [->cell]]
             [clojure.gdx.color.new :as new-color])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
 
 (defn f
@@ -53,8 +54,8 @@
                                                               (for [y (range 4)]
                                                                 (for [x (range 6)]
                                                                   (->cell :inventory.slot/bag :position [x y]))))})
-                                    (Actor/.setName "inventory-cell-table"))
+                                    (set-name/f "inventory-cell-table"))
                            :pad 4}]]})
-      (Actor/.setName "moon.ui.windows.inventory")
-      (Actor/.setVisible false)
+      (set-name/f "moon.ui.windows.inventory")
+      (set-visible/f false)
       (set-position! position))))

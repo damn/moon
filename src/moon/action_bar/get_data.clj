@@ -1,5 +1,6 @@
 (ns moon.action-bar.get-data
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
+  (:require [clojure.gdx.actor.get-user-object :as get-user-object])
+  (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn f
   [action-bar]
@@ -7,4 +8,4 @@
           (:button-group %)]}
   (let [group (Group/.findActor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
-     :button-group (Actor/.getUserObject group)}))
+     :button-group (get-user-object/f group)}))

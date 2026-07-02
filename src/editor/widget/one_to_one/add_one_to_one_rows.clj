@@ -1,5 +1,8 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
-  (:require [clojure.gdx.layout.pack :as pack]
+  (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.actor.remove :as remove]
+            [clojure.gdx.actor.set-user-object :as set-user-object]
+            [clojure.gdx.layout.pack :as pack]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
@@ -9,8 +12,7 @@
             [moon.property.tooltip :as tooltip]
             [moon.property.image :as property-image]
             [moon.textures :as textures])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event
+  (:import (com.badlogic.gdx.scenes.scene2d Event
                                             Group
                                             Stage)
            (com.badlogic.gdx.scenes.scene2d.ui Image
@@ -31,34 +33,34 @@
      table
      [[(when-not property-id
          {:actor (doto (text-button/create {:text "+" :skin skin})
-                   (Actor/.addListener (change-listener/create
-                                        (fn [event _actor]
-                                          (let [{:keys [ctx/db
-                                                        ctx/skin
-                                                        ctx/stage
-                                                        ctx/textures
-                                                        ctx/property-overview-window]
-                                                 :as ctx} (:stage/ctx (Event/.getStage event))]
-                                            (Stage/.addActor
-                                             stage
-                                             (property-overview-window
-                                              {:db db
-                                               :textures textures
-                                               :skin skin
-                                               :property-type property-type
-                                               :clicked-id-fn (fn [actor id ctx]
-                                                                (Actor/.remove (find-ancestor actor #(instance? Window %)))
-                                                                (redo-rows ctx id))})))))))})]
+                   (add-listener/f (change-listener/create
+                                    (fn [event _actor]
+                                      (let [{:keys [ctx/db
+                                                    ctx/skin
+                                                    ctx/stage
+                                                    ctx/textures
+                                                    ctx/property-overview-window]
+                                             :as ctx} (:stage/ctx (Event/.getStage event))]
+                                        (Stage/.addActor
+                                         stage
+                                         (property-overview-window
+                                          {:db db
+                                           :textures textures
+                                           :skin skin
+                                           :property-type property-type
+                                           :clicked-id-fn (fn [actor id ctx]
+                                                            (remove/f (find-ancestor actor #(instance? Window %)))
+                                                            (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
            {:actor (doto (Image. (textures/texture-region textures (property-image/f property)))
-                     (.addListener (text-tooltip/create (tooltip/f property) skin))
-                     (.setUserObject property-id))}))]
+                     (add-listener/f (text-tooltip/create (tooltip/f property) skin))
+                     (set-user-object/f property-id))}))]
       [(when property-id
          {:actor (doto (text-button/create
                         {:text "-"
                          :skin skin})
-                   (Actor/.addListener (change-listener/create
-                                        (fn [event _actor]
-                                          (redo-rows (:stage/ctx (Event/.getStage event))
-                                                     nil)))))})]])))
+                   (add-listener/f (change-listener/create
+                                    (fn [event _actor]
+                                      (redo-rows (:stage/ctx (Event/.getStage event))
+                                                 nil)))))})]])))

@@ -1,5 +1,8 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [clojure.gdx.window.set-modal :as set-modal]
+  (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.actor.get-height :as get-height]
+            [clojure.gdx.actor.get-width :as get-width]
+            [clojure.gdx.window.set-modal :as set-modal]
             [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.window.add-close-button :as add-close-button]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
@@ -8,8 +11,7 @@
             [scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.utils.change-listener :as change-listener])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event
+  (:import (com.badlogic.gdx.scenes.scene2d Event
                                             Stage)))
 
 (defn open-select-sounds-handler [table ->sound-columns]
@@ -27,21 +29,21 @@
                                                            [{:actor (doto (text-button/create
                                                                            {:text sound-name
                                                                             :skin skin})
-                                                          (Actor/.addListener (change-listener/create
-                                                                               (fn [event actor]
-                                                                                 ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (Event/.getStage event)))))))}
+                                                          (add-listener/f (change-listener/create
+                                                                           (fn [event actor]
+                                                                             ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (Event/.getStage event)))))))}
                                                             {:actor (doto (text-button/create
                                                                            {:text "play!"
                                                                             :skin skin})
-                                                          (Actor/.addListener (change-listener/create
-                                                                               (fn [event _actor]
-                                                                                 (do! (:stage/ctx (Event/.getStage event))
-                                                                                      [[:tx/sound sound-name]])))))}])} )]
+                                                          (add-listener/f (change-listener/create
+                                                                           (fn [event _actor]
+                                                                             (do! (:stage/ctx (Event/.getStage event))
+                                                                                  [[:tx/sound sound-name]])))))}])} )]
                               {:actor (scroll-pane/create
                                        {:actor table
                                         :skin skin})
-                               :width  (+ (Actor/.getWidth table) 50)
+                               :width  (+ (get-width/f table) 50)
                                :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
-                                            (Actor/.getHeight table))})]]})
+                                            (get-height/f table))})]]})
                        (add-close-button/f! skin)
                        (set-modal/f true)))))

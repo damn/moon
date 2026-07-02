@@ -1,9 +1,10 @@
 (ns moon.inventory-window.get-cell
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
+  (:require [clojure.gdx.actor.get-user-object :as get-user-object])
+  (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn f [inventory-window cell]
   (->> "inventory-cell-table"
        (#(Group/.findActor inventory-window %))
        Group/.getChildren
-       (filter #(= (Actor/.getUserObject %) cell))
+       (filter #(= (get-user-object/f %) cell))
        first))

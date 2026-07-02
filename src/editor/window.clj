@@ -1,5 +1,8 @@
 (ns editor.window
-  (:require [clojure.gdx.window.set-modal :as set-modal]
+  (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.actor.get-stage :as get-stage]
+            [clojure.gdx.actor.set-name :as set-name]
+            [clojure.gdx.window.set-modal :as set-modal]
             [scene2d.actor :as actor]
             [scene2d.utils.change-listener :as change-listener]
             [input.key-just-pressed :as key-just-pressed?]
@@ -14,7 +17,7 @@
             [moon.property.type :refer [property->type]]
             [editor.create-widget :as create-widget]
             [editor.widget-value :as widget-value])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)))
+  (:import (com.badlogic.gdx.scenes.scene2d Event Group)))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -36,16 +39,16 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (Actor/.addListener (change-listener/create
-                                                          (fn [event actor]
-                                                            (clicked-save-fn actor (:stage/ctx (Event/.getStage event)))))))
+                                     (add-listener/f (change-listener/create
+                                                      (fn [event actor]
+                                                        (clicked-save-fn actor (:stage/ctx (Event/.getStage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (Actor/.addListener (change-listener/create
-                                                          (fn [event actor]
-                                                            (clicked-delete-fn actor (:stage/ctx (Event/.getStage event)))))))
+                                     (add-listener/f (change-listener/create
+                                                      (fn [event actor]
+                                                        (clicked-delete-fn actor (:stage/ctx (Event/.getStage event)))))))
                             :center? true}]]]
     (doto (window/create
            {:title "[SKY]Property[]"
@@ -61,8 +64,8 @@
       (set-modal/f true)
       (Group/.addActor (actor/f
                         {:act! (fn [this delta]
-                                 (when-let [stage (Actor/.getStage this)]
+                                 (when-let [stage (get-stage/f this)]
                                    (let [ctx (:stage/ctx stage)]
                                      (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                        (clicked-save-fn this ctx)))))}))
-      (Actor/.setName "moon.ui.editor.window"))))
+      (set-name/f "moon.ui.editor.window"))))

@@ -1,11 +1,12 @@
 (ns tx.show-message
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
+  (:require [clojure.gdx.actor.set-user-object :as set-user-object])
+  (:import (com.badlogic.gdx.scenes.scene2d Group)))
 
 (defn f
   [{:keys [ctx/stage] :as ctx} message]
   (-> stage
       :stage/root
       (#(Group/.findActor % "player-message"))
-      (Actor/.setUserObject (atom {:text message
-                                   :counter 0})))
+      (set-user-object/f (atom {:text message
+                                :counter 0})))
   nil)

@@ -1,8 +1,8 @@
 (ns scene2d.actor.set-position
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [clojure.gdx.actor.set-position :as set-position]))
 
 (defn set-position!
-  ([^Actor actor [x y]]
-   (.setPosition actor x y))
-  ([^Actor actor [x y] align]
-   (.setPosition actor x y align)))
+  ([actor [x y]]
+   (set-position/f actor x y))
+  ([actor [x y] align]
+   (set-position/f actor x y align)))

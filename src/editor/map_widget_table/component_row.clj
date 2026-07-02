@@ -1,10 +1,13 @@
 (ns editor.map-widget-table.component-row
-  (:require [editor.map-widget-table.k-label-text :as k-label-text]
+  (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.actor.get-user-object :as get-user-object]
+            [clojure.gdx.actor.remove :as remove]
+            [editor.map-widget-table.k-label-text :as k-label-text]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Event Group)))
+  (:import (com.badlogic.gdx.scenes.scene2d Event Group)))
 
 (defn create
   [{:keys [skin
@@ -18,14 +21,14 @@
                                      (doto (text-button/create
                                             {:text "-"
                                              :skin skin})
-                                       (Actor/.addListener (change-listener/create
-                                                            (fn [event _actor]
-                                                              (Actor/.remove (first (filter (fn [actor]
-                                                                                              (and (Actor/.getUserObject actor)
-                                                                                                   (= k ((Actor/.getUserObject actor) 0))))
-                                                                                            (Group/.getChildren table))))
-                                                              (let [ctx (:stage/ctx (Event/.getStage event))]
-                                                                ((:ctx/rebuild-editor-window! ctx) ctx)))))))
+                                       (add-listener/f (change-listener/create
+                                                        (fn [event _actor]
+                                                          (remove/f (first (filter (fn [actor]
+                                                                                      (and (get-user-object/f actor)
+                                                                                           (= k ((get-user-object/f actor) 0))))
+                                                                                    (Group/.getChildren table))))
+                                                          (let [ctx (:stage/ctx (Event/.getStage event))]
+                                                            ((:ctx/rebuild-editor-window! ctx) ctx)))))))
                             :left? true}
                            {:actor (label/create
                                     {:text (k-label-text/f k)

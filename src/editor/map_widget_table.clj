@@ -1,12 +1,13 @@
 (ns editor.map-widget-table
-  (:require [clojure.interpose-f :refer [interpose-f]]
+  (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.actor.set-name :as set-name]
+            [clojure.interpose-f :refer [interpose-f]]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
             [editor.horiz-sep :as horiz-sep])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor
-                                            Event
+  (:import (com.badlogic.gdx.scenes.scene2d Event
                                             Stage)))
 
 (defn create
@@ -19,7 +20,7 @@
            opt?]}]
   (let [table (doto (table/create
                      {:table/cell-defaults {:pad 5}})
-                (Actor/.setName "moon.db.schema.map.ui.widget"))
+                (set-name/f "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep/f colspan)
                                     (map (fn [k]
@@ -36,19 +37,19 @@
                 [{:actor (doto (text-button/create
                                 {:text "Add component"
                                  :skin skin})
-                           (Actor/.addListener (change-listener/create
-                                                (fn [event actor]
-                                                  (let [{:keys [ctx/db
-                                                                ctx/stage
-                                                                ctx/skin
-                                                                ctx/add-component-window]} (:stage/ctx (Event/.getStage event))]
-                                                    (Stage/.addActor
-                                                     stage
-                                                     (add-component-window
-                                                      {:skin skin
-                                                       :schemas (:db/schemas db)
-                                                       :schema schema
-                                                       :map-widget-table table})))))))
+                           (add-listener/f (change-listener/create
+                                            (fn [event actor]
+                                              (let [{:keys [ctx/db
+                                                            ctx/stage
+                                                            ctx/skin
+                                                            ctx/add-component-window]} (:stage/ctx (Event/.getStage event))]
+                                                (Stage/.addActor
+                                                 stage
+                                                 (add-component-window
+                                                  {:skin skin
+                                                   :schemas (:db/schemas db)
+                                                   :schema schema
+                                                   :map-widget-table table})))))))
                   :colspan colspan}])]
              [(when opt?
                 [{:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
