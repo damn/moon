@@ -59,21 +59,18 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]))
 
-(defn show-whole-map!
-  [{:keys [ctx/camera
-           ctx/tiled-map]}]
-  (set-position! camera
-                 [(/ (pget/f (get-properties/f tiled-map) "width") 2)
-                  (/ (pget/f (get-properties/f tiled-map) "height") 2)])
+(defn get-prop [tiled-map k]
+  (pget/f (get-properties/f tiled-map) k))
+
+(defn zoom-to-rect! [camera rectangle]
   (set-zoom! camera
              (calculate-zoom camera
-                             {:left [0 0]
-                              :top [0 (pget/f (get-properties/f tiled-map) "height")]
-                              :right [(pget/f (get-properties/f tiled-map) "width") 0]
-                              :bottom [0 0]})))
+                             rectangle)))
 
+; TODO does too many things!
 (defn generate-level
-  [{:keys [ctx/db
+  [{:keys [ctx/camera
+           ctx/db
            ctx/textures
            ctx/tiled-map] :as ctx} level-fn]
   (when tiled-map
@@ -92,7 +89,12 @@
         get-layers/f
         (get/f "creatures")
         (set-visible/f true))
-    (show-whole-map! ctx)
+    (set-position! camera [(/ (get-prop tiled-map "width") 2)
+                           (/ (get-prop tiled-map "height") 2)])
+    (zoom-to-rect! camera {:left [0 0]
+                           :top [0 (get-prop tiled-map "height")]
+                           :right [(get-prop tiled-map "width") 0]
+                           :bottom [0 0]})
     ctx))
 
 (defn edit-window [skin level-fns]
