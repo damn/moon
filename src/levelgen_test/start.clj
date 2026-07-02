@@ -8,6 +8,7 @@
             [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
             [orthographic-camera.set-zoom :refer [set-zoom!]]
             [moon.db.all-raw :refer [all-raw]]
+            [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.application-listener.new :as create-listener]
             [clojure.gdx.lwjgl3-application.new :as lwjgl3-application]
             [clojure.gdx.lwjgl3-application-configuration.new :as create-config]
@@ -27,8 +28,7 @@
             [clojure.gdx.graphics.get-gl20 :as get-gl20]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
             [moon.create-textures :as create-textures])
-  (:import (com.badlogic.gdx Input
-                             Files
+  (:import (com.badlogic.gdx Files
                              Gdx)
            (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d SpriteBatch
@@ -198,7 +198,7 @@
              :ctx/world-viewport world-viewport
              :ctx/camera (:viewport/camera world-viewport)}
         ctx (generate-level ctx initial-level-fn)]
-    (.setInputProcessor ^Input input stage)
+    (set-input-processor!/f input stage)
     (Stage/.addActor (:ctx/stage ctx)
                      (window/create (edit-window skin level-fns)))
     ctx))
