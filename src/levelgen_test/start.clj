@@ -59,8 +59,6 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]))
 
-(def color-setter (constantly (float-bits/f [1 1 1 1])))
-
 (defn update-draw-stage
   [{:keys [ctx/stage] :as ctx}]
   (set-ctx/f stage ctx)
@@ -104,7 +102,7 @@
                      world-unit-scale
                      (:viewport/camera world-viewport)
                      tiled-map
-                     color-setter)
+                     (constantly (float-bits/f [1 1 1 1])))
   ctx)
 
 (defn show-whole-map!
@@ -156,6 +154,8 @@
                                                      ctx (:stage/ctx stage)
                                                      new-ctx (generate-level ctx level-fn)]
                                                  (set-ctx/f stage new-ctx))))))}])})
+
+; TODO we want to know the application state actually .....
 
 (defn create!
   [config]
