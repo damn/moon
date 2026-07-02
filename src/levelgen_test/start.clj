@@ -1,6 +1,6 @@
 (ns levelgen-test.start
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [moon.creature-tiles]
+            [moon.creature-tiles :as creature-tiles]
             [input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [orthographic-camera.position :as get-position]
@@ -21,15 +21,13 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.fit-viewport.new :as fit-viewport]
-            [moon.application.listener]
+            [moon.application.listener :as listener]
             [clojure.gdx.gl20.clear :as clear!]
             [clojure.gdx.gl20.clear-color :as clear-color!]
             [clojure.gdx.gl20.color-buffer-bit :as color-buffer-bit]
             [clojure.gdx.graphics.get-gl20 :as get-gl20]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
-
-            [ctx.textures]
-            )
+            [moon.create-textures :as create-textures])
   (:import (com.badlogic.gdx Input
                              Files
                              Gdx)
@@ -123,7 +121,7 @@
   (let [level (let [[f params] (edn-resource level-fn)]
                 (f
                  (assoc params
-                        :level/creature-properties (moon.creature-tiles/prepare
+                        :level/creature-properties (creature-tiles/prepare
                                                     (all-raw db :properties/creatures)
                                                     (fn [{:keys [image/file image/bounds]}]
                                                       (assert file)
@@ -177,9 +175,8 @@
              :ctx/graphics graphics
              :ctx/stage stage
              :ctx/db (db/create)
-             :ctx/textures (ctx.textures/step {:ctx/files files}
-                                              {:folder "resources/"
-                                               :extensions #{"png" "bmp"}})
+             :ctx/textures (create-textures/f files {:folder "resources/"
+                                                     :extensions #{"png" "bmp"}})
              :ctx/sprite-batch sprite-batch
              :ctx/skin skin
              :ctx/world-viewport world-viewport
@@ -227,7 +224,7 @@
 (defn -main []
   (use-glfw-async!/f)
   (lwjgl3-application/f (create-listener/f
-                         (moon.application.listener/f
+                         (listener/f
                           {:state-var #'state
                            :create-pipeline [[create!]]
                            :dispose! dispose!
