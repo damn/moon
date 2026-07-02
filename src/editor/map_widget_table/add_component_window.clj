@@ -1,5 +1,6 @@
 (ns editor.map-widget-table.add-component-window
-  (:require [editor.build-widget :as build-widget]
+  (:require [clojure.gdx.window.set-modal :as set-modal]
+            [editor.build-widget :as build-widget]
             [editor.widget-value :as widget-value]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
@@ -18,7 +19,7 @@
                        :skin skin
                        :table/cell-defaults {:pad 5}})
                  (add-close-button/f! skin)
-                 (.setModal true))
+                 (set-modal/f true))
         remaining-ks (sort (remove (set (keys (widget-value/f schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
     (add-rows!

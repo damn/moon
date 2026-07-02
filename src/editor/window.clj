@@ -1,5 +1,6 @@
 (ns editor.window
-  (:require [scene2d.actor :as actor]
+  (:require [clojure.gdx.window.set-modal :as set-modal]
+            [scene2d.actor :as actor]
             [scene2d.utils.change-listener :as change-listener]
             [input.key-just-pressed :as key-just-pressed?]
             [scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
@@ -57,7 +58,7 @@
                            scroll-pane-height
                            50)]]})
       (add-close-button/f! skin)
-      (.setModal true)
+      (set-modal/f true)
       (Group/.addActor (actor/f
                         {:act! (fn [this delta]
                                  (when-let [stage (Actor/.getStage this)]

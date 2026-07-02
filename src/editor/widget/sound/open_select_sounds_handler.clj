@@ -1,5 +1,6 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [scene2d.ui.scroll-pane :as scroll-pane]
+  (:require [clojure.gdx.window.set-modal :as set-modal]
+            [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.window.add-close-button :as add-close-button]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [ctx.do :refer [do!]]
@@ -43,4 +44,4 @@
                                :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
                                             (Actor/.getHeight table))})]]})
                        (add-close-button/f! skin)
-                       (.setModal true)))))
+                       (set-modal/f true)))))
