@@ -2,9 +2,9 @@
   (:require [clojure.edn :as edn]
             [clojure.gdx.disposable.dispose :as dispose]
             [clojure.gdx.files.internal :as internal]
+            [clojure.gdx.graphics.new-cursor :as new-cursor]
             [clojure.gdx.pixmap.new :as pixmap]
-            [clojure.java.io :as io])
-  (:import (com.badlogic.gdx Graphics)))
+            [clojure.java.io :as io]))
 
 (defn step
   [{:keys [ctx/files
@@ -14,6 +14,6 @@
                  (fn [[path-segment [hotspot-x hotspot-y]]]
                    (let [path (format path-format path-segment)
                          pixmap (pixmap/f (internal/f files path))
-                         cursor (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y)]
+                         cursor (new-cursor/f graphics pixmap hotspot-x hotspot-y)]
                      (dispose/f pixmap)
                      cursor)))))
