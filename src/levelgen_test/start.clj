@@ -8,185 +8,15 @@
 ; == only functions !?
 (ns levelgen-test.start
   (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.actor.get-stage :as get-stage]
             [clojure.gdx.application-listener.new :as create-listener]
-            [clojure.gdx.color.float-bits :as float-bits]
-            [clojure.gdx.disposable.dispose :as dispose]
-            [clojure.gdx.draw-tiled-map :as draw-tiled-map]
-            [clojure.gdx.files.internal :as internal]
-            [clojure.gdx.fit-viewport.new :as fit-viewport]
-            [clojure.gdx.gdx.files :as files]
-            [clojure.gdx.gdx.graphics :as graphics]
-            [clojure.gdx.gdx.input :as input]
-            [clojure.gdx.gl20.clear :as clear!]
-            [clojure.gdx.gl20.clear-color :as clear-color!]
-            [clojure.gdx.gl20.color-buffer-bit :as color-buffer-bit]
-            [clojure.gdx.graphics.get-gl20 :as get-gl20]
-            [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.lwjgl3-application-configuration.new :as create-config]
             [clojure.gdx.lwjgl3-application.new :as lwjgl3-application]
-            [clojure.gdx.orthographic-camera.new :as new-camera]
-            [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
-            [clojure.gdx.skin.new :as skin]
-            [clojure.gdx.sprite-batch.new :as sprite-batch]
-            [clojure.gdx.stage.act :as act]
-            [clojure.gdx.stage.add-actor :as add-actor]
-            [clojure.gdx.stage.draw :as draw]
-            [clojure.gdx.stage.set-ctx :as set-ctx]
             [clojure.gdx.use-glfw-async :as use-glfw-async!]
-            [clojure.gdx.viewport.update :as update]
-            [gdx.scenes.scene2d.ui.window :as window]
-            [input.key-pressed :as key-pressed?]
-            [levelgen-test.generate :as generate]
-            [moon.create-textures :as create-textures]
-            [moon.db :as db]
-            [orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [orthographic-camera.position :as get-position]
-            [orthographic-camera.set-position :refer [set-position!]]
-            [scene2d.stage :as stage]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener]))
-
-(defn apply-ctx [stage f]
-  (set-ctx/f stage (f (:stage/ctx stage))))
-
-(defn app-event! [f]
-  (fn [_event actor]
-    (apply-ctx (get-stage/f actor)
-               f)))
-
-(defn change-listener [f]
-  (change-listener/create
-   (app-event! f)))
-
-(defn on-change [actor f]
-  (add-listener/f actor (change-listener f)))
-
-(defn edit-window [skin level-fns]
-  {:title "Edit"
-   :skin skin
-   :table/rows (for [level-fn level-fns
-                     :let [on-click #(do
-                                      (dispose/f (:ctx/tiled-map %))
-                                      (generate/f % level-fn))]]
-                 [{:actor (doto (text-button/create
-                                 {:text (str "Generate " level-fn)
-                                  :skin skin})
-                            (on-change on-click))}])})
+            [clojure.java.io :as io]
+            levelgen-test.application-listener))
 
 ; TODO we want to know the application state actually .....
 ; => validate ?
-
-(defn create!
-  [config]
-  (let [files (files/f)
-        input (input/f)
-        graphics (graphics/f)
-        sprite-batch (sprite-batch/f)
-        ui-viewport (fit-viewport/create (:ui-viewport-width config)
-                                         (:ui-viewport-height config))
-        world-unit-scale (float (/ (:tile-size config)))
-        stage (stage/create ui-viewport sprite-batch)
-        skin (skin/f (internal/f files (:ui-skin-path config)))
-        world-viewport (let [world-width  (* (:world-viewport-width config) world-unit-scale)
-                             world-height (* (:world-viewport-height config)  world-unit-scale)]
-                         (fit-viewport/create world-width
-                                              world-height
-                                              (doto (new-camera/f)
-                                                (set-to-ortho!/f! false world-width world-height))))
-        ctx {:ctx/input input
-             :ctx/graphics graphics
-             :ctx/stage stage
-             :ctx/zoom-speed (:zoom-speed config)
-             :ctx/camera-movement-speed (:camera-movement-speed config)
-             :ctx/world-unit-scale world-unit-scale
-             :ctx/db (db/create)
-             :ctx/textures (create-textures/f files (:textures-config config))
-             :ctx/sprite-batch sprite-batch
-             :ctx/skin skin
-             :ctx/world-viewport world-viewport
-             :ctx/camera (:viewport/camera world-viewport)}
-        ctx (generate/f ctx (:initial-level-fn config))]
-    (set-input-processor!/f input stage)
-    (add-actor/f (:ctx/stage ctx)
-                 (window/create (edit-window skin (:level-fns config))))
-    ctx))
-
-(defn dispose!
-  [{:keys [ctx/skin
-           ctx/sprite-batch
-           ctx/tiled-map]}]
-  ; TODO TEXTURES NOT DISPOSED
-  (dispose/f skin)
-  (dispose/f sprite-batch)
-  (dispose/f tiled-map))
-
-(defn resize!
-  [{:keys [ctx/stage
-           ctx/world-viewport]}
-   width height]
-  (update/f (:stage/viewport stage) width height true)
-  (update/f world-viewport width height false))
-
-(defn clear-screen!
-  [graphics]
-  (let [gl (get-gl20/f graphics)]
-    (clear-color!/f gl 0 0 0 0)
-    (clear!/f gl color-buffer-bit/v)))
-
-(defn render!
-  [{:keys [ctx/input
-           ctx/camera
-           ctx/zoom-speed
-           ctx/camera-movement-speed
-           ctx/sprite-batch
-           ctx/tiled-map
-           ctx/world-viewport
-           ctx/world-unit-scale
-           ctx/graphics
-           ctx/stage] :as ctx}]
-  (let [ctx (or (:stage/ctx stage)
-                ctx)] ; first render stage does not have ctx set. ( TODO: just set it ?  )
-    (set-ctx/f stage ctx))
-  (clear-screen! graphics)
-  (draw-tiled-map/f! sprite-batch
-                     world-unit-scale
-                     (:viewport/camera world-viewport)
-                     tiled-map
-                     (constantly (float-bits/f [1 1 1 1])))
-  (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
-  (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed)))
-  (let [apply-position (fn [idx f]
-                         (set-position! camera
-                                        (update (get-position/f camera)
-                                                idx
-                                                #(f % camera-movement-speed))))]
-    (if (key-pressed?/f input :input.keys/left)  (apply-position 0 -))
-    (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
-    (if (key-pressed?/f input :input.keys/up)    (apply-position 1 +))
-    (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -)))
-  (act/f stage)
-  (draw/f stage)
-  (:stage/ctx stage))
-
-(defn application-listener [state config]
-  {:create! (fn []
-              (reset! state (create! config)))
-
-   :dispose! (fn []
-               (dispose! @state))
-
-   :render! (fn []
-              (swap! state render!))
-
-   :resize! (fn [width height]
-              (resize! @state width height))
-
-   :pause! (fn [])
-
-   :resume! (fn [])})
 
 (def state (atom nil))
 
@@ -197,5 +27,6 @@
                    slurp
                    edn/read-string)]
     (lwjgl3-application/f (create-listener/f
-                           (application-listener state config))
+                           (levelgen-test.application-listener/f state
+                                                                 config))
                           (create-config/f (:lwjgl-app-config config)))))
