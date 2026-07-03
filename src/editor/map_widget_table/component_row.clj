@@ -2,12 +2,13 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.get-user-object :as get-user-object]
             [clojure.gdx.actor.remove :as remove]
+            [clojure.gdx.event.get-stage :as get-stage]
+            [clojure.gdx.group.get-children :as get-children]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener])
-  (:import (com.badlogic.gdx.scenes.scene2d Event Group)))
+            [scene2d.utils.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin
@@ -26,8 +27,8 @@
                                                           (remove/f (first (filter (fn [actor]
                                                                                       (and (get-user-object/f actor)
                                                                                            (= k ((get-user-object/f actor) 0))))
-                                                                                    (Group/.getChildren table))))
-                                                          (let [ctx (:stage/ctx (Event/.getStage event))]
+                                                                                    (get-children/f table))))
+                                                          (let [ctx (:stage/ctx (get-stage/f event))]
                                                             ((:ctx/rebuild-editor-window! ctx) ctx)))))))
                             :left? true}
                            {:actor (label/create

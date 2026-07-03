@@ -1,12 +1,12 @@
 (ns editor.create-widget.sound
   (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.event.get-stage :as get-stage]
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener])
-  (:import (com.badlogic.gdx.scenes.scene2d Event)))
+            [scene2d.utils.change-listener :as change-listener]))
 
 (defn f
   [_  sound-name {:keys [ctx/skin]}]
@@ -19,6 +19,6 @@
                             (add-listener/f (change-listener/create
                                              (fn [event _actor]
                                                ((open-select-sounds-handler table)
-                                                (:stage/ctx (Event/.getStage event))
+                                                (:stage/ctx (get-stage/f event))
                                                 sound-columns)))))}])])
     table))

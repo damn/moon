@@ -1,5 +1,6 @@
 (ns editor.main-window
   (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.event.get-stage :as get-stage]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.string :as str]
             [editor.window]
@@ -7,8 +8,7 @@
             [scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.db.property-types :refer [property-types]]
-            [moon.db.get-raw :refer [get-raw]])
-  (:import (com.badlogic.gdx.scenes.scene2d Event)))
+            [moon.db.get-raw :refer [get-raw]]))
 
 (defn create
   [{:keys [ctx/db
@@ -27,7 +27,7 @@
                                                               ctx/stage
                                                               ctx/textures
                                                               ctx/property-overview-window]
-                                                       :as ctx} (:stage/ctx (Event/.getStage event))]
+                                                       :as ctx} (:stage/ctx (get-stage/f event))]
                                                   (add-actor/f stage
                                                                (property-overview-window
                                                                 {:db db

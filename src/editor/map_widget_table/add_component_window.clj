@@ -1,6 +1,7 @@
 (ns editor.map-widget-table.add-component-window
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.remove :as remove]
+            [clojure.gdx.event.get-stage :as get-stage]
             [clojure.gdx.layout.pack :as pack]
             [clojure.gdx.window.set-modal :as set-modal]
             [editor.build-widget :as build-widget]
@@ -12,8 +13,7 @@
             [gdx.scenes.scene2d.ui.window :as window]
             [moon.schemas.default-value :refer [default-value]]
             [moon.schemas.map-keys :refer [map-keys]]
-            [moon.schemas.optional :refer [optional?]])
-  (:import (com.badlogic.gdx.scenes.scene2d Event)))
+            [moon.schemas.optional :refer [optional?]]))
 
 (defn f
   [{:keys [schemas schema map-widget-table skin]}]
@@ -34,7 +34,7 @@
                   (add-listener/f (change-listener/create
                                    (fn [event _actor]
                                      (remove/f window)
-                                     (let [ctx (:stage/ctx (Event/.getStage event))]
+                                     (let [ctx (:stage/ctx (get-stage/f event))]
                                        (add-rows! map-widget-table [((:ctx/create-component-row ctx)
                                                                       {:skin skin
                                                                        :editor-widget (build-widget/f ctx
