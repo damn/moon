@@ -1,9 +1,8 @@
 (ns ctx.shape-drawer
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [clojure.gdx.texture-region.new :as texture-region])
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn step
   [{:keys [ctx/batch
            ctx/shape-drawer-texture]}]
-  (ShapeDrawer. batch (TextureRegion. ^Texture shape-drawer-texture 1 0 1 1)))
+  (ShapeDrawer. batch (texture-region/f shape-drawer-texture 1 0 1 1)))
