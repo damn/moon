@@ -2,6 +2,7 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.remove :as remove]
             [clojure.gdx.actor.set-user-object :as set-user-object]
+            [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.layout.pack :as pack]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
@@ -13,8 +14,7 @@
             [moon.property.image :as property-image]
             [moon.textures :as textures])
   (:import (com.badlogic.gdx.scenes.scene2d Event
-                                            Group
-                                            Stage)
+                                            Group)
            (com.badlogic.gdx.scenes.scene2d.ui Image
                                                Window)))
 
@@ -41,7 +41,7 @@
                                                     ctx/textures
                                                     ctx/property-overview-window]
                                              :as ctx} (:stage/ctx (Event/.getStage event))]
-                                        (Stage/.addActor
+                                        (add-actor/f
                                          stage
                                          (property-overview-window
                                           {:db db

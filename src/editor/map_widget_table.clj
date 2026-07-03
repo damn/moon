@@ -1,14 +1,14 @@
 (ns editor.map-widget-table
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.set-name :as set-name]
+            [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.interpose-f :refer [interpose-f]]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]
             [editor.horiz-sep :as horiz-sep])
-  (:import (com.badlogic.gdx.scenes.scene2d Event
-                                            Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Event)))
 
 (defn create
   [{:keys [create-component-row
@@ -43,7 +43,7 @@
                                                             ctx/stage
                                                             ctx/skin
                                                             ctx/add-component-window]} (:stage/ctx (Event/.getStage event))]
-                                                (Stage/.addActor
+                                                (add-actor/f
                                                  stage
                                                  (add-component-window
                                                   {:skin skin
