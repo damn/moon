@@ -1,13 +1,14 @@
 (ns draw.with-line-width
-  (:require [ctx.draw :refer [draw!]])
-  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [clojure.gdx.shape-drawer.get-default-line-width :as get-default-line-width]
+            [clojure.gdx.shape-drawer.set-default-line-width :as set-default-line-width]
+            [ctx.draw :refer [draw!]]))
 
 (defn f
   [{:keys [ctx/shape-drawer]
     :as ctx}
    width
    draws]
-  (let [old-line-width (ShapeDrawer/.getDefaultLineWidth shape-drawer)]
-    (ShapeDrawer/.setDefaultLineWidth shape-drawer (* width old-line-width))
+  (let [old-line-width (get-default-line-width/f shape-drawer)]
+    (set-default-line-width/f shape-drawer (* width old-line-width))
     (draw! ctx draws)
-    (ShapeDrawer/.setDefaultLineWidth shape-drawer old-line-width)))
+    (set-default-line-width/f shape-drawer old-line-width)))

@@ -1,7 +1,8 @@
 (ns draw.rectangle
-  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [clojure.gdx.shape-drawer.rectangle :as rectangle]
+            [clojure.gdx.shape-drawer.set-color :as set-color]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-  (ShapeDrawer/.setColor shape-drawer (float color-float-bits))
-  (ShapeDrawer/.rectangle shape-drawer x y w h))
+  (set-color/f shape-drawer color-float-bits)
+  (rectangle/f shape-drawer x y w h))

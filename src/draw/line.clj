@@ -1,7 +1,8 @@
 (ns draw.line
-  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [clojure.gdx.shape-drawer.line :as line]
+            [clojure.gdx.shape-drawer.set-color :as set-color]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
-  (ShapeDrawer/.setColor shape-drawer (float color-float-bits))
-  (ShapeDrawer/.line shape-drawer (float sx) (float sy) (float ex) (float ey)))
+  (set-color/f shape-drawer color-float-bits)
+  (line/f shape-drawer sx sy ex ey))
