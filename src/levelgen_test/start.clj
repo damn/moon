@@ -9,7 +9,6 @@
 (ns levelgen-test.start
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.edn-resource :refer [edn-resource]]
             [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.get-stage :as get-stage]
             [clojure.gdx.application-listener.new :as create-listener]
@@ -28,8 +27,6 @@
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.lwjgl3-application-configuration.new :as create-config]
             [clojure.gdx.lwjgl3-application.new :as lwjgl3-application]
-            [clojure.gdx.map-layers.get :as get]
-            [clojure.gdx.map-properties.get :as pget]
             [clojure.gdx.orthographic-camera.new :as new-camera]
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
             [clojure.gdx.skin.new :as skin]
@@ -38,67 +35,19 @@
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.stage.draw :as draw]
             [clojure.gdx.stage.set-ctx :as set-ctx]
-            [clojure.gdx.tiled-map-tile-layer.set-visible :as set-visible]
-            [clojure.gdx.tiled-map.get-layers :as get-layers]
-            [clojure.gdx.tiled-map.get-properties :as get-properties]
             [clojure.gdx.use-glfw-async :as use-glfw-async!]
             [clojure.gdx.viewport.update :as update]
             [gdx.scenes.scene2d.ui.window :as window]
             [input.key-pressed :as key-pressed?]
+            [levelgen-test.generate :as generate]
             [moon.create-textures :as create-textures]
-            [moon.creature-tiles :as creature-tiles]
             [moon.db :as db]
-            [moon.db.all-raw :refer [all-raw]]
-            [moon.textures :as textures]
-            [orthographic-camera.calculate-zoom :refer [calculate-zoom]]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [orthographic-camera.position :as get-position]
             [orthographic-camera.set-position :refer [set-position!]]
-            [orthographic-camera.set-zoom :refer [set-zoom!]]
             [scene2d.stage :as stage]
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]))
-
-; TODO 2 function calls but should just be data
-; => clojurize tiled-map before passing anywhere??
-(defn get-prop [tiled-map k]
-  (-> tiled-map
-      get-properties/f
-      (pget/f k)))
-
-(defn zoom-to-rect! [camera rectangle]
-  (set-zoom! camera
-             (calculate-zoom camera
-                             rectangle)))
-
-; TODO does too many things!
-(defn generate-level
-  [{:keys [ctx/camera
-           ctx/db
-           ctx/textures]
-    :as ctx}
-   level-fn]
-  (let [level (let [[f params] (edn-resource level-fn)]
-                (f
-                 (assoc params
-                        :level/creature-properties (creature-tiles/prepare
-                                                    (all-raw db :properties/creatures)
-                                                    #(textures/texture-region textures %))
-                        :textures textures)))
-        tiled-map (:tiled-map level)
-        ctx (assoc ctx :ctx/tiled-map tiled-map)]
-    (assert tiled-map)
-    (-> tiled-map
-        get-layers/f
-        (get/f "creatures")
-        (set-visible/f true))
-    (set-position! camera [(/ (get-prop tiled-map "width") 2)
-                           (/ (get-prop tiled-map "height") 2)])
-    (zoom-to-rect! camera {:left [0 0]
-                           :top [0 (get-prop tiled-map "height")]
-                           :right [(get-prop tiled-map "width") 0]
-                           :bottom [0 0]})
-    ctx))
 
 (defn apply-ctx [stage f]
   (set-ctx/f stage (f (:stage/ctx stage))))
@@ -121,7 +70,7 @@
    :table/rows (for [level-fn level-fns
                      :let [on-click #(do
                                       (dispose/f (:ctx/tiled-map %))
-                                      (generate-level % level-fn))]]
+                                      (generate/f % level-fn))]]
                  [{:actor (doto (text-button/create
                                  {:text (str "Generate " level-fn)
                                   :skin skin})
@@ -159,7 +108,7 @@
              :ctx/skin skin
              :ctx/world-viewport world-viewport
              :ctx/camera (:viewport/camera world-viewport)}
-        ctx (generate-level ctx (:initial-level-fn config))]
+        ctx (generate/f ctx (:initial-level-fn config))]
     (set-input-processor!/f input stage)
     (add-actor/f (:ctx/stage ctx)
                  (window/create (edit-window skin (:level-fns config))))
