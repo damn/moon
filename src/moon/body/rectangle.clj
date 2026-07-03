@@ -1,5 +1,5 @@
 (ns moon.body.rectangle
-  (:import (com.badlogic.gdx.math Rectangle)))
+  (:require [clojure.gdx.rectangle.new :as new-rectangle]))
 
 (defn ->rectangle
   [{:keys [body/position
@@ -7,4 +7,4 @@
            body/height]}]
   (let [[x y] [(- (position 0) (/ width  2))
                (- (position 1) (/ height 2))]]
-    (Rectangle. x y width height)))
+    (new-rectangle/f x y width height)))

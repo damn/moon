@@ -1,13 +1,13 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
   (:require [clojure.gdx.actor.add-listener :as add-listener]
+            [clojure.gdx.event.get-stage :as event-get-stage]
             [clojure.gdx.stage.add-actor :as add-actor]
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.window :as window])
-  (:import (com.badlogic.gdx.scenes.scene2d Event)))
+            [gdx.scenes.scene2d.ui.window :as window]))
 
 (defn f [skin menus update-labels]
   (let [table (table/create
@@ -16,7 +16,7 @@
                                 (doto (text-button/create {:text label :skin skin})
                                   (add-listener/f (change-listener/create
                                                    (fn [event actor]
-                                                     (add-actor/f (Event/.getStage event)
+                                                     (add-actor/f (event-get-stage/f event)
                                                                   (doto (window/create
                                                                          {:title label
                                                                           :skin skin
@@ -25,7 +25,7 @@
                                                                                           (doto (text-button/create {:text label :skin skin})
                                                                                             (add-listener/f (change-listener/create
                                                                                                              (fn [event actor]
-                                                                                                               (on-click actor (:stage/ctx (Event/.getStage event)))))))})]})
+                                                                                                               (on-click actor (:stage/ctx (event-get-stage/f event)))))))})]})
                                                                     (add-close-button/f! skin)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]

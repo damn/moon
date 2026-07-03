@@ -1,5 +1,5 @@
 (ns scene2d.ui.text-tooltip
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextTooltip)))
+  (:require [clojure.gdx.text-tooltip.new :as new-text-tooltip]))
 
 (defn create [tooltip skin]
-  (TextTooltip. ^String tooltip ^Skin skin))
+  (new-text-tooltip/f tooltip skin))

@@ -1,5 +1,5 @@
 (ns scene2d.ui.text-field
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextField)))
+  (:require [clojure.gdx.text-field.new :as new-text-field]))
 
 (defn create [text skin]
-  (TextField. ^String text ^Skin skin))
+  (new-text-field/f text skin))

@@ -10,7 +10,9 @@
             [clojure.gdx.orthographic-camera.viewport-width :as viewport-width]
             [clojure.gdx.orthographic-camera.zoom :as zoom]
             [clojure.gdx.tiled-map.get-layers :as get-layers]
-            [clojure.gdx.tiled-map-tile-layer.visible? :as visible?]))
+            [clojure.gdx.tiled-map-tile-layer.visible? :as visible?]
+            [clojure.gdx.vector3.x :as x]
+            [clojure.gdx.vector3.y :as y]))
 
 (defn f!
   [batch
@@ -23,19 +25,19 @@
   (let [width  (* (viewport-width/f camera) (zoom/f camera))
         height (* (viewport-height/f camera) (zoom/f camera))
         up (up/f camera)
-        w (+ (* width  (Math/abs (.y up)))
-             (* height (Math/abs (.x up))))
-        h (+ (* height (Math/abs (.y up)))
-             (* width  (Math/abs (.x up))))
+        w (+ (* width  (Math/abs (float (y/f up))))
+             (* height (Math/abs (float (x/f up)))))
+        h (+ (* height (Math/abs (float (y/f up))))
+             (* width  (Math/abs (float (x/f up)))))
         pos (position/f camera)
-        viewBounds {:x (- (.x pos) (/ w 2))
-                    :y (- (.y pos) (/ h 2))
+        viewBounds {:x (- (x/f pos) (/ w 2))
+                    :y (- (y/f pos) (/ h 2))
                     :width w
                     :height h}]
     (doseq [layer (filter visible?/f (get-layers/f tiled-map))]
       (draw-tiled-map-tile-layer/f! layer
                                     batch
-                                    (float world-unit-scale)
+                                    world-unit-scale
                                     viewBounds
                                     color-setter)))
   (end!/f batch))

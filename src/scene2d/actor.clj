@@ -1,15 +1,9 @@
 (ns scene2d.actor
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [clojure.gdx.actor.new :as new-actor]))
 
 (defn f
   [{:keys [act! draw!]}]
-  (proxy [Actor] []
-    (act [delta]
-      (when act!
-        (act! this delta))
-      (let [^Actor this this]
-        (proxy-super act delta)))
-
-    (draw [batch parent-alpha]
-      (when draw!
-        (draw! this batch parent-alpha)))))
+  (new-actor/f (or act!
+                   (fn [_actor _delta]))
+               (or draw!
+                   (fn [_actor _batch _parent-alpha]))))

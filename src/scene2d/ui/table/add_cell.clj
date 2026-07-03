@@ -1,8 +1,7 @@
 (ns scene2d.ui.table.add-cell
-  (:require [scene2d.ui.cell :refer [set-opts!]])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Table)))
+  (:require [clojure.gdx.table.add :as add]
+            [scene2d.ui.cell :refer [set-opts!]]))
 
-(defn add-cell! [^Table table cell-declaration]
-  (-> (Table/.add table ^Actor (:actor cell-declaration))
+(defn add-cell! [table cell-declaration]
+  (-> (add/f table (:actor cell-declaration))
       (set-opts! (dissoc cell-declaration :actor))))

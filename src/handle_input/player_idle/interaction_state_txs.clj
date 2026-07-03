@@ -1,7 +1,7 @@
 (ns handle-input.player-idle.interaction-state-txs
   (:require [clojure.gdx.actor.visible? :as visible?]
-            [moon.inventory.can-pickup-item :as can-pickup-item])
-  (:import (com.badlogic.gdx.scenes.scene2d Group)))
+            [clojure.gdx.group.find-actor :as find-actor]
+            [moon.inventory.can-pickup-item :as can-pickup-item]))
 
 (defn interaction-state->txs [[k params] stage player-eid]
   (case k
@@ -20,7 +20,7 @@
             (cond
              (-> stage
                  :stage/root
-                 (#(Group/.findActor % "moon.ui.windows.inventory"))
+                 (#(find-actor/f % "moon.ui.windows.inventory"))
                  visible?/f)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]

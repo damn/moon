@@ -3,10 +3,9 @@
             [clojure.gdx.actor.get-parent :as get-parent]
             [clojure.gdx.actor.get-user-object :as get-user-object]
             [scene2d.actor.is-button :as button?]
-            [scene2d.actor.is-window-title-bar :as window-title-bar?])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)))
+            [scene2d.actor.is-window-title-bar :as window-title-bar?]))
 
-(defn mouseover-actor-info [^Actor actor]
+(defn mouseover-actor-info [actor]
   (let [inventory-slot (and (get-parent/f actor)
                             (= "inventory-cell" (get-name/f (get-parent/f actor)))
                             (get-user-object/f (get-parent/f actor)))]

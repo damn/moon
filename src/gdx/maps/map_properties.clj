@@ -1,6 +1,7 @@
 (ns gdx.maps.map-properties
-  (:import (com.badlogic.gdx.maps MapProperties)))
+  (:require [clojure.gdx.map-properties.get-keys :as get-keys]
+            [clojure.gdx.map-properties.get-values :as get-values]))
 
-(defn clojurize [^MapProperties props]
-  (zipmap (.getKeys props)
-          (.getValues props)))
+(defn clojurize [props]
+  (zipmap (get-keys/f props)
+          (get-values/f props)))

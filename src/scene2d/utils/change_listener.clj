@@ -1,7 +1,5 @@
 (ns scene2d.utils.change-listener
-  (:import (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
+  (:require [clojure.gdx.change-listener.new :as new-change-listener]))
 
 (defn create [f]
-  (proxy [ChangeListener] []
-    (changed [event actor]
-      (f event actor))))
+  (new-change-listener/f f))

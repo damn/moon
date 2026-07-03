@@ -9,23 +9,23 @@
             [clojure.gdx.actor.set-name :as set-name]
             [clojure.gdx.actor.set-user-object :as set-user-object]
             [clojure.gdx.actor.stage-to-local-coordinates :as stage-to-local-coordinates]
+            [clojure.gdx.event.get-stage :as event-get-stage]
+            [clojure.gdx.group.add-actor :as add-actor]
+            [clojure.gdx.image.new-drawable :as new-image]
+            [clojure.gdx.vector2.new :as new-vector2]
             [gdx.math.vector2.clojurize :as clojurize]
             [scene2d.ui.widget :as widget]
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
             [scene2d.utils.click-listener :as click-listener]
-            [scene2d.ui.stack :as stack]
-            [clojure.gdx.vector2.new :as new-vector2])
-  (:import (com.badlogic.gdx.scenes.scene2d Event Group)
-           (com.badlogic.gdx.scenes.scene2d.ui Image)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+            [scene2d.ui.stack :as stack]))
 
 (defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
      (let [stack (stack/create)]
-       (run! #(Group/.addActor stack %)
+       (run! #(add-actor/f stack %)
              [(widget/f
                {:draw! (fn [this _batch _parent-alpha]
                          (when-let [stage (get-stage/f this)]
@@ -41,7 +41,7 @@
                                                                                               (new-vector2/f ui-mouse-position)))]
                                                       (hit/f this x y true))
                                                     (get-user-object/f (get-parent/f this)))))))})
-              (doto (Image. ^Drawable background-drawable)
+              (doto (new-image/f background-drawable)
                 (set-name/f "image-widget")
                 (set-user-object/f {:background-drawable background-drawable
                                     :cell-size cell-size}))])
@@ -50,7 +50,7 @@
                           (fn [event _x _y]
                             (let [{:keys [ctx/player-eid
                                           ctx/k->clicked-inventory-cell]
-                                   :as ctx} (:stage/ctx (Event/.getStage event))
+                                   :as ctx} (:stage/ctx (event-get-stage/f event))
                                   entity @player-eid
                                   state-k (:state (:entity/fsm entity))]
                               (do! ctx

@@ -6,8 +6,9 @@
             [grid2d.flood-fill :as flood-fill]
             [tiled-map.movement-property :as movement-property]
             [tiled-map.add-creatures-layer :as add-creatures-layer]
-            [world-fns.modules.area-level-grid :as area-level-grid])
-  (:import (com.badlogic.gdx.maps MapLayers)))
+            [world-fns.modules.area-level-grid :as area-level-grid]
+            [clojure.gdx.map-layers.get :as map-layers-get]
+            [clojure.gdx.tiled-map.get-layers :as get-layers]))
 
 (defn step
   [{:keys [world/max-area-level
@@ -43,7 +44,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (MapLayers/.get (.getLayers tiled-map) "creatures")
+                                                    (property-value (map-layers-get/f (get-layers/f tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

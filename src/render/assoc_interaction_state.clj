@@ -1,11 +1,11 @@
 (ns render.assoc-interaction-state
-  (:require [moon.player-effect-ctx :as player-effect-ctx]
+  (:require [clojure.gdx.group.find-actor :as find-actor]
+            [moon.player-effect-ctx :as player-effect-ctx]
             [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.skill.usable-state :as usable-state]
             [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
             [moon.action-bar.selected-skill :as selected-skill]
-            [moon.body.distance :as distance])
-  (:import (com.badlogic.gdx.scenes.scene2d Group)))
+            [moon.body.distance :as distance]))
 
 (defn create
   [{:keys [ctx/mouseover-eid
@@ -29,7 +29,7 @@
      :else
      (if-let [skill-id (-> stage
                            :stage/root
-                           (#(Group/.findActor % "moon.ui.action-bar"))
+                           (#(find-actor/f % "moon.ui.action-bar"))
                            selected-skill/f)]
        (let [entity @player-eid
              skill (skill-id (:entity/skills entity))
