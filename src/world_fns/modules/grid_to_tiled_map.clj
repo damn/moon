@@ -2,7 +2,8 @@
   (:require [gdx.maps.map-properties :as map-properties]
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
-            [grid2d.height :refer [->height]])
+            [grid2d.height :refer [->height]]
+            [clojure.gdx.tiled-map.get-properties :as get-properties])
   (:import (com.badlogic.gdx.maps.tiled TiledMap
                                         TiledMapTileLayer$Cell)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
@@ -13,7 +14,7 @@
                    (fn [tile]
                      (assert tile)
                      (StaticTiledMapTile. ^StaticTiledMapTile tile)))]
-    {:properties (merge (map-properties/clojurize (.getProperties schema-tiled-map))
+    {:properties (merge (map-properties/clojurize (get-properties/f schema-tiled-map))
                         {"width" (->width grid)
                          "height" (->height grid)})
      :layers (for [layer (.getLayers schema-tiled-map)]
