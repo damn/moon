@@ -59,8 +59,12 @@
             [scene2d.ui.text-button :as text-button]
             [scene2d.utils.change-listener :as change-listener]))
 
+; TODO 2 function calls but should just be data
+; => clojurize tiled-map before passing anywhere??
 (defn get-prop [tiled-map k]
-  (pget/f (get-properties/f tiled-map) k))
+  (-> tiled-map
+      get-properties/f
+      (pget/f k)))
 
 (defn zoom-to-rect! [camera rectangle]
   (set-zoom! camera
@@ -71,8 +75,9 @@
 (defn generate-level
   [{:keys [ctx/camera
            ctx/db
-           ctx/textures
-           ctx/tiled-map] :as ctx} level-fn]
+           ctx/textures]
+    :as ctx}
+   level-fn]
   (let [level (let [[f params] (edn-resource level-fn)]
                 (f
                  (assoc params
@@ -123,6 +128,7 @@
                             (on-change on-click))}])})
 
 ; TODO we want to know the application state actually .....
+; => validate ?
 
 (defn create!
   [config]
