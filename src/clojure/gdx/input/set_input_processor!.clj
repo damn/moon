@@ -2,4 +2,4 @@
   (:import (com.badlogic.gdx Input)))
 
 (defn f [input processor]
-  (.setInputProcessor ^Input input processor))
+  (Input/.setInputProcessor input processor))
