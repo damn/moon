@@ -73,8 +73,6 @@
            ctx/db
            ctx/textures
            ctx/tiled-map] :as ctx} level-fn]
-  (when tiled-map
-    (dispose/f tiled-map))
   (let [level (let [[f params] (edn-resource level-fn)]
                 (f
                  (assoc params
@@ -116,7 +114,9 @@
   {:title "Edit"
    :skin skin
    :table/rows (for [level-fn level-fns
-                     :let [on-click #(generate-level % level-fn)]]
+                     :let [on-click #(do
+                                      (dispose/f (:ctx/tiled-map %))
+                                      (generate-level % level-fn))]]
                  [{:actor (doto (text-button/create
                                  {:text (str "Generate " level-fn)
                                   :skin skin})
