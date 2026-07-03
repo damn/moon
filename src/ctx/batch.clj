@@ -1,5 +1,5 @@
 (ns ctx.batch
-  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch)))
+  (:require [clojure.gdx.sprite-batch.new :as sprite-batch]))
 
 (defn step [_ctx]
-  (SpriteBatch.))
+  (sprite-batch/f))
