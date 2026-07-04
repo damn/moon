@@ -4,6 +4,3 @@
 
 (defn f [^TextureRegion texture-region]
   (StaticTiledMapTile. texture-region))
-
-(defn f-tile [^StaticTiledMapTile tile]
-  (StaticTiledMapTile. tile))
