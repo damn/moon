@@ -9,11 +9,3 @@
          (filter File/.isFile)
          (filter #(str/ends-with? (File/.getName %) extension))
          (map File/.getName))))
-
-(comment
-
- (spit "config/sounds.edn"
-       (vec (dev.create-assets-edn/list-files "wav/" ".wav")))
-
-
- )
