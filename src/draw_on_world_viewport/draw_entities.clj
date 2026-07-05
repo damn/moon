@@ -1,6 +1,5 @@
 (ns draw-on-world-viewport.draw-entities
   (:require [clojure.sort-by-order :as sort-by-order]
-            [game.constants :refer [show-body-bounds?]]
             [ctx.draw :refer [draw!]]
             [ctx.draw-component :refer [draw-component]]
             [moon.body.draw-rectangle :as draw-rectangle]
@@ -13,7 +12,8 @@
            ctx/player-eid
            ctx/raycaster
            ctx/k->render
-           ctx/render-z-order]
+           ctx/render-z-order
+           ctx/show-body-bounds?]
     :as ctx}
    render-layers]
   (let [entities (map deref active-entities)

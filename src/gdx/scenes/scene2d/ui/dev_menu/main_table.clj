@@ -2,6 +2,7 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.event.get-stage :as event-get-stage]
             [clojure.gdx.stage.add-actor :as add-actor]
+            [clojure.gdx.stage.set-ctx :as set-ctx]
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.window.add-close-button :as add-close-button]
@@ -25,7 +26,9 @@
                                                                                           (doto (text-button/create {:text label :skin skin})
                                                                                             (add-listener/f (change-listener/create
                                                                                                              (fn [event actor]
-                                                                                                               (on-click actor (:stage/ctx (event-get-stage/f event)))))))})]})
+                                                                                                               (let [stage (event-get-stage/f event)]
+                                                                                                                 (set-ctx/f stage
+                                                                                                                            (on-click (:stage/ctx stage))))))))})]})
                                                                     (add-close-button/f! skin)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]

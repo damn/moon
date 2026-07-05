@@ -52,4 +52,8 @@
          :ctx/z-orders [:z-order/on-ground
                         :z-order/ground
                         :z-order/flying
-                        :z-order/effect]))
+                        :z-order/effect]
+         :ctx/show-potential-field-colors? nil
+         :ctx/show-cell-entities? false
+         :ctx/show-cell-occupied? false
+         :ctx/show-body-bounds? false))

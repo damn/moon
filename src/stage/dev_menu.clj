@@ -1,6 +1,7 @@
 (ns stage.dev-menu
   (:require [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
             [stage.dev-menu.ctx-data :as ctx-data]
+            [stage.dev-menu.debug-flags :as debug-flags]
             [stage.dev-menu.update-labels :as update-labels]))
 
 (defn create
@@ -10,6 +11,7 @@
            ctx/textures]}]
   (dev-menu/create
    {:menus [ctx-data/item
+            debug-flags/item
             {:label "Help"
              :items [{:label controls-info}]}
             {:label "Select World"
@@ -17,7 +19,7 @@
                                     "config/world_fns/uf_caves.edn"
                                     "config/world_fns/modules.edn"]]
                       {:label (str "Start " world-fn)
-                       :on-click (fn [actor {:keys [ctx/stage] :as ctx}]
+                       :on-click (fn [ctx]
                                    #_(let [rebuild-actors! nil
                                            #_(fn rebuild-actors! [stage ctx]
                                                (.clear stage)
@@ -28,7 +30,8 @@
                                            stage (get-stage actor)]  ; get before clear, otherwise the actor does not have a stage anymore
                                        (rebuild-actors! ui ctx)
                                        #_(disposable/dispose! (:ctx/tiled-map ctx))
-                                       (set! (.ctx ^Stage stage) (create-world ctx world-fn))))})}
+                                       (set! (.ctx ^Stage stage) (create-world ctx world-fn)))
+                                   ctx)})}
 
             ]
     :update-labels (for [item update-labels/v]

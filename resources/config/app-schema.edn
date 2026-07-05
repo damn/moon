@@ -58,4 +58,8 @@
  [:ctx/elapsed-time :some]
  [:ctx/paused? :some]
  [:ctx/player-eid :some]
+ [:ctx/show-potential-field-colors? :any]
+ [:ctx/show-cell-entities? :boolean]
+ [:ctx/show-cell-occupied? :boolean]
+ [:ctx/show-body-bounds? :boolean]
  ]

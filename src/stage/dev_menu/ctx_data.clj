@@ -5,12 +5,13 @@
 (def item
   {:label "Ctx Data"
    :items [{:label "Show data"
-            :on-click (fn [_actor {:keys [ctx/skin
-                                          ctx/stage] :as ctx}]
+            :on-click (fn [{:keys [ctx/skin
+                                   ctx/stage] :as ctx}]
                         (add-actor/f stage
                                      (data-viewer-window/create
                                       {:title "Data View"
                                        :data ctx
                                        :width 1000
                                        :height 1000
-                                       :skin skin})))}]})
+                                       :skin skin}))
+                        ctx)}]})

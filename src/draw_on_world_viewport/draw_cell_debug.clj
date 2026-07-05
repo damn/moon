@@ -1,14 +1,14 @@
 (ns draw-on-world-viewport.draw-cell-debug
-  (:require [orthographic-camera.visible-tiles :refer [visible-tiles]]
-            [game.constants :refer [show-potential-field-colors?
-                                    show-cell-entities?
-                                    show-cell-occupied?]]))
+  (:require [orthographic-camera.visible-tiles :refer [visible-tiles]]))
 
 (defn f
   [{:keys [ctx/colors
            ctx/grid
            ctx/factions-iterations
-           ctx/world-viewport]}]
+           ctx/world-viewport
+           ctx/show-potential-field-colors?
+           ctx/show-cell-entities?
+           ctx/show-cell-occupied?]}]
   (apply concat
          (for [[x y] (visible-tiles (:viewport/camera world-viewport))
                :let [cell (grid [x y])]
