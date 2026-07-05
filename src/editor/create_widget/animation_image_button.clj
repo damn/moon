@@ -1,4 +1,4 @@
-(ns editor.create-widget.animation.image-button
+(ns editor.create-widget.animation-image-button
   (:require [clojure.gdx.image-button.new :as new-image-button]
             [clojure.gdx.texture-region.get-region-height :as get-region-height]
             [clojure.gdx.texture-region.get-region-width :as get-region-width]
