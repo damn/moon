@@ -1,11 +1,13 @@
 (ns moon.db
   (:require [clojure.edn :as edn]
+            [clojure.edn-resource :refer [edn-resource]]
             [clojure.java.io :as io]
             [moon.schemas.validate :refer [validate]]
             [moon.property.type :refer [property->type]]))
 
 (defn create []
-  (let [schemas (-> "config/schema.edn" io/resource slurp edn/read-string)
+  (let [schemas (-> (-> "config/schema.edn" io/resource slurp edn/read-string)
+                    (with-meta {:schemas/k->malli-form (edn-resource "config/k->malli-form.edn")}))
         properties-file (io/resource "config/properties.edn")
         properties (-> properties-file slurp edn/read-string)]
     (assert (or (empty? properties)
