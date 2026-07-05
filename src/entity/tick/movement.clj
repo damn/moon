@@ -1,24 +1,9 @@
 (ns entity.tick.movement
-  (:require [clojure.math :as math]
-            [math.vector2.angle-from-vector :as angle-from-vector]
+  (:require [math.vector2.angle-from-vector :as angle-from-vector]
             [math.vector2.length :as length]
-            [moon.grid.valid-position :refer [valid-position?]]
-            [clojure.number.is-nearly-equal :as nearly-equal?]))
-
-(defn- move-position [position {:keys [direction speed delta-time]}]
-  (mapv #(+ %1 (* %2 speed delta-time)) position direction))
-
-(defn- try-move [grid body entity-id movement]
-  (let [new-body (update body :body/position move-position movement)]
-    (when (valid-position? grid new-body entity-id)
-      new-body)))
-
-(defn- try-move-solid-body [grid body entity-id {[vx vy] :direction :as movement}]
-  (let [xdir (math/signum (float vx))
-        ydir (math/signum (float vy))]
-    (or (try-move grid body entity-id movement)
-        (try-move grid body entity-id (assoc movement :direction [xdir 0]))
-        (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
+            [moon.grid.try-move-solid-body :as try-move-solid-body]
+            [clojure.number.is-nearly-equal :as nearly-equal?]
+            [position.move :as move]))
 
 (defn f
   [{:keys [direction
@@ -41,8 +26,8 @@
     (let [movement (assoc movement :delta-time delta-time)
           body (:entity/body @eid)]
       (when-let [body (if (:body/collides? body)
-                        (try-move-solid-body grid body (:entity/id @eid) movement)
-                        (update body :body/position move-position movement))]
+                        (try-move-solid-body/f grid body (:entity/id @eid) movement)
+                        (update body :body/position move/f movement))]
         [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
          (when rotate-in-movement-direction?
            [:tx/assoc-in eid [:entity/body :body/rotation-angle] (angle-from-vector/f direction)])
