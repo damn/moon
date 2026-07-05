@@ -16,16 +16,7 @@
 (defn- get-in-order [v order]
   (map #(get v %) order))
 
-(def ^:private current-order (atom nil))
-
 (def ^:private turn-ratio 0.25)
-
-(defn- create-rand-4-neighbour-posis [posi n random] ; TODO does more than 1 thing
-  (when (< (srand random) turn-ratio)
-    (reset! current-order (create-order random)))
-  (take n
-        (get-in-order (get-4-neighbours posi)
-                      @current-order)))
 
 (defn- get-default-adj-num [open-paths random]
   (if (= open-paths 1)
@@ -72,8 +63,6 @@
 ; TODO glaubich einziger unterschied noch: openpaths wird bei jeder cell neu berechnet?
 ; TODO max-tries wenn er nie �ber min-cells kommt? -> im let dazu definieren vlt max 30 sekunden -> in tries umgerechnet??
 (defn create [random min-cells max-cells adjnum-type]
-  ; move up where its used only
-  (reset! current-order (create-order random))
   (let [start [0 0]
         start-grid (assoc {} start :ground) ; grid of posis to :ground or no entry for walls
         finished (fn [grid end cell-cnt]
@@ -87,16 +76,19 @@
                         :end   (convert end)})))]
     (loop [posi-seq [start]
            grid     start-grid
-           cell-cnt 0]
+           cell-cnt 0
+           current-order (create-order random)]
       ; TODO min cells check !?
       (if (>= cell-cnt max-cells)
         (finished grid
                   (last posi-seq)
                   cell-cnt)
-        (let [try-carve-posis (create-rand-4-neighbour-posis
-                               (last posi-seq) ; TODO take random ! at corner ... hmm
-                               ((get-adj-num adjnum-type) (count posi-seq) random)
-                               random)
+        (let [current-order (if (< (srand random) turn-ratio)
+                              (create-order random)
+                              current-order)
+              try-carve-posis (take ((get-adj-num adjnum-type) (count posi-seq) random)
+                                    (get-in-order (get-4-neighbours (last posi-seq))
+                                                  current-order))
               carve-posis (filter #(nil? (get grid %)) try-carve-posis)
               new-pos-seq (concat (drop-last posi-seq) carve-posis)]
           (if (not-empty new-pos-seq)
@@ -104,6 +96,7 @@
                    (if (seq carve-posis)
                      (assoc-ks grid carve-posis :ground)
                      grid)
-                   (+ cell-cnt (count carve-posis)))
+                   (+ cell-cnt (count carve-posis))
+                   current-order)
             ; TODO here min-cells check ?
             (finished grid (last posi-seq) cell-cnt)))))))
