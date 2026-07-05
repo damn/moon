@@ -1,15 +1,14 @@
 (ns ctx.colors
-  (:require [clojure.color :refer [black white gray red]]
-            [clojure.gdx.color.float-bits :as float-bits]))
+  (:require [clojure.gdx.color.float-bits :as float-bits]))
 
 (defn step [_ctx]
   (let [outline-alpha 0.4]
     {
      :colors/mouseover-tile-air  (float-bits/f [1 1 0 0.5])
      :colors/mouseover-tile-none (float-bits/f [1 0 0 0.5])
-     :colors/debug-body-outline-collides (float-bits/f white)
-     :colors/debug-body-outline (float-bits/f gray)
-     :colors/debug-body-outline-render-error (float-bits/f red)
+     :colors/debug-body-outline-collides (float-bits/f [1 1 1 1])
+     :colors/debug-body-outline (float-bits/f [0.5 0.5 0.5 1])
+     :colors/debug-body-outline-render-error (float-bits/f [1 0 0 1])
      :colors/debug-cell-entities (float-bits/f [1 0 0 0.6])
      :colors/debug-cell-occupied (float-bits/f [0 0 1 0.6])
      :colors/debug-potential-field (fn [ratio]
@@ -33,7 +32,7 @@
                                 :darkgreen (float-bits/f [0 0.5 0 1])
                                 :yellow    (float-bits/f [0.5 0.5 0 1])
                                 :red       (float-bits/f [0.5 0 0 1])})))
-     :colors/hp-bar-rect (float-bits/f black)
+     :colors/hp-bar-rect (float-bits/f [0 0 0 1])
      :colors/temp-modifier (float-bits/f [0.5 0.5 0.5 0.4])
      :colors/active-skill-circle (float-bits/f [1 1 1 0.125])
      :colors/active-skill-sector (float-bits/f [1 1 1 0.5])
