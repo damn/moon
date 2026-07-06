@@ -1,8 +1,8 @@
 (ns levelgen-test.render
-  (:require [com.badlogic.gdx.graphics.color :as color]
+  (:require
+            [com.badlogic.gdx.graphics :as graphics] [com.badlogic.gdx.graphics.color :as color]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
-            [clojure.gdx.graphics.get-gl20 :as get-gl20]
             [clojure.gdx.stage.act :as act]
             [clojure.gdx.stage.draw :as draw]
             [clojure.gdx.stage.set-ctx :as set-ctx]
@@ -25,7 +25,7 @@
   (let [ctx (or (:stage/ctx stage)
                 ctx)] ; first render stage does not have ctx set. ( TODO: just set it ?  )
     (set-ctx/f stage ctx))
-  (let [gl (get-gl20/f graphics)]
+  (let [gl (graphics/get-gl20 graphics)]
     (gl20/clear-color! gl 0 0 0 0)
     (gl20/clear! gl gl20/color-buffer-bit))
   (draw-tiled-map/f! sprite-batch

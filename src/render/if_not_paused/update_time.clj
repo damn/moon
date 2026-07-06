@@ -1,11 +1,12 @@
 (ns render.if-not-paused.update-time
-  (:require [clojure.gdx.graphics.get-delta-time :as get-delta-time]))
+  (:require
+            [com.badlogic.gdx.graphics :as graphics]))
 
 (defn f
   [{:keys [ctx/graphics
            ctx/max-delta]
     :as ctx}]
-  (let [delta-ms (min (get-delta-time/f graphics) max-delta)]
+  (let [delta-ms (min (graphics/get-delta-time graphics) max-delta)]
     (-> ctx
         (assoc :ctx/delta-time delta-ms)
         (update :ctx/elapsed-time + delta-ms))))

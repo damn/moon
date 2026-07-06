@@ -1,5 +1,6 @@
 (ns stage.dev-menu.update-labels
-  (:require [clojure.gdx.graphics.get-frames-per-second :as get-frames-per-second]
+  (:require
+            [com.badlogic.gdx.graphics :as graphics]
             [clojure.gdx.orthographic-camera.zoom :as zoom]
             [clojure.readable :as readable]))
 
@@ -11,7 +12,7 @@
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn (fn [{:keys [ctx/graphics]}]
-                 (get-frames-per-second/f graphics))
+                 (graphics/get-frames-per-second graphics))
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
     :update-fn (fn [{:keys [ctx/mouseover-eid]}]
