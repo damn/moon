@@ -1,6 +1,5 @@
 (ns editor.map-widget-table.component-row
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [editor.map-widget-table.k-label-text :as k-label-text]

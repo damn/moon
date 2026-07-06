@@ -1,6 +1,5 @@
 (ns stage.hp-mana-bar
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [ctx.draw :refer [draw!]]
             [scene2d.actor :as actor]
             [clojure.readable :as readable]

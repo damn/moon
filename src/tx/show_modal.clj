@@ -1,6 +1,5 @@
 (ns tx.show-modal
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]

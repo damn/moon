@@ -1,6 +1,5 @@
 (ns input.position
-  (:require
-            [com.badlogic.gdx.input :as input]))
+  (:require [com.badlogic.gdx.input :as input]))
 
 (defn f [input]
   [(input/get-x input)

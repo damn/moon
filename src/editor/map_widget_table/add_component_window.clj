@@ -1,6 +1,5 @@
 (ns editor.map-widget-table.add-component-window
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]

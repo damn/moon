@@ -1,6 +1,5 @@
 (ns tx.ui-set-item
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [moon.inventory-window.set-item :as set-item]
             [moon.textures :as textures]
             [info.item :refer [info-text]]))

@@ -1,6 +1,6 @@
 (ns orthographic-camera.frustum
-  (:require
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera] [com.badlogic.gdx.math.frustum :as frustum]
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [com.badlogic.gdx.math.frustum :as frustum]
             [com.badlogic.gdx.math.vector3 :as vector3]))
 
 (defn frustum [camera]

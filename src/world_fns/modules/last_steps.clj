@@ -1,6 +1,6 @@
 (ns world-fns.modules.last-steps
-  (:require
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map] [tiled-map-tile-layer.property-value :refer [property-value]]
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [tiled-map-tile-layer.property-value :refer [property-value]]
             [grid2d.cells :refer [->cells]]
             [grid2d.scale-grid :as scale-grid]
             [grid2d.printgrid :as printgrid]

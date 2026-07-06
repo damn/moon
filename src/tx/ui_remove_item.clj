@@ -1,6 +1,5 @@
 (ns tx.ui-remove-item
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [moon.inventory-window.remove-item :as remove-item]))
 
 (defn f

@@ -1,6 +1,5 @@
 (ns tx.show-message
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn f

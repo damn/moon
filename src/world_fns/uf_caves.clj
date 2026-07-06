@@ -1,6 +1,5 @@
 (ns world-fns.uf-caves
-  (:require
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.graphics.texture :as texture]
             [tiled.create-static-tiled-map-tile :as create-tile]
             [world-fns.uf-caves.initial-grid]

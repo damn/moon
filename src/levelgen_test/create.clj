@@ -1,6 +1,5 @@
 (ns levelgen-test.create
-  (:require
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]

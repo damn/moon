@@ -1,6 +1,5 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]

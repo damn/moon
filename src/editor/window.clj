@@ -1,6 +1,5 @@
 (ns editor.window
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]

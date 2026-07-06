@@ -1,8 +1,7 @@
 (ns draw.line
-  (:require
-            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
+  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
   (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/line shape-drawer sx sy ex ey))
+  (shape-drawer/line! shape-drawer sx sy ex ey))

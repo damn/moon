@@ -1,6 +1,5 @@
 (ns ctx.add-stage-actors
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn f!
   [{:keys [ctx/stage]

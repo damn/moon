@@ -1,6 +1,6 @@
 (ns editor.create-widget.number
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor] [clojure.edn-str :refer [->edn-str]]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [clojure.edn-str :refer [->edn-str]]
             [scene2d.ui.text-field :as text-field]
             [scene2d.ui.text-tooltip :as text-tooltip]))
 

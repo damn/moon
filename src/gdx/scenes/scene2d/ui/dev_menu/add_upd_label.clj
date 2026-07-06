@@ -1,6 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.add-upd-label
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]

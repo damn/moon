@@ -1,6 +1,5 @@
 (ns ctx.default-font
-  (:require
-            [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator$free-type-font-parameter :as font-parameter]
+  (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator$free-type-font-parameter :as font-parameter]
             [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]

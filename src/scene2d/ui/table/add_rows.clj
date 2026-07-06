@@ -1,6 +1,5 @@
 (ns scene2d.ui.table.add-rows
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.table.add-cell :refer [add-cell!]]))
 
 (defn add-rows! [table rows]

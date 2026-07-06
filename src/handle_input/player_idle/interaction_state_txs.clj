@@ -1,6 +1,5 @@
 (ns handle-input.player-idle.interaction-state-txs
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [moon.inventory.can-pickup-item :as can-pickup-item]))
 

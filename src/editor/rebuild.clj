@@ -1,6 +1,5 @@
 (ns editor.rebuild
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [editor.map-widget-table.get-value :as get-value]

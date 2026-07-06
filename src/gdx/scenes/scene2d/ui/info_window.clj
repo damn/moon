@@ -1,6 +1,5 @@
 (ns gdx.scenes.scene2d.ui.info-window
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as gdx-label]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]

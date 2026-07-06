@@ -1,7 +1,7 @@
 (ns world-fns.modules.place-step
-  (:require
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.map-properties :as map-properties] [world-fns.modules.place-step.place-star :refer [place-module*]]))
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.map-properties :as map-properties]
+            [world-fns.modules.place-step.place-star :refer [place-module*]]))
 
 (defn f
   [modules-tiled-map

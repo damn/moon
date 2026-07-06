@@ -1,6 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [gdx.scenes.scene2d.ui.dev-menu.main-table :as main-table]

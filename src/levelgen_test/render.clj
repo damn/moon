@@ -1,7 +1,7 @@
 (ns levelgen-test.render
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.graphics :as graphics] [com.badlogic.gdx.graphics.color :as color]
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.graphics :as graphics]
+            [com.badlogic.gdx.graphics.color :as color]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [input.key-pressed :as key-pressed?]

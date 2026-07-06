@@ -1,6 +1,5 @@
 (ns editor.build-widget
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [editor.create-widget :as create-widget]))
 
 (defn f [ctx schema k v]

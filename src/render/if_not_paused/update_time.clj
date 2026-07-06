@@ -1,6 +1,5 @@
 (ns render.if-not-paused.update-time
-  (:require
-            [com.badlogic.gdx.graphics :as graphics]))
+  (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (defn f
   [{:keys [ctx/graphics

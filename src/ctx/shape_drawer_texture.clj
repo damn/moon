@@ -1,6 +1,6 @@
 (ns ctx.shape-drawer-texture
-  (:require
-            [com.badlogic.gdx.graphics.texture :as texture] [com.badlogic.gdx.utils.disposable :as disposable]
+  (:require [com.badlogic.gdx.graphics.texture :as texture]
+            [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.graphics.pixmap :as pixmap]
             [com.badlogic.gdx.graphics.pixmap$format :as pixmap-format]))
 

@@ -1,6 +1,5 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.group :as group]

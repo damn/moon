@@ -1,6 +1,5 @@
 (ns levelgen-test.app-event
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [levelgen-test.apply-ctx :as apply-ctx]))
 
 (defn f [f]

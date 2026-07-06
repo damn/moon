@@ -1,6 +1,5 @@
 (ns editor.app.render
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn render!
   [{:keys [ctx/stage]

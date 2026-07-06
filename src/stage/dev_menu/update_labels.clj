@@ -1,6 +1,5 @@
 (ns stage.dev-menu.update-labels
-  (:require
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.graphics :as graphics]
             [clojure.readable :as readable]))
 

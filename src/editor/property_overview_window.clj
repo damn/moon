@@ -1,6 +1,5 @@
 (ns editor.property-overview-window
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [editor.constants :refer [property-type->overview-table-props]]
             [editor.property-overview-window.table-rows :refer [overview-table-rows*]]
             [gdx.scenes.scene2d.ui.window :as window]

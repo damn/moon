@@ -1,6 +1,5 @@
 (ns editor.widget-value.one-to-one
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn f [_  widget _schemas]

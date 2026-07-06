@@ -1,6 +1,5 @@
 (ns editor.create-widget.string
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [scene2d.ui.text-field :as text-field]
             [scene2d.ui.text-tooltip :as text-tooltip]))
 

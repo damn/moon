@@ -1,6 +1,5 @@
 (ns editor.widget.sound.rebuild
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]

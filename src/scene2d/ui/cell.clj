@@ -1,6 +1,5 @@
 (ns scene2d.ui.cell
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]))
 
 (defn set-opts! [cell opts]
   (doseq [[option arg] opts]

@@ -1,6 +1,5 @@
 (ns moon.action-bar.add-skill
-  (:require
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]

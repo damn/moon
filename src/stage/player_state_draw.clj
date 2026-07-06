@@ -1,6 +1,5 @@
 (ns stage.player-state-draw
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [ctx.draw :refer [draw!]]
             [moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
             [scene2d.actor :as actor]))

@@ -1,6 +1,5 @@
 (ns moon.action-bar.get-data
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn f

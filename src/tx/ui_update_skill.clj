@@ -1,6 +1,5 @@
 (ns tx.ui-update-skill
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [moon.action-bar.add-skill :as add-skill]
             [moon.textures :as textures]
             [info.entity :refer [info-text]]))

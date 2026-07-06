@@ -1,6 +1,5 @@
 (ns render.set-cursor
-  (:require
-            [com.badlogic.gdx.graphics :as graphics]))
+  (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (defn step
   [{:keys [ctx/graphics

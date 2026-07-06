@@ -1,6 +1,5 @@
 (ns scene2d.ui.window.add-close-button
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.table.add-cell :refer [add-cell!]]

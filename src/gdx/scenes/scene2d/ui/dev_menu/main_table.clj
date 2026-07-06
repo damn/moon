@@ -1,6 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [scene2d.utils.change-listener :as change-listener]

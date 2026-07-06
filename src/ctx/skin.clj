@@ -1,6 +1,5 @@
 (ns ctx.skin
-  (:require
-            [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
+  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))

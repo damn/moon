@@ -1,6 +1,5 @@
 (ns moon.action-bar.selected-skill
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [moon.action-bar.get-data :as get-data]))
 

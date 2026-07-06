@@ -1,6 +1,5 @@
 (ns editor.widget.sound.columns
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [ctx.do :refer [do!]]

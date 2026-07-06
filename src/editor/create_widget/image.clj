@@ -1,8 +1,8 @@
 (ns editor.create-widget.image
-  (:require
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [com.badlogic.gdx.graphics.texture :as texture] [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+            [com.badlogic.gdx.graphics.texture :as texture]
+            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.text-button :as text-button]
             [moon.textures :as textures]))

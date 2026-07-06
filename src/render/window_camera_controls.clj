@@ -1,6 +1,5 @@
 (ns render.window-camera-controls
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [input.key-just-pressed :as key-just-pressed?]
             [input.key-pressed :as key-pressed?]

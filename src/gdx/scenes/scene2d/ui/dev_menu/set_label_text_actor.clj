@@ -1,6 +1,5 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.set-label-text-actor
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as gdx-label]
             [scene2d.actor :as actor]))
 
