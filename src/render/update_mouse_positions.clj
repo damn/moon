@@ -1,5 +1,5 @@
 (ns render.update-mouse-positions
-  (:require [clojure.gdx.unproject :as unproject]
+  (:require [gdx.unproject :as unproject]
             [ctx.mouse-position :refer [mouse-position]]))
 
 (defn step

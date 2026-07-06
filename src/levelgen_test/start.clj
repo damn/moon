@@ -1,6 +1,6 @@
 (ns levelgen-test.start
   (:require [clojure.edn :as edn]
-            [clojure.gdx.use-glfw-async :as use-glfw-async!]
+            [gdx.use-glfw-async :as use-glfw-async!]
             [clojure.java.io :as io]
             [levelgen-test.application]))
 

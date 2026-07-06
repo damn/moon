@@ -1,4 +1,4 @@
-(ns clojure.gdx.load-tmx-map
+(ns gdx.load-tmx-map
   (:require [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]))
 
 (defn f [path]

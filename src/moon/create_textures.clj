@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.graphics.texture :as texture]
             [clojure.string :as str]
             [com.badlogic.gdx.files :as files]
-            [clojure.gdx.recursively-search :as recursively-search]))
+            [gdx.recursively-search :as recursively-search]))
 
 (defn f
   [files {:keys [folder extensions]}]

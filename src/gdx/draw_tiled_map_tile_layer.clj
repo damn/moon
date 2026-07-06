@@ -1,10 +1,10 @@
-(ns clojure.gdx.draw-tiled-map-tile-layer
+(ns gdx.draw-tiled-map-tile-layer
   (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [clojure.gdx.draw-tiled-map-tile :as draw-tile]))
+            [gdx.draw-tiled-map-tile :as draw-tile]))
 
 (defn f!
   [layer
