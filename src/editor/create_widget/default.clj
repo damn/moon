@@ -1,5 +1,5 @@
 (ns editor.create-widget.default
-  (:require [string.truncate :refer [truncate]]
+  (:require [clojure.string.truncate :refer [truncate]]
             [clojure.edn-str :refer [->edn-str]]
             [gdx.scene2d.ui.label :as label]))
 
