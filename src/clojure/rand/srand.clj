@@ -1,4 +1,4 @@
-(ns rand.srand
+(ns clojure.rand.srand
   (:import (java.util Random)))
 
 (defn srand

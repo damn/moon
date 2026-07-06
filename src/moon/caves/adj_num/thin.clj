@@ -1,5 +1,5 @@
 (ns moon.caves.adj-num.thin
-  (:require [rand.srand-int :refer [srand-int]]))
+  (:require [clojure.rand.srand-int :refer [srand-int]]))
 
 (defn f [open-paths random]
   (if (= open-paths 1)

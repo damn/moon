@@ -1,4 +1,4 @@
-(ns rand.sshuffle
+(ns clojure.rand.sshuffle
   (:import (java.util Random)))
 
 ;; rename to 'shuffle', rand and rand-int without the 's'-> just use with require :as.

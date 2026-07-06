@@ -6,8 +6,8 @@
   (:require [grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
             [clojure.position.get-4-neighbours :refer [get-4-neighbours]]
             [map.assoc-ks :refer [assoc-ks]]
-            [rand.sshuffle :refer [sshuffle]]
-            [rand.srand :refer [srand]]))
+            [clojure.rand.sshuffle :refer [sshuffle]]
+            [clojure.rand.srand :refer [srand]]))
 
 ; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5
 ; besser 150x150 anstatt 100x100 w h

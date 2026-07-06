@@ -1,4 +1,4 @@
-(ns rand.int-between)
+(ns clojure.rand.int-between)
 
 (defn rand-int-between
   "returns a random integer between lower and upper bounds inclusive."
