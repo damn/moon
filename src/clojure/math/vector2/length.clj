@@ -1,4 +1,4 @@
-(ns math.vector2.length
+(ns clojure.math.vector2.length
   (:require [clojure.math :as math]))
 
 (defn f [[x y]]

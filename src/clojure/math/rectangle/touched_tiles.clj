@@ -1,4 +1,4 @@
-(ns math.rectangle.touched-tiles)
+(ns clojure.math.rectangle.touched-tiles)
 
 (defn touched-tiles
   "x is leftmost point and y bottom most point in the rectangle."

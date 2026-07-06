@@ -1,4 +1,4 @@
-(ns math.vector2.distance
+(ns clojure.math.vector2.distance
   (:require [clojure.math :as math]))
 
 (defn f

@@ -1,4 +1,4 @@
-(ns math.vector2.dot)
+(ns clojure.math.vector2.dot)
 
 (defn f
   [[this-x this-y]

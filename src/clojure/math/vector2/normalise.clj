@@ -1,5 +1,5 @@
-(ns math.vector2.normalise
-  (:require [math.vector2.length :as length]))
+(ns clojure.math.vector2.normalise
+  (:require [clojure.math.vector2.length :as length]))
 
 (defn f [[x y :as v]]
   (let [len (length/f v)]

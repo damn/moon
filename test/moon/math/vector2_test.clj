@@ -1,7 +1,7 @@
 (ns moon.math.vector2-test
   (:require [clojure.number.is-nearly-equal :as nearly-equal?]
-            [math.vector2.scale :as scale]
-            [math.vector2.length :as length]
+            [clojure.math.vector2.scale :as scale]
+            [clojure.math.vector2.length :as length]
             [clojure.test :refer :all]))
 
 (set! *unchecked-math* :warn-on-boxed)
@@ -40,6 +40,6 @@
            [-1 0]
            [-1 1]]]
     [v
-     (math.vector2.angle-from-vector/f v)]))
+     (clojure.math.vector2.angle-from-vector/f v)]))
 
  )

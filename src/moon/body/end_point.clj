@@ -1,7 +1,7 @@
 (ns moon.body.end-point
-  (:require [math.vector2.add :as add]
-            [math.vector2.direction :as direction]
-            [math.vector2.scale :as scale]
+  (:require [clojure.math.vector2.add :as add]
+            [clojure.math.vector2.direction :as direction]
+            [clojure.math.vector2.scale :as scale]
             [moon.body.start-point :refer [start-point]]))
 
 (defn end-point [body target-body maxrange]

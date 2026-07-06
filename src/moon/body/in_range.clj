@@ -1,5 +1,5 @@
 (ns moon.body.in-range
-  (:require [math.vector2.distance :as distance]))
+  (:require [clojure.math.vector2.distance :as distance]))
 
 (defn in-range? [body target-body maxrange]
   (< (- (float (distance/f (:body/position body)

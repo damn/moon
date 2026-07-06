@@ -1,8 +1,8 @@
-(ns math.vector2.double-ray-endpositions
-  (:require [math.vector2.normal-vectors :as normal-vectors]
-            [math.vector2.add :as add]
-            [math.vector2.direction :as direction]
-            [math.vector2.scale :as scale]))
+(ns clojure.math.vector2.double-ray-endpositions
+  (:require [clojure.math.vector2.normal-vectors :as normal-vectors]
+            [clojure.math.vector2.add :as add]
+            [clojure.math.vector2.direction :as direction]
+            [clojure.math.vector2.scale :as scale]))
 
 (defn f
   [[start-x start-y]

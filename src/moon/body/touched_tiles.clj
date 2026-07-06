@@ -1,5 +1,5 @@
 (ns moon.body.touched-tiles
-  (:require [math.rectangle.touched-tiles :as rectangle]))
+  (:require [clojure.math.rectangle.touched-tiles :as rectangle]))
 
 (defn touched-tiles
   [{:keys [body/position

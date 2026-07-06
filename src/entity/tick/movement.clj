@@ -1,6 +1,6 @@
 (ns entity.tick.movement
-  (:require [math.vector2.angle-from-vector :as angle-from-vector]
-            [math.vector2.length :as length]
+  (:require [clojure.math.vector2.angle-from-vector :as angle-from-vector]
+            [clojure.math.vector2.length :as length]
             [moon.grid.try-move-solid-body :as try-move-solid-body]
             [clojure.number.is-nearly-equal :as nearly-equal?]
             [clojure.position.move :as move]))

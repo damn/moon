@@ -1,6 +1,6 @@
 (ns moon.grid.npc-pathing.diagonal-check-indizes
   (:require [clojure.positions :refer [positions]]
-            [math.vector2.diagonal-direction :as diagonal-direction?]
+            [clojure.math.vector2.diagonal-direction :as diagonal-direction?]
             [clojure.position.get-8-neighbours :refer [get-8-neighbours]]))
 
 (let [order (get-8-neighbours [0 0])]
