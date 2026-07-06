@@ -1,11 +1,10 @@
 (ns ctx.default-font
   (:require
+            [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.files :as files]
-            [clojure.gdx.free-type-font-generator.generate-font :as generate-font]
-            [clojure.gdx.free-type-font-generator.new :as new-generator]
             [clojure.gdx.free-type-font-generator$free-type-font-parameter.new :as new-parameter]
             [clojure.gdx.free-type-font-generator$free-type-font-parameter.set-mag-filter :as set-mag-filter]
             [clojure.gdx.free-type-font-generator$free-type-font-parameter.set-min-filter :as set-min-filter]
@@ -21,12 +20,12 @@
                                           :size 16
                                           :quality-scaling 2
                                           :use-integer-positions? false}
-        generator (new-generator/f (files/internal files path))
+        generator (free-type-font-generator/new (files/internal files path))
         parameter (-> (new-parameter/f)
                       (set-size/f (* size quality-scaling))
                       (set-min-filter/f texture-filter/linear)
                       (set-mag-filter/f texture-filter/linear))
-        font (generate-font/f generator parameter)
+        font (free-type-font-generator/generate-font generator parameter)
         font-data (bitmap-font/get-data font)]
     (disposable/dispose! generator)
     (bitmap-font-data/set-scale! font-data (/ quality-scaling))
