@@ -3,7 +3,7 @@
             [moon.cell.nearest-entity :as nearest-entity]
             [moon.cell.nearest-entity-distance :as nearest-entity-distance]
             [moon.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
-            [position.is-diagonal :refer [diagonal?]]))
+            [clojure.position.is-diagonal :refer [diagonal?]]))
 
 ; TODO performance
 ; * cached-adjacent-non-blocked-cells ? -> no need for cell blocked check?

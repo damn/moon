@@ -3,7 +3,7 @@
             [math.vector2.length :as length]
             [moon.grid.try-move-solid-body :as try-move-solid-body]
             [clojure.number.is-nearly-equal :as nearly-equal?]
-            [position.move :as move]))
+            [clojure.position.move :as move]))
 
 (defn f
   [{:keys [direction

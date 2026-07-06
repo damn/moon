@@ -1,5 +1,5 @@
 (ns grid2d.adjacent-wall-positions
-  (:require [position.get-8-neighbours :refer [get-8-neighbours]]
+  (:require [clojure.position.get-8-neighbours :refer [get-8-neighbours]]
             [grid2d.posis :as posis]))
 
 (defn f [grid]
