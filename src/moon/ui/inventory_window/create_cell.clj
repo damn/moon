@@ -5,12 +5,10 @@
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.math.vector2 :as vector2]
             [gdx.scene2d.ui.widget :as widget]
-            [ctx.do :refer [do!]]
-            [ctx.draw :refer [draw!]]
             [gdx.scene2d.utils.click-listener :as click-listener]
             [gdx.scene2d.ui.stack :as stack]))
 
-(defn ->cell [slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
+(defn ->cell [do! draw! slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor

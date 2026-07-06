@@ -1,5 +1,7 @@
 (ns stage.inventory-window
-  (:require [moon.textures :as textures]
+  (:require [ctx.do :refer [do!]]
+            [ctx.draw :refer [draw!]]
+            [moon.textures :as textures]
             [moon.ui.inventory-window.create :as create-inventory-window]))
 
 (defn create
@@ -31,7 +33,9 @@
                                                           {:image/file "images/items.png"
                                                            :image/bounds bounds})))]
     (create-inventory-window/f
-     {:item-rect-color (:colors/item-rect colors)
+     {:do! do!
+      :draw! draw!
+      :item-rect-color (:colors/item-rect colors)
       :droppable-item-color (:colors/droppable-item colors)
       :not-allowed-drop-item-color (:colors/not-allowed-drop-item colors)
       :skin skin

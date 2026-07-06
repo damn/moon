@@ -10,7 +10,9 @@
             [moon.ui.inventory-window.create-cell :refer [->cell]]))
 
 (defn f
-  [{:keys [item-rect-color
+  [{:keys [do!
+           draw!
+           item-rect-color
            droppable-item-color
            not-allowed-drop-item-color
            skin
@@ -30,7 +32,7 @@
                                           droppable-item-color
                                           not-allowed-drop-item-color)]
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
-        ->cell (partial ->cell slot->drawable draw-cell-rect cell-size)]
+        ->cell (partial ->cell do! draw! slot->drawable draw-cell-rect cell-size)]
     (doto (window/create
            {:title "Inventory"
             :skin skin
