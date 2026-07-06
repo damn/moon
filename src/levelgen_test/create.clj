@@ -8,7 +8,7 @@
             [clojure.gdx.orthographic-camera.new :as new-camera]
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
             [clojure.gdx.skin.new :as skin]
-            [clojure.gdx.sprite-batch.new :as sprite-batch]
+            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.stage.add-actor :as add-actor]
             [gdx.scenes.scene2d.ui.window :as window]
             [levelgen-test.change-listener]
