@@ -1,10 +1,10 @@
 (ns ctx.explored-tile-corners
   (:require
-            [com.badlogic.gdx.maps.map-properties :as map-properties] [clojure.grid2d :as g2d]
-            [clojure.gdx.tiled-map.get-properties :as get-properties]))
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.map-properties :as map-properties] [clojure.grid2d :as g2d]))
 
 (defn step
   [{:keys [ctx/tiled-map]}]
-  (atom (g2d/create-grid (map-properties/get (get-properties/f tiled-map) "width")
-                         (map-properties/get (get-properties/f tiled-map) "height")
+  (atom (g2d/create-grid (map-properties/get (tiled-map/get-properties tiled-map) "width")
+                         (map-properties/get (tiled-map/get-properties tiled-map) "height")
                          (constantly false))))

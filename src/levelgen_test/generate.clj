@@ -1,7 +1,7 @@
 (ns levelgen-test.generate
-  (:require [clojure.edn-resource :refer [edn-resource]]
+  (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map] [clojure.edn-resource :refer [edn-resource]]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
-            [clojure.gdx.tiled-map.get-layers :as get-layers]
             [clojure.gdx.tiled-map-tile-layer.set-visible :as set-visible]
             [levelgen-test.get-property :as get-property]
             [levelgen-test.zoom-to-rect :as zoom-to-rect]
@@ -28,7 +28,7 @@
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
     (-> tiled-map
-        get-layers/f
+        tiled-map/get-layers
         (map-layers/get "creatures")
         (set-visible/f true))
     (set-position! camera [(/ (get-property/f tiled-map "width") 2)

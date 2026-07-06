@@ -1,11 +1,11 @@
 (ns tiled-map.tile-movement-property
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.map-properties :as map-properties]
             [clojure.gdx.tiled-map-tile-layer.get-cell :as get-cell]
             [clojure.gdx.tiled-map-tile-layer.get-name :as get-name]
             [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]
-            [clojure.gdx.tiled-map-tile.get-properties :as get-tile-properties]
-            [clojure.gdx.tiled-map.get-properties :as get-properties]))
+            [clojure.gdx.tiled-map-tile.get-properties :as get-tile-properties]))
 
 (defn f
   [tiled-map layer [x y]]
@@ -16,7 +16,7 @@
         (assert value
                 (str "Value for :movement at position "
                      position  " / mapeditor inverted position: " [(position 0)
-                                                                   (- (dec (map-properties/get (get-properties/f tiled-map) "height"))
+                                                                   (- (dec (map-properties/get (tiled-map/get-properties tiled-map) "height"))
                                                                       (position 1))]
                      " and layer " (get-name/f layer) " is undefined."))
         value))))

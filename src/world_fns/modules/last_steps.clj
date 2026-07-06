@@ -1,5 +1,6 @@
 (ns world-fns.modules.last-steps
-  (:require [tiled-map-tile-layer.property-value :refer [property-value]]
+  (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map] [tiled-map-tile-layer.property-value :refer [property-value]]
             [grid2d.cells :refer [->cells]]
             [grid2d.scale-grid :as scale-grid]
             [grid2d.printgrid :as printgrid]
@@ -7,8 +8,7 @@
             [tiled-map.movement-property :as movement-property]
             [tiled-map.add-creatures-layer :as add-creatures-layer]
             [world-fns.modules.area-level-grid :as area-level-grid]
-            [com.badlogic.gdx.maps.map-layers :as map-layers]
-            [clojure.gdx.tiled-map.get-layers :as get-layers]))
+            [com.badlogic.gdx.maps.map-layers :as map-layers]))
 
 (defn step
   [{:keys [world/max-area-level
@@ -44,7 +44,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (map-layers/get (get-layers/f tiled-map) "creatures")
+                                                    (property-value (map-layers/get (tiled-map/get-layers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

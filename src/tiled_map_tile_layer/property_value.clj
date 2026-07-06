@@ -1,5 +1,6 @@
 (ns tiled-map-tile-layer.property-value
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.map-properties :as map-properties]
             [clojure.gdx.tiled-map-tile-layer.get-cell :as get-cell]
             [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]

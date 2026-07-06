@@ -1,16 +1,15 @@
 (ns tiled.tiled-map
   (:require
-            [com.badlogic.gdx.maps.map-properties :as map-properties] [tiled-map.add-layer :as add-layer]
-            [clojure.gdx.tiled-map.get-properties :as get-properties]
-            [clojure.gdx.tiled-map.new :as new-tiled-map]))
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.map-properties :as map-properties] [tiled-map.add-layer :as add-layer]))
 
 (defn f
   [{:keys [properties
            layers]}]
-  (let [tiled-map (new-tiled-map/f)]
+  (let [tiled-map (tiled-map/new)]
     (doseq [[k v] properties]
       (assert (string? k))
-      (map-properties/put! (get-properties/f tiled-map) k v))
+      (map-properties/put! (tiled-map/get-properties tiled-map) k v))
     (doseq [layer layers]
       (add-layer/f tiled-map layer))
     tiled-map))

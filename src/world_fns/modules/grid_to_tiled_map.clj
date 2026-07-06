@@ -1,5 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.map-properties :as map-properties]
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
@@ -9,9 +10,7 @@
             [clojure.gdx.tiled-map-tile-layer.get-name :as get-name]
             [clojure.gdx.tiled-map-tile-layer.get-properties :as get-layer-properties]
             [clojure.gdx.tiled-map-tile-layer.is-visible :as is-visible]
-            [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]
-            [clojure.gdx.tiled-map.get-layers :as get-layers]
-            [clojure.gdx.tiled-map.get-properties :as get-properties]))
+            [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]))
 
 (defn grid->tiled-map
   [schema-tiled-map grid]
@@ -19,10 +18,10 @@
                    (fn [tile]
                      (assert tile)
                      (static-tiled-map-tile/new-tile tile)))]
-    {:properties (merge (map-properties/clojurize (get-properties/f schema-tiled-map))
+    {:properties (merge (map-properties/clojurize (tiled-map/get-properties schema-tiled-map))
                         {"width" (->width grid)
                          "height" (->height grid)})
-     :layers (for [layer (get-layers/f schema-tiled-map)]
+     :layers (for [layer (tiled-map/get-layers schema-tiled-map)]
                {:name (get-name/f layer)
                 :visible? (is-visible/f layer)
                 :properties (map-properties/clojurize (get-layer-properties/f layer))
