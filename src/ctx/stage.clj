@@ -1,6 +1,6 @@
 (ns ctx.stage
   (:require [scene2d.stage :as stage]
-            [clojure.gdx.fit-viewport.new :as fit-viewport]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]))
 
 (defn step

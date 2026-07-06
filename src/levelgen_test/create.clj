@@ -2,7 +2,7 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.files :as files]
-            [clojure.gdx.fit-viewport.new :as fit-viewport]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.gdx :as gdx]
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.orthographic-camera.new :as new-camera]
