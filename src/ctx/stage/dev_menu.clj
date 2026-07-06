@@ -1,8 +1,8 @@
-(ns stage.dev-menu
+(ns ctx.stage.dev-menu
   (:require [gdx.scene2d.ui.dev-menu :as dev-menu]
-            [stage.dev-menu.ctx-data :as ctx-data]
-            [stage.dev-menu.debug-flags :as debug-flags]
-            [stage.dev-menu.update-labels :as update-labels]))
+            [ctx.stage.dev-menu.ctx-data :as ctx-data]
+            [ctx.stage.dev-menu.debug-flags :as debug-flags]
+            [ctx.stage.dev-menu.update-labels :as update-labels]))
 
 (defn create
   [{:keys [ctx/controls-info

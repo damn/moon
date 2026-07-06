@@ -1,4 +1,4 @@
-(ns stage.dev-menu.debug-flags)
+(ns ctx.stage.dev-menu.debug-flags)
 
 (def item
   {:label "Debug"

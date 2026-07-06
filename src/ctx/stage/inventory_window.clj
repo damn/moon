@@ -1,4 +1,4 @@
-(ns stage.inventory-window
+(ns ctx.stage.inventory-window
   (:require [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
             [moon.textures :as textures]

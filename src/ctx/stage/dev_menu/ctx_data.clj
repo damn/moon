@@ -1,4 +1,4 @@
-(ns stage.dev-menu.ctx-data
+(ns ctx.stage.dev-menu.ctx-data
   (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [gdx.scene2d.ui.data-viewer-window :as data-viewer-window]))
 

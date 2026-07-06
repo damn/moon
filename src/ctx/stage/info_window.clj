@@ -1,4 +1,4 @@
-(ns stage.info-window
+(ns ctx.stage.info-window
   (:require [info.entity :refer [info-text]]
             [gdx.scene2d.ui.info-window :as info-window]))
 

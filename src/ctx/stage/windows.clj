@@ -1,4 +1,4 @@
-(ns stage.windows
+(ns ctx.stage.windows
   (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 

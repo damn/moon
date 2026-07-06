@@ -26,13 +26,13 @@
                    (clojure.map.assoc-create/f :ctx/max-speed ctx.max-speed/step)
                    (clojure.map.assoc-create/f :ctx/db ctx.db/step)
                    (clojure.pipeline.do/step
-                    (ctx.add-stage-actors/f! [(stage.dev-menu/create)
-                                                 (stage.action-bar/create)
-                                                 (stage.hp-mana-bar/create)
-                                                 (stage.windows/create [stage.info-window/create
-                                                                        stage.inventory-window/create])
-                                                 (stage.player-state-draw/create)
-                                                 (stage.player-message-actor/create)]))
+                    (ctx.add-stage-actors/f! [(ctx.stage.dev-menu/create)
+                                                 (ctx.stage.action-bar/create)
+                                                 (ctx.stage.hp-mana-bar/create)
+                                                 (ctx.stage.windows/create [ctx.stage.info-window/create
+                                                                        ctx.stage.inventory-window/create])
+                                                 (ctx.stage.player-state-draw/create)
+                                                 (ctx.stage.player-message-actor/create)]))
                    (ctx.tiled-map/step #edn/resource
                                           ; "config/world_fns/modules.edn"
                                           "config/world_fns/vampire.edn"

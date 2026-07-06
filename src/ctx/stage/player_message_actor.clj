@@ -1,4 +1,4 @@
-(ns stage.player-message-actor
+(ns ctx.stage.player-message-actor
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [ctx.draw :refer [draw!]]
             [gdx.scene2d.actor :as actor]))

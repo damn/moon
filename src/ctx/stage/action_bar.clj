@@ -1,4 +1,4 @@
-(ns stage.action-bar
+(ns ctx.stage.action-bar
   (:require [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
