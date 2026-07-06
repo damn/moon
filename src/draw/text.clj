@@ -1,8 +1,7 @@
 (ns draw.text
   (:require
+            [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font] [com.badlogic.gdx.utils.align :as align]
-            [clojure.gdx.bitmap-font$bitmap-font-data.get-scale-x :as get-scale-x]
-            [clojure.gdx.bitmap-font$bitmap-font-data.set-scale :as set-scale]
             [clojure.string :as str]))
 
 (defn f
@@ -14,12 +13,12 @@
         unit-scale @unit-scale
         scale (or scale 1)
         font-data (bitmap-font/get-data font)
-        old-scale (get-scale-x/f font-data)
+        old-scale (bitmap-font-data/get-scale-x font-data)
         target-width 0
         wrap? false
         scale (* (float unit-scale)
                  (float scale))]
-    (set-scale/f font-data (* old-scale scale))
+    (bitmap-font-data/set-scale! font-data (* old-scale scale))
     (bitmap-font/draw! font
                   batch
                   text
@@ -33,4 +32,4 @@
                   target-width
                   align/center
                   wrap?)
-    (set-scale/f font-data old-scale)))
+    (bitmap-font-data/set-scale! font-data old-scale)))

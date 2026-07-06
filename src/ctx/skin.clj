@@ -1,7 +1,7 @@
 (ns ctx.skin
   (:require
+            [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [clojure.gdx.bitmap-font$bitmap-font-data.set-markup-enabled :as set-markup-enabled]
             [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
@@ -11,5 +11,5 @@
     (-> skin
         (skin/get-font "default-font")
         bitmap-font/get-data
-        (set-markup-enabled/f true))
+        (bitmap-font-data/set-markup-enabled! true))
     skin))
