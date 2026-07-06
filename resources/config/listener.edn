@@ -3,28 +3,28 @@
  :create-pipeline [
                    (ctx.gdx-context/f)
                    (ctx.unorganised/step)
-                   (map.assoc-create/f :ctx/batch ctx.batch/step)
-                   (map.assoc-create/f :ctx/audio ctx.audio/step)
-                   (map.assoc-create/f :ctx/shape-drawer-texture ctx.shape-drawer-texture/step)
-                   (map.assoc-create/f :ctx/shape-drawer ctx.shape-drawer/step)
-                   (map.assoc-create/f :ctx/skin ctx.skin/step)
-                   (map.assoc-create/f :ctx/stage ctx.stage/step)
+                   (clojure.map.assoc-create/f :ctx/batch ctx.batch/step)
+                   (clojure.map.assoc-create/f :ctx/audio ctx.audio/step)
+                   (clojure.map.assoc-create/f :ctx/shape-drawer-texture ctx.shape-drawer-texture/step)
+                   (clojure.map.assoc-create/f :ctx/shape-drawer ctx.shape-drawer/step)
+                   (clojure.map.assoc-create/f :ctx/skin ctx.skin/step)
+                   (clojure.map.assoc-create/f :ctx/stage ctx.stage/step)
                    (clojure.pipeline.do/step
                     (ctx.tooltip-manager-opts/step))
                    (clojure.pipeline.do/step
                     (ctx.put-colors/step))
-                   (map.assoc-create/f :ctx/cursors ctx.cursors/step)
-                   (map.create/f :ctx/textures (ctx.textures/step
+                   (clojure.map.assoc-create/f :ctx/cursors ctx.cursors/step)
+                   (clojure.map.create/f :ctx/textures (ctx.textures/step
                                                 {:folder "resources/"
                                                  :extensions #{"png" "bmp"}}))
-                   (map.assoc-create/f :ctx/world-viewport ctx.world-viewport/step)
-                   (map.assoc-create/f :ctx/default-font ctx.default-font/step)
+                   (clojure.map.assoc-create/f :ctx/world-viewport ctx.world-viewport/step)
+                   (clojure.map.assoc-create/f :ctx/default-font ctx.default-font/step)
                    (ctx.record/step)
                    (ctx.controls/step)
-                   (map.assoc-create/f :ctx/colors ctx.colors/step)
-                   (map.assoc-create/f :ctx/render-z-order ctx.render-z-order/step)
-                   (map.assoc-create/f :ctx/max-speed ctx.max-speed/step)
-                   (map.assoc-create/f :ctx/db ctx.db/step)
+                   (clojure.map.assoc-create/f :ctx/colors ctx.colors/step)
+                   (clojure.map.assoc-create/f :ctx/render-z-order ctx.render-z-order/step)
+                   (clojure.map.assoc-create/f :ctx/max-speed ctx.max-speed/step)
+                   (clojure.map.assoc-create/f :ctx/db ctx.db/step)
                    (clojure.pipeline.do/step
                     (ctx.add-stage-actors/f! [(stage.dev-menu/create)
                                                  (stage.action-bar/create)
@@ -38,10 +38,10 @@
                                           "config/world_fns/vampire.edn"
                                           ; "config/world_fns/uf_caves.edn"
                                           )
-                   (map.assoc-create/f :ctx/grid ctx.grid/step)
-                   (map.assoc-create/f :ctx/content-grid ctx.content-grid/step)
-                   [map.assoc-create/f :ctx/explored-tile-corners ctx.explored-tile-corners/step]
-                   [map.assoc-create/f :ctx/raycaster ctx.raycaster/step]
+                   (clojure.map.assoc-create/f :ctx/grid ctx.grid/step)
+                   (clojure.map.assoc-create/f :ctx/content-grid ctx.content-grid/step)
+                   [clojure.map.assoc-create/f :ctx/explored-tile-corners ctx.explored-tile-corners/step]
+                   [clojure.map.assoc-create/f :ctx/raycaster ctx.raycaster/step]
                    (ctx.spawn-player/step)
                    (clojure.pipeline.do/step
                     (ctx.spawn-enemies/step))
@@ -77,7 +77,7 @@
                                                         #_(moon.geom-test)
                                                         (draw-on-world-viewport.highlight-mouseover-tile/f)
                                                         ]]
-                   (map.assoc-create/f :ctx/interaction-state render.assoc-interaction-state/create)
+                   (clojure.map.assoc-create/f :ctx/interaction-state render.assoc-interaction-state/create)
                    [render.set-cursor/step]
                    [render.handle-player-input/step]
                    (clojure.core/dissoc :ctx/interaction-state)
