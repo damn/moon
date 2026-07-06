@@ -11,7 +11,7 @@
             [clojure.gdx.free-type-font-generator$free-type-font-parameter.set-mag-filter :as set-mag-filter]
             [clojure.gdx.free-type-font-generator$free-type-font-parameter.set-min-filter :as set-min-filter]
             [clojure.gdx.free-type-font-generator$free-type-font-parameter.set-size :as set-size]
-            [clojure.gdx.texture$texture-filter.linear :as texture-filter-linear]))
+            [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]))
 
 (defn step
   [{:keys [ctx/files]}]
@@ -25,8 +25,8 @@
         generator (new-generator/f (files/internal files path))
         parameter (-> (new-parameter/f)
                       (set-size/f (* size quality-scaling))
-                      (set-min-filter/f texture-filter-linear/v)
-                      (set-mag-filter/f texture-filter-linear/v))
+                      (set-min-filter/f texture-filter/linear)
+                      (set-mag-filter/f texture-filter/linear))
         font (generate-font/f generator parameter)
         font-data (get-data/f font)]
     (disposable/dispose! generator)
