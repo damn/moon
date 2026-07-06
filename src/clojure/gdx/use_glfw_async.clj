@@ -1,8 +1,8 @@
 (ns clojure.gdx.use-glfw-async
-  (:require [clojure.gdx.os.mac-os-x :as mac-os-x]
-            [clojure.gdx.shared-library-loader.os :as os]
+  (:require [com.badlogic.gdx.utils.os :as os]
+            [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
             [org.lwjgl.system.configuration :as configuration]))
 
 (defn f []
-  (when (= os/v mac-os-x/v)
+  (when (= shared-library-loader/os os/mac-os-x)
     (configuration/set! configuration/glfw-library-name "glfw_async")))
