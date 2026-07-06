@@ -33,5 +33,5 @@
                        (doto (label/create
                               {:text extra-info-text
                                :skin skin})
-                         (set-touchable/f touchable-disabled/v))])
+                         (set-touchable/f touchable/disabled))])
                 stack)})))
