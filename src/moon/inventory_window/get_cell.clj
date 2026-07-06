@@ -6,6 +6,6 @@
 (defn f [inventory-window cell]
   (->> "inventory-cell-table"
        (#(group/find-actor inventory-window %))
-       get-children/f
+       group/get-children
        (filter #(= (actor/get-user-object %) cell))
        first))

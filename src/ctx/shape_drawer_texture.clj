@@ -5,9 +5,9 @@
             [clojure.gdx.texture.new :as texture]))
 
 (defn step [_ctx]
-  (let [pixmap (doto (pixmap/f 1 1 pixmap-format/rgba8888)
-                 (set-color/f 1 1 1 1)
-                 (draw-pixel/f 0 0))
+  (let [pixmap (doto (pixmap/new 1 1 pixmap-format/rgba8888)
+                 (pixmap/set-color! 1 1 1 1)
+                 (pixmap/draw-pixel! 0 0))
         texture (texture/f pixmap)]
     (disposable/dispose! pixmap)
     texture))

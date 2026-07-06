@@ -1,6 +1,6 @@
 (ns world-fns.modules.place-step
-  (:require [world-fns.modules.place-step.place-star :refer [place-module*]]
-            [clojure.gdx.map-properties.get :as get]
+  (:require
+            [com.badlogic.gdx.maps.map-properties :as map-properties] [world-fns.modules.place-step.place-star :refer [place-module*]]
             [clojure.gdx.tiled-map.get-properties :as get-properties]))
 
 (defn f
@@ -14,9 +14,9 @@
         number-modules-x 8
         number-modules-y 4
         [modules-width modules-height] modules-scale
-        _ (assert (and (= (get/f (get-properties/f modules-tiled-map) "width")
+        _ (assert (and (= (map-properties/get (get-properties/f modules-tiled-map) "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (get/f (get-properties/f modules-tiled-map) "height")
+                       (= (map-properties/get (get-properties/f modules-tiled-map) "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* module-offset-tiles

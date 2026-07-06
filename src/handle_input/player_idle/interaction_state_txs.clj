@@ -22,7 +22,7 @@
              (-> stage
                  :stage/root
                  (#(group/find-actor % "moon.ui.windows.inventory"))
-                 visible?/f)
+                 actor/visible?)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]

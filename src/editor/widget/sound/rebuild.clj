@@ -11,7 +11,7 @@
   (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
     (add-rows! table [(->sound-columns skin table sound-name)])
-    (actor/remove! (find-ancestor actor window?/f))
-    (layout/pack (find-ancestor table window?/f))
+    (actor/remove! (find-ancestor actor window/instance?))
+    (layout/pack (find-ancestor table window/instance?))
     (let [[k _] (actor/get-user-object table)]
       (actor/set-user-object! table [k sound-name]))))

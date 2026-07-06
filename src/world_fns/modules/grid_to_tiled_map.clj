@@ -1,5 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
-  (:require [clojure.gdx.map-properties.clojurize :as clojurize]
+  (:require
+            [com.badlogic.gdx.maps.map-properties :as map-properties]
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
             [grid2d.height :refer [->height]]
@@ -18,13 +19,13 @@
                    (fn [tile]
                      (assert tile)
                      (static-tiled-map-tile/new-tile tile)))]
-    {:properties (merge (clojurize/f (get-properties/f schema-tiled-map))
+    {:properties (merge (map-properties/clojurize (get-properties/f schema-tiled-map))
                         {"width" (->width grid)
                          "height" (->height grid)})
      :layers (for [layer (get-layers/f schema-tiled-map)]
                {:name (get-name/f layer)
                 :visible? (is-visible/f layer)
-                :properties (clojurize/f (get-layer-properties/f layer))
+                :properties (map-properties/clojurize (get-layer-properties/f layer))
                 :tiles (for [position (posis/f grid)
                              :let [local-position (get grid position)]
                              :when local-position]

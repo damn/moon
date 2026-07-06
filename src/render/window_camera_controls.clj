@@ -21,7 +21,7 @@
 
   (when (key-just-pressed?/f input (:close-windows-key controls))
     (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
-         get-children/f
+         group/get-children
          (run! #(actor/set-visible! % false))))
 
   (when (key-just-pressed?/f input (:toggle-inventory controls))

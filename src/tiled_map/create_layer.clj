@@ -1,6 +1,6 @@
 (ns tiled-map.create-layer
-  (:require [tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [clojure.gdx.map-properties.get :as get]
+  (:require
+            [com.badlogic.gdx.maps.map-properties :as map-properties] [tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.gdx.tiled-map.get-properties :as get-properties]))
 
 (defn f
@@ -11,10 +11,10 @@
            tiles]}]
   (let [props (get-properties/f tiled-map)]
     (tiled-map-tile-layer/f
-     {:width      (get/f props "width")
-      :height     (get/f props "height")
-      :tilewidth  (get/f props "tilewidth")
-      :tileheight (get/f props "tileheight")
+     {:width      (map-properties/get props "width")
+      :height     (map-properties/get props "height")
+      :tilewidth  (map-properties/get props "tilewidth")
+      :tileheight (map-properties/get props "tileheight")
       :name name
       :visible? visible?
       :map-properties properties

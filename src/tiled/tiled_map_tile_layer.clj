@@ -1,5 +1,6 @@
 (ns tiled.tiled-map-tile-layer
-  (:require [clojure.gdx.map-properties.put! :as put!]
+  (:require
+            [com.badlogic.gdx.maps.map-properties :as map-properties]
             [clojure.gdx.tiled-map-tile-layer.get-properties :as get-properties]
             [clojure.gdx.tiled-map-tile-layer.new :as new-layer]
             [clojure.gdx.tiled-map-tile-layer.set-cell :as set-cell]
@@ -24,7 +25,7 @@
                 (set-visible/f visible?))]
     (doseq [[k v] map-properties]
       (assert (string? k))
-      (put!/f (get-properties/f layer) k v))
+      (map-properties/put! (get-properties/f layer) k v))
     (doseq [[[x y] tile] tiles
             :when tile]
       (set-cell/f layer x y
