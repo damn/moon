@@ -1,5 +1,6 @@
 (ns clojure.gdx.draw-tiled-map-tile
   (:require
+            [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.texture-region.get-region-height :as get-region-height]
             [clojure.gdx.texture-region.get-region-width :as get-region-width]

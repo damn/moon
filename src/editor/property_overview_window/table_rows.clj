@@ -1,5 +1,6 @@
 (ns editor.property-overview-window.table-rows
   (:require
+            [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]

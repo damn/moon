@@ -1,5 +1,6 @@
 (ns editor.create-widget.image
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+  (:require
+            [com.badlogic.gdx.graphics.texture :as texture] [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.texture-region.get-region-height :as get-region-height]
             [clojure.gdx.texture-region.get-region-width :as get-region-width]
             [clojure.gdx.texture-region-drawable.new :as new-texture-region-drawable]

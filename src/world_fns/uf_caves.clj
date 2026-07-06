@@ -1,5 +1,6 @@
 (ns world-fns.uf-caves
-  (:require [clojure.gdx.texture-region.new :as texture-region]
+  (:require
+            [com.badlogic.gdx.graphics.texture :as texture] [clojure.gdx.texture-region.new :as texture-region]
             [tiled.create-static-tiled-map-tile :as create-tile]
             [world-fns.uf-caves.initial-grid]
             [world-fns.uf-caves.fix-nads]

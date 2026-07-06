@@ -1,5 +1,6 @@
 (ns moon.textures
-  (:require [clojure.gdx.texture-region.new :as texture-region]))
+  (:require
+            [com.badlogic.gdx.graphics.texture :as texture] [clojure.gdx.texture-region.new :as texture-region]))
 
 (defn texture-region
   [textures {:keys [image/file image/bounds]}]

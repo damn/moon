@@ -1,5 +1,6 @@
 (ns ctx.shape-drawer
-  (:require [clojure.gdx.shape-drawer.new :as new-shape-drawer]
+  (:require
+            [com.badlogic.gdx.graphics.texture :as texture] [clojure.gdx.shape-drawer.new :as new-shape-drawer]
             [clojure.gdx.texture-region.new :as texture-region]))
 
 (defn step

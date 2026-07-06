@@ -1,5 +1,6 @@
 (ns moon.inventory-window.set-item
   (:require
+            [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
