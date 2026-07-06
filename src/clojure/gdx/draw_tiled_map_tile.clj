@@ -1,12 +1,10 @@
 (ns clojure.gdx.draw-tiled-map-tile
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [clojure.gdx.tiled-map-tile.get-texture-region :as get-texture-region]
-            [clojure.gdx.tiled-map-tile.get-offset-x :as get-offset-x]
-            [clojure.gdx.tiled-map-tile.get-offset-y :as get-offset-y])
+            [com.badlogic.gdx.graphics.g2d.batch :as batch])
   (:import (com.badlogic.gdx.graphics.g2d Batch)))
 
 (defn f!
@@ -19,9 +17,9 @@
    verts
    batch
    num-vertices]
-  (let [region (get-texture-region/f tile)
-        x1 (+ x (* (get-offset-x/f tile) unit-scale))
-        y1 (+ y (* (get-offset-y/f tile) unit-scale))
+  (let [region (tiled-map-tile/get-texture-region tile)
+        x1 (+ x (* (tiled-map-tile/get-offset-x tile) unit-scale))
+        y1 (+ y (* (tiled-map-tile/get-offset-y tile) unit-scale))
         x2 (+ x1 (* (texture-region/get-region-width region) unit-scale))
         y2 (+ y1 (* (texture-region/get-region-height region) unit-scale))
         u1 (texture-region/get-u region)

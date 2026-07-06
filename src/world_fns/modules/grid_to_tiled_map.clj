@@ -1,5 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.map-properties :as map-properties]
             [grid2d.posis :as posis]

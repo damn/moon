@@ -1,5 +1,6 @@
 (ns levelgen-test.generate
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map] [clojure.edn-resource :refer [edn-resource]]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [clojure.gdx.tiled-map-tile-layer.set-visible :as set-visible]
