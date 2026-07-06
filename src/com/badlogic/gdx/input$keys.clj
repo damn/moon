@@ -1,7 +1,7 @@
-(ns clojure.gdx.input$keys.key-to-value
+(ns com.badlogic.gdx.input$keys
   (:import (com.badlogic.gdx Input$Keys)))
 
-(defn f [k]
+(defn key-to-value [k]
   (case k
     :input.keys/d Input$Keys/D
     :input.keys/a Input$Keys/A
