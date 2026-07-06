@@ -1,9 +1,8 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
   (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.stage.add-actor :as add-actor]
-            [clojure.gdx.stage.set-ctx :as set-ctx]
             [scene2d.utils.change-listener :as change-listener]
             [scene2d.ui.text-button :as text-button]
             [scene2d.ui.window.add-close-button :as add-close-button]
@@ -18,7 +17,7 @@
                                 (doto (text-button/create {:text label :skin skin})
                                   (actor/add-listener! (change-listener/create
                                                    (fn [event actor]
-                                                     (add-actor/f (event/get-stage event)
+                                                     (stage/add-actor! (event/get-stage event)
                                                                   (doto (window/create
                                                                          {:title label
                                                                           :skin skin
@@ -28,7 +27,7 @@
                                                                                             (actor/add-listener! (change-listener/create
                                                                                                              (fn [event actor]
                                                                                                                (let [stage (event/get-stage event)]
-                                                                                                                 (set-ctx/f stage
+                                                                                                                 (stage/set-ctx! stage
                                                                                                                             (on-click (:stage/ctx stage))))))))})]})
                                                                     (add-close-button/f! skin)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]

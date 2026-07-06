@@ -1,5 +1,6 @@
 (ns render.check-debug-viewer
-  (:require [clojure.gdx.stage.add-actor :as add-actor]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [ctx.button-just-pressed :refer [button-just-pressed?]]
             [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]))
 
@@ -14,7 +15,7 @@
   (when (button-just-pressed? ctx (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
-      (add-actor/f stage
+      (stage/add-actor! stage
                    (data-viewer-window/create
                     {:title "Data View"
                      :data data

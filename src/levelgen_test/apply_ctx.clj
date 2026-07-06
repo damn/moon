@@ -1,5 +1,6 @@
 (ns levelgen-test.apply-ctx
-  (:require [clojure.gdx.stage.set-ctx :as set-ctx]))
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn f [stage f]
-  (set-ctx/f stage (f (:stage/ctx stage))))
+  (stage/set-ctx! stage (f (:stage/ctx stage))))

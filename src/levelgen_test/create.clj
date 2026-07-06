@@ -1,5 +1,6 @@
 (ns levelgen-test.create
   (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.utils.disposable :as disposable]
@@ -10,7 +11,6 @@
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [clojure.gdx.stage.add-actor :as add-actor]
             [gdx.scenes.scene2d.ui.window :as window]
             [levelgen-test.change-listener]
             [levelgen-test.generate :as generate]
@@ -50,7 +50,7 @@
              :ctx/camera (:viewport/camera world-viewport)}
         ctx (generate/f ctx (:initial-level-fn config))]
     (input/set-input-processor! input stage)
-    (add-actor/f (:ctx/stage ctx)
+    (stage/add-actor! (:ctx/stage ctx)
                  (window/create
                   {:title "Edit"
                    :skin skin

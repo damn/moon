@@ -1,12 +1,12 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
   (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
-            [clojure.gdx.stage.add-actor :as add-actor]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
@@ -40,7 +40,7 @@
                                                     ctx/textures
                                                     ctx/property-overview-window]
                                              :as ctx} (:stage/ctx (event/get-stage event))]
-                                        (add-actor/f
+                                        (stage/add-actor!
                                          stage
                                          (property-overview-window
                                           {:db db

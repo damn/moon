@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.data-viewer-window
   (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.stage.add-actor :as add-actor]
             [gdx.scenes.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
             [scene2d.ui.label :as label]
             [scene2d.ui.scroll-pane :as scroll-pane]
@@ -24,7 +24,7 @@
                      (doto (text-button/create {:text "Map" :skin skin})
                        (actor/add-listener! (change-listener/create
                                         (fn [_event actor]
-                                          (add-actor/f (actor/get-stage actor)
+                                          (stage/add-actor! (actor/get-stage actor)
                                                        (create
                                                         {:title "title"
                                                          :data v

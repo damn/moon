@@ -1,7 +1,6 @@
 (ns editor.app.render
-  (:require [clojure.gdx.stage.act :as act]
-            [clojure.gdx.stage.draw :as draw]
-            [clojure.gdx.stage.set-ctx :as set-ctx]))
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn render!
   [{:keys [ctx/stage]
@@ -9,7 +8,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (set-ctx/f stage ctx)
-    (act/f stage)
-    (draw/f stage)
+    (stage/set-ctx! stage ctx)
+    (stage/act stage)
+    (stage/draw stage)
     (:stage/ctx stage)))

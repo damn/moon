@@ -1,10 +1,10 @@
 (ns tx.show-modal
   (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.utils.align :as align]
-            [clojure.gdx.stage.add-actor :as add-actor]
             [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.ui.label :as label]
             [scene2d.ui.text-button :as text-button]
@@ -17,7 +17,7 @@
     :as ctx}
    {:keys [title text button-text on-click]}]
   (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
-  (add-actor/f stage
+  (stage/add-actor! stage
                (doto (window/create
                       {:title title
                        :skin skin

@@ -1,9 +1,9 @@
 (ns editor.widget.sound.open-select-sounds-handler
   (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.stage.add-actor :as add-actor]
             [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.window.add-close-button :as add-close-button]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
@@ -17,7 +17,7 @@
   (fn [{:keys [ctx/skin
                ctx/stage]
         :as ctx}]
-    (add-actor/f stage
+    (stage/add-actor! stage
                  (doto (window/create
                         {:title "Choose"
                          :skin skin

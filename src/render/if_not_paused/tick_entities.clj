@@ -1,5 +1,6 @@
 (ns render.if-not-paused.tick-entities
-  (:require [clojure.gdx.stage.add-actor :as add-actor]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [ctx.do :refer [do!]]
             [ctx.tick-component :refer [tick-component]]
             [moon.throwable :as throwable]
@@ -21,7 +22,7 @@
                 active-entities))
    (catch Throwable t
      (throwable/pretty-pst t)
-     (add-actor/f stage
+     (stage/add-actor! stage
                   (error-window/create
                    {:skin skin
                     :throwable t}))))

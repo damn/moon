@@ -1,8 +1,8 @@
 (ns editor.map-widget-table
   (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.interpose-f :refer [interpose-f]]
             [gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
@@ -43,7 +43,7 @@
                                                             ctx/stage
                                                             ctx/skin
                                                             ctx/add-component-window]} (:stage/ctx (event/get-stage event))]
-                                                (add-actor/f
+                                                (stage/add-actor!
                                                  stage
                                                  (add-component-window
                                                   {:skin skin

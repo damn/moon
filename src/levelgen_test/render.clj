@@ -1,11 +1,9 @@
 (ns levelgen-test.render
   (:require
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.graphics :as graphics] [com.badlogic.gdx.graphics.color :as color]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
-            [clojure.gdx.stage.act :as act]
-            [clojure.gdx.stage.draw :as draw]
-            [clojure.gdx.stage.set-ctx :as set-ctx]
             [input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [orthographic-camera.position :as get-position]
@@ -24,7 +22,7 @@
            ctx/stage] :as ctx}]
   (let [ctx (or (:stage/ctx stage)
                 ctx)] ; first render stage does not have ctx set. ( TODO: just set it ?  )
-    (set-ctx/f stage ctx))
+    (stage/set-ctx! stage ctx))
   (let [gl (graphics/get-gl20 graphics)]
     (gl20/clear-color! gl 0 0 0 0)
     (gl20/clear! gl gl20/color-buffer-bit))
@@ -44,6 +42,6 @@
     (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
     (if (key-pressed?/f input :input.keys/up)    (apply-position 1 +))
     (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -)))
-  (act/f stage)
-  (draw/f stage)
+  (stage/act stage)
+  (stage/draw stage)
   (:stage/ctx stage))
