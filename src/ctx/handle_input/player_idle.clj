@@ -1,7 +1,7 @@
-(ns handle-input.player-idle
+(ns ctx.handle-input.player-idle
   (:require [ctx.button-just-pressed :refer [button-just-pressed?]]
             [ctx.player-movement-vector :refer [player-movement-vector]]
-            [handle-input.player-idle.interaction-state-txs :refer [interaction-state->txs]]))
+            [ctx.handle-input.player-idle.interaction-state-txs :refer [interaction-state->txs]]))
 
 (defn f
   [player-eid {:keys [ctx/interaction-state

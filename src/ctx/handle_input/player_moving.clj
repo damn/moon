@@ -1,4 +1,4 @@
-(ns handle-input.player-moving
+(ns ctx.handle-input.player-moving
   (:require [ctx.player-movement-vector :refer [player-movement-vector]]
             [moon.creature.speed :as speed]))
 
