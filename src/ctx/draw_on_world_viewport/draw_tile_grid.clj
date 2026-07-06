@@ -1,4 +1,4 @@
-(ns draw-on-world-viewport.draw-tile-grid
+(ns ctx.draw-on-world-viewport.draw-tile-grid
   (:require [com.badlogic.gdx.graphics.color :as color]
             [gdx.graphics.orthographic-camera.frustum :refer [frustum]]))
 

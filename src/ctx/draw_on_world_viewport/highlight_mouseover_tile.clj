@@ -1,4 +1,4 @@
-(ns draw-on-world-viewport.highlight-mouseover-tile)
+(ns ctx.draw-on-world-viewport.highlight-mouseover-tile)
 
 (defn f
   [{:keys [ctx/colors

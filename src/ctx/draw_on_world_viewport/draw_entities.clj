@@ -1,4 +1,4 @@
-(ns draw-on-world-viewport.draw-entities
+(ns ctx.draw-on-world-viewport.draw-entities
   (:require [clojure.sort-by-order :as sort-by-order]
             [ctx.draw :refer [draw!]]
             [ctx.draw-component :refer [draw-component]]

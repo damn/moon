@@ -1,4 +1,4 @@
-(ns draw-on-world-viewport.draw-cell-debug
+(ns ctx.draw-on-world-viewport.draw-cell-debug
   (:require [gdx.graphics.orthographic-camera.visible-tiles :refer [visible-tiles]]))
 
 (defn f
