@@ -6,5 +6,5 @@
 (defn f
   [_  widget _schemas]
   (->> (group/get-children widget)
-       (keep get-user-object/f)
+       (keep actor/get-user-object)
        set))

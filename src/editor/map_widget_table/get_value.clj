@@ -6,6 +6,6 @@
 
 (defn f [table schemas]
   (into {}
-        (for [widget (filter (comp vector? get-user-object/f) (group/get-children table))
+        (for [widget (filter (comp vector? actor/get-user-object) (group/get-children table))
               :let [[k _] (actor/get-user-object widget)]]
           [k (widget-value/f (get schemas k) widget schemas)])))

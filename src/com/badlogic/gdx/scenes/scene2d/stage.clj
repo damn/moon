@@ -1,6 +1,5 @@
 (ns com.badlogic.gdx.scenes.scene2d.stage
-  (:import (com.badlogic.gdx.scenes.scene2d Stage)
-           (moon Stage)))
+  (:import (moon Stage)))
 
 (defn act [stage]
   (Stage/.act stage))

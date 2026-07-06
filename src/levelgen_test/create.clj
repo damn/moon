@@ -15,7 +15,7 @@
             [levelgen-test.generate :as generate]
             [moon.create-textures :as create-textures]
             [moon.db :as db]
-            [scene2d.stage :as stage]
+            [scene2d.stage]
             [scene2d.ui.text-button :as text-button]))
 
 (defn f
@@ -27,7 +27,7 @@
         ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                          (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
-        stage (stage/create ui-viewport sprite-batch)
+        stage (scene2d.stage/create ui-viewport sprite-batch)
         skin (skin/new (files/internal files (:ui-skin-path config)))
         world-viewport (let [world-width  (* (:world-viewport-width config) world-unit-scale)
                              world-height (* (:world-viewport-height config)  world-unit-scale)]

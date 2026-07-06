@@ -3,4 +3,4 @@
 
 (defn create
   [{:keys [actor skin]}]
-  (new-scroll-pane/f actor skin))
+  (scroll-pane/new actor skin))

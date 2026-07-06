@@ -1,6 +1,6 @@
 (ns stage.player-message-actor
   (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [ctx.draw :refer [draw!]]
             [scene2d.actor :as actor]))
 
@@ -8,9 +8,9 @@
   (let [message-duration-seconds 0.5]
     (doto (actor/f
            {:draw! (fn [this _batch _parent-alpha]
-                     (when-let [stage (actor/get-stage this)]
+                     (when-let [stage (gdx-actor/get-stage this)]
                        (draw! (:stage/ctx stage)
-                              [(let [state (actor/get-user-object this)
+                              [(let [state (gdx-actor/get-user-object this)
                                      vp-width (:viewport/world-width (:stage/viewport stage))
                                      vp-height (:viewport/world-height (:stage/viewport stage))]
                                  (when-let [text (:text @state)]
@@ -20,10 +20,10 @@
                                                 :scale 2.5
                                                 :up? true}]))])))
             :act! (fn [this delta]
-                    (let [state (actor/get-user-object this)]
+                    (let [state (gdx-actor/get-user-object this)]
                       (when (:text @state)
                         (swap! state update :counter + delta)
                         (when (>= (:counter @state) message-duration-seconds)
                           (reset! state nil)))))})
-      (actor/set-name! "player-message")
-      (actor/set-user-object! (atom nil)))))
+      (gdx-actor/set-name! "player-message")
+      (gdx-actor/set-user-object! (atom nil)))))

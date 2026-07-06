@@ -1,7 +1,7 @@
 (ns tx.show-modal
   (:require
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.utils.align :as align]
@@ -29,7 +29,7 @@
                                                                 (fn [_event _actor]
                                                                   (actor/remove! (group/find-actor (:stage/root stage) "moon.ui.modal-window"))
                                                                   (on-click)))))}]]})
-                 (window/set-modal! true)
+                 (gdx-window/set-modal! true)
                  (actor/set-name! "moon.ui.modal-window")
                  (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                  (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]

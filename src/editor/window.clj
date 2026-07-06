@@ -1,8 +1,8 @@
 (ns editor.window
   (:require
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [editor.create-widget :as create-widget]
             [editor.widget-value :as widget-value]
@@ -39,14 +39,14 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (actor/add-listener! (change-listener/create
+                                     (gdx-actor/add-listener! (change-listener/create
                                                       (fn [event actor]
                                                         (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (actor/add-listener! (change-listener/create
+                                     (gdx-actor/add-listener! (change-listener/create
                                                       (fn [event actor]
                                                         (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
@@ -61,11 +61,11 @@
                            scroll-pane-height
                            50)]]})
       (add-close-button/f! skin)
-      (window/set-modal! true)
+      (gdx-window/set-modal! true)
       (group/add-actor! (actor/f
                     {:act! (fn [this delta]
-                             (when-let [stage (actor/get-stage this)]
+                             (when-let [stage (gdx-actor/get-stage this)]
                                (let [ctx (:stage/ctx stage)]
                                  (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                    (clicked-save-fn this ctx)))))}))
-      (actor/set-name! "moon.ui.editor.window"))))
+      (gdx-actor/set-name! "moon.ui.editor.window"))))
