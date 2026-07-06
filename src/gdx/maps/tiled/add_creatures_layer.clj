@@ -1,5 +1,5 @@
-(ns tiled-map.add-creatures-layer
-  (:require [tiled-map.add-layer :as add-layer]
+(ns gdx.maps.tiled.add-creatures-layer
+  (:require [gdx.maps.tiled.add-layer :as add-layer]
             [gdx.maps.tiled.tiles.create-static-tiled-map-tile :as create-tile]))
 
 (defn f [tiled-map spawn-positions]

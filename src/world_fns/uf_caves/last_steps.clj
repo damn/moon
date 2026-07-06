@@ -3,14 +3,14 @@
             [world-fns.uf-caves.position-tile-fn :as position-tile-fn]
             [world-fns.uf-caves.assoc-transition-cells :as assoc-transition-cells]
             [world-fns.uf-caves.scale-grid :as scale-grid]
-            [tiled-map.movement-property :as movement-property]
+            [gdx.maps.tiled.movement-property :as movement-property]
             [grid2d.height :refer [->height]]
             [grid2d.width :refer [->width]]
             [grid2d.cells :refer [->cells]]
             [grid2d.posis :as posis]
             [grid2d.printgrid :as printgrid]
             [gdx.maps.tiled.tiled-map :as tiled-map]
-            [tiled-map.add-creatures-layer :as add-creatures-layer]))
+            [gdx.maps.tiled.add-creatures-layer :as add-creatures-layer]))
 
 ; TODO don't spawn my faction vampire w. player items ...
 ; FIXME - overlapping with player - don't spawn creatures on start position

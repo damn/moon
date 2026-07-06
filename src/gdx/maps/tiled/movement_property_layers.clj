@@ -1,4 +1,4 @@
-(ns tiled-map.movement-property-layers
+(ns gdx.maps.tiled.movement-property-layers
   (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]

@@ -1,4 +1,4 @@
-(ns tiled-map.create-layer
+(ns gdx.maps.tiled.create-layer
   (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.map-properties :as map-properties]
             [gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]))

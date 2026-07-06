@@ -1,7 +1,7 @@
 (ns gdx.maps.tiled.tiled-map
   (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.map-properties :as map-properties]
-            [tiled-map.add-layer :as add-layer]))
+            [gdx.maps.tiled.add-layer :as add-layer]))
 
 (defn f
   [{:keys [properties
