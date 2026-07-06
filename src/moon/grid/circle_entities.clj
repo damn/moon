@@ -1,6 +1,6 @@
 (ns moon.grid.circle-entities
-  (:require [clojure.gdx.intersector.overlaps :as overlaps]
-            [math.circle :as circle]
+  (:require [com.badlogic.gdx.math.circle :as circle]
+            [clojure.gdx.intersector.overlaps :as overlaps]
             [moon.body.rectangle :refer [->rectangle]]
             [moon.grid.circle-to-cells :refer [circle->cells]]
             [moon.grid.cells-entities :as cells->entities]))
@@ -9,5 +9,5 @@
   (->> (circle->cells g2d circle)
        (map deref)
        cells->entities/f
-       (filter #(overlaps/f (circle/create circle)
+       (filter #(overlaps/f (circle/new circle)
                             (->rectangle (:entity/body @%))))))
