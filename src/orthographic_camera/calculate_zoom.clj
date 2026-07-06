@@ -1,13 +1,13 @@
 (ns orthographic-camera.calculate-zoom
-  (:require [clojure.gdx.orthographic-camera.viewport-height :as viewport-height]
-            [clojure.gdx.orthographic-camera.viewport-width :as viewport-width]
+  (:require
+            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [orthographic-camera.position :as get-position]))
 
 (defn calculate-zoom
   "calculates the zoom value for camera to see all the 4 points."
   [camera {:keys [left top right bottom]}]
-  (let [viewport-width  (viewport-width/f camera)
-        viewport-height (viewport-height/f camera)
+  (let [viewport-width  (orthographic-camera/viewport-width camera)
+        viewport-height (orthographic-camera/viewport-height camera)
         [px py] (get-position/f camera)
         px (float px)
         py (float py)

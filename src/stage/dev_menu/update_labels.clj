@@ -1,7 +1,7 @@
 (ns stage.dev-menu.update-labels
   (:require
+            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.graphics :as graphics]
-            [clojure.gdx.orthographic-camera.zoom :as zoom]
             [clojure.readable :as readable]))
 
 (def v
@@ -29,6 +29,6 @@
                  (mapv int world-mouse-position))}
    {:label "Zoom"
     :update-fn (fn [{:keys [ctx/world-viewport]}]
-                 (zoom/f (:viewport/camera world-viewport)))
+                 (orthographic-camera/zoom (:viewport/camera world-viewport)))
     :icon "images/zoom.png"}
    ])

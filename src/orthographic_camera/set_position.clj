@@ -1,10 +1,10 @@
 (ns orthographic-camera.set-position
-  (:require [clojure.gdx.orthographic-camera.position :as position]
-            [clojure.gdx.orthographic-camera.update :as update!]
+  (:require
+            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.math.vector3 :as vector3]))
 
 (defn set-position! [camera [x y]]
-  (let [pos (position/f camera)]
+  (let [pos (orthographic-camera/position camera)]
     (vector3/set-x! pos x)
     (vector3/set-y! pos y))
-  (update!/f! camera))
+  (orthographic-camera/update! camera))

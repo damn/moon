@@ -1,5 +1,6 @@
 (ns levelgen-test.create
   (:require
+            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
@@ -7,8 +8,6 @@
             [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.gdx :as gdx]
-            [clojure.gdx.orthographic-camera.new :as new-camera]
-            [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -34,8 +33,8 @@
                              world-height (* (:world-viewport-height config)  world-unit-scale)]
                          (fit-viewport/create world-width
                                               world-height
-                                              (doto (new-camera/f)
-                                                (set-to-ortho!/f! false world-width world-height))))
+                                              (doto (orthographic-camera/new)
+                                                (orthographic-camera/set-to-ortho! false world-width world-height))))
         ctx {:ctx/input input
              :ctx/graphics graphics
              :ctx/stage stage
