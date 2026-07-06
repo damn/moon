@@ -8,7 +8,7 @@
             [clojure.gdx.texture-region.get-region-width :as get-region-width]
             [clojure.gdx.texture-region-drawable.new :as new-texture-region-drawable]
             [clojure.gdx.texture-region-drawable.set-min-size :as set-min-size]
-            [clojure.gdx.touchable.disabled :as touchable-disabled]
+            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [scene2d.ui.stack :as stack]
             [scene2d.ui.text-tooltip :as text-tooltip]
             [scene2d.utils.change-listener :as change-listener]

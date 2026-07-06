@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
   (:require [clojure.gdx.actor.set-touchable :as set-touchable]
             [clojure.gdx.layout.set-fill-parent :as set-fill-parent]
-            [clojure.gdx.touchable.disabled :as touchable-disabled]
+            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [gdx.scenes.scene2d.ui.dev-menu.main-table :as main-table]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]))
@@ -16,7 +16,7 @@
                        [{:actor (doto (label/create
                                        {:text ""
                                         :skin skin})
-                                  (set-touchable/f touchable-disabled/v))
+                                  (set-touchable/f touchable/disabled))
                          :expand? true
                          :fill-x? true
                          :fill-y? true}]]})
