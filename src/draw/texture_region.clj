@@ -1,9 +1,8 @@
 (ns draw.texture-region
   (:require
+            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [clojure.gdx.texture-region.get-region-height :as get-region-height]
-            [clojure.gdx.texture-region.get-region-width :as get-region-width]))
+            [com.badlogic.gdx.graphics.g2d.batch :as batch]))
 
 (defn f!
   [{:keys [ctx/batch
@@ -12,8 +11,8 @@
    texture-region
    [x y]
    & {:keys [center? rotation]}]
-  (let [[w h] (let [dimensions [(get-region-width/f texture-region)
-                                (get-region-height/f texture-region)]]
+  (let [[w h] (let [dimensions [(texture-region/get-region-width texture-region)
+                                (texture-region/get-region-height texture-region)]]
                 (if (= @unit-scale 1)
                   dimensions
                   (mapv (comp float (partial * world-unit-scale))
