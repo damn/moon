@@ -5,7 +5,7 @@
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.clear-children :as clear-children]
             [clojure.gdx.image.new :as new-image]
-            [clojure.gdx.layout.pack :as pack]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.window.instance? :as window?]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
@@ -28,7 +28,7 @@
   (let [redo-rows (fn [ctx property-ids]
                     (clear-children/f table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (pack/f (find-ancestor table window?/f)))]
+                    (layout/pack (find-ancestor table window?/f)))]
     (add-rows!
      table
      [[{:actor (doto (text-button/create

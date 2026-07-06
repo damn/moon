@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.dev-menu
   (:require [clojure.gdx.actor.set-touchable :as set-touchable]
-            [clojure.gdx.layout.set-fill-parent :as set-fill-parent]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [gdx.scenes.scene2d.ui.dev-menu.main-table :as main-table]
             [scene2d.ui.label :as label]
@@ -20,4 +20,4 @@
                          :expand? true
                          :fill-x? true
                          :fill-y? true}]]})
-    (set-fill-parent/f true)))
+    (layout/set-fill-parent true)))

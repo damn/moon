@@ -2,7 +2,7 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.remove :as remove]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.layout.pack :as pack]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [clojure.gdx.window.set-modal :as set-modal]
             [editor.build-widget :as build-widget]
             [editor.widget-value :as widget-value]
@@ -46,5 +46,5 @@
                                                                        :table map-widget-table})])
                                        ((:ctx/rebuild-editor-window! ctx) ctx)))))
                   )}]))
-    (pack/f window)
+    (layout/pack window)
     window))

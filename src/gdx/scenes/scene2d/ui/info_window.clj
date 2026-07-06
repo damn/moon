@@ -4,7 +4,7 @@
             [clojure.gdx.actor.set-visible :as set-visible]
             [clojure.gdx.group.add-actor :as add-actor]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [clojure.gdx.layout.pack :as pack]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.actor :as actor]
             [scene2d.ui.label :as label]
@@ -32,5 +32,5 @@
                          {:act! (fn [this delta]
                                   (when-let [stage (get-stage/f this)]
                                     (label/set-text label (set-label-text! (:stage/ctx stage))))
-                                  (pack/f window))}))
+                                  (layout/pack window))}))
     window))

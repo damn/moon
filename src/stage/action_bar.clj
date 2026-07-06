@@ -7,7 +7,7 @@
             [clojure.gdx.horizontal-group.new :as new-horizontal-group]
             [clojure.gdx.horizontal-group.pad :as pad]
             [clojure.gdx.horizontal-group.space :as space]
-            [clojure.gdx.layout.set-fill-parent :as set-fill-parent]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create [_ctx]
@@ -22,5 +22,5 @@
                                                        (set-min-check-count/f 0))))
                          :expand? true
                          :bottom? true}]]})
-    (set-fill-parent/f true)
+    (layout/set-fill-parent true)
     (set-name/f "moon.ui.action-bar")))
