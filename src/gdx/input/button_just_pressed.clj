@@ -1,4 +1,4 @@
-(ns input.button-just-pressed
+(ns gdx.input.button-just-pressed
   (:require [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input$buttons :as input-buttons]))
 

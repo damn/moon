@@ -8,7 +8,7 @@
             [editor.window.with-window-close :as with-window-close]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
-            [input.key-just-pressed :as key-just-pressed?]
+            [gdx.input.key-just-pressed :as key-just-pressed?]
             [moon.db.delete :refer [delete!]]
             [moon.db.update :refer [update!]]
             [moon.property.type :refer [property->type]]

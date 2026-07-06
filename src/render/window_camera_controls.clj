@@ -1,8 +1,8 @@
 (ns render.window-camera-controls
   (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [input.key-just-pressed :as key-just-pressed?]
-            [input.key-pressed :as key-pressed?]
+            [gdx.input.key-just-pressed :as key-just-pressed?]
+            [gdx.input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]))
 
 (defn step

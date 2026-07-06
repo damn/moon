@@ -1,4 +1,4 @@
-(ns input.key-just-pressed
+(ns gdx.input.key-just-pressed
   (:require [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input$keys :as input-keys]))
 
