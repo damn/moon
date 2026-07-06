@@ -1,5 +1,5 @@
 (ns scene2d.ui.widget
-  (:require [clojure.gdx.widget.new :as new-widget]))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]))
 
 (defn f
   [{:keys [draw!]}]
