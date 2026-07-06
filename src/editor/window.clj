@@ -5,20 +5,20 @@
             [clojure.gdx.event.get-stage :as event-get-stage]
             [clojure.gdx.group.add-actor :as add-actor]
             [clojure.gdx.window.set-modal :as set-modal]
-            [scene2d.actor :as actor]
-            [scene2d.utils.change-listener :as change-listener]
-            [input.key-just-pressed :as key-just-pressed?]
-            [scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.ui.window.add-close-button :as add-close-button]
+            [editor.create-widget :as create-widget]
+            [editor.widget-value :as widget-value]
             [editor.window.with-window-close :as with-window-close]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
+            [input.key-just-pressed :as key-just-pressed?]
             [moon.db.delete :refer [delete!]]
             [moon.db.update :refer [update!]]
             [moon.property.type :refer [property->type]]
-            [editor.create-widget :as create-widget]
-            [editor.widget-value :as widget-value]))
+            [scene2d.actor :as actor]
+            [scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
+            [scene2d.ui.text-button :as text-button]
+            [scene2d.ui.window.add-close-button :as add-close-button]
+            [scene2d.utils.change-listener :as change-listener]))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -63,10 +63,10 @@
                            50)]]})
       (add-close-button/f! skin)
       (set-modal/f true)
-      (#(add-actor/f % (actor/f
-                        {:act! (fn [this delta]
-                                 (when-let [stage (get-stage/f this)]
-                                   (let [ctx (:stage/ctx stage)]
-                                     (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
-                                       (clicked-save-fn this ctx)))))})))
+      (add-actor/f (actor/f
+                    {:act! (fn [this delta]
+                             (when-let [stage (get-stage/f this)]
+                               (let [ctx (:stage/ctx stage)]
+                                 (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
+                                   (clicked-save-fn this ctx)))))}))
       (set-name/f "moon.ui.editor.window"))))
