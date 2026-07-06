@@ -1,4 +1,4 @@
-(ns gdx.math.vector3.clojurize
+(ns clojure.gdx.vector3.clojurize
   (:require [clojure.gdx.vector3.x :as x]
             [clojure.gdx.vector3.y :as y]
             [clojure.gdx.vector3.z :as z]))

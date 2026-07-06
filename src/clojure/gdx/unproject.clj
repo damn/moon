@@ -1,7 +1,7 @@
 (ns clojure.gdx.unproject
   (:require [clojure.gdx.vector2.new :as new-vector2]
             [clojure.gdx.viewport.unproject :as unproject]
-            [gdx.math.vector2.clojurize :as clojurize]))
+            [clojure.gdx.vector2.clojurize :as clojurize]))
 
 (defn f [viewport xy]
   (-> viewport

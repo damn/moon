@@ -13,7 +13,7 @@
             [clojure.gdx.group.add-actor :as add-actor]
             [clojure.gdx.image.new-drawable :as new-image]
             [clojure.gdx.vector2.new :as new-vector2]
-            [gdx.math.vector2.clojurize :as clojurize]
+            [clojure.gdx.vector2.clojurize :as clojurize]
             [scene2d.ui.widget :as widget]
             [ctx.do :refer [do!]]
             [ctx.draw :refer [draw!]]
