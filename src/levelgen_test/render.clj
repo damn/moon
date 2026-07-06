@@ -1,7 +1,10 @@
 (ns levelgen-test.render
   (:require [clojure.gdx.color.float-bits :as float-bits]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
-            [gdx.graphics.clear-screen! :as clear-screen!]
+            [clojure.gdx.gl20.clear :as clear!]
+            [clojure.gdx.gl20.clear-color :as clear-color!]
+            [clojure.gdx.gl20.color-buffer-bit :as color-buffer-bit]
+            [clojure.gdx.graphics.get-gl20 :as get-gl20]
             [clojure.gdx.stage.act :as act]
             [clojure.gdx.stage.draw :as draw]
             [clojure.gdx.stage.set-ctx :as set-ctx]
@@ -24,7 +27,9 @@
   (let [ctx (or (:stage/ctx stage)
                 ctx)] ; first render stage does not have ctx set. ( TODO: just set it ?  )
     (set-ctx/f stage ctx))
-  (clear-screen!/f graphics)
+  (let [gl (get-gl20/f graphics)]
+    (clear-color!/f gl 0 0 0 0)
+    (clear!/f gl color-buffer-bit/v))
   (draw-tiled-map/f! sprite-batch
                      world-unit-scale
                      (:viewport/camera world-viewport)
