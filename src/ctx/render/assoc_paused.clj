@@ -1,4 +1,4 @@
-(ns render.assoc-paused
+(ns ctx.render.assoc-paused
   (:require [gdx.input.key-pressed :refer [f] :rename {f key-pressed?}]
             [gdx.input.key-just-pressed :refer [f] :rename {f key-just-pressed?}]))
 

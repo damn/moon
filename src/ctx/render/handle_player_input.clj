@@ -1,4 +1,4 @@
-(ns render.handle-player-input
+(ns ctx.render.handle-player-input
   (:require [ctx.do :refer [do!]]))
 
 (defn step

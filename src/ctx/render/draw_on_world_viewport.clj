@@ -1,4 +1,4 @@
-(ns render.draw-on-world-viewport
+(ns ctx.render.draw-on-world-viewport
   (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]

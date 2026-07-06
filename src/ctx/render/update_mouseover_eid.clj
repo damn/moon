@@ -1,4 +1,4 @@
-(ns render.update-mouseover-eid
+(ns ctx.render.update-mouseover-eid
   (:require [clojure.sort-by-order :as sort-by-order]
             [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.grid.point-to-entities :refer [point->entities]]

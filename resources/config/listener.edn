@@ -49,16 +49,16 @@
                    ]
  :dispose! ctx.dispose/do!
  :render-pipeline [
-                   [render.get-stage-ctx/step]
-                   [render.validate/step]
-                   [render.update-mouse-positions/step]
-                   [render.update-mouseover-eid/step]
-                   [render.check-debug-viewer/step]
-                   [render.set-active-entities/step]
-                   [render.set-camera-position/step]
-                   [render.clear-screen/step]
-                   [render.draw-tiled-map/step]
-                   [render.draw-on-world-viewport/step [
+                   [ctx.render.get-stage-ctx/step]
+                   [ctx.render.validate/step]
+                   [ctx.render.update-mouse-positions/step]
+                   [ctx.render.update-mouseover-eid/step]
+                   [ctx.render.check-debug-viewer/step]
+                   [ctx.render.set-active-entities/step]
+                   [ctx.render.set-camera-position/step]
+                   [ctx.render.clear-screen/step]
+                   [ctx.render.draw-tiled-map/step]
+                   [ctx.render.draw-on-world-viewport/step [
                                                         #_(ctx.draw-on-world-viewport.draw-tile-grid/f)
                                                         (ctx.draw-on-world-viewport.draw-cell-debug/f)
                                                         (ctx.draw-on-world-viewport.draw-entities/do! [#{:entity/mouseover?
@@ -77,20 +77,20 @@
                                                         #_(moon.geom-test)
                                                         (ctx.draw-on-world-viewport.highlight-mouseover-tile/f)
                                                         ]]
-                   (clojure.map.assoc-create/f :ctx/interaction-state render.assoc-interaction-state/create)
-                   [render.set-cursor/step]
-                   [render.handle-player-input/step]
+                   (clojure.map.assoc-create/f :ctx/interaction-state ctx.render.assoc-interaction-state/create)
+                   [ctx.render.set-cursor/step]
+                   [ctx.render.handle-player-input/step]
                    (clojure.core/dissoc :ctx/interaction-state)
-                   [render.assoc-paused/step]
-                   [render.if-not-paused/step [
-                                               render.if-not-paused.update-time/f
-                                               render.if-not-paused.update-potential-fields/f
-                                               render.if-not-paused.tick-entities/f
+                   [ctx.render.assoc-paused/step]
+                   [ctx.render.if-not-paused/step [
+                                               ctx.render.if-not-paused.update-time/f
+                                               ctx.render.if-not-paused.update-potential-fields/f
+                                               ctx.render.if-not-paused.tick-entities/f
                                                ]]
-                   [render.remove-destroyed-entities/step]
-                   [render.window-camera-controls/step]
-                   [render.update-draw-stage/step]
-                   [render.validate/step]
+                   [ctx.render.remove-destroyed-entities/step]
+                   [ctx.render.window-camera-controls/step]
+                   [ctx.render.update-draw-stage/step]
+                   [ctx.render.validate/step]
                    ]
  :resize!  ctx.resize/do!
  }

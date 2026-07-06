@@ -1,4 +1,4 @@
-(ns render.update-mouse-positions
+(ns ctx.render.update-mouse-positions
   (:require [gdx.unproject :as unproject]
             [ctx.mouse-position :refer [mouse-position]]))
 

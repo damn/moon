@@ -1,4 +1,4 @@
-(ns render.set-active-entities
+(ns ctx.render.set-active-entities
   (:require [moon.content-grid.active-entities :as active-entities]))
 
 (defn step

@@ -1,9 +1,9 @@
-(ns render.assoc-interaction-state
+(ns ctx.render.assoc-interaction-state
   (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
             [moon.player-effect-ctx :as player-effect-ctx]
             [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.skill.usable-state :as usable-state]
-            [render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
+            [ctx.render.assoc-interaction-state.mouseover-actor-info :refer [mouseover-actor-info]]
             [moon.action-bar.selected-skill :as selected-skill]
             [moon.body.distance :as distance]))
 

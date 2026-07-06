@@ -1,4 +1,4 @@
-(ns render.if-not-paused)
+(ns ctx.render.if-not-paused)
 
 (defn step
   [{:keys [ctx/paused?]

@@ -1,4 +1,4 @@
-(ns render.if-not-paused.update-potential-fields
+(ns ctx.render.if-not-paused.update-potential-fields
   (:require [moon.grid.update-potential-fields :as update-potential-fields]))
 
 (defn f

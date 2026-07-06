@@ -70,7 +70,7 @@
                                                                ]})
                                  ]
                :dispose! editor.app.dispose/dispose!
-               :render-pipeline [(render.clear-screen/step)
+               :render-pipeline [(ctx.render.clear-screen/step)
                                  (editor.app.render/render!)]
                :resize! editor.app.resize/resize!})
    :title "!Editor!"

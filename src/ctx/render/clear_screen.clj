@@ -1,4 +1,4 @@
-(ns render.clear-screen
+(ns ctx.render.clear-screen
   (:require [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]))
 

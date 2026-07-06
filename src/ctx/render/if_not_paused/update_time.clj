@@ -1,4 +1,4 @@
-(ns render.if-not-paused.update-time
+(ns ctx.render.if-not-paused.update-time
   (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (defn f

@@ -1,4 +1,4 @@
-(ns render.remove-destroyed-entities
+(ns ctx.render.remove-destroyed-entities
   (:require [ctx.do :refer [do!]]))
 
 (defn step

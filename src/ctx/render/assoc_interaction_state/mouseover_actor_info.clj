@@ -1,4 +1,4 @@
-(ns render.assoc-interaction-state.mouseover-actor-info
+(ns ctx.render.assoc-interaction-state.mouseover-actor-info
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [gdx.scene2d.actor.is-button :as button?]
             [gdx.scene2d.actor.is-window-title-bar :as window-title-bar?]))

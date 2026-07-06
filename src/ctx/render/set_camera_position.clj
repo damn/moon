@@ -1,4 +1,4 @@
-(ns render.set-camera-position
+(ns ctx.render.set-camera-position
   (:require [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]))
 
 (defn step

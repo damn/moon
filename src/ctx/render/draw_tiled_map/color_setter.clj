@@ -1,4 +1,4 @@
-(ns render.draw-tiled-map.color-setter)
+(ns ctx.render.draw-tiled-map.color-setter)
 
 (defn tile-color-setter*
   [{:keys [ray-blocked?

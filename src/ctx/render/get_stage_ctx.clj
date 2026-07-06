@@ -1,4 +1,4 @@
-(ns render.get-stage-ctx)
+(ns ctx.render.get-stage-ctx)
 
 (defn step
   [{:keys [ctx/stage]

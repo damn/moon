@@ -1,4 +1,4 @@
-(ns render.set-cursor
+(ns ctx.render.set-cursor
   (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (defn step
