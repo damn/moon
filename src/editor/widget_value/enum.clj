@@ -1,6 +1,6 @@
 (ns editor.widget-value.enum
-  (:require [clojure.edn :as edn]
-            [clojure.gdx.select-box.get-selected :as get-selected]))
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box] [clojure.edn :as edn]))
 
 (defn f [_  widget _schemas]
-  (edn/read-string (get-selected/f widget)))
+  (edn/read-string (select-box/get-selected widget)))
