@@ -7,7 +7,7 @@
             [tiled-map.movement-property :as movement-property]
             [tiled-map.add-creatures-layer :as add-creatures-layer]
             [world-fns.modules.area-level-grid :as area-level-grid]
-            [clojure.gdx.map-layers.get :as map-layers-get]
+            [com.badlogic.gdx.maps.map-layers :as map-layers]
             [clojure.gdx.tiled-map.get-layers :as get-layers]))
 
 (defn step
@@ -44,7 +44,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (map-layers-get/f (get-layers/f tiled-map) "creatures")
+                                                    (property-value (map-layers/get (get-layers/f tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))
