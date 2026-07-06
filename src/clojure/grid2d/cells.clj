@@ -1,4 +1,4 @@
-(ns grid2d.cells)
+(ns clojure.grid2d.cells)
 
 (defprotocol Cells
   (->cells [_]))

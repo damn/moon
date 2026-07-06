@@ -1,8 +1,8 @@
-(ns grid2d.fix-nads
+(ns clojure.grid2d.fix-nads
   (:require [clojure.map.assoc-ks :refer [assoc-ks]]
-            [grid2d.get-nads :refer [get-nads]]
-            [grid2d.cells :refer [->cells]]
-            [grid2d.get-tiles-needing-fix-for-nad :as get-tiles-needing-fix-for-nad]))
+            [clojure.grid2d.get-nads :refer [get-nads]]
+            [clojure.grid2d.cells :refer [->cells]]
+            [clojure.grid2d.get-tiles-needing-fix-for-nad :as get-tiles-needing-fix-for-nad]))
 
 (defn f [grid]
   {:pre [(= #{:wall :ground} (set (->cells grid)))]

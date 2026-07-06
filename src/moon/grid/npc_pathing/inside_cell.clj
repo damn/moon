@@ -1,5 +1,5 @@
 (ns moon.grid.npc-pathing.inside-cell
-  (:require [grid2d.get-cells :refer [get-cells]]
+  (:require [clojure.grid2d.get-cells :refer [get-cells]]
             [moon.body.touched-tiles :refer [touched-tiles]]))
 
 (defn f [grid entity cell]

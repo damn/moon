@@ -1,4 +1,4 @@
-(ns grid2d.posis)
+(ns clojure.grid2d.posis)
 
 (defprotocol Positions
   (f [_]))

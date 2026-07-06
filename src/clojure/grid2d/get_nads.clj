@@ -1,6 +1,6 @@
-(ns grid2d.get-nads
-  (:require [grid2d.posis :as posis]
-            [grid2d.is-nad-corner :as nad-corner?]))
+(ns clojure.grid2d.get-nads
+  (:require [clojure.grid2d.posis :as posis]
+            [clojure.grid2d.is-nad-corner :as nad-corner?]))
 
 ; could be made faster because accessing the same posis oftentimes at nad-corner? check
 (let [diagonal-steps [[-1 -1] [-1 1] [1 -1] [1 1]]]

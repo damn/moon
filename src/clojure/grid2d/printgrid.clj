@@ -1,6 +1,6 @@
-(ns grid2d.printgrid
-  (:require [grid2d.height :refer [->height]]
-            [grid2d.width :refer [->width]]))
+(ns clojure.grid2d.printgrid
+  (:require [clojure.grid2d.height :refer [->height]]
+            [clojure.grid2d.width :refer [->width]]))
 
 (defn f
   "Prints with y-up coordinates."

@@ -1,6 +1,6 @@
 (ns world-fns.uf-caves.assoc-transition-cells
-  (:require [grid2d.cells :refer [->cells]]
-            [grid2d.adjacent-wall-positions :as adjacent-wall-positions]))
+  (:require [clojure.grid2d.cells :refer [->cells]]
+            [clojure.grid2d.adjacent-wall-positions :as adjacent-wall-positions]))
 
 (defn f [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid

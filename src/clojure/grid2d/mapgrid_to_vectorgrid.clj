@@ -1,4 +1,4 @@
-(ns grid2d.mapgrid-to-vectorgrid
+(ns clojure.grid2d.mapgrid-to-vectorgrid
   (:require [clojure.grid2d :as grid2d]))
 
 (defn f

@@ -1,4 +1,4 @@
-(ns grid2d.flood-fill
+(ns clojure.grid2d.flood-fill
   (:require [clojure.position.get-8-neighbours :refer [get-8-neighbours]]
             [clojure.map.assoc-ks :refer [assoc-ks]]))
 
