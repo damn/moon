@@ -1,4 +1,4 @@
-(ns effects.handle.projectile
+(ns ctx.effects.handle.projectile
   (:require [moon.body.projectile-start-point :as projectile-start-point]))
 
 (defn f

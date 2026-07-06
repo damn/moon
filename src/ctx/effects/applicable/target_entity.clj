@@ -1,4 +1,4 @@
-(ns effects.applicable.target-entity
+(ns ctx.effects.applicable.target-entity
   (:require [moon.effect.is-applicable :as applicable?]))
 
 (defn f

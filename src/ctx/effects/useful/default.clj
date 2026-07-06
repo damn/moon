@@ -1,4 +1,4 @@
-(ns effects.useful.default)
+(ns ctx.effects.useful.default)
 
 (defn f
   [_ _effect-ctx _ctx]

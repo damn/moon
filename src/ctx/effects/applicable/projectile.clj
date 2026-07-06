@@ -1,4 +1,4 @@
-(ns effects.applicable.projectile)
+(ns ctx.effects.applicable.projectile)
 
 (defn f
   [_ {:keys [effect/target-direction]}]

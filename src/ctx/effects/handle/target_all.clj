@@ -1,4 +1,4 @@
-(ns effects.handle.target-all
+(ns ctx.effects.handle.target-all
   (:require [moon.target-all :as target-all]))
 
 (defn f

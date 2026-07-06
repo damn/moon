@@ -28,11 +28,11 @@
                          )
  (clojure.add-methods/f! moon.effect.is-applicable/f
                          {
-                          :effects/audiovisual   effects.applicable.audiovisual/f
-                          :effects/projectile    effects.applicable.projectile/f
-                          :effects/spawn         effects.applicable.spawn/f
-                          :effects/target-all    effects.applicable.target-all/f
-                          :effects/target-entity effects.applicable.target-entity/f
+                          :effects/audiovisual   ctx.effects.applicable.audiovisual/f
+                          :effects/projectile    ctx.effects.applicable.projectile/f
+                          :effects/spawn         ctx.effects.applicable.spawn/f
+                          :effects/target-all    ctx.effects.applicable.target-all/f
+                          :effects/target-entity ctx.effects.applicable.target-entity/f
 
                           :effects.target/audiovisual  ctx.effects-target.applicable.audiovisual/f
                           :effects.target/convert      ctx.effects-target.applicable.convert/f
@@ -45,23 +45,23 @@
                          )
  (clojure.add-methods/f! moon.effect.is-useful/f
                          {
-                          :default               effects.useful.default/f
+                          :default               ctx.effects.useful.default/f
 
-                          :effects/audiovisual   effects.useful.audiovisual/f
-                          :effects/projectile    effects.useful.projectile/f
-                          :effects/target-all    effects.useful.target-all/f
-                          :effects/target-entity effects.useful.target-entity/f
+                          :effects/audiovisual   ctx.effects.useful.audiovisual/f
+                          :effects/projectile    ctx.effects.useful.projectile/f
+                          :effects/target-all    ctx.effects.useful.target-all/f
+                          :effects/target-entity ctx.effects.useful.target-entity/f
 
                           :effects.target/audiovisual ctx.effects-target.useful.audiovisual/f
                           }
                          )
  (clojure.add-methods/f! moon.effect.handle/f
                          {
-                          :effects/audiovisual   effects.handle.audiovisual/f
-                          :effects/projectile    effects.handle.projectile/f
-                          :effects/spawn         effects.handle.spawn/f
-                          :effects/target-all    effects.handle.target-all/f
-                          :effects/target-entity effects.handle.target-entity/f
+                          :effects/audiovisual   ctx.effects.handle.audiovisual/f
+                          :effects/projectile    ctx.effects.handle.projectile/f
+                          :effects/spawn         ctx.effects.handle.spawn/f
+                          :effects/target-all    ctx.effects.handle.target-all/f
+                          :effects/target-entity ctx.effects.handle.target-entity/f
 
                           :effects.target/audiovisual  ctx.effects-target.handle.audiovisual/f
                           :effects.target/convert      ctx.effects-target.handle.convert/f
@@ -74,10 +74,10 @@
                          )
  (clojure.add-methods/f! moon.effect.render/f
                          {
-                          :default               effects.render.default/f
+                          :default               ctx.effects.render.default/f
 
-                          :effects/target-all    effects.render.target-all/f
-                          :effects/target-entity effects.render.target-entity/f
+                          :effects/target-all    ctx.effects.render.target-all/f
+                          :effects/target-entity ctx.effects.render.target-entity/f
                           }
                          )
  (gdx.use-glfw-async/f)

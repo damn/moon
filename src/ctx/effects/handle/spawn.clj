@@ -1,4 +1,4 @@
-(ns effects.handle.spawn)
+(ns ctx.effects.handle.spawn)
 
 (defn f
   [[_ {:keys [property/id] :as property}]

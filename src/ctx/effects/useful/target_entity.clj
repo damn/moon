@@ -1,4 +1,4 @@
-(ns effects.useful.target-entity
+(ns ctx.effects.useful.target-entity
   (:require [moon.body.in-range :refer [in-range?]]))
 
 (defn f

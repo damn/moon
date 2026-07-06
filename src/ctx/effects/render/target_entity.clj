@@ -1,4 +1,4 @@
-(ns effects.render.target-entity
+(ns ctx.effects.render.target-entity
   (:require [moon.body.in-range :refer [in-range?]]
             [moon.body.start-point :refer [start-point]]
             [moon.body.end-point :refer [end-point]]))

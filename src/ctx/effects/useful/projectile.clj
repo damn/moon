@@ -1,4 +1,4 @@
-(ns effects.useful.projectile
+(ns ctx.effects.useful.projectile
   (:require [clojure.math.vector2.distance :as distance]
             [clojure.math.vector2.double-ray-endpositions :as double-ray-endpositions]
             [moon.raycaster.is-blocked :as blocked?]))
