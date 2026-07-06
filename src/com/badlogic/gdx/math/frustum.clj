@@ -1,5 +1,5 @@
-(ns clojure.gdx.frustum.plane-points
+(ns com.badlogic.gdx.math.frustum
   (:import (com.badlogic.gdx.math Frustum)))
 
-(defn f [^Frustum frustum]
+(defn plane-points [^Frustum frustum]
   (.planePoints frustum))
