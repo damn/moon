@@ -3,7 +3,7 @@
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
             [grid2d.height :refer [->height]]
-            [clojure.gdx.static-tiled-map-tile.new-tile :as new-static-tiled-map-tile]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.gdx.tiled-map-tile-layer.get-cell :as get-cell]
             [clojure.gdx.tiled-map-tile-layer.get-name :as get-name]
             [clojure.gdx.tiled-map-tile-layer.get-properties :as get-layer-properties]
@@ -17,7 +17,7 @@
   (let [copy-tile (memoize
                    (fn [tile]
                      (assert tile)
-                     (new-static-tiled-map-tile/f tile)))]
+                     (static-tiled-map-tile/new-tile tile)))]
     {:properties (merge (clojurize/f (get-properties/f schema-tiled-map))
                         {"width" (->width grid)
                          "height" (->height grid)})
