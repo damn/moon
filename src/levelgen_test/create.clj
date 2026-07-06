@@ -1,11 +1,11 @@
 (ns levelgen-test.create
   (:require
+            [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.gdx :as gdx]
-            [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.orthographic-camera.new :as new-camera]
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
@@ -49,7 +49,7 @@
              :ctx/world-viewport world-viewport
              :ctx/camera (:viewport/camera world-viewport)}
         ctx (generate/f ctx (:initial-level-fn config))]
-    (set-input-processor!/f input stage)
+    (input/set-input-processor! input stage)
     (add-actor/f (:ctx/stage ctx)
                  (window/create
                   {:title "Edit"

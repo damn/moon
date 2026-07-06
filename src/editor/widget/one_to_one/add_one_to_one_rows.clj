@@ -1,12 +1,12 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
   (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.group.clear-children :as clear-children]
-            [clojure.gdx.image.new :as new-image]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [clojure.gdx.stage.add-actor :as add-actor]
-            [clojure.gdx.window.instance? :as window?]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
             [scene2d.ui.text-button :as text-button]
@@ -25,7 +25,7 @@
    property-type
    property-id]
   (let [redo-rows (fn [ctx id]
-                    (clear-children/f table)
+                    (group/clear-children! table)
                     (add-one-to-one-rows ctx table property-type id)
                     (layout/pack (find-ancestor table window?/f)))]
     (add-rows!
@@ -52,7 +52,7 @@
                                                             (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
-           {:actor (doto (new-image/f (textures/texture-region textures (property-image/f property)))
+           {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
                      (actor/add-listener! (text-tooltip/create (tooltip/f property) skin))
                      (actor/set-user-object! property-id))}))]
       [(when property-id

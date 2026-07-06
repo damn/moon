@@ -1,9 +1,9 @@
 (ns editor.window.with-window-close
   (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.stage.set-ctx :as set-ctx]
-            [clojure.gdx.window.instance? :as window?]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
             [scene2d.actor.find-ancestor :refer [find-ancestor]]))

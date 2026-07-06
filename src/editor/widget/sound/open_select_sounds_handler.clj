@@ -1,9 +1,9 @@
 (ns editor.widget.sound.open-select-sounds-handler
   (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.stage.add-actor :as add-actor]
-            [clojure.gdx.window.set-modal :as set-modal]
             [scene2d.ui.scroll-pane :as scroll-pane]
             [scene2d.ui.window.add-close-button :as add-close-button]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
@@ -45,4 +45,4 @@
                               :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
                                            (actor/get-height table))})]]})
                    (add-close-button/f! skin)
-                   (set-modal/f true)))))
+                   (window/set-modal! true)))))

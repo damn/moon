@@ -1,9 +1,9 @@
 (ns editor.window
   (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.group.add-actor :as add-actor]
-            [clojure.gdx.window.set-modal :as set-modal]
             [editor.create-widget :as create-widget]
             [editor.widget-value :as widget-value]
             [editor.window.with-window-close :as with-window-close]
@@ -61,8 +61,8 @@
                            scroll-pane-height
                            50)]]})
       (add-close-button/f! skin)
-      (set-modal/f true)
-      (add-actor/f (actor/f
+      (window/set-modal! true)
+      (group/add-actor! (actor/f
                     {:act! (fn [this delta]
                              (when-let [stage (actor/get-stage this)]
                                (let [ctx (:stage/ctx stage)]

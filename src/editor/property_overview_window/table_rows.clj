@@ -1,8 +1,8 @@
 (ns editor.property-overview-window.table-rows
   (:require
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.group.add-actor :as add-actor]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.texture-region.get-region-height :as get-region-height]
             [clojure.gdx.texture-region.get-region-width :as get-region-width]
@@ -21,7 +21,7 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (let [stack (stack/create)]
-                (run! #(add-actor/f stack %)
+                (run! #(group/add-actor! stack %)
                       [(doto (image-button/new
                               (doto (new-texture-region-drawable/f texture-region)
                                 (set-min-size/f (* image-scale (get-region-width/f texture-region))

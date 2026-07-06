@@ -1,5 +1,6 @@
 (ns tx.ui-update-skill
-  (:require [clojure.gdx.group.find-actor :as find-actor]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [moon.action-bar.add-skill :as add-skill]
             [moon.textures :as textures]
             [info.entity :refer [info-text]]))
@@ -12,7 +13,7 @@
    eid skill]
   (-> stage
       :stage/root
-      (#(find-actor/f % "moon.ui.action-bar"))
+      (#(group/find-actor % "moon.ui.action-bar"))
       (add-skill/f {:skill-id (:property/id skill)
                     :texture-region (textures/texture-region textures (:entity/image skill))
                     :tooltip-text (info-text skill ctx)}

@@ -1,5 +1,6 @@
 (ns moon.ui.error-window
-  (:require [clojure.gdx.window.set-modal :as set-modal]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.window :as window]
             [scene2d.ui.window.add-close-button :as add-close-button]
@@ -18,4 +19,4 @@
                                    {:text label-text
                                     :skin skin})}]]})
       (add-close-button/f! skin)
-      (set-modal/f true))))
+      (window/set-modal! true))))

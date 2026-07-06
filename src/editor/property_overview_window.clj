@@ -1,5 +1,6 @@
 (ns editor.property-overview-window
-  (:require [clojure.gdx.window.set-modal :as set-modal]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [editor.constants :refer [property-type->overview-table-props]]
             [editor.property-overview-window.table-rows :refer [overview-table-rows*]]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -33,4 +34,4 @@
                              (partition-all columns)
                              (overview-table-rows* skin image-scale)))})
     (add-close-button/f! skin)
-    (set-modal/f true)))
+    (window/set-modal! true)))

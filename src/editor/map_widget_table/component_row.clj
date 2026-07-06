@@ -1,8 +1,8 @@
 (ns editor.map-widget-table.component-row
   (:require
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.group.get-children :as get-children]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -26,7 +26,7 @@
                                                           (actor/remove! (first (filter (fn [actor]
                                                                                       (and (actor/get-user-object actor)
                                                                                            (= k ((actor/get-user-object actor) 0))))
-                                                                                    (get-children/f table))))
+                                                                                    (group/get-children table))))
                                                           (let [ctx (:stage/ctx (event/get-stage event))]
                                                             ((:ctx/rebuild-editor-window! ctx) ctx)))))))
                             :left? true}

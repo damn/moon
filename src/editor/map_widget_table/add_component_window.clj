@@ -1,9 +1,9 @@
 (ns editor.map-widget-table.add-component-window
   (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
-            [clojure.gdx.window.set-modal :as set-modal]
             [editor.build-widget :as build-widget]
             [editor.widget-value :as widget-value]
             [scene2d.ui.table.add-rows :refer [add-rows!]]
@@ -22,7 +22,7 @@
                        :skin skin
                        :table/cell-defaults {:pad 5}})
                  (add-close-button/f! skin)
-                 (set-modal/f true))
+                 (window/set-modal! true))
         remaining-ks (sort (remove (set (keys (widget-value/f schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
     (add-rows!

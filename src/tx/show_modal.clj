@@ -1,10 +1,10 @@
 (ns tx.show-modal
   (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.utils.align :as align]
-            [clojure.gdx.group.find-actor :as find-actor]
             [clojure.gdx.stage.add-actor :as add-actor]
-            [clojure.gdx.window.set-modal :as set-modal]
             [scene2d.actor.set-position :refer [set-position!]]
             [scene2d.ui.label :as label]
             [scene2d.ui.text-button :as text-button]
@@ -16,7 +16,7 @@
            ctx/stage]
     :as ctx}
    {:keys [title text button-text on-click]}]
-  (assert (not (find-actor/f (:stage/root stage) "moon.ui.modal-window")))
+  (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
   (add-actor/f stage
                (doto (window/create
                       {:title title
@@ -27,9 +27,9 @@
                                     [{:actor (doto (text-button/create {:text button-text :skin skin})
                                                (actor/add-listener! (change-listener/create
                                                                 (fn [_event _actor]
-                                                                  (actor/remove! (find-actor/f (:stage/root stage) "moon.ui.modal-window"))
+                                                                  (actor/remove! (group/find-actor (:stage/root stage) "moon.ui.modal-window"))
                                                                   (on-click)))))}]]})
-                 (set-modal/f true)
+                 (window/set-modal! true)
                  (actor/set-name! "moon.ui.modal-window")
                  (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                  (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
