@@ -1,5 +1,5 @@
 (ns scene2d.ui.stack
-  (:require [clojure.gdx.stack.new :as new-stack]))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]))
 
 (defn create []
-  (new-stack/f))
+  (stack/new))
