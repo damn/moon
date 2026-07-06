@@ -3,9 +3,7 @@
             [clojure.gdx.disposable.dispose :as dispose]
             [clojure.gdx.files.internal :as internal]
             [clojure.gdx.fit-viewport.new :as fit-viewport]
-            [clojure.gdx.gdx.files :as files]
-            [clojure.gdx.gdx.graphics :as graphics]
-            [clojure.gdx.gdx.input :as input]
+            [com.badlogic.gdx.gdx :as gdx]
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.orthographic-camera.new :as new-camera]
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
@@ -22,9 +20,9 @@
 
 (defn f
   [config]
-  (let [files (files/f)
-        input (input/f)
-        graphics (graphics/f)
+  (let [files (gdx/files)
+        input (gdx/input)
+        graphics (gdx/graphics)
         sprite-batch (sprite-batch/f)
         ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                          (:ui-viewport-height config))
