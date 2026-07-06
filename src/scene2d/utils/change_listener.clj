@@ -1,5 +1,5 @@
 (ns scene2d.utils.change-listener
-  (:require [clojure.gdx.change-listener.new :as new-change-listener]))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn create [f]
-  (new-change-listener/f f))
+  (change-listener/new f))
