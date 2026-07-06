@@ -1,5 +1,5 @@
 (ns scene2d.utils.click-listener
-  (:require [clojure.gdx.click-listener.new :as new-click-listener]))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]))
 
 (defn create [f]
-  (new-click-listener/f f))
+  (click-listener/new f))
