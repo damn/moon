@@ -4,5 +4,5 @@
  :active-skill :cursors/sandclock
  :stunned :cursors/denied
  :player-moving :cursors/walking
- :player-idle entity.state.cursor.player-idle/f
+ :player-idle ctx.entity.state.cursor.player-idle/f
  }

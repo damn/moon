@@ -1,15 +1,15 @@
 {
- :entity/animation entity.tick.animation/f
- :entity/alert-friendlies-after-duration entity.tick.alert-friendlies-after-duration/f
- :entity/string-effect entity.tick.string-effect/f
- :entity/skills entity.tick.skills/f
- :entity/temp-modifier entity.tick.temp-modifier/f
- :entity/projectile-collision entity.tick.projectile-collision/f
- :active-skill entity.tick.active-skill/f
- :entity/delete-after-duration entity.tick.delete-after-duration/f
- :stunned entity.tick.stunned/f
- :npc-moving entity.tick.npc-moving/f
- :npc-sleeping entity.tick.npc-sleeping/f
- :npc-idle entity.tick.npc-idle/f
- :entity/movement entity.tick.movement/f
+ :entity/animation ctx.entity.tick.animation/f
+ :entity/alert-friendlies-after-duration ctx.entity.tick.alert-friendlies-after-duration/f
+ :entity/string-effect ctx.entity.tick.string-effect/f
+ :entity/skills ctx.entity.tick.skills/f
+ :entity/temp-modifier ctx.entity.tick.temp-modifier/f
+ :entity/projectile-collision ctx.entity.tick.projectile-collision/f
+ :active-skill ctx.entity.tick.active-skill/f
+ :entity/delete-after-duration ctx.entity.tick.delete-after-duration/f
+ :stunned ctx.entity.tick.stunned/f
+ :npc-moving ctx.entity.tick.npc-moving/f
+ :npc-sleeping ctx.entity.tick.npc-sleeping/f
+ :npc-idle ctx.entity.tick.npc-idle/f
+ :entity/movement ctx.entity.tick.movement/f
  }

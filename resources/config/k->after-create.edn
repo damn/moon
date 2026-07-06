@@ -1,5 +1,5 @@
 {
- :entity/fsm entity.after-create.fsm/f
- :entity/inventory entity.after-create.inventory/f
- :entity/skills entity.after-create.skills/f
+ :entity/fsm ctx.entity.after-create.fsm/f
+ :entity/inventory ctx.entity.after-create.inventory/f
+ :entity/skills ctx.entity.after-create.skills/f
  }

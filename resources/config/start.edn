@@ -10,20 +10,20 @@
                          )
  (clojure.add-methods/f! moon.create-entity-state/f
                          {
-                          :default               entity.state.create.default/f
+                          :default               ctx.entity.state.create.default/f
 
-                          :active-skill          entity.state.create.active-skill/f
-                          :stunned               entity.state.create.stunned/f
-                          :player-moving         entity.state.create.player-moving/f
-                          :npc-moving            entity.state.create.npc-moving/f
-                          :player-item-on-cursor entity.state.create.player-item-on-cursor/f
+                          :active-skill          ctx.entity.state.create.active-skill/f
+                          :stunned               ctx.entity.state.create.stunned/f
+                          :player-moving         ctx.entity.state.create.player-moving/f
+                          :npc-moving            ctx.entity.state.create.npc-moving/f
+                          :player-item-on-cursor ctx.entity.state.create.player-item-on-cursor/f
                           }
                          )
  (clojure.add-methods/f! moon.entity-state-draw-ui-view/f
                          {
-                          :default               entity.state.draw-ui-view.default/f
+                          :default               ctx.entity.state.draw-ui-view.default/f
 
-                          :player-item-on-cursor entity.state.draw-ui-view.player-item-on-cursor/f
+                          :player-item-on-cursor ctx.entity.state.draw-ui-view.player-item-on-cursor/f
                           }
                          )
  (clojure.add-methods/f! moon.effect.is-applicable/f
