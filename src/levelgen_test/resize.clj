@@ -1,9 +1,9 @@
 (ns levelgen-test.resize
-  (:require [clojure.gdx.viewport.update :as update]))
+  (:require [com.badlogic.gdx.utils.viewport :as viewport]))
 
 (defn f
   [{:keys [ctx/stage
            ctx/world-viewport]}
    width height]
-  (update/f (:stage/viewport stage) width height true)
-  (update/f world-viewport width height false))
+  (viewport/update! (:stage/viewport stage) width height true)
+  (viewport/update! world-viewport width height false))

@@ -1,7 +1,6 @@
 (ns clojure.gdx.unproject
   (:require [com.badlogic.gdx.math.vector2 :as vector2]
-            [com.badlogic.gdx.utils.viewport :as viewport]
-            [clojure.gdx.unproject :as unproject]))
+            [com.badlogic.gdx.utils.viewport :as viewport]))
 
 (defn f [viewport xy]
   (-> viewport

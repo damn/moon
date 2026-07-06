@@ -1,6 +1,6 @@
 (ns editor.app.resize
-  (:require [clojure.gdx.viewport.update :as update-viewport]))
+  (:require [com.badlogic.gdx.utils.viewport :as viewport]))
 
 (defn resize!
   [{:keys [ctx/stage]} width height]
-  (update-viewport/f (:stage/viewport stage) width height true))
+  (viewport/update! (:stage/viewport stage) width height true))
