@@ -1,6 +1,6 @@
 (ns ctx.default-font
-  (:require [clojure.gdx.bitmap-font.get-data :as get-data]
-            [clojure.gdx.bitmap-font.set-use-integer-positions :as set-use-integer-positions]
+  (:require
+            [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clojure.gdx.bitmap-font$bitmap-font-data.set-markup-enabled :as set-markup-enabled]
             [clojure.gdx.bitmap-font$bitmap-font-data.set-scale :as set-scale]
             [com.badlogic.gdx.utils.disposable :as disposable]
@@ -28,9 +28,9 @@
                       (set-min-filter/f texture-filter/linear)
                       (set-mag-filter/f texture-filter/linear))
         font (generate-font/f generator parameter)
-        font-data (get-data/f font)]
+        font-data (bitmap-font/get-data font)]
     (disposable/dispose! generator)
     (set-scale/f font-data (/ quality-scaling))
     (set-markup-enabled/f font-data true)
-    (set-use-integer-positions/f font use-integer-positions?)
+    (bitmap-font/set-use-integer-positions! font use-integer-positions?)
     font))
