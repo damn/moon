@@ -5,9 +5,9 @@
             [gdx.draw-tiled-map :as draw-tiled-map]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [gdx.input.key-pressed :as key-pressed?]
-            [orthographic-camera.inc-zoom :refer [inc-zoom!]]
-            [orthographic-camera.position :as get-position]
-            [orthographic-camera.set-position :refer [set-position!]]
+            [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
+            [gdx.graphics.orthographic-camera.position :as get-position]
+            [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
             [scene2d.stage :refer [set-ctx!]]))
 
 (defn f

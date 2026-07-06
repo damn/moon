@@ -1,5 +1,5 @@
 (ns render.draw-tiled-map
-  (:require [orthographic-camera.position :as get-position]
+  (:require [gdx.graphics.orthographic-camera.position :as get-position]
             [gdx.draw-tiled-map :as draw-tiled-map]
             [render.draw-tiled-map.color-setter :refer [tile-color-setter*]]
             [moon.raycaster.is-blocked :as blocked?]))

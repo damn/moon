@@ -1,5 +1,5 @@
 (ns draw-on-world-viewport.draw-cell-debug
-  (:require [orthographic-camera.visible-tiles :refer [visible-tiles]]))
+  (:require [gdx.graphics.orthographic-camera.visible-tiles :refer [visible-tiles]]))
 
 (defn f
   [{:keys [ctx/colors

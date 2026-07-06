@@ -1,5 +1,5 @@
-(ns orthographic-camera.visible-tiles
-  (:require [orthographic-camera.frustum :refer [frustum]]))
+(ns gdx.graphics.orthographic-camera.visible-tiles
+  (:require [gdx.graphics.orthographic-camera.frustum :refer [frustum]]))
 
 (defn visible-tiles [camera]
   (let [[left-x right-x bottom-y top-y] (frustum camera)]

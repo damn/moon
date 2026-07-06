@@ -1,6 +1,6 @@
-(ns orthographic-camera.calculate-zoom
+(ns gdx.graphics.orthographic-camera.calculate-zoom
   (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [orthographic-camera.position :as get-position]))
+            [gdx.graphics.orthographic-camera.position :as get-position]))
 
 (defn calculate-zoom
   "calculates the zoom value for camera to see all the 4 points."

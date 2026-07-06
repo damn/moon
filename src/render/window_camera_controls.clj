@@ -3,7 +3,7 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [gdx.input.key-just-pressed :as key-just-pressed?]
             [gdx.input.key-pressed :as key-pressed?]
-            [orthographic-camera.inc-zoom :refer [inc-zoom!]]))
+            [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]))
 
 (defn step
   [{:keys [ctx/input

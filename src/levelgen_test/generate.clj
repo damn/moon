@@ -9,7 +9,7 @@
             [moon.creature-tiles :as creature-tiles]
             [moon.db.all-raw :refer [all-raw]]
             [moon.textures :as textures]
-            [orthographic-camera.set-position :refer [set-position!]]))
+            [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]))
 
 ; TODO does too many things!
 (defn f
