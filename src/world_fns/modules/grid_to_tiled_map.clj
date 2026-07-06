@@ -1,5 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
@@ -7,8 +8,7 @@
             [grid2d.posis :as posis]
             [grid2d.width :refer [->width]]
             [grid2d.height :refer [->height]]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]))
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn grid->tiled-map
   [schema-tiled-map grid]
@@ -28,4 +28,4 @@
                              :when local-position]
                          (when (vector? local-position)
                            (when-let [cell (tiled-map-tile-layer/get-cell layer (local-position 0) (local-position 1))]
-                             [position (copy-tile (get-tile/f cell))])))})}))
+                             [position (copy-tile (tiled-map-tile-layer-cell/get-tile cell))])))})}))

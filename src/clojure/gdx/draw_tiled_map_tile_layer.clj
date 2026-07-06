@@ -1,10 +1,10 @@
 (ns clojure.gdx.draw-tiled-map-tile-layer
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]
             [clojure.gdx.draw-tiled-map-tile :as draw-tile])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
 
@@ -53,7 +53,7 @@
                x x-start]
           (when (< col col2)
             (when-let [cell (.getCell layer col row)]
-              (when-let [tile (get-tile/f cell)]
+              (when-let [tile (tiled-map-tile-layer-cell/get-tile cell)]
                 (draw-tile/f! x
                               y
                               tile

@@ -1,11 +1,10 @@
 (ns tiled.tiled-map-tile-layer
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.map-properties :as map-properties]
-            [clojure.gdx.tiled-map-tile-layer$cell.new :as new-cell]
-            [clojure.gdx.tiled-map-tile-layer$cell.set-tile :as set-tile]))
+            [com.badlogic.gdx.maps.map-properties :as map-properties]))
 
 (defn f
   [{:keys [width
@@ -27,6 +26,6 @@
     (doseq [[[x y] tile] tiles
             :when tile]
       (tiled-map-tile-layer/set-cell! layer x y
-                  (doto (new-cell/f)
-                    (set-tile/f tile))))
+                  (doto (tiled-map-tile-layer-cell/new)
+                    (tiled-map-tile-layer-cell/set-tile! tile))))
     layer))
