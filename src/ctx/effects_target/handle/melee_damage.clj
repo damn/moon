@@ -1,4 +1,4 @@
-(ns effects-target.handle.melee-damage
+(ns ctx.effects-target.handle.melee-damage
   (:require [moon.effect.handle :as handle]
             [moon.creature.melee-damage :as melee-damage]))
 

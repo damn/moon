@@ -34,13 +34,13 @@
                           :effects/target-all    effects.applicable.target-all/f
                           :effects/target-entity effects.applicable.target-entity/f
 
-                          :effects.target/audiovisual  effects-target.applicable.audiovisual/f
-                          :effects.target/convert      effects-target.applicable.convert/f
-                          :effects.target/damage       effects-target.applicable.damage/f
-                          :effects.target/kill         effects-target.applicable.kill/f
-                          :effects.target/melee-damage effects-target.applicable.melee-damage/f
-                          :effects.target/spiderweb    effects-target.applicable.spiderweb/f
-                          :effects.target/stun         effects-target.applicable.stun/f
+                          :effects.target/audiovisual  ctx.effects-target.applicable.audiovisual/f
+                          :effects.target/convert      ctx.effects-target.applicable.convert/f
+                          :effects.target/damage       ctx.effects-target.applicable.damage/f
+                          :effects.target/kill         ctx.effects-target.applicable.kill/f
+                          :effects.target/melee-damage ctx.effects-target.applicable.melee-damage/f
+                          :effects.target/spiderweb    ctx.effects-target.applicable.spiderweb/f
+                          :effects.target/stun         ctx.effects-target.applicable.stun/f
                           }
                          )
  (clojure.add-methods/f! moon.effect.is-useful/f
@@ -52,7 +52,7 @@
                           :effects/target-all    effects.useful.target-all/f
                           :effects/target-entity effects.useful.target-entity/f
 
-                          :effects.target/audiovisual effects-target.useful.audiovisual/f
+                          :effects.target/audiovisual ctx.effects-target.useful.audiovisual/f
                           }
                          )
  (clojure.add-methods/f! moon.effect.handle/f
@@ -63,13 +63,13 @@
                           :effects/target-all    effects.handle.target-all/f
                           :effects/target-entity effects.handle.target-entity/f
 
-                          :effects.target/audiovisual  effects-target.handle.audiovisual/f
-                          :effects.target/convert      effects-target.handle.convert/f
-                          :effects.target/damage       effects-target.handle.damage/f
-                          :effects.target/kill         effects-target.handle.kill/f
-                          :effects.target/melee-damage effects-target.handle.melee-damage/f
-                          :effects.target/spiderweb    effects-target.handle.spiderweb/f
-                          :effects.target/stun         effects-target.handle.stun/f
+                          :effects.target/audiovisual  ctx.effects-target.handle.audiovisual/f
+                          :effects.target/convert      ctx.effects-target.handle.convert/f
+                          :effects.target/damage       ctx.effects-target.handle.damage/f
+                          :effects.target/kill         ctx.effects-target.handle.kill/f
+                          :effects.target/melee-damage ctx.effects-target.handle.melee-damage/f
+                          :effects.target/spiderweb    ctx.effects-target.handle.spiderweb/f
+                          :effects.target/stun         ctx.effects-target.handle.stun/f
                           }
                          )
  (clojure.add-methods/f! moon.effect.render/f

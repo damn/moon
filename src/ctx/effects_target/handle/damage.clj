@@ -1,4 +1,4 @@
-(ns effects-target.handle.damage
+(ns ctx.effects-target.handle.damage
   (:require [clojure.rand.int-between :refer [rand-int-between]]
             [moon.stats.effective-armor-save :as effective-armor-save]
             [moon.stats.get-hitpoints :as get-hitpoints]

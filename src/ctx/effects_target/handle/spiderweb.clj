@@ -1,4 +1,4 @@
-(ns effects-target.handle.spiderweb
+(ns ctx.effects-target.handle.spiderweb
   (:require [moon.stats.add-mods :as add-mods]
             [clojure.timer.create :refer [create-timer]]))
 

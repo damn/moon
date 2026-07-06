@@ -1,4 +1,4 @@
-(ns effects-target.applicable.damage)
+(ns ctx.effects-target.applicable.damage)
 
 (defn f
   [_ {:keys [effect/target]}]

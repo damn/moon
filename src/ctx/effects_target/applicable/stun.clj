@@ -1,4 +1,4 @@
-(ns effects-target.applicable.stun)
+(ns ctx.effects-target.applicable.stun)
 
 (defn f
   [_ {:keys [effect/target]}]

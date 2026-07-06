@@ -1,4 +1,4 @@
-(ns effects-target.applicable.convert
+(ns ctx.effects-target.applicable.convert
   (:require [moon.faction :as faction]))
 
 (defn f

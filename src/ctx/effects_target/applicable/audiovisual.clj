@@ -1,4 +1,4 @@
-(ns effects-target.applicable.audiovisual)
+(ns ctx.effects-target.applicable.audiovisual)
 
 (defn f
   [_ {:keys [effect/target]}]

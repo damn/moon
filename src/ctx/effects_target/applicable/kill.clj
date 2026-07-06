@@ -1,4 +1,4 @@
-(ns effects-target.applicable.kill)
+(ns ctx.effects-target.applicable.kill)
 
 (defn f
   [_ {:keys [effect/target]}]

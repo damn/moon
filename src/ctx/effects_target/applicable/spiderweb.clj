@@ -1,4 +1,4 @@
-(ns effects-target.applicable.spiderweb)
+(ns ctx.effects-target.applicable.spiderweb)
 
 (defn f
   [_ {:keys [effect/target]}]
