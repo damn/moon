@@ -30,8 +30,8 @@
                           :s/val-max     editor.widget-value.val-max/f
                           }
                          )
- (clojure.gdx.use-glfw-async/f)
- (clojure.gdx.application/f!
+ (gdx.use-glfw-async/f)
+ (gdx.application/f!
   {:listener (moon.application.listener/f
               {
                :state-var editor.app/state
