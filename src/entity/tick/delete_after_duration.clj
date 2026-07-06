@@ -1,5 +1,5 @@
 (ns entity.tick.delete-after-duration
-  (:require [timer.stopped :refer [stopped?]]))
+  (:require [clojure.timer.stopped :refer [stopped?]]))
 
 (defn f
   [counter eid {:keys [ctx/elapsed-time]}]

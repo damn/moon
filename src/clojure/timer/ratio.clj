@@ -1,5 +1,5 @@
-(ns timer.ratio
-  (:require [timer.stopped :refer [stopped?]]))
+(ns clojure.timer.ratio
+  (:require [clojure.timer.stopped :refer [stopped?]]))
 
 (defn f [elapsed-time {:keys [duration stop-time] :as timer}]
   {:post [(<= 0 % 1)]}

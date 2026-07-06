@@ -1,7 +1,7 @@
 (ns entity.render.active-skill
   (:require [clojure.math :as math]
             [moon.effect.render :as render]
-            [timer.ratio :as ratio]
+            [clojure.timer.ratio :as ratio]
             [moon.textures :as textures]))
 
 (let [radius (let [tile-size 48

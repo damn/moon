@@ -1,4 +1,4 @@
-(ns timer.create)
+(ns clojure.timer.create)
 
 (defn create-timer
   [elapsed-time duration]

@@ -1,6 +1,6 @@
 (ns tx.add-text-effect
-  (:require [timer.increment :as increment]
-            [timer.create :refer [create-timer]]))
+  (:require [clojure.timer.increment :as increment]
+            [clojure.timer.create :refer [create-timer]]))
 
 (defn do! [{:keys [ctx/elapsed-time]} eid text duration]
   [[:tx/assoc

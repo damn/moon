@@ -1,5 +1,5 @@
 (ns entity.state.create.stunned
-  (:require [timer.create :refer [create-timer]]))
+  (:require [clojure.timer.create :refer [create-timer]]))
 
 (defn f
   [[_k duration] _eid {:keys [ctx/elapsed-time]}]

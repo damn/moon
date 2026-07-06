@@ -1,5 +1,5 @@
 (ns entity.create.delete-after-duration
-  (:require [timer.create :refer [create-timer]]))
+  (:require [clojure.timer.create :refer [create-timer]]))
 
 (defn f
   [duration {:keys [ctx/elapsed-time]}]
