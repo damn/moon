@@ -3,7 +3,7 @@
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.files :as files]
             [clojure.gdx.graphics.new-cursor :as new-cursor]
-            [clojure.gdx.pixmap.new :as pixmap]
+            [com.badlogic.gdx.graphics.pixmap :as pixmap]
             [clojure.java.io :as io]))
 
 (defn step

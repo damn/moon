@@ -1,8 +1,6 @@
 (ns ctx.shape-drawer-texture
   (:require [com.badlogic.gdx.utils.disposable :as disposable]
-            [clojure.gdx.pixmap.draw-pixel :as draw-pixel]
-            [clojure.gdx.pixmap.new :as pixmap]
-            [clojure.gdx.pixmap.set-color :as set-color]
+            [com.badlogic.gdx.graphics.pixmap :as pixmap]
             [com.badlogic.gdx.graphics.pixmap$format :as pixmap-format]
             [clojure.gdx.texture.new :as texture]))
 
