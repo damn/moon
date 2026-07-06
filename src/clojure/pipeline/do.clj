@@ -1,4 +1,4 @@
-(ns pipeline.do)
+(ns clojure.pipeline.do)
 
 (defn step [ctx [f! & params]]
   (apply f! ctx params)

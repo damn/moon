@@ -41,7 +41,7 @@
                                  (map.assoc-create/f :ctx/skin ctx.skin/step)
                                  (map.assoc-create/f :ctx/db ctx.db/step)
                                  (map.assoc-create/f :ctx/stage ctx.stage/step)
-                                 (pipeline.do/step
+                                 (clojure.pipeline.do/step
                                   (ctx.add-stage-actors/f! [[editor.main-window/create]]))
                                  (map.create/f :ctx/textures (ctx.textures/step
                                                               {:folder "resources/"
