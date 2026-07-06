@@ -1,5 +1,6 @@
 (ns editor.property-overview-window.table-rows
   (:require
+            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
@@ -7,8 +8,6 @@
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.texture-region.get-region-height :as get-region-height]
             [clojure.gdx.texture-region.get-region-width :as get-region-width]
-            [clojure.gdx.texture-region-drawable.new :as new-texture-region-drawable]
-            [clojure.gdx.texture-region-drawable.set-min-size :as set-min-size]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [scene2d.ui.stack :as stack]
             [scene2d.ui.text-tooltip :as text-tooltip]
@@ -24,8 +23,8 @@
       {:actor (let [stack (stack/create)]
                 (run! #(group/add-actor! stack %)
                       [(doto (image-button/new
-                              (doto (new-texture-region-drawable/f texture-region)
-                                (set-min-size/f (* image-scale (get-region-width/f texture-region))
+                              (doto (texture-region-drawable/new texture-region)
+                                (texture-region-drawable/set-min-size! (* image-scale (get-region-width/f texture-region))
                                                 (* image-scale (get-region-height/f texture-region)))))
                         (actor/add-listener! (change-listener/create
                                          (fn [event actor]

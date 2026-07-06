@@ -1,11 +1,10 @@
 (ns moon.inventory-window.set-item
   (:require
+            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.texture-region-drawable.new :as new-texture-region-drawable]
-            [clojure.gdx.texture-region-drawable.set-min-size :as set-min-size]
             [scene2d.ui.text-tooltip :as text-tooltip]
             [moon.inventory-window.get-cell :as get-cell]))
 
@@ -13,7 +12,7 @@
   (let [cell-widget (get-cell/f inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")
         cell-size (:cell-size (actor/get-user-object image-widget))]
-    (image/set-drawable! image-widget (doto (new-texture-region-drawable/f texture-region)
-                                   (set-min-size/f cell-size cell-size)))
+    (image/set-drawable! image-widget (doto (texture-region-drawable/new texture-region)
+                                   (texture-region-drawable/set-min-size! cell-size cell-size)))
     (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
     nil))

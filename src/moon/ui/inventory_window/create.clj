@@ -1,11 +1,9 @@
 (ns moon.ui.inventory-window.create
   (:require
+            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.graphics.color :as color]
-            [clojure.gdx.texture-region-drawable.new :as new-texture-region-drawable]
-            [clojure.gdx.texture-region-drawable.set-min-size :as set-min-size]
-            [clojure.gdx.texture-region-drawable.tint :as tint]
             [scene2d.actor.set-position :refer [set-position!]]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -21,9 +19,9 @@
            slot->texture-region
            cell-size]}]
   (let [slot->drawable (fn [slot]
-                         (doto (new-texture-region-drawable/f (slot->texture-region slot))
-                           (set-min-size/f cell-size cell-size)
-                           (tint/f (color/new [1 1 1 0.4]))))
+                         (doto (texture-region-drawable/new (slot->texture-region slot))
+                           (texture-region-drawable/set-min-size! cell-size cell-size)
+                           (texture-region-drawable/tint! (color/new [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?
