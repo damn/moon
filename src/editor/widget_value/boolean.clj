@@ -1,6 +1,6 @@
 (ns editor.widget-value.boolean
-  (:require [clojure.gdx.checkbox.is-checked? :as is-checked?]))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.checkbox :as checkbox]))
 
 (defn f
   [_ widget _schemas]
-  (is-checked?/f widget))
+  (checkbox/is-checked? widget))
