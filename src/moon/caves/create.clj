@@ -5,7 +5,7 @@
   http://forums.tigsource.com/index.php?topic=5174.0"
   (:require [grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
             [clojure.position.get-4-neighbours :refer [get-4-neighbours]]
-            [map.assoc-ks :refer [assoc-ks]]
+            [clojure.map.assoc-ks :refer [assoc-ks]]
             [clojure.rand.sshuffle :refer [sshuffle]]
             [clojure.rand.srand :refer [srand]]))
 

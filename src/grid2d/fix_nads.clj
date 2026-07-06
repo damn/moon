@@ -1,5 +1,5 @@
 (ns grid2d.fix-nads
-  (:require [map.assoc-ks :refer [assoc-ks]]
+  (:require [clojure.map.assoc-ks :refer [assoc-ks]]
             [grid2d.get-nads :refer [get-nads]]
             [grid2d.cells :refer [->cells]]
             [grid2d.get-tiles-needing-fix-for-nad :as get-tiles-needing-fix-for-nad]))

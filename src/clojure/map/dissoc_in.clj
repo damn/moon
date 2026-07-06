@@ -1,4 +1,4 @@
-(ns map.dissoc-in)
+(ns clojure.map.dissoc-in)
 
 (defn dissoc-in [m ks]
   (assert (> (count ks) 1))

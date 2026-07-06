@@ -1,6 +1,6 @@
 (ns grid2d.flood-fill
   (:require [clojure.position.get-8-neighbours :refer [get-8-neighbours]]
-            [map.assoc-ks :refer [assoc-ks]]))
+            [clojure.map.assoc-ks :refer [assoc-ks]]))
 
 (defn f [grid start walk-on-position?]
   (loop [next-positions [start]
