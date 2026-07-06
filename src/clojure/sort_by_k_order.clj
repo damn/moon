@@ -1,5 +1,5 @@
 (ns clojure.sort-by-k-order
-  (:require [vector.index-of :as index-of]))
+  (:require [clojure.vector.index-of :as index-of]))
 
 (defn sort-by-k-order [k-order components]
   (let [max-count (inc (count k-order))]
