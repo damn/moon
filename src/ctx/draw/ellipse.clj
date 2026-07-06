@@ -1,4 +1,4 @@
-(ns draw.ellipse
+(ns ctx.draw.ellipse
   (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 
 (defn f

@@ -1,4 +1,4 @@
-(ns draw.with-line-width
+(ns ctx.draw.with-line-width
   (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
             [ctx.draw :refer [draw!]]))
 

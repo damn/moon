@@ -1,4 +1,4 @@
-(ns draw.grid
+(ns ctx.draw.grid
   (:require [ctx.draw :refer [draw!]]))
 
 (defn f

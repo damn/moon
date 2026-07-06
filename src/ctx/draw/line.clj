@@ -1,7 +1,7 @@
-(ns draw.circle
+(ns ctx.draw.line
   (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 
 (defn f
-  [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
+  [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
   (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/circle! shape-drawer x y radius))
+  (shape-drawer/line! shape-drawer sx sy ex ey))
