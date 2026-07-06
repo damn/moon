@@ -7,7 +7,8 @@
             [input.key-pressed :as key-pressed?]
             [orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [orthographic-camera.position :as get-position]
-            [orthographic-camera.set-position :refer [set-position!]]))
+            [orthographic-camera.set-position :refer [set-position!]]
+            [scene2d.stage :refer [set-ctx!]]))
 
 (defn f
   [{:keys [ctx/input
@@ -22,7 +23,7 @@
            ctx/stage] :as ctx}]
   (let [ctx (or (:stage/ctx stage)
                 ctx)] ; first render stage does not have ctx set. ( TODO: just set it ?  )
-    (stage/set-ctx! stage ctx))
+    (set-ctx! stage ctx))
   (let [gl (graphics/get-gl20 graphics)]
     (gl20/clear-color! gl 0 0 0 0)
     (gl20/clear! gl gl20/color-buffer-bit))

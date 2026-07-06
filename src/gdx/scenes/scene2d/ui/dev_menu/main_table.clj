@@ -7,7 +7,8 @@
             [scene2d.ui.window.add-close-button :as add-close-button]
             [gdx.scenes.scene2d.ui.dev-menu.add-upd-label :refer [add-upd-label!]]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.window :as window]))
+            [gdx.scenes.scene2d.ui.window :as window]
+            [scene2d.stage :refer [set-ctx!]]))
 
 (defn f [skin menus update-labels]
   (let [table (table/create
@@ -26,7 +27,7 @@
                                                                                             (actor/add-listener! (change-listener/create
                                                                                                              (fn [event actor]
                                                                                                                (let [stage (event/get-stage event)]
-                                                                                                                 (stage/set-ctx! stage
+                                                                                                                 (set-ctx! stage
                                                                                                                             (on-click (:stage/ctx stage))))))))})]})
                                                                     (add-close-button/f! skin)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]

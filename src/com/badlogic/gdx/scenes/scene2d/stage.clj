@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.scenes.scene2d.stage
-  (:import (moon Stage)))
+  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
 
 (defn act! [stage]
   (Stage/.act stage))
@@ -12,6 +12,3 @@
 
 (defn hit [^Stage stage x y touchable?]
   (.hit stage (float x) (float y) touchable?))
-
-(defn set-ctx! [stage ctx]
-  (set! (.ctx ^Stage stage) ctx))

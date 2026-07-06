@@ -4,7 +4,8 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
-            [scene2d.actor.find-ancestor :refer [find-ancestor]]))
+            [scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [scene2d.stage :refer [set-ctx!]]))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin
@@ -13,7 +14,7 @@
     (try
      (let [new-ctx (update ctx :ctx/db f)
            stage (actor/get-stage actor)]
-       (stage/set-ctx! stage new-ctx))
+       (set-ctx! stage new-ctx))
      (actor/remove! (find-ancestor actor (partial instance? window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
