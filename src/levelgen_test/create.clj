@@ -7,7 +7,7 @@
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]
             [clojure.gdx.orthographic-camera.new :as new-camera]
             [clojure.gdx.orthographic-camera.set-to-ortho :as set-to-ortho!]
-            [clojure.gdx.skin.new :as skin]
+            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.stage.add-actor :as add-actor]
             [gdx.scenes.scene2d.ui.window :as window]
@@ -28,7 +28,7 @@
                                          (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
         stage (stage/create ui-viewport sprite-batch)
-        skin (skin/f (files/internal files (:ui-skin-path config)))
+        skin (skin/new (files/internal files (:ui-skin-path config)))
         world-viewport (let [world-width  (* (:world-viewport-width config) world-unit-scale)
                              world-height (* (:world-viewport-height config)  world-unit-scale)]
                          (fit-viewport/create world-width
