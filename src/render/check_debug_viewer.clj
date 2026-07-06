@@ -1,7 +1,7 @@
 (ns render.check-debug-viewer
   (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [ctx.button-just-pressed :refer [button-just-pressed?]]
-            [gdx.scenes.scene2d.ui.data-viewer-window :as data-viewer-window]))
+            [gdx.scene2d.ui.data-viewer-window :as data-viewer-window]))
 
 (defn step
   [{:keys [ctx/controls

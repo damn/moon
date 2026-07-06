@@ -4,11 +4,11 @@
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.utils.align :as align]
-            [scene2d.actor.set-position :refer [set-position!]]
-            [scene2d.ui.label :as label]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener]
-            [gdx.scenes.scene2d.ui.window :as window]))
+            [gdx.scene2d.actor.set-position :refer [set-position!]]
+            [gdx.scene2d.ui.label :as label]
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.utils.change-listener :as change-listener]
+            [gdx.scene2d.ui.window :as window]))
 
 (defn f
   [{:keys [ctx/skin

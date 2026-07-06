@@ -1,6 +1,6 @@
 (ns editor.create-widget.one-to-many
   (:require [editor.widget.one-to-many.add-one-to-many-rows :refer [add-one-to-many-rows]]
-            [gdx.scenes.scene2d.ui.table :as table]))
+            [gdx.scene2d.ui.table :as table]))
 
 (defn f
   [[_ property-type] property-ids ctx]

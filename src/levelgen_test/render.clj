@@ -8,7 +8,7 @@
             [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [gdx.graphics.orthographic-camera.position :as get-position]
             [gdx.graphics.orthographic-camera.set-position :refer [set-position!]]
-            [scene2d.stage :refer [set-ctx!]]))
+            [gdx.scene2d.stage :refer [set-ctx!]]))
 
 (defn f
   [{:keys [ctx/input

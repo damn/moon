@@ -3,8 +3,8 @@
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [ctx.do :refer [do!]]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener]))
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.utils.change-listener :as change-listener]))
 
 (defn sound-columns [skin table sound-name]
   [{:actor (doto (text-button/create

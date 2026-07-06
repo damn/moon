@@ -3,8 +3,8 @@
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
-            [scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [scene2d.ui.table.add-rows :refer [add-rows!]]))
+            [gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]

@@ -3,10 +3,10 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [editor.map-widget-table.k-label-text :as k-label-text]
-            [scene2d.ui.label :as label]
-            [gdx.scenes.scene2d.ui.table :as table]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener]))
+            [gdx.scene2d.ui.label :as label]
+            [gdx.scene2d.ui.table :as table]
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.utils.change-listener :as change-listener]))
 
 (defn create
   [{:keys [skin

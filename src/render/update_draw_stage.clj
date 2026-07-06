@@ -1,6 +1,6 @@
 (ns render.update-draw-stage
   (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [scene2d.stage :refer [set-ctx!]]))
+            [gdx.scene2d.stage :refer [set-ctx!]]))
 
 (defn step
   [{:keys [ctx/stage] :as ctx}]

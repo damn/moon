@@ -1,7 +1,7 @@
 (ns stage.player-message-actor
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
             [ctx.draw :refer [draw!]]
-            [scene2d.actor :as actor]))
+            [gdx.scene2d.actor :as actor]))
 
 (defn create [_ctx]
   (let [message-duration-seconds 0.5]

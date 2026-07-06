@@ -1,6 +1,6 @@
 (ns stage.info-window
   (:require [info.entity :refer [info-text]]
-            [gdx.scenes.scene2d.ui.info-window :as info-window]))
+            [gdx.scene2d.ui.info-window :as info-window]))
 
 (defn create
   [{:keys [ctx/skin

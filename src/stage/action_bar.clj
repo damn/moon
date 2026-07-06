@@ -3,7 +3,7 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
-            [gdx.scenes.scene2d.ui.table :as table]))
+            [gdx.scene2d.ui.table :as table]))
 
 (defn create [_ctx]
   (doto (table/create

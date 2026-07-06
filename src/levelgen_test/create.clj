@@ -9,13 +9,13 @@
             [com.badlogic.gdx.gdx :as gdx]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scene2d.ui.window :as window]
             [levelgen-test.change-listener]
             [levelgen-test.generate :as generate]
             [moon.create-textures :as create-textures]
             [moon.db :as db]
-            [scene2d.stage]
-            [scene2d.ui.text-button :as text-button]))
+            [gdx.scene2d.stage]
+            [gdx.scene2d.ui.text-button :as text-button]))
 
 (defn f
   [config]
@@ -26,7 +26,7 @@
         ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                          (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
-        stage (scene2d.stage/create ui-viewport sprite-batch)
+        stage (gdx.scene2d.stage/create ui-viewport sprite-batch)
         skin (skin/new (files/internal files (:ui-skin-path config)))
         world-viewport (let [world-width  (* (:world-viewport-width config) world-unit-scale)
                              world-height (* (:world-viewport-height config)  world-unit-scale)]

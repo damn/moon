@@ -7,10 +7,10 @@
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
-            [scene2d.ui.stack :as stack]
-            [scene2d.ui.text-tooltip :as text-tooltip]
-            [scene2d.utils.change-listener :as change-listener]
-            [scene2d.ui.label :as label]))
+            [gdx.scene2d.ui.stack :as stack]
+            [gdx.scene2d.ui.text-tooltip :as text-tooltip]
+            [gdx.scene2d.utils.change-listener :as change-listener]
+            [gdx.scene2d.ui.label :as label]))
 
 (defn overview-table-rows* [skin image-scale rows]
   (for [row rows]

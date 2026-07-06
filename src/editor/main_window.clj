@@ -4,9 +4,9 @@
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.string :as str]
             [editor.window]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener]
-            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.utils.change-listener :as change-listener]
+            [gdx.scene2d.ui.window :as window]
             [moon.db.property-types :refer [property-types]]
             [moon.db.get-raw :refer [get-raw]]))
 

@@ -3,9 +3,9 @@
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.graphics.color :as color]
-            [scene2d.actor.set-position :refer [set-position!]]
-            [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scene2d.actor.set-position :refer [set-position!]]
+            [gdx.scene2d.ui.table :as table]
+            [gdx.scene2d.ui.window :as window]
             [moon.inventory.is-valid-slot :as valid-slot?]
             [moon.ui.inventory-window.create-cell :refer [->cell]]))
 

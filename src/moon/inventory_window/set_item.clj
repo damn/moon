@@ -4,7 +4,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [scene2d.ui.text-tooltip :as text-tooltip]
+            [gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [moon.inventory-window.get-cell :as get-cell]))
 
 (defn f [inventory-window cell {:keys [texture-region tooltip-text]} skin]

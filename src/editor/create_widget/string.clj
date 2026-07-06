@@ -1,7 +1,7 @@
 (ns editor.create-widget.string
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [scene2d.ui.text-field :as text-field]
-            [scene2d.ui.text-tooltip :as text-tooltip]))
+            [gdx.scene2d.ui.text-field :as text-field]
+            [gdx.scene2d.ui.text-tooltip :as text-tooltip]))
 
 (defn f
   [schema v {:keys [ctx/skin]}]

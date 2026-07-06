@@ -2,9 +2,9 @@
   (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [editor.constants :refer [property-type->overview-table-props]]
             [editor.property-overview-window.table-rows :refer [overview-table-rows*]]
-            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scene2d.ui.window :as window]
             [moon.db.all-raw :refer [all-raw]]
-            [scene2d.ui.window.add-close-button :as add-close-button]
+            [gdx.scene2d.ui.window.add-close-button :as add-close-button]
             [moon.property.tooltip :as tooltip]
             [moon.property.image :as image]
             [moon.textures :as textures]))

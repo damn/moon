@@ -3,14 +3,14 @@
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [scene2d.ui.scroll-pane :as scroll-pane]
-            [scene2d.ui.window.add-close-button :as add-close-button]
+            [gdx.scene2d.ui.scroll-pane :as scroll-pane]
+            [gdx.scene2d.ui.window.add-close-button :as add-close-button]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]
             [ctx.do :refer [do!]]
-            [gdx.scenes.scene2d.ui.table :as table]
-            [scene2d.ui.text-button :as text-button]
-            [gdx.scenes.scene2d.ui.window :as window]
-            [scene2d.utils.change-listener :as change-listener]))
+            [gdx.scene2d.ui.table :as table]
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.ui.window :as window]
+            [gdx.scene2d.utils.change-listener :as change-listener]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin

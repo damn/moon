@@ -4,8 +4,8 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [moon.throwable :as throwable]
             [moon.ui.error-window :as error-window]
-            [scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [scene2d.stage :refer [set-ctx!]]))
+            [gdx.scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [gdx.scene2d.stage :refer [set-ctx!]]))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin

@@ -3,10 +3,10 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.interpose-f :refer [interpose-f]]
-            [gdx.scenes.scene2d.ui.table :as table]
-            [scene2d.ui.table.add-rows :refer [add-rows!]]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.utils.change-listener :as change-listener]
+            [gdx.scene2d.ui.table :as table]
+            [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.utils.change-listener :as change-listener]
             [editor.horiz-sep :as horiz-sep]))
 
 (defn create

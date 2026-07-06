@@ -6,17 +6,17 @@
             [editor.create-widget :as create-widget]
             [editor.widget-value :as widget-value]
             [editor.window.with-window-close :as with-window-close]
-            [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scene2d.ui.table :as table]
+            [gdx.scene2d.ui.window :as window]
             [gdx.input.key-just-pressed :as key-just-pressed?]
             [moon.db.delete :refer [delete!]]
             [moon.db.update :refer [update!]]
             [moon.property.type :refer [property->type]]
-            [scene2d.actor :as actor]
-            [scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
-            [scene2d.ui.text-button :as text-button]
-            [scene2d.ui.window.add-close-button :as add-close-button]
-            [scene2d.utils.change-listener :as change-listener]))
+            [gdx.scene2d.actor :as actor]
+            [gdx.scene2d.ui.table.scroll-pane-cell :as scroll-pane-cell]
+            [gdx.scene2d.ui.text-button :as text-button]
+            [gdx.scene2d.ui.window.add-close-button :as add-close-button]
+            [gdx.scene2d.utils.change-listener :as change-listener]))
 
 (defn property-editor-window
   [{:keys [ctx

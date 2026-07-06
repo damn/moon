@@ -6,7 +6,7 @@
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
-            [scene2d.ui.text-tooltip :as text-tooltip]
+            [gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [moon.action-bar.get-data :as get-data]))
 
 (defn f

@@ -1,5 +1,5 @@
 (ns stage.dev-menu
-  (:require [gdx.scenes.scene2d.ui.dev-menu :as dev-menu]
+  (:require [gdx.scene2d.ui.dev-menu :as dev-menu]
             [stage.dev-menu.ctx-data :as ctx-data]
             [stage.dev-menu.debug-flags :as debug-flags]
             [stage.dev-menu.update-labels :as update-labels]))

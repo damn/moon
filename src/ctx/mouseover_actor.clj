@@ -1,5 +1,5 @@
 (ns ctx.mouseover-actor
-  (:require [scene2d.stage.hit :refer [hit]]
+  (:require [gdx.scene2d.stage.hit :refer [hit]]
             [gdx.unproject :as unproject]
             [ctx.mouse-position :refer [mouse-position]]))
 
