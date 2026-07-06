@@ -1,5 +1,6 @@
 (ns world-fns.modules.grid-to-tiled-map
   (:require
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.map-properties :as map-properties]
@@ -7,10 +8,6 @@
             [grid2d.width :refer [->width]]
             [grid2d.height :refer [->height]]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [clojure.gdx.tiled-map-tile-layer.get-cell :as get-cell]
-            [clojure.gdx.tiled-map-tile-layer.get-name :as get-name]
-            [clojure.gdx.tiled-map-tile-layer.get-properties :as get-layer-properties]
-            [clojure.gdx.tiled-map-tile-layer.is-visible :as is-visible]
             [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]))
 
 (defn grid->tiled-map
@@ -23,12 +20,12 @@
                         {"width" (->width grid)
                          "height" (->height grid)})
      :layers (for [layer (tiled-map/get-layers schema-tiled-map)]
-               {:name (get-name/f layer)
-                :visible? (is-visible/f layer)
-                :properties (map-properties/clojurize (get-layer-properties/f layer))
+               {:name (tiled-map-tile-layer/get-name layer)
+                :visible? (tiled-map-tile-layer/is-visible layer)
+                :properties (map-properties/clojurize (tiled-map-tile-layer/get-properties layer))
                 :tiles (for [position (posis/f grid)
                              :let [local-position (get grid position)]
                              :when local-position]
                          (when (vector? local-position)
-                           (when-let [cell (get-cell/f layer (local-position 0) (local-position 1))]
+                           (when-let [cell (tiled-map-tile-layer/get-cell layer (local-position 0) (local-position 1))]
                              [position (copy-tile (get-tile/f cell))])))})}))
