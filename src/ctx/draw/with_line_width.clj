@@ -1,5 +1,5 @@
 (ns ctx.draw.with-line-width
-  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
+  (:require [gdx.graphics.shape-drawer :as shape-drawer]
             [ctx.draw :refer [draw!]]))
 
 (defn f

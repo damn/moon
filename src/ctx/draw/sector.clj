@@ -1,5 +1,5 @@
 (ns ctx.draw.sector
-  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
+  (:require [gdx.graphics.shape-drawer :as shape-drawer]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]

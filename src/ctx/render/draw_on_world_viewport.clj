@@ -1,5 +1,5 @@
 (ns ctx.render.draw-on-world-viewport
-  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
+  (:require [gdx.graphics.shape-drawer :as shape-drawer]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [ctx.draw :refer [draw!]]))

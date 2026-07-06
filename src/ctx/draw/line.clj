@@ -1,5 +1,5 @@
 (ns ctx.draw.line
-  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
+  (:require [gdx.graphics.shape-drawer :as shape-drawer]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]

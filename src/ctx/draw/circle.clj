@@ -1,5 +1,5 @@
 (ns ctx.draw.circle
-  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
+  (:require [gdx.graphics.shape-drawer :as shape-drawer]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]

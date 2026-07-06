@@ -1,5 +1,5 @@
 (ns ctx.draw.ellipse
-  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
+  (:require [gdx.graphics.shape-drawer :as shape-drawer]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
