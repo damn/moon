@@ -1,7 +1,7 @@
 (ns clojure.gdx.application
   (:require [com.badlogic.gdx.application-listener :as application-listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
-            [clojure.gdx.lwjgl3-application-configuration.new :as create-config]))
+            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]))
 
 (defn f!
   [{:keys [listener] :as config}]
