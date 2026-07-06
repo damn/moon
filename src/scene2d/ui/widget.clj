@@ -3,4 +3,4 @@
 
 (defn f
   [{:keys [draw!]}]
-  (new-widget/f draw!))
+  (widget/new draw!))
