@@ -1,6 +1,6 @@
 (ns scene2d.ui.table.add-rows
-  (:require [clojure.gdx.table.add :as add]
-            [clojure.gdx.table.row :as row]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [scene2d.ui.table.add-cell :refer [add-cell!]]))
 
 (defn add-rows! [table rows]
@@ -11,6 +11,6 @@
         (add-cell! table props-or-actor)
 
         ; TODO Remove else case
-        :else (add/f table props-or-actor)))
-    (row/f table))
+        :else (table/add table props-or-actor)))
+    (table/row table))
   table)
