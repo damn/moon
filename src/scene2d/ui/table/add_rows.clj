@@ -11,6 +11,6 @@
         (add-cell! table props-or-actor)
 
         ; TODO Remove else case
-        :else (table/add table props-or-actor)))
-    (table/row table))
+        :else (table/add! table props-or-actor)))
+    (table/row! table))
   table)

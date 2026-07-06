@@ -4,5 +4,5 @@
             [tiled-map.create-layer :as create-layer]))
 
 (defn f [tiled-map layer]
-  (map-layers/add (tiled-map/get-layers tiled-map)
+  (map-layers/add! (tiled-map/get-layers tiled-map)
          (create-layer/f tiled-map layer)))

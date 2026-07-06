@@ -27,7 +27,7 @@
   (let [redo-rows (fn [ctx property-ids]
                     (group/clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (layout/pack (find-ancestor table window/instance?)))]
+                    (layout/pack! (find-ancestor table (partial instance? (window/class)))))]
     (add-rows!
      table
      [[{:actor (doto (text-button/create
@@ -49,7 +49,7 @@
                                          :skin skin
                                          :property-type property-type
                                          :clicked-id-fn (fn [actor id ctx]
-                                                          (actor/remove! (find-ancestor actor window/instance?))
+                                                          (actor/remove! (find-ancestor actor (partial instance? (window/class))))
                                                           (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (get-raw db property-id)]

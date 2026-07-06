@@ -9,6 +9,6 @@
               new-ctx
               ctx)]
     (stage/set-ctx! stage ctx)
-    (stage/act stage)
-    (stage/draw stage)
+    (stage/act! stage)
+    (stage/draw! stage)
     (:stage/ctx stage)))

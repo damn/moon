@@ -3,8 +3,8 @@
   (:import (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Pixmap Texture)))
 
-(defn new [^Pixmap pixmap]
-  (Texture. pixmap))
-
-(defn new-file-handle [^FileHandle file-handle]
+(defn new [^FileHandle file-handle]
   (Texture. file-handle))
+
+(defn new-from-pixmap [^Pixmap pixmap]
+  (Texture. pixmap))

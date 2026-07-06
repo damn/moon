@@ -7,13 +7,10 @@
   (FreeTypeFontGenerator$FreeTypeFontParameter.))
 
 (defn set-mag-filter! [^FreeTypeFontGenerator$FreeTypeFontParameter parameter ^Texture$TextureFilter filter]
-  (set! (.magFilter parameter) filter)
-  parameter)
+  (set! (.magFilter parameter) filter))
 
 (defn set-min-filter! [^FreeTypeFontGenerator$FreeTypeFontParameter parameter ^Texture$TextureFilter filter]
-  (set! (.minFilter parameter) filter)
-  parameter)
+  (set! (.minFilter parameter) filter))
 
 (defn set-size! [^FreeTypeFontGenerator$FreeTypeFontParameter parameter size]
-  (set! (.size parameter) size)
-  parameter)
+  (set! (.size parameter) size))

@@ -4,4 +4,4 @@
 (defn f
   [_ checked? {:keys [ctx/skin]}]
   (doto (checkbox/new "" skin)
-    (checkbox/set-checked checked?)))
+    (checkbox/set-checked! checked?)))

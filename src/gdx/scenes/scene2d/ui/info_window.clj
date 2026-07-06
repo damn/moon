@@ -30,6 +30,6 @@
     (group/add-actor! window (actor/f
                          {:act! (fn [this delta]
                                   (when-let [stage (gdx-actor/get-stage this)]
-                                    (gdx-label/set-text label (set-label-text! (:stage/ctx stage))))
-                                  (layout/pack window))}))
+                                    (gdx-label/set-text! label (set-label-text! (:stage/ctx stage))))
+                                  (layout/pack! window))}))
     window))

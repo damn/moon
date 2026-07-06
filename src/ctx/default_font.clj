@@ -1,6 +1,6 @@
 (ns ctx.default-font
   (:require
-            [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator$free-type-font-parameter :as free-type-font-parameter]
+            [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator$free-type-font-parameter :as font-parameter]
             [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
@@ -18,11 +18,11 @@
                                           :quality-scaling 2
                                           :use-integer-positions? false}
         generator (free-type-font-generator/new (files/internal files path))
-        parameter (-> (free-type-font-parameter/new)
-                      (free-type-font-parameter/set-size! (* size quality-scaling))
-                      (free-type-font-parameter/set-min-filter! texture-filter/linear)
-                      (free-type-font-parameter/set-mag-filter! texture-filter/linear))
-        font (free-type-font-generator/generate-font generator parameter)
+        parameter (doto (font-parameter/new)
+                    (font-parameter/set-size! (* size quality-scaling))
+                    (font-parameter/set-min-filter! texture-filter/linear)
+                    (font-parameter/set-mag-filter! texture-filter/linear))
+        font (free-type-font-generator/generate-font! generator parameter)
         font-data (bitmap-font/get-data font)]
     (disposable/dispose! generator)
     (bitmap-font-data/set-scale! font-data (/ quality-scaling))

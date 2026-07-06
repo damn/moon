@@ -1,17 +1,17 @@
 (ns clojure.gdx.recursively-search
-  (:import (com.badlogic.gdx.files FileHandle)))
+  (:require [com.badlogic.gdx.files.file-handle :as file-handle]))
 
-(defn f [^FileHandle file-handle extensions]
-  (loop [[file & remaining] (.list file-handle)
+(defn f [file-handle extensions]
+  (loop [[file & remaining] (file-handle/list-files file-handle)
          result []]
     (cond (nil? file)
           result
 
-          (.isDirectory ^FileHandle file)
-          (recur (concat remaining (.list ^FileHandle file)) result)
+          (file-handle/directory? file)
+          (recur (concat remaining (file-handle/list-files file)) result)
 
-          (extensions (.extension ^FileHandle file))
-          (recur remaining (conj result (.path ^FileHandle file)))
+          (extensions (file-handle/extension file))
+          (recur remaining (conj result (file-handle/path file)))
 
           :else
           (recur remaining result))))

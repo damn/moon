@@ -3,4 +3,4 @@
 
 (defn f
   [_ widget _schemas]
-  (checkbox/is-checked? widget))
+  (checkbox/checked? widget))

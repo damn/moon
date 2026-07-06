@@ -21,4 +21,4 @@
                          :expand? true
                          :fill-x? true
                          :fill-y? true}]]})
-    (layout/set-fill-parent true)))
+    (layout/set-fill-parent! true)))

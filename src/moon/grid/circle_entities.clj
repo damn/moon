@@ -9,5 +9,5 @@
   (->> (circle->cells g2d circle)
        (map deref)
        cells->entities/f
-       (filter #(intersector/overlaps (circle/new circle)
+       (filter #(intersector/overlaps? (circle/new circle)
                                       (->rectangle (:entity/body @%))))))

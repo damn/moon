@@ -4,7 +4,7 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
                                                    FreeTypeFontGenerator$FreeTypeFontParameter)))
 
-(defn generate-font [generator ^FreeTypeFontGenerator$FreeTypeFontParameter parameter]
+(defn generate-font! [generator ^FreeTypeFontGenerator$FreeTypeFontParameter parameter]
   (FreeTypeFontGenerator/.generateFont generator parameter))
 
 (defn new [^FileHandle file-handle]

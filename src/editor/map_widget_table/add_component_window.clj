@@ -46,5 +46,5 @@
                                                                        :table map-widget-table})])
                                        ((:ctx/rebuild-editor-window! ctx) ctx)))))
                   )}]))
-    (layout/pack window)
+    (layout/pack! window)
     window))

@@ -1,7 +1,6 @@
 (ns space.earlygrey.shapedrawer.shape-drawer
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.graphics.g2d Batch TextureRegion)
-           (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
 
 (defn circle [^ShapeDrawer shape-drawer x y radius]
   (ShapeDrawer/.circle shape-drawer x y radius))
@@ -21,7 +20,7 @@
 (defn line [^ShapeDrawer shape-drawer sx sy ex ey]
   (ShapeDrawer/.line shape-drawer (float sx) (float sy) (float ex) (float ey)))
 
-(defn new [^Batch batch ^TextureRegion texture-region]
+(defn new [batch texture-region]
   (ShapeDrawer. batch texture-region))
 
 (defn rectangle [^ShapeDrawer shape-drawer x y w h]

@@ -12,14 +12,26 @@
 (defn get-name [^TiledMapTileLayer layer]
   (TiledMapTileLayer/.getName layer))
 
+(defn get-render-offset-x [^TiledMapTileLayer layer]
+  (.getRenderOffsetX layer))
+
+(defn get-render-offset-y [^TiledMapTileLayer layer]
+  (.getRenderOffsetY layer))
+
+(defn get-tile-height [^TiledMapTileLayer layer]
+  (.getTileHeight layer))
+
+(defn get-tile-width [^TiledMapTileLayer layer]
+  (.getTileWidth layer))
+
 (defn get-properties [^TiledMapTileLayer layer]
   (.getProperties layer))
 
 (defn get-width [^TiledMapTileLayer layer]
   (.getWidth layer))
 
-(defn is-visible [^TiledMapTileLayer layer]
-  (.isVisible layer))
+(defn visible? [^TiledMapTileLayer layer]
+  (TiledMapTileLayer/.isVisible layer))
 
 (defn new [width height tilewidth tileheight]
   (TiledMapTileLayer. (int width) (int height) (int tilewidth) (int tileheight)))
@@ -32,6 +44,3 @@
 
 (defn set-visible! [layer visible?]
   (TiledMapTileLayer/.setVisible layer visible?))
-
-(defn visible? [layer]
-  (TiledMapTileLayer/.isVisible layer))

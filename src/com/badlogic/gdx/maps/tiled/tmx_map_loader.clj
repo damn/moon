@@ -5,5 +5,5 @@
 (defn new []
   (TmxMapLoader.))
 
-(defn load [^TmxMapLoader tmx-map-loader path]
+(defn load! [^TmxMapLoader tmx-map-loader path]
   (.load tmx-map-loader path))

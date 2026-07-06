@@ -9,4 +9,4 @@
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
                            (recursively-search/f (files/internal files folder) extensions))]
-             [path (texture/new-file-handle (files/internal files path))])))
+             [path (texture/new (files/internal files path))])))

@@ -1,13 +1,13 @@
 (ns com.badlogic.gdx.scenes.scene2d.stage
   (:import (moon Stage)))
 
-(defn act [stage]
+(defn act! [stage]
   (Stage/.act stage))
 
 (defn add-actor! [stage actor]
   (Stage/.addActor stage actor))
 
-(defn draw [stage]
+(defn draw! [stage]
   (Stage/.draw stage))
 
 (defn hit [^Stage stage x y touchable?]

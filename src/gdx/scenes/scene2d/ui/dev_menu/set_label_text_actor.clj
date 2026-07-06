@@ -8,4 +8,4 @@
   (actor/f
    {:act! (fn [this _delta]
             (when-let [stage (gdx-actor/get-stage this)]
-              (gdx-label/set-text label (text-fn (:stage/ctx stage)))))}))
+              (gdx-label/set-text! label (text-fn (:stage/ctx stage)))))}))

@@ -21,7 +21,7 @@
                          "height" (->height grid)})
      :layers (for [layer (tiled-map/get-layers schema-tiled-map)]
                {:name (tiled-map-tile-layer/get-name layer)
-                :visible? (tiled-map-tile-layer/is-visible layer)
+                :visible? (tiled-map-tile-layer/visible? layer)
                 :properties (map-properties/clojurize (tiled-map-tile-layer/get-properties layer))
                 :tiles (for [position (posis/f grid)
                              :let [local-position (get grid position)]

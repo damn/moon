@@ -2,8 +2,14 @@
   (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
 
-(defn new [{:keys [title windowed-mode foreground-fps]}]
-  (doto (Lwjgl3ApplicationConfiguration.)
-    (.setTitle title)
-    (.setWindowedMode (:width windowed-mode) (:height windowed-mode))
-    (.setForegroundFPS foreground-fps)))
+(defn new []
+  (Lwjgl3ApplicationConfiguration.))
+
+(defn set-title! [config title]
+  (Lwjgl3ApplicationConfiguration/.setTitle config title))
+
+(defn set-windowed-mode! [config width height]
+  (Lwjgl3ApplicationConfiguration/.setWindowedMode config (int width) (int height)))
+
+(defn set-foreground-fps! [config foreground-fps]
+  (Lwjgl3ApplicationConfiguration/.setForegroundFPS config (int foreground-fps)))

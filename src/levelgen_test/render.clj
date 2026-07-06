@@ -42,6 +42,6 @@
     (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
     (if (key-pressed?/f input :input.keys/up)    (apply-position 1 +))
     (if (key-pressed?/f input :input.keys/down)  (apply-position 1 -)))
-  (stage/act stage)
-  (stage/draw stage)
+  (stage/act! stage)
+  (stage/draw! stage)
   (:stage/ctx stage))
