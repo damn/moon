@@ -1,5 +1,6 @@
 (ns clojure.gdx.draw-tiled-map-tile-layer
-  (:require [clojure.gdx.batch.get-color :as get-color]
+  (:require
+            [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.tiled-map-tile-layer$cell.get-tile :as get-tile]
             [clojure.gdx.draw-tiled-map-tile :as draw-tile])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer)))
@@ -12,7 +13,7 @@
    color-setter]
   (let [num-vertices 20
         vertices (float-array num-vertices)
-        batch-color (get-color/f batch)
+        batch-color (batch/get-color batch)
         layer-width (.getWidth layer)
         layer-height (.getHeight layer)
         layer-tile-width (* (.getTileWidth layer) unit-scale)

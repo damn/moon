@@ -1,5 +1,6 @@
 (ns clojure.gdx.draw-tiled-map-tile
-  (:require [clojure.gdx.batch.draw! :as draw!]
+  (:require
+            [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.texture-region.get-region-height :as get-region-height]
             [clojure.gdx.texture-region.get-region-width :as get-region-width]
             [clojure.gdx.texture-region.get-texture :as get-texture]
@@ -55,7 +56,7 @@
     (aset-float verts Batch/C4 color21)
     (aset-float verts Batch/U4 u2)
     (aset-float verts Batch/V4 v1)
-    (draw!/f batch
+    (batch/draw! batch
              (get-texture/f region)
              verts
              0
