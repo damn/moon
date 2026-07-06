@@ -1,7 +1,8 @@
-(ns clojure.gdx.application-listener.new
+(ns com.badlogic.gdx.application-listener
+  (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx ApplicationListener)))
 
-(defn f
+(defn new
   [{:keys [create!
            dispose!
            render!
