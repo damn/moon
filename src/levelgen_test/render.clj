@@ -1,5 +1,5 @@
 (ns levelgen-test.render
-  (:require [clojure.gdx.color.float-bits :as float-bits]
+  (:require [com.badlogic.gdx.graphics.color :as color]
             [clojure.gdx.draw-tiled-map :as draw-tiled-map]
             [clojure.gdx.gl20.clear :as clear!]
             [clojure.gdx.gl20.clear-color :as clear-color!]
@@ -34,7 +34,7 @@
                      world-unit-scale
                      (:viewport/camera world-viewport)
                      tiled-map
-                     (constantly (float-bits/f [1 1 1 1])))
+                     (constantly (color/float-bits [1 1 1 1])))
   (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
   (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed)))
   (let [apply-position (fn [idx f]

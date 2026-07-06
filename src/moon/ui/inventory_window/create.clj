@@ -1,7 +1,7 @@
 (ns moon.ui.inventory-window.create
   (:require [clojure.gdx.actor.set-name :as set-name]
             [clojure.gdx.actor.set-visible :as set-visible]
-            [clojure.gdx.color.new :as new-color]
+            [com.badlogic.gdx.graphics.color :as color]
             [clojure.gdx.texture-region-drawable.new :as new-texture-region-drawable]
             [clojure.gdx.texture-region-drawable.set-min-size :as set-min-size]
             [clojure.gdx.texture-region-drawable.tint :as tint]
@@ -22,7 +22,7 @@
   (let [slot->drawable (fn [slot]
                          (doto (new-texture-region-drawable/f (slot->texture-region slot))
                            (set-min-size/f cell-size cell-size)
-                           (tint/f (new-color/f [1 1 1 0.4]))))
+                           (tint/f (color/new [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?
