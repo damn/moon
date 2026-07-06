@@ -1,5 +1,5 @@
 (ns world-fns.modules.convert-to-tiled-map
-  (:require [tiled.tiled-map :as tiled-map]
+  (:require [gdx.maps.tiled.tiled-map :as tiled-map]
             [world-fns.modules.grid-to-tiled-map :refer [grid->tiled-map]]))
 
 (defn f

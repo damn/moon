@@ -9,7 +9,7 @@
             [grid2d.cells :refer [->cells]]
             [grid2d.posis :as posis]
             [grid2d.printgrid :as printgrid]
-            [tiled.tiled-map :as tiled-map]
+            [gdx.maps.tiled.tiled-map :as tiled-map]
             [tiled-map.add-creatures-layer :as add-creatures-layer]))
 
 ; TODO don't spawn my faction vampire w. player items ...

@@ -1,4 +1,4 @@
-(ns tiled.create-static-tiled-map-tile
+(ns gdx.maps.tiled.tiles.create-static-tiled-map-tile
   (:require [com.badlogic.gdx.maps.map-properties :as map-properties]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
