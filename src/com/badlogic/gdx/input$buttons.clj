@@ -1,7 +1,7 @@
-(ns clojure.gdx.input$buttons.key-to-value
+(ns com.badlogic.gdx.input$buttons
   (:import (com.badlogic.gdx Input$Buttons)))
 
-(defn f [k]
+(defn key-to-value [k]
   (case k
     :input.buttons/left Input$Buttons/LEFT
     :input.buttons/right Input$Buttons/RIGHT))
