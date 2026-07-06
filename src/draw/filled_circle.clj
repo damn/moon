@@ -1,8 +1,8 @@
 (ns draw.filled-circle
-  (:require [clojure.gdx.shape-drawer.filled-circle :as filled-circle]
-            [clojure.gdx.shape-drawer.set-color :as set-color]))
+  (:require
+            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-  (set-color/f shape-drawer color-float-bits)
-  (filled-circle/f shape-drawer x y radius))
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/filled-circle shape-drawer x y radius))

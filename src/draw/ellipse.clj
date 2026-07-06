@@ -1,8 +1,8 @@
 (ns draw.ellipse
-  (:require [clojure.gdx.shape-drawer.ellipse :as ellipse]
-            [clojure.gdx.shape-drawer.set-color :as set-color]))
+  (:require
+            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 
 (defn f
   [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
-  (set-color/f shape-drawer color-float-bits)
-  (ellipse/f shape-drawer x y radius-x radius-y))
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/ellipse shape-drawer x y radius-x radius-y))
