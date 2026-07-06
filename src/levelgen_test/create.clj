@@ -23,7 +23,7 @@
   (let [files (gdx/files)
         input (gdx/input)
         graphics (gdx/graphics)
-        sprite-batch (sprite-batch/f)
+        sprite-batch (sprite-batch/new)
         ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                          (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
