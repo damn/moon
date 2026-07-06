@@ -1,6 +1,6 @@
 (ns ctx.cursors
   (:require [clojure.edn :as edn]
-            [clojure.gdx.disposable.dispose :as dispose]
+            [com.badlogic.gdx.utils.disposable :as disposable]
             [clojure.gdx.files.internal :as internal]
             [clojure.gdx.graphics.new-cursor :as new-cursor]
             [clojure.gdx.pixmap.new :as pixmap]
@@ -15,5 +15,5 @@
                    (let [path (format path-format path-segment)
                          pixmap (pixmap/f (internal/f files path))
                          cursor (new-cursor/f graphics pixmap hotspot-x hotspot-y)]
-                     (dispose/f pixmap)
+                     (disposable/dispose! pixmap)
                      cursor)))))

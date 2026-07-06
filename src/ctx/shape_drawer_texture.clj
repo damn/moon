@@ -1,5 +1,5 @@
 (ns ctx.shape-drawer-texture
-  (:require [clojure.gdx.disposable.dispose :as dispose]
+  (:require [com.badlogic.gdx.utils.disposable :as disposable]
             [clojure.gdx.pixmap.draw-pixel :as draw-pixel]
             [clojure.gdx.pixmap.new :as pixmap]
             [clojure.gdx.pixmap.set-color :as set-color]
@@ -11,5 +11,5 @@
                  (set-color/f 1 1 1 1)
                  (draw-pixel/f 0 0))
         texture (texture/f pixmap)]
-    (dispose/f pixmap)
+    (disposable/dispose! pixmap)
     texture))

@@ -1,6 +1,6 @@
 (ns levelgen-test.create
   (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.disposable.dispose :as dispose]
+            [com.badlogic.gdx.utils.disposable :as disposable]
             [clojure.gdx.files.internal :as internal]
             [clojure.gdx.fit-viewport.new :as fit-viewport]
             [com.badlogic.gdx.gdx :as gdx]
@@ -55,7 +55,7 @@
                    :skin skin
                    :table/rows (for [level-fn (:level-fns config)
                                      :let [on-click #(do
-                                                      (dispose/f (:ctx/tiled-map %))
+                                                      (disposable/dispose! (:ctx/tiled-map %))
                                                       (generate/f % level-fn))]]
                                  [{:actor (doto (text-button/create
                                                  {:text (str "Generate " level-fn)

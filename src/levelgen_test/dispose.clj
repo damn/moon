@@ -1,11 +1,11 @@
 (ns levelgen-test.dispose
-  (:require [clojure.gdx.disposable.dispose :as dispose]))
+  (:require [com.badlogic.gdx.utils.disposable :as disposable]))
 
 (defn f
   [{:keys [ctx/skin
            ctx/sprite-batch
            ctx/tiled-map]}]
   ; TODO TEXTURES NOT DISPOSED
-  (dispose/f skin)
-  (dispose/f sprite-batch)
-  (dispose/f tiled-map))
+  (disposable/dispose! skin)
+  (disposable/dispose! sprite-batch)
+  (disposable/dispose! tiled-map))
