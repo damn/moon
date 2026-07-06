@@ -1,6 +1,6 @@
 (ns editor.map-widget-table
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.actor.set-name :as set-name]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.interpose-f :refer [interpose-f]]
@@ -20,7 +20,7 @@
            opt?]}]
   (let [table (doto (table/create
                      {:table/cell-defaults {:pad 5}})
-                (set-name/f "moon.db.schema.map.ui.widget"))
+                (actor/set-name! "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep/f colspan)
                                     (map (fn [k]
@@ -37,7 +37,7 @@
                 [{:actor (doto (text-button/create
                                 {:text "Add component"
                                  :skin skin})
-                           (add-listener/f (change-listener/create
+                           (actor/add-listener! (change-listener/create
                                             (fn [event actor]
                                               (let [{:keys [ctx/db
                                                             ctx/stage

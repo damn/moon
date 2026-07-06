@@ -1,5 +1,6 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.stage.set-ctx :as set-ctx]
@@ -15,7 +16,7 @@
                {:table/rows [(for [{:keys [label items]} menus]
                                {:actor
                                 (doto (text-button/create {:text label :skin skin})
-                                  (add-listener/f (change-listener/create
+                                  (actor/add-listener! (change-listener/create
                                                    (fn [event actor]
                                                      (add-actor/f (event/get-stage event)
                                                                   (doto (window/create
@@ -24,7 +25,7 @@
                                                                           :table/rows [(for [{:keys [label on-click]} items]
                                                                                          {:actor
                                                                                           (doto (text-button/create {:text label :skin skin})
-                                                                                            (add-listener/f (change-listener/create
+                                                                                            (actor/add-listener! (change-listener/create
                                                                                                              (fn [event actor]
                                                                                                                (let [stage (event/get-stage event)]
                                                                                                                  (set-ctx/f stage

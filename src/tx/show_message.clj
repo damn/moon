@@ -1,5 +1,6 @@
 (ns tx.show-message
-  (:require [clojure.gdx.actor.set-user-object :as set-user-object]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.group.find-actor :as find-actor]))
 
 (defn f
@@ -7,6 +8,6 @@
   (-> stage
       :stage/root
       (#(find-actor/f % "player-message"))
-      (set-user-object/f (atom {:text message
+      (actor/set-user-object! (atom {:text message
                                 :counter 0})))
   nil)

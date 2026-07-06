@@ -1,6 +1,6 @@
 (ns stage.action-bar
-  (:require [clojure.gdx.actor.set-name :as set-name]
-            [clojure.gdx.actor.set-user-object :as set-user-object]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.button-group.new :as new-button-group]
             [clojure.gdx.button-group.set-max-check-count :as set-max-check-count]
             [clojure.gdx.button-group.set-min-check-count :as set-min-check-count]
@@ -14,11 +14,11 @@
           :table/rows [[{:actor (doto (horizontal-group/new)
                                   (horizontal-group/space 2)
                                   (horizontal-group/pad 2)
-                                  (set-name/f "moon.ui.action-bar.horizontal-group")
-                                  (set-user-object/f (doto (new-button-group/f)
+                                  (actor/set-name! "moon.ui.action-bar.horizontal-group")
+                                  (actor/set-user-object! (doto (new-button-group/f)
                                                        (set-max-check-count/f 1)
                                                        (set-min-check-count/f 0))))
                          :expand? true
                          :bottom? true}]]})
     (layout/set-fill-parent true)
-    (set-name/f "moon.ui.action-bar")))
+    (actor/set-name! "moon.ui.action-bar")))

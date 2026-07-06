@@ -1,5 +1,6 @@
 (ns editor.main-window
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.string :as str]
@@ -20,7 +21,7 @@
                   [{:actor (doto (text-button/create
                                   {:text (str/capitalize (name property-type))
                                    :skin skin})
-                             (add-listener/f (change-listener/create
+                             (actor/add-listener! (change-listener/create
                                               (fn [event actor]
                                                 (let [{:keys [ctx/db
                                                               ctx/skin

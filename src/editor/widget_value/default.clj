@@ -1,6 +1,7 @@
 (ns editor.widget-value.default
-  (:require [clojure.gdx.actor.get-user-object :as get-user-object]))
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn f
   [_  widget _schemas]
-  ((get-user-object/f widget) 1))
+  ((actor/get-user-object widget) 1))

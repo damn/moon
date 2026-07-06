@@ -1,6 +1,6 @@
 (ns moon.action-bar.add-skill
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.actor.set-user-object :as set-user-object]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.group.add-actor :as add-actor]
             [clojure.gdx.button-group.add :as button-group-add]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
@@ -23,8 +23,8 @@
                       (doto (new-texture-region-drawable/f texture-region)
                         (set-min-size/f (* scale (get-region-width/f texture-region))
                                         (* scale (get-region-height/f texture-region)))))
-                 (add-listener/f (text-tooltip/create tooltip-text skin))
-                 (set-user-object/f skill-id))]
+                 (actor/add-listener! (text-tooltip/create tooltip-text skin))
+                 (actor/set-user-object! skill-id))]
     (add-actor/f horizontal-group button)
     (button-group-add/f button-group button)
     nil))

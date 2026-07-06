@@ -1,7 +1,6 @@
 (ns gdx.scenes.scene2d.ui.info-window
-  (:require [clojure.gdx.actor.get-stage :as get-stage]
-            [clojure.gdx.actor.set-name :as set-name]
-            [clojure.gdx.actor.set-visible :as set-visible]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.group.add-actor :as add-actor]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
@@ -25,12 +24,12 @@
                       {:title title
                        :skin skin
                        :table/rows [[{:actor label :expand? true}]]})
-                 (set-name/f actor-name)
-                 (set-visible/f visible?)
+                 (actor/set-name! actor-name)
+                 (actor/set-visible! visible?)
                  (set-position! position))]
     (add-actor/f window (actor/f
                          {:act! (fn [this delta]
-                                  (when-let [stage (get-stage/f this)]
+                                  (when-let [stage (actor/get-stage this)]
                                     (label/set-text label (set-label-text! (:stage/ctx stage))))
                                   (layout/pack window))}))
     window))

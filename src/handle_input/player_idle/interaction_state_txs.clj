@@ -1,5 +1,6 @@
 (ns handle-input.player-idle.interaction-state-txs
-  (:require [clojure.gdx.actor.visible? :as visible?]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.group.find-actor :as find-actor]
             [moon.inventory.can-pickup-item :as can-pickup-item]))
 

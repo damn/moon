@@ -1,6 +1,6 @@
 (ns editor.map-widget-table.add-component-window
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.actor.remove :as remove]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [clojure.gdx.window.set-modal :as set-modal]
@@ -31,9 +31,9 @@
        [{:actor (doto (text-button/create
                        {:skin skin
                         :text (name k)})
-                  (add-listener/f (change-listener/create
+                  (actor/add-listener! (change-listener/create
                                    (fn [event _actor]
-                                     (remove/f window)
+                                     (actor/remove! window)
                                      (let [ctx (:stage/ctx (event/get-stage event))]
                                        (add-rows! map-widget-table [((:ctx/create-component-row ctx)
                                                                       {:skin skin

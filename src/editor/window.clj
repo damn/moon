@@ -1,7 +1,6 @@
 (ns editor.window
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.actor.get-stage :as get-stage]
-            [clojure.gdx.actor.set-name :as set-name]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.add-actor :as add-actor]
             [clojure.gdx.window.set-modal :as set-modal]
@@ -40,14 +39,14 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (add-listener/f (change-listener/create
+                                     (actor/add-listener! (change-listener/create
                                                       (fn [event actor]
                                                         (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (add-listener/f (change-listener/create
+                                     (actor/add-listener! (change-listener/create
                                                       (fn [event actor]
                                                         (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
@@ -65,8 +64,8 @@
       (set-modal/f true)
       (add-actor/f (actor/f
                     {:act! (fn [this delta]
-                             (when-let [stage (get-stage/f this)]
+                             (when-let [stage (actor/get-stage this)]
                                (let [ctx (:stage/ctx stage)]
                                  (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                    (clicked-save-fn this ctx)))))}))
-      (set-name/f "moon.ui.editor.window"))))
+      (actor/set-name! "moon.ui.editor.window"))))

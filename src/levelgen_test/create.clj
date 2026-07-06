@@ -1,5 +1,6 @@
 (ns levelgen-test.create
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
@@ -60,6 +61,6 @@
                                  [{:actor (doto (text-button/create
                                                  {:text (str "Generate " level-fn)
                                                   :skin skin})
-                                            (add-listener/f (levelgen-test.change-listener/f
+                                            (actor/add-listener! (levelgen-test.change-listener/f
                                                              on-click)))}])}))
     ctx))

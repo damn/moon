@@ -1,6 +1,6 @@
 (ns editor.window.with-window-close
-  (:require [clojure.gdx.actor.get-stage :as get-stage]
-            [clojure.gdx.actor.remove :as remove]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.stage.set-ctx :as set-ctx]
             [clojure.gdx.window.instance? :as window?]
@@ -14,9 +14,9 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (get-stage/f actor)]
+           stage (actor/get-stage actor)]
        (set-ctx/f stage new-ctx))
-     (remove/f (find-ancestor actor window?/f))
+     (actor/remove! (find-ancestor actor window?/f))
      (catch Throwable t
        (throwable/pretty-pst t)
        (add-actor/f stage

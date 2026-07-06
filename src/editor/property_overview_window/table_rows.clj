@@ -1,6 +1,6 @@
 (ns editor.property-overview-window.table-rows
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.actor.set-touchable :as set-touchable]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.add-actor :as add-actor]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
@@ -26,12 +26,12 @@
                               (doto (new-texture-region-drawable/f texture-region)
                                 (set-min-size/f (* image-scale (get-region-width/f texture-region))
                                                 (* image-scale (get-region-height/f texture-region)))))
-                        (add-listener/f (change-listener/create
+                        (actor/add-listener! (change-listener/create
                                          (fn [event actor]
                                            (on-clicked actor (:stage/ctx (event/get-stage event))))))
-                        (add-listener/f (text-tooltip/create tooltip skin)))
+                        (actor/add-listener! (text-tooltip/create tooltip skin)))
                        (doto (label/create
                               {:text extra-info-text
                                :skin skin})
-                         (set-touchable/f touchable/disabled))])
+                         (actor/set-touchable! touchable/disabled))])
                 stack)})))

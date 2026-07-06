@@ -1,5 +1,6 @@
 (ns stage.windows
-  (:require [clojure.gdx.actor.set-name :as set-name]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.group.add-actor :as add-actor]
             [clojure.gdx.group.new :as new-group]))
 
@@ -7,4 +8,4 @@
   (let [group (new-group/f)]
     (run! #(add-actor/f group %) (for [f actor-fns] (f ctx)))
     (doto group
-      (set-name/f "moon.ui.windows"))))
+      (actor/set-name! "moon.ui.windows"))))

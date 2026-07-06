@@ -1,6 +1,6 @@
 (ns moon.ui.inventory-window.create
-  (:require [clojure.gdx.actor.set-name :as set-name]
-            [clojure.gdx.actor.set-visible :as set-visible]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.graphics.color :as color]
             [clojure.gdx.texture-region-drawable.new :as new-texture-region-drawable]
             [clojure.gdx.texture-region-drawable.set-min-size :as set-min-size]
@@ -55,8 +55,8 @@
                                                               (for [y (range 4)]
                                                                 (for [x (range 6)]
                                                                   (->cell :inventory.slot/bag :position [x y]))))})
-                                    (set-name/f "inventory-cell-table"))
+                                    (actor/set-name! "inventory-cell-table"))
                            :pad 4}]]})
-      (set-name/f "moon.ui.windows.inventory")
-      (set-visible/f false)
+      (actor/set-name! "moon.ui.windows.inventory")
+      (actor/set-visible! false)
       (set-position! position))))

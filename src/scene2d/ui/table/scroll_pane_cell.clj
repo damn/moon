@@ -1,12 +1,12 @@
 (ns scene2d.ui.table.scroll-pane-cell
-  (:require [clojure.gdx.actor.get-height :as get-height]
-            [clojure.gdx.actor.get-width :as get-width]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [scene2d.ui.scroll-pane :as scroll-pane]))
 
 (defn create [table skin scroll-pane-height buffer]
   {:actor (scroll-pane/create
            {:actor table
             :skin skin})
-   :width  (+ (get-width/f table) buffer)
+   :width  (+ (actor/get-width table) buffer)
    :height (min (- scroll-pane-height buffer)
-                (get-height/f table))})
+                (actor/get-height table))})

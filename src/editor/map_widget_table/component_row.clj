@@ -1,7 +1,6 @@
 (ns editor.map-widget-table.component-row
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.actor.get-user-object :as get-user-object]
-            [clojure.gdx.actor.remove :as remove]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.get-children :as get-children]
             [editor.map-widget-table.k-label-text :as k-label-text]
@@ -22,11 +21,11 @@
                                      (doto (text-button/create
                                             {:text "-"
                                              :skin skin})
-                                       (add-listener/f (change-listener/create
+                                       (actor/add-listener! (change-listener/create
                                                         (fn [event _actor]
-                                                          (remove/f (first (filter (fn [actor]
-                                                                                      (and (get-user-object/f actor)
-                                                                                           (= k ((get-user-object/f actor) 0))))
+                                                          (actor/remove! (first (filter (fn [actor]
+                                                                                      (and (actor/get-user-object actor)
+                                                                                           (= k ((actor/get-user-object actor) 0))))
                                                                                     (get-children/f table))))
                                                           (let [ctx (:stage/ctx (event/get-stage event))]
                                                             ((:ctx/rebuild-editor-window! ctx) ctx)))))))

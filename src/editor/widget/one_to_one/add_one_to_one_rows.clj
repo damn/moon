@@ -1,7 +1,6 @@
 (ns editor.widget.one-to-one.add-one-to-one-rows
-  (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.actor.remove :as remove]
-            [clojure.gdx.actor.set-user-object :as set-user-object]
+  (:require
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.clear-children :as clear-children]
             [clojure.gdx.image.new :as new-image]
@@ -33,7 +32,7 @@
      table
      [[(when-not property-id
          {:actor (doto (text-button/create {:text "+" :skin skin})
-                   (add-listener/f (change-listener/create
+                   (actor/add-listener! (change-listener/create
                                     (fn [event _actor]
                                       (let [{:keys [ctx/db
                                                     ctx/skin
@@ -49,18 +48,18 @@
                                            :skin skin
                                            :property-type property-type
                                            :clicked-id-fn (fn [actor id ctx]
-                                                            (remove/f (find-ancestor actor window?/f))
+                                                            (actor/remove! (find-ancestor actor window?/f))
                                                             (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
            {:actor (doto (new-image/f (textures/texture-region textures (property-image/f property)))
-                     (add-listener/f (text-tooltip/create (tooltip/f property) skin))
-                     (set-user-object/f property-id))}))]
+                     (actor/add-listener! (text-tooltip/create (tooltip/f property) skin))
+                     (actor/set-user-object! property-id))}))]
       [(when property-id
          {:actor (doto (text-button/create
                         {:text "-"
                          :skin skin})
-                   (add-listener/f (change-listener/create
+                   (actor/add-listener! (change-listener/create
                                     (fn [event _actor]
                                       (redo-rows (:stage/ctx (event/get-stage event))
                                                  nil)))))})]])))
