@@ -1,5 +1,5 @@
 (ns draw.text
-  (:require [clojure.gdx.align.center :as align-center]
+  (:require [com.badlogic.gdx.utils.align :as align]
             [clojure.gdx.bitmap-font.draw! :as draw-font!]
             [clojure.gdx.bitmap-font.get-data :as get-data]
             [clojure.gdx.bitmap-font.get-line-height :as get-line-height]
@@ -33,6 +33,6 @@
                              (* (get-line-height/f font)))
                          0))
                   target-width
-                  align-center/v
+                  align/center
                   wrap?)
     (set-scale/f font-data old-scale)))

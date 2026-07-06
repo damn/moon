@@ -2,7 +2,7 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.remove :as remove]
             [clojure.gdx.actor.set-name :as set-name]
-            [clojure.gdx.align.center :as align-center]
+            [com.badlogic.gdx.utils.align :as align]
             [clojure.gdx.group.find-actor :as find-actor]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.window.set-modal :as set-modal]
@@ -34,5 +34,5 @@
                  (set-name/f "moon.ui.modal-window")
                  (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                  (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
-                                align-center/v)))
+                                align/center)))
   nil)
