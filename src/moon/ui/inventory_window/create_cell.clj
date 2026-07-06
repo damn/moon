@@ -9,7 +9,7 @@
             [clojure.gdx.actor.set-name :as set-name]
             [clojure.gdx.actor.set-user-object :as set-user-object]
             [clojure.gdx.actor.stage-to-local-coordinates :as stage-to-local-coordinates]
-            [clojure.gdx.event.get-stage :as event-get-stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.add-actor :as add-actor]
             [clojure.gdx.image.new-drawable :as new-image]
             [clojure.gdx.vector2.new :as new-vector2]
@@ -50,7 +50,7 @@
                           (fn [event _x _y]
                             (let [{:keys [ctx/player-eid
                                           ctx/k->clicked-inventory-cell]
-                                   :as ctx} (:stage/ctx (event-get-stage/f event))
+                                   :as ctx} (:stage/ctx (event/get-stage event))
                                   entity @player-eid
                                   state-k (:state (:entity/fsm entity))]
                               (do! ctx

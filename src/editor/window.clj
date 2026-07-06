@@ -2,7 +2,7 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.get-stage :as get-stage]
             [clojure.gdx.actor.set-name :as set-name]
-            [clojure.gdx.event.get-stage :as event-get-stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.add-actor :as add-actor]
             [clojure.gdx.window.set-modal :as set-modal]
             [editor.create-widget :as create-widget]
@@ -42,14 +42,14 @@
                                            :skin skin})
                                      (add-listener/f (change-listener/create
                                                       (fn [event actor]
-                                                        (clicked-save-fn actor (:stage/ctx (event-get-stage/f event)))))))
+                                                        (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
                                      (add-listener/f (change-listener/create
                                                       (fn [event actor]
-                                                        (clicked-delete-fn actor (:stage/ctx (event-get-stage/f event)))))))
+                                                        (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
     (doto (window/create
            {:title "[SKY]Property[]"

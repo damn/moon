@@ -2,7 +2,7 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.get-height :as get-height]
             [clojure.gdx.actor.get-width :as get-width]
-            [clojure.gdx.event.get-stage :as get-stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.window.set-modal :as set-modal]
             [scene2d.ui.scroll-pane :as scroll-pane]
@@ -31,13 +31,13 @@
                                                                         :skin skin})
                                                                   (add-listener/f (change-listener/create
                                                                                    (fn [event actor]
-                                                                                     ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (get-stage/f event)))))))}
+                                                                                     ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
                                                         {:actor (doto (text-button/create
                                                                        {:text "play!"
                                                                         :skin skin})
                                                                   (add-listener/f (change-listener/create
                                                                                    (fn [event _actor]
-                                                                                     (do! (:stage/ctx (get-stage/f event))
+                                                                                     (do! (:stage/ctx (event/get-stage event))
                                                                                           [[:tx/sound sound-name]])))))}])} )]
                              {:actor (scroll-pane/create
                                       {:actor table

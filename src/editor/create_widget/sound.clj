@@ -1,6 +1,6 @@
 (ns editor.create-widget.sound
   (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.event.get-stage :as get-stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [editor.widget.sound.columns :refer [sound-columns]]
             [editor.widget.sound.open-select-sounds-handler :refer [open-select-sounds-handler]]
             [gdx.scenes.scene2d.ui.table :as table]
@@ -19,6 +19,6 @@
                             (add-listener/f (change-listener/create
                                              (fn [event _actor]
                                                ((open-select-sounds-handler table)
-                                                (:stage/ctx (get-stage/f event))
+                                                (:stage/ctx (event/get-stage event))
                                                 sound-columns)))))}])])
     table))

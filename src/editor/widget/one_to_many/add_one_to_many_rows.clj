@@ -2,7 +2,7 @@
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.remove :as remove]
             [clojure.gdx.actor.set-user-object :as set-user-object]
-            [clojure.gdx.event.get-stage :as get-stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.clear-children :as clear-children]
             [clojure.gdx.image.new :as new-image]
             [clojure.gdx.layout.pack :as pack]
@@ -41,7 +41,7 @@
                                                   ctx/stage
                                                   ctx/textures
                                                   ctx/property-overview-window]
-                                           :as ctx} (:stage/ctx (get-stage/f event))]
+                                           :as ctx} (:stage/ctx (event/get-stage event))]
                                       (add-actor/f
                                        stage
                                        (property-overview-window
@@ -63,5 +63,5 @@
                         :skin skin})
                   (add-listener/f (change-listener/create
                                    (fn [event _actor]
-                                     (redo-rows (:stage/ctx (get-stage/f event))
+                                     (redo-rows (:stage/ctx (event/get-stage event))
                                                 (disj property-ids id))))))})])))

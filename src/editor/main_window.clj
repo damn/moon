@@ -1,6 +1,6 @@
 (ns editor.main-window
   (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.event.get-stage :as get-stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.string :as str]
             [editor.window]
@@ -27,7 +27,7 @@
                                                               ctx/stage
                                                               ctx/textures
                                                               ctx/property-overview-window]
-                                                       :as ctx} (:stage/ctx (get-stage/f event))]
+                                                       :as ctx} (:stage/ctx (event/get-stage event))]
                                                   (add-actor/f stage
                                                                (property-overview-window
                                                                 {:db db

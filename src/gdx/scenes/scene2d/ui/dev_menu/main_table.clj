@@ -1,6 +1,6 @@
 (ns gdx.scenes.scene2d.ui.dev-menu.main-table
   (:require [clojure.gdx.actor.add-listener :as add-listener]
-            [clojure.gdx.event.get-stage :as event-get-stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.stage.add-actor :as add-actor]
             [clojure.gdx.stage.set-ctx :as set-ctx]
             [scene2d.utils.change-listener :as change-listener]
@@ -17,7 +17,7 @@
                                 (doto (text-button/create {:text label :skin skin})
                                   (add-listener/f (change-listener/create
                                                    (fn [event actor]
-                                                     (add-actor/f (event-get-stage/f event)
+                                                     (add-actor/f (event/get-stage event)
                                                                   (doto (window/create
                                                                          {:title label
                                                                           :skin skin
@@ -26,7 +26,7 @@
                                                                                           (doto (text-button/create {:text label :skin skin})
                                                                                             (add-listener/f (change-listener/create
                                                                                                              (fn [event actor]
-                                                                                                               (let [stage (event-get-stage/f event)]
+                                                                                                               (let [stage (event/get-stage event)]
                                                                                                                  (set-ctx/f stage
                                                                                                                             (on-click (:stage/ctx stage))))))))})]})
                                                                     (add-close-button/f! skin)))))))})]})]

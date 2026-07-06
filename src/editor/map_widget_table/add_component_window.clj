@@ -1,7 +1,7 @@
 (ns editor.map-widget-table.add-component-window
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [clojure.gdx.actor.remove :as remove]
-            [clojure.gdx.event.get-stage :as get-stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.layout.pack :as pack]
             [clojure.gdx.window.set-modal :as set-modal]
             [editor.build-widget :as build-widget]
@@ -34,7 +34,7 @@
                   (add-listener/f (change-listener/create
                                    (fn [event _actor]
                                      (remove/f window)
-                                     (let [ctx (:stage/ctx (get-stage/f event))]
+                                     (let [ctx (:stage/ctx (event/get-stage event))]
                                        (add-rows! map-widget-table [((:ctx/create-component-row ctx)
                                                                       {:skin skin
                                                                        :editor-widget (build-widget/f ctx
