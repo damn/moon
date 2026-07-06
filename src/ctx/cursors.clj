@@ -1,7 +1,7 @@
 (ns ctx.cursors
   (:require [clojure.edn :as edn]
             [com.badlogic.gdx.utils.disposable :as disposable]
-            [clojure.gdx.files.internal :as internal]
+            [com.badlogic.gdx.files :as files]
             [clojure.gdx.graphics.new-cursor :as new-cursor]
             [clojure.gdx.pixmap.new :as pixmap]
             [clojure.java.io :as io]))
@@ -13,7 +13,7 @@
     (update-vals data
                  (fn [[path-segment [hotspot-x hotspot-y]]]
                    (let [path (format path-format path-segment)
-                         pixmap (pixmap/f (internal/f files path))
+                         pixmap (pixmap/f (files/internal files path))
                          cursor (new-cursor/f graphics pixmap hotspot-x hotspot-y)]
                      (disposable/dispose! pixmap)
                      cursor)))))

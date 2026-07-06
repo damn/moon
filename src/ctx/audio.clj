@@ -1,7 +1,7 @@
 (ns ctx.audio
   (:require [clojure.edn :as edn]
             [com.badlogic.gdx.audio :as audio]
-            [com.badlogic.gdx.files.internal :as internal]
+            [com.badlogic.gdx.files :as files]
             [clojure.java.io :as io]))
 
 (defn step
@@ -12,4 +12,4 @@
               :let [path (format "sounds/%s.wav" sound-name)]]
           [sound-name
            (audio/new-sound audio
-                            (internal/f files path))])))
+                            (files/internal files path))])))

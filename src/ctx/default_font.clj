@@ -4,7 +4,7 @@
             [clojure.gdx.bitmap-font$bitmap-font-data.set-markup-enabled :as set-markup-enabled]
             [clojure.gdx.bitmap-font$bitmap-font-data.set-scale :as set-scale]
             [com.badlogic.gdx.utils.disposable :as disposable]
-            [clojure.gdx.files.internal :as internal]
+            [com.badlogic.gdx.files :as files]
             [clojure.gdx.free-type-font-generator.generate-font :as generate-font]
             [clojure.gdx.free-type-font-generator.new :as new-generator]
             [clojure.gdx.free-type-font-generator$free-type-font-parameter.new :as new-parameter]
@@ -22,7 +22,7 @@
                                           :size 16
                                           :quality-scaling 2
                                           :use-integer-positions? false}
-        generator (new-generator/f (internal/f files path))
+        generator (new-generator/f (files/internal files path))
         parameter (-> (new-parameter/f)
                       (set-size/f (* size quality-scaling))
                       (set-min-filter/f texture-filter-linear/v)

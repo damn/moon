@@ -1,7 +1,7 @@
 (ns levelgen-test.create
   (:require [clojure.gdx.actor.add-listener :as add-listener]
             [com.badlogic.gdx.utils.disposable :as disposable]
-            [clojure.gdx.files.internal :as internal]
+            [com.badlogic.gdx.files :as files]
             [clojure.gdx.fit-viewport.new :as fit-viewport]
             [com.badlogic.gdx.gdx :as gdx]
             [clojure.gdx.input.set-input-processor! :as set-input-processor!]
@@ -28,7 +28,7 @@
                                          (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
         stage (stage/create ui-viewport sprite-batch)
-        skin (skin/f (internal/f files (:ui-skin-path config)))
+        skin (skin/f (files/internal files (:ui-skin-path config)))
         world-viewport (let [world-width  (* (:world-viewport-width config) world-unit-scale)
                              world-height (* (:world-viewport-height config)  world-unit-scale)]
                          (fit-viewport/create world-width
