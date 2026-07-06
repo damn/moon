@@ -3,7 +3,7 @@
             [clojure.gdx.actor.set-touchable :as set-touchable]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.group.add-actor :as add-actor]
-            [clojure.gdx.image-button.new :as new-image-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.texture-region.get-region-height :as get-region-height]
             [clojure.gdx.texture-region.get-region-width :as get-region-width]
             [clojure.gdx.texture-region-drawable.new :as new-texture-region-drawable]
@@ -22,7 +22,7 @@
                   extra-info-text]} row]
       {:actor (let [stack (stack/create)]
                 (run! #(add-actor/f stack %)
-                      [(doto (new-image-button/f
+                      [(doto (image-button/new
                               (doto (new-texture-region-drawable/f texture-region)
                                 (set-min-size/f (* image-scale (get-region-width/f texture-region))
                                                 (* image-scale (get-region-height/f texture-region)))))

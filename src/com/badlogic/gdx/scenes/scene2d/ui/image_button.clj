@@ -1,6 +1,7 @@
-(ns clojure.gdx.image-button.new
+(ns com.badlogic.gdx.scenes.scene2d.ui.image-button
+  (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.scenes.scene2d.utils Drawable)
            (com.badlogic.gdx.scenes.scene2d.ui ImageButton)))
 
-(defn f [^Drawable drawable]
+(defn new [^Drawable drawable]
   (ImageButton. drawable))
