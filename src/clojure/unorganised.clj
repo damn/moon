@@ -1,9 +1,7 @@
-(ns clojure.unorganised
-  (:require [clojure.edn-resource :refer [edn-resource]]))
+(ns clojure.unorganised)
 
 (defn step [ctx]
   (assoc ctx
-         :ctx/draw-fns (edn-resource "config/draw-fns.edn")
          :ctx/unit-scale (atom 1)
          :ctx/active-entities nil
          :ctx/delta-time nil

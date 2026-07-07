@@ -4,7 +4,6 @@
 (def schema
   (create-schema
    [:map {:closed true}
-    [:ctx/draw-fns :some]
     [:ctx/input :some]
     [:ctx/graphics :some]
     [:ctx/audio :some]
