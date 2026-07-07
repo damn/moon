@@ -1,8 +1,9 @@
 (ns clojure.render-draw-tiled-map
-  (:require [clojure.orthographic-camera-position :as get-position]
+  (:require [clojure.color-setter :refer [tile-color-setter*]]
             [clojure.gdx-draw-tiled-map :as draw-tiled-map]
-            [clojure.color-setter :refer [tile-color-setter*]]
-            [clojure.raycaster-is-blocked :as blocked?]))
+            [clojure.orthographic-camera-position :as get-position]
+            [clojure.raycaster-is-blocked :as blocked?]
+            [clojure.world-unit-scale :as world-unit-scale]))
 
 (defn step
   [{:keys [ctx/batch
@@ -10,11 +11,10 @@
            ctx/explored-tile-corners
            ctx/raycaster
            ctx/tiled-map
-           ctx/world-unit-scale
            ctx/world-viewport]
     :as ctx}]
   (draw-tiled-map/f! batch
-                     world-unit-scale
+                     world-unit-scale/world-unit-scale
                      (:viewport/camera world-viewport)
                      tiled-map
                      (tile-color-setter*

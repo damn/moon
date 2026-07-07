@@ -1,23 +1,23 @@
 (ns clojure.window-camera-controls
-  (:require
-            [clojure.set-visible]
-            [clojure.visible] [clojure.group :as group]
+  (:require [clojure.group :as group]
+            [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.key-just-pressed :as key-just-pressed?]
             [clojure.key-pressed :as key-pressed?]
-            [clojure.inc-zoom :refer [inc-zoom!]]))
+            [clojure.set-visible]
+            [clojure.visible]
+            [clojure.zoom-speed :as zoom-speed]))
 
 (defn step
   [{:keys [ctx/input
            ctx/controls
            ctx/stage
-           ctx/world-viewport
-           ctx/zoom-speed]
+           ctx/world-viewport]
     :as ctx}]
   (when (key-pressed?/f input (:zoom-in controls))
-    (inc-zoom! (:viewport/camera world-viewport) zoom-speed))
+    (inc-zoom! (:viewport/camera world-viewport) zoom-speed/zoom-speed))
 
   (when (key-pressed?/f input (:zoom-out controls))
-    (inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
+    (inc-zoom! (:viewport/camera world-viewport) (- zoom-speed/zoom-speed)))
 
   (when (key-just-pressed?/f input (:close-windows-key controls))
     (->> (group/find-actor (:stage/root stage) "moon.ui.windows")

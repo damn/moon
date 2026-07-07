@@ -1,18 +1,18 @@
 (ns clojure.render-stats
   (:require [clojure.get-hitpoints :as get-hitpoints]
-            [clojure.val-max-ratio :as ratio]))
+            [clojure.val-max-ratio :as ratio]
+            [clojure.world-unit-scale :as world-unit-scale]))
 
 (defn f
-  [_ entity {:keys [ctx/colors
-                    ctx/world-unit-scale]}]
+  [_ entity {:keys [ctx/colors]}]
   (let [ratio (ratio/f (get-hitpoints/f (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [body/position body/width body/height]} (:entity/body entity)
             [x y] position
             x (- x (/ width  2))
             y (+ y (/ height 2))
-            height (* 5 world-unit-scale)
-            border (* 1 world-unit-scale)]
+            height (* 5 world-unit-scale/world-unit-scale)
+            border (* 1 world-unit-scale/world-unit-scale)]
         [[:draw/filled-rectangle x y width height (:colors/hp-bar-rect colors)]
          [:draw/filled-rectangle
           (+ x border)

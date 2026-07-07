@@ -7,9 +7,6 @@
 ; so there should be a central ctx protocol???
 
 [:map {:closed true}
- [:ctx/state->pause-game? :some]
- [:ctx/zoom-speed :some]
- [:ctx/pausing? :boolean]
  [:ctx/draw-fns :some]
  [:ctx/fsms :some]
  [:ctx/info :some]
@@ -30,7 +27,6 @@
  [:ctx/cursors :some]
  [:ctx/default-font :some]
  [:ctx/unit-scale :some]
- [:ctx/world-unit-scale :some]
  [:ctx/world-viewport :some]
  [:ctx/shape-drawer :some]
  [:ctx/shape-drawer-texture :some]
@@ -47,13 +43,10 @@
  [:ctx/controls :some]
  [:ctx/controls-info :some]
  [:ctx/max-speed :some]
- [:ctx/minimum-size :some]
  [:ctx/render-z-order :some]
- [:ctx/z-orders :some]
  [:ctx/content-grid :some]
  [:ctx/entity-ids :some]
  [:ctx/explored-tile-corners :some]
- [:ctx/factions-iterations :some]
  [:ctx/grid :some]
  [:ctx/id-counter :some]
  [:ctx/potential-field-cache :some]

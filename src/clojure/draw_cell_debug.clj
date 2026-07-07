@@ -1,10 +1,10 @@
 (ns clojure.draw-cell-debug
-  (:require [clojure.visible-tiles :refer [visible-tiles]]))
+  (:require [clojure.factions-iterations :as factions-iterations]
+            [clojure.visible-tiles :refer [visible-tiles]]))
 
 (defn f
   [{:keys [ctx/colors
            ctx/grid
-           ctx/factions-iterations
            ctx/world-viewport
            ctx/show-potential-field-colors?
            ctx/show-cell-entities?
@@ -21,5 +21,5 @@
             (when-let [faction show-potential-field-colors?]
               (let [{:keys [distance]} (faction cell*)]
                 (when distance
-                  (let [ratio (/ distance (factions-iterations faction))]
+                  (let [ratio (/ distance (factions-iterations/factions-iterations faction))]
                     [:draw/filled-rectangle x y 1 1 ((:colors/debug-potential-field colors) ratio)]))))])))
