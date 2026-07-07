@@ -6,7 +6,9 @@
             [clojure.disposable :as disposable]
             [clojure.files :as files]
             [clojure.fit-viewport :as fit-viewport]
-            [clojure.gdx :as gdx]
+            [clojure.gdx.files :as gdx-files]
+            [clojure.gdx.input :as gdx-input]
+            [clojure.gdx.graphics :as graphics]
             [clojure.skin :as skin]
             [clojure.sprite-batch :as sprite-batch]
             [clojure.ui-window :as window]
@@ -19,9 +21,9 @@
 
 (defn f
   [config]
-  (let [files (gdx/files)
-        input (gdx/input)
-        graphics (gdx/graphics)
+  (let [files (gdx-files/f)
+        input (gdx-input/f)
+        graphics (graphics/f)
         sprite-batch (sprite-batch/new)
         ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                          (:ui-viewport-height config))

@@ -1,9 +1,9 @@
 (comment
 
  (require '[clojure.build :refer [build]]
-          '[clojure.gdx :as gdx]
+          '[clojure.gdx.app :as app]
           '[clojure.post-runnable :as post-runnable])
- (post-runnable/f (gdx/app)
+ (post-runnable/f (app/f)
   (fn []
     (let [{:keys [ctx/db]
            :as ctx} @state]
