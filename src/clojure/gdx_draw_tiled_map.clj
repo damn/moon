@@ -3,7 +3,9 @@
             [clojure.tiled-map-tile :as tiled-map-tile]
             [clojure.tiled-map :as tiled-map]
             [clojure.orthographic-camera :as orthographic-camera]
-            [clojure.batch :as batch]
+            [clojure.begin :as begin]
+            [clojure.end :as end]
+            [clojure.set-projection-matrix :as set-projection-matrix]
             [clojure.draw-tiled-map-tile-layer :as draw-tiled-map-tile-layer]
             [clojure.vector3 :as vector3]))
 
@@ -13,8 +15,8 @@
    camera
    tiled-map
    color-setter]
-  (batch/set-projection-matrix! batch (orthographic-camera/combined camera))
-  (batch/begin! batch)
+  (set-projection-matrix/f batch (orthographic-camera/combined camera))
+  (begin/f batch)
   (let [width  (* (orthographic-camera/viewport-width camera) (orthographic-camera/zoom camera))
         height (* (orthographic-camera/viewport-height camera) (orthographic-camera/zoom camera))
         up (orthographic-camera/up camera)
@@ -33,4 +35,4 @@
                                     world-unit-scale
                                     viewBounds
                                     color-setter)))
-  (batch/end! batch))
+  (end/f batch))

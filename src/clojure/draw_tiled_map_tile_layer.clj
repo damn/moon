@@ -3,7 +3,7 @@
             [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.tiled-map-tile :as tiled-map-tile]
             [clojure.tiled-map :as tiled-map]
-            [clojure.batch :as batch]
+            [clojure.get-color :as get-color]
             [clojure.draw-tiled-map-tile :as draw-tile]))
 
 (defn f!
@@ -14,7 +14,7 @@
    color-setter]
   (let [num-vertices 20
         vertices (float-array num-vertices)
-        batch-color (batch/get-color batch)
+        batch-color (get-color/f batch)
         layer-width (tiled-map-tile-layer/get-width layer)
         layer-height (tiled-map-tile-layer/get-height layer)
         layer-tile-width (* (tiled-map-tile-layer/get-tile-width layer) unit-scale)

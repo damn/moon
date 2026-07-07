@@ -3,7 +3,7 @@
             [clojure.tiled-map :as tiled-map]
             [clojure.texture-region :as texture-region]
             [clojure.texture :as texture]
-            [clojure.batch :as batch]))
+            [clojure.draw! :as draw]))
 
 (defn f!
   [x
@@ -28,28 +28,28 @@
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
         color21 (float (color-setter batch-color x2 y1))]
-    (aset-float verts batch/x1 x1)
-    (aset-float verts batch/y1 y1)
-    (aset-float verts batch/c1 color11)
-    (aset-float verts batch/u1 u1)
-    (aset-float verts batch/v1 v1)
-    (aset-float verts batch/x2 x1)
-    (aset-float verts batch/y2 y2)
-    (aset-float verts batch/c2 color12)
-    (aset-float verts batch/u2 u1)
-    (aset-float verts batch/v2 v2)
-    (aset-float verts batch/x3 x2)
-    (aset-float verts batch/y3 y2)
-    (aset-float verts batch/c3 color22)
-    (aset-float verts batch/u3 u2)
-    (aset-float verts batch/v3 v2)
-    (aset-float verts batch/x4 x2)
-    (aset-float verts batch/y4 y1)
-    (aset-float verts batch/c4 color21)
-    (aset-float verts batch/u4 u2)
-    (aset-float verts batch/v4 v1)
-    (batch/draw! batch
-             (texture-region/get-texture region)
-             verts
-             0
-             num-vertices)))
+    (aset-float verts clojure.x1/v x1)
+    (aset-float verts clojure.y1/v y1)
+    (aset-float verts clojure.c1/v color11)
+    (aset-float verts clojure.u1/v u1)
+    (aset-float verts clojure.v1/v v1)
+    (aset-float verts clojure.x2/v x1)
+    (aset-float verts clojure.y2/v y2)
+    (aset-float verts clojure.c2/v color12)
+    (aset-float verts clojure.u2/v u1)
+    (aset-float verts clojure.v2/v v2)
+    (aset-float verts clojure.x3/v x2)
+    (aset-float verts clojure.y3/v y2)
+    (aset-float verts clojure.c3/v color22)
+    (aset-float verts clojure.u3/v u2)
+    (aset-float verts clojure.v3/v v2)
+    (aset-float verts clojure.x4/v x2)
+    (aset-float verts clojure.y4/v y1)
+    (aset-float verts clojure.c4/v color21)
+    (aset-float verts clojure.u4/v u2)
+    (aset-float verts clojure.v4/v v1)
+    (draw/f batch
+          (texture-region/get-texture region)
+          verts
+          0
+          num-vertices)))
