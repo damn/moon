@@ -1,21 +1,4 @@
 [
- (clojure.add-methods/f! clojure.is-applicable/f
-                         {
-                          :effects/audiovisual   clojure.effects-applicable-audiovisual/f
-                          :effects/projectile    clojure.applicable-projectile/f
-                          :effects/spawn         clojure.applicable-spawn/f
-                          :effects/target-all    clojure.applicable-target-all/f
-                          :effects/target-entity clojure.applicable-target-entity/f
-
-                          :effects.target/audiovisual  clojure.effects-target-applicable-audiovisual/f
-                          :effects.target/convert      clojure.applicable-convert/f
-                          :effects.target/damage       clojure.applicable-damage/f
-                          :effects.target/kill         clojure.applicable-kill/f
-                          :effects.target/melee-damage clojure.applicable-melee-damage/f
-                          :effects.target/spiderweb    clojure.applicable-spiderweb/f
-                          :effects.target/stun         clojure.applicable-stun/f
-                          }
-                         )
  (clojure.add-methods/f! clojure.is-useful/f
                          {
                           :default               clojure.useful-default/f
