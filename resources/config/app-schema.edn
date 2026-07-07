@@ -1,3 +1,11 @@
+; TODO
+
+; * wanted to see what is used together
+; by extracting each sub-ctx call in a separate ctx call with only one param
+; ala draw.circle {:keys [ctx/shape-drawer]}
+; by this logic other ctx callers also shouldn't know where from the ctx a call comes from
+; so there should be a central ctx protocol???
+
 [:map {:closed true}
  [:ctx/state->pause-game? :some]
  [:ctx/zoom-speed :some]
