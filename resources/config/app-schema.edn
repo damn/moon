@@ -8,7 +8,6 @@
 
 [:map {:closed true}
  [:ctx/draw-fns :some]
- [:ctx/k->tick :some]
  [:ctx/k->render :some]
  [:ctx/k->create :some]
  [:ctx/k->destroy :some]
