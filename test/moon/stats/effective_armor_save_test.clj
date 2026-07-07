@@ -1,5 +1,5 @@
 (ns moon.stats.effective-armor-save-test
-  (:require [moon.stats.effective-armor-save :as effective-armor-save]))
+  (:require [clojure.effective-armor-save :as effective-armor-save]))
 
 (comment
 

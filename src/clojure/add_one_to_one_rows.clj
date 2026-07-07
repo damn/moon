@@ -1,0 +1,64 @@
+(ns clojure.add-one-to-one-rows
+  (:require [clojure.stage :as stage]
+            [clojure.window :as window]
+            [clojure.image :as image]
+            [clojure.group :as group]
+            [clojure.actor :as actor]
+            [clojure.event :as event]
+            [clojure.layout :as layout]
+            [clojure.find-ancestor :refer [find-ancestor]]
+            [clojure.add-rows :refer [add-rows!]]
+            [clojure.ui-text-button :as text-button]
+            [clojure.ui-text-tooltip :as text-tooltip]
+            [clojure.utils-change-listener :as change-listener]
+            [clojure.get-raw :refer [get-raw]]
+            [clojure.tooltip :as tooltip]
+            [clojure.property-image :as property-image]
+            [clojure.moon-textures :as textures]))
+
+(defn add-one-to-one-rows
+  [{:keys [ctx/db
+           ctx/skin
+           ctx/textures]}
+   table
+   property-type
+   property-id]
+  (let [redo-rows (fn [ctx id]
+                    (group/clear-children! table)
+                    (add-one-to-one-rows ctx table property-type id)
+                    (layout/pack! (find-ancestor table (partial instance? window/class))))]
+    (add-rows!
+     table
+     [[(when-not property-id
+         {:actor (doto (text-button/create {:text "+" :skin skin})
+                   (actor/add-listener! (change-listener/create
+                                    (fn [event _actor]
+                                      (let [{:keys [ctx/db
+                                                    ctx/skin
+                                                    ctx/stage
+                                                    ctx/textures
+                                                    ctx/property-overview-window]
+                                             :as ctx} (:stage/ctx (event/get-stage event))]
+                                        (stage/add-actor!
+                                         stage
+                                         (property-overview-window
+                                          {:db db
+                                           :textures textures
+                                           :skin skin
+                                           :property-type property-type
+                                           :clicked-id-fn (fn [actor id ctx]
+                                                            (actor/remove! (find-ancestor actor (partial instance? window/class)))
+                                                            (redo-rows ctx id))})))))))})]
+      [(when property-id
+         (let [property (get-raw db property-id)]
+           {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
+                     (actor/add-listener! (text-tooltip/create (tooltip/f property) skin))
+                     (actor/set-user-object! property-id))}))]
+      [(when property-id
+         {:actor (doto (text-button/create
+                        {:text "-"
+                         :skin skin})
+                   (actor/add-listener! (change-listener/create
+                                    (fn [event _actor]
+                                      (redo-rows (:stage/ctx (event/get-stage event))
+                                                 nil)))))})]])))

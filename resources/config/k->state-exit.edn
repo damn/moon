@@ -1,6 +1,6 @@
 {
- :player-item-on-cursor ctx.entity.state.exit.player-item-on-cursor/f
- :player-moving ctx.entity.state.exit.player-moving/f
- :npc-sleeping ctx.entity.state.exit.npc-sleeping/f
- :npc-moving ctx.entity.state.exit.npc-moving/f
+ :player-item-on-cursor clojure.exit-player-item-on-cursor/f
+ :player-moving clojure.exit-player-moving/f
+ :npc-sleeping clojure.exit-npc-sleeping/f
+ :npc-moving clojure.exit-npc-moving/f
  }

@@ -1,8 +1,8 @@
 {
- :player-item-on-cursor ctx.entity.state.enter.player-item-on-cursor/f
- :active-skill ctx.entity.state.enter.active-skill/f
- :npc-dead ctx.entity.state.enter.npc-dead/f
- :player-moving ctx.entity.state.enter.player-moving/f
- :player-dead ctx.entity.state.enter.player-dead/f
- :npc-moving ctx.entity.state.enter.npc-moving/f
+ :player-item-on-cursor clojure.enter-player-item-on-cursor/f
+ :active-skill clojure.enter-active-skill/f
+ :npc-dead clojure.npc-dead/f
+ :player-moving clojure.enter-player-moving/f
+ :player-dead clojure.player-dead/f
+ :npc-moving clojure.enter-npc-moving/f
  }

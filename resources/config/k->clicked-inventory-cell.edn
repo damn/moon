@@ -1,4 +1,4 @@
 {
- :player-item-on-cursor ctx.entity.state.clicked-inventory-cell.player-item-on-cursor/f
- :player-idle ctx.entity.state.clicked-inventory-cell.player-idle/f
+ :player-item-on-cursor clojure.clicked-inventory-cell-player-item-on-cursor/f
+ :player-idle clojure.clicked-inventory-cell-player-idle/f
  }

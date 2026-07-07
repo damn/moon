@@ -1,57 +1,57 @@
 [
- (clojure.add-methods/f! editor.create-widget/f
+ (clojure.add-methods/f! clojure.create-widget/f
                          {
-                          :default       editor.create-widget.default/f
+                          :default       clojure.create-widget-default/f
 
-                          :s/animation   editor.create-widget.animation/f
-                          :s/boolean     editor.create-widget.boolean/f
-                          :s/enum        editor.create-widget.enum/f
-                          :s/image       editor.create-widget.image/f
-                          :s/map         editor.create-widget.map/f
-                          :s/number      editor.create-widget.number/f
-                          :s/one-to-many editor.create-widget.one-to-many/f
-                          :s/one-to-one  editor.create-widget.one-to-one/f
-                          :s/sound       editor.create-widget.sound/f
-                          :s/string      editor.create-widget.string/f
-                          :s/val-max     editor.create-widget.val-max/f
+                          :s/animation   clojure.create-widget-animation/f
+                          :s/boolean     clojure.create-widget-boolean/f
+                          :s/enum        clojure.create-widget-enum/f
+                          :s/image       clojure.create-widget-image/f
+                          :s/map         clojure.create-widget-map/f
+                          :s/number      clojure.create-widget-number/f
+                          :s/one-to-many clojure.create-widget-one-to-many/f
+                          :s/one-to-one  clojure.create-widget-one-to-one/f
+                          :s/sound       clojure.create-widget-sound/f
+                          :s/string      clojure.create-widget-string/f
+                          :s/val-max     clojure.create-widget-val-max/f
                           }
                          )
- (clojure.add-methods/f! editor.widget-value/f
+ (clojure.add-methods/f! clojure.widget-value/f
                          {
-                          :default       editor.widget-value.default/f
+                          :default       clojure.widget-value-default/f
 
-                          :s/boolean     editor.widget-value.boolean/f
-                          :s/enum        editor.widget-value.enum/f
-                          :s/map         editor.widget-value.map/f
-                          :s/number      editor.widget-value.number/f
-                          :s/one-to-many editor.widget-value.one-to-many/f
-                          :s/one-to-one  editor.widget-value.one-to-one/f
-                          :s/string      editor.widget-value.string/f
-                          :s/val-max     editor.widget-value.val-max/f
+                          :s/boolean     clojure.widget-value-boolean/f
+                          :s/enum        clojure.widget-value-enum/f
+                          :s/map         clojure.widget-value-map/f
+                          :s/number      clojure.widget-value-number/f
+                          :s/one-to-many clojure.widget-value-one-to-many/f
+                          :s/one-to-one  clojure.widget-value-one-to-one/f
+                          :s/string      clojure.widget-value-string/f
+                          :s/val-max     clojure.widget-value-val-max/f
                           }
                          )
- (gdx.use-glfw-async/f)
- (gdx.application/f!
-  {:listener (moon.application.listener/f
+ (clojure.use-glfw-async/f)
+ (clojure.gdx-application/f!
+  {:listener (clojure.listener/f
               {
-               :state-var editor.app/state
+               :state-var clojure.app/state
                :create-pipeline [
-                                 (ctx.gdx-context/f)
-                                 (clojure.assoc-create/f :ctx/batch ctx.batch/step)
-                                 (clojure.assoc-create/f :ctx/skin ctx.skin/step)
-                                 (clojure.assoc-create/f :ctx/db ctx.db/step)
-                                 (clojure.assoc-create/f :ctx/stage ctx.stage/step)
+                                 (clojure.gdx-context/f)
+                                 (clojure.assoc-create/f :ctx/batch clojure.ctx-batch/step)
+                                 (clojure.assoc-create/f :ctx/skin clojure.ctx-skin/step)
+                                 (clojure.assoc-create/f :ctx/db clojure.ctx-db/step)
+                                 (clojure.assoc-create/f :ctx/stage clojure.ctx-stage/step)
                                  (clojure.do/step
-                                  (ctx.add-stage-actors/f! [[editor.main-window/create]]))
-                                 (clojure.map-create/f :ctx/textures (ctx.textures/step
+                                  (clojure.add-stage-actors/f! [[clojure.main-window/create]]))
+                                 (clojure.map-create/f :ctx/textures (clojure.ctx-textures/step
                                                               {:folder "resources/"
                                                                :extensions #{"png" "bmp"}}))
-                                 (editor.app.create/f!
-                                  {:ctx/property-overview-window editor.property-overview-window/create
-                                   :ctx/add-component-window editor.map-widget-table.add-component-window/f
-                                   :ctx/create-component-row editor.map-widget-table.component-row/create
-                                   :ctx/create-map-widget-table editor.map-widget-table/create
-                                   :ctx/rebuild-editor-window! editor.rebuild/f!
+                                 (clojure.app-create/f!
+                                  {:ctx/property-overview-window clojure.property-overview-window/create
+                                   :ctx/add-component-window clojure.add-component-window/f
+                                   :ctx/create-component-row clojure.component-row/create
+                                   :ctx/create-map-widget-table clojure.map-widget-table/create
+                                   :ctx/rebuild-editor-window! clojure.editor-rebuild/f!
                                    :ctx/property-k-sort-order [:property/id
                                                                :property/pretty-name
                                                                :entity/image
@@ -69,10 +69,10 @@
                                                                :skill/cost
                                                                ]})
                                  ]
-               :dispose! editor.app.dispose/dispose!
-               :render-pipeline [(ctx.render.clear-screen/step)
-                                 (editor.app.render/render!)]
-               :resize! editor.app.resize/resize!})
+               :dispose! clojure.app-dispose/dispose!
+               :render-pipeline [(clojure.clear-screen/step)
+                                 (clojure.app-render/render!)]
+               :resize! clojure.app-resize/resize!})
    :title "!Editor!"
    :windowed-mode {:width 1440 :height 900}
    :foreground-fps 60})

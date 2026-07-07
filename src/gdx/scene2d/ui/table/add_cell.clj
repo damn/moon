@@ -1,7 +1,0 @@
-(ns gdx.scene2d.ui.table.add-cell
-  (:require [clojure.table :as table]
-            [clojure.set-opts :as set-opts]))
-
-(defn add-cell! [table cell-declaration]
-  (-> (table/add! table (:actor cell-declaration))
-      (set-opts/f (dissoc cell-declaration :actor))))

@@ -1,15 +1,15 @@
 {
- :entity/animation ctx.entity.tick.animation/f
- :entity/alert-friendlies-after-duration ctx.entity.tick.alert-friendlies-after-duration/f
- :entity/string-effect ctx.entity.tick.string-effect/f
- :entity/skills ctx.entity.tick.skills/f
- :entity/temp-modifier ctx.entity.tick.temp-modifier/f
- :entity/projectile-collision ctx.entity.tick.projectile-collision/f
- :active-skill ctx.entity.tick.active-skill/f
- :entity/delete-after-duration ctx.entity.tick.delete-after-duration/f
- :stunned ctx.entity.tick.stunned/f
- :npc-moving ctx.entity.tick.npc-moving/f
- :npc-sleeping ctx.entity.tick.npc-sleeping/f
- :npc-idle ctx.entity.tick.npc-idle/f
- :entity/movement ctx.entity.tick.movement/f
+ :entity/animation clojure.tick-animation/f
+ :entity/alert-friendlies-after-duration clojure.alert-friendlies-after-duration/f
+ :entity/string-effect clojure.tick-string-effect/f
+ :entity/skills clojure.tick-skills/f
+ :entity/temp-modifier clojure.tick-temp-modifier/f
+ :entity/projectile-collision clojure.tick-projectile-collision/f
+ :active-skill clojure.tick-active-skill/f
+ :entity/delete-after-duration clojure.tick-delete-after-duration/f
+ :stunned clojure.tick-stunned/f
+ :npc-moving clojure.tick-npc-moving/f
+ :npc-sleeping clojure.tick-npc-sleeping/f
+ :npc-idle clojure.npc-idle/f
+ :entity/movement clojure.movement/f
  }

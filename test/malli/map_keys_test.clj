@@ -1,5 +1,5 @@
 (ns malli.map-keys-test
-  (:require [malli.map-keys :as map-keys]))
+  (:require [clojure.malli-map-keys :as map-keys]))
 
 (comment
  (= (map-keys/f

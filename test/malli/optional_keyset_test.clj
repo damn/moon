@@ -1,5 +1,5 @@
 (ns malli.optional-keyset-test
-  (:require [malli.optional-keyset :as optional-keyset]))
+  (:require [clojure.malli-optional-keyset :as optional-keyset]))
 
 (comment
  (= (optional-keyset/f

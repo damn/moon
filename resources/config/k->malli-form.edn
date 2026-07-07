@@ -1,16 +1,16 @@
 {
- :s/animation         moon.schemas.malli-form.animation/f
- :s/boolean           moon.schemas.malli-form.boolean/f
- :s/enum              moon.schemas.malli-form.enum/f
- :s/image             moon.schemas.malli-form.image/f
- :s/map               moon.schemas.malli-form.map/f
- :s/number            moon.schemas.malli-form.number/f
- :s/one-to-many       moon.schemas.malli-form.one-to-many/f
- :s/one-to-one        moon.schemas.malli-form.one-to-one/f
- :s/qualified-keyword moon.schemas.malli-form.qualified-keyword/f
- :s/some              moon.schemas.malli-form.some/f
- :s/sound             moon.schemas.malli-form.sound/f
- :s/string            moon.schemas.malli-form.string/f
- :s/val-max           moon.schemas.malli-form.val-max/f
- :s/vector            moon.schemas.malli-form.vector/f
+ :s/animation         clojure.malli-form-animation/f
+ :s/boolean           clojure.malli-form-boolean/f
+ :s/enum              clojure.malli-form-enum/f
+ :s/image             clojure.malli-form-image/f
+ :s/map               clojure.malli-form-map/f
+ :s/number            clojure.malli-form-number/f
+ :s/one-to-many       clojure.malli-form-one-to-many/f
+ :s/one-to-one        clojure.malli-form-one-to-one/f
+ :s/qualified-keyword clojure.qualified-keyword/f
+ :s/some              clojure.some/f
+ :s/sound             clojure.malli-form-sound/f
+ :s/string            clojure.malli-form-string/f
+ :s/val-max           clojure.malli-form-val-max/f
+ :s/vector            clojure.vector/f
  }

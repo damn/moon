@@ -36,9 +36,9 @@
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {
-            "dev"      ["run" "-m" "dev.loop" "((requiring-resolve 'moon.start/-main))"]
-            "levelgen" ["run" "-m" "dev.loop" "((requiring-resolve 'levelgen-test.start/-main))"]
-            "editor"   ["run" "-m" "dev.loop" "((requiring-resolve 'editor.start/-main))"]
+            "dev"      ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.moon-start/-main))"]
+            "levelgen" ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.levelgen-test-start/-main))"]
+            "editor"   ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.editor-start/-main))"]
             }
   :plugins [[lein-hiera "2.0.0"]
             [lein-codox "0.10.8"]]
@@ -54,6 +54,6 @@
                 ;*unchecked-math* :warn-on-boxed
                 ;*assert* false
                 *print-level* 3}
-  :profiles {:uberjar {:aot [moon.start]}}
+  :profiles {:uberjar {:aot [clojure.moon-start]}}
   :uberjar-name "moon.jar"
-  :main moon.start)
+  :main clojure.moon-start)

@@ -1,88 +1,88 @@
 [
- (clojure.add-methods/f! moon.schemas.create-value/create-value
+ (clojure.add-methods/f! clojure.create-value/create-value
                          {
-                          :default       moon.schemas.create-value.default/f
+                          :default       clojure.create-value-default/f
 
-                          :s/map         moon.schemas.create-value.map/f
-                          :s/one-to-many moon.schemas.create-value.one-to-many/f
-                          :s/one-to-one  moon.schemas.create-value.one-to-one/f
+                          :s/map         clojure.create-value-map/f
+                          :s/one-to-many clojure.create-value-one-to-many/f
+                          :s/one-to-one  clojure.create-value-one-to-one/f
                           }
                          )
- (clojure.add-methods/f! moon.create-entity-state/f
+ (clojure.add-methods/f! clojure.create-entity-state/f
                          {
-                          :default               ctx.entity.state.create.default/f
+                          :default               clojure.create-default/f
 
-                          :active-skill          ctx.entity.state.create.active-skill/f
-                          :stunned               ctx.entity.state.create.stunned/f
-                          :player-moving         ctx.entity.state.create.player-moving/f
-                          :npc-moving            ctx.entity.state.create.npc-moving/f
-                          :player-item-on-cursor ctx.entity.state.create.player-item-on-cursor/f
+                          :active-skill          clojure.create-active-skill/f
+                          :stunned               clojure.create-stunned/f
+                          :player-moving         clojure.create-player-moving/f
+                          :npc-moving            clojure.create-npc-moving/f
+                          :player-item-on-cursor clojure.create-player-item-on-cursor/f
                           }
                          )
- (clojure.add-methods/f! moon.entity-state-draw-ui-view/f
+ (clojure.add-methods/f! clojure.entity-state-draw-ui-view/f
                          {
-                          :default               ctx.entity.state.draw-ui-view.default/f
+                          :default               clojure.draw-ui-view-default/f
 
-                          :player-item-on-cursor ctx.entity.state.draw-ui-view.player-item-on-cursor/f
+                          :player-item-on-cursor clojure.draw-ui-view-player-item-on-cursor/f
                           }
                          )
- (clojure.add-methods/f! moon.effect.is-applicable/f
+ (clojure.add-methods/f! clojure.is-applicable/f
                          {
-                          :effects/audiovisual   ctx.effects.applicable.audiovisual/f
-                          :effects/projectile    ctx.effects.applicable.projectile/f
-                          :effects/spawn         ctx.effects.applicable.spawn/f
-                          :effects/target-all    ctx.effects.applicable.target-all/f
-                          :effects/target-entity ctx.effects.applicable.target-entity/f
+                          :effects/audiovisual   clojure.effects-applicable-audiovisual/f
+                          :effects/projectile    clojure.applicable-projectile/f
+                          :effects/spawn         clojure.applicable-spawn/f
+                          :effects/target-all    clojure.applicable-target-all/f
+                          :effects/target-entity clojure.applicable-target-entity/f
 
-                          :effects.target/audiovisual  ctx.effects-target.applicable.audiovisual/f
-                          :effects.target/convert      ctx.effects-target.applicable.convert/f
-                          :effects.target/damage       ctx.effects-target.applicable.damage/f
-                          :effects.target/kill         ctx.effects-target.applicable.kill/f
-                          :effects.target/melee-damage ctx.effects-target.applicable.melee-damage/f
-                          :effects.target/spiderweb    ctx.effects-target.applicable.spiderweb/f
-                          :effects.target/stun         ctx.effects-target.applicable.stun/f
+                          :effects.target/audiovisual  clojure.effects-target-applicable-audiovisual/f
+                          :effects.target/convert      clojure.applicable-convert/f
+                          :effects.target/damage       clojure.applicable-damage/f
+                          :effects.target/kill         clojure.applicable-kill/f
+                          :effects.target/melee-damage clojure.applicable-melee-damage/f
+                          :effects.target/spiderweb    clojure.applicable-spiderweb/f
+                          :effects.target/stun         clojure.applicable-stun/f
                           }
                          )
- (clojure.add-methods/f! moon.effect.is-useful/f
+ (clojure.add-methods/f! clojure.is-useful/f
                          {
-                          :default               ctx.effects.useful.default/f
+                          :default               clojure.useful-default/f
 
-                          :effects/audiovisual   ctx.effects.useful.audiovisual/f
-                          :effects/projectile    ctx.effects.useful.projectile/f
-                          :effects/target-all    ctx.effects.useful.target-all/f
-                          :effects/target-entity ctx.effects.useful.target-entity/f
+                          :effects/audiovisual   clojure.effects-useful-audiovisual/f
+                          :effects/projectile    clojure.useful-projectile/f
+                          :effects/target-all    clojure.useful-target-all/f
+                          :effects/target-entity clojure.useful-target-entity/f
 
-                          :effects.target/audiovisual ctx.effects-target.useful.audiovisual/f
+                          :effects.target/audiovisual clojure.effects-target-useful-audiovisual/f
                           }
                          )
- (clojure.add-methods/f! moon.effect.handle/f
+ (clojure.add-methods/f! clojure.handle/f
                          {
-                          :effects/audiovisual   ctx.effects.handle.audiovisual/f
-                          :effects/projectile    ctx.effects.handle.projectile/f
-                          :effects/spawn         ctx.effects.handle.spawn/f
-                          :effects/target-all    ctx.effects.handle.target-all/f
-                          :effects/target-entity ctx.effects.handle.target-entity/f
+                          :effects/audiovisual   clojure.effects-handle-audiovisual/f
+                          :effects/projectile    clojure.handle-projectile/f
+                          :effects/spawn         clojure.handle-spawn/f
+                          :effects/target-all    clojure.handle-target-all/f
+                          :effects/target-entity clojure.handle-target-entity/f
 
-                          :effects.target/audiovisual  ctx.effects-target.handle.audiovisual/f
-                          :effects.target/convert      ctx.effects-target.handle.convert/f
-                          :effects.target/damage       ctx.effects-target.handle.damage/f
-                          :effects.target/kill         ctx.effects-target.handle.kill/f
-                          :effects.target/melee-damage ctx.effects-target.handle.melee-damage/f
-                          :effects.target/spiderweb    ctx.effects-target.handle.spiderweb/f
-                          :effects.target/stun         ctx.effects-target.handle.stun/f
+                          :effects.target/audiovisual  clojure.effects-target-handle-audiovisual/f
+                          :effects.target/convert      clojure.handle-convert/f
+                          :effects.target/damage       clojure.handle-damage/f
+                          :effects.target/kill         clojure.handle-kill/f
+                          :effects.target/melee-damage clojure.handle-melee-damage/f
+                          :effects.target/spiderweb    clojure.handle-spiderweb/f
+                          :effects.target/stun         clojure.handle-stun/f
                           }
                          )
- (clojure.add-methods/f! moon.effect.render/f
+ (clojure.add-methods/f! clojure.effect-render/f
                          {
-                          :default               ctx.effects.render.default/f
+                          :default               clojure.render-default/f
 
-                          :effects/target-all    ctx.effects.render.target-all/f
-                          :effects/target-entity ctx.effects.render.target-entity/f
+                          :effects/target-all    clojure.render-target-all/f
+                          :effects/target-entity clojure.render-target-entity/f
                           }
                          )
- (gdx.use-glfw-async/f)
- (gdx.application/f!
-  {:listener (moon.application.listener/f #edn/resource "config/listener.edn")
+ (clojure.use-glfw-async/f)
+ (clojure.gdx-application/f!
+  {:listener (clojure.listener/f #edn/resource "config/listener.edn")
    :title "Moon"
    :windowed-mode {:width 1440
                    :height 900}

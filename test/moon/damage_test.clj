@@ -1,5 +1,5 @@
 (ns moon.damage-test
-  (:require [moon.stats.calc-damage :as calc-damage]
+  (:require [clojure.calc-damage :as calc-damage]
             [clojure.test :refer :all]))
 
 (def get-damage calc-damage/f)

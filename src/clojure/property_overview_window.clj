@@ -1,0 +1,36 @@
+(ns clojure.property-overview-window
+  (:require [clojure.window :as gdx-window]
+            [clojure.constants :refer [property-type->overview-table-props]]
+            [clojure.table-rows :refer [overview-table-rows*]]
+            [clojure.ui-window :as window]
+            [clojure.all-raw :refer [all-raw]]
+            [clojure.add-close-button :as add-close-button]
+            [clojure.tooltip :as tooltip]
+            [clojure.property-image :as image]
+            [clojure.moon-textures :as textures]))
+
+(defn create
+  [{:keys [db
+           textures
+           skin
+           property-type
+           clicked-id-fn]}]
+  (doto (window/create
+         {:title "Edit"
+          :skin skin
+          :table/rows (let [{:keys [sort-by-fn
+                                    extra-info-text
+                                    columns
+                                    image-scale]} (get property-type->overview-table-props property-type)]
+                        (->> (all-raw db property-type)
+                             (sort-by sort-by-fn)
+                             (map (fn [property]
+                                    {:texture-region (textures/texture-region textures (image/f property))
+                                     :on-clicked (fn [actor ctx]
+                                                   (clicked-id-fn actor (:property/id property) ctx))
+                                     :tooltip (tooltip/f property)
+                                     :extra-info-text (extra-info-text property)}))
+                             (partition-all columns)
+                             (overview-table-rows* skin image-scale)))})
+    (add-close-button/f! skin)
+    (gdx-window/set-modal! true)))

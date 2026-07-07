@@ -1,9 +1,0 @@
-(ns ctx.entity.tick.string-effect
-  (:require [clojure.stopped :refer [stopped?]]))
-
-(defn f
-  [{:keys [counter]}
-   eid
-   {:keys [ctx/elapsed-time]}]
-  (when (stopped? elapsed-time counter)
-    [[:tx/dissoc eid :entity/string-effect]]))

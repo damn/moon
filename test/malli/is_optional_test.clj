@@ -1,5 +1,5 @@
 (ns malli.is-optional-test
-  (:require [malli.is-optional :as optional?]))
+  (:require [clojure.is-optional :as optional?]))
 
 (comment
  (= (optional?/f :foo

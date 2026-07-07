@@ -1,14 +1,14 @@
 {
- :entity/clickable ctx.entity.render.clickable/f
- :player-item-on-cursor ctx.entity.render.player-item-on-cursor/f
- :entity/animation ctx.entity.render.animation/f
- :entity/image ctx.entity.render.image/f
- :entity/line-render ctx.entity.render.line-render/f
- :entity/mouseover? ctx.entity.render.mouseover/f
- :entity/stats ctx.entity.render.stats/f
- :entity/string-effect ctx.entity.render.string-effect/f
- :entity/temp-modifier ctx.entity.render.temp-modifier/f
- :active-skill ctx.entity.render.active-skill/f
- :npc-sleeping ctx.entity.render.npc-sleeping/f
- :stunned ctx.entity.render.stunned/f
+ :entity/clickable clojure.clickable/f
+ :player-item-on-cursor clojure.render-player-item-on-cursor/f
+ :entity/animation clojure.render-animation/f
+ :entity/image clojure.render-image/f
+ :entity/line-render clojure.line-render/f
+ :entity/mouseover? clojure.mouseover/f
+ :entity/stats clojure.render-stats/f
+ :entity/string-effect clojure.render-string-effect/f
+ :entity/temp-modifier clojure.render-temp-modifier/f
+ :active-skill clojure.render-active-skill/f
+ :npc-sleeping clojure.render-npc-sleeping/f
+ :stunned clojure.render-stunned/f
  }

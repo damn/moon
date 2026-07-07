@@ -1,7 +1,7 @@
 (ns moon.operations-test
-  (:require [moon.ops.apply :as apply]
-            [moon.ops.add :as add]
-            [moon.ops.remove :as remove]
+  (:require [clojure.apply :as apply]
+            [clojure.ops-add :as add]
+            [clojure.ops-remove :as remove]
             [clojure.test :refer :all]))
 
 (deftest add-and-remove

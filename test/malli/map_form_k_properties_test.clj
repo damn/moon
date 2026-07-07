@@ -1,5 +1,5 @@
 (ns malli.map-form-k-properties-test
-  (:require [malli.map-form-k-properties :refer [map-form-k->properties]]))
+  (:require [clojure.map-form-k-properties :refer [map-form-k->properties]]))
 
 (comment
  (= (map-form-k->properties
