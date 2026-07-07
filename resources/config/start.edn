@@ -19,13 +19,6 @@
                           :player-item-on-cursor clojure.create-player-item-on-cursor/f
                           }
                          )
- (clojure.add-methods/f! clojure.entity-state-draw-ui-view/f
-                         {
-                          :default               clojure.draw-ui-view-default/f
-
-                          :player-item-on-cursor clojure.draw-ui-view-player-item-on-cursor/f
-                          }
-                         )
  (clojure.add-methods/f! clojure.is-applicable/f
                          {
                           :effects/audiovisual   clojure.effects-applicable-audiovisual/f
