@@ -4,5 +4,5 @@
 
 (defn f
   [{:keys [fsm initial-state]} eid ctx]
-  [[:tx/assoc eid :entity/fsm (create-fsm ctx fsm initial-state)]
+  [[:tx/assoc eid :entity/fsm (create-fsm fsm initial-state)]
    [:tx/assoc eid initial-state (create-entity-state/f [initial-state nil] eid ctx)]])

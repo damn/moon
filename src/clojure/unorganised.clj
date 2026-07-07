@@ -1,15 +1,9 @@
 (ns clojure.unorganised
   (:require [clojure.edn-resource :refer [edn-resource]]
-            [clojure.create-schema :refer [create-schema]]
-            [reduce-fsm :as fsm]))
+            [clojure.create-schema :refer [create-schema]]))
 
 (defn step [ctx]
   (assoc ctx
-         :ctx/fsms (let [load-fsm (fn [path]
-                                    (let [data (edn-resource path)]
-                                      (eval `(fsm/fsm-inc ~data))))]
-                     {:npc (load-fsm "config/npc-fsm.edn")
-                      :player (load-fsm "config/player-fsm.edn")})
          :ctx/k->tick (edn-resource "config/k-tick.edn")
          :ctx/k->render (edn-resource "config/k->render.edn")
          :ctx/k->create (edn-resource "config/k->create.edn")
