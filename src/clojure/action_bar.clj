@@ -1,6 +1,7 @@
 (ns clojure.action-bar
-  (:require [clojure.button-group :as button-group]
-            [clojure.actor :as actor]
+  (:require
+            [clojure.set-name]
+            [clojure.set-user-object] [clojure.button-group :as button-group]
             [clojure.horizontal-group :as horizontal-group]
             [clojure.layout :as layout]
             [clojure.ui-table :as table]))
@@ -11,11 +12,11 @@
           :table/rows [[{:actor (doto (horizontal-group/new)
                                   (horizontal-group/space! 2)
                                   (horizontal-group/pad! 2)
-                                  (actor/set-name! "moon.ui.action-bar.horizontal-group")
-                                  (actor/set-user-object! (doto (button-group/new)
+                                  (clojure.set-name/f "moon.ui.action-bar.horizontal-group")
+                                  (clojure.set-user-object/f (doto (button-group/new)
                                                        (button-group/set-max-check-count! 1)
                                                        (button-group/set-min-check-count! 0))))
                          :expand? true
                          :bottom? true}]]})
     (layout/set-fill-parent! true)
-    (actor/set-name! "moon.ui.action-bar")))
+    (clojure.set-name/f "moon.ui.action-bar")))

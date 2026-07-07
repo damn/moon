@@ -1,6 +1,7 @@
 (ns clojure.add-component-window
-  (:require [clojure.window :as gdx-window]
-            [clojure.actor :as actor]
+  (:require
+            [clojure.add-listener]
+            [clojure.remove-actor] [clojure.window :as gdx-window]
             [clojure.event :as event]
             [clojure.layout :as layout]
             [clojure.build-widget :as build-widget]
@@ -30,9 +31,9 @@
        [{:actor (doto (text-button/create
                        {:skin skin
                         :text (name k)})
-                  (actor/add-listener! (change-listener/create
+                  (clojure.add-listener/f (change-listener/create
                                    (fn [event _actor]
-                                     (actor/remove! window)
+                                     (clojure.remove-actor/f window)
                                      (let [ctx (:stage/ctx (event/get-stage event))]
                                        (add-rows! map-widget-table [((:ctx/create-component-row ctx)
                                                                       {:skin skin

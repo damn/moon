@@ -1,6 +1,6 @@
 (ns clojure.main-window
-  (:require [clojure.stage :as stage]
-            [clojure.actor :as actor]
+  (:require
+            [clojure.add-listener] [clojure.stage :as stage]
             [clojure.event :as event]
             [clojure.string :as str]
             [clojure.editor-window]
@@ -20,7 +20,7 @@
                   [{:actor (doto (text-button/create
                                   {:text (str/capitalize (name property-type))
                                    :skin skin})
-                             (actor/add-listener! (change-listener/create
+                             (clojure.add-listener/f (change-listener/create
                                               (fn [event actor]
                                                 (let [{:keys [ctx/db
                                                               ctx/skin

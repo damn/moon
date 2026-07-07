@@ -1,9 +1,11 @@
 (ns clojure.add-one-to-one-rows
-  (:require [clojure.stage :as stage]
+  (:require
+            [clojure.add-listener]
+            [clojure.remove-actor]
+            [clojure.set-user-object] [clojure.stage :as stage]
             [clojure.window :as window]
             [clojure.image :as image]
             [clojure.group :as group]
-            [clojure.actor :as actor]
             [clojure.event :as event]
             [clojure.layout :as layout]
             [clojure.find-ancestor :refer [find-ancestor]]
@@ -31,7 +33,7 @@
      table
      [[(when-not property-id
          {:actor (doto (text-button/create {:text "+" :skin skin})
-                   (actor/add-listener! (change-listener/create
+                   (clojure.add-listener/f (change-listener/create
                                     (fn [event _actor]
                                       (let [{:keys [ctx/db
                                                     ctx/skin
@@ -47,18 +49,18 @@
                                            :skin skin
                                            :property-type property-type
                                            :clicked-id-fn (fn [actor id ctx]
-                                                            (actor/remove! (find-ancestor actor (partial instance? window/class)))
+                                                            (clojure.remove-actor/f (find-ancestor actor (partial instance? window/class)))
                                                             (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
            {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
-                     (actor/add-listener! (text-tooltip/create (tooltip/f property) skin))
-                     (actor/set-user-object! property-id))}))]
+                     (clojure.add-listener/f (text-tooltip/create (tooltip/f property) skin))
+                     (clojure.set-user-object/f property-id))}))]
       [(when property-id
          {:actor (doto (text-button/create
                         {:text "-"
                          :skin skin})
-                   (actor/add-listener! (change-listener/create
+                   (clojure.add-listener/f (change-listener/create
                                     (fn [event _actor]
                                       (redo-rows (:stage/ctx (event/get-stage event))
                                                  nil)))))})]])))

@@ -1,6 +1,6 @@
 (ns clojure.get-data
-  (:require [clojure.group :as group]
-            [clojure.actor :as actor]))
+  (:require
+            [clojure.get-user-object] [clojure.group :as group]))
 
 (defn f
   [action-bar]
@@ -8,4 +8,4 @@
           (:button-group %)]}
   (let [group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
-     :button-group (actor/get-user-object group)}))
+     :button-group (clojure.get-user-object/f group)}))

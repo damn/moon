@@ -1,8 +1,8 @@
 (ns clojure.levelgen-test-create
-  (:require [clojure.orthographic-camera :as orthographic-camera]
+  (:require
+            [clojure.add-listener] [clojure.orthographic-camera :as orthographic-camera]
             [clojure.stage :as stage]
             [clojure.input :as input]
-            [clojure.actor :as actor]
             [clojure.disposable :as disposable]
             [clojure.files :as files]
             [clojure.fit-viewport :as fit-viewport]
@@ -59,6 +59,6 @@
                                  [{:actor (doto (text-button/create
                                                  {:text (str "Generate " level-fn)
                                                   :skin skin})
-                                            (actor/add-listener! (clojure.levelgen-test-change-listener/f
+                                            (clojure.add-listener/f (clojure.levelgen-test-change-listener/f
                                                              on-click)))}])}))
     ctx))

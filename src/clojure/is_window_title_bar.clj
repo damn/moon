@@ -1,11 +1,11 @@
 (ns clojure.is-window-title-bar
-  (:require [clojure.window :as window]
-            [clojure.actor :as actor]
+  (:require
+            [clojure.get-parent] [clojure.window :as window]
             [clojure.label :as label]))
 
 (defn f [actor]
   (when (instance? label/class actor)
-    (when-let [p (actor/get-parent actor)]
-      (when-let [p (actor/get-parent p)]
+    (when-let [p (clojure.get-parent/f actor)]
+      (when-let [p (clojure.get-parent/f p)]
         (and (instance? window/class p)
              (= (window/get-title-label p) actor))))))

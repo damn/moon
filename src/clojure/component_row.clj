@@ -1,6 +1,8 @@
 (ns clojure.component-row
-  (:require [clojure.group :as group]
-            [clojure.actor :as actor]
+  (:require
+            [clojure.add-listener]
+            [clojure.get-user-object]
+            [clojure.remove-actor] [clojure.group :as group]
             [clojure.event :as event]
             [clojure.k-label-text :as k-label-text]
             [clojure.ui-label :as label]
@@ -20,11 +22,11 @@
                                      (doto (text-button/create
                                             {:text "-"
                                              :skin skin})
-                                       (actor/add-listener! (change-listener/create
+                                       (clojure.add-listener/f (change-listener/create
                                                         (fn [event _actor]
-                                                          (actor/remove! (first (filter (fn [actor]
-                                                                                      (and (actor/get-user-object actor)
-                                                                                           (= k ((actor/get-user-object actor) 0))))
+                                                          (clojure.remove-actor/f (first (filter (fn [actor]
+                                                                                      (and (clojure.get-user-object/f actor)
+                                                                                           (= k ((clojure.get-user-object/f actor) 0))))
                                                                                     (group/get-children table))))
                                                           (let [ctx (:stage/ctx (event/get-stage event))]
                                                             ((:ctx/rebuild-editor-window! ctx) ctx)))))))

@@ -1,7 +1,8 @@
 (ns clojure.with-window-close
-  (:require [clojure.stage :as stage]
+  (:require
+            [clojure.get-stage]
+            [clojure.remove-actor] [clojure.stage :as stage]
             [clojure.window :as window]
-            [clojure.actor :as actor]
             [clojure.throwable :as throwable]
             [clojure.error-window :as error-window]
             [clojure.find-ancestor :refer [find-ancestor]]
@@ -13,9 +14,9 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (actor/get-stage actor)]
+           stage (clojure.get-stage/f actor)]
        (set-ctx! stage new-ctx))
-     (actor/remove! (find-ancestor actor (partial instance? window/class)))
+     (clojure.remove-actor/f (find-ancestor actor (partial instance? window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
        (stage/add-actor! stage

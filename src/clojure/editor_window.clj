@@ -1,7 +1,9 @@
 (ns clojure.editor-window
-  (:require [clojure.window :as gdx-window]
+  (:require
+            [clojure.add-listener]
+            [clojure.get-stage]
+            [clojure.set-name] [clojure.window :as gdx-window]
             [clojure.group :as group]
-            [clojure.actor :as gdx-actor]
             [clojure.event :as event]
             [clojure.create-widget :as create-widget]
             [clojure.widget-value :as widget-value]
@@ -38,14 +40,14 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (gdx-actor/add-listener! (change-listener/create
+                                     (clojure.add-listener/f (change-listener/create
                                                       (fn [event actor]
                                                         (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (gdx-actor/add-listener! (change-listener/create
+                                     (clojure.add-listener/f (change-listener/create
                                                       (fn [event actor]
                                                         (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
@@ -63,8 +65,8 @@
       (gdx-window/set-modal! true)
       (group/add-actor! (actor/f
                     {:act! (fn [this delta]
-                             (when-let [stage (gdx-actor/get-stage this)]
+                             (when-let [stage (clojure.get-stage/f this)]
                                (let [ctx (:stage/ctx stage)]
                                  (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                    (clicked-save-fn this ctx)))))}))
-      (gdx-actor/set-name! "moon.ui.clojure.editor-window"))))
+      (clojure.set-name/f "moon.ui.clojure.editor-window"))))

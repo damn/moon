@@ -1,5 +1,6 @@
 (ns clojure.ui-dev-menu
-  (:require [clojure.actor :as actor]
+  (:require
+            [clojure.set-touchable]
             [clojure.layout :as layout]
             [clojure.touchable :as touchable]
             [clojure.main-table :as main-table]
@@ -16,7 +17,7 @@
                        [{:actor (doto (label/create
                                        {:text ""
                                         :skin skin})
-                                  (actor/set-touchable! touchable/disabled))
+                                  (clojure.set-touchable/f touchable/disabled))
                          :expand? true
                          :fill-x? true
                          :fill-y? true}]]})

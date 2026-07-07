@@ -1,6 +1,7 @@
 (ns clojure.map-widget-table
-  (:require [clojure.stage :as stage]
-            [clojure.actor :as actor]
+  (:require
+            [clojure.add-listener]
+            [clojure.set-name] [clojure.stage :as stage]
             [clojure.event :as event]
             [clojure.interpose-f :refer [interpose-f]]
             [clojure.ui-table :as table]
@@ -19,7 +20,7 @@
            opt?]}]
   (let [table (doto (table/create
                      {:table/cell-defaults {:pad 5}})
-                (actor/set-name! "moon.db.schema.map.ui.widget"))
+                (clojure.set-name/f "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep/f colspan)
                                     (map (fn [k]
@@ -36,7 +37,7 @@
                 [{:actor (doto (text-button/create
                                 {:text "Add component"
                                  :skin skin})
-                           (actor/add-listener! (change-listener/create
+                           (clojure.add-listener/f (change-listener/create
                                             (fn [event actor]
                                               (let [{:keys [ctx/db
                                                             ctx/stage

@@ -1,12 +1,15 @@
 (ns clojure.mouseover-actor-info
-  (:require [clojure.actor :as actor]
+  (:require
+            [clojure.get-name]
+            [clojure.get-parent]
+            [clojure.get-user-object]
             [clojure.is-button :as button?]
             [clojure.is-window-title-bar :as window-title-bar?]))
 
 (defn mouseover-actor-info [actor]
-  (let [inventory-slot (and (actor/get-parent actor)
-                            (= "inventory-cell" (actor/get-name (actor/get-parent actor)))
-                            (actor/get-user-object (actor/get-parent actor)))]
+  (let [inventory-slot (and (clojure.get-parent/f actor)
+                            (= "inventory-cell" (clojure.get-name/f (clojure.get-parent/f actor)))
+                            (clojure.get-user-object/f (clojure.get-parent/f actor)))]
     (cond
      inventory-slot
      [:mouseover-actor/inventory-cell inventory-slot]

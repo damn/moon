@@ -1,7 +1,8 @@
 (ns clojure.inventory-window-create
-  (:require [clojure.texture-region-drawable :as texture-region-drawable]
+  (:require
+            [clojure.set-name]
+            [clojure.set-visible] [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
-            [clojure.actor :as actor]
             [clojure.new-color]
             [clojure.actor-set-position :refer [set-position!]]
             [clojure.ui-table :as table]
@@ -55,8 +56,8 @@
                                                               (for [y (range 4)]
                                                                 (for [x (range 6)]
                                                                   (->cell :inventory.slot/bag :position [x y]))))})
-                                    (actor/set-name! "inventory-cell-table"))
+                                    (clojure.set-name/f "inventory-cell-table"))
                            :pad 4}]]})
-      (actor/set-name! "moon.ui.windows.inventory")
-      (actor/set-visible! false)
+      (clojure.set-name/f "moon.ui.windows.inventory")
+      (clojure.set-visible/f false)
       (set-position! position))))

@@ -1,5 +1,6 @@
 (ns clojure.hp-mana-bar
-  (:require [clojure.actor :as gdx-actor]
+  (:require
+            [clojure.get-stage]
             [clojure.draw :refer [draw!]]
             [clojure.scene2d-actor :as actor]
             [clojure.readable :as readable]
@@ -49,6 +50,6 @@
                           (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
     (actor/f
      {:draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (gdx-actor/get-stage this)]
+               (when-let [stage (clojure.get-stage/f this)]
                  (draw! (:stage/ctx stage)
                         (create-draws (:stage/ctx stage)))))})))

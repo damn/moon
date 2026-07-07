@@ -1,11 +1,13 @@
 (ns clojure.scroll-pane-cell
-  (:require [clojure.actor :as actor]
+  (:require
+            [clojure.get-height]
+            [clojure.get-width]
             [clojure.ui-scroll-pane :as scroll-pane]))
 
 (defn create [table skin scroll-pane-height buffer]
   {:actor (scroll-pane/create
            {:actor table
             :skin skin})
-   :width  (+ (actor/get-width table) buffer)
+   :width  (+ (clojure.get-width/f table) buffer)
    :height (min (- scroll-pane-height buffer)
-                (actor/get-height table))})
+                (clojure.get-height/f table))})

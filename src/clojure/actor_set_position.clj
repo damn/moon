@@ -1,8 +1,8 @@
 (ns clojure.actor-set-position
-  (:require [clojure.actor :as actor]))
+  (:require [clojure.set-position]))
 
 (defn set-position!
   ([actor [x y]]
-   (actor/set-position! actor x y))
+   (clojure.set-position/f actor x y))
   ([actor [x y] align]
-   (actor/set-position! actor x y align)))
+   (clojure.set-position/f actor x y align)))

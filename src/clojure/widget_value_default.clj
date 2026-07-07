@@ -1,6 +1,7 @@
 (ns clojure.widget-value-default
-  (:require [clojure.actor :as actor]))
+  (:require
+            [clojure.get-user-object]))
 
 (defn f
   [_  widget _schemas]
-  ((actor/get-user-object widget) 1))
+  ((clojure.get-user-object/f widget) 1))

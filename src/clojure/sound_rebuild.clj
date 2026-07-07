@@ -1,7 +1,9 @@
 (ns clojure.sound-rebuild
-  (:require [clojure.window :as window]
+  (:require
+            [clojure.get-user-object]
+            [clojure.remove-actor]
+            [clojure.set-user-object] [clojure.window :as window]
             [clojure.group :as group]
-            [clojure.actor :as actor]
             [clojure.layout :as layout]
             [clojure.find-ancestor :refer [find-ancestor]]
             [clojure.add-rows :refer [add-rows!]]))
@@ -10,7 +12,7 @@
   (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
     (add-rows! table [(->sound-columns skin table sound-name)])
-    (actor/remove! (find-ancestor actor (partial instance? window/class)))
+    (clojure.remove-actor/f (find-ancestor actor (partial instance? window/class)))
     (layout/pack! (find-ancestor table (partial instance? window/class)))
-    (let [[k _] (actor/get-user-object table)]
-      (actor/set-user-object! table [k sound-name]))))
+    (let [[k _] (clojure.get-user-object/f table)]
+      (clojure.set-user-object/f table [k sound-name]))))
