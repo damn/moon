@@ -1,7 +1,6 @@
 (ns clojure.levelgen-test
   (:require [clojure.add-listener]
             [clojure.all-raw :refer [all-raw]]
-            [clojure.app-event :as app-event]
             [clojure.create-textures :as create-textures]
             [clojure.creature-tiles :as creature-tiles]
             [clojure.disposable :as disposable]
@@ -27,11 +26,9 @@
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
             [clojure.scene2d-stage]
-            [clojure.set-ctx :as set-ctx]
             [clojure.skin :as skin]
             [clojure.sprite-batch :as sprite-batch]
             [clojure.stage :as stage]
-            [clojure.state :refer [application]]
             [clojure.tiled-map :as tiled-map]
             [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.tmx :as tmx]
@@ -41,9 +38,6 @@
             [clojure.utils-change-listener :as utils-change-listener]
             [clojure.viewport :as viewport]
             [clojure.zoom-to-rect :as zoom-to-rect]))
-
-(defn- button-change-listener [f]
-  (utils-change-listener/create (app-event/f f)))
 
 (defn- generate-level
   [{:keys [ctx/camera
@@ -72,7 +66,7 @@
     ctx))
 
 (defn- create-ctx
-  [config]
+  [state config]
   (let [files (gdx-files/f)
         input (gdx-input/f)
         graphics (gdx-graphics/f)
@@ -113,7 +107,10 @@
                                       [{:actor (doto (text-button/create
                                                       {:text (str "Generate " label)
                                                        :skin skin})
-                                               (clojure.add-listener/f (button-change-listener on-click)))}])}))
+                                               (clojure.add-listener/f
+                                                (utils-change-listener/create
+                                                 (fn [_event _actor]
+                                                   (swap! state on-click)))))}])}))
     ctx))
 
 (defn- dispose-ctx
@@ -137,9 +134,6 @@
            ctx/world-unit-scale
            ctx/graphics
            ctx/stage] :as ctx}]
-  (let [ctx (or (:stage/ctx stage)
-                ctx)]
-    (set-ctx/f stage ctx))
   (let [gl (graphics/get-gl20 graphics)]
     (gl20/clear-color! gl 0 0 0 0)
     (gl20/clear! gl gl20/color-buffer-bit))
@@ -161,7 +155,7 @@
     (if (key-pressed?/f input :input.keys/down) (apply-position 1 -)))
   (stage/act! stage)
   (stage/draw! stage)
-  (:stage/ctx stage))
+  ctx)
 
 (defn- resize-ctx
   [{:keys [ctx/stage
@@ -169,6 +163,8 @@
    width height]
   (viewport/update! (:stage/viewport stage) width height true)
   (viewport/update! world-viewport width height false))
+
+(def state (atom nil))
 
 (defn -main []
   (let [config {:initial-level-fn uf-caves/create
@@ -189,9 +185,9 @@
      {:title "Levelgen Test"
       :windowed-mode {:width 1440 :height 900}
       :foreground-fps 60}
-     {:create! (fn [] (reset! application (create-ctx config)))
-      :dispose! (fn [] (dispose-ctx @application))
-      :render! (fn [] (swap! application render-ctx))
-      :resize! (fn [width height] (resize-ctx @application width height))
+     {:create! (fn [] (reset! state (create-ctx state config)))
+      :dispose! (fn [] (dispose-ctx @state))
+      :render! (fn [] (swap! state render-ctx))
+      :resize! (fn [width height] (resize-ctx @state width height))
       :pause! (fn [])
       :resume! (fn [])})))
