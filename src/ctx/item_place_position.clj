@@ -1,8 +1,8 @@
 (ns ctx.item-place-position
-  (:require [clojure.math.vector2.add :as add]
-            [clojure.math.vector2.direction :as direction]
-            [clojure.math.vector2.distance :as distance]
-            [clojure.math.vector2.scale :as scale]))
+  (:require [clojure.add :as add]
+            [clojure.direction :as direction]
+            [clojure.distance :as distance]
+            [clojure.scale :as scale]))
 
 ; It is possible to put items out of sight, losing them.
 ; Because line of sight checks center of entity only, not corners

@@ -1,7 +1,7 @@
 (ns ctx.info.entity
   (:require [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.string :as str]
-            [clojure.string.remove-newlines :refer [remove-newlines]]))
+            [clojure.remove-newlines :refer [remove-newlines]]))
 
 (defn info-text
   [entity {:keys [ctx/info] :as ctx}]

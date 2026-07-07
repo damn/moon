@@ -1,7 +1,7 @@
 (ns ctx.raycaster
-  (:require [clojure.grid2d.cells :refer [->cells]]
-            [clojure.grid2d.width :refer [->width]]
-            [clojure.grid2d.height :refer [->height]]
+  (:require [clojure.cells :refer [->cells]]
+            [clojure.width :refer [->width]]
+            [clojure.height :refer [->height]]
             [moon.cell.blocks-vision :as blocks-vision?]))
 
 (defn step

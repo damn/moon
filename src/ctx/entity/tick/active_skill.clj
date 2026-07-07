@@ -1,7 +1,7 @@
 (ns ctx.entity.tick.active-skill
   (:require [moon.effect.is-applicable :as applicable?]
             [moon.update-effect-ctx :as update-effect-ctx]
-            [clojure.timer.stopped :refer [stopped?]]))
+            [clojure.stopped :refer [stopped?]]))
 
 (defn f
   [{:keys [skill effect-ctx counter]}

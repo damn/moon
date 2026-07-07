@@ -1,5 +1,5 @@
 (ns ctx.tx.spawn-alert
-  (:require [clojure.timer.create :refer [create-timer]]))
+  (:require [clojure.timer-create :refer [create-timer]]))
 
 (defn do!
   [{:keys [ctx/elapsed-time]} position faction duration]

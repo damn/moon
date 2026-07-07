@@ -1,5 +1,5 @@
 (ns world-fns.uf-caves.scale-grid
-  (:require [clojure.grid2d.scalegrid :as scalegrid]))
+  (:require [clojure.scalegrid :as scalegrid]))
 
 (defn f [grid start scale]
   (let [grid (scalegrid/f grid scale)]

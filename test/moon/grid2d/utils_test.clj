@@ -1,9 +1,9 @@
 (ns moon.grid2d.utils-test
   (:require [moon.caves :as caves]
-            [clojure.grid2d.height :refer [->height]]
-            [clojure.grid2d.width :refer [->width]]
-            [clojure.grid2d.printgrid :as printgrid]
-            [clojure.grid2d.flood-fill :as flood-fill])
+            [clojure.height :refer [->height]]
+            [clojure.width :refer [->width]]
+            [clojure.printgrid :as printgrid]
+            [clojure.flood-fill :as flood-fill])
   (:import (java.util Random)))
 
 (comment

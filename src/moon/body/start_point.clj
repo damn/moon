@@ -1,7 +1,7 @@
 (ns moon.body.start-point
-  (:require [clojure.math.vector2.add :as add]
-            [clojure.math.vector2.direction :as direction]
-            [clojure.math.vector2.scale :as scale]))
+  (:require [clojure.add :as add]
+            [clojure.direction :as direction]
+            [clojure.scale :as scale]))
 
 ; TODO use at projectile & also adjust rotation
 (defn start-point [body target-body]

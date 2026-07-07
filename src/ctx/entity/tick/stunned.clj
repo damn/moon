@@ -1,5 +1,5 @@
 (ns ctx.entity.tick.stunned
-  (:require [clojure.timer.stopped :refer [stopped?]]))
+  (:require [clojure.stopped :refer [stopped?]]))
 
 (defn f
   [{:keys [counter]} eid {:keys [ctx/elapsed-time]}]

@@ -1,6 +1,6 @@
 (ns ctx.effects-target.handle.spiderweb
   (:require [moon.stats.add-mods :as add-mods]
-            [clojure.timer.create :refer [create-timer]]))
+            [clojure.timer-create :refer [create-timer]]))
 
 (let [spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}}
       spiderweb-duration 5]

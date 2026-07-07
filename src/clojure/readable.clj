@@ -1,6 +1,6 @@
 (ns clojure.readable
-  (:require [clojure.number.is-nearly-equal :as nearly-equal?]
-            [clojure.number.round-n-decimals :as round-n-decimals]))
+  (:require [clojure.is-nearly-equal :as nearly-equal?]
+            [clojure.round-n-decimals :as round-n-decimals]))
 
 (defn f [^double x]
   {:pre [(number? x)]}

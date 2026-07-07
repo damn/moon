@@ -1,5 +1,5 @@
 (ns ctx.tx.spawn-projectile
-  (:require [clojure.math.vector2.angle-from-vector :as angle-from-vector]))
+  (:require [clojure.angle-from-vector :as angle-from-vector]))
 
 (defn do!
   [_ctx

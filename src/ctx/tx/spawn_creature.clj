@@ -1,5 +1,5 @@
 (ns ctx.tx.spawn-creature
-  (:require [clojure.map.safe-merge :refer [safe-merge]]))
+  (:require [clojure.safe-merge :refer [safe-merge]]))
 
 (defn do!
   [_ctx

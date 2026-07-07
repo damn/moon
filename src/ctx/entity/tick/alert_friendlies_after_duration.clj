@@ -1,5 +1,5 @@
 (ns ctx.entity.tick.alert-friendlies-after-duration
-  (:require [clojure.timer.stopped :refer [stopped?]]
+  (:require [clojure.stopped :refer [stopped?]]
             [moon.grid.circle-entities :refer [circle->entities]]))
 
 (defn f

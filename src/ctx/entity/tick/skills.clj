@@ -1,5 +1,5 @@
 (ns ctx.entity.tick.skills
-  (:require [clojure.timer.stopped :refer [stopped?]]))
+  (:require [clojure.stopped :refer [stopped?]]))
 
 (defn f
   [skills eid {:keys [ctx/elapsed-time]}]

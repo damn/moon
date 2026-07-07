@@ -1,5 +1,5 @@
 (ns moon.player-effect-ctx
-  (:require [clojure.math.vector2.direction :as direction]))
+  (:require [clojure.direction :as direction]))
 
 (defn f [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid

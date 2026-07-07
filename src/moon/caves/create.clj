@@ -3,11 +3,11 @@
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
-  (:require [clojure.grid2d.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
-            [clojure.position.get-4-neighbours :refer [get-4-neighbours]]
-            [clojure.map.assoc-ks :refer [assoc-ks]]
-            [clojure.rand.sshuffle :refer [sshuffle]]
-            [clojure.rand.srand :refer [srand]]))
+  (:require [clojure.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
+            [clojure.get-4-neighbours :refer [get-4-neighbours]]
+            [clojure.assoc-ks :refer [assoc-ks]]
+            [clojure.sshuffle :refer [sshuffle]]
+            [clojure.srand :refer [srand]]))
 
 ; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5
 ; besser 150x150 anstatt 100x100 w h

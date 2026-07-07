@@ -1,6 +1,6 @@
 (ns ctx.entity.state.create.active-skill
   (:require [moon.creature.apply-action-speed-modifier :as apply-action-speed-modifier]
-            [clojure.timer.create :refer [create-timer]]))
+            [clojure.timer-create :refer [create-timer]]))
 
 (defn f
   [[_k [skill effect-ctx]] eid {:keys [ctx/elapsed-time]}]
