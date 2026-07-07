@@ -3,7 +3,7 @@
             [clojure.gdx-draw-tiled-map :as draw-tiled-map]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.raycaster-is-blocked :as blocked?]
-            [clojure.world-unit-scale :as world-unit-scale]))
+            [clojure.world-unit-scale :refer [world-unit-scale]]))
 
 (defn step
   [{:keys [ctx/batch
@@ -14,7 +14,7 @@
            ctx/world-viewport]
     :as ctx}]
   (draw-tiled-map/f! batch
-                     world-unit-scale/world-unit-scale
+                     world-unit-scale
                      (:viewport/camera world-viewport)
                      tiled-map
                      (tile-color-setter*

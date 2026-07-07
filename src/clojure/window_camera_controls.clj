@@ -5,7 +5,7 @@
             [clojure.key-pressed :as key-pressed?]
             [clojure.set-visible]
             [clojure.visible]
-            [clojure.zoom-speed :as zoom-speed]))
+            [clojure.zoom-speed :refer [zoom-speed]]))
 
 (defn step
   [{:keys [ctx/input
@@ -14,10 +14,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (key-pressed?/f input (:zoom-in controls))
-    (inc-zoom! (:viewport/camera world-viewport) zoom-speed/zoom-speed))
+    (inc-zoom! (:viewport/camera world-viewport) zoom-speed))
 
   (when (key-pressed?/f input (:zoom-out controls))
-    (inc-zoom! (:viewport/camera world-viewport) (- zoom-speed/zoom-speed)))
+    (inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
 
   (when (key-just-pressed?/f input (:close-windows-key controls))
     (->> (group/find-actor (:stage/root stage) "moon.ui.windows")

@@ -1,5 +1,5 @@
 (ns clojure.render-string-effect
-  (:require [clojure.world-unit-scale :as world-unit-scale]))
+  (:require [clojure.world-unit-scale :refer [world-unit-scale]]))
 
 (defn f
   [{:keys [text]} entity _ctx]
@@ -8,6 +8,6 @@
                   :x x
                   :y (+ y
                         (/ (:body/height (:entity/body entity)) 2)
-                        (* 5 world-unit-scale/world-unit-scale))
+                        (* 5 world-unit-scale))
                   :scale 2
                   :up? true}]]))

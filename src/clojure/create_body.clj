@@ -1,7 +1,7 @@
 (ns clojure.create-body
-  (:require [clojure.minimum-size :as minimum-size]
+  (:require [clojure.minimum-size :refer [minimum-size]]
             [clojure.records-body :as body]
-            [clojure.z-orders :as z-orders]))
+            [clojure.z-orders :refer [z-orders]]))
 
 (defn f
   [{[x y] :position
@@ -15,10 +15,10 @@
   (assert position)
   (assert width)
   (assert height)
-  (assert (>= width  (if collides? minimum-size/minimum-size 0)))
-  (assert (>= height (if collides? minimum-size/minimum-size 0)))
+  (assert (>= width  (if collides? minimum-size 0)))
+  (assert (>= height (if collides? minimum-size 0)))
   (assert (or (boolean? collides?) (nil? collides?)))
-  (assert ((set z-orders/z-orders) z-order))
+  (assert ((set z-orders) z-order))
   (assert (or (nil? rotation-angle)
               (<= 0 rotation-angle 360)))
   (body/map->R
