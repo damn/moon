@@ -1,9 +1,9 @@
 (ns clojure.remove-destroyed-entities
-  (:require [clojure.ctx-do :refer [do!]]))
+  (:require [clojure.ctx-do :refer [do!]]
+            [clojure.k-destroy :refer [k->destroy]]))
 
 (defn step
-  [{:keys [ctx/k->destroy]
-    :as ctx}]
+  [ctx]
   (do! ctx
        (mapcat
         (fn [eid]
