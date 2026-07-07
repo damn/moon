@@ -1,11 +1,11 @@
 (ns clojure.k-state-exit
-  (:require [clojure.exit-npc-moving :as exit-npc-moving]
-            [clojure.exit-npc-sleeping :as exit-npc-sleeping]
-            [clojure.exit-player-item-on-cursor :as exit-player-item-on-cursor]
-            [clojure.exit-player-moving :as exit-player-moving]))
+  (:require [clojure.k-state-exit.npc-moving :as npc-moving]
+            [clojure.k-state-exit.npc-sleeping :as npc-sleeping]
+            [clojure.k-state-exit.player-item-on-cursor :as player-item-on-cursor]
+            [clojure.k-state-exit.player-moving :as player-moving]))
 
 (def k->state-exit
-  {:player-item-on-cursor exit-player-item-on-cursor/f
-   :player-moving exit-player-moving/f
-   :npc-sleeping exit-npc-sleeping/f
-   :npc-moving exit-npc-moving/f})
+  {:player-item-on-cursor player-item-on-cursor/f
+   :player-moving player-moving/f
+   :npc-sleeping npc-sleeping/f
+   :npc-moving npc-moving/f})

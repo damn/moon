@@ -1,5 +1,5 @@
 (ns clojure.k-cursor
-  (:require [clojure.cursor-player-idle :as cursor-player-idle]))
+  (:require [clojure.k-cursor.player-idle :as player-idle]))
 
 (def k->cursor
   {:player-item-on-cursor :cursors/hand-grab
@@ -7,4 +7,4 @@
    :active-skill :cursors/sandclock
    :stunned :cursors/denied
    :player-moving :cursors/walking
-   :player-idle cursor-player-idle/f})
+   :player-idle player-idle/f})

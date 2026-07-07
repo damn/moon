@@ -1,13 +1,13 @@
 (ns clojure.k-create
-  (:require [clojure.create-animation :as create-animation]
-            [clojure.create-body :as create-body]
-            [clojure.create-delete-after-duration :as create-delete-after-duration]
-            [clojure.create-projectile-collision :as create-projectile-collision]
-            [clojure.create-stats :as create-stats]))
+  (:require [clojure.k-create.animation :as animation]
+            [clojure.k-create.body :as body]
+            [clojure.k-create.delete-after-duration :as delete-after-duration]
+            [clojure.k-create.projectile-collision :as projectile-collision]
+            [clojure.k-create.stats :as stats]))
 
 (def k->create
-  {:entity/animation create-animation/f
-   :entity/body create-body/f
-   :entity/delete-after-duration create-delete-after-duration/f
-   :entity/projectile-collision create-projectile-collision/f
-   :entity/stats create-stats/f})
+  {:entity/animation animation/f
+   :entity/body body/f
+   :entity/delete-after-duration delete-after-duration/f
+   :entity/projectile-collision projectile-collision/f
+   :entity/stats stats/f})

@@ -1,29 +1,29 @@
 (ns clojure.k-tick
-  (:require [clojure.alert-friendlies-after-duration :as alert-friendlies-after-duration]
-            [clojure.movement :as movement]
-            [clojure.npc-idle :as npc-idle]
-            [clojure.tick-active-skill :as tick-active-skill]
-            [clojure.tick-animation :as tick-animation]
-            [clojure.tick-delete-after-duration :as tick-delete-after-duration]
-            [clojure.tick-npc-moving :as tick-npc-moving]
-            [clojure.tick-npc-sleeping :as tick-npc-sleeping]
-            [clojure.tick-projectile-collision :as tick-projectile-collision]
-            [clojure.tick-skills :as tick-skills]
-            [clojure.tick-string-effect :as tick-string-effect]
-            [clojure.tick-stunned :as tick-stunned]
-            [clojure.tick-temp-modifier :as tick-temp-modifier]))
+  (:require [clojure.k-tick.alert-friendlies-after-duration :as alert-friendlies-after-duration]
+            [clojure.k-tick.animation :as animation]
+            [clojure.k-tick.active-skill :as active-skill]
+            [clojure.k-tick.delete-after-duration :as delete-after-duration]
+            [clojure.k-tick.movement :as movement]
+            [clojure.k-tick.npc-idle :as npc-idle]
+            [clojure.k-tick.npc-moving :as npc-moving]
+            [clojure.k-tick.npc-sleeping :as npc-sleeping]
+            [clojure.k-tick.projectile-collision :as projectile-collision]
+            [clojure.k-tick.skills :as skills]
+            [clojure.k-tick.string-effect :as string-effect]
+            [clojure.k-tick.stunned :as stunned]
+            [clojure.k-tick.temp-modifier :as temp-modifier]))
 
 (def k->tick
-  {:entity/animation tick-animation/f
+  {:entity/animation animation/f
    :entity/alert-friendlies-after-duration alert-friendlies-after-duration/f
-   :entity/string-effect tick-string-effect/f
-   :entity/skills tick-skills/f
-   :entity/temp-modifier tick-temp-modifier/f
-   :entity/projectile-collision tick-projectile-collision/f
-   :active-skill tick-active-skill/f
-   :entity/delete-after-duration tick-delete-after-duration/f
-   :stunned tick-stunned/f
-   :npc-moving tick-npc-moving/f
-   :npc-sleeping tick-npc-sleeping/f
+   :entity/string-effect string-effect/f
+   :entity/skills skills/f
+   :entity/temp-modifier temp-modifier/f
+   :entity/projectile-collision projectile-collision/f
+   :active-skill active-skill/f
+   :entity/delete-after-duration delete-after-duration/f
+   :stunned stunned/f
+   :npc-moving npc-moving/f
+   :npc-sleeping npc-sleeping/f
    :npc-idle npc-idle/f
    :entity/movement movement/f})
