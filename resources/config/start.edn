@@ -1,8 +1,0 @@
-[
- (clojure.use-glfw-async/f)
- (clojure.gdx-application/f!
-  {:listener (clojure.listener/f #edn/resource "config/listener.edn")
-   :title "Moon"
-   :windowed-mode {:width 1440
-                   :height 900}
-   :foreground-fps 60})]
