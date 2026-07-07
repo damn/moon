@@ -43,10 +43,6 @@
             [clojure.free-type-font-generator :as free-type-font-generator]
             [clojure.free-type-font-generator$free-type-font-parameter :as font-parameter]
             [clojure.gdx-draw-tiled-map :as draw-tiled-map]
-            [clojure.gdx.audio :as gdx-audio]
-            [clojure.gdx.files :as gdx-files]
-            [clojure.gdx.graphics :as gdx-graphics]
-            [clojure.gdx.input :as input]
             [clojure.generate-font :as generate-font]
             [clojure.get-hitpoints :as get-hitpoints]
             [clojure.get-mana :as get-mana]
@@ -70,10 +66,7 @@
             [clojure.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
             [clojure.key-pressed :refer [f] :rename {f key-pressed?}]
             [clojure.line-of-sight :as line-of-sight?]
-            [clojure.application-listener :as application-listener]
             [clojure.lwjgl3-application :as lwjgl3-application]
-            [clojure.lwjgl3-application-configuration :as lwjgl3-config]
-            [clojure.use-glfw-async :as use-glfw-async]
             [clojure.map-properties :as map-properties]
             [clojure.max-delta :refer [max-delta]]
             [clojure.minimum-size :refer [minimum-size]]
@@ -452,11 +445,11 @@
       (set-name/f "player-message")
       (set-user-object/f (atom nil)))))
 
-(defn- create []
-  (let [ctx {:ctx/audio (gdx-audio/f)
-             :ctx/files (gdx-files/f)
-             :ctx/graphics (gdx-graphics/f)
-             :ctx/input (input/f)
+(defn- create [^com.badlogic.gdx.Application app]
+  (let [ctx {:ctx/audio (.getAudio app)
+             :ctx/files (.getFiles app)
+             :ctx/graphics (.getGraphics app)
+             :ctx/input (.getInput app)
              :ctx/unit-scale (atom 1)
              :ctx/active-entities nil
              :ctx/delta-time nil
@@ -1030,19 +1023,17 @@
   (viewport/update! world-viewport width height false))
 
 (defn -main []
-  (use-glfw-async/f)
   (lwjgl3-application/f
-   (application-listener/new
-    {:create! (fn []
-                (reset! application/state (create)))
-     :dispose! (fn []
-                 (dispose-app! @application/state))
-     :render! (fn []
-                (swap! application/state render-app!))
-     :resize! (fn [width height]
-                (resize-app! @application/state width height))
-     :pause! (fn [])
-     :resume! (fn [])})
-   (lwjgl3-config/f {:title "Moon"
-                     :windowed-mode {:width 1440 :height 900}
-                     :foreground-fps 60})))
+   {:create! (fn [app]
+               (reset! application/state (create app)))
+    :dispose! (fn []
+                (dispose-app! @application/state))
+    :render! (fn []
+               (swap! application/state render-app!))
+    :resize! (fn [width height]
+               (resize-app! @application/state width height))
+    :pause! (fn [])
+    :resume! (fn [])}
+   {:title "Moon"
+    :windowed-mode {:width 1440 :height 900}
+    :foreground-fps 60}))

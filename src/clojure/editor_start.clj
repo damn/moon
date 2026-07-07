@@ -22,10 +22,6 @@
             [clojure.edn-str :refer [->edn-str]]
             [clojure.event :as event]
             [clojure.find-ancestor :refer [find-ancestor]]
-            [clojure.gdx.audio :as audio]
-            [clojure.gdx.files :as files]
-            [clojure.gdx.graphics :as graphics]
-            [clojure.gdx.input :as input]
             [clojure.get-raw :refer [get-raw]]
             [clojure.get-stage]
             [clojure.get-user-object]
@@ -38,10 +34,7 @@
             [clojure.interpose-f :refer [interpose-f]]
             [clojure.k-label-text :as k-label-text]
             [clojure.key-just-pressed :as key-just-pressed?]
-            [clojure.application-listener :as application-listener]
             [clojure.lwjgl3-application :as lwjgl3-application]
-            [clojure.lwjgl3-application-configuration :as lwjgl3-config]
-            [clojure.use-glfw-async :as use-glfw-async]
             [clojure.moon-textures :as textures]
             [clojure.optional :refer [optional?]]
             [clojure.pack! :as pack!]
@@ -647,11 +640,11 @@
                                                                                                                    {:ctx ctx
                                                                                                                     :property (get-raw db id)})))})))))))}])}))
 
-(defn- create []
-  (let [ctx {:ctx/audio (audio/f)
-             :ctx/files (files/f)
-             :ctx/graphics (graphics/f)
-             :ctx/input (input/f)}
+(defn- create [^com.badlogic.gdx.Application app]
+  (let [ctx {:ctx/audio (.getAudio app)
+             :ctx/files (.getFiles app)
+             :ctx/graphics (.getGraphics app)
+             :ctx/input (.getInput app)}
         ctx (assoc ctx :ctx/batch (ctx-batch/step ctx))
         ctx (assoc ctx :ctx/skin (ctx-skin/step ctx))
         ctx (assoc ctx :ctx/db (ctx-db/step ctx))
@@ -683,19 +676,17 @@
   (viewport/update! (:stage/viewport stage) width height true))
 
 (defn -main []
-  (use-glfw-async/f)
   (lwjgl3-application/f
-   (application-listener/new
-    {:create! (fn []
-                (reset! application/state (create)))
-     :dispose! (fn []
-                 (dispose-app! @application/state))
-     :render! (fn []
-                (swap! application/state render-app!))
-     :resize! (fn [width height]
-                (resize-app! @application/state width height))
-     :pause! (fn [])
-     :resume! (fn [])})
-   (lwjgl3-config/f {:title "!Editor!"
-                     :windowed-mode {:width 1440 :height 900}
-                     :foreground-fps 60})))
+   {:create! (fn [app]
+               (reset! application/state (create app)))
+    :dispose! (fn []
+                (dispose-app! @application/state))
+    :render! (fn []
+               (swap! application/state render-app!))
+    :resize! (fn [width height]
+               (resize-app! @application/state width height))
+    :pause! (fn [])
+    :resume! (fn [])}
+   {:title "!Editor!"
+    :windowed-mode {:width 1440 :height 900}
+    :foreground-fps 60}))

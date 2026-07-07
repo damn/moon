@@ -8,9 +8,6 @@
             [clojure.fit-viewport :as fit-viewport]
             [clojure.float-bits]
             [clojure.gdx-draw-tiled-map :as draw-tiled-map]
-            [clojure.gdx.files :as gdx-files]
-            [clojure.gdx.graphics :as gdx-graphics]
-            [clojure.gdx.input :as gdx-input]
             [clojure.get :as get]
             [clojure.get-property :as get-property]
             [clojure.gl20 :as gl20]
@@ -19,9 +16,6 @@
             [clojure.input :as input]
             [clojure.key-pressed :as key-pressed?]
             [clojure.lwjgl3-application :as lwjgl3-application]
-            [clojure.lwjgl3-application-configuration :as lwjgl3-config]
-            [clojure.application-listener :as application-listener]
-            [clojure.use-glfw-async :as use-glfw-async]
             [clojure.modules :as modules]
             [clojure.moon-db :as db]
             [clojure.moon-textures :as textures]
@@ -69,10 +63,10 @@
     ctx))
 
 (defn- create-ctx
-  [state config]
-  (let [files (gdx-files/f)
-        input (gdx-input/f)
-        graphics (gdx-graphics/f)
+  [state config ^com.badlogic.gdx.Application app]
+  (let [files (.getFiles app)
+        input (.getInput app)
+        graphics (.getGraphics app)
         sprite-batch (sprite-batch/new)
         ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                          (:ui-viewport-height config))
@@ -184,19 +178,17 @@
                                   :extensions #{"png" "bmp"}}
                 :zoom-speed 0.1
                 :camera-movement-speed 1}]
-    (use-glfw-async/f)
     (lwjgl3-application/f
-     (application-listener/new
-      {:create! (fn []
-                  (reset! state (create-ctx state config)))
-       :dispose! (fn []
-                   (dispose-ctx @state))
-       :render! (fn []
-                  (swap! state render-ctx))
-       :resize! (fn [width height]
-                  (resize-ctx @state width height))
-       :pause! (fn [])
-       :resume! (fn [])})
-     (lwjgl3-config/f {:title "Levelgen Test"
-                       :windowed-mode {:width 1440 :height 900}
-                       :foreground-fps 60}))))
+     {:create! (fn [app]
+                 (reset! state (create-ctx state config app)))
+      :dispose! (fn []
+                  (dispose-ctx @state))
+      :render! (fn []
+                 (swap! state render-ctx))
+      :resize! (fn [width height]
+                 (resize-ctx @state width height))
+      :pause! (fn [])
+      :resume! (fn [])}
+     {:title "Levelgen Test"
+      :windowed-mode {:width 1440 :height 900}
+      :foreground-fps 60})))
