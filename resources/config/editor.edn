@@ -34,7 +34,7 @@
  (clojure.gdx-application/f!
   {:listener (clojure.listener/f
               {
-               :state-var clojure.app/state
+               :state-var clojure.application/state
                :create-pipeline [
                                  (clojure.gdx-context/f)
                                  (clojure.assoc-create/f :ctx/batch clojure.ctx-batch/step)
