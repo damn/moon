@@ -1,7 +1,0 @@
-{
- :entity/animation clojure.create-animation/f
- :entity/body clojure.create-body/f
- :entity/delete-after-duration clojure.create-delete-after-duration/f
- :entity/projectile-collision clojure.create-projectile-collision/f
- :entity/stats clojure.create-stats/f
- }
