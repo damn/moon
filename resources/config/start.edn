@@ -1,12 +1,4 @@
 [
- (clojure.add-methods/f! clojure.effect-render/f
-                         {
-                          :default               clojure.render-default/f
-
-                          :effects/target-all    clojure.render-target-all/f
-                          :effects/target-entity clojure.render-target-entity/f
-                          }
-                         )
  (clojure.use-glfw-async/f)
  (clojure.gdx-application/f!
   {:listener (clojure.listener/f #edn/resource "config/listener.edn")
