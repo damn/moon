@@ -106,12 +106,12 @@
                       (window/create
                        {:title "Edit"
                         :skin skin
-                        :table/rows (for [level-fn (:level-fns config)
+                        :table/rows (for [[label level-fn] (:level-fns config)
                                           :let [on-click #(do
                                                             (disposable/dispose! (:ctx/tiled-map %))
                                                             (generate-level % level-fn))]]
                                       [{:actor (doto (text-button/create
-                                                      {:text (str "Generate " level-fn)
+                                                      {:text (str "Generate " label)
                                                        :skin skin})
                                                (clojure.add-listener/f (button-change-listener on-click)))}])}))
     ctx))
@@ -171,9 +171,9 @@
 
 (defn -main []
   (let [config {:initial-level-fn uf-caves/create
-                :level-fns [tmx/vampire
-                            uf-caves/create
-                            modules/create]
+                :level-fns [["Vampire" tmx/vampire]
+                            ["UF Caves" uf-caves/create]
+                            ["Modules" modules/create]]
                 :ui-viewport-width 1440
                 :ui-viewport-height 900
                 :world-viewport-width 1440
