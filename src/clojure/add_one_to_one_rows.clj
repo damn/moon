@@ -7,7 +7,7 @@
             [clojure.image :as image]
             [clojure.group :as group]
             [clojure.event :as event]
-            [clojure.layout :as layout]
+            [clojure.pack! :as pack!]
             [clojure.find-ancestor :refer [find-ancestor]]
             [clojure.add-rows :refer [add-rows!]]
             [clojure.ui-text-button :as text-button]
@@ -28,7 +28,7 @@
   (let [redo-rows (fn [ctx id]
                     (group/clear-children! table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (layout/pack! (find-ancestor table (partial instance? window/class))))]
+                    (pack!/f (find-ancestor table (partial instance? window/class))))]
     (add-rows!
      table
      [[(when-not property-id

@@ -4,7 +4,7 @@
             [clojure.remove-actor]
             [clojure.set-user-object] [clojure.window :as window]
             [clojure.group :as group]
-            [clojure.layout :as layout]
+            [clojure.pack! :as pack!]
             [clojure.find-ancestor :refer [find-ancestor]]
             [clojure.add-rows :refer [add-rows!]]))
 
@@ -13,6 +13,6 @@
     (group/clear-children! table)
     (add-rows! table [(->sound-columns skin table sound-name)])
     (clojure.remove-actor/f (find-ancestor actor (partial instance? window/class)))
-    (layout/pack! (find-ancestor table (partial instance? window/class)))
+    (pack!/f (find-ancestor table (partial instance? window/class)))
     (let [[k _] (clojure.get-user-object/f table)]
       (clojure.set-user-object/f table [k sound-name]))))

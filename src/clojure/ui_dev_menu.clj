@@ -1,7 +1,7 @@
 (ns clojure.ui-dev-menu
   (:require
             [clojure.set-touchable]
-            [clojure.layout :as layout]
+            [clojure.set-fill-parent! :as set-fill-parent!]
             [clojure.touchable :as touchable]
             [clojure.main-table :as main-table]
             [clojure.ui-label :as label]
@@ -21,4 +21,4 @@
                          :expand? true
                          :fill-x? true
                          :fill-y? true}]]})
-    (layout/set-fill-parent! true)))
+    (set-fill-parent!/f true)))

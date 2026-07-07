@@ -3,7 +3,7 @@
             [clojure.add-listener]
             [clojure.remove-actor] [clojure.window :as gdx-window]
             [clojure.event :as event]
-            [clojure.layout :as layout]
+            [clojure.pack! :as pack!]
             [clojure.build-widget :as build-widget]
             [clojure.widget-value :as widget-value]
             [clojure.add-rows :refer [add-rows!]]
@@ -46,5 +46,5 @@
                                                                        :table map-widget-table})])
                                        ((:ctx/rebuild-editor-window! ctx) ctx)))))
                   )}]))
-    (layout/pack! window)
+    (pack!/f window)
     window))

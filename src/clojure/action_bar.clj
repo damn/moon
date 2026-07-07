@@ -1,7 +1,7 @@
 (ns clojure.action-bar
   (:require [clojure.button-group :as button-group]
             [clojure.horizontal-group :as horizontal-group]
-            [clojure.layout :as layout]
+            [clojure.set-fill-parent! :as set-fill-parent!]
             [clojure.set-name :as set-name]
             [clojure.set-user-object :as set-user-object]
             [clojure.ui-table :as table]))
@@ -18,5 +18,5 @@
                                                        (button-group/set-min-check-count! 0))))
                          :expand? true
                          :bottom? true}]]})
-    (layout/set-fill-parent! true)
+    (set-fill-parent!/f true)
     (set-name/f "moon.ui.action-bar")))

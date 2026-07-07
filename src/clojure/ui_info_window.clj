@@ -4,7 +4,7 @@
             [clojure.set-name]
             [clojure.set-visible] [clojure.group :as group]
             [clojure.label :as gdx-label]
-            [clojure.layout :as layout]
+            [clojure.pack! :as pack!]
             [clojure.actor-set-position :refer [set-position!]]
             [clojure.scene2d-actor :as actor]
             [clojure.ui-label :as label]
@@ -32,5 +32,5 @@
                          {:act! (fn [this delta]
                                   (when-let [stage (clojure.get-stage/f this)]
                                     (gdx-label/set-text! label (set-label-text! (:stage/ctx stage))))
-                                  (layout/pack! window))}))
+                                  (pack!/f window))}))
     window))
