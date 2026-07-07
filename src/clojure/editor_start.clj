@@ -1,10 +1,6 @@
 (ns clojure.editor-start
   (:require [clojure.add-component-window :as add-component-window]
             [clojure.add-stage-actors :as add-stage-actors]
-            [clojure.app-create :as app-create]
-            [clojure.app-dispose :as app-dispose]
-            [clojure.app-render :as app-render]
-            [clojure.app-resize :as app-resize]
             [clojure.application :as application]
             [clojure.assoc-create :as assoc-create]
             [clojure.clear-screen :as clear-screen]
@@ -15,6 +11,7 @@
             [clojure.ctx-skin :as ctx-skin]
             [clojure.ctx-stage :as ctx-stage]
             [clojure.ctx-textures :as ctx-textures]
+            [clojure.disposable :as disposable]
             [clojure.do :as do]
             [clojure.editor-rebuild :as editor-rebuild]
             [clojure.gdx-context :as gdx-context]
@@ -24,7 +21,33 @@
             [clojure.map-create :as map-create]
             [clojure.map-widget-table :as map-widget-table]
             [clojure.property-overview-window :as property-overview-window]
+            [clojure.set-ctx :as set-ctx]
+            [clojure.stage :as stage]
+            [clojure.viewport :as viewport]
             [clojure.widget-value]))
+
+(defn- create-app! [ctx data]
+  (merge ctx data))
+
+(defn- dispose-app! [{:keys [ctx/skin
+                             ctx/batch
+                             ctx/textures]}]
+  (disposable/dispose! batch)
+  (disposable/dispose! skin)
+  (run! disposable/dispose! (vals textures)))
+
+(defn- render-app! [{:keys [ctx/stage]
+                     :as ctx}]
+  (let [ctx (if-let [new-ctx (:stage/ctx stage)]
+              new-ctx
+              ctx)]
+    (set-ctx/f stage ctx)
+    (stage/act! stage)
+    (stage/draw! stage)
+    (:stage/ctx stage)))
+
+(defn- resize-app! [{:keys [ctx/stage]} width height]
+  (viewport/update! (:stage/viewport stage) width height true))
 
 (defn -main []
   (lwjgl3-application/f!
@@ -43,7 +66,7 @@
                        [map-create/f :ctx/textures [ctx-textures/step
                                                     {:folder "resources/"
                                                      :extensions #{"png" "bmp"}}]]
-                       [app-create/f!
+                       [create-app!
                         {:ctx/property-overview-window property-overview-window/create
                          :ctx/add-component-window add-component-window/f
                          :ctx/create-component-row component-row/create
@@ -64,7 +87,7 @@
                                                      :skill/action-time
                                                      :skill/start-action-sound
                                                      :skill/cost]}]]
-     :dispose! app-dispose/dispose!
+     :dispose! dispose-app!
      :render-pipeline [[clear-screen/step]
-                       [app-render/render!]]
-     :resize! app-resize/resize!})))
+                       [render-app!]]
+     :resize! resize-app!})))
