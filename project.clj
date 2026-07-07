@@ -37,7 +37,7 @@
   :resource-paths ["resources/"]
   :aliases {
             "dev"      ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.moon-start/-main))"]
-            "levelgen" ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.levelgen-test-start/-main))"]
+            "levelgen" ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.levelgen-test/-main))"]
             "editor"   ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.editor-start/-main))"]
             }
   :plugins [[lein-hiera "2.0.0"]
