@@ -4,7 +4,6 @@
 
 (defn step [ctx]
   (assoc ctx
-         :ctx/k->render (edn-resource "config/k->render.edn")
          :ctx/k->create (edn-resource "config/k->create.edn")
          :ctx/k->destroy (edn-resource "config/k->destroy.edn")
          :ctx/k->after-create (edn-resource "config/k->after-create.edn")

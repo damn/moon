@@ -11,7 +11,6 @@
            ctx/colors
            ctx/player-eid
            ctx/raycaster
-           ctx/k->render
            ctx/render-z-order
            ctx/show-body-bounds?]
     :as ctx}

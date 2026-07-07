@@ -1,5 +1,6 @@
-(ns clojure.draw-component)
+(ns clojure.draw-component
+  (:require [clojure.k-render :refer [k->render]]))
 
 (defn draw-component
-  [{:keys [ctx/k->render] :as ctx} entity k v]
+  [ctx entity k v]
   ((k->render k) v entity ctx))
