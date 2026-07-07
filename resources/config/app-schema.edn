@@ -46,7 +46,6 @@
  [:ctx/colors :some]
  [:ctx/controls :some]
  [:ctx/controls-info :some]
- [:ctx/max-delta :some]
  [:ctx/max-speed :some]
  [:ctx/minimum-size :some]
  [:ctx/render-z-order :some]

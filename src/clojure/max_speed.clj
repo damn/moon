@@ -1,6 +1,6 @@
-(ns clojure.max-speed)
+(ns clojure.max-speed
+  (:require [clojure.max-delta :as max-delta]))
 
 (defn step
-  [{:keys [ctx/minimum-size
-           ctx/max-delta]}]
-  (/ minimum-size max-delta))
+  [{:keys [ctx/minimum-size]}]
+  (/ minimum-size max-delta/max-delta))
