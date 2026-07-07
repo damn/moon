@@ -1,5 +1,5 @@
 {
- :state-var game.app/state
+ :state-var clojure.application/state
  :create-pipeline [
                    (ctx.gdx-context/f)
                    (ctx.unorganised/step)
