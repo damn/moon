@@ -1,6 +1,0 @@
-{
- :player-item-on-cursor clojure.exit-player-item-on-cursor/f
- :player-moving clojure.exit-player-moving/f
- :npc-sleeping clojure.exit-npc-sleeping/f
- :npc-moving clojure.exit-npc-moving/f
- }

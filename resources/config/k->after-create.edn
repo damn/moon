@@ -1,5 +1,0 @@
-{
- :entity/fsm clojure.after-create-fsm/f
- :entity/inventory clojure.inventory/f
- :entity/skills clojure.after-create-skills/f
- }

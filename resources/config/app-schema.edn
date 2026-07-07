@@ -8,12 +8,6 @@
 
 [:map {:closed true}
  [:ctx/draw-fns :some]
- [:ctx/k->after-create :some]
- [:ctx/k->state-enter :some]
- [:ctx/k->state-exit :some]
- [:ctx/k->handle-input :some]
- [:ctx/k->cursor :some]
- [:ctx/k->clicked-inventory-cell :some]
  [:ctx/input :some]
  [:ctx/graphics :some]
  [:ctx/audio :some]

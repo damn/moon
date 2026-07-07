@@ -1,5 +1,0 @@
-{
- :player-idle clojure.handle-input-player-idle/f
- :player-moving clojure.handle-input-player-moving/f
- :player-item-on-cursor clojure.handle-input-player-item-on-cursor/f
- }

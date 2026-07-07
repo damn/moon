@@ -15,7 +15,8 @@
             [clojure.vector2 :as vector2]
             [clojure.ui-widget :as widget]
             [clojure.utils-click-listener :as click-listener]
-            [clojure.ui-stack :as stack]))
+            [clojure.ui-stack :as stack]
+            [clojure.k-clicked-inventory-cell :refer [k->clicked-inventory-cell]]))
 
 (defn ->cell [do! draw! slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -45,8 +46,7 @@
        (doto stack
          (clojure.add-listener/f (click-listener/create
                           (fn [event _x _y]
-                            (let [{:keys [ctx/player-eid
-                                          ctx/k->clicked-inventory-cell]
+                            (let [{:keys [ctx/player-eid]
                                    :as ctx} (:stage/ctx (event/get-stage event))
                                   entity @player-eid
                                   state-k (:state (:entity/fsm entity))]

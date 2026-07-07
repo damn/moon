@@ -4,12 +4,6 @@
 
 (defn step [ctx]
   (assoc ctx
-         :ctx/k->after-create (edn-resource "config/k->after-create.edn")
-         :ctx/k->state-enter (edn-resource "config/k->state-enter.edn")
-         :ctx/k->state-exit (edn-resource "config/k->state-exit.edn")
-         :ctx/k->handle-input (edn-resource "config/k->handle-input.edn")
-         :ctx/k->cursor (edn-resource "config/k->cursor.edn")
-         :ctx/k->clicked-inventory-cell (edn-resource "config/k->clicked-inventory-cell.edn")
          :ctx/draw-fns (edn-resource "config/draw-fns.edn")
          :ctx/unit-scale (atom 1)
          :ctx/active-entities nil

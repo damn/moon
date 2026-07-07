@@ -1,7 +1,8 @@
-(ns clojure.after-create-component)
+(ns clojure.after-create-component
+  (:require [clojure.k-after-create :refer [k->after-create]]))
 
 (defn after-create-component
-  [{:keys [ctx/k->after-create] :as ctx} eid [k v]]
+  [ctx eid [k v]]
   (if-let [f (k->after-create k)]
     (f v eid ctx)
     nil))

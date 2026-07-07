@@ -1,9 +1,9 @@
 (ns clojure.handle-player-input
-  (:require [clojure.ctx-do :refer [do!]]))
+  (:require [clojure.ctx-do :refer [do!]]
+            [clojure.k-handle-input :refer [k->handle-input]]))
 
 (defn step
-  [{:keys [ctx/k->handle-input
-           ctx/player-eid]
+  [{:keys [ctx/player-eid]
     :as ctx}]
   (let [eid player-eid
         entity @eid
