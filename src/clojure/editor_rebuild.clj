@@ -2,7 +2,7 @@
   (:require
             [clojure.remove-actor] [clojure.stage :as stage]
             [clojure.group :as group]
-            [clojure.map-widget-table-get-value :as get-value]
+            [clojure.widget-value :refer [map-widget-table-get-value]]
             [clojure.editor-window]))
 
 (defn f!
@@ -13,7 +13,7 @@
                    :stage/root
                    (group/find-actor "moon.ui.clojure.editor-window"))
         map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
-        property (get-value/f map-widget-table (:db/schemas db))]
+        property (map-widget-table-get-value map-widget-table (:db/schemas db))]
     (clojure.remove-actor/f window)
     (stage/add-actor! stage
                  (clojure.editor-window/property-editor-window

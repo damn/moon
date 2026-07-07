@@ -1,18 +1,4 @@
 [
- (clojure.add-methods/f! clojure.widget-value/f
-                         {
-                          :default       clojure.widget-value-default/f
-
-                          :s/boolean     clojure.widget-value-boolean/f
-                          :s/enum        clojure.widget-value-enum/f
-                          :s/map         clojure.widget-value-map/f
-                          :s/number      clojure.widget-value-number/f
-                          :s/one-to-many clojure.widget-value-one-to-many/f
-                          :s/one-to-one  clojure.widget-value-one-to-one/f
-                          :s/string      clojure.widget-value-string/f
-                          :s/val-max     clojure.widget-value-val-max/f
-                          }
-                         )
  (clojure.use-glfw-async/f)
  (clojure.gdx-application/f!
   {:listener (clojure.listener/f
