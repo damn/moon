@@ -39,7 +39,6 @@
             [clojure.k-label-text :as k-label-text]
             [clojure.key-just-pressed :as key-just-pressed?]
             [clojure.application-listener :as application-listener]
-            [clojure.listener :as listener]
             [clojure.lwjgl3-application :as lwjgl3-application]
             [clojure.lwjgl3-application-configuration :as lwjgl3-config]
             [clojure.use-glfw-async :as use-glfw-async]
@@ -648,7 +647,7 @@
                                                                                                                    {:ctx ctx
                                                                                                                     :property (get-raw db id)})))})))))))}])}))
 
-(defn- create [_ctx]
+(defn- create []
   (let [ctx {:ctx/audio (audio/f)
              :ctx/files (files/f)
              :ctx/graphics (graphics/f)
@@ -671,7 +670,8 @@
 
 (defn- render-app! [{:keys [ctx/stage]
                      :as ctx}]
-  (let [ctx (if-let [new-ctx (:stage/ctx stage)]
+  (let [ctx (clear-screen/step ctx)
+        ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
     (set-ctx/f stage ctx)
@@ -686,13 +686,16 @@
   (use-glfw-async/f)
   (lwjgl3-application/f
    (application-listener/new
-    (listener/f
-     {:state-var #'application/state
-      :create-pipeline [[create]]
-      :dispose! dispose-app!
-      :render-pipeline [[clear-screen/step]
-                        [render-app!]]
-      :resize! resize-app!}))
+    {:create! (fn []
+                (reset! application/state (create)))
+     :dispose! (fn []
+                 (dispose-app! @application/state))
+     :render! (fn []
+                (swap! application/state render-app!))
+     :resize! (fn [width height]
+                (resize-app! @application/state width height))
+     :pause! (fn [])
+     :resume! (fn [])})
    (doto (lwjgl3-config/new)
      (lwjgl3-config/set-title! "!Editor!")
      (lwjgl3-config/set-windowed-mode! 1440 900)

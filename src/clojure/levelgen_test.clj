@@ -187,10 +187,14 @@
     (use-glfw-async/f)
     (lwjgl3-application/f
      (application-listener/new
-      {:create! (fn [] (reset! state (create-ctx state config)))
-       :dispose! (fn [] (dispose-ctx @state))
-       :render! (fn [] (swap! state render-ctx))
-       :resize! (fn [width height] (resize-ctx @state width height))
+      {:create! (fn []
+                  (reset! state (create-ctx state config)))
+       :dispose! (fn []
+                   (dispose-ctx @state))
+       :render! (fn []
+                  (swap! state render-ctx))
+       :resize! (fn [width height]
+                  (resize-ctx @state width height))
        :pause! (fn [])
        :resume! (fn [])})
      (doto (lwjgl3-config/new)

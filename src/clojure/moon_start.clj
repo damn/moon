@@ -70,7 +70,6 @@
             [clojure.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
             [clojure.key-pressed :refer [f] :rename {f key-pressed?}]
             [clojure.line-of-sight :as line-of-sight?]
-            [clojure.listener :as listener]
             [clojure.application-listener :as application-listener]
             [clojure.lwjgl3-application :as lwjgl3-application]
             [clojure.lwjgl3-application-configuration :as lwjgl3-config]
@@ -453,7 +452,7 @@
       (set-name/f "player-message")
       (set-user-object/f (atom nil)))))
 
-(defn- create [_ctx]
+(defn- create []
   (let [ctx {:ctx/audio (gdx-audio/f)
              :ctx/files (gdx-files/f)
              :ctx/graphics (gdx-graphics/f)
@@ -1034,12 +1033,16 @@
   (use-glfw-async/f)
   (lwjgl3-application/f
    (application-listener/new
-    (listener/f
-     {:state-var #'application/state
-      :create-pipeline [[create]]
-      :dispose! dispose-app!
-      :render-pipeline [[render-app!]]
-      :resize! resize-app!}))
+    {:create! (fn []
+                (reset! application/state (create)))
+     :dispose! (fn []
+                 (dispose-app! @application/state))
+     :render! (fn []
+                (swap! application/state render-app!))
+     :resize! (fn [width height]
+                (resize-app! @application/state width height))
+     :pause! (fn [])
+     :resume! (fn [])})
    (doto (lwjgl3-config/new)
      (lwjgl3-config/set-title! "Moon")
      (lwjgl3-config/set-windowed-mode! 1440 900)
