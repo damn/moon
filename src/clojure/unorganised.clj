@@ -13,7 +13,6 @@
                                       (eval `(fsm/fsm-inc ~data))))]
                      {:npc (load-fsm "config/npc-fsm.edn")
                       :player (load-fsm "config/player-fsm.edn")})
-         :ctx/txs-fn-map (edn-resource "config/txs-fn-map.edn")
          :ctx/k->tick (edn-resource "config/k-tick.edn")
          :ctx/k->render (edn-resource "config/k->render.edn")
          :ctx/k->create (edn-resource "config/k->create.edn")
