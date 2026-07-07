@@ -5,7 +5,7 @@
             [clojure.app-schema :refer [schema]]
             [clojure.application :as application]
             [clojure.audio :as audio]
-            [clojure.begin :as begin]
+            [clojure.batch :as batch]
             [clojure.bitmap-font :as bitmap-font]
             [clojure.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [clojure.blocks-vision :as blocks-vision?]
@@ -33,7 +33,6 @@
             [clojure.draw :refer [draw!]]
             [clojure.draw-component :refer [draw-component]]
             [clojure.edn :as edn]
-            [clojure.end :as end]
             [clojure.entity-state-draw-ui-view :as entity-state-draw-ui-view]
             [clojure.error-window :as error-window]
             [clojure.factions-iterations :refer [factions-iterations]]
@@ -90,11 +89,9 @@
             [clojure.remove-actor]
             [clojure.scene2d-actor :as actor]
             [clojure.selected-skill :as selected-skill]
-            [clojure.set-color :as set-color]
             [clojure.set-ctx :as set-ctx]
             [clojure.set-fill-parent! :as set-fill-parent!]
             [clojure.set-name :as set-name]
-            [clojure.set-projection-matrix :as set-projection-matrix]
             [clojure.set-user-object :as set-user-object]
             [clojure.set-visible]
             [clojure.sort-by-order :as sort-by-order]
@@ -804,9 +801,9 @@
            ctx/world-viewport]
     :as ctx}
    draw-fns]
-  (set-color/f batch 1 1 1 1)
-  (set-projection-matrix/f batch (orthographic-camera/combined (:viewport/camera world-viewport)))
-  (begin/f batch)
+  (batch/set-color! batch 1 1 1 1)
+  (batch/set-projection-matrix! batch (orthographic-camera/combined (:viewport/camera world-viewport)))
+  (batch/begin! batch)
   (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
@@ -814,7 +811,7 @@
       (draw! ctx (apply f ctx params)))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (end/f batch)
+  (batch/end! batch)
   ctx)
 
 (defn- assoc-interaction-state-create
