@@ -9,7 +9,6 @@
 [:map {:closed true}
  [:ctx/draw-fns :some]
  [:ctx/fsms :some]
- [:ctx/info :some]
  [:ctx/k->tick :some]
  [:ctx/k->render :some]
  [:ctx/k->create :some]

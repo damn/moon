@@ -2,7 +2,7 @@
   (:require [clojure.group :as group]
             [clojure.action-bar-add-skill :as add-skill]
             [clojure.moon-textures :as textures]
-            [clojure.info-entity :refer [info-text]]))
+            [clojure.info :refer [info-text]]))
 
 (defn f
   [{:keys [ctx/skin

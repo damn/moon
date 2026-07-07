@@ -5,7 +5,6 @@
 
 (defn step [ctx]
   (assoc ctx
-         :ctx/info (edn-resource "config/info.edn")
          :ctx/fsms (let [load-fsm (fn [path]
                                     (let [data (edn-resource path)]
                                       (eval `(fsm/fsm-inc ~data))))]

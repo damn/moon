@@ -1,5 +1,5 @@
 (ns clojure.stage-info-window
-  (:require [clojure.info-entity :refer [info-text]]
+  (:require [clojure.info :refer [info-text]]
             [clojure.ui-info-window :as info-window]))
 
 (defn create
