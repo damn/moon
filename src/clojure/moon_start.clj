@@ -71,7 +71,10 @@
             [clojure.key-pressed :refer [f] :rename {f key-pressed?}]
             [clojure.line-of-sight :as line-of-sight?]
             [clojure.listener :as listener]
+            [clojure.application-listener :as application-listener]
             [clojure.lwjgl3-application :as lwjgl3-application]
+            [clojure.lwjgl3-application-configuration :as lwjgl3-config]
+            [clojure.use-glfw-async :as use-glfw-async]
             [clojure.map-properties :as map-properties]
             [clojure.max-delta :refer [max-delta]]
             [clojure.minimum-size :refer [minimum-size]]
@@ -1028,14 +1031,16 @@
   (viewport/update! world-viewport width height false))
 
 (defn -main []
-  (lwjgl3-application/f!
-   {:title "Moon"
-    :windowed-mode {:width 1440
-                    :height 900}
-    :foreground-fps 60}
-   (listener/f
-    {:state-var #'application/state
-     :create-pipeline [[create]]
-     :dispose! dispose-app!
-     :render-pipeline [[render-app!]]
-     :resize! resize-app!})))
+  (use-glfw-async/f)
+  (lwjgl3-application/f
+   (application-listener/new
+    (listener/f
+     {:state-var #'application/state
+      :create-pipeline [[create]]
+      :dispose! dispose-app!
+      :render-pipeline [[render-app!]]
+      :resize! resize-app!}))
+   (doto (lwjgl3-config/new)
+     (lwjgl3-config/set-title! "Moon")
+     (lwjgl3-config/set-windowed-mode! 1440 900)
+     (lwjgl3-config/set-foreground-fps! 60))))

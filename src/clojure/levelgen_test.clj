@@ -19,6 +19,9 @@
             [clojure.input :as input]
             [clojure.key-pressed :as key-pressed?]
             [clojure.lwjgl3-application :as lwjgl3-application]
+            [clojure.lwjgl3-application-configuration :as lwjgl3-config]
+            [clojure.application-listener :as application-listener]
+            [clojure.use-glfw-async :as use-glfw-async]
             [clojure.modules :as modules]
             [clojure.moon-db :as db]
             [clojure.moon-textures :as textures]
@@ -181,13 +184,16 @@
                                   :extensions #{"png" "bmp"}}
                 :zoom-speed 0.1
                 :camera-movement-speed 1}]
-    (lwjgl3-application/f!
-     {:title "Levelgen Test"
-      :windowed-mode {:width 1440 :height 900}
-      :foreground-fps 60}
-     {:create! (fn [] (reset! state (create-ctx state config)))
-      :dispose! (fn [] (dispose-ctx @state))
-      :render! (fn [] (swap! state render-ctx))
-      :resize! (fn [width height] (resize-ctx @state width height))
-      :pause! (fn [])
-      :resume! (fn [])})))
+    (use-glfw-async/f)
+    (lwjgl3-application/f
+     (application-listener/new
+      {:create! (fn [] (reset! state (create-ctx state config)))
+       :dispose! (fn [] (dispose-ctx @state))
+       :render! (fn [] (swap! state render-ctx))
+       :resize! (fn [width height] (resize-ctx @state width height))
+       :pause! (fn [])
+       :resume! (fn [])})
+     (doto (lwjgl3-config/new)
+       (lwjgl3-config/set-title! "Levelgen Test")
+       (lwjgl3-config/set-windowed-mode! 1440 900)
+       (lwjgl3-config/set-foreground-fps! 60)))))

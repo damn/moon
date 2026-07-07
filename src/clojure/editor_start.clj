@@ -38,8 +38,11 @@
             [clojure.interpose-f :refer [interpose-f]]
             [clojure.k-label-text :as k-label-text]
             [clojure.key-just-pressed :as key-just-pressed?]
+            [clojure.application-listener :as application-listener]
             [clojure.listener :as listener]
             [clojure.lwjgl3-application :as lwjgl3-application]
+            [clojure.lwjgl3-application-configuration :as lwjgl3-config]
+            [clojure.use-glfw-async :as use-glfw-async]
             [clojure.moon-textures :as textures]
             [clojure.optional :refer [optional?]]
             [clojure.pack! :as pack!]
@@ -680,14 +683,17 @@
   (viewport/update! (:stage/viewport stage) width height true))
 
 (defn -main []
-  (lwjgl3-application/f!
-   {:title "!Editor!"
-    :windowed-mode {:width 1440 :height 900}
-    :foreground-fps 60}
-   (listener/f
-    {:state-var #'application/state
-     :create-pipeline [[create]]
-     :dispose! dispose-app!
-     :render-pipeline [[clear-screen/step]
-                       [render-app!]]
-     :resize! resize-app!})))
+  (use-glfw-async/f)
+  (lwjgl3-application/f
+   (application-listener/new
+    (listener/f
+     {:state-var #'application/state
+      :create-pipeline [[create]]
+      :dispose! dispose-app!
+      :render-pipeline [[clear-screen/step]
+                        [render-app!]]
+      :resize! resize-app!}))
+   (doto (lwjgl3-config/new)
+     (lwjgl3-config/set-title! "!Editor!")
+     (lwjgl3-config/set-windowed-mode! 1440 900)
+     (lwjgl3-config/set-foreground-fps! 60))))
