@@ -1,5 +1,5 @@
 (ns ctx.stage.dev-menu.ctx-data
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+  (:require [clojure.stage :as stage]
             [gdx.scene2d.ui.data-viewer-window :as data-viewer-window]))
 
 (def item

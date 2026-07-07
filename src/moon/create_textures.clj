@@ -1,7 +1,7 @@
 (ns moon.create-textures
-  (:require [com.badlogic.gdx.graphics.texture :as texture]
+  (:require [clojure.texture :as texture]
             [clojure.string :as str]
-            [com.badlogic.gdx.files :as files]
+            [clojure.files :as files]
             [gdx.recursively-search :as recursively-search]))
 
 (defn f

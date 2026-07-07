@@ -1,9 +1,9 @@
 (ns moon.inventory-window.set-item
-  (:require [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.texture-region-drawable :as texture-region-drawable]
+            [clojure.texture :as texture]
+            [clojure.image :as image]
+            [clojure.group :as group]
+            [clojure.actor :as actor]
             [gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [moon.inventory-window.get-cell :as get-cell]))
 

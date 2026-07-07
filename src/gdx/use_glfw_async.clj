@@ -1,6 +1,6 @@
 (ns gdx.use-glfw-async
-  (:require [com.badlogic.gdx.utils.os :as os]
-            [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
+  (:require [clojure.os :as os]
+            [clojure.shared-library-loader :as shared-library-loader]
             [org.lwjgl.system.configuration :as configuration]))
 
 (defn f []

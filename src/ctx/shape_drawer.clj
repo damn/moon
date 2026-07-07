@@ -1,7 +1,7 @@
 (ns ctx.shape-drawer
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+  (:require [clojure.texture-region :as texture-region]
             [gdx.graphics.shape-drawer :as shape-drawer]
-            [com.badlogic.gdx.graphics.texture :as texture]))
+            [clojure.texture :as texture]))
 
 (defn step
   [{:keys [ctx/batch

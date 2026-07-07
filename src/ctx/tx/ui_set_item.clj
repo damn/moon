@@ -1,5 +1,5 @@
 (ns ctx.tx.ui-set-item
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [clojure.group :as group]
             [moon.inventory-window.set-item :as set-item]
             [moon.textures :as textures]
             [ctx.info.item :refer [info-text]]))

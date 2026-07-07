@@ -1,5 +1,5 @@
 (ns gdx.scene2d.ui.window
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+  (:require [clojure.window :as window]
             [gdx.scene2d.ui.table.set-opts :refer [set-opts!]]))
 
 (defn f [{:keys [title skin]}]

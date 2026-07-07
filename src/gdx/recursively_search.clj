@@ -1,5 +1,5 @@
 (ns gdx.recursively-search
-  (:require [com.badlogic.gdx.files.file-handle :as file-handle]))
+  (:require [clojure.file-handle :as file-handle]))
 
 (defn f [file-handle extensions]
   (loop [[file & remaining] (file-handle/list-files file-handle)

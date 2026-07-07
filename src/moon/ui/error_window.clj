@@ -1,5 +1,5 @@
 (ns moon.ui.error-window
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
+  (:require [clojure.window :as gdx-window]
             [gdx.scene2d.ui.label :as label]
             [gdx.scene2d.ui.window :as window]
             [gdx.scene2d.ui.window.add-close-button :as add-close-button]

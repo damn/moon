@@ -1,7 +1,7 @@
 (ns ctx.audio
   (:require [clojure.edn :as edn]
-            [com.badlogic.gdx.audio :as audio]
-            [com.badlogic.gdx.files :as files]
+            [clojure.audio :as audio]
+            [clojure.files :as files]
             [clojure.java.io :as io]))
 
 (defn step

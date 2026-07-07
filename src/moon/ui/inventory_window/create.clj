@@ -1,8 +1,8 @@
 (ns moon.ui.inventory-window.create
-  (:require [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.graphics.color :as color]
+  (:require [clojure.texture-region-drawable :as texture-region-drawable]
+            [clojure.texture :as texture]
+            [clojure.actor :as actor]
+            [clojure.color :as color]
             [gdx.scene2d.actor.set-position :refer [set-position!]]
             [gdx.scene2d.ui.table :as table]
             [gdx.scene2d.ui.window :as window]

@@ -1,8 +1,8 @@
 (ns ctx.stage.action-bar
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
+  (:require [clojure.button-group :as button-group]
+            [clojure.actor :as actor]
+            [clojure.horizontal-group :as horizontal-group]
+            [clojure.layout :as layout]
             [gdx.scene2d.ui.table :as table]))
 
 (defn create [_ctx]

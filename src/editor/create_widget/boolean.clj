@@ -1,5 +1,5 @@
 (ns editor.create-widget.boolean
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.checkbox :as checkbox]))
+  (:require [clojure.checkbox :as checkbox]))
 
 (defn f
   [_ checked? {:keys [ctx/skin]}]

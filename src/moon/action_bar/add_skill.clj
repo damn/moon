@@ -1,11 +1,11 @@
 (ns moon.action-bar.add-skill
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+  (:require [clojure.texture-region :as texture-region]
+            [clojure.texture-region-drawable :as texture-region-drawable]
+            [clojure.texture :as texture]
+            [clojure.button-group :as button-group]
+            [clojure.group :as group]
+            [clojure.actor :as actor]
+            [clojure.image-button :as image-button]
             [gdx.scene2d.ui.text-tooltip :as text-tooltip]
             [moon.action-bar.get-data :as get-data]))
 

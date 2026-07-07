@@ -1,5 +1,5 @@
 (ns gdx.scene2d.ui.table.add-cell
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+  (:require [clojure.table :as table]
             [clojure.set-opts :as set-opts]))
 
 (defn add-cell! [table cell-declaration]

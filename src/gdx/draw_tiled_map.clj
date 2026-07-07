@@ -1,11 +1,11 @@
 (ns gdx.draw-tiled-map
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]
+  (:require [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [clojure.tiled-map-tile :as tiled-map-tile]
+            [clojure.tiled-map :as tiled-map]
+            [clojure.orthographic-camera :as orthographic-camera]
+            [clojure.batch :as batch]
             [gdx.draw-tiled-map-tile-layer :as draw-tiled-map-tile-layer]
-            [com.badlogic.gdx.math.vector3 :as vector3]))
+            [clojure.vector3 :as vector3]))
 
 (defn f!
   [batch

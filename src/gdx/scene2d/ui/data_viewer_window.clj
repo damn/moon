@@ -1,6 +1,6 @@
 (ns gdx.scene2d.ui.data-viewer-window
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.stage :as stage]
+            [clojure.actor :as actor]
             [gdx.scene2d.ui.data-viewer-window.v-text :refer [v->text]]
             [gdx.scene2d.ui.label :as label]
             [gdx.scene2d.ui.scroll-pane :as scroll-pane]

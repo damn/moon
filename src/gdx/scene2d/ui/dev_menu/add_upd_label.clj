@@ -1,6 +1,6 @@
 (ns gdx.scene2d.ui.dev-menu.add-upd-label
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [clojure.image :as image]
+            [clojure.group :as group]
             [gdx.scene2d.ui.label :as label]
             [gdx.scene2d.ui.table :as table]
             [gdx.scene2d.ui.table.add-cell :refer [add-cell!]]

@@ -1,8 +1,8 @@
 (ns editor.map-widget-table.add-component-window
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
+  (:require [clojure.window :as gdx-window]
+            [clojure.actor :as actor]
+            [clojure.event :as event]
+            [clojure.layout :as layout]
             [editor.build-widget :as build-widget]
             [editor.widget-value :as widget-value]
             [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]

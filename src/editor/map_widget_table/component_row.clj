@@ -1,7 +1,7 @@
 (ns editor.map-widget-table.component-row
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.group :as group]
+            [clojure.actor :as actor]
+            [clojure.event :as event]
             [editor.map-widget-table.k-label-text :as k-label-text]
             [gdx.scene2d.ui.label :as label]
             [gdx.scene2d.ui.table :as table]

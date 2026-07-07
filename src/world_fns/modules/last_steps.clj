@@ -1,5 +1,5 @@
 (ns world-fns.modules.last-steps
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [clojure.tiled-map :as tiled-map]
             [gdx.maps.tiled.tiled-map-tile-layer.property-value :refer [property-value]]
             [clojure.cells :refer [->cells]]
             [clojure.scale-grid :as scale-grid]
@@ -8,7 +8,7 @@
             [gdx.maps.tiled.movement-property :as movement-property]
             [gdx.maps.tiled.add-creatures-layer :as add-creatures-layer]
             [world-fns.modules.area-level-grid :as area-level-grid]
-            [com.badlogic.gdx.maps.map-layers :as map-layers]))
+            [clojure.map-layers :as map-layers]))
 
 (defn step
   [{:keys [world/max-area-level

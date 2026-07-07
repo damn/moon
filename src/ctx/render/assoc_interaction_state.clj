@@ -1,5 +1,5 @@
 (ns ctx.render.assoc-interaction-state
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
+  (:require [clojure.group :as group]
             [moon.player-effect-ctx :as player-effect-ctx]
             [ctx.mouseover-actor :refer [mouseover-actor]]
             [moon.skill.usable-state :as usable-state]

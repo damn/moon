@@ -1,5 +1,5 @@
 (ns ctx.render.if-not-paused.update-time
-  (:require [com.badlogic.gdx.graphics :as graphics]))
+  (:require [clojure.graphics :as graphics]))
 
 (defn f
   [{:keys [ctx/graphics

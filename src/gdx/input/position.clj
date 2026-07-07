@@ -1,5 +1,5 @@
 (ns gdx.input.position
-  (:require [com.badlogic.gdx.input :as input]))
+  (:require [clojure.input :as input]))
 
 (defn f [input]
   [(input/get-x input)

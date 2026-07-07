@@ -1,7 +1,7 @@
 (ns ctx.draw.texture-region
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]))
+  (:require [clojure.texture-region :as texture-region]
+            [clojure.texture :as texture]
+            [clojure.batch :as batch]))
 
 (defn f!
   [{:keys [ctx/batch

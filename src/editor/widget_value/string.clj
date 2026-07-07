@@ -1,5 +1,5 @@
 (ns editor.widget-value.string
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]))
+  (:require [clojure.text-field :as text-field]))
 
 (defn f
   [_ widget _schemas]

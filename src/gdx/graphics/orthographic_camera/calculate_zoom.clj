@@ -1,5 +1,5 @@
 (ns gdx.graphics.orthographic-camera.calculate-zoom
-  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+  (:require [clojure.orthographic-camera :as orthographic-camera]
             [gdx.graphics.orthographic-camera.position :as get-position]))
 
 (defn calculate-zoom

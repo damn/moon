@@ -1,5 +1,5 @@
 (ns ctx.render.set-cursor
-  (:require [com.badlogic.gdx.graphics :as graphics]))
+  (:require [clojure.graphics :as graphics]))
 
 (defn step
   [{:keys [ctx/graphics

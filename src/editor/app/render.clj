@@ -1,5 +1,5 @@
 (ns editor.app.render
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+  (:require [clojure.stage :as stage]
             [gdx.scene2d.stage :refer [set-ctx!]]))
 
 (defn render!

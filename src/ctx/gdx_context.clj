@@ -1,5 +1,5 @@
 (ns ctx.gdx-context
-  (:require [com.badlogic.gdx.gdx :as gdx]))
+  (:require [clojure.gdx :as gdx]))
 
 (defn f [ctx]
   (assoc ctx

@@ -1,11 +1,11 @@
 (ns ctx.default-font
-  (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator$free-type-font-parameter :as font-parameter]
-            [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [com.badlogic.gdx.utils.disposable :as disposable]
-            [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]))
+  (:require [clojure.free-type-font-generator$free-type-font-parameter :as font-parameter]
+            [clojure.free-type-font-generator :as free-type-font-generator]
+            [clojure.bitmap-font$bitmap-font-data :as bitmap-font-data]
+            [clojure.bitmap-font :as bitmap-font]
+            [clojure.disposable :as disposable]
+            [clojure.files :as files]
+            [clojure.texture$texture-filter :as texture-filter]))
 
 (defn step
   [{:keys [ctx/files]}]

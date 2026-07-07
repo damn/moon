@@ -1,7 +1,7 @@
 (ns gdx.scene2d.ui.dev-menu.main-table
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.stage :as stage]
+            [clojure.actor :as actor]
+            [clojure.event :as event]
             [gdx.scene2d.utils.change-listener :as change-listener]
             [gdx.scene2d.ui.text-button :as text-button]
             [gdx.scene2d.ui.window.add-close-button :as add-close-button]

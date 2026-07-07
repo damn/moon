@@ -1,9 +1,9 @@
 (ns levelgen-test.render
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.graphics :as graphics]
-            [com.badlogic.gdx.graphics.color :as color]
+  (:require [clojure.stage :as stage]
+            [clojure.graphics :as graphics]
+            [clojure.color :as color]
             [gdx.draw-tiled-map :as draw-tiled-map]
-            [com.badlogic.gdx.graphics.gl20 :as gl20]
+            [clojure.gl20 :as gl20]
             [gdx.input.key-pressed :as key-pressed?]
             [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]
             [gdx.graphics.orthographic-camera.position :as get-position]

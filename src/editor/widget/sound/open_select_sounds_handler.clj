@@ -1,8 +1,8 @@
 (ns editor.widget.sound.open-select-sounds-handler
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.stage :as stage]
+            [clojure.window :as gdx-window]
+            [clojure.actor :as actor]
+            [clojure.event :as event]
             [gdx.scene2d.ui.scroll-pane :as scroll-pane]
             [gdx.scene2d.ui.window.add-close-button :as add-close-button]
             [editor.widget.sound.rebuild :refer [rebuild-sound-widget!]]

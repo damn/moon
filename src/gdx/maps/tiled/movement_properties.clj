@@ -1,7 +1,7 @@
 (ns gdx.maps.tiled.movement-properties
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+  (:require [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [clojure.tiled-map-tile :as tiled-map-tile]
+            [clojure.tiled-map :as tiled-map]
             [gdx.maps.tiled.tile-movement-property :as tile-movement-property]
             [gdx.maps.tiled.movement-property-layers :as movement-property-layers]))
 

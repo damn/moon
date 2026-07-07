@@ -1,5 +1,5 @@
 (ns gdx.scene2d.ui.select-box
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]))
+  (:require [clojure.select-box :as select-box]))
 
 (defn create
   [{:keys [items selected skin]}]

@@ -1,6 +1,6 @@
 (ns ctx.handle-input.player-idle.interaction-state-txs
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.group :as group]
+            [clojure.actor :as actor]
             [moon.inventory.can-pickup-item :as can-pickup-item]))
 
 (defn interaction-state->txs [[k params] stage player-eid]

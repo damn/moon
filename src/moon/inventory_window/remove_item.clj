@@ -1,7 +1,7 @@
 (ns moon.inventory-window.remove-item
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.image :as image]
+            [clojure.group :as group]
+            [clojure.actor :as actor]
             [moon.inventory-window.get-cell :as get-cell]))
 
 (defn f [inventory-window cell]

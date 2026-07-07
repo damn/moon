@@ -1,8 +1,8 @@
 (ns ctx.skin
-  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
+  (:require [clojure.bitmap-font$bitmap-font-data :as bitmap-font-data]
+            [clojure.bitmap-font :as bitmap-font]
+            [clojure.files :as files]
+            [clojure.skin :as skin]))
 
 (defn step
   [{:keys [ctx/files]}]

@@ -1,5 +1,5 @@
 (ns ctx.render.if-not-paused.tick-entities
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+  (:require [clojure.stage :as stage]
             [ctx.do :refer [do!]]
             [ctx.tick-component :refer [tick-component]]
             [moon.throwable :as throwable]

@@ -1,8 +1,8 @@
 (ns editor.create-widget.animation-image-button
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+  (:require [clojure.texture-region :as texture-region]
+            [clojure.texture-region-drawable :as texture-region-drawable]
+            [clojure.texture :as texture]
+            [clojure.image-button :as image-button]
             [moon.textures :as textures]))
 
 (defn f [textures image scale]

@@ -1,9 +1,9 @@
 (ns moon.ui.inventory-window.create-cell
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [com.badlogic.gdx.math.vector2 :as vector2]
+  (:require [clojure.image :as image]
+            [clojure.group :as group]
+            [clojure.actor :as actor]
+            [clojure.event :as event]
+            [clojure.vector2 :as vector2]
             [gdx.scene2d.ui.widget :as widget]
             [gdx.scene2d.utils.click-listener :as click-listener]
             [gdx.scene2d.ui.stack :as stack]))

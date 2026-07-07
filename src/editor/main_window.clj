@@ -1,7 +1,7 @@
 (ns editor.main-window
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.stage :as stage]
+            [clojure.actor :as actor]
+            [clojure.event :as event]
             [clojure.string :as str]
             [editor.window]
             [gdx.scene2d.ui.text-button :as text-button]

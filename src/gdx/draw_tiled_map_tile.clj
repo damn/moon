@@ -1,9 +1,9 @@
 (ns gdx.draw-tiled-map-tile
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]))
+  (:require [clojure.tiled-map-tile :as tiled-map-tile]
+            [clojure.tiled-map :as tiled-map]
+            [clojure.texture-region :as texture-region]
+            [clojure.texture :as texture]
+            [clojure.batch :as batch]))
 
 (defn f!
   [x

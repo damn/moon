@@ -1,5 +1,5 @@
 (ns ctx.draw-on-world-viewport.draw-tile-grid
-  (:require [com.badlogic.gdx.graphics.color :as color]
+  (:require [clojure.color :as color]
             [gdx.graphics.orthographic-camera.frustum :refer [frustum]]))
 
 (defn f

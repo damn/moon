@@ -1,7 +1,7 @@
 (ns ctx.render.draw-on-world-viewport
   (:require [gdx.graphics.shape-drawer :as shape-drawer]
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]
+            [clojure.orthographic-camera :as orthographic-camera]
+            [clojure.batch :as batch]
             [ctx.draw :refer [draw!]]))
 
 (defn step

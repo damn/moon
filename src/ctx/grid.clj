@@ -1,6 +1,6 @@
 (ns ctx.grid
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.map-properties :as map-properties]
+  (:require [clojure.tiled-map :as tiled-map]
+            [clojure.map-properties :as map-properties]
             [gdx.maps.tiled.movement-property :as movement-property]
             [clojure.grid2d :as g2d]
             [moon.records.grid-cell :as grid-cell]))

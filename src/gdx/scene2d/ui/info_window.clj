@@ -1,8 +1,8 @@
 (ns gdx.scene2d.ui.info-window
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as gdx-label]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
+  (:require [clojure.group :as group]
+            [clojure.actor :as gdx-actor]
+            [clojure.label :as gdx-label]
+            [clojure.layout :as layout]
             [gdx.scene2d.actor.set-position :refer [set-position!]]
             [gdx.scene2d.actor :as actor]
             [gdx.scene2d.ui.label :as label]

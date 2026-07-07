@@ -1,6 +1,6 @@
 (ns gdx.scene2d.actor.is-button
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.ui.button :as button]))
+  (:require [clojure.actor :as actor]
+            [clojure.button :as button]))
 
 (let [button-class? (fn [actor]
                       (some #(= button/class %) (supers (class actor))))]

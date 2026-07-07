@@ -1,6 +1,6 @@
 (ns ctx.render.window-camera-controls
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.group :as group]
+            [clojure.actor :as actor]
             [gdx.input.key-just-pressed :as key-just-pressed?]
             [gdx.input.key-pressed :as key-pressed?]
             [gdx.graphics.orthographic-camera.inc-zoom :refer [inc-zoom!]]))

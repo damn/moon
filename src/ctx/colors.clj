@@ -1,5 +1,5 @@
 (ns ctx.colors
-  (:require [com.badlogic.gdx.graphics.color :as color]))
+  (:require [clojure.color :as color]))
 
 (defn step [_ctx]
   (let [outline-alpha 0.4]

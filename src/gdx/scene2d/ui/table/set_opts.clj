@@ -1,6 +1,6 @@
 (ns gdx.scene2d.ui.table.set-opts
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
+  (:require [clojure.table :as table]
+            [clojure.layout :as layout]
             [clojure.set-opts :as set-opts]
             [gdx.scene2d.ui.table.add-rows :refer [add-rows!]]))
 

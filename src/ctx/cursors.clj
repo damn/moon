@@ -1,9 +1,9 @@
 (ns ctx.cursors
-  (:require [com.badlogic.gdx.graphics :as graphics]
+  (:require [clojure.graphics :as graphics]
             [clojure.edn :as edn]
-            [com.badlogic.gdx.utils.disposable :as disposable]
-            [com.badlogic.gdx.files :as files]
-            [com.badlogic.gdx.graphics.pixmap :as pixmap]
+            [clojure.disposable :as disposable]
+            [clojure.files :as files]
+            [clojure.pixmap :as pixmap]
             [clojure.java.io :as io]))
 
 (defn step

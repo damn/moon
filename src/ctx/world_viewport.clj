@@ -1,6 +1,6 @@
 (ns ctx.world-viewport
-  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]))
+  (:require [clojure.orthographic-camera :as orthographic-camera]
+            [clojure.fit-viewport :as fit-viewport]))
 
 (defn step
   [{:keys [ctx/world-unit-scale]}]

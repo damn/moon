@@ -1,6 +1,6 @@
 (ns ctx.stage.windows
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:require [clojure.group :as group]
+            [clojure.actor :as actor]))
 
 (defn create [ctx actor-fns]
   (let [group (group/new)]

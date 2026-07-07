@@ -1,7 +1,7 @@
 (ns gdx.scene2d.ui.dev-menu
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
-            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+  (:require [clojure.actor :as actor]
+            [clojure.layout :as layout]
+            [clojure.touchable :as touchable]
             [gdx.scene2d.ui.dev-menu.main-table :as main-table]
             [gdx.scene2d.ui.label :as label]
             [gdx.scene2d.ui.table :as table]))

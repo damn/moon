@@ -1,6 +1,6 @@
 (ns editor.widget-value.one-to-one
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:require [clojure.group :as group]
+            [clojure.actor :as actor]))
 
 (defn f [_  widget _schemas]
   (->> (group/get-children widget)

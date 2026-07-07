@@ -1,8 +1,8 @@
 (ns editor.window
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as gdx-actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+  (:require [clojure.window :as gdx-window]
+            [clojure.group :as group]
+            [clojure.actor :as gdx-actor]
+            [clojure.event :as event]
             [editor.create-widget :as create-widget]
             [editor.widget-value :as widget-value]
             [editor.window.with-window-close :as with-window-close]

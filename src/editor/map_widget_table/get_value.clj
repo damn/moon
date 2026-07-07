@@ -1,6 +1,6 @@
 (ns editor.map-widget-table.get-value
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require [clojure.group :as group]
+            [clojure.actor :as actor]
             [editor.widget-value :as widget-value]))
 
 (defn f [table schemas]
