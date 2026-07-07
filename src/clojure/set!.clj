@@ -1,8 +1,6 @@
-(ns clojure.configuration
+(ns clojure.set!
   (:refer-clojure :exclude [set!])
   (:import (org.lwjgl.system Configuration)))
 
-(def glfw-library-name Configuration/GLFW_LIBRARY_NAME)
-
-(defn set! [configuration value]
+(defn f [configuration value]
   (Configuration/.set configuration value))
