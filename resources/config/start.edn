@@ -1,16 +1,4 @@
 [
- (clojure.add-methods/f! clojure.is-useful/f
-                         {
-                          :default               clojure.useful-default/f
-
-                          :effects/audiovisual   clojure.effects-useful-audiovisual/f
-                          :effects/projectile    clojure.useful-projectile/f
-                          :effects/target-all    clojure.useful-target-all/f
-                          :effects/target-entity clojure.useful-target-entity/f
-
-                          :effects.target/audiovisual clojure.effects-target-useful-audiovisual/f
-                          }
-                         )
  (clojure.add-methods/f! clojure.handle/f
                          {
                           :effects/audiovisual   clojure.effects-handle-audiovisual/f
