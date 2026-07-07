@@ -3,7 +3,8 @@
 
 (defn dispose!
   [{:keys [ctx/skin
-           ctx/batch]}]
-  ; TODO textures not disposede
+           ctx/batch
+           ctx/textures]}]
+  (disposable/dispose! batch)
   (disposable/dispose! skin)
-  (disposable/dispose! batch))
+  (run! disposable/dispose! (vals textures)))

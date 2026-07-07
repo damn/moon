@@ -119,10 +119,11 @@
 (defn- dispose-ctx
   [{:keys [ctx/skin
            ctx/sprite-batch
+           ctx/textures
            ctx/tiled-map]}]
-  ; TODO TEXTURES NOT DISPOSED
-  (disposable/dispose! skin)
   (disposable/dispose! sprite-batch)
+  (disposable/dispose! skin)
+  (run! disposable/dispose! (vals textures))
   (disposable/dispose! tiled-map))
 
 (defn- render-ctx
