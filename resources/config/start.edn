@@ -1,13 +1,4 @@
 [
- (clojure.add-methods/f! clojure.create-value/create-value
-                         {
-                          :default       clojure.create-value-default/f
-
-                          :s/map         clojure.create-value-map/f
-                          :s/one-to-many clojure.create-value-one-to-many/f
-                          :s/one-to-one  clojure.create-value-one-to-one/f
-                          }
-                         )
  (clojure.add-methods/f! clojure.create-entity-state/f
                          {
                           :default               clojure.create-default/f
