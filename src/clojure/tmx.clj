@@ -6,3 +6,7 @@
            start-position]}]
   {:tiled-map (load-tmx-map/f tmx-file)
    :start-position start-position})
+
+(defn vampire [_]
+  (create {:tmx-file "maps/vampire.tmx"
+           :start-position [32 71]}))

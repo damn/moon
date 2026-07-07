@@ -1,11 +1,8 @@
 (ns clojure.levelgen-test-start
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
+  (:require [clojure.edn-resource :refer [edn-resource]]
             [clojure.levelgen-test-application]))
 
 (defn -main []
   (-> "config/levelgen_test.edn"
-      io/resource
-      slurp
-      edn/read-string
+      edn-resource
       clojure.levelgen-test-application/start!))

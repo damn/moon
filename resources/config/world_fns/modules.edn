@@ -1,6 +1,0 @@
-[clojure.modules/create
- {:initial-grid-fn clojure.caves/create
-  :grid2d-fix-nads-fn clojure.fix-nads/f
-  :world/map-size 5,
-  :world/max-area-level 3,
-  :world/spawn-rate 0.05}]

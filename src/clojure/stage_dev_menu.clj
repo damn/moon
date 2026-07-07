@@ -2,7 +2,10 @@
   (:require [clojure.ui-dev-menu :as dev-menu]
             [clojure.ctx-data :as ctx-data]
             [clojure.debug-flags :as debug-flags]
-            [clojure.update-labels :as update-labels]))
+            [clojure.update-labels :as update-labels]
+            [clojure.tmx :as tmx]
+            [clojure.uf-caves :as uf-caves]
+            [clojure.modules :as modules]))
 
 (defn create
   [{:keys [ctx/controls-info
@@ -15,10 +18,10 @@
             {:label "Help"
              :items [{:label controls-info}]}
             {:label "Select World"
-             :items (for [world-fn ["config/world_fns/vampire.edn"
-                                    "config/world_fns/uf_caves.edn"
-                                    "config/world_fns/modules.edn"]]
-                      {:label (str "Start " world-fn)
+             :items (for [[label world-fn] [["Vampire" tmx/vampire]
+                                            ["UF Caves" uf-caves/create]
+                                            ["Modules" modules/create]]]
+                      {:label (str "Start " label)
                        :on-click (fn [ctx]
                                    #_(let [rebuild-actors! nil
                                            #_(fn rebuild-actors! [stage ctx]

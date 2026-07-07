@@ -5,10 +5,10 @@
  :lwjgl-app-config {:title "Levelgen Test"
                     :windowed-mode {:width 1440 :height 900}
                     :foreground-fps 60}
- :initial-level-fn "config/world_fns/uf_caves.edn"
- :level-fns ["config/world_fns/vampire.edn"
-             "config/world_fns/uf_caves.edn"
-             "config/world_fns/modules.edn"]
+ :initial-level-fn clojure.uf-caves/create
+ :level-fns [clojure.tmx/vampire
+             clojure.uf-caves/create
+             clojure.modules/create]
  :ui-viewport-width 1440
  :ui-viewport-height 900
  :world-viewport-width 1440

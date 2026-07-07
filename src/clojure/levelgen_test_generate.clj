@@ -2,7 +2,6 @@
   (:require [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.tiled-map-tile :as tiled-map-tile]
             [clojure.tiled-map :as tiled-map]
-            [clojure.edn-resource :refer [edn-resource]]
             [clojure.get :as get]
             [clojure.get-property :as get-property]
             [clojure.zoom-to-rect :as zoom-to-rect]
@@ -18,13 +17,11 @@
            ctx/textures]
     :as ctx}
    level-fn]
-  (let [level (let [[f params] (edn-resource level-fn)]
-                (f
-                 (assoc params
-                        :level/creature-properties (creature-tiles/prepare
-                                                    (all-raw db :properties/creatures)
-                                                    #(textures/texture-region textures %))
-                        :textures textures)))
+  (let [level (level-fn
+               {:level/creature-properties (creature-tiles/prepare
+                                            (all-raw db :properties/creatures)
+                                            #(textures/texture-region textures %))
+                :textures textures})
         tiled-map (:tiled-map level)
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)

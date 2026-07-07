@@ -1,9 +1,0 @@
-[clojure.uf-caves/create
- {:initial-grid-create-fn clojure.caves/create
-  :grid2d-fix-nads-fn clojure.fix-nads/f
-  :tile-size 48
-  :texture-path "images/uf_terrain.png"
-  :spawn-rate 0.02
-  :scaling 3
-  :cave-size 200
-  :cave-style :wide}]

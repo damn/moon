@@ -7,15 +7,13 @@
   [{:keys [ctx/db
            ctx/textures]
     :as ctx}
-   world-fn-file]
-  (let [[f params] world-fn-file
-        {:keys [tiled-map
-                start-position]} (f
-                                  (assoc params
-                                         :level/creature-properties (clojure.creature-tiles/prepare
-                                                                     (all-raw db :properties/creatures)
-                                                                     #(textures/texture-region textures %))
-                                         :textures textures))]
+   world-fn]
+  (let [{:keys [tiled-map
+                start-position]} (world-fn
+                                  {:level/creature-properties (clojure.creature-tiles/prepare
+                                                               (all-raw db :properties/creatures)
+                                                               #(textures/texture-region textures %))
+                                   :textures textures})]
     (assoc ctx
            :ctx/tiled-map tiled-map
            :ctx/start-position start-position)))

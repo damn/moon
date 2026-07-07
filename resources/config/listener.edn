@@ -33,11 +33,9 @@
                                                                         clojure.inventory-window/create])
                                                  (clojure.player-state-draw/create)
                                                  (clojure.player-message-actor/create)]))
-                   (clojure.ctx-tiled-map/step #edn/resource
-                                          ; "config/world_fns/modules.edn"
-                                          "config/world_fns/vampire.edn"
-                                          ; "config/world_fns/uf_caves.edn"
-                                          )
+                   (clojure.ctx-tiled-map/step clojure.tmx/vampire)
+                   ; (clojure.ctx-tiled-map/step clojure.modules/create)
+                   ; (clojure.ctx-tiled-map/step clojure.uf-caves/create)
                    (clojure.assoc-create/f :ctx/grid clojure.ctx-grid/step)
                    (clojure.assoc-create/f :ctx/content-grid clojure.content-grid/step)
                    [clojure.assoc-create/f :ctx/explored-tile-corners clojure.explored-tile-corners/step]
