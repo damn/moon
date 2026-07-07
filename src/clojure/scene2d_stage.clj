@@ -9,6 +9,3 @@
         :stage/root     (.getRoot     ^Stage this)
         :stage/ctx      (.ctx         ^Stage this)
         :stage/viewport (.getViewport ^Stage this)))))
-
-(defn set-ctx! [^Stage stage ctx]
-  (set! (.ctx stage) ctx))

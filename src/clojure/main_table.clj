@@ -8,7 +8,7 @@
             [clojure.add-upd-label :refer [add-upd-label!]]
             [clojure.ui-table :as table]
             [clojure.ui-window :as window]
-            [clojure.scene2d-stage :refer [set-ctx!]]))
+            [clojure.set-ctx :as set-ctx]))
 
 (defn f [skin menus update-labels]
   (let [table (table/create
@@ -27,7 +27,7 @@
                                                                                             (clojure.add-listener/f (change-listener/create
                                                                                                              (fn [event actor]
                                                                                                                (let [stage (event/get-stage event)]
-                                                                                                                 (set-ctx! stage
+                                                                                                                 (set-ctx/f stage
                                                                                                                             (on-click (:stage/ctx stage))))))))})]})
                                                                     (add-close-button/f! skin)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]

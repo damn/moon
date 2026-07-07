@@ -1,6 +1,6 @@
 (ns clojure.app-render
   (:require [clojure.stage :as stage]
-            [clojure.scene2d-stage :refer [set-ctx!]]))
+            [clojure.set-ctx :as set-ctx]))
 
 (defn render!
   [{:keys [ctx/stage]
@@ -8,7 +8,7 @@
   (let [ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (set-ctx! stage ctx)
+    (set-ctx/f stage ctx)
     (stage/act! stage)
     (stage/draw! stage)
     (:stage/ctx stage)))

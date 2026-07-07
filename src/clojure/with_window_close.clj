@@ -6,7 +6,7 @@
             [clojure.throwable :as throwable]
             [clojure.error-window :as error-window]
             [clojure.find-ancestor :refer [find-ancestor]]
-            [clojure.scene2d-stage :refer [set-ctx!]]))
+            [clojure.set-ctx :as set-ctx]))
 
 (defn f [f]
   (fn [actor {:keys [ctx/skin
@@ -15,7 +15,7 @@
     (try
      (let [new-ctx (update ctx :ctx/db f)
            stage (clojure.get-stage/f actor)]
-       (set-ctx! stage new-ctx))
+       (set-ctx/f stage new-ctx))
      (clojure.remove-actor/f (find-ancestor actor (partial instance? window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)

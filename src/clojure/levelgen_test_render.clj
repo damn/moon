@@ -8,7 +8,7 @@
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
-            [clojure.scene2d-stage :refer [set-ctx!]]))
+            [clojure.set-ctx :as set-ctx]))
 
 (defn f
   [{:keys [ctx/input
@@ -23,7 +23,7 @@
            ctx/stage] :as ctx}]
   (let [ctx (or (:stage/ctx stage)
                 ctx)] ; first render stage does not have ctx set. ( TODO: just set it ?  )
-    (set-ctx! stage ctx))
+    (set-ctx/f stage ctx))
   (let [gl (graphics/get-gl20 graphics)]
     (gl20/clear-color! gl 0 0 0 0)
     (gl20/clear! gl gl20/color-buffer-bit))
