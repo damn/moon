@@ -3,7 +3,7 @@
             [clojure.tiled-map-tile :as tiled-map-tile]
             [clojure.tiled-map :as tiled-map]
             [clojure.edn-resource :refer [edn-resource]]
-            [clojure.map-layers :as map-layers]
+            [clojure.get :as get]
             [clojure.get-property :as get-property]
             [clojure.zoom-to-rect :as zoom-to-rect]
             [clojure.creature-tiles :as creature-tiles]
@@ -30,7 +30,7 @@
     (assert tiled-map)
     (-> tiled-map
         tiled-map/get-layers
-        (map-layers/get "creatures")
+        (get/f "creatures")
         (tiled-map-tile-layer/set-visible! true))
     (set-position! camera [(/ (get-property/f tiled-map "width") 2)
                            (/ (get-property/f tiled-map "height") 2)])

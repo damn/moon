@@ -4,12 +4,12 @@
             [clojure.tiled-map-tile :as tiled-map-tile]
             [clojure.tiled-map :as tiled-map]
             [clojure.map-properties :as map-properties]
-            [clojure.map-layers :as map-layers]))
+            [clojure.get :as get]))
 
 (defn f [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (map-layers/get (tiled-map/get-layers tiled-map) layer-name)]
+        layer (get/f (tiled-map/get-layers tiled-map) layer-name)]
     (for [x (range (tiled-map-tile-layer/get-width layer))
           y (range (tiled-map-tile-layer/get-height layer))
           :let [position [x y]
