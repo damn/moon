@@ -1,21 +1,4 @@
 [
- (clojure.add-methods/f! clojure.create-widget/f
-                         {
-                          :default       clojure.create-widget-default/f
-
-                          :s/animation   clojure.create-widget-animation/f
-                          :s/boolean     clojure.create-widget-boolean/f
-                          :s/enum        clojure.create-widget-enum/f
-                          :s/image       clojure.create-widget-image/f
-                          :s/map         clojure.create-widget-map/f
-                          :s/number      clojure.create-widget-number/f
-                          :s/one-to-many clojure.create-widget-one-to-many/f
-                          :s/one-to-one  clojure.create-widget-one-to-one/f
-                          :s/sound       clojure.create-widget-sound/f
-                          :s/string      clojure.create-widget-string/f
-                          :s/val-max     clojure.create-widget-val-max/f
-                          }
-                         )
  (clojure.add-methods/f! clojure.widget-value/f
                          {
                           :default       clojure.widget-value-default/f

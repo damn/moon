@@ -4,7 +4,7 @@
             [clojure.remove-actor] [clojure.window :as gdx-window]
             [clojure.event :as event]
             [clojure.pack! :as pack!]
-            [clojure.build-widget :as build-widget]
+            [clojure.create-widget :refer [build-widget]]
             [clojure.widget-value :as widget-value]
             [clojure.add-rows :refer [add-rows!]]
             [clojure.ui-text-button :as text-button]
@@ -37,7 +37,7 @@
                                      (let [ctx (:stage/ctx (event/get-stage event))]
                                        (add-rows! map-widget-table [((:ctx/create-component-row ctx)
                                                                       {:skin skin
-                                                                       :editor-widget (build-widget/f ctx
+                                                                       :editor-widget (build-widget ctx
                                                                                                       (get schemas k)
                                                                                                       k
                                                                                                       (default-value schemas k))
