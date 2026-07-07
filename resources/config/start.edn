@@ -1,15 +1,4 @@
 [
- (clojure.add-methods/f! clojure.create-entity-state/f
-                         {
-                          :default               clojure.create-default/f
-
-                          :active-skill          clojure.create-active-skill/f
-                          :stunned               clojure.create-stunned/f
-                          :player-moving         clojure.create-player-moving/f
-                          :npc-moving            clojure.create-npc-moving/f
-                          :player-item-on-cursor clojure.create-player-item-on-cursor/f
-                          }
-                         )
  (clojure.add-methods/f! clojure.is-applicable/f
                          {
                           :effects/audiovisual   clojure.effects-applicable-audiovisual/f
