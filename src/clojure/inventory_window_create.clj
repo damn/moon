@@ -2,7 +2,7 @@
   (:require [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
             [clojure.actor :as actor]
-            [clojure.color :as color]
+            [clojure.new-color]
             [clojure.actor-set-position :refer [set-position!]]
             [clojure.ui-table :as table]
             [clojure.ui-window :as window]
@@ -22,7 +22,7 @@
   (let [slot->drawable (fn [slot]
                          (doto (texture-region-drawable/new (slot->texture-region slot))
                            (texture-region-drawable/set-min-size! cell-size cell-size)
-                           (texture-region-drawable/tint! (color/new [1 1 1 0.4]))))
+                           (texture-region-drawable/tint! (clojure.new-color/f [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?

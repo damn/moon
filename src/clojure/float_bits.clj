@@ -1,11 +1,7 @@
-(ns clojure.color
-  (:refer-clojure :exclude [new])
+(ns clojure.float-bits
   (:import (com.badlogic.gdx.graphics Color)))
 
-(defn new [[r g b a]]
-  (Color. r g b a))
-
-(defn float-bits [[r g b a]]
+(defn f [[r g b a]]
   (Color/toFloatBits (float r)
                      (float g)
                      (float b)

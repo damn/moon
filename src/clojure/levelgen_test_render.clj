@@ -1,7 +1,7 @@
 (ns clojure.levelgen-test-render
   (:require [clojure.stage :as stage]
             [clojure.graphics :as graphics]
-            [clojure.color :as color]
+            [clojure.float-bits]
             [clojure.gdx-draw-tiled-map :as draw-tiled-map]
             [clojure.gl20 :as gl20]
             [clojure.key-pressed :as key-pressed?]
@@ -31,7 +31,7 @@
                      world-unit-scale
                      (:viewport/camera world-viewport)
                      tiled-map
-                     (constantly (color/float-bits [1 1 1 1])))
+                     (constantly (clojure.float-bits/f [1 1 1 1])))
   (when (key-pressed?/f input :input.keys/minus)  (inc-zoom! camera zoom-speed))
   (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed)))
   (let [apply-position (fn [idx f]
