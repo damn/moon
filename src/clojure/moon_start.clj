@@ -1043,7 +1043,6 @@
                 (resize-app! @application/state width height))
      :pause! (fn [])
      :resume! (fn [])})
-   (doto (lwjgl3-config/new)
-     (lwjgl3-config/set-title! "Moon")
-     (lwjgl3-config/set-windowed-mode! 1440 900)
-     (lwjgl3-config/set-foreground-fps! 60))))
+   (lwjgl3-config/f {:title "Moon"
+                     :windowed-mode {:width 1440 :height 900}
+                     :foreground-fps 60})))
