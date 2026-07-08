@@ -1,5 +1,5 @@
 (ns clojure.moon-start
-  (:require [clojure.active-entities :as active-entities]
+  (:require [clojure.content-grid.active-entities :as active-entities]
             [clojure.actor-set-position :as actor-set-position]
             [clojure.all-raw :refer [all-raw]]
             [clojure.app-schema :refer [schema]]

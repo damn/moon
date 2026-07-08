@@ -1,4 +1,4 @@
-(ns clojure.update-entity)
+(ns clojure.content-grid.update-entity)
 
 (defn f!
   [{:keys [grid

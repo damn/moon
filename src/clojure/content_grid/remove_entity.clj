@@ -1,4 +1,4 @@
-(ns clojure.remove-entity)
+(ns clojure.content-grid.remove-entity)
 
 (defn f! [_ eid]
   (-> @eid

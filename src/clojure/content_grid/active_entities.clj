@@ -1,4 +1,4 @@
-(ns clojure.active-entities
+(ns clojure.content-grid.active-entities
   (:require [clojure.get-8-neighbours :refer [get-8-neighbours]]))
 
 (defn f
