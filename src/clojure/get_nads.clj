@@ -1,5 +1,5 @@
 (ns clojure.get-nads
-  (:require [clojure.posis :as posis]
+  (:require [clojure.g2d.posis :as posis]
             [clojure.is-nad-corner :as nad-corner?]))
 
 ; could be made faster because accessing the same posis oftentimes at nad-corner? check

@@ -1,4 +1,4 @@
-(ns clojure.flood-fill
+(ns clojure.g2d.flood-fill
   (:require [clojure.get-8-neighbours :refer [get-8-neighbours]]
             [clojure.assoc-ks :refer [assoc-ks]]))
 

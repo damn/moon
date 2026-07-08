@@ -1,10 +1,10 @@
 (ns clojure.modules-last-steps
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.property-value :refer [property-value]]
-            [clojure.cells :refer [->cells]]
+            [clojure.g2d.cells :refer [->cells]]
             [clojure.scale-grid :as scale-grid]
-            [clojure.printgrid :as printgrid]
-            [clojure.flood-fill :as flood-fill]
+            [clojure.g2d.printgrid :as printgrid]
+            [clojure.g2d.flood-fill :as flood-fill]
             [clojure.movement-property :as movement-property]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
             [clojure.area-level-grid :as area-level-grid]

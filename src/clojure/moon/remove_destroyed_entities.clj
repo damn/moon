@@ -1,5 +1,5 @@
 (ns clojure.moon.remove-destroyed-entities
-  (:require [clojure.ctx-do :refer [do!]]
+  (:require [clojure.moon.ctx-do :refer [do!]]
             [clojure.k-destroy :refer [k->destroy]]))
 
 (defn f [ctx]

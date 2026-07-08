@@ -1,8 +1,8 @@
 (ns clojure.moon.create-raycaster
   (:require [clojure.blocks-vision :as blocks-vision?]
-            [clojure.cells :refer [->cells]]
-            [clojure.height :refer [->height]]
-            [clojure.width :refer [->width]]))
+            [clojure.g2d.cells :refer [->cells]]
+            [clojure.g2d.height :refer [->height]]
+            [clojure.g2d.width :refer [->width]]))
 
 (defn f [ctx]
   (let [grid (:ctx/grid ctx)

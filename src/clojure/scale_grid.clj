@@ -1,7 +1,7 @@
 (ns clojure.scale-grid
   (:require [clojure.grid2d :as g2d]
-            [clojure.height :refer [->height]]
-            [clojure.width :refer [->width]]))
+            [clojure.g2d.height :refer [->height]]
+            [clojure.g2d.width :refer [->width]]))
 
 (defn f [grid [w h]]
   (g2d/create-grid (* (->width grid)  w)

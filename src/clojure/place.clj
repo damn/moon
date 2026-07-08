@@ -1,5 +1,5 @@
 (ns clojure.place
-  (:require [clojure.posis :as posis]
+  (:require [clojure.g2d.posis :as posis]
             [clojure.place-step :as place-step]))
 
 (defn step

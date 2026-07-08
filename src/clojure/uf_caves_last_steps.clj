@@ -1,14 +1,14 @@
 (ns clojure.uf-caves-last-steps
-  (:require [clojure.flood-fill :as flood-fill]
+  (:require [clojure.g2d.flood-fill :as flood-fill]
             [clojure.position-tile-fn :as position-tile-fn]
             [clojure.assoc-transition-cells :as assoc-transition-cells]
             [clojure.uf-caves-scale-grid :as scale-grid]
             [clojure.movement-property :as movement-property]
-            [clojure.height :refer [->height]]
-            [clojure.width :refer [->width]]
-            [clojure.cells :refer [->cells]]
-            [clojure.posis :as posis]
-            [clojure.printgrid :as printgrid]
+            [clojure.g2d.height :refer [->height]]
+            [clojure.g2d.width :refer [->width]]
+            [clojure.g2d.cells :refer [->cells]]
+            [clojure.g2d.posis :as posis]
+            [clojure.g2d.printgrid :as printgrid]
             [clojure.tiled-tiled-map :as tiled-map]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]))
 

@@ -1,4 +1,4 @@
-(ns clojure.ctx-do
+(ns clojure.moon.ctx-do
   (:require [clojure.txs-fn-map.actions :refer [actions!]]
             [clojure.moon.tx :as tx]))
 

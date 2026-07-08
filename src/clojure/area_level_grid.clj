@@ -1,5 +1,5 @@
 (ns clojure.area-level-grid
-  (:require [clojure.cells :refer [->cells]]
+  (:require [clojure.g2d.cells :refer [->cells]]
             [clojure.get-4-neighbours :refer [get-4-neighbours]]))
 
 ; can adjust:

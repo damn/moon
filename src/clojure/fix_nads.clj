@@ -1,7 +1,7 @@
 (ns clojure.fix-nads
   (:require [clojure.assoc-ks :refer [assoc-ks]]
             [clojure.get-nads :refer [get-nads]]
-            [clojure.cells :refer [->cells]]
+            [clojure.g2d.cells :refer [->cells]]
             [clojure.get-tiles-needing-fix-for-nad :as get-tiles-needing-fix-for-nad]))
 
 (defn f [grid]

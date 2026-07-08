@@ -1,5 +1,5 @@
 (ns clojure.uf-caves-initial-grid
-  (:require [clojure.cells :refer [->cells]]))
+  (:require [clojure.g2d.cells :refer [->cells]]))
 
 (defn f
   [{:keys [initial-grid-create-fn

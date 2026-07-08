@@ -1,5 +1,5 @@
 (ns clojure.moon.when-not-paused
-  (:require [clojure.ctx-do :refer [do!]]
+  (:require [clojure.moon.ctx-do :refer [do!]]
             [clojure.error-window :as error-window]
             [clojure.factions-iterations :refer [factions-iterations]]
             [clojure.graphics :as graphics]

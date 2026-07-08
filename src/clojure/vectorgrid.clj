@@ -1,8 +1,8 @@
 (ns clojure.vectorgrid
-  (:require [clojure.cells :as cells]
-            [clojure.posis :as posis]
-            [clojure.height :as height]
-            [clojure.width :as width]))
+  (:require [clojure.g2d.cells :as cells]
+            [clojure.g2d.posis :as posis]
+            [clojure.g2d.height :as height]
+            [clojure.g2d.width :as width]))
 
 (deftype VectorGrid [data]
   height/Height
