@@ -1,5 +1,5 @@
 (ns clojure.create-entity-state
-  (:require [clojure.apply-action-speed-modifier :as apply-action-speed-modifier]
+  (:require [clojure.stats.apply-action-speed-modifier :as apply-action-speed-modifier]
             [clojure.get-stat-value :refer [get-stat-value]]
             [clojure.timer-create :refer [create-timer]]))
 
@@ -17,7 +17,7 @@
    :effect-ctx effect-ctx
    :counter (->> skill
                  :skill/action-time
-                 (apply-action-speed-modifier/f @eid skill)
+                 (apply-action-speed-modifier/f (:entity/stats @eid) skill)
                  (create-timer elapsed-time))})
 
 (defmethod f :stunned
