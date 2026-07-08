@@ -1,6 +1,6 @@
-(ns clojure.get-nads
+(ns clojure.g2d.get-nads
   (:require [clojure.g2d.posis :as posis]
-            [clojure.is-nad-corner :as nad-corner?]))
+            [clojure.g2d.is-nad-corner :as nad-corner?]))
 
 ; could be made faster because accessing the same posis oftentimes at nad-corner? check
 (let [diagonal-steps [[-1 -1] [-1 1] [1 -1] [1 1]]]

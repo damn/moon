@@ -3,7 +3,7 @@
             [clojure.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clojure.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
-            [clojure.graphics-shape-drawer :as shape-drawer]
+            [clojure.shape-drawer :as shape-drawer]
             [clojure.string :as str]
             [clojure.texture-region :as texture-region]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]))

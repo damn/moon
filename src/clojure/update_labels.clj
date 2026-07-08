@@ -1,6 +1,6 @@
 (ns clojure.update-labels
   (:require [clojure.orthographic-camera :as orthographic-camera]
-            [clojure.graphics :as graphics]
+            [clojure.gdx.graphics :as graphics]
             [clojure.readable :as readable]))
 
 (def v

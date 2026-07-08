@@ -1,4 +1,4 @@
-(ns clojure.graphics
+(ns clojure.gdx.graphics
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics Cursor Pixmap)))
 

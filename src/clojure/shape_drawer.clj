@@ -1,4 +1,4 @@
-(ns clojure.graphics-shape-drawer
+(ns clojure.shape-drawer
   (:require [clojure.shapedrawer-shape-drawer :as shape-drawer]))
 
 (defn circle! [shape-drawer x y radius]

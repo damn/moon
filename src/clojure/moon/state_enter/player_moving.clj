@@ -1,5 +1,5 @@
 (ns clojure.moon.state-enter.player-moving
-  (:require [clojure.get-stat-value :refer [get-stat-value]]))
+  (:require [clojure.stats.get-stat-value :refer [get-stat-value]]))
 
 (defn f
   [{:keys [movement-vector]} eid]

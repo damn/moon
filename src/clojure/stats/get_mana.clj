@@ -1,4 +1,4 @@
-(ns clojure.get-mana
+(ns clojure.stats.get-mana
   (:require [clojure.val-max.apply-max :as apply-max]))
 
 (defn f

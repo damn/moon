@@ -4,7 +4,7 @@
             [clojure.draw :refer [draw!]]
             [clojure.moon.draw-component :refer [draw-component]]
             [clojure.factions-iterations :refer [factions-iterations]]
-            [clojure.graphics-shape-drawer :as shape-drawer]
+            [clojure.shape-drawer :as shape-drawer]
             [clojure.line-of-sight :as line-of-sight?]
             [clojure.orthographic-camera :as orthographic-camera]
             [clojure.sort-by-order :as sort-by-order]

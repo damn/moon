@@ -2,7 +2,7 @@
   (:require [clojure.disposable :as disposable]
             [clojure.edn :as edn]
             [clojure.files :as files]
-            [clojure.graphics :as graphics]
+            [clojure.gdx.graphics :as graphics]
             [clojure.java.io :as io]
             [clojure.pixmap :as pixmap]))
 

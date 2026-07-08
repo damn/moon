@@ -1,5 +1,5 @@
-(ns clojure.get-tiles-needing-fix-for-nad
-  (:require [clojure.is-nad-corner :as nad-corner?]))
+(ns clojure.g2d.get-tiles-needing-fix-for-nad
+  (:require [clojure.g2d.is-nad-corner :as nad-corner?]))
 
 (defn f [grid [[fromx fromy] [tox toy]]]
   (let [xstep (- tox fromx)

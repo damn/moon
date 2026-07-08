@@ -1,5 +1,5 @@
 (ns clojure.inside-cell
-  (:require [clojure.get-cells :refer [get-cells]]
+  (:require [clojure.g2d.get-cells :refer [get-cells]]
             [clojure.body.touched-tiles :refer [touched-tiles]]))
 
 (defn f [grid entity cell]

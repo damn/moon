@@ -1,4 +1,4 @@
-(ns clojure.get-property
+(ns clojure.tiled-map.get-property
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.map-properties :as map-properties]))
 

@@ -1,7 +1,7 @@
 (ns clojure.info
-  (:require [clojure.get-hitpoints :as get-hitpoints]
-            [clojure.get-mana :as get-mana]
-            [clojure.get-stat-value :refer [get-stat-value]]
+  (:require [clojure.stats.get-hitpoints :as get-hitpoints]
+            [clojure.stats.get-mana :as get-mana]
+            [clojure.stats.get-stat-value :refer [get-stat-value]]
             [clojure.math :as math]
             [clojure.ratio :as ratio]
             [clojure.readable :as readable]

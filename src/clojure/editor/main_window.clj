@@ -3,7 +3,7 @@
             [clojure.editor.create-widget-property-editor-window :refer [property-editor-window]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.event :as event]
-            [clojure.get-raw :refer [get-raw]]
+            [clojure.db.get-raw :refer [get-raw]]
             [clojure.property-types :refer [property-types]]
             [clojure.stage :as stage]
             [clojure.string :as str]

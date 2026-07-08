@@ -1,5 +1,5 @@
 (ns clojure.creature-melee-damage
-  (:require [clojure.get-stat-value :refer [get-stat-value]]))
+  (:require [clojure.stats.get-stat-value :refer [get-stat-value]]))
 
 (defn f [{:keys [entity/stats]}]
   (let [strength (or (get-stat-value stats :stats/strength) 0)]

@@ -1,5 +1,5 @@
 (ns clojure.grid.cached-adjacent-cells
-  (:require [clojure.get-cells :refer [get-cells]]
+  (:require [clojure.g2d.get-cells :refer [get-cells]]
             [clojure.get-8-neighbours :refer [get-8-neighbours]]))
 
 ; works on cell , not g2d first param

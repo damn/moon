@@ -1,4 +1,4 @@
-(ns clojure.get-hitpoints
+(ns clojure.stats.get-hitpoints
   (:require [clojure.val-max.apply-max :as apply-max]))
 
 (defn f

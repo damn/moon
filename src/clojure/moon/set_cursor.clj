@@ -1,5 +1,5 @@
 (ns clojure.moon.set-cursor
-  (:require [clojure.graphics :as graphics]))
+  (:require [clojure.gdx.graphics :as graphics]))
 
 (def k->cursor
   {:player-item-on-cursor :cursors/hand-grab

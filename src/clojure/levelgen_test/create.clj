@@ -7,7 +7,7 @@
             [clojure.files :as files]
             [clojure.fit-viewport :as fit-viewport]
             [clojure.map-layers.get :as get]
-            [clojure.get-property :as get-property]
+            [clojure.tiled-map.get-property :as get-property]
             [clojure.input :as input]
             [clojure.malli-form-register-methods]
             [clojure.moon-db :as db]

@@ -1,5 +1,5 @@
 (ns clojure.effective-armor-save
-  (:require [clojure.get-stat-value :refer [get-stat-value]]))
+  (:require [clojure.stats.get-stat-value :refer [get-stat-value]]))
 
 ; not in stats because projectile as source doesnt have stats
 ; FIXME I don't see it triggering with 10 armor save ... !

@@ -1,4 +1,4 @@
-(ns clojure.is-nad-corner)
+(ns clojure.g2d.is-nad-corner)
 
 (defn f [grid [fromx fromy] [tox toy]]
   (and

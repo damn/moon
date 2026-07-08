@@ -2,7 +2,7 @@
   (:require [clojure.moon.ctx-do :refer [do!]]
             [clojure.error-window :as error-window]
             [clojure.factions-iterations :refer [factions-iterations]]
-            [clojure.graphics :as graphics]
+            [clojure.gdx.graphics :as graphics]
             [clojure.grid-update-potential-fields :as update-potential-fields]
             [clojure.max-delta :refer [max-delta]]
             [clojure.stage :as stage]

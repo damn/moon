@@ -1,4 +1,4 @@
-(ns clojure.circle-entities
+(ns clojure.grid.circle-entities
   (:require [clojure.gdx.math.circle :as circle]
             [clojure.intersector :as intersector]
             [clojure.body.rectangle :refer [->rectangle]]

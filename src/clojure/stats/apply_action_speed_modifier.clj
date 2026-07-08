@@ -1,5 +1,5 @@
 (ns clojure.stats.apply-action-speed-modifier
-  (:require [clojure.get-stat-value :refer [get-stat-value]]))
+  (:require [clojure.stats.get-stat-value :refer [get-stat-value]]))
 
 (defn f [stats skill action-time]
   (/ action-time

@@ -1,5 +1,5 @@
 (ns clojure.valid-position
-  (:require [clojure.get-cells :refer [get-cells]]
+  (:require [clojure.g2d.get-cells :refer [get-cells]]
             [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.overlaps :refer [overlaps?]]
             [clojure.grid.cell.is-blocked :as blocked?]

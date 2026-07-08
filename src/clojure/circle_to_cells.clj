@@ -1,7 +1,7 @@
 (ns clojure.circle-to-cells
   (:require [clojure.outer-rectangle :refer [outer-rectangle]]
             [clojure.touched-tiles :refer [touched-tiles]]
-            [clojure.get-cells :refer [get-cells]]))
+            [clojure.g2d.get-cells :refer [get-cells]]))
 
 (defn circle->cells [g2d circle]
   (->> circle

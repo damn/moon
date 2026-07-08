@@ -1,6 +1,6 @@
 (ns clojure.db.build
   (:require [clojure.create-value :refer [build-values]]
-            [clojure.get-raw :refer [get-raw]]))
+            [clojure.db.get-raw :refer [get-raw]]))
 
 (defn build [{:keys [db/schemas] :as this} property-id]
   (build-values schemas

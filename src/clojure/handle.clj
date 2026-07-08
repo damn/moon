@@ -4,7 +4,7 @@
             [clojure.creature-melee-damage :as melee-damage]
             [clojure.effective-armor-save :as effective-armor-save]
             [clojure.end-point :refer [end-point]]
-            [clojure.get-hitpoints :as get-hitpoints]
+            [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.in-range :refer [in-range?]]
             [clojure.int-between :refer [rand-int-between]]
             [clojure.moon-target-all :as target-all]

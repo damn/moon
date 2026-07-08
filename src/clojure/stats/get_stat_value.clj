@@ -1,4 +1,4 @@
-(ns clojure.get-stat-value
+(ns clojure.stats.get-stat-value
   (:require [clojure.modifiers-get-value :as get-value]))
 
 (defn get-stat-value [stats stat-k]
