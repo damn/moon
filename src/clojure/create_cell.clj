@@ -1,7 +1,7 @@
 (ns clojure.create-cell
   (:require
             [clojure.actor.hit]
-            [clojure.add-listener]
+            [clojure.actor.add-listener]
             [clojure.actor.get-parent]
             [clojure.actor.get-stage]
             [clojure.actor.get-user-object]
@@ -44,7 +44,7 @@
                 (clojure.actor.set-user-object/f {:background-drawable background-drawable
                                     :cell-size cell-size}))])
        (doto stack
-         (clojure.add-listener/f (click-listener/create
+         (clojure.actor.add-listener/f (click-listener/create
                           (fn [event _x _y]
                             (let [{:keys [ctx/player-eid]
                                    :as ctx} (:stage/ctx (event/get-stage event))

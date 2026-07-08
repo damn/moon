@@ -1,10 +1,10 @@
 (ns clojure.main-table
   (:require
-            [clojure.add-listener] [clojure.stage :as stage]
+            [clojure.actor.add-listener] [clojure.stage :as stage]
             [clojure.event :as event]
             [clojure.utils-change-listener :as change-listener]
             [clojure.ui-text-button :as text-button]
-            [clojure.add-close-button :as add-close-button]
+            [clojure.window.add-close-button :as add-close-button]
             [clojure.add-upd-label :refer [add-upd-label!]]
             [clojure.ui-table :as table]
             [clojure.ui-window :as window]
@@ -15,7 +15,7 @@
                {:table/rows [(for [{:keys [label items]} menus]
                                {:actor
                                 (doto (text-button/create {:text label :skin skin})
-                                  (clojure.add-listener/f (change-listener/create
+                                  (clojure.actor.add-listener/f (change-listener/create
                                                    (fn [event actor]
                                                      (stage/add-actor! (event/get-stage event)
                                                                   (doto (window/create
@@ -24,7 +24,7 @@
                                                                           :table/rows [(for [{:keys [label on-click]} items]
                                                                                          {:actor
                                                                                           (doto (text-button/create {:text label :skin skin})
-                                                                                            (clojure.add-listener/f (change-listener/create
+                                                                                            (clojure.actor.add-listener/f (change-listener/create
                                                                                                              (fn [event actor]
                                                                                                                (let [stage (event/get-stage event)]
                                                                                                                  (set-ctx/f stage

@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-add-component-window
   (:require [clojure.actor.remove-actor]
-            [clojure.add-close-button :as add-close-button]
-            [clojure.add-listener]
+            [clojure.window.add-close-button :as add-close-button]
+            [clojure.actor.add-listener]
             [clojure.add-rows :refer [add-rows!]]
             [clojure.default-value :refer [default-value]]
             [clojure.editor.create-widget-build-widget :as build-widget]
@@ -34,7 +34,7 @@
        [{:actor (doto (text-button/create
                        {:skin skin
                         :text (name k)})
-                  (clojure.add-listener/f (change-listener/create
+                  (clojure.actor.add-listener/f (change-listener/create
                                            (fn [event _actor]
                                              (clojure.actor.remove-actor/f window)
                                              (let [ctx (:stage/ctx (event/get-stage event))]

@@ -1,11 +1,11 @@
 (ns clojure.data-viewer-window
   (:require
-            [clojure.add-listener]
+            [clojure.actor.add-listener]
             [clojure.actor.get-stage] [clojure.stage :as stage]
             [clojure.v-text :refer [v->text]]
             [clojure.ui-label :as label]
             [clojure.ui-scroll-pane :as scroll-pane]
-            [clojure.add-close-button :as add-close-button]
+            [clojure.window.add-close-button :as add-close-button]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
@@ -22,7 +22,7 @@
   (let [v->actor (fn [v skin]
                    (if (map? v)
                      (doto (text-button/create {:text "Map" :skin skin})
-                       (clojure.add-listener/f (change-listener/create
+                       (clojure.actor.add-listener/f (change-listener/create
                                         (fn [_event actor]
                                           (stage/add-actor! (clojure.actor.get-stage/f actor)
                                                        (create

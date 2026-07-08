@@ -1,5 +1,5 @@
-(ns clojure.add-creatures-layer
-  (:require [clojure.add-layer :as add-layer]
+(ns clojure.tiled-map.add-creatures-layer
+  (:require [clojure.tiled-map.add-layer :as add-layer]
             [clojure.create-static-tiled-map-tile :as create-tile]))
 
 (defn f [tiled-map spawn-positions]

@@ -1,8 +1,8 @@
 (ns clojure.editor.create-widget-property-editor-window
   (:require [clojure.actor.get-stage]
             [clojure.actor.set-name]
-            [clojure.add-close-button :as add-close-button]
-            [clojure.add-listener]
+            [clojure.window.add-close-button :as add-close-button]
+            [clojure.actor.add-listener]
             [clojure.db-update :refer [update!]]
             [clojure.delete :refer [delete!]]
             [clojure.editor.create-widget :refer [create-widget]]
@@ -40,14 +40,14 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (clojure.add-listener/f (change-listener/create
+                                     (clojure.actor.add-listener/f (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (clojure.add-listener/f (change-listener/create
+                                     (clojure.actor.add-listener/f (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]

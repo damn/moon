@@ -1,8 +1,8 @@
 (ns clojure.editor.create-widget-open-select-sounds-handler
   (:require [clojure.actor.get-height]
             [clojure.actor.get-width]
-            [clojure.add-close-button :as add-close-button]
-            [clojure.add-listener]
+            [clojure.window.add-close-button :as add-close-button]
+            [clojure.actor.add-listener]
             [clojure.add-rows :refer [add-rows!]]
             [clojure.ctx-do :refer [do!]]
             [clojure.editor.create-widget-rebuild-sound-widget :as rebuild-sound-widget]
@@ -31,13 +31,13 @@
                                                             [{:actor (doto (text-button/create
                                                                             {:text sound-name
                                                                              :skin skin})
-                                                                           (clojure.add-listener/f (change-listener/create
+                                                                           (clojure.actor.add-listener/f (change-listener/create
                                                                                                     (fn [event actor]
                                                                                                       ((rebuild-sound-widget/rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
                                                              {:actor (doto (text-button/create
                                                                             {:text "play!"
                                                                              :skin skin})
-                                                                           (clojure.add-listener/f (change-listener/create
+                                                                           (clojure.actor.add-listener/f (change-listener/create
                                                                                                     (fn [event _actor]
                                                                                                       (do! (:stage/ctx (event/get-stage event))
                                                                                                            [[:tx/sound sound-name]])))))}])} )]

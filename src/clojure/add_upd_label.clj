@@ -3,7 +3,7 @@
             [clojure.group :as group]
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]
-            [clojure.add-cell :refer [add-cell!]]
+            [clojure.table.add-cell :refer [add-cell!]]
             [clojure.set-label-text-actor :refer [set-label-text-actor]]))
 
 (defn add-upd-label!

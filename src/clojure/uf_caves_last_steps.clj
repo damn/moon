@@ -10,7 +10,7 @@
             [clojure.posis :as posis]
             [clojure.printgrid :as printgrid]
             [clojure.tiled-tiled-map :as tiled-map]
-            [clojure.add-creatures-layer :as add-creatures-layer]))
+            [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]))
 
 ; TODO don't spawn my faction vampire w. player items ...
 ; FIXME - overlapping with player - don't spawn creatures on start position

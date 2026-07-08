@@ -6,7 +6,7 @@
             [clojure.printgrid :as printgrid]
             [clojure.flood-fill :as flood-fill]
             [clojure.movement-property :as movement-property]
-            [clojure.add-creatures-layer :as add-creatures-layer]
+            [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
             [clojure.area-level-grid :as area-level-grid]
             [clojure.map-layers.get :as get]))
 

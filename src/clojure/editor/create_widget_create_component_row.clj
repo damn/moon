@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-create-component-row
   (:require [clojure.actor.get-user-object]
             [clojure.actor.remove-actor]
-            [clojure.add-listener]
+            [clojure.actor.add-listener]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
             [clojure.event :as event]
             [clojure.group :as group]
@@ -23,7 +23,7 @@
                                      (doto (text-button/create
                                             {:text "-"
                                              :skin skin})
-                                       (clojure.add-listener/f (change-listener/create
+                                       (clojure.actor.add-listener/f (change-listener/create
                                                                 (fn [event _actor]
                                                                   (clojure.actor.remove-actor/f (first (filter (fn [actor]
                                                                                                           (and (clojure.actor.get-user-object/f actor)

@@ -1,6 +1,6 @@
 (ns clojure.editor.create-widget-map-widget-table-create
   (:require [clojure.actor.set-name]
-            [clojure.add-listener]
+            [clojure.actor.add-listener]
             [clojure.add-rows :refer [add-rows!]]
             [clojure.editor.create-widget-add-component-window :as add-component-window]
             [clojure.editor.create-widget-create-component-row :as create-component-row]
@@ -38,7 +38,7 @@
                 [{:actor (doto (text-button/create
                                 {:text "Add component"
                                  :skin skin})
-                           (clojure.add-listener/f (change-listener/create
+                           (clojure.actor.add-listener/f (change-listener/create
                                                     (fn [event actor]
                                                       (let [{:keys [ctx/db
                                                                     ctx/stage

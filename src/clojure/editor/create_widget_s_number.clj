@@ -1,5 +1,5 @@
 (ns clojure.editor.create-widget-s-number
-  (:require [clojure.add-listener]
+  (:require [clojure.actor.add-listener]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.edn-str :refer [->edn-str]]
             [clojure.ui-text-field :as text-field]
@@ -9,4 +9,4 @@
 (defmethod create-widget :s/number
   [schema v {:keys [ctx/skin]}]
   (doto (text-field/create (->edn-str v) skin)
-    (clojure.add-listener/f (text-tooltip/create (str schema) skin))))
+    (clojure.actor.add-listener/f (text-tooltip/create (str schema) skin))))

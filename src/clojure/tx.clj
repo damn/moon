@@ -1,6 +1,6 @@
 (ns clojure.tx
   (:require [clojure.action-bar.add-skill :as add-skill-ui]
-            [clojure.add-listener]
+            [clojure.actor.add-listener]
             [clojure.add-mods :as add-mods]
             [clojure.after-create-component :refer [after-create-component]]
             [clojure.align :as align]
@@ -205,7 +205,7 @@
                                :skin skin
                                :table/rows [[{:actor (label/create {:text text :skin skin})}]
                                             [{:actor (doto (text-button/create {:text button-text :skin skin})
-                                                        (clojure.add-listener/f
+                                                        (clojure.actor.add-listener/f
                                                          (change-listener/create
                                                           (fn [_event _actor]
                                                             (clojure.actor.remove-actor/f

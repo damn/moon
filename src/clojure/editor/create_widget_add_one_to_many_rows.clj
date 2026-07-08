@@ -2,7 +2,7 @@
   (:require [clojure.actor.find-ancestor :refer [find-ancestor]]
             [clojure.actor.remove-actor]
             [clojure.actor.set-user-object]
-            [clojure.add-listener]
+            [clojure.actor.add-listener]
             [clojure.add-rows :refer [add-rows!]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.event :as event]
@@ -35,7 +35,7 @@
      [[{:actor (doto (text-button/create
                       {:text "+"
                        :skin skin})
-                 (clojure.add-listener/f (change-listener/create
+                 (clojure.actor.add-listener/f (change-listener/create
                                           (fn [event _actor]
                                             (let [{:keys [ctx/db
                                                           ctx/skin
@@ -55,13 +55,13 @@
       (for [property-id property-ids]
         (let [property (get-raw db property-id)]
           {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
-                    (clojure.add-listener/f (text-tooltip/create (tooltip/f property) skin))
+                    (clojure.actor.add-listener/f (text-tooltip/create (tooltip/f property) skin))
                     (clojure.actor.set-user-object/f property-id))}))
       (for [id property-ids]
         {:actor (doto (text-button/create
                        {:text "-"
                         :skin skin})
-                  (clojure.add-listener/f (change-listener/create
+                  (clojure.actor.add-listener/f (change-listener/create
                                            (fn [event _actor]
                                              (redo-rows (:stage/ctx (event/get-stage event))
                                                         (disj property-ids id))))))})])))

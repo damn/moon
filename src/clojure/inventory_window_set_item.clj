@@ -1,6 +1,6 @@
 (ns clojure.inventory-window-set-item
   (:require
-            [clojure.add-listener]
+            [clojure.actor.add-listener]
             [clojure.actor.get-user-object] [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
             [clojure.image :as image]
@@ -14,5 +14,5 @@
         cell-size (:cell-size (clojure.actor.get-user-object/f image-widget))]
     (image/set-drawable! image-widget (doto (texture-region-drawable/new texture-region)
                                    (texture-region-drawable/set-min-size! cell-size cell-size)))
-    (clojure.add-listener/f cell-widget (text-tooltip/create tooltip-text skin))
+    (clojure.actor.add-listener/f cell-widget (text-tooltip/create tooltip-text skin))
     nil))

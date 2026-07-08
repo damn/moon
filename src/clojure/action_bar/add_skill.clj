@@ -1,6 +1,6 @@
 (ns clojure.action-bar.add-skill
   (:require
-            [clojure.add-listener]
+            [clojure.actor.add-listener]
             [clojure.actor.set-user-object] [clojure.texture-region :as texture-region]
             [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
@@ -22,7 +22,7 @@
                       (doto (texture-region-drawable/new texture-region)
                         (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
                                         (* scale (texture-region/get-region-height texture-region)))))
-                 (clojure.add-listener/f (text-tooltip/create tooltip-text skin))
+                 (clojure.actor.add-listener/f (text-tooltip/create tooltip-text skin))
                  (clojure.actor.set-user-object/f skill-id))]
     (group/add-actor! horizontal-group button)
     (button-group/add! button-group button)

@@ -1,7 +1,7 @@
 (ns clojure.tiled-tiled-map
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.map-properties :as map-properties]
-            [clojure.add-layer :as add-layer]))
+            [clojure.tiled-map.add-layer :as add-layer]))
 
 (defn f
   [{:keys [properties
