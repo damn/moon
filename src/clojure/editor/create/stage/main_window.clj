@@ -61,6 +61,32 @@
             [clojure.window :as gdx-window]
             [clojure.with-window-close :as with-window-close]))
 
+(defn- property-overview-window-create
+  [{:keys [db
+           textures
+           skin
+           property-type
+           clicked-id-fn]}]
+  (doto (window/create
+         {:title "Edit"
+          :skin skin
+          :table/rows (let [{:keys [sort-by-fn
+                                    extra-info-text
+                                    columns
+                                    image-scale]} (get property-type->overview-table-props property-type)]
+                        (->> (all-raw db property-type)
+                             (sort-by sort-by-fn)
+                             (map (fn [property]
+                                    {:texture-region (textures/texture-region textures (property-image/f property))
+                                     :on-clicked (fn [actor ctx]
+                                                   (clicked-id-fn actor (:property/id property) ctx))
+                                     :tooltip (tooltip/f property)
+                                     :extra-info-text (extra-info-text property)}))
+                             (partition-all columns)
+                             (overview-table-rows* skin image-scale)))})
+    (add-close-button/f! skin)
+    (gdx-window/set-modal! true)))
+
 (def ^:private property-k-sort-order
   [:property/id
    :property/pretty-name
@@ -78,18 +104,19 @@
    :skill/start-action-sound
    :skill/cost])
 
-(declare build-widget
-         create-component-row
-         map-widget-table-create
-         add-component-window
-         property-overview-window-create
-         property-editor-window
-         rebuild-editor-window!
-         sound-columns)
-
 (defmulti ^:private widget-value
   (fn [[schema-k :as _schema] widget schemas]
     schema-k))
+
+(defmulti ^:private create-widget
+  (fn [[schema-k :as _schema] v ctx]
+    schema-k))
+
+(defn- build-widget [ctx schema k v]
+  (let [widget (create-widget schema v ctx)]
+    (clojure.actor.set-user-object/f widget [k v])
+    widget))
+
 
 (defn- map-widget-table-get-value [table schemas]
   (into {}
@@ -288,32 +315,72 @@
                                            (fn [event _actor]
                                              (redo-rows (:stage/ctx (event/get-stage event))
                                                         (disj property-ids id))))))})])))
+(defn- property-editor-window
+  [{:keys [ctx
+           property]}]
+  (let [{:keys [ctx/db
+                ctx/skin
+                ctx/stage]} ctx
+        schemas (:db/schemas db)
+        schema (get schemas (property->type property))
+        widget (create-widget schema property ctx)
+        scroll-pane-height (:viewport/world-height (:stage/viewport stage))
+        get-widget-value #(widget-value schema widget schemas)
+        property-id (:property/id property)
+        clicked-delete-fn (with-window-close/f (fn [db]
+                                                 (delete! db property-id)))
+        clicked-save-fn (with-window-close/f (fn [db]
+                                               (update! db (get-widget-value))))
+        scroll-pane-rows [[{:actor widget :colspan 2}]
+                          [{:actor (doto (text-button/create
+                                          {:text "Save [LIGHT_GRAY](ENTER)[]"
+                                           :skin skin})
+                                     (clojure.add-listener/f (change-listener/create
+                                                              (fn [event actor]
+                                                                (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
+                            :center? true}
+                           {:actor (doto (text-button/create
+                                          {:text "Delete"
+                                           :skin skin})
+                                     (clojure.add-listener/f (change-listener/create
+                                                              (fn [event actor]
+                                                                (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
+                            :center? true}]]]
+    (doto (window/create
+           {:title "[SKY]Property[]"
+            :skin skin
+            :table/cell-defaults {:pad 5}
+            :table/rows [[(scroll-pane-cell/create
+                           (table/create {:table/cell-defaults {:pad 5}
+                                          :table/rows scroll-pane-rows})
+                           skin
+                           scroll-pane-height
+                           50)]]})
+      (add-close-button/f! skin)
+      (gdx-window/set-modal! true)
+      (group/add-actor! (actor/f
+                         {:act! (fn [this delta]
+                                  (when-let [stage (clojure.actor.get-stage/f this)]
+                                    (let [ctx (:stage/ctx stage)]
+                                      (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
+                                        (clicked-save-fn this ctx)))))}))
+      (clojure.actor.set-name/f "moon.ui.clojure.editor-window"))))
 
-(defn- property-overview-window-create
-  [{:keys [db
-           textures
-           skin
-           property-type
-           clicked-id-fn]}]
-  (doto (window/create
-         {:title "Edit"
-          :skin skin
-          :table/rows (let [{:keys [sort-by-fn
-                                    extra-info-text
-                                    columns
-                                    image-scale]} (get property-type->overview-table-props property-type)]
-                        (->> (all-raw db property-type)
-                             (sort-by sort-by-fn)
-                             (map (fn [property]
-                                    {:texture-region (textures/texture-region textures (property-image/f property))
-                                     :on-clicked (fn [actor ctx]
-                                                   (clicked-id-fn actor (:property/id property) ctx))
-                                     :tooltip (tooltip/f property)
-                                     :extra-info-text (extra-info-text property)}))
-                             (partition-all columns)
-                             (overview-table-rows* skin image-scale)))})
-    (add-close-button/f! skin)
-    (gdx-window/set-modal! true)))
+(defn- rebuild-editor-window!
+  [{:keys [ctx/db
+           ctx/stage]
+    :as ctx}]
+  (let [window (-> stage
+                   :stage/root
+                   (group/find-actor "moon.ui.clojure.editor-window"))
+        map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
+        property (map-widget-table-get-value map-widget-table (:db/schemas db))]
+    (clojure.actor.remove-actor/f window)
+    (stage/add-actor! stage
+                      (property-editor-window
+                       {:ctx ctx
+                        :property property}))))
+
 
 (defn- create-component-row
   [{:keys [skin
@@ -347,6 +414,39 @@
     :expand-y? true}
    {:actor editor-widget
     :left? true}])
+
+(defn- add-component-window
+  [{:keys [schemas schema map-widget-table skin]}]
+  (let [window (doto (window/create
+                      {:title "Choose"
+                       :skin skin
+                       :table/cell-defaults {:pad 5}})
+                 (add-close-button/f! skin)
+                 (gdx-window/set-modal! true))
+        remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
+                                   (map-keys schemas schema)))]
+    (add-rows!
+     window
+     (for [k remaining-ks]
+       [{:actor (doto (text-button/create
+                       {:skin skin
+                        :text (name k)})
+                  (clojure.add-listener/f (change-listener/create
+                                           (fn [event _actor]
+                                             (clojure.actor.remove-actor/f window)
+                                             (let [ctx (:stage/ctx (event/get-stage event))]
+                                               (add-rows! map-widget-table [(create-component-row
+                                                                            {:skin skin
+                                                                             :editor-widget (build-widget ctx
+                                                                                                          (get schemas k)
+                                                                                                          k
+                                                                                                          (default-value schemas k))
+                                                                             :k k
+                                                                             :display-remove-component-button? (optional? schemas schema k)
+                                                                             :table map-widget-table})])
+                                               (rebuild-editor-window! ctx))))))}]))
+    (pack!/f window)
+    window))
 
 (defn- map-widget-table-create
   [{:keys [skin
@@ -397,47 +497,7 @@
              component-rows))
     table))
 
-(defn- add-component-window
-  [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (doto (window/create
-                      {:title "Choose"
-                       :skin skin
-                       :table/cell-defaults {:pad 5}})
-                 (add-close-button/f! skin)
-                 (gdx-window/set-modal! true))
-        remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
-                                   (map-keys schemas schema)))]
-    (add-rows!
-     window
-     (for [k remaining-ks]
-       [{:actor (doto (text-button/create
-                       {:skin skin
-                        :text (name k)})
-                  (clojure.add-listener/f (change-listener/create
-                                           (fn [event _actor]
-                                             (clojure.actor.remove-actor/f window)
-                                             (let [ctx (:stage/ctx (event/get-stage event))]
-                                               (add-rows! map-widget-table [(create-component-row
-                                                                            {:skin skin
-                                                                             :editor-widget (build-widget ctx
-                                                                                                          (get schemas k)
-                                                                                                          k
-                                                                                                          (default-value schemas k))
-                                                                             :k k
-                                                                             :display-remove-component-button? (optional? schemas schema k)
-                                                                             :table map-widget-table})])
-                                               (rebuild-editor-window! ctx))))))}]))
-    (pack!/f window)
-    window))
 
-(defmulti ^:private create-widget
-  (fn [[schema-k :as _schema] v ctx]
-    schema-k))
-
-(defn- build-widget [ctx schema k v]
-  (let [widget (create-widget schema v ctx)]
-    (clojure.actor.set-user-object/f widget [k v])
-    widget))
 
 (defmethod create-widget :default
   [_ v {:keys [ctx/skin]}]
@@ -534,71 +594,9 @@
   (doto (text-field/create (->edn-str v) skin)
     (clojure.add-listener/f (text-tooltip/create (str schema) skin))))
 
-(defn- property-editor-window
-  [{:keys [ctx
-           property]}]
-  (let [{:keys [ctx/db
-                ctx/skin
-                ctx/stage]} ctx
-        schemas (:db/schemas db)
-        schema (get schemas (property->type property))
-        widget (create-widget schema property ctx)
-        scroll-pane-height (:viewport/world-height (:stage/viewport stage))
-        get-widget-value #(widget-value schema widget schemas)
-        property-id (:property/id property)
-        clicked-delete-fn (with-window-close/f (fn [db]
-                                                 (delete! db property-id)))
-        clicked-save-fn (with-window-close/f (fn [db]
-                                               (update! db (get-widget-value))))
-        scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor (doto (text-button/create
-                                          {:text "Save [LIGHT_GRAY](ENTER)[]"
-                                           :skin skin})
-                                     (clojure.add-listener/f (change-listener/create
-                                                              (fn [event actor]
-                                                                (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
-                            :center? true}
-                           {:actor (doto (text-button/create
-                                          {:text "Delete"
-                                           :skin skin})
-                                     (clojure.add-listener/f (change-listener/create
-                                                              (fn [event actor]
-                                                                (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
-                            :center? true}]]]
-    (doto (window/create
-           {:title "[SKY]Property[]"
-            :skin skin
-            :table/cell-defaults {:pad 5}
-            :table/rows [[(scroll-pane-cell/create
-                           (table/create {:table/cell-defaults {:pad 5}
-                                          :table/rows scroll-pane-rows})
-                           skin
-                           scroll-pane-height
-                           50)]]})
-      (add-close-button/f! skin)
-      (gdx-window/set-modal! true)
-      (group/add-actor! (actor/f
-                         {:act! (fn [this delta]
-                                  (when-let [stage (clojure.actor.get-stage/f this)]
-                                    (let [ctx (:stage/ctx stage)]
-                                      (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
-                                        (clicked-save-fn this ctx)))))}))
-      (clojure.actor.set-name/f "moon.ui.clojure.editor-window"))))
 
-(defn- rebuild-editor-window!
-  [{:keys [ctx/db
-           ctx/stage]
-    :as ctx}]
-  (let [window (-> stage
-                   :stage/root
-                   (group/find-actor "moon.ui.clojure.editor-window"))
-        map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
-        property (map-widget-table-get-value map-widget-table (:db/schemas db))]
-    (clojure.actor.remove-actor/f window)
-    (stage/add-actor! stage
-                      (property-editor-window
-                       {:ctx ctx
-                        :property property}))))
+
+
 
 (defn f
   [{:keys [ctx/db
