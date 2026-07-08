@@ -65,6 +65,10 @@
      :entity/string-effect}
    #{:entity/stats
      :active-skill}])
+(defn- stage-ctx-step
+  [{:keys [ctx/stage] :as ctx}]
+  (or (:stage/ctx stage) ctx))
+
 (defn- render-validate-step [ctx]
   (validate-humanize schema ctx)
   ctx)
@@ -290,6 +294,14 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
+(defn- assoc-interaction-state-step
+  [ctx]
+  (assoc ctx :ctx/interaction-state (assoc-interaction-state-create ctx)))
+
+(defn- dissoc-interaction-state-step
+  [ctx]
+  (dissoc ctx :ctx/interaction-state))
+
 (defn- set-cursor-step
   [{:keys [ctx/graphics
            ctx/cursors
@@ -373,6 +385,16 @@
                           :throwable t}))))
   ctx)
 
+(defn- when-not-paused-step
+  [ctx]
+  (if (:ctx/paused? ctx)
+    ctx
+    (reduce (fn [ctx f] (f ctx))
+            ctx
+            [update-time-step
+             if-not-paused-update-potential-fields-step
+             tick-entities-step])))
+
 (defn- remove-destroyed-entities-step
   [ctx]
   (do! ctx
@@ -422,32 +444,24 @@
   (stage/draw! stage)
   (:stage/ctx stage))
 
-(defn render
-  [{:keys [ctx/stage]
-    :as ctx}]
-  (let [ctx (or (:stage/ctx stage) ctx)
-        ctx (render-validate-step ctx)
-        ctx (update-mouse-positions-step ctx)
-        ctx (update-mouseover-eid-step ctx)
-        ctx (check-debug-viewer-step ctx)
-        ctx (set-active-entities-step ctx)
-        ctx (set-camera-position-step ctx)
-        ctx (clear-screen-step ctx)
-        ctx (render-draw-tiled-map-step ctx)
-        ctx (draw-on-world-viewport-step ctx)
-        ctx (assoc ctx :ctx/interaction-state (assoc-interaction-state-create ctx))
-        ctx (set-cursor-step ctx)
-        ctx (handle-player-input-step ctx)
-        ctx (dissoc ctx :ctx/interaction-state)
-        ctx (assoc-paused-step ctx)
-        ctx (if (:ctx/paused? ctx)
-              ctx
-              (reduce (fn [ctx f] (f ctx))
-                      ctx
-                      [update-time-step
-                       if-not-paused-update-potential-fields-step
-                       tick-entities-step]))
-        ctx (remove-destroyed-entities-step ctx)
-        ctx (window-camera-controls-step ctx)
-        ctx (update-draw-stage-step ctx)]
-    (render-validate-step ctx)))
+(defn render [ctx]
+  (-> ctx
+      stage-ctx-step
+      update-mouse-positions-step
+      update-mouseover-eid-step
+      check-debug-viewer-step
+      set-active-entities-step
+      set-camera-position-step
+      clear-screen-step
+      render-draw-tiled-map-step
+      draw-on-world-viewport-step
+      assoc-interaction-state-step
+      set-cursor-step
+      handle-player-input-step
+      dissoc-interaction-state-step
+      assoc-paused-step
+      when-not-paused-step
+      remove-destroyed-entities-step
+      window-camera-controls-step
+      update-draw-stage-step
+      render-validate-step))
