@@ -1,4 +1,4 @@
-(ns clojure.k-handle-input.player-idle
+(ns clojure.moon.k-handle-input.player-idle
   (:require [clojure.ctx-button-just-pressed :refer [button-just-pressed?]]
             [clojure.player-movement-vector :refer [player-movement-vector]]
             [clojure.interaction-state-txs :refer [interaction-state->txs]]))

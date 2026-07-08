@@ -1,6 +1,6 @@
 (ns clojure.moon.handle-player-input
   (:require [clojure.moon.ctx-do :refer [do!]]
-            [clojure.k-handle-input :refer [k->handle-input]]))
+            [clojure.moon.k-handle-input :refer [k->handle-input]]))
 
 (defn f
   [{:keys [ctx/player-eid]

@@ -1,4 +1,4 @@
-(ns clojure.k-handle-input.player-moving
+(ns clojure.moon.k-handle-input.player-moving
   (:require [clojure.player-movement-vector :refer [player-movement-vector]]
             [clojure.speed :as speed]))
 

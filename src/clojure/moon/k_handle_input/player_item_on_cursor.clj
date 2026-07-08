@@ -1,4 +1,4 @@
-(ns clojure.k-handle-input.player-item-on-cursor
+(ns clojure.moon.k-handle-input.player-item-on-cursor
   (:require [clojure.ctx-button-just-pressed :refer [button-just-pressed?]]
             [clojure.mouseover-actor :refer [mouseover-actor]]))
 
