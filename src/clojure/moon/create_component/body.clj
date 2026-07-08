@@ -1,4 +1,4 @@
-(ns clojure.k-create.body
+(ns clojure.moon.create-component.body
   (:require [clojure.minimum-size :refer [minimum-size]]
             [clojure.records-body :as body]
             [clojure.moon.z-orders :refer [z-orders]]))

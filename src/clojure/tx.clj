@@ -8,7 +8,7 @@
             [clojure.scene2d.actor.set-position! :refer [set-position!]]
             [clojure.build :refer [build]]
             [clojure.can-pickup-item :as can-pickup-item]
-            [clojure.create-component :refer [create-component]]
+            [clojure.moon.create-component :refer [create-component]]
             [clojure.create-entity-state :as create-entity-state]
             [clojure.scene2d.group :as group]
             [clojure.handle :as handle]

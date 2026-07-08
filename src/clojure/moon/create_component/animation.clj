@@ -1,4 +1,4 @@
-(ns clojure.k-create.animation)
+(ns clojure.moon.create-component.animation)
 
 (defn f
   [{:keys [animation/frames

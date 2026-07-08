@@ -1,4 +1,4 @@
-(ns clojure.k-create.stats)
+(ns clojure.moon.create-component.stats)
 
 (defn f
   [v _ctx]
