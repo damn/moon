@@ -1,7 +1,7 @@
 (ns clojure.circle-entities
   (:require [clojure.circle :as circle]
             [clojure.intersector :as intersector]
-            [clojure.body-rectangle :refer [->rectangle]]
+            [clojure.body.rectangle :refer [->rectangle]]
             [clojure.circle-to-cells :refer [circle->cells]]
             [clojure.cells-entities :as cells->entities]))
 

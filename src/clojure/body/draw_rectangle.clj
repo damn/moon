@@ -1,4 +1,4 @@
-(ns clojure.body-draw-rectangle)
+(ns clojure.body.draw-rectangle)
 
 (defn f
   [{:keys [body/position

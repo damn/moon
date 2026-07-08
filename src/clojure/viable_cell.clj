@@ -1,7 +1,7 @@
 (ns clojure.viable-cell
   (:require [clojure.filter-viable-cells :as filter-viable-cells]
             [clojure.get-min-dist-cell :refer [get-min-dist-cell]]
-            [clojure.cached-adjacent-cells :refer [cached-adjacent-cells]]))
+            [clojure.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]))
 
 (defn viable-cell? [grid distance-to own-dist eid cell]
   (when-let [best-cell (get-min-dist-cell

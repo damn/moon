@@ -1,4 +1,4 @@
-(ns clojure.build-all
+(ns clojure.db.build-all
   (:require [clojure.db.all-raw :refer [all-raw]]
             [clojure.create-value :refer [build-values]]))
 

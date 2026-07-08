@@ -6,7 +6,7 @@
             [clojure.gdx.utils.align :as align]
             [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.scene2d.actor.set-position! :refer [set-position!]]
-            [clojure.build :refer [build]]
+            [clojure.db.build :refer [build]]
             [clojure.can-pickup-item :as can-pickup-item]
             [clojure.moon.create-component :refer [create-component]]
             [clojure.create-entity-state :as create-entity-state]

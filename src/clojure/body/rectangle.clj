@@ -1,4 +1,4 @@
-(ns clojure.body-rectangle
+(ns clojure.body.rectangle
   (:require [clojure.rectangle :as rectangle]))
 
 (defn ->rectangle

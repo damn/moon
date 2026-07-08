@@ -1,4 +1,4 @@
-(ns clojure.calc-damage
+(ns clojure.stats.calc-damage
   (:require [clojure.val-max.apply-max :as apply-max]
             [clojure.val-max.apply-min :as apply-min]))
 

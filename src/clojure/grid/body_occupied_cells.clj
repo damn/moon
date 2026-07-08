@@ -1,5 +1,5 @@
-(ns clojure.body-occupied-cells
-  (:require [clojure.body-touched-tiles :refer [touched-tiles]]
+(ns clojure.grid.body-occupied-cells
+  (:require [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.get-cells :refer [get-cells]]))
 
 (defn body->occupied-cells

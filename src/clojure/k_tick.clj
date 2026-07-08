@@ -1,6 +1,6 @@
 (ns clojure.k-tick
   (:require [clojure.v2.angle-from-vector :as angle-from-vector]
-            [clojure.body-touched-tiles :refer [touched-tiles]]
+            [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.cell-is-blocked :as blocked?]
             [clojure.cells-entities :as cells->entities]
             [clojure.choose-skill :as choose-skill]

@@ -1,5 +1,5 @@
 (ns clojure.set-touched-cells
-  (:require [clojure.body-touched-tiles :refer [touched-tiles]]
+  (:require [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.get-cells :refer [get-cells]]))
 
 (defn set-touched-cells! [grid eid]

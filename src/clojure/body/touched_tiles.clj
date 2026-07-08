@@ -1,4 +1,4 @@
-(ns clojure.body-touched-tiles
+(ns clojure.body.touched-tiles
   (:require [clojure.touched-tiles :as rectangle]))
 
 (defn touched-tiles

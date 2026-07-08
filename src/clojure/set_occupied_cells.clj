@@ -1,5 +1,5 @@
 (ns clojure.set-occupied-cells
-  (:require [clojure.body-occupied-cells :refer [body->occupied-cells]]))
+  (:require [clojure.grid.body-occupied-cells :refer [body->occupied-cells]]))
 
 (defn set-occupied-cells! [grid eid]
   (let [cells (body->occupied-cells grid (:entity/body @eid))]

@@ -1,5 +1,5 @@
 (ns clojure.moon.create-spawn-creatures
-  (:require [clojure.build :refer [build]]
+  (:require [clojure.db.build :refer [build]]
             [clojure.moon.ctx-do :refer [do!]]
             [clojure.spawn-positions :as spawn-positions]))
 

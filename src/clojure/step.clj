@@ -2,7 +2,7 @@
   (:require [clojure.is-pf-blocked :as pf-blocked?]
             [clojure.nearest-entity :as nearest-entity]
             [clojure.nearest-entity-distance :as nearest-entity-distance]
-            [clojure.cached-adjacent-cells :refer [cached-adjacent-cells]]
+            [clojure.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
             [clojure.is-diagonal :refer [diagonal?]]))
 
 ; TODO performance

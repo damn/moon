@@ -1,6 +1,6 @@
 (comment
 
- (require '[clojure.build :refer [build]]
+ (require '[clojure.db.build :refer [build]]
           '[clojure.post-runnable :as post-runnable])
  (post-runnable/f (com.badlogic.gdx.Gdx/app)
   (fn []
