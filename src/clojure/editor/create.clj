@@ -1,16 +1,22 @@
 (ns clojure.editor.create
-  (:require [clojure.editor.ctx-from-app :as ctx-from-app]
-            [clojure.editor.ctx-batch-step :as ctx-batch-step]
-            [clojure.editor.ctx-skin-step :as ctx-skin-step]
-            [clojure.editor.ctx-db-step :as ctx-db-step]
+  (:require [clojure.editor.input :as input]
+            [clojure.editor.audio :as audio]
+            [clojure.editor.files :as files]
+            [clojure.editor.graphics :as graphics]
+            [clojure.editor.batch :as batch]
+            [clojure.editor.skin :as skin]
+            [clojure.editor.db :as db]
             [clojure.editor.stage :as stage]
-            [clojure.editor.ctx-textures-step :as ctx-textures-step]))
+            [clojure.editor.textures :as textures]))
 
-(defn create [app]
-  (-> app
-      ctx-from-app/f
-      ctx-batch-step/f
-      ctx-skin-step/f
-      ctx-db-step/f
+(defn create [^com.badlogic.gdx.Application app]
+  (-> {:ctx/app app}
+      input/f
+      audio/f
+      files/f
+      graphics/f
+      batch/f
+      skin/f
+      db/f
       stage/f
-      ctx-textures-step/f))
+      textures/f))

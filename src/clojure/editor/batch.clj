@@ -1,4 +1,4 @@
-(ns clojure.editor.ctx-batch-step
+(ns clojure.editor.batch
   (:require [clojure.ctx-batch :as ctx-batch]))
 
 (defn f [ctx]

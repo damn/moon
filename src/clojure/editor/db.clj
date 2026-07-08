@@ -1,4 +1,4 @@
-(ns clojure.editor.ctx-db-step
+(ns clojure.editor.db
   (:require [clojure.ctx-db :as ctx-db]))
 
 (defn f [ctx]
