@@ -9,6 +9,7 @@
             [clojure.get :as get]
             [clojure.get-property :as get-property]
             [clojure.input :as input]
+            [clojure.malli-form-register-methods]
             [clojure.moon-db :as db]
             [clojure.moon-textures :as textures]
             [clojure.orthographic-camera :as orthographic-camera]

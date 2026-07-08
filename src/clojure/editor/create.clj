@@ -8,7 +8,8 @@
             [clojure.editor.db :as db]
             [clojure.editor.stage :as stage]
             [clojure.editor.textures :as textures]
-            [clojure.editor.create-widget-register-methods]))
+            [clojure.editor.create-widget-register-methods]
+            [clojure.malli-form-register-methods]))
 
 (defn create [^com.badlogic.gdx.Application app]
   (-> {:ctx/app app}

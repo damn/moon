@@ -46,6 +46,7 @@
             [clojure.is-valid-slot :as valid-slot?]
             [clojure.java.io :as io]
             [clojure.map-properties :as map-properties]
+            [clojure.malli-form-register-methods]
             [clojure.max-delta :refer [max-delta]]
             [clojure.minimum-size :refer [minimum-size]]
             [clojure.modules :as modules]
