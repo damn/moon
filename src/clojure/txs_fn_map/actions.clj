@@ -1,4 +1,4 @@
-(ns clojure.actions)
+(ns clojure.txs-fn-map.actions)
 
 (defn actions!
   [txs-fn-map ctx txs]

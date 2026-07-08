@@ -1,5 +1,5 @@
 (ns clojure.ctx-do
-  (:require [clojure.actions :refer [actions!]]
+  (:require [clojure.txs-fn-map.actions :refer [actions!]]
             [clojure.tx :as tx]))
 
 (defn do!
