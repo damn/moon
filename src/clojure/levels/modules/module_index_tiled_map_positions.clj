@@ -1,4 +1,4 @@
-(ns clojure.modules.module-index-tiled-map-positions)
+(ns clojure.levels.modules.module-index-tiled-map-positions)
 
 (defn module-index->tiled-map-positions
   [[module-x module-y]

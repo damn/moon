@@ -1,15 +1,15 @@
-(ns clojure.modules
+(ns clojure.levels.modules
   (:require [clojure.caves :as caves]
             [clojure.fix-nads :as fix-nads]
             [clojure.load-schema-tiled-map :as load-schema-tiled-map]
             [clojure.print-grid :refer [print-grid]]
-            [clojure.modules.calculate-start :as calculate-start]
-            [clojure.modules.assoc-transitions :as assoc-transitions]
-            [clojure.modules.create-scaled-grid :as create-scaled-grid]
-            [clojure.modules.last-steps]
-            [clojure.modules.place :as place-module]
-            [clojure.modules.convert-to-tiled-map :as convert-to-tiled-map]
-            [clojure.modules.initial-grid :as initial-grid]))
+            [clojure.levels.modules.calculate-start :as calculate-start]
+            [clojure.levels.modules.assoc-transitions :as assoc-transitions]
+            [clojure.levels.modules.create-scaled-grid :as create-scaled-grid]
+            [clojure.levels.modules.last-steps]
+            [clojure.levels.modules.place :as place-module]
+            [clojure.levels.modules.convert-to-tiled-map :as convert-to-tiled-map]
+            [clojure.levels.modules.initial-grid :as initial-grid]))
 
 (defn create
   [world-fn-ctx]
@@ -34,4 +34,4 @@
       place-module/step
       convert-to-tiled-map/f
       calculate-start/f
-      clojure.modules.last-steps/step)))
+      clojure.levels.modules.last-steps/step)))

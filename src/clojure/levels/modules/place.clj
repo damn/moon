@@ -1,6 +1,6 @@
-(ns clojure.modules.place
+(ns clojure.levels.modules.place
   (:require [clojure.g2d.posis :as posis]
-            [clojure.modules.place-step :as place-step]))
+            [clojure.levels.modules.place-step :as place-step]))
 
 (defn step
   [{:keys [scale

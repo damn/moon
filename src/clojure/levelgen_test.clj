@@ -4,7 +4,7 @@
             [clojure.levelgen-test.dispose :as dispose]
             [clojure.levelgen-test.render :as render]
             [clojure.levelgen-test.resize :as resize]
-            [clojure.modules :as modules]
+            [clojure.levels.modules :as modules]
             [clojure.tmx :as tmx]
             [clojure.uf-caves :as uf-caves]))
 

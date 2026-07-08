@@ -1,4 +1,4 @@
-(ns clojure.modules.last-steps
+(ns clojure.levels.modules.last-steps
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.property-value :refer [property-value]]
             [clojure.g2d.cells :refer [->cells]]

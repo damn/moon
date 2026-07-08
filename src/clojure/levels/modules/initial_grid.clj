@@ -1,4 +1,4 @@
-(ns clojure.modules.initial-grid
+(ns clojure.levels.modules.initial-grid
   (:import (java.util Random)))
 
 (defn f
