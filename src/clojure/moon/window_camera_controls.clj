@@ -4,8 +4,9 @@
             [clojure.group :as group]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
-            [clojure.key-pressed :refer [f] :rename {f key-pressed?}]
-            [clojure.zoom-speed :refer [zoom-speed]]))
+            [clojure.key-pressed :refer [f] :rename {f key-pressed?}]))
+
+(def zoom-speed 0.025)
 
 (defn f
   [{:keys [ctx/input

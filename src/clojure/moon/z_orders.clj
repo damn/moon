@@ -1,4 +1,4 @@
-(ns clojure.z-orders)
+(ns clojure.moon.z-orders)
 
 (def z-orders
   [:z-order/on-ground
