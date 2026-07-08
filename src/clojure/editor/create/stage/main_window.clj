@@ -15,6 +15,7 @@
             [clojure.db-update :refer [update!]]
             [clojure.default-value :refer [default-value]]
             [clojure.delete :refer [delete!]]
+            [clojure.editor.property-k-sort-order :refer [property-k-sort-order]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.edn :as edn]
             [clojure.edn-str :refer [->edn-str]]
@@ -58,25 +59,6 @@
             [clojure.utils-change-listener :as change-listener]
             [clojure.window :as gdx-window]
             [clojure.with-window-close :as with-window-close]))
-
-
-
-(def ^:private property-k-sort-order
-  [:property/id
-   :property/pretty-name
-   :entity/image
-   :entity/animation
-   :entity/species
-   :creature/level
-   :entity/body
-   :item/slot
-   :projectile/speed
-   :projectile/max-range
-   :projectile/piercing?
-   :skill/action-time-modifier-key
-   :skill/action-time
-   :skill/start-action-sound
-   :skill/cost])
 
 (defmulti ^:private widget-value
   (fn [[schema-k :as _schema] widget schemas]
