@@ -1,4 +1,4 @@
-(ns clojure.k-state-enter.npc-moving
+(ns clojure.moon.state-enter.npc-moving
   (:require [clojure.get-stat-value :refer [get-stat-value]]))
 
 (defn f

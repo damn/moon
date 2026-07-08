@@ -1,4 +1,4 @@
-(ns clojure.k-state-enter.active-skill
+(ns clojure.moon.state-enter.active-skill
   (:require [clojure.pay-mana-cost :as pay-mana-cost]))
 
 (defn f

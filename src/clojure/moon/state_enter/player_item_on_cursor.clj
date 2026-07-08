@@ -1,4 +1,4 @@
-(ns clojure.k-state-enter.player-item-on-cursor)
+(ns clojure.moon.state-enter.player-item-on-cursor)
 
 (defn f
   [{:keys [item]} eid]

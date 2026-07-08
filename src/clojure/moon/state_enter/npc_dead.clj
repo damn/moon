@@ -1,4 +1,4 @@
-(ns clojure.k-state-enter.npc-dead)
+(ns clojure.moon.state-enter.npc-dead)
 
 (defn f
   [_ eid]

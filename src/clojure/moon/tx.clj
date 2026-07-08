@@ -22,7 +22,7 @@
             [clojure.info :refer [info-text]]
             [clojure.item :as item]
             [clojure.item-is-valid :as valid?]
-            [clojure.k-state-enter :refer [k->state-enter]]
+            [clojure.moon.state-enter :refer [k->state-enter]]
             [clojure.k-state-exit :refer [k->state-exit]]
             [clojure.moon-textures :as textures]
             [clojure.play :as play]

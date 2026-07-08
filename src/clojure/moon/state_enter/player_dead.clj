@@ -1,4 +1,4 @@
-(ns clojure.k-state-enter.player-dead)
+(ns clojure.moon.state-enter.player-dead)
 
 (defn f
   [_ _eid]
