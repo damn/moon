@@ -1,5 +1,5 @@
 (ns clojure.moon.create-raycaster
-  (:require [clojure.blocks-vision :as blocks-vision?]
+  (:require [clojure.grid.cell.blocks-vision :as blocks-vision?]
             [clojure.g2d.cells :refer [->cells]]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]))
