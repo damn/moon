@@ -1,4 +1,4 @@
-(ns clojure.editor.create.ctx-skin-step
+(ns clojure.editor.ctx-skin-step
   (:require [clojure.ctx-skin :as ctx-skin]))
 
 (defn f [ctx]

@@ -1,4 +1,4 @@
-(ns clojure.editor.create.stage.main-window
+(ns clojure.editor.main-window
   (:require [clojure.actor.find-ancestor :refer [find-ancestor]]
             [clojure.actor.get-height]
             [clojure.actor.get-stage]

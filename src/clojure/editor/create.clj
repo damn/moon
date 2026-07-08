@@ -1,10 +1,10 @@
 (ns clojure.editor.create
-  (:require [clojure.editor.create.ctx-from-app :as ctx-from-app]
-            [clojure.editor.create.ctx-batch-step :as ctx-batch-step]
-            [clojure.editor.create.ctx-skin-step :as ctx-skin-step]
-            [clojure.editor.create.ctx-db-step :as ctx-db-step]
-            [clojure.editor.create.stage :as stage]
-            [clojure.editor.create.ctx-textures-step :as ctx-textures-step]))
+  (:require [clojure.editor.ctx-from-app :as ctx-from-app]
+            [clojure.editor.ctx-batch-step :as ctx-batch-step]
+            [clojure.editor.ctx-skin-step :as ctx-skin-step]
+            [clojure.editor.ctx-db-step :as ctx-db-step]
+            [clojure.editor.stage :as stage]
+            [clojure.editor.ctx-textures-step :as ctx-textures-step]))
 
 (defn create [app]
   (-> app

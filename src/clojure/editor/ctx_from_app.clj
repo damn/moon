@@ -1,4 +1,4 @@
-(ns clojure.editor.create.ctx-from-app)
+(ns clojure.editor.ctx-from-app)
 
 (defn f [^com.badlogic.gdx.Application app]
   {:ctx/audio (.getAudio app)

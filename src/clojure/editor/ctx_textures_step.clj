@@ -1,4 +1,4 @@
-(ns clojure.editor.create.ctx-textures-step
+(ns clojure.editor.ctx-textures-step
   (:require [clojure.ctx-textures :as ctx-textures]))
 
 (defn f [ctx]
