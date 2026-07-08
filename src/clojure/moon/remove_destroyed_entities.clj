@@ -1,6 +1,13 @@
 (ns clojure.moon.remove-destroyed-entities
-  (:require [clojure.moon.ctx-do :refer [do!]]
-            [clojure.k-destroy :refer [k->destroy]]))
+  (:require [clojure.moon.ctx-do :refer [do!]]))
+
+(def k->destroy
+  {
+   :entity/destroy-audiovisual
+   (fn
+     [audiovisuals-id eid]
+     [[:tx/audiovisual (:body/position (:entity/body @eid)) audiovisuals-id]])
+   })
 
 (defn f [ctx]
   (do! ctx
