@@ -38,7 +38,7 @@
   :aliases {
             "dev"      ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.moon/-main))"]
             "levelgen" ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.levelgen-test/-main))"]
-            "editor"   ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.editor-start/-main))"]
+            "editor"   ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.editor/-main))"]
             }
   :plugins [[lein-hiera "2.0.0"]
             [lein-codox "0.10.8"]]

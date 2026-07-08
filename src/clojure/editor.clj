@@ -1,4 +1,4 @@
-(ns clojure.editor-start
+(ns clojure.editor
   (:require [clojure.add-close-button :as add-close-button]
             [clojure.add-listener]
             [clojure.add-rows :refer [add-rows!]]
