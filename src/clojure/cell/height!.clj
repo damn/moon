@@ -1,5 +1,5 @@
-(ns clojure.pad-top!
+(ns clojure.cell.height!
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defn f [^Cell cell n]
-  (.padTop cell (float n)))
+  (.height cell (float n)))

@@ -1,7 +1,7 @@
 (ns clojure.table-set-opts
   (:require [clojure.table :as table]
             [clojure.pack! :as pack!]
-            [clojure.set-opts :as set-opts]
+            [clojure.cell.set-opts :as set-opts]
             [clojure.table.add-rows :refer [add-rows!]]))
 
 (defn set-opts! [table opts]
