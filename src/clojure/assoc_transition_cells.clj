@@ -1,6 +1,6 @@
 (ns clojure.assoc-transition-cells
   (:require [clojure.cells :refer [->cells]]
-            [clojure.adjacent-wall-positions :as adjacent-wall-positions]))
+            [clojure.g2d.adjacent-wall-positions :as adjacent-wall-positions]))
 
 (defn f [grid]
   (let [grid (reduce #(assoc %1 %2 :transition) grid

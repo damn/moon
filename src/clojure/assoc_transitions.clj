@@ -1,6 +1,6 @@
 (ns clojure.assoc-transitions
   (:require [clojure.cells :refer [->cells]]
-            [clojure.adjacent-wall-positions :as adjacent-wall-positions]))
+            [clojure.g2d.adjacent-wall-positions :as adjacent-wall-positions]))
 
 (defn f
   [{:keys [grid] :as world-fn-ctx}]
