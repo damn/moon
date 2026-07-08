@@ -1,4 +1,4 @@
-(ns clojure.get-data
+(ns clojure.action-bar.get-data
   (:require
             [clojure.get-user-object] [clojure.group :as group]))
 

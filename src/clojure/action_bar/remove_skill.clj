@@ -1,7 +1,7 @@
-(ns clojure.remove-skill
+(ns clojure.action-bar.remove-skill
   (:require
             [clojure.remove-actor] [clojure.button-group :as button-group]
-            [clojure.get-data :as get-data]))
+            [clojure.action-bar.get-data :as get-data]))
 
 (defn f [action-bar skill-id]
   (let [{:keys [horizontal-group button-group]} (get-data/f action-bar)

@@ -88,7 +88,7 @@
             [clojure.raycaster-is-blocked :as blocked?]
             [clojure.remove-actor]
             [clojure.scene2d-actor :as actor]
-            [clojure.selected-skill :as selected-skill]
+            [clojure.action-bar.selected-skill :as selected-skill]
             [clojure.set-ctx :as set-ctx]
             [clojure.set-fill-parent! :as set-fill-parent!]
             [clojure.set-name :as set-name]

@@ -1,5 +1,5 @@
 (ns clojure.tx
-  (:require [clojure.action-bar-add-skill :as add-skill-ui]
+  (:require [clojure.action-bar.add-skill :as add-skill-ui]
             [clojure.add-listener]
             [clojure.add-mods :as add-mods]
             [clojure.after-create-component :refer [after-create-component]]
