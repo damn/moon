@@ -52,7 +52,7 @@
             [clojure.gl20 :as gl20]
             [clojure.zoom-speed :refer [zoom-speed]]))
 
-(def ^:private entity-render-layers
+(def ^:private render-layers
   [#{:entity/mouseover?
      :stunned
      :player-item-on-cursor}
@@ -196,8 +196,7 @@
            ctx/raycaster
            ctx/render-z-order
            ctx/show-body-bounds?]
-    :as ctx}
-   render-layers]
+    :as ctx}]
   (let [entities (map deref active-entities)
         player @player-eid
         should-draw? (fn [entity z-order]
@@ -240,16 +239,19 @@
            ctx/shape-drawer
            ctx/unit-scale
            ctx/world-viewport]
-    :as ctx}
-   draw-fns]
+    :as ctx}]
   (batch/set-color! batch 1 1 1 1)
   (batch/set-projection-matrix! batch (orthographic-camera/combined (:viewport/camera world-viewport)))
   (batch/begin! batch)
   (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
-    (doseq [[f & params] draw-fns]
-      (draw! ctx (apply f ctx params)))
+    ; this whole form is - 'draw-on-world-viewport'
+    (doseq [f [draw-cell-debug
+               draw-entities!
+               highlight-mouseover-tile]]
+      (draw! ctx (f ctx)))
+    ;
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
   (batch/end! batch)
@@ -432,10 +434,7 @@
         ctx (set-camera-position-step ctx)
         ctx (clear-screen-step ctx)
         ctx (render-draw-tiled-map-step ctx)
-        ctx (draw-on-world-viewport-step ctx
-                                         [[draw-cell-debug]
-                                          [draw-entities! entity-render-layers]
-                                          [highlight-mouseover-tile]])
+        ctx (draw-on-world-viewport-step ctx)
         ctx (assoc ctx :ctx/interaction-state (assoc-interaction-state-create ctx))
         ctx (set-cursor-step ctx)
         ctx (handle-player-input-step ctx)
