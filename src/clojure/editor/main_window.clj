@@ -17,6 +17,7 @@
             [clojure.delete :refer [delete!]]
             [clojure.editor.property-k-sort-order :refer [property-k-sort-order]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
+            [clojure.editor.widget-value :refer [widget-value map-widget-table-get-value]]
             [clojure.edn :as edn]
             [clojure.edn-str :refer [->edn-str]]
             [clojure.event :as event]
@@ -60,10 +61,6 @@
             [clojure.window :as gdx-window]
             [clojure.with-window-close :as with-window-close]))
 
-(defmulti ^:private widget-value
-  (fn [[schema-k :as _schema] widget schemas]
-    schema-k))
-
 (defmulti ^:private create-widget
   (fn [[schema-k :as _schema] v ctx]
     schema-k))
@@ -73,52 +70,6 @@
     (clojure.actor.set-user-object/f widget [k v])
     widget))
 
-
-(defn- map-widget-table-get-value [table schemas]
-  (into {}
-        (for [widget (filter (comp vector? clojure.actor.get-user-object/f) (group/get-children table))
-              :let [[k _] (clojure.actor.get-user-object/f widget)]]
-          [k (widget-value (get schemas k) widget schemas)])))
-
-(defmethod widget-value :default
-  [_ widget _schemas]
-  ((clojure.actor.get-user-object/f widget) 1))
-
-(defmethod widget-value :s/boolean
-  [_ widget _schemas]
-  (checkbox/checked? widget))
-
-(defmethod widget-value :s/enum
-  [_ widget _schemas]
-  (edn/read-string (gdx-select-box/get-selected widget)))
-
-(defmethod widget-value :s/map
-  [_ table schemas]
-  (map-widget-table-get-value table schemas))
-
-(defmethod widget-value :s/number
-  [_ widget _schemas]
-  (edn/read-string (gdx-text-field/get-text widget)))
-
-(defmethod widget-value :s/one-to-many
-  [_ widget _schemas]
-  (->> (group/get-children widget)
-       (keep clojure.actor.get-user-object/f)
-       set))
-
-(defmethod widget-value :s/one-to-one
-  [_ widget _schemas]
-  (->> (group/get-children widget)
-       (keep clojure.actor.get-user-object/f)
-       first))
-
-(defmethod widget-value :s/string
-  [_ widget _schemas]
-  (gdx-text-field/get-text widget))
-
-(defmethod widget-value :s/val-max
-  [_ widget _schemas]
-  (edn/read-string (gdx-text-field/get-text widget)))
 
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]
