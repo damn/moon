@@ -1,7 +1,7 @@
 (ns clojure.moon.assoc-interaction-state
   (:require [clojure.ui.action-bar.selected-skill :as selected-skill]
             [clojure.scene2d.actor.mouseover-info :refer [mouseover-actor-info]]
-            [clojure.body-distance :as distance]
+            [clojure.body.distance :as distance]
             [clojure.scene2d.group :as group]
             [clojure.mouseover-actor :refer [mouseover-actor]]
             [clojure.player-effect-ctx :as player-effect-ctx]

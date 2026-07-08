@@ -4,7 +4,7 @@
 
 (comment
   ;; Move file + update all references under src/, resources/, test/
-  (move-and-rename/f "clojure.g2d.area-level-grid" "clojure.g2d.area-level-grid")
+  (move-and-rename/f "clojure.body.distance" "clojure.body.distance")
 
   ;; Text-only rename (no file move):
   ;(rename/f "clojure.g2d.area-level-grid" "clojure.g2d.area-level-grid")

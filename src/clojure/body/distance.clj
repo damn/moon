@@ -1,4 +1,4 @@
-(ns clojure.body-distance
+(ns clojure.body.distance
   (:require [clojure.v2.distance :as distance]))
 
 (defn f [body other-body]

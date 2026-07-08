@@ -1,5 +1,5 @@
 (ns clojure.create-effect-ctx
-  (:require [clojure.body-direction :as direction]
+  (:require [clojure.body.direction :as direction]
             [clojure.nearest-enemy :refer [nearest-enemy]]
             [clojure.line-of-sight :as line-of-sight?]))
 
