@@ -2,7 +2,7 @@
   (:require [clojure.ctx-do :refer [do!]]
             [clojure.draw :refer [draw!]]
             [clojure.moon-textures :as textures]
-            [clojure.moon.inventory-window-build :refer [inventory-window-build]]))
+            [clojure.ui.inventory-window :refer [inventory-window-build]]))
 
 (defn inventory-window-create
   [{:keys [ctx/colors

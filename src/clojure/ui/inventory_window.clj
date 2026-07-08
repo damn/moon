@@ -1,8 +1,8 @@
-(ns clojure.moon.inventory-window-build
+(ns clojure.ui.inventory-window
   (:require [clojure.scene2d.actor.set-name :as set-name]
             [clojure.scene2d.actor.set-position! :as actor-set-position]
             [clojure.scene2d.actor.set-visible]
-            [clojure.create-cell :refer [->cell]]
+            [clojure.ui.inventory-window.cell :refer [->cell]]
             [clojure.is-valid-slot :as valid-slot?]
             [clojure.new-color]
             [clojure.texture-region-drawable :as texture-region-drawable]

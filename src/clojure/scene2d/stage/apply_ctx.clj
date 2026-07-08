@@ -1,4 +1,4 @@
-(ns clojure.apply-ctx
+(ns clojure.scene2d.stage.apply-ctx
   (:require [clojure.set-ctx :as set-ctx]))
 
 (defn f [stage f]

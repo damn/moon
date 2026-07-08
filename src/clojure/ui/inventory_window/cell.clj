@@ -1,4 +1,4 @@
-(ns clojure.create-cell
+(ns clojure.ui.inventory-window.cell
   (:require
             [clojure.scene2d.actor.hit]
             [clojure.scene2d.actor.add-listener]
