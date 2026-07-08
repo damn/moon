@@ -36,7 +36,7 @@
   :source-paths ["src"]
   :resource-paths ["resources/"]
   :aliases {
-            "dev"      ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.moon-start/-main))"]
+            "dev"      ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.moon/-main))"]
             "levelgen" ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.levelgen-test/-main))"]
             "editor"   ["run" "-m" "clojure.loop" "((requiring-resolve 'clojure.editor-start/-main))"]
             }
@@ -54,6 +54,6 @@
                 ;*unchecked-math* :warn-on-boxed
                 ;*assert* false
                 *print-level* 3}
-  :profiles {:uberjar {:aot [clojure.moon-start]}}
+  :profiles {:uberjar {:aot [clojure.moon]}}
   :uberjar-name "moon.jar"
-  :main clojure.moon-start)
+  :main clojure.moon)
