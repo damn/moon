@@ -1,4 +1,4 @@
-(ns clojure.all-raw
+(ns clojure.db.all-raw
   (:require [clojure.type :refer [property->type]]))
 
 (defn all-raw [{:keys [db/data]} property-type]
