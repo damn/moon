@@ -1,6 +1,6 @@
 (ns clojure.editor.main-window
   (:require [clojure.add-listener]
-            [clojure.editor.create-widget :refer [property-editor-window]]
+            [clojure.editor.create-widget-property-editor-window :refer [property-editor-window]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.event :as event]
             [clojure.get-raw :refer [get-raw]]
