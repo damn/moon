@@ -1,4 +1,4 @@
-(ns clojure.table.add-cell
+(ns clojure.ui.table.add-cell
   (:require [clojure.table :as table]
             [clojure.ui.cell.set-opts :as set-opts]))
 

@@ -2,7 +2,7 @@
   (:require [clojure.table :as table]
             [clojure.pack! :as pack!]
             [clojure.ui.cell.set-opts :as set-opts]
-            [clojure.table.add-rows :refer [add-rows!]]))
+            [clojure.ui.table.add-rows :refer [add-rows!]]))
 
 (defn set-opts! [table opts]
   (when-let [rows (:table/rows opts)]

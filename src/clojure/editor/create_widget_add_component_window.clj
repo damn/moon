@@ -2,7 +2,7 @@
   (:require [clojure.scene2d.actor.remove-actor]
             [clojure.window.add-close-button :as add-close-button]
             [clojure.scene2d.actor.add-listener]
-            [clojure.table.add-rows :refer [add-rows!]]
+            [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.default-value :refer [default-value]]
             [clojure.editor.create-widget-build-widget :as build-widget]
             [clojure.editor.create-widget-create-component-row :as create-component-row]

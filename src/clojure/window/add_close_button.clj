@@ -3,7 +3,7 @@
             [clojure.scene2d.actor.add-listener]
             [clojure.scene2d.actor.remove-actor] [clojure.window :as window]
             [clojure.utils-change-listener :as change-listener]
-            [clojure.table.add-cell :refer [add-cell!]]
+            [clojure.ui.table.add-cell :refer [add-cell!]]
             [clojure.ui-text-button :as text-button]))
 
 (defn f! [window skin]

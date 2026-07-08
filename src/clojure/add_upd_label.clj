@@ -3,7 +3,7 @@
             [clojure.scene2d.group :as group]
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]
-            [clojure.table.add-cell :refer [add-cell!]]
+            [clojure.ui.table.add-cell :refer [add-cell!]]
             [clojure.set-label-text-actor :refer [set-label-text-actor]]))
 
 (defn add-upd-label!

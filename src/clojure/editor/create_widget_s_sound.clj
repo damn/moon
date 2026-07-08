@@ -1,6 +1,6 @@
 (ns clojure.editor.create-widget-s-sound
   (:require [clojure.scene2d.actor.add-listener]
-            [clojure.table.add-rows :refer [add-rows!]]
+            [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.create-widget-open-select-sounds-handler :as open-select-sounds-handler]
             [clojure.editor.create-widget-sound-columns :as sound-columns]

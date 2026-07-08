@@ -1,6 +1,6 @@
-(ns clojure.table.add-rows
+(ns clojure.ui.table.add-rows
   (:require [clojure.table :as table]
-            [clojure.table.add-cell :refer [add-cell!]]))
+            [clojure.ui.table.add-cell :refer [add-cell!]]))
 
 (defn add-rows! [table rows]
   (doseq [row rows]
