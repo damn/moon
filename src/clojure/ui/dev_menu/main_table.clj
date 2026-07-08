@@ -1,11 +1,11 @@
-(ns clojure.main-table
+(ns clojure.ui.dev-menu.main-table
   (:require
             [clojure.scene2d.actor.add-listener] [clojure.stage :as stage]
             [clojure.event :as event]
             [clojure.utils-change-listener :as change-listener]
             [clojure.ui-text-button :as text-button]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [clojure.add-upd-label :refer [add-upd-label!]]
+            [clojure.ui.dev-menu.main-table.add-upd-label :refer [add-upd-label!]]
             [clojure.ui-table :as table]
             [clojure.ui-window :as window]
             [clojure.set-ctx :as set-ctx]))

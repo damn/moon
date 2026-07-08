@@ -5,7 +5,7 @@
             [clojure.moon.create-controls-info :refer [controls-info]]
             [clojure.tmx :as tmx]
             [clojure.uf-caves :as uf-caves]
-            [clojure.ui-dev-menu :as dev-menu]
+            [clojure.ui.dev-menu :as dev-menu]
             [clojure.update-labels :as update-labels]))
 
 (defn stage-dev-menu-create

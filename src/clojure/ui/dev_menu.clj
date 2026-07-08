@@ -1,9 +1,9 @@
-(ns clojure.ui-dev-menu
+(ns clojure.ui.dev-menu
   (:require
             [clojure.scene2d.actor.set-touchable]
             [clojure.set-fill-parent! :as set-fill-parent!]
             [clojure.touchable :as touchable]
-            [clojure.main-table :as main-table]
+            [clojure.ui.dev-menu.main-table :as main-table]
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]))
 

@@ -1,4 +1,4 @@
-(ns clojure.add-upd-label
+(ns clojure.ui.dev-menu.main-table.add-upd-label
   (:require [clojure.image :as image]
             [clojure.scene2d.group :as group]
             [clojure.ui-label :as label]
