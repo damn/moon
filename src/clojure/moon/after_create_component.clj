@@ -1,4 +1,4 @@
-(ns clojure.after-create-component
+(ns clojure.moon.after-create-component
   (:require [clojure.k-after-create :refer [k->after-create]]))
 
 (defn after-create-component

@@ -15,7 +15,7 @@
             [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
             [clojure.npc-pathing :as npc-pathing]
             [clojure.overlaps :refer [overlaps?]]
-            [clojure.remove-mods :as remove-mods]
+            [clojure.stats.remove-mods :as remove-mods]
             [clojure.stopped :refer [stopped?]]
             [clojure.try-move-solid-body :as try-move-solid-body]
             [clojure.update-effect-ctx :as update-effect-ctx]))

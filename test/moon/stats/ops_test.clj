@@ -1,6 +1,6 @@
 (ns moon.stats.ops-test
-  (:require [clojure.ops-add :as add]
-            [clojure.ops-remove :as remove]
+  (:require [clojure.ops.add :as add]
+            [clojure.ops.remove :as remove]
             [clojure.ops.apply :as apply]
             [clojure.test :refer :all]))
 
