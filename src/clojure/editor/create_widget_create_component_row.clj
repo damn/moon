@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-create-component-row
-  (:require [clojure.actor.get-user-object]
-            [clojure.actor.remove-actor]
-            [clojure.actor.add-listener]
+  (:require [clojure.scene2d.actor.get-user-object]
+            [clojure.scene2d.actor.remove-actor]
+            [clojure.scene2d.actor.add-listener]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
             [clojure.event :as event]
             [clojure.scene2d.group :as group]
@@ -23,11 +23,11 @@
                                      (doto (text-button/create
                                             {:text "-"
                                              :skin skin})
-                                       (clojure.actor.add-listener/f (change-listener/create
+                                       (clojure.scene2d.actor.add-listener/f (change-listener/create
                                                                 (fn [event _actor]
-                                                                  (clojure.actor.remove-actor/f (first (filter (fn [actor]
-                                                                                                          (and (clojure.actor.get-user-object/f actor)
-                                                                                                               (= k ((clojure.actor.get-user-object/f actor) 0))))
+                                                                  (clojure.scene2d.actor.remove-actor/f (first (filter (fn [actor]
+                                                                                                          (and (clojure.scene2d.actor.get-user-object/f actor)
+                                                                                                               (= k ((clojure.scene2d.actor.get-user-object/f actor) 0))))
                                                                                                         (group/get-children table))))
                                                                   (let [ctx (:stage/ctx (event/get-stage event))]
                                                                     (rebuild-editor-window/rebuild-editor-window! ctx)))))))

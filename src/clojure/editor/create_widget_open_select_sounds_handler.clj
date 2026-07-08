@@ -1,8 +1,8 @@
 (ns clojure.editor.create-widget-open-select-sounds-handler
-  (:require [clojure.actor.get-height]
-            [clojure.actor.get-width]
+  (:require [clojure.scene2d.actor.get-height]
+            [clojure.scene2d.actor.get-width]
             [clojure.window.add-close-button :as add-close-button]
-            [clojure.actor.add-listener]
+            [clojure.scene2d.actor.add-listener]
             [clojure.table.add-rows :refer [add-rows!]]
             [clojure.ctx-do :refer [do!]]
             [clojure.editor.create-widget-rebuild-sound-widget :as rebuild-sound-widget]
@@ -31,21 +31,21 @@
                                                             [{:actor (doto (text-button/create
                                                                             {:text sound-name
                                                                              :skin skin})
-                                                                           (clojure.actor.add-listener/f (change-listener/create
+                                                                           (clojure.scene2d.actor.add-listener/f (change-listener/create
                                                                                                     (fn [event actor]
                                                                                                       ((rebuild-sound-widget/rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
                                                              {:actor (doto (text-button/create
                                                                             {:text "play!"
                                                                              :skin skin})
-                                                                           (clojure.actor.add-listener/f (change-listener/create
+                                                                           (clojure.scene2d.actor.add-listener/f (change-listener/create
                                                                                                     (fn [event _actor]
                                                                                                       (do! (:stage/ctx (event/get-stage event))
                                                                                                            [[:tx/sound sound-name]])))))}])} )]
                                 {:actor (scroll-pane/create
                                          {:actor table
                                           :skin skin})
-                                 :width  (+ (clojure.actor.get-width/f table) 50)
+                                 :width  (+ (clojure.scene2d.actor.get-width/f table) 50)
                                  :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
-                                              (clojure.actor.get-height/f table))})]]})
+                                              (clojure.scene2d.actor.get-height/f table))})]]})
                             (add-close-button/f! skin)
                             (gdx-window/set-modal! true)))))

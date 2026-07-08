@@ -1,5 +1,5 @@
 (ns clojure.levelgen-test.create
-  (:require [clojure.actor.add-listener]
+  (:require [clojure.scene2d.actor.add-listener]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.create-textures :as create-textures]
             [clojure.creature-tiles :as creature-tiles]
@@ -93,7 +93,7 @@
                                       [{:actor (doto (text-button/create
                                                       {:text (str "Generate " label)
                                                        :skin skin})
-                                               (clojure.actor.add-listener/f
+                                               (clojure.scene2d.actor.add-listener/f
                                                 (utils-change-listener/create
                                                  (fn [_event _actor]
                                                    (swap! state on-click)))))}])}))

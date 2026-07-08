@@ -1,8 +1,8 @@
 (ns clojure.editor.create-widget-property-editor-window
-  (:require [clojure.actor.get-stage]
-            [clojure.actor.set-name]
+  (:require [clojure.scene2d.actor.get-stage]
+            [clojure.scene2d.actor.set-name]
             [clojure.window.add-close-button :as add-close-button]
-            [clojure.actor.add-listener]
+            [clojure.scene2d.actor.add-listener]
             [clojure.db-update :refer [update!]]
             [clojure.delete :refer [delete!]]
             [clojure.editor.create-widget :refer [create-widget]]
@@ -40,14 +40,14 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (clojure.actor.add-listener/f (change-listener/create
+                                     (clojure.scene2d.actor.add-listener/f (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (clojure.actor.add-listener/f (change-listener/create
+                                     (clojure.scene2d.actor.add-listener/f (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
@@ -65,8 +65,8 @@
       (gdx-window/set-modal! true)
       (group/add-actor! (actor/f
                          {:act! (fn [this delta]
-                                  (when-let [stage (clojure.actor.get-stage/f this)]
+                                  (when-let [stage (clojure.scene2d.actor.get-stage/f this)]
                                     (let [ctx (:stage/ctx stage)]
                                       (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                         (clicked-save-fn this ctx)))))}))
-      (clojure.actor.set-name/f "moon.ui.clojure.editor-window"))))
+      (clojure.scene2d.actor.set-name/f "moon.ui.clojure.editor-window"))))

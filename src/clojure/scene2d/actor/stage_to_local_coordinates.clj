@@ -1,4 +1,4 @@
-(ns clojure.actor.stage-to-local-coordinates
+(ns clojure.scene2d.actor.stage-to-local-coordinates
   (:refer-clojure :exclude [new remove])
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)))

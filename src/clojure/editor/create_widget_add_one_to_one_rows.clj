@@ -1,8 +1,8 @@
 (ns clojure.editor.create-widget-add-one-to-one-rows
-  (:require [clojure.actor.find-ancestor :refer [find-ancestor]]
-            [clojure.actor.remove-actor]
-            [clojure.actor.set-user-object]
-            [clojure.actor.add-listener]
+  (:require [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [clojure.scene2d.actor.remove-actor]
+            [clojure.scene2d.actor.set-user-object]
+            [clojure.scene2d.actor.add-listener]
             [clojure.table.add-rows :refer [add-rows!]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.event :as event]
@@ -34,7 +34,7 @@
      table
      [[(when-not property-id
          {:actor (doto (text-button/create {:text "+" :skin skin})
-                   (clojure.actor.add-listener/f (change-listener/create
+                   (clojure.scene2d.actor.add-listener/f (change-listener/create
                                             (fn [event _actor]
                                               (let [{:keys [ctx/db
                                                             ctx/skin
@@ -49,18 +49,18 @@
                                                    :skin skin
                                                    :property-type property-type
                                                    :clicked-id-fn (fn [actor id ctx]
-                                                                    (clojure.actor.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
+                                                                    (clojure.scene2d.actor.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
                                                                     (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
            {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
-                     (clojure.actor.add-listener/f (text-tooltip/create (tooltip/f property) skin))
-                     (clojure.actor.set-user-object/f property-id))}))]
+                     (clojure.scene2d.actor.add-listener/f (text-tooltip/create (tooltip/f property) skin))
+                     (clojure.scene2d.actor.set-user-object/f property-id))}))]
       [(when property-id
          {:actor (doto (text-button/create
                         {:text "-"
                          :skin skin})
-                   (clojure.actor.add-listener/f (change-listener/create
+                   (clojure.scene2d.actor.add-listener/f (change-listener/create
                                             (fn [event _actor]
                                               (redo-rows (:stage/ctx (event/get-stage event))
                                                          nil)))))})]])))

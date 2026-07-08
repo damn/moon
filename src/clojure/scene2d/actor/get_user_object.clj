@@ -1,7 +1,7 @@
-(ns clojure.actor.add-listener
+(ns clojure.scene2d.actor.get-user-object
   (:refer-clojure :exclude [new remove])
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn f [actor listener]
-  (Actor/.addListener actor listener))
+(defn f [^Actor actor]
+  (Actor/.getUserObject actor))

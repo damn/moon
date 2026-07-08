@@ -1,7 +1,7 @@
-(ns clojure.actor.get-x
+(ns clojure.scene2d.actor.visible
   (:refer-clojure :exclude [new remove])
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn f [^Actor actor]
-  (Actor/.getX actor))
+  (Actor/.isVisible actor))

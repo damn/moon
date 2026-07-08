@@ -1,15 +1,15 @@
 (ns clojure.create-cell
   (:require
-            [clojure.actor.hit]
-            [clojure.actor.add-listener]
-            [clojure.actor.get-parent]
-            [clojure.actor.get-stage]
-            [clojure.actor.get-user-object]
-            [clojure.actor.get-x]
-            [clojure.actor.get-y]
-            [clojure.actor.set-name]
-            [clojure.actor.set-user-object]
-            [clojure.actor.stage-to-local-coordinates] [clojure.image :as image]
+            [clojure.scene2d.actor.hit]
+            [clojure.scene2d.actor.add-listener]
+            [clojure.scene2d.actor.get-parent]
+            [clojure.scene2d.actor.get-stage]
+            [clojure.scene2d.actor.get-user-object]
+            [clojure.scene2d.actor.get-x]
+            [clojure.scene2d.actor.get-y]
+            [clojure.scene2d.actor.set-name]
+            [clojure.scene2d.actor.set-user-object]
+            [clojure.scene2d.actor.stage-to-local-coordinates] [clojure.image :as image]
             [clojure.scene2d.group :as group]
             [clojure.event :as event]
             [clojure.vector2 :as vector2]
@@ -26,25 +26,25 @@
        (run! #(group/add-actor! stack %)
              [(widget/f
                {:draw! (fn [this _batch _parent-alpha]
-                         (when-let [stage (clojure.actor.get-stage/f this)]
+                         (when-let [stage (clojure.scene2d.actor.get-stage/f this)]
                            (let [{:keys [ctx/player-eid
                                          ctx/ui-mouse-position]
                                   :as ctx} (:stage/ctx stage)]
                              (draw! ctx
                                     (draw-cell-rect @player-eid
-                                                    (clojure.actor.get-x/f this)
-                                                    (clojure.actor.get-y/f this)
+                                                    (clojure.scene2d.actor.get-x/f this)
+                                                    (clojure.scene2d.actor.get-y/f this)
                                                     (let [[x y] (vector2/clojurize
-                                                                 (clojure.actor.stage-to-local-coordinates/f this
+                                                                 (clojure.scene2d.actor.stage-to-local-coordinates/f this
                                                                                               (vector2/new ui-mouse-position)))]
-                                                      (clojure.actor.hit/f this x y true))
-                                                    (clojure.actor.get-user-object/f (clojure.actor.get-parent/f this)))))))})
+                                                      (clojure.scene2d.actor.hit/f this x y true))
+                                                    (clojure.scene2d.actor.get-user-object/f (clojure.scene2d.actor.get-parent/f this)))))))})
               (doto (image/new-drawable background-drawable)
-                (clojure.actor.set-name/f "image-widget")
-                (clojure.actor.set-user-object/f {:background-drawable background-drawable
+                (clojure.scene2d.actor.set-name/f "image-widget")
+                (clojure.scene2d.actor.set-user-object/f {:background-drawable background-drawable
                                     :cell-size cell-size}))])
        (doto stack
-         (clojure.actor.add-listener/f (click-listener/create
+         (clojure.scene2d.actor.add-listener/f (click-listener/create
                           (fn [event _x _y]
                             (let [{:keys [ctx/player-eid]
                                    :as ctx} (:stage/ctx (event/get-stage event))
@@ -54,5 +54,5 @@
                                    (if-let [f (k->clicked-inventory-cell state-k)]
                                      (f player-eid cell)
                                      nil))))))
-         (clojure.actor.set-name/f "inventory-cell")
-         (clojure.actor.set-user-object/f cell)))}))
+         (clojure.scene2d.actor.set-name/f "inventory-cell")
+         (clojure.scene2d.actor.set-user-object/f cell)))}))

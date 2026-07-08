@@ -1,5 +1,5 @@
 (ns clojure.editor.create-widget-s-sound
-  (:require [clojure.actor.add-listener]
+  (:require [clojure.scene2d.actor.add-listener]
             [clojure.table.add-rows :refer [add-rows!]]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.create-widget-open-select-sounds-handler :as open-select-sounds-handler]
@@ -21,7 +21,7 @@
                            (sound-columns-fn skin table sound-name)
                            [{:actor
                              (doto (text-button/create {:text "No sound" :skin skin})
-                               (clojure.actor.add-listener/f (change-listener/create
+                               (clojure.scene2d.actor.add-listener/f (change-listener/create
                                                         (fn [event _actor]
                                                           ((open-select-fn table)
                                                            (:stage/ctx (event/get-stage event)))))))}])])

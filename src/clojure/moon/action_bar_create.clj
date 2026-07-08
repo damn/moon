@@ -1,6 +1,6 @@
 (ns clojure.moon.action-bar-create
-  (:require [clojure.actor.set-name :as set-name]
-            [clojure.actor.set-user-object :as set-user-object]
+  (:require [clojure.scene2d.actor.set-name :as set-name]
+            [clojure.scene2d.actor.set-user-object :as set-user-object]
             [clojure.button-group :as button-group]
             [clojure.horizontal-group :as horizontal-group]
             [clojure.set-fill-parent! :as set-fill-parent!]

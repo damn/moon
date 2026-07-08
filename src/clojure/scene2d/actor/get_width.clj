@@ -1,7 +1,7 @@
-(ns clojure.actor.get-user-object
+(ns clojure.scene2d.actor.get-width
   (:refer-clojure :exclude [new remove])
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn f [^Actor actor]
-  (Actor/.getUserObject actor))
+  (Actor/.getWidth actor))

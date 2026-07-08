@@ -1,11 +1,11 @@
 (ns clojure.with-window-close
   (:require
-            [clojure.actor.get-stage]
-            [clojure.actor.remove-actor] [clojure.stage :as stage]
+            [clojure.scene2d.actor.get-stage]
+            [clojure.scene2d.actor.remove-actor] [clojure.stage :as stage]
             [clojure.window :as window]
             [clojure.throwable :as throwable]
             [clojure.error-window :as error-window]
-            [clojure.actor.find-ancestor :refer [find-ancestor]]
+            [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.set-ctx :as set-ctx]))
 
 (defn f [f]
@@ -14,9 +14,9 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (clojure.actor.get-stage/f actor)]
+           stage (clojure.scene2d.actor.get-stage/f actor)]
        (set-ctx/f stage new-ctx))
-     (clojure.actor.remove-actor/f (find-ancestor actor (partial instance? window/class)))
+     (clojure.scene2d.actor.remove-actor/f (find-ancestor actor (partial instance? window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
        (stage/add-actor! stage
