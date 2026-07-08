@@ -1,4 +1,4 @@
-(ns clojure.k-state-exit.npc-sleeping)
+(ns clojure.moon.state-exit.npc-sleeping)
 
 (defn f
   [_ eid _ctx]

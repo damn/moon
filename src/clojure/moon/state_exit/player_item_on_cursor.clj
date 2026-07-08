@@ -1,4 +1,4 @@
-(ns clojure.k-state-exit.player-item-on-cursor
+(ns clojure.moon.state-exit.player-item-on-cursor
   (:require [clojure.item-place-position :refer [item-place-position]]))
 
 (defn f

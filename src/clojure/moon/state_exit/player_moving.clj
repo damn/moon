@@ -1,4 +1,4 @@
-(ns clojure.k-state-exit.player-moving)
+(ns clojure.moon.state-exit.player-moving)
 
 (defn f
   [_ eid _ctx]
