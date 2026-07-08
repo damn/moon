@@ -1,4 +1,4 @@
-(ns clojure.action-bar.add-skill
+(ns clojure.ui.action-bar.add-skill
   (:require
             [clojure.scene2d.actor.add-listener]
             [clojure.scene2d.actor.set-user-object] [clojure.texture-region :as texture-region]
@@ -8,7 +8,7 @@
             [clojure.scene2d.group :as group]
             [clojure.image-button :as image-button]
             [clojure.ui-text-tooltip :as text-tooltip]
-            [clojure.action-bar.get-data :as get-data]))
+            [clojure.ui.action-bar.get-data :as get-data]))
 
 (defn f
   [action-bar

@@ -1,4 +1,4 @@
-(ns clojure.action-bar.get-data
+(ns clojure.ui.action-bar.get-data
   (:require
             [clojure.scene2d.actor.get-user-object] [clojure.scene2d.group :as group]))
 
