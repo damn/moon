@@ -1,4 +1,4 @@
-(ns clojure.after-create-skills)
+(ns clojure.moon.after-create-component.after-create-skills)
 
 (defn f
   [skills eid _ctx]

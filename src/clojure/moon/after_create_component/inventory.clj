@@ -1,4 +1,4 @@
-(ns clojure.inventory
+(ns clojure.moon.after-create-component.inventory
   (:require [clojure.grid2d :as g2d]))
 
 (defn f
