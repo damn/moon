@@ -6,7 +6,7 @@
             [clojure.ratio :as ratio]
             [clojure.readable :as readable]
             [clojure.remove-newlines :refer [remove-newlines]]
-            [clojure.sort :as sort]
+            [clojure.ops.sort :as sort]
             [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.string :as str]))
 

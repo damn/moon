@@ -1,5 +1,5 @@
-(ns clojure.apply
-  (:require [clojure.sort :as sort]))
+(ns clojure.ops.apply
+  (:require [clojure.ops.sort :as sort]))
 
 (defn f [ops base-value]
   (reduce (fn [base-value [k value]]

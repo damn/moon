@@ -1,5 +1,5 @@
 (ns clojure.modifiers-get-value
-  (:require [clojure.apply :as apply]))
+  (:require [clojure.ops.apply :as apply]))
 
 (defn f [base-value modifiers modifier-k]
   {:pre [(= "modifier" (namespace modifier-k))]}

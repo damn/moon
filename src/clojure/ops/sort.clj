@@ -1,4 +1,4 @@
-(ns clojure.sort)
+(ns clojure.ops.sort)
 
 (defn f [ops]
   (sort-by (fn [[k]]

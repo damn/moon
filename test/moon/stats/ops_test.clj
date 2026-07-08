@@ -1,7 +1,7 @@
 (ns moon.stats.ops-test
   (:require [clojure.ops-add :as add]
             [clojure.ops-remove :as remove]
-            [clojure.apply :as apply]
+            [clojure.ops.apply :as apply]
             [clojure.test :refer :all]))
 
 (deftest add-and-remove
