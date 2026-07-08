@@ -1,5 +1,5 @@
 (ns clojure.get-mana
-  (:require [clojure.apply-max :as apply-max]))
+  (:require [clojure.val-max.apply-max :as apply-max]))
 
 (defn f
   [{:keys [stats/mana

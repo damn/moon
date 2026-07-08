@@ -1,6 +1,6 @@
 (ns clojure.calc-damage
-  (:require [clojure.apply-max :as apply-max]
-            [clojure.apply-min :as apply-min]))
+  (:require [clojure.val-max.apply-max :as apply-max]
+            [clojure.val-max.apply-min :as apply-min]))
 
 (defn f
   ([source target damage]
