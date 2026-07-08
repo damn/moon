@@ -1,22 +1,23 @@
 (ns clojure.moon
-  (:require [clojure.application :as application]
-            [clojure.lwjgl3-application :as lwjgl3-application]
+  (:require [clojure.lwjgl3-application :as lwjgl3-application]
             [clojure.moon.create :as create]
             [clojure.moon.dispose :as dispose]
             [clojure.moon.render :as render]
             [clojure.moon.resize :as resize])
   (:gen-class))
 
+(def state (atom nil))
+
 (defn -main []
   (lwjgl3-application/f
    {:create! (fn [app]
-               (reset! application/state (create/create app)))
+               (reset! state (create/create app)))
     :dispose! (fn []
-                (dispose/dispose @application/state))
+                (dispose/dispose @state))
     :render! (fn []
-               (swap! application/state render/render))
+               (swap! state render/render))
     :resize! (fn [width height]
-               (resize/resize @application/state width height))
+               (resize/resize @state width height))
     :pause! (fn [])
     :resume! (fn [])}
    {:title "Moon"
