@@ -4,7 +4,7 @@
             [clojure.tiled-map-tile :as tiled-map-tile]
             [clojure.tiled-map :as tiled-map]
             [clojure.map-properties :as map-properties]
-            [clojure.get :as get]))
+            [clojure.map-layers.get :as get]))
 
 (defn f [tiled-map]
   (let [layer-name "creatures"

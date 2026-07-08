@@ -8,7 +8,7 @@
             [clojure.movement-property :as movement-property]
             [clojure.add-creatures-layer :as add-creatures-layer]
             [clojure.area-level-grid :as area-level-grid]
-            [clojure.get :as get]))
+            [clojure.map-layers.get :as get]))
 
 (defn step
   [{:keys [world/max-area-level
