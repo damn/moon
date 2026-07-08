@@ -1,11 +1,11 @@
-(ns clojure.uf-caves
+(ns clojure.levels.uf-caves
   (:require [clojure.caves :as caves]
             [clojure.fix-nads :as fix-nads]
             [clojure.texture-region :as texture-region]
             [clojure.create-static-tiled-map-tile :as create-tile]
-            [clojure.uf-caves-initial-grid]
-            [clojure.uf-caves-fix-nads]
-            [clojure.uf-caves-last-steps])
+            [clojure.levels.uf-caves.initial-grid]
+            [clojure.levels.uf-caves.fix-nads]
+            [clojure.levels.uf-caves.last-steps])
   (:import (java.util Random)))
 
 (defn create
@@ -51,6 +51,6 @@
              :level/spawn-rate spawn-rate
              :level/scaling scaling
              :level/creature-properties creature-properties}
-            [clojure.uf-caves-initial-grid/f
-             clojure.uf-caves-fix-nads/f
-             clojure.uf-caves-last-steps/step])))
+            [clojure.levels.uf-caves.initial-grid/f
+             clojure.levels.uf-caves.fix-nads/f
+             clojure.levels.uf-caves.last-steps/step])))

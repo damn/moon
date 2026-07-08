@@ -5,8 +5,8 @@
             [clojure.levelgen-test.render :as render]
             [clojure.levelgen-test.resize :as resize]
             [clojure.levels.modules :as modules]
-            [clojure.tmx :as tmx]
-            [clojure.uf-caves :as uf-caves]))
+            [clojure.levels.tmx :as tmx]
+            [clojure.levels.uf-caves :as uf-caves]))
 
 (def state (atom nil))
 

@@ -1,4 +1,4 @@
-(ns clojure.uf-caves-fix-nads)
+(ns clojure.levels.uf-caves.fix-nads)
 
 (defn f
   [{:keys [level/grid]

@@ -1,8 +1,8 @@
-(ns clojure.uf-caves-last-steps
+(ns clojure.levels.uf-caves.last-steps
   (:require [clojure.g2d.flood-fill :as flood-fill]
             [clojure.position-tile-fn :as position-tile-fn]
             [clojure.g2d.assoc-transition-cells :as assoc-transition-cells]
-            [clojure.uf-caves-scale-grid :as scale-grid]
+            [clojure.levels.uf-caves.scale-grid :as scale-grid]
             [clojure.movement-property :as movement-property]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]

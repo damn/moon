@@ -1,4 +1,4 @@
-(ns clojure.uf-caves-scale-grid
+(ns clojure.levels.uf-caves.scale-grid
   (:require [clojure.scalegrid :as scalegrid]))
 
 (defn f [grid start scale]

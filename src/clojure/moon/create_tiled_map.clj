@@ -2,7 +2,7 @@
   (:require [clojure.db.all-raw :refer [all-raw]]
             [clojure.creature-tiles]
             [clojure.moon-textures :as textures]
-            [clojure.tmx :as tmx]))
+            [clojure.levels.tmx :as tmx]))
 
 (defn f [ctx]
   (let [{:keys [tiled-map

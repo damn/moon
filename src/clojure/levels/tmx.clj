@@ -1,4 +1,4 @@
-(ns clojure.tmx
+(ns clojure.levels.tmx
   (:require [clojure.load-tmx-map :as load-tmx-map]))
 
 (defn create

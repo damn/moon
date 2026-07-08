@@ -1,4 +1,4 @@
-(ns clojure.uf-caves-initial-grid
+(ns clojure.levels.uf-caves.initial-grid
   (:require [clojure.g2d.cells :refer [->cells]]))
 
 (defn f
