@@ -1,6 +1,6 @@
 (ns clojure.editor.create-widget-add-component-window
   (:require [clojure.scene2d.actor.remove-actor]
-            [clojure.window.add-close-button :as add-close-button]
+            [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.scene2d.actor.add-listener]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.default-value :refer [default-value]]

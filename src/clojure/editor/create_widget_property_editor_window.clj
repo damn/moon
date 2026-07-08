@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-property-editor-window
   (:require [clojure.scene2d.actor.get-stage]
             [clojure.scene2d.actor.set-name]
-            [clojure.window.add-close-button :as add-close-button]
+            [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.scene2d.actor.add-listener]
             [clojure.db-update :refer [update!]]
             [clojure.delete :refer [delete!]]

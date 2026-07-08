@@ -1,6 +1,6 @@
 (ns clojure.ui.action-bar.remove-skill
   (:require
-            [clojure.scene2d.actor.remove-actor] [clojure.button-group :as button-group]
+            [clojure.scene2d.actor.remove-actor] [clojure.ui.button-group :as button-group]
             [clojure.ui.action-bar.get-data :as get-data]))
 
 (defn f [action-bar skill-id]

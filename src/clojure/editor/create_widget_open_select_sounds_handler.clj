@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-open-select-sounds-handler
   (:require [clojure.scene2d.actor.get-height]
             [clojure.scene2d.actor.get-width]
-            [clojure.window.add-close-button :as add-close-button]
+            [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.scene2d.actor.add-listener]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.ctx-do :refer [do!]]

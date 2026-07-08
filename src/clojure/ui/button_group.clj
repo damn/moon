@@ -1,4 +1,4 @@
-(ns clojure.button-group
+(ns clojure.ui.button-group
   (:refer-clojure :exclude [new remove])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup)))
 

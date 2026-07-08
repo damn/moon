@@ -1,6 +1,6 @@
 (ns clojure.ui.action-bar.selected-skill
   (:require
-            [clojure.scene2d.actor.get-user-object] [clojure.button-group :as button-group]
+            [clojure.scene2d.actor.get-user-object] [clojure.ui.button-group :as button-group]
             [clojure.ui.action-bar.get-data :as get-data]))
 
 (defn f [action-bar]

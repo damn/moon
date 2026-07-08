@@ -1,6 +1,6 @@
 (ns clojure.ctx-skin
-  (:require [clojure.bitmap-font$bitmap-font-data :as bitmap-font-data]
-            [clojure.bitmap-font :as bitmap-font]
+  (:require [clojure.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
+            [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clojure.files :as files]
             [clojure.skin :as skin]))
 

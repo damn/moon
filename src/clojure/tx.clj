@@ -3,7 +3,7 @@
             [clojure.scene2d.actor.add-listener]
             [clojure.stats.add-mods :as add-mods]
             [clojure.after-create-component :refer [after-create-component]]
-            [clojure.align :as align]
+            [clojure.gdx.utils.align :as align]
             [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.scene2d.actor.set-position! :refer [set-position!]]
             [clojure.build :refer [build]]

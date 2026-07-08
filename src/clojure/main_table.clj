@@ -4,7 +4,7 @@
             [clojure.event :as event]
             [clojure.utils-change-listener :as change-listener]
             [clojure.ui-text-button :as text-button]
-            [clojure.window.add-close-button :as add-close-button]
+            [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.add-upd-label :refer [add-upd-label!]]
             [clojure.ui-table :as table]
             [clojure.ui-window :as window]

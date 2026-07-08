@@ -1,5 +1,5 @@
 (ns clojure.draw-tiled-map-tile-layer
-  (:require [clojure.batch :as batch]
+  (:require [clojure.gdx.graphics.g2d.batch :as batch]
             [clojure.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.tiled-map-tile :as tiled-map-tile]

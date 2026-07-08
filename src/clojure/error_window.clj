@@ -2,7 +2,7 @@
   (:require [clojure.window :as gdx-window]
             [clojure.ui-label :as label]
             [clojure.ui-window :as window]
-            [clojure.window.add-close-button :as add-close-button]
+            [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.repl :as repl]
             [clojure.with-err-str :as with-err-str]))
 

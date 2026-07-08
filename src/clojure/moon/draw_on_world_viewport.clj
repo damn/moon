@@ -1,5 +1,5 @@
 (ns clojure.moon.draw-on-world-viewport
-  (:require [clojure.batch :as batch]
+  (:require [clojure.gdx.graphics.g2d.batch :as batch]
             [clojure.body-draw-rectangle :as draw-rectangle]
             [clojure.draw :refer [draw!]]
             [clojure.draw-component :refer [draw-component]]

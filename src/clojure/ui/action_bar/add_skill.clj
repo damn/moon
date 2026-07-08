@@ -4,7 +4,7 @@
             [clojure.scene2d.actor.set-user-object] [clojure.texture-region :as texture-region]
             [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
-            [clojure.button-group :as button-group]
+            [clojure.ui.button-group :as button-group]
             [clojure.scene2d.group :as group]
             [clojure.image-button :as image-button]
             [clojure.ui-text-tooltip :as text-tooltip]

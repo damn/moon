@@ -1,4 +1,4 @@
-(ns clojure.bitmap-font$bitmap-font-data
+(ns clojure.gdx.graphics.g2d.bitmap-font$bitmap-font-data
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData)))
 
 (defn get-scale-x [^BitmapFont$BitmapFontData data]

@@ -1,6 +1,6 @@
 (ns clojure.moon.create-default-font
-  (:require [clojure.bitmap-font :as bitmap-font]
-            [clojure.bitmap-font$bitmap-font-data :as bitmap-font-data]
+  (:require [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+            [clojure.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [clojure.disposable :as disposable]
             [clojure.files :as files]
             [clojure.free-type-font-generator :as free-type-font-generator]

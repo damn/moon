@@ -1,4 +1,4 @@
-(ns clojure.window.add-close-button
+(ns clojure.ui.window.add-close-button
   (:require
             [clojure.scene2d.actor.add-listener]
             [clojure.scene2d.actor.remove-actor] [clojure.window :as window]

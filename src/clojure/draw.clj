@@ -1,8 +1,8 @@
 (ns clojure.draw
-  (:require [clojure.align :as align]
-            [clojure.batch :as batch]
-            [clojure.bitmap-font :as bitmap-font]
-            [clojure.bitmap-font$bitmap-font-data :as bitmap-font-data]
+  (:require [clojure.gdx.utils.align :as align]
+            [clojure.gdx.graphics.g2d.batch :as batch]
+            [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+            [clojure.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [clojure.graphics-shape-drawer :as shape-drawer]
             [clojure.string :as str]
             [clojure.texture-region :as texture-region]

@@ -5,7 +5,7 @@
             [clojure.v-text :refer [v->text]]
             [clojure.ui-label :as label]
             [clojure.ui-scroll-pane :as scroll-pane]
-            [clojure.window.add-close-button :as add-close-button]
+            [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]

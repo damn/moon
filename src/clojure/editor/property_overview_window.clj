@@ -5,7 +5,7 @@
             [clojure.scene2d.actor.get-width]
             [clojure.scene2d.actor.remove-actor]
             [clojure.scene2d.actor.set-user-object]
-            [clojure.window.add-close-button :as add-close-button]
+            [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.scene2d.actor.add-listener]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.constants :refer [property-type->overview-table-props]]
