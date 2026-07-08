@@ -13,7 +13,7 @@
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
-            [clojure.utils-change-listener :as change-listener]
+            [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.window :as gdx-window]))
 
 (defn open-select-sounds-handler [table ->sound-columns]

@@ -1,6 +1,6 @@
 (ns clojure.editor.widget-value
   (:require [clojure.scene2d.actor.get-user-object]
-            [clojure.checkbox :as checkbox]
+            [clojure.ui.checkbox :as checkbox]
             [clojure.edn :as edn]
             [clojure.scene2d.group :as group]
             [clojure.select-box :as gdx-select-box]

@@ -1,4 +1,4 @@
-(ns clojure.circle
+(ns clojure.gdx.math.circle
   (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.math Circle)))
 

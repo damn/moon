@@ -1,9 +1,9 @@
 (ns clojure.k-tick
   (:require [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.body.touched-tiles :refer [touched-tiles]]
-            [clojure.cell-is-blocked :as blocked?]
+            [clojure.grid.cell.is-blocked :as blocked?]
             [clojure.cells-entities :as cells->entities]
-            [clojure.choose-skill :as choose-skill]
+            [clojure.moon.choose-skill :as choose-skill]
             [clojure.circle-entities :refer [circle->entities]]
             [clojure.create-effect-ctx :as create-effect-ctx]
             [clojure.get-cells :refer [get-cells]]

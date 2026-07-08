@@ -2,7 +2,7 @@
   (:require [clojure.get-cells :refer [get-cells]]
             [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.overlaps :refer [overlaps?]]
-            [clojure.cell-is-blocked :as blocked?]
+            [clojure.grid.cell.is-blocked :as blocked?]
             [clojure.cells-entities :as cells->entities]))
 
 (defn valid-position? [g2d {:keys [body/z-order] :as body} entity-id]

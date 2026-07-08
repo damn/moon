@@ -2,7 +2,7 @@
   (:require
             [clojure.scene2d.actor.add-listener]
             [clojure.scene2d.actor.remove-actor] [clojure.window :as window]
-            [clojure.utils-change-listener :as change-listener]
+            [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.ui.table.add-cell :refer [add-cell!]]
             [clojure.ui-text-button :as text-button]))
 

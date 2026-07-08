@@ -14,7 +14,7 @@
             [clojure.event :as event]
             [clojure.vector2 :as vector2]
             [clojure.ui-widget :as widget]
-            [clojure.utils-click-listener :as click-listener]
+            [clojure.scene2d.utils.click-listener :as click-listener]
             [clojure.ui-stack :as stack]))
 
 (defn ->cell [do! draw! on-click-cell slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]

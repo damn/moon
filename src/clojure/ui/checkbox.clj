@@ -1,4 +1,4 @@
-(ns clojure.checkbox
+(ns clojure.ui.checkbox
   (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox Skin)))
 

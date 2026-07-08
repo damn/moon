@@ -1,4 +1,4 @@
-(ns clojure.can-pickup-item
+(ns clojure.inventory.can-pickup-item
   (:require [clojure.free-cell :as free-cell]
             [clojure.item-is-valid :as valid?]))
 

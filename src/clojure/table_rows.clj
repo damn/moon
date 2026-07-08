@@ -10,7 +10,7 @@
             [clojure.touchable :as touchable]
             [clojure.ui-stack :as stack]
             [clojure.ui-text-tooltip :as text-tooltip]
-            [clojure.utils-change-listener :as change-listener]
+            [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.ui-label :as label]))
 
 (defn overview-table-rows* [skin image-scale rows]

@@ -7,7 +7,7 @@
             [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.scene2d.actor.set-position! :refer [set-position!]]
             [clojure.db.build :refer [build]]
-            [clojure.can-pickup-item :as can-pickup-item]
+            [clojure.inventory.can-pickup-item :as can-pickup-item]
             [clojure.moon.create-component :refer [create-component]]
             [clojure.create-entity-state :as create-entity-state]
             [clojure.scene2d.group :as group]
@@ -45,7 +45,7 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.content-grid.update-entity :as update-entity]
-            [clojure.utils-change-listener :as change-listener]
+            [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.scene2d.actor.visible]
             [clojure.window :as gdx-window]
             [reduce-fsm :as fsm]))

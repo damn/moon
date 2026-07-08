@@ -1,5 +1,5 @@
 (ns clojure.editor.create-widget-s-boolean
-  (:require [clojure.checkbox :as checkbox]
+  (:require [clojure.ui.checkbox :as checkbox]
             [clojure.editor.create-widget :refer [create-widget]]))
 
 (defmethod create-widget :s/boolean

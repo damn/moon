@@ -1,4 +1,4 @@
-(ns clojure.choose-skill
+(ns clojure.moon.choose-skill
   (:require [clojure.is-useful :as useful?]
             [clojure.usable-state :as usable-state]
             [clojure.is-applicable :as applicable?]))

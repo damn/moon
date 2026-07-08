@@ -7,7 +7,7 @@
             [clojure.event :as event]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
-            [clojure.utils-change-listener :as change-listener]))
+            [clojure.scene2d.utils.change-listener :as change-listener]))
 
 (defmethod create-widget :s/sound
   [_ sound-name {:keys [ctx/skin]}]

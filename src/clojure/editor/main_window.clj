@@ -9,7 +9,7 @@
             [clojure.string :as str]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
-            [clojure.utils-change-listener :as change-listener]))
+            [clojure.scene2d.utils.change-listener :as change-listener]))
 
 (defn f
   [{:keys [ctx/db

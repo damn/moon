@@ -9,7 +9,7 @@
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
-            [clojure.utils-change-listener :as change-listener]))
+            [clojure.scene2d.utils.change-listener :as change-listener]))
 
 (defn create-component-row
   [{:keys [skin

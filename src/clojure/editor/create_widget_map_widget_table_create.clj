@@ -10,7 +10,7 @@
             [clojure.stage :as stage]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
-            [clojure.utils-change-listener :as change-listener]))
+            [clojure.scene2d.utils.change-listener :as change-listener]))
 
 (defn map-widget-table-create
   [{:keys [skin

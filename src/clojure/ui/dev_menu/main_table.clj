@@ -2,7 +2,7 @@
   (:require
             [clojure.scene2d.actor.add-listener] [clojure.stage :as stage]
             [clojure.event :as event]
-            [clojure.utils-change-listener :as change-listener]
+            [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.ui-text-button :as text-button]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.ui.dev-menu.main-table.add-upd-label :refer [add-upd-label!]]

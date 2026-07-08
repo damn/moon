@@ -1,4 +1,4 @@
-(ns clojure.cell-is-blocked)
+(ns clojure.grid.cell.is-blocked)
 
 (defn f [{:keys [movement]} z-order]
   (case movement

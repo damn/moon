@@ -22,7 +22,7 @@
             [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
-            [clojure.utils-change-listener :as utils-change-listener]
+            [clojure.scene2d.utils.change-listener :as utils-change-listener]
             [clojure.orthographic-camera.zoom-to-rect :as zoom-to-rect]))
 
 (defn- generate-level

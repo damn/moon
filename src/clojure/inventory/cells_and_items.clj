@@ -1,4 +1,4 @@
-(ns clojure.cells-and-items
+(ns clojure.inventory.cells-and-items
   (:require [clojure.valid-slots :as valid-slots]))
 
 (defn f [inventory slot]

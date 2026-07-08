@@ -3,7 +3,7 @@
             [clojure.moon.ctx-do :refer [do!]]
             [clojure.event :as event]
             [clojure.ui-text-button :as text-button]
-            [clojure.utils-change-listener :as change-listener]))
+            [clojure.scene2d.utils.change-listener :as change-listener]))
 
 (defn sound-columns [skin table sound-name open-select-sounds-handler]
   [{:actor (doto (text-button/create

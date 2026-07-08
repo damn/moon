@@ -16,7 +16,7 @@
             [clojure.tooltip :as tooltip]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-text-tooltip :as text-tooltip]
-            [clojure.utils-change-listener :as change-listener]
+            [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.window :as gdx-window]))
 
 (defn add-one-to-one-rows
