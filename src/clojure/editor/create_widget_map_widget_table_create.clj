@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-map-widget-table-create
   (:require [clojure.actor.set-name]
             [clojure.actor.add-listener]
-            [clojure.add-rows :refer [add-rows!]]
+            [clojure.table.add-rows :refer [add-rows!]]
             [clojure.editor.create-widget-add-component-window :as add-component-window]
             [clojure.editor.create-widget-create-component-row :as create-component-row]
             [clojure.event :as event]

@@ -1,4 +1,4 @@
-(ns clojure.add-rows
+(ns clojure.table.add-rows
   (:require [clojure.table :as table]
             [clojure.table.add-cell :refer [add-cell!]]))
 

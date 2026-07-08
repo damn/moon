@@ -3,7 +3,7 @@
             [clojure.actor.remove-actor]
             [clojure.actor.set-user-object]
             [clojure.actor.add-listener]
-            [clojure.add-rows :refer [add-rows!]]
+            [clojure.table.add-rows :refer [add-rows!]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.event :as event]
             [clojure.get-raw :refer [get-raw]]

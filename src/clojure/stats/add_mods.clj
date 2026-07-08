@@ -1,4 +1,4 @@
-(ns clojure.add-mods
+(ns clojure.stats.add-mods
   (:require [clojure.modifiers-add :as add]))
 
 (defn f [stats mods]

@@ -1,5 +1,5 @@
 (ns clojure.handle
-  (:require [clojure.add-mods :as add-mods]
+  (:require [clojure.stats.add-mods :as add-mods]
             [clojure.calc-damage :as calc-damage]
             [clojure.creature-melee-damage :as melee-damage]
             [clojure.effective-armor-save :as effective-armor-save]

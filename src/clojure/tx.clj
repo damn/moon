@@ -1,7 +1,7 @@
 (ns clojure.tx
   (:require [clojure.action-bar.add-skill :as add-skill-ui]
             [clojure.actor.add-listener]
-            [clojure.add-mods :as add-mods]
+            [clojure.stats.add-mods :as add-mods]
             [clojure.after-create-component :refer [after-create-component]]
             [clojure.align :as align]
             [clojure.v2.angle-from-vector :as angle-from-vector]

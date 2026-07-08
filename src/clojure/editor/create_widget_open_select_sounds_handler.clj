@@ -3,7 +3,7 @@
             [clojure.actor.get-width]
             [clojure.window.add-close-button :as add-close-button]
             [clojure.actor.add-listener]
-            [clojure.add-rows :refer [add-rows!]]
+            [clojure.table.add-rows :refer [add-rows!]]
             [clojure.ctx-do :refer [do!]]
             [clojure.editor.create-widget-rebuild-sound-widget :as rebuild-sound-widget]
             [clojure.event :as event]
