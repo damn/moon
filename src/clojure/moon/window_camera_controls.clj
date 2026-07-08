@@ -1,7 +1,7 @@
 (ns clojure.moon.window-camera-controls
   (:require [clojure.actor.set-visible]
             [clojure.actor.visible]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
             [clojure.key-pressed :refer [f] :rename {f key-pressed?}]))

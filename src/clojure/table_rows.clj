@@ -4,7 +4,7 @@
             [clojure.actor.set-touchable] [clojure.texture-region :as texture-region]
             [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.event :as event]
             [clojure.image-button :as image-button]
             [clojure.touchable :as touchable]

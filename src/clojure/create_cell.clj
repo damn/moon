@@ -10,7 +10,7 @@
             [clojure.actor.set-name]
             [clojure.actor.set-user-object]
             [clojure.actor.stage-to-local-coordinates] [clojure.image :as image]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.event :as event]
             [clojure.vector2 :as vector2]
             [clojure.ui-widget :as widget]

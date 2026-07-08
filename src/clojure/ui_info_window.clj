@@ -2,7 +2,7 @@
   (:require
             [clojure.actor.get-stage]
             [clojure.actor.set-name]
-            [clojure.actor.set-visible] [clojure.group :as group]
+            [clojure.actor.set-visible] [clojure.scene2d.group :as group]
             [clojure.label :as gdx-label]
             [clojure.pack! :as pack!]
             [clojure.actor.set-position! :refer [set-position!]]

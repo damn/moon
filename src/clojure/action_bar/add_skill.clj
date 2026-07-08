@@ -5,7 +5,7 @@
             [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
             [clojure.button-group :as button-group]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.image-button :as image-button]
             [clojure.ui-text-tooltip :as text-tooltip]
             [clojure.action-bar.get-data :as get-data]))

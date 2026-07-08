@@ -1,6 +1,6 @@
 (ns clojure.moon.windows-create
   (:require [clojure.actor.set-name :as set-name]
-            [clojure.group :as group]))
+            [clojure.scene2d.group :as group]))
 
 (defn windows-create [ctx actor-fns]
   (let [group* (group/new)]

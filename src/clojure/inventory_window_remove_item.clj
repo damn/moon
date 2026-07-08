@@ -1,7 +1,7 @@
 (ns clojure.inventory-window-remove-item
   (:require
             [clojure.actor.get-user-object] [clojure.image :as image]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.get-cell :as get-cell]))
 
 (defn f [inventory-window cell]

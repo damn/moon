@@ -4,7 +4,7 @@
             [clojure.actor.remove-actor]
             [clojure.actor.set-user-object]
             [clojure.table.add-rows :refer [add-rows!]]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.pack! :as pack!]
             [clojure.window :as gdx-window]))
 

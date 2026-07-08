@@ -4,7 +4,7 @@
             [clojure.actor.add-listener]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
             [clojure.event :as event]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.k-label-text :as k-label-text]
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]

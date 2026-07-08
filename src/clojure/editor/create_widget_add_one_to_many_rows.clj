@@ -7,7 +7,7 @@
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.event :as event]
             [clojure.get-raw :refer [get-raw]]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.image :as image]
             [clojure.moon-textures :as textures]
             [clojure.pack! :as pack!]

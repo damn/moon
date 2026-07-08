@@ -1,6 +1,6 @@
 (ns clojure.action-bar.get-data
   (:require
-            [clojure.actor.get-user-object] [clojure.group :as group]))
+            [clojure.actor.get-user-object] [clojure.scene2d.group :as group]))
 
 (defn f
   [action-bar]

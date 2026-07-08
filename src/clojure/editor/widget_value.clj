@@ -2,7 +2,7 @@
   (:require [clojure.actor.get-user-object]
             [clojure.checkbox :as checkbox]
             [clojure.edn :as edn]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.select-box :as gdx-select-box]
             [clojure.text-field :as gdx-text-field]))
 

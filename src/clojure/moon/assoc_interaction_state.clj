@@ -2,7 +2,7 @@
   (:require [clojure.action-bar.selected-skill :as selected-skill]
             [clojure.actor.mouseover-info :refer [mouseover-actor-info]]
             [clojure.body-distance :as distance]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.mouseover-actor :refer [mouseover-actor]]
             [clojure.player-effect-ctx :as player-effect-ctx]
             [clojure.usable-state :as usable-state]))

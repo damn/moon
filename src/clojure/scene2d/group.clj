@@ -1,4 +1,4 @@
-(ns clojure.group
+(ns clojure.scene2d.group
   (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 

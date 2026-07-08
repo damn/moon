@@ -2,7 +2,7 @@
   (:require [clojure.actor.remove-actor]
             [clojure.editor.create-widget-property-editor-window :as property-editor-window]
             [clojure.editor.widget-value :refer [map-widget-table-get-value]]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.stage :as stage]))
 
 (defn rebuild-editor-window!

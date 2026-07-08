@@ -1,6 +1,6 @@
 (ns clojure.add-upd-label
   (:require [clojure.image :as image]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]
             [clojure.table.add-cell :refer [add-cell!]]

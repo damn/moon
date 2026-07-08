@@ -4,7 +4,7 @@
             [clojure.actor.get-user-object] [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
             [clojure.image :as image]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.ui-text-tooltip :as text-tooltip]
             [clojure.get-cell :as get-cell]))
 

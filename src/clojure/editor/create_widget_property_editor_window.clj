@@ -8,7 +8,7 @@
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.widget-value :refer [widget-value]]
             [clojure.event :as event]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.key-just-pressed :as key-just-pressed?]
             [clojure.scene2d-actor :as actor]
             [clojure.scroll-pane-cell :as scroll-pane-cell]

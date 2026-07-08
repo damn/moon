@@ -10,7 +10,7 @@
             [clojure.can-pickup-item :as can-pickup-item]
             [clojure.create-component :refer [create-component]]
             [clojure.create-entity-state :as create-entity-state]
-            [clojure.group :as group]
+            [clojure.scene2d.group :as group]
             [clojure.handle :as handle]
             [clojure.increment :as increment]
             [clojure.inventory-window-remove-item :as remove-item-ui]
