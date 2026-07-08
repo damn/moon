@@ -1,24 +1,25 @@
 (ns clojure.editor.create.stage.main-window
-  (:require [clojure.add-close-button :as add-close-button]
+  (:require [clojure.actor.find-ancestor :refer [find-ancestor]]
+            [clojure.actor.get-height]
+            [clojure.actor.get-stage]
+            [clojure.actor.get-user-object]
+            [clojure.actor.get-width]
+            [clojure.actor.remove-actor]
+            [clojure.actor.set-user-object]
+            [clojure.add-close-button :as add-close-button]
             [clojure.add-listener]
             [clojure.add-rows :refer [add-rows!]]
-            [clojure.all-raw :refer [all-raw]]
             [clojure.animation-image-button :as animation-image-button]
             [clojure.checkbox :as checkbox]
-            [clojure.constants :refer [property-type->overview-table-props]]
             [clojure.ctx-do :refer [do!]]
             [clojure.db-update :refer [update!]]
             [clojure.default-value :refer [default-value]]
             [clojure.delete :refer [delete!]]
+            [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.edn :as edn]
             [clojure.edn-str :refer [->edn-str]]
             [clojure.event :as event]
-            [clojure.actor.find-ancestor :refer [find-ancestor]]
             [clojure.get-raw :refer [get-raw]]
-            [clojure.actor.get-stage]
-            [clojure.actor.get-user-object]
-            [clojure.actor.get-height]
-            [clojure.actor.get-width]
             [clojure.group :as group]
             [clojure.horiz-sep :as horiz-sep]
             [clojure.image :as image]
@@ -31,18 +32,15 @@
             [clojure.pack! :as pack!]
             [clojure.property-image :as property-image]
             [clojure.property-types :refer [property-types]]
-            [clojure.actor.remove-actor]
             [clojure.scene2d-actor :as actor]
             [clojure.schemas-map-keys :refer [map-keys]]
             [clojure.schemas-optional-keyset :refer [optional-keyset]]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.select-box :as gdx-select-box]
             [clojure.set :as set]
-            [clojure.actor.set-user-object]
             [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.stage :as stage]
             [clojure.string :as str]
-            [clojure.table-rows :refer [overview-table-rows*]]
             [clojure.text-field :as gdx-text-field]
             [clojure.texture-region :as texture-region]
             [clojure.texture-region-drawable :as texture-region-drawable]
@@ -61,31 +59,7 @@
             [clojure.window :as gdx-window]
             [clojure.with-window-close :as with-window-close]))
 
-(defn- property-overview-window-create
-  [{:keys [db
-           textures
-           skin
-           property-type
-           clicked-id-fn]}]
-  (doto (window/create
-         {:title "Edit"
-          :skin skin
-          :table/rows (let [{:keys [sort-by-fn
-                                    extra-info-text
-                                    columns
-                                    image-scale]} (get property-type->overview-table-props property-type)]
-                        (->> (all-raw db property-type)
-                             (sort-by sort-by-fn)
-                             (map (fn [property]
-                                    {:texture-region (textures/texture-region textures (property-image/f property))
-                                     :on-clicked (fn [actor ctx]
-                                                   (clicked-id-fn actor (:property/id property) ctx))
-                                     :tooltip (tooltip/f property)
-                                     :extra-info-text (extra-info-text property)}))
-                             (partition-all columns)
-                             (overview-table-rows* skin image-scale)))})
-    (add-close-button/f! skin)
-    (gdx-window/set-modal! true)))
+
 
 (def ^:private property-k-sort-order
   [:property/id
@@ -247,7 +221,7 @@
                                                      :as ctx} (:stage/ctx (event/get-stage event))]
                                                 (stage/add-actor!
                                                  stage
-                                                 (property-overview-window-create
+                                                 (property-overview-window
                                                   {:db db
                                                    :textures textures
                                                    :skin skin
@@ -294,7 +268,7 @@
                                                    :as ctx} (:stage/ctx (event/get-stage event))]
                                               (stage/add-actor!
                                                stage
-                                               (property-overview-window-create
+                                               (property-overview-window
                                                 {:db db
                                                  :textures textures
                                                  :skin skin
@@ -616,7 +590,7 @@
                                                                       ctx/textures]
                                                                :as ctx} (:stage/ctx (event/get-stage event))]
                                                           (stage/add-actor! stage
-                                                                            (property-overview-window-create
+                                                                            (property-overview-window
                                                                              {:db db
                                                                               :textures textures
                                                                               :skin skin
