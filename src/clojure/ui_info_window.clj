@@ -1,11 +1,11 @@
 (ns clojure.ui-info-window
   (:require
-            [clojure.get-stage]
-            [clojure.set-name]
-            [clojure.set-visible] [clojure.group :as group]
+            [clojure.actor.get-stage]
+            [clojure.actor.set-name]
+            [clojure.actor.set-visible] [clojure.group :as group]
             [clojure.label :as gdx-label]
             [clojure.pack! :as pack!]
-            [clojure.actor-set-position :refer [set-position!]]
+            [clojure.actor.set-position! :refer [set-position!]]
             [clojure.scene2d-actor :as actor]
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]
@@ -25,12 +25,12 @@
                       {:title title
                        :skin skin
                        :table/rows [[{:actor label :expand? true}]]})
-                 (clojure.set-name/f actor-name)
-                 (clojure.set-visible/f visible?)
+                 (clojure.actor.set-name/f actor-name)
+                 (clojure.actor.set-visible/f visible?)
                  (set-position! position))]
     (group/add-actor! window (actor/f
                          {:act! (fn [this delta]
-                                  (when-let [stage (clojure.get-stage/f this)]
+                                  (when-let [stage (clojure.actor.get-stage/f this)]
                                     (gdx-label/set-text! label (set-label-text! (:stage/ctx stage))))
                                   (pack!/f window))}))
     window))

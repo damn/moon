@@ -1,7 +1,7 @@
-(ns clojure.get-stage
+(ns clojure.actor.get-height
   (:refer-clojure :exclude [new remove])
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn f [actor]
-  (Actor/.getStage actor))
+(defn f [^Actor actor]
+  (Actor/.getHeight actor))

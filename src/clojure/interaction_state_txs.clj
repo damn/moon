@@ -1,6 +1,6 @@
 (ns clojure.interaction-state-txs
   (:require
-            [clojure.visible] [clojure.group :as group]
+            [clojure.actor.visible] [clojure.group :as group]
             [clojure.can-pickup-item :as can-pickup-item]))
 
 (defn interaction-state->txs [[k params] stage player-eid]
@@ -21,7 +21,7 @@
              (-> stage
                  :stage/root
                  (#(group/find-actor % "moon.ui.windows.inventory"))
-                 clojure.visible/f)
+                 clojure.actor.visible/f)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]

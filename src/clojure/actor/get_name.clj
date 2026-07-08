@@ -1,4 +1,4 @@
-(ns clojure.get-name
+(ns clojure.actor.get-name
   (:refer-clojure :exclude [new remove])
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)))

@@ -21,12 +21,12 @@
             [clojure.edn :as edn]
             [clojure.edn-str :refer [->edn-str]]
             [clojure.event :as event]
-            [clojure.find-ancestor :refer [find-ancestor]]
+            [clojure.actor.find-ancestor :refer [find-ancestor]]
             [clojure.get-raw :refer [get-raw]]
-            [clojure.get-stage]
-            [clojure.get-user-object]
-            [clojure.get-height]
-            [clojure.get-width]
+            [clojure.actor.get-stage]
+            [clojure.actor.get-user-object]
+            [clojure.actor.get-height]
+            [clojure.actor.get-width]
             [clojure.group :as group]
             [clojure.horiz-sep :as horiz-sep]
             [clojure.image :as image]
@@ -40,7 +40,7 @@
             [clojure.pack! :as pack!]
             [clojure.property-image :as property-image]
             [clojure.property-types :refer [property-types]]
-            [clojure.remove-actor]
+            [clojure.actor.remove-actor]
             [clojure.scene2d-actor :as actor]
             [clojure.schemas-map-keys :refer [map-keys]]
             [clojure.schemas-optional-keyset :refer [optional-keyset]]
@@ -48,7 +48,7 @@
             [clojure.select-box :as gdx-select-box]
             [clojure.set :as set]
             [clojure.set-ctx :as set-ctx]
-            [clojure.set-user-object]
+            [clojure.actor.set-user-object]
             [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.stage :as stage]
             [clojure.string :as str]
@@ -104,13 +104,13 @@
 
 (defn- map-widget-table-get-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? clojure.get-user-object/f) (group/get-children table))
-              :let [[k _] (clojure.get-user-object/f widget)]]
+        (for [widget (filter (comp vector? clojure.actor.get-user-object/f) (group/get-children table))
+              :let [[k _] (clojure.actor.get-user-object/f widget)]]
           [k (widget-value (get schemas k) widget schemas)])))
 
 (defmethod widget-value :default
   [_ widget _schemas]
-  ((clojure.get-user-object/f widget) 1))
+  ((clojure.actor.get-user-object/f widget) 1))
 
 (defmethod widget-value :s/boolean
   [_ widget _schemas]
@@ -131,13 +131,13 @@
 (defmethod widget-value :s/one-to-many
   [_ widget _schemas]
   (->> (group/get-children widget)
-       (keep clojure.get-user-object/f)
+       (keep clojure.actor.get-user-object/f)
        set))
 
 (defmethod widget-value :s/one-to-one
   [_ widget _schemas]
   (->> (group/get-children widget)
-       (keep clojure.get-user-object/f)
+       (keep clojure.actor.get-user-object/f)
        first))
 
 (defmethod widget-value :s/string
@@ -152,10 +152,10 @@
   (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
     (add-rows! table [(->sound-columns skin table sound-name)])
-    (clojure.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
+    (clojure.actor.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
     (pack!/f (find-ancestor table (partial instance? gdx-window/class)))
-    (let [[k _] (clojure.get-user-object/f table)]
-      (clojure.set-user-object/f table [k sound-name]))))
+    (let [[k _] (clojure.actor.get-user-object/f table)]
+      (clojure.actor.set-user-object/f table [k sound-name]))))
 
 (defn- open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin
@@ -185,9 +185,9 @@
                                 {:actor (scroll-pane/create
                                          {:actor table
                                           :skin skin})
-                                 :width  (+ (clojure.get-width/f table) 50)
+                                 :width  (+ (clojure.actor.get-width/f table) 50)
                                  :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
-                                              (clojure.get-height/f table))})]]})
+                                              (clojure.actor.get-height/f table))})]]})
                             (add-close-button/f! skin)
                             (gdx-window/set-modal! true)))))
 
@@ -237,13 +237,13 @@
                                                    :skin skin
                                                    :property-type property-type
                                                    :clicked-id-fn (fn [actor id ctx]
-                                                                    (clojure.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
+                                                                    (clojure.actor.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
                                                                     (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (get-raw db property-id)]
            {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
                      (clojure.add-listener/f (text-tooltip/create (tooltip/f property) skin))
-                     (clojure.set-user-object/f property-id))}))]
+                     (clojure.actor.set-user-object/f property-id))}))]
       [(when property-id
          {:actor (doto (text-button/create
                         {:text "-"
@@ -284,13 +284,13 @@
                                                  :skin skin
                                                  :property-type property-type
                                                  :clicked-id-fn (fn [actor id ctx]
-                                                                  (clojure.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
+                                                                  (clojure.actor.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
                                                                   (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (get-raw db property-id)]
           {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
                     (clojure.add-listener/f (text-tooltip/create (tooltip/f property) skin))
-                    (clojure.set-user-object/f property-id))}))
+                    (clojure.actor.set-user-object/f property-id))}))
       (for [id property-ids]
         {:actor (doto (text-button/create
                        {:text "-"
@@ -340,9 +340,9 @@
                                              :skin skin})
                                        (clojure.add-listener/f (change-listener/create
                                                                 (fn [event _actor]
-                                                                  (clojure.remove-actor/f (first (filter (fn [actor]
-                                                                                                          (and (clojure.get-user-object/f actor)
-                                                                                                               (= k ((clojure.get-user-object/f actor) 0))))
+                                                                  (clojure.actor.remove-actor/f (first (filter (fn [actor]
+                                                                                                          (and (clojure.actor.get-user-object/f actor)
+                                                                                                               (= k ((clojure.actor.get-user-object/f actor) 0))))
                                                                                                         (group/get-children table))))
                                                                   (let [ctx (:stage/ctx (event/get-stage event))]
                                                                     (rebuild-editor-window! ctx)))))))
@@ -368,7 +368,7 @@
            opt?]}]
   (let [table (doto (table/create
                      {:table/cell-defaults {:pad 5}})
-                (clojure.set-name/f "moon.db.schema.map.ui.widget"))
+                (clojure.actor.set-name/f "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep/f colspan)
                                     (map (fn [k]
@@ -426,7 +426,7 @@
                         :text (name k)})
                   (clojure.add-listener/f (change-listener/create
                                            (fn [event _actor]
-                                             (clojure.remove-actor/f window)
+                                             (clojure.actor.remove-actor/f window)
                                              (let [ctx (:stage/ctx (event/get-stage event))]
                                                (add-rows! map-widget-table [(create-component-row
                                                                             {:skin skin
@@ -447,7 +447,7 @@
 
 (defn- build-widget [ctx schema k v]
   (let [widget (create-widget schema v ctx)]
-    (clojure.set-user-object/f widget [k v])
+    (clojure.actor.set-user-object/f widget [k v])
     widget))
 
 (defmethod create-widget :default
@@ -590,11 +590,11 @@
       (gdx-window/set-modal! true)
       (group/add-actor! (actor/f
                          {:act! (fn [this delta]
-                                  (when-let [stage (clojure.get-stage/f this)]
+                                  (when-let [stage (clojure.actor.get-stage/f this)]
                                     (let [ctx (:stage/ctx stage)]
                                       (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                         (clicked-save-fn this ctx)))))}))
-      (clojure.set-name/f "moon.ui.clojure.editor-window"))))
+      (clojure.actor.set-name/f "moon.ui.clojure.editor-window"))))
 
 (defn- rebuild-editor-window!
   [{:keys [ctx/db
@@ -605,7 +605,7 @@
                    (group/find-actor "moon.ui.clojure.editor-window"))
         map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
         property (map-widget-table-get-value map-widget-table (:db/schemas db))]
-    (clojure.remove-actor/f window)
+    (clojure.actor.remove-actor/f window)
     (stage/add-actor! stage
                       (property-editor-window
                        {:ctx ctx

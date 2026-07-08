@@ -1,10 +1,10 @@
-(ns clojure.find-ancestor
+(ns clojure.actor.find-ancestor
   (:require
-            [clojure.get-parent]))
+            [clojure.actor.get-parent]))
 
 (defn find-ancestor [actor pred?]
   (loop [a actor]
-    (if-let [p (clojure.get-parent/f a)]
+    (if-let [p (clojure.actor.get-parent/f a)]
       (if (pred? p)
         p
         (recur p))

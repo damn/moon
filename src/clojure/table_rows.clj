@@ -1,7 +1,7 @@
 (ns clojure.table-rows
   (:require
             [clojure.add-listener]
-            [clojure.set-touchable] [clojure.texture-region :as texture-region]
+            [clojure.actor.set-touchable] [clojure.texture-region :as texture-region]
             [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
             [clojure.group :as group]
@@ -32,5 +32,5 @@
                        (doto (label/create
                               {:text extra-info-text
                                :skin skin})
-                         (clojure.set-touchable/f touchable/disabled))])
+                         (clojure.actor.set-touchable/f touchable/disabled))])
                 stack)})))

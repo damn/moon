@@ -1,6 +1,6 @@
 (ns clojure.moon-start
   (:require [clojure.content-grid.active-entities :as active-entities]
-            [clojure.actor-set-position :as actor-set-position]
+            [clojure.actor.set-position! :as actor-set-position]
             [clojure.all-raw :refer [all-raw]]
             [clojure.app-schema :refer [schema]]
             [clojure.application :as application]
@@ -45,8 +45,8 @@
             [clojure.generate-font :as generate-font]
             [clojure.get-hitpoints :as get-hitpoints]
             [clojure.get-mana :as get-mana]
-            [clojure.get-stage]
-            [clojure.get-user-object]
+            [clojure.actor.get-stage]
+            [clojure.actor.get-user-object]
             [clojure.graphics :as graphics]
             [clojure.graphics-shape-drawer :as shape-drawer]
             [clojure.grid-cell :as grid-cell]
@@ -73,7 +73,7 @@
             [clojure.moon-textures :as textures]
             [clojure.mouse-position :refer [mouse-position]]
             [clojure.mouseover-actor :refer [mouseover-actor]]
-            [clojure.mouseover-actor-info :refer [mouseover-actor-info]]
+            [clojure.actor.mouseover-info :refer [mouseover-actor-info]]
             [clojure.movement-property :as movement-property]
             [clojure.new-color]
             [clojure.orthographic-camera :as orthographic-camera]
@@ -86,14 +86,14 @@
             [clojure.point-to-entities :refer [point->entities]]
             [clojure.readable :as readable]
             [clojure.raycaster-is-blocked :as blocked?]
-            [clojure.remove-actor]
+            [clojure.actor.remove-actor]
             [clojure.scene2d-actor :as actor]
             [clojure.action-bar.selected-skill :as selected-skill]
             [clojure.set-ctx :as set-ctx]
             [clojure.set-fill-parent! :as set-fill-parent!]
-            [clojure.set-name :as set-name]
-            [clojure.set-user-object :as set-user-object]
-            [clojure.set-visible]
+            [clojure.actor.set-name :as set-name]
+            [clojure.actor.set-user-object :as set-user-object]
+            [clojure.actor.set-visible]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.spawn-positions :as spawn-positions]
             [clojure.stage :as stage]
@@ -118,7 +118,7 @@
             [clojure.usable-state :as usable-state]
             [clojure.validate-humanize :refer [validate-humanize]]
             [clojure.val-max-ratio :as ratio]
-            [clojure.visible]
+            [clojure.actor.visible]
             [clojure.visible-tiles :refer [visible-tiles]]
             [clojure.viewport :as viewport]
             [clojure.width :refer [->width]]
@@ -290,7 +290,7 @@
                           (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
     (actor/f
      {:draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (clojure.get-stage/f this)]
+               (when-let [stage (clojure.actor.get-stage/f this)]
                  (draw! (:stage/ctx stage)
                         (create-draws (:stage/ctx stage)))))})))
 
@@ -367,7 +367,7 @@
                                     (set-name/f "inventory-cell-table"))
                            :pad 4}]]})
       (set-name/f "moon.ui.windows.inventory")
-      (clojure.set-visible/f false)
+      (clojure.actor.set-visible/f false)
       (actor-set-position/set-position! position))))
 
 (defn- inventory-window-create
@@ -413,7 +413,7 @@
 (defn- player-state-draw-create [_ctx]
   (actor/f
    {:draw! (fn [this _batch _parent-alpha]
-             (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (clojure.get-stage/f this))
+             (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (clojure.actor.get-stage/f this))
                    entity @player-eid
                    state-k (:state (:entity/fsm entity))]
                (draw! ctx (entity-state-draw-ui-view/f [state-k (state-k entity)] player-eid ctx))))}))
@@ -422,9 +422,9 @@
   (let [message-duration-seconds 0.5]
     (doto (actor/f
            {:draw! (fn [this _batch _parent-alpha]
-                     (when-let [stage (clojure.get-stage/f this)]
+                     (when-let [stage (clojure.actor.get-stage/f this)]
                        (draw! (:stage/ctx stage)
-                              [(let [state (clojure.get-user-object/f this)
+                              [(let [state (clojure.actor.get-user-object/f this)
                                      vp-width (:viewport/world-width (:stage/viewport stage))
                                      vp-height (:viewport/world-height (:stage/viewport stage))]
                                  (when-let [text (:text @state)]
@@ -434,7 +434,7 @@
                                                 :scale 2.5
                                                 :up? true}]))])))
             :act! (fn [this delta]
-                    (let [state (clojure.get-user-object/f this)]
+                    (let [state (clojure.actor.get-user-object/f this)]
                       (when (:text @state)
                         (swap! state update :counter + delta)
                         (when (>= (:counter @state) message-duration-seconds)
@@ -961,15 +961,15 @@
   (when (key-just-pressed? input (:close-windows-key controls))
     (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
          group/get-children
-         (run! #(clojure.set-visible/f % false))))
+         (run! #(clojure.actor.set-visible/f % false))))
 
   (when (key-just-pressed? input (:toggle-inventory controls))
     (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-      (clojure.set-visible/f inventory (not (clojure.visible/f inventory)))))
+      (clojure.actor.set-visible/f inventory (not (clojure.actor.visible/f inventory)))))
 
   (when (key-just-pressed? input (:toggle-entity-info controls))
     (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
-      (clojure.set-visible/f entity-info (not (clojure.visible/f entity-info)))))
+      (clojure.actor.set-visible/f entity-info (not (clojure.actor.visible/f entity-info)))))
   ctx)
 
 (defn- update-draw-stage-step

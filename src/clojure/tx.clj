@@ -5,7 +5,7 @@
             [clojure.after-create-component :refer [after-create-component]]
             [clojure.align :as align]
             [clojure.angle-from-vector :as angle-from-vector]
-            [clojure.actor-set-position :refer [set-position!]]
+            [clojure.actor.set-position! :refer [set-position!]]
             [clojure.build :refer [build]]
             [clojure.can-pickup-item :as can-pickup-item]
             [clojure.create-component :refer [create-component]]
@@ -28,7 +28,7 @@
             [clojure.play :as play]
             [clojure.records-entity :as entity]
             [clojure.register-eid :as register-eid]
-            [clojure.remove-actor]
+            [clojure.actor.remove-actor]
             [clojure.content-grid.remove-entity :as remove-entity]
             [clojure.remove-from-occupied-cells :refer [remove-from-occupied-cells!]]
             [clojure.remove-from-touched-cells :refer [remove-from-touched-cells!]]
@@ -36,9 +36,9 @@
             [clojure.safe-merge :refer [safe-merge]]
             [clojure.set-occupied-cells :refer [set-occupied-cells!]]
             [clojure.set-touched-cells :refer [set-touched-cells!]]
-            [clojure.set-user-object]
-            [clojure.set-visible]
-            [clojure.set-name]
+            [clojure.actor.set-user-object]
+            [clojure.actor.set-visible]
+            [clojure.actor.set-name]
             [clojure.stage :as stage]
             [clojure.timer-create :refer [create-timer]]
             [clojure.ui-label :as label]
@@ -46,7 +46,7 @@
             [clojure.ui-window :as window]
             [clojure.content-grid.update-entity :as update-entity]
             [clojure.utils-change-listener :as change-listener]
-            [clojure.visible]
+            [clojure.actor.visible]
             [clojure.window :as gdx-window]
             [reduce-fsm :as fsm]))
 
@@ -192,7 +192,7 @@
      (-> stage
          :stage/root
          (#(group/find-actor % "player-message"))
-         (clojure.set-user-object/f (atom {:text message :counter 0})))
+         (clojure.actor.set-user-object/f (atom {:text message :counter 0})))
      nil)
 
    :tx/show-modal
@@ -208,12 +208,12 @@
                                                         (clojure.add-listener/f
                                                          (change-listener/create
                                                           (fn [_event _actor]
-                                                            (clojure.remove-actor/f
+                                                            (clojure.actor.remove-actor/f
                                                              (group/find-actor (:stage/root stage)
                                                                                "moon.ui.modal-window"))
                                                             (on-click)))))}]]})
                          (gdx-window/set-modal! true)
-                         (clojure.set-name/f "moon.ui.modal-window")
+                         (clojure.actor.set-name/f "moon.ui.modal-window")
                          (set-position! [(/ (:viewport/world-width (:stage/viewport stage)) 2)
                                          (* (:viewport/world-height (:stage/viewport stage)) (/ 3 4))]
                                         align/center)))
@@ -328,7 +328,7 @@
    :tx/toggle-inventory-visible
    (fn [{:keys [ctx/stage]}]
      (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-       (clojure.set-visible/f inventory (not (clojure.visible/f inventory)))
+       (clojure.actor.set-visible/f inventory (not (clojure.actor.visible/f inventory)))
        nil))
 
    :tx/ui-remove-item

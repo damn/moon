@@ -1,15 +1,15 @@
 (ns clojure.create-cell
   (:require
-            [clojure.actor-hit]
+            [clojure.actor.hit]
             [clojure.add-listener]
-            [clojure.get-parent]
-            [clojure.get-stage]
-            [clojure.get-user-object]
-            [clojure.get-x]
-            [clojure.get-y]
-            [clojure.set-name]
-            [clojure.set-user-object]
-            [clojure.stage-to-local-coordinates] [clojure.image :as image]
+            [clojure.actor.get-parent]
+            [clojure.actor.get-stage]
+            [clojure.actor.get-user-object]
+            [clojure.actor.get-x]
+            [clojure.actor.get-y]
+            [clojure.actor.set-name]
+            [clojure.actor.set-user-object]
+            [clojure.actor.stage-to-local-coordinates] [clojure.image :as image]
             [clojure.group :as group]
             [clojure.event :as event]
             [clojure.vector2 :as vector2]
@@ -26,22 +26,22 @@
        (run! #(group/add-actor! stack %)
              [(widget/f
                {:draw! (fn [this _batch _parent-alpha]
-                         (when-let [stage (clojure.get-stage/f this)]
+                         (when-let [stage (clojure.actor.get-stage/f this)]
                            (let [{:keys [ctx/player-eid
                                          ctx/ui-mouse-position]
                                   :as ctx} (:stage/ctx stage)]
                              (draw! ctx
                                     (draw-cell-rect @player-eid
-                                                    (clojure.get-x/f this)
-                                                    (clojure.get-y/f this)
+                                                    (clojure.actor.get-x/f this)
+                                                    (clojure.actor.get-y/f this)
                                                     (let [[x y] (vector2/clojurize
-                                                                 (clojure.stage-to-local-coordinates/f this
+                                                                 (clojure.actor.stage-to-local-coordinates/f this
                                                                                               (vector2/new ui-mouse-position)))]
-                                                      (clojure.actor-hit/f this x y true))
-                                                    (clojure.get-user-object/f (clojure.get-parent/f this)))))))})
+                                                      (clojure.actor.hit/f this x y true))
+                                                    (clojure.actor.get-user-object/f (clojure.actor.get-parent/f this)))))))})
               (doto (image/new-drawable background-drawable)
-                (clojure.set-name/f "image-widget")
-                (clojure.set-user-object/f {:background-drawable background-drawable
+                (clojure.actor.set-name/f "image-widget")
+                (clojure.actor.set-user-object/f {:background-drawable background-drawable
                                     :cell-size cell-size}))])
        (doto stack
          (clojure.add-listener/f (click-listener/create
@@ -54,5 +54,5 @@
                                    (if-let [f (k->clicked-inventory-cell state-k)]
                                      (f player-eid cell)
                                      nil))))))
-         (clojure.set-name/f "inventory-cell")
-         (clojure.set-user-object/f cell)))}))
+         (clojure.actor.set-name/f "inventory-cell")
+         (clojure.actor.set-user-object/f cell)))}))

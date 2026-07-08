@@ -1,7 +1,7 @@
 (ns clojure.add-close-button
   (:require
             [clojure.add-listener]
-            [clojure.remove-actor] [clojure.window :as window]
+            [clojure.actor.remove-actor] [clojure.window :as window]
             [clojure.utils-change-listener :as change-listener]
             [clojure.add-cell :refer [add-cell!]]
             [clojure.ui-text-button :as text-button]))
@@ -11,4 +11,4 @@
              {:actor (doto (text-button/create {:text "X" :skin skin})
                        (clojure.add-listener/f (change-listener/create
                                        (fn [_event _actor]
-                                         (clojure.remove-actor/f window)))))}))
+                                         (clojure.actor.remove-actor/f window)))))}))
