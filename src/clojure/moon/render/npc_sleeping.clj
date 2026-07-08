@@ -1,4 +1,4 @@
-(ns clojure.k-render.npc-sleeping)
+(ns clojure.moon.render.npc-sleeping)
 
 (defn f
   [_ {:keys [entity/body]} _ctx]

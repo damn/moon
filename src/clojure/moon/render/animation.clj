@@ -1,5 +1,5 @@
-(ns clojure.k-render.animation
-  (:require [clojure.k-render.image :as image]))
+(ns clojure.moon.render.animation
+  (:require [clojure.moon.render.image :as image]))
 
 (defn f
   [{:keys [frames

@@ -1,4 +1,4 @@
-(ns clojure.k-render.stunned)
+(ns clojure.moon.render.stunned)
 
 (defn f
   [_ {:keys [entity/body]} {:keys [ctx/colors]}]

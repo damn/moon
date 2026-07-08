@@ -1,4 +1,4 @@
-(ns clojure.k-render.temp-modifier)
+(ns clojure.moon.render.temp-modifier)
 
 (defn f
   [_ entity {:keys [ctx/colors]}]

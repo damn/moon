@@ -1,4 +1,4 @@
-(ns clojure.k-render.image
+(ns clojure.moon.render.image
   (:require [clojure.moon-textures :as textures]))
 
 (defn f

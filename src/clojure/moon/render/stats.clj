@@ -1,4 +1,4 @@
-(ns clojure.k-render.stats
+(ns clojure.moon.render.stats
   (:require [clojure.get-hitpoints :as get-hitpoints]
             [clojure.val-max-ratio :as ratio]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]))

@@ -1,4 +1,4 @@
-(ns clojure.k-render.string-effect
+(ns clojure.moon.render.string-effect
   (:require [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (defn f

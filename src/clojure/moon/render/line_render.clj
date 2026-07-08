@@ -1,4 +1,4 @@
-(ns clojure.k-render.line-render)
+(ns clojure.moon.render.line-render)
 
 (defn f
   [{:keys [thick? end color]}

@@ -1,4 +1,4 @@
-(ns clojure.k-render.clickable)
+(ns clojure.moon.render.clickable)
 
 (defn f
   [{:keys [text]}

@@ -2,7 +2,7 @@
   (:require [clojure.gdx.graphics.g2d.batch :as batch]
             [clojure.body-draw-rectangle :as draw-rectangle]
             [clojure.draw :refer [draw!]]
-            [clojure.draw-component :refer [draw-component]]
+            [clojure.moon.draw-component :refer [draw-component]]
             [clojure.factions-iterations :refer [factions-iterations]]
             [clojure.graphics-shape-drawer :as shape-drawer]
             [clojure.line-of-sight :as line-of-sight?]

@@ -1,4 +1,4 @@
-(ns clojure.k-render.player-item-on-cursor
+(ns clojure.moon.render.player-item-on-cursor
   (:require [clojure.item-place-position :refer [item-place-position]]
             [clojure.mouseover-actor :refer [mouseover-actor]]
             [clojure.moon-textures :as textures]))
