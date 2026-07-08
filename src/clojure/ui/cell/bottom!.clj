@@ -1,5 +1,5 @@
-(ns clojure.cell.center!
+(ns clojure.ui.cell.bottom!
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defn f [^Cell cell]
-  (.center cell))
+  (.bottom cell))

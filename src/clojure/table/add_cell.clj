@@ -1,6 +1,6 @@
 (ns clojure.table.add-cell
   (:require [clojure.table :as table]
-            [clojure.cell.set-opts :as set-opts]))
+            [clojure.ui.cell.set-opts :as set-opts]))
 
 (defn add-cell! [table cell-declaration]
   (-> (table/add! table (:actor cell-declaration))

@@ -1,5 +1,5 @@
-(ns clojure.cell.fill-y!
+(ns clojure.ui.cell.fill-x!
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defn f [^Cell cell]
-  (.fillY cell))
+  (.fillX cell))

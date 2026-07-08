@@ -1,4 +1,4 @@
-(ns clojure.cell.left!
+(ns clojure.ui.cell.left!
   (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
 
 (defn f [^Cell cell]
