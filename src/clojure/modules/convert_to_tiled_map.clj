@@ -1,4 +1,4 @@
-(ns clojure.convert-to-tiled-map
+(ns clojure.modules.convert-to-tiled-map
   (:require [clojure.tiled-tiled-map :as tiled-map]
             [clojure.grid-to-tiled-map :refer [grid->tiled-map]]))
 

@@ -1,4 +1,4 @@
-(ns clojure.create-scaled-grid
+(ns clojure.modules.create-scaled-grid
   (:require [clojure.scale-grid :as scale-grid]))
 
 (defn f [w]

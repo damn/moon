@@ -1,4 +1,4 @@
-(ns clojure.transitions
+(ns clojure.modules.transitions
   (:require [clojure.get-4-neighbours :refer [get-4-neighbours]]))
 
 (let [idxvalues-order [[1 0] [-1 0] [0 1] [0 -1]]]

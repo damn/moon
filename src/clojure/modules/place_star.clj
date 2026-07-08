@@ -1,6 +1,6 @@
-(ns clojure.place-star
-  (:require [clojure.module-index-tiled-map-positions :refer [module-index->tiled-map-positions]]
-            [clojure.transitions :as transitions]))
+(ns clojure.modules.place-star
+  (:require [clojure.modules.module-index-tiled-map-positions :refer [module-index->tiled-map-positions]]
+            [clojure.modules.transitions :as transitions]))
 
 (defn place-module*
   [module-offset-tiles

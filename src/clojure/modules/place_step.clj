@@ -1,7 +1,7 @@
-(ns clojure.place-step
+(ns clojure.modules.place-step
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.map-properties :as map-properties]
-            [clojure.place-star :refer [place-module*]]))
+            [clojure.modules.place-star :refer [place-module*]]))
 
 (defn f
   [modules-tiled-map

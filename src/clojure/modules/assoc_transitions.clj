@@ -1,4 +1,4 @@
-(ns clojure.assoc-transitions
+(ns clojure.modules.assoc-transitions
   (:require [clojure.g2d.cells :refer [->cells]]
             [clojure.g2d.adjacent-wall-positions :as adjacent-wall-positions]))
 
