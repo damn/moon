@@ -1,4 +1,4 @@
-(ns clojure.app-schema
+(ns clojure.moon.schema
   (:require [clojure.create-schema :refer [create-schema]]))
 
 (def schema
