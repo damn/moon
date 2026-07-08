@@ -1,4 +1,4 @@
-(ns clojure.zoom-to-rect
+(ns clojure.orthographic-camera.zoom-to-rect
   (:require [clojure.set-zoom :refer [set-zoom!]]
             [clojure.calculate-zoom :refer [calculate-zoom]]))
 

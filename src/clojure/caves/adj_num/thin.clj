@@ -1,4 +1,4 @@
-(ns clojure.thin
+(ns clojure.caves.adj-num.thin
   (:require [clojure.srand-int :refer [srand-int]]))
 
 (defn f [open-paths random]

@@ -1,4 +1,4 @@
-(ns clojure.adj-num-default
+(ns clojure.caves.adj-num.default
   (:require [clojure.srand-int :refer [srand-int]]))
 
 (defn f [open-paths random]

@@ -23,7 +23,7 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.utils-change-listener :as utils-change-listener]
-            [clojure.zoom-to-rect :as zoom-to-rect]))
+            [clojure.orthographic-camera.zoom-to-rect :as zoom-to-rect]))
 
 (defn- generate-level
   [{:keys [ctx/camera

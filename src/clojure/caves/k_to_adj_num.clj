@@ -1,7 +1,7 @@
-(ns clojure.k-to-adj-num
-  (:require [clojure.adj-num-default :as default]
-            [clojure.thin :as thin]
-            [clojure.wide :as wide]))
+(ns clojure.caves.k-to-adj-num
+  (:require [clojure.caves.adj-num.default :as default]
+            [clojure.caves.adj-num.thin :as thin]
+            [clojure.caves.adj-num.wide :as wide]))
 
 (def k->adj-num
   {:wide    wide/f
