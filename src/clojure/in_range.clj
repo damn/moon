@@ -1,5 +1,5 @@
 (ns clojure.in-range
-  (:require [clojure.distance :as distance]))
+  (:require [clojure.v2.distance :as distance]))
 
 (defn in-range? [body target-body maxrange]
   (< (- (float (distance/f (:body/position body)

@@ -1,5 +1,5 @@
 (ns clojure.is-useful
-  (:require [clojure.distance :as distance]
+  (:require [clojure.v2.distance :as distance]
             [clojure.double-ray-endpositions :as double-ray-endpositions]
             [clojure.in-range :refer [in-range?]]
             [clojure.raycaster-is-blocked :as blocked?]))

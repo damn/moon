@@ -4,7 +4,7 @@
             [clojure.add-mods :as add-mods]
             [clojure.after-create-component :refer [after-create-component]]
             [clojure.align :as align]
-            [clojure.angle-from-vector :as angle-from-vector]
+            [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.actor.set-position! :refer [set-position!]]
             [clojure.build :refer [build]]
             [clojure.can-pickup-item :as can-pickup-item]

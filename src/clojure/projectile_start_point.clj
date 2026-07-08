@@ -1,6 +1,6 @@
 (ns clojure.projectile-start-point
-  (:require [clojure.add :as add]
-            [clojure.scale :as scale]))
+  (:require [clojure.v2.add :as add]
+            [clojure.v2.scale :as scale]))
 
 (defn f [body direction size]
   (add/f (:body/position body)

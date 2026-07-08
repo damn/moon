@@ -1,7 +1,7 @@
 (ns clojure.start-point
-  (:require [clojure.add :as add]
-            [clojure.direction :as direction]
-            [clojure.scale :as scale]))
+  (:require [clojure.v2.add :as add]
+            [clojure.v2.direction :as direction]
+            [clojure.v2.scale :as scale]))
 
 ; TODO use at projectile & also adjust rotation
 (defn start-point [body target-body]

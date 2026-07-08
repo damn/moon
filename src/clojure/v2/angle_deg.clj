@@ -1,7 +1,7 @@
-(ns clojure.angle-deg
+(ns clojure.v2.angle-deg
   (:require [clojure.math :as math]
-            [clojure.dot :as dot]
-            [clojure.crs :as crs]))
+            [clojure.v2.dot :as dot]
+            [clojure.v2.crs :as crs]))
 
 (defn f
   "Returns the angle in degrees of this vector relative to the given reference vector.

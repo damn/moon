@@ -1,4 +1,4 @@
-(ns clojure.length
+(ns clojure.v2.length
   (:require [clojure.math :as math]))
 
 (defn f [[x y]]

@@ -1,5 +1,5 @@
 (ns clojure.npc-pathing
-  (:require [clojure.direction :as direction]
+  (:require [clojure.v2.direction :as direction]
             [clojure.is-occupied-by-other :as occupied-by-other?]
             [clojure.find-next-cell :as find-next-cell]
             [clojure.inside-cell :as inside-cell?]))

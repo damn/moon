@@ -1,4 +1,4 @@
-(ns clojure.crs)
+(ns clojure.v2.crs)
 
 (defn f
   "Calculates the 2D cross product between this and the given vector"

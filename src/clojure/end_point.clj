@@ -1,7 +1,7 @@
 (ns clojure.end-point
-  (:require [clojure.add :as add]
-            [clojure.direction :as direction]
-            [clojure.scale :as scale]
+  (:require [clojure.v2.add :as add]
+            [clojure.v2.direction :as direction]
+            [clojure.v2.scale :as scale]
             [clojure.start-point :refer [start-point]]))
 
 (defn end-point [body target-body maxrange]

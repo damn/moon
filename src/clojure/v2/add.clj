@@ -1,4 +1,4 @@
-(ns clojure.add)
+(ns clojure.v2.add)
 
 (defn f [v1 v2]
   (mapv + v1 v2))

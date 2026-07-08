@@ -1,5 +1,5 @@
 (ns clojure.k-tick
-  (:require [clojure.angle-from-vector :as angle-from-vector]
+  (:require [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.body-touched-tiles :refer [touched-tiles]]
             [clojure.cell-is-blocked :as blocked?]
             [clojure.cells-entities :as cells->entities]
@@ -10,7 +10,7 @@
             [clojure.get-stat-value :refer [get-stat-value]]
             [clojure.is-applicable :as applicable?]
             [clojure.is-nearly-equal :as nearly-equal?]
-            [clojure.length :as length]
+            [clojure.v2.length :as length]
             [clojure.move :as move]
             [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
             [clojure.npc-pathing :as npc-pathing]

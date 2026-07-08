@@ -1,4 +1,4 @@
-(ns clojure.distance
+(ns clojure.v2.distance
   (:require [clojure.math :as math]))
 
 (defn f
@@ -7,4 +7,4 @@
   (let [x-d (- x2 x1)
         y-d (- y2 y1)]
     (math/sqrt (+ (* x-d x-d)
-                  (* y-d y-d))) ))
+                  (* y-d y-d)))))

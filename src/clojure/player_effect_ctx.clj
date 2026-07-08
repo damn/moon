@@ -1,5 +1,5 @@
 (ns clojure.player-effect-ctx
-  (:require [clojure.direction :as direction]))
+  (:require [clojure.v2.direction :as direction]))
 
 (defn f [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid

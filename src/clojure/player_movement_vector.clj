@@ -1,7 +1,7 @@
 (ns clojure.player-movement-vector
-  (:require [clojure.add :as add]
-            [clojure.length :as length]
-            [clojure.normalise :as normalise]
+  (:require [clojure.v2.add :as add]
+            [clojure.v2.length :as length]
+            [clojure.v2.normalise :as normalise]
             [clojure.key-pressed :as key-pressed?]))
 
 (defn player-movement-vector [{:keys [ctx/input]}]

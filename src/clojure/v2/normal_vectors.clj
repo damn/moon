@@ -1,4 +1,4 @@
-(ns clojure.normal-vectors)
+(ns clojure.v2.normal-vectors)
 
 (defn f [[x y]]
   [[(- (float y))         x]
