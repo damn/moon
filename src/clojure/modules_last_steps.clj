@@ -7,7 +7,7 @@
             [clojure.g2d.flood-fill :as flood-fill]
             [clojure.movement-property :as movement-property]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
-            [clojure.area-level-grid :as area-level-grid]
+            [clojure.g2d.area-level-grid :as area-level-grid]
             [clojure.map-layers.get :as get]))
 
 (defn step

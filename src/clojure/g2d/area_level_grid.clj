@@ -1,4 +1,4 @@
-(ns clojure.area-level-grid
+(ns clojure.g2d.area-level-grid
   (:require [clojure.g2d.cells :refer [->cells]]
             [clojure.get-4-neighbours :refer [get-4-neighbours]]))
 
