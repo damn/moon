@@ -1,5 +1,5 @@
 (ns clojure.k-render.string-effect
-  (:require [clojure.world-unit-scale :refer [world-unit-scale]]))
+  (:require [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (defn f
   [{:keys [text]} entity _ctx]

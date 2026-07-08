@@ -3,7 +3,7 @@
             [clojure.gdx-draw-tiled-map :as draw-tiled-map]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.raycaster-is-blocked :as blocked?]
-            [clojure.world-unit-scale :refer [world-unit-scale]]))
+            [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (defn f
   [{:keys [ctx/batch

@@ -10,7 +10,7 @@
             [clojure.sort-by-order :as sort-by-order]
             [clojure.throwable :as throwable]
             [clojure.visible-tiles :refer [visible-tiles]]
-            [clojure.world-unit-scale :refer [world-unit-scale]]))
+            [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (def ^:private render-layers
   [#{:entity/mouseover?

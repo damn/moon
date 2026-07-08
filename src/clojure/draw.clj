@@ -6,7 +6,7 @@
             [clojure.graphics-shape-drawer :as shape-drawer]
             [clojure.string :as str]
             [clojure.texture-region :as texture-region]
-            [clojure.world-unit-scale :refer [world-unit-scale]]))
+            [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (declare draw!)
 

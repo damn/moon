@@ -1,7 +1,7 @@
 (ns clojure.k-render.stats
   (:require [clojure.get-hitpoints :as get-hitpoints]
             [clojure.val-max-ratio :as ratio]
-            [clojure.world-unit-scale :refer [world-unit-scale]]))
+            [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (defn f
   [_ entity {:keys [ctx/colors]}]
