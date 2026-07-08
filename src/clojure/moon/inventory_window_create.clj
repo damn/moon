@@ -2,6 +2,7 @@
   (:require [clojure.ctx-do :refer [do!]]
             [clojure.draw :refer [draw!]]
             [clojure.moon-textures :as textures]
+            [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
             [clojure.ui.inventory-window :refer [inventory-window-build]]))
 
 (defn inventory-window-create
@@ -35,6 +36,7 @@
     (inventory-window-build
      {:do! do!
       :draw! draw!
+      :on-click-cell handle-clicked-inventory-cell/f
       :item-rect-color (:colors/item-rect colors)
       :droppable-item-color (:colors/droppable-item colors)
       :not-allowed-drop-item-color (:colors/not-allowed-drop-item colors)

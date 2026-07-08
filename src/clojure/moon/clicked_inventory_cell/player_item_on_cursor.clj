@@ -1,4 +1,4 @@
-(ns clojure.k-clicked-inventory-cell.player-item-on-cursor
+(ns clojure.moon.clicked-inventory-cell.player-item-on-cursor
   (:require [clojure.is-stackable :as stackable?]
             [clojure.is-valid-slot :as valid-slot?]))
 

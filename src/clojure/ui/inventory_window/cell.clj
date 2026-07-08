@@ -15,10 +15,9 @@
             [clojure.vector2 :as vector2]
             [clojure.ui-widget :as widget]
             [clojure.utils-click-listener :as click-listener]
-            [clojure.ui-stack :as stack]
-            [clojure.k-clicked-inventory-cell :refer [k->clicked-inventory-cell]]))
+            [clojure.ui-stack :as stack]))
 
-(defn ->cell [do! draw! slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
+(defn ->cell [do! draw! on-click-cell slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
@@ -47,12 +46,7 @@
          (clojure.scene2d.actor.add-listener/f (click-listener/create
                           (fn [event _x _y]
                             (let [{:keys [ctx/player-eid]
-                                   :as ctx} (:stage/ctx (event/get-stage event))
-                                  entity @player-eid
-                                  state-k (:state (:entity/fsm entity))]
-                              (do! ctx
-                                   (if-let [f (k->clicked-inventory-cell state-k)]
-                                     (f player-eid cell)
-                                     nil))))))
+                                   :as ctx} (:stage/ctx (event/get-stage event))]
+                              (do! ctx (on-click-cell player-eid cell))))))
          (clojure.scene2d.actor.set-name/f "inventory-cell")
          (clojure.scene2d.actor.set-user-object/f cell)))}))

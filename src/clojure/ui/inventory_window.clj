@@ -12,6 +12,7 @@
 (defn inventory-window-build
   [{:keys [do!
            draw!
+           on-click-cell
            item-rect-color
            droppable-item-color
            not-allowed-drop-item-color
@@ -32,7 +33,7 @@
                                           droppable-item-color
                                           not-allowed-drop-item-color)]
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
-        ->cell (partial ->cell do! draw! slot->drawable draw-cell-rect cell-size)]
+        ->cell (partial ->cell do! draw! on-click-cell slot->drawable draw-cell-rect cell-size)]
     (doto (window/create
            {:title "Inventory"
             :skin skin

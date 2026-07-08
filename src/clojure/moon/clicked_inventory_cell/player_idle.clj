@@ -1,4 +1,4 @@
-(ns clojure.k-clicked-inventory-cell.player-idle)
+(ns clojure.moon.clicked-inventory-cell.player-idle)
 
 (defn f
   [eid cell]
