@@ -1,17 +1,17 @@
 (ns gdx.lwjgl3-application-configuration
-  (:require [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]))
+  (:require [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as this]))
 
-(defn set-title! [& args]
-  (apply lwjgl3-application-configuration/set-title! args))
-
-(defn set-windowed-mode! [& args]
-  (apply lwjgl3-application-configuration/set-windowed-mode! args))
-
-(defn set-foreground-fps! [& args]
-  (apply lwjgl3-application-configuration/set-foreground-fps! args))
-
-(def k->opts
-  lwjgl3-application-configuration/k->opts)
-
-(defn build [& args]
-  (apply lwjgl3-application-configuration/build args))
+(let [k->opts
+      {
+       :title          this/set-title!
+       :windowed-mode  this/set-windowed-mode!
+       :foreground-fps this/set-foreground-fps!
+       }
+      ]
+  (defn build [opts]
+    (let [configuration (this/create)]
+      (doseq [[k v] opts]
+        (let [apply! (k->opts k)]
+          (assert apply! (str "Unknown lwjgl3 config option: " k))
+          (apply! configuration v)))
+      configuration)))
