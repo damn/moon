@@ -1,7 +1,7 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 [com.github.damn/com.badlogic.gdx "03c54cefaa"]
+                 [com.github.damn/com.badlogic.gdx "74be16bd9a59f9605b5afbfd458fb1939a10fd3c"]
 
                  [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.2"]
 

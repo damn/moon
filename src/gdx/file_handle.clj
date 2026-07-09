@@ -7,7 +7,7 @@
     (cond (nil? file)
           result
 
-          (file-handle/is-directory file)
+          (file-handle/isDirectory file)
           (recur (concat remaining (file-handle/list file)) result)
 
           (extensions (file-handle/extension file))

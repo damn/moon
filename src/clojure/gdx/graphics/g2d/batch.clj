@@ -29,13 +29,13 @@
   (apply batch/end args))
 
 (defn set-color! [& args]
-  (apply batch/set-color args))
+  (apply batch/setColor args))
 
 (defn get-color [& args]
-  (apply batch/get-color args))
+  (apply batch/getColor args))
 
 (defn set-projection-matrix! [& args]
-  (apply batch/set-projection-matrix args))
+  (apply batch/setProjectionMatrix args))
 
 (defn draw! [& args]
   (apply batch/draw args))
