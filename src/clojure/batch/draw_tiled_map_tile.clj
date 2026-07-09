@@ -18,12 +18,12 @@
   (let [region (tiled-map-tile/get-texture-region tile)
         x1 (+ x (* (tiled-map-tile/get-offset-x tile) unit-scale))
         y1 (+ y (* (tiled-map-tile/get-offset-y tile) unit-scale))
-        x2 (+ x1 (* (texture-region/get-region-width region) unit-scale))
-        y2 (+ y1 (* (texture-region/get-region-height region) unit-scale))
-        u1 (texture-region/get-u region)
-        v1 (texture-region/get-v2 region)
-        u2 (texture-region/get-u2 region)
-        v2 (texture-region/get-v region)
+        x2 (+ x1 (* (texture-region/getRegionWidth region) unit-scale))
+        y2 (+ y1 (* (texture-region/getRegionHeight region) unit-scale))
+        u1 (texture-region/getU region)
+        v1 (texture-region/getV2 region)
+        u2 (texture-region/getU2 region)
+        v2 (texture-region/getV region)
         color11 (float (color-setter batch-color x1 y1))
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
@@ -49,7 +49,7 @@
     (aset-float verts batch/U4 u2)
     (aset-float verts batch/V4 v1)
     (batch/draw! batch
-                          (texture-region/get-texture region)
+                          (texture-region/getTexture region)
                           verts
                           0
                           num-vertices)))

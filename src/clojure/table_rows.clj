@@ -23,8 +23,8 @@
                 (run! #(group/add-actor! stack %)
                       [(doto (image-button/new
                               (doto (texture-region-drawable/new texture-region)
-                                (texture-region-drawable/set-min-size! (* image-scale (texture-region/get-region-width texture-region))
-                                                (* image-scale (texture-region/get-region-height texture-region)))))
+                                (texture-region-drawable/set-min-size! (* image-scale (texture-region/getRegionWidth texture-region))
+                                                (* image-scale (texture-region/getRegionHeight texture-region)))))
                         (clojure.scene2d.actor.add-listener/f (change-listener/create
                                          (fn [event actor]
                                            (on-clicked actor (:stage/ctx (event/get-stage event))))))

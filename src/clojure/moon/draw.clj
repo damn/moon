@@ -78,8 +78,8 @@
                                texture-region
                                [x y]
                                & {:keys [center? rotation]}]
-                           (let [[w h] (let [dimensions [(texture-region/get-region-width texture-region)
-                                                         (texture-region/get-region-height texture-region)]]
+                           (let [[w h] (let [dimensions [(texture-region/getRegionWidth texture-region)
+                                                         (texture-region/getRegionHeight texture-region)]]
                                           (if (= @unit-scale 1)
                                             dimensions
                                             (mapv (comp float (partial * world-unit-scale))

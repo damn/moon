@@ -11,5 +11,5 @@
         scale 2]
     (image-button/new
      (doto (texture-region-drawable/new texture-region)
-       (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
-                                              (* scale (texture-region/get-region-height texture-region)))))))
+       (texture-region-drawable/set-min-size! (* scale (texture-region/getRegionWidth texture-region))
+                                              (* scale (texture-region/getRegionHeight texture-region)))))))

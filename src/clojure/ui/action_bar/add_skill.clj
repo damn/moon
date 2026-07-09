@@ -20,8 +20,8 @@
         {:keys [horizontal-group button-group]} (get-data/f action-bar)
         button (doto (image-button/new
                       (doto (texture-region-drawable/new texture-region)
-                        (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
-                                        (* scale (texture-region/get-region-height texture-region)))))
+                        (texture-region-drawable/set-min-size! (* scale (texture-region/getRegionWidth texture-region))
+                                        (* scale (texture-region/getRegionHeight texture-region)))))
                  (clojure.scene2d.actor.add-listener/f (text-tooltip/create tooltip-text skin))
                  (clojure.scene2d.actor.set-user-object/f skill-id))]
     (group/add-actor! horizontal-group button)

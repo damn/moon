@@ -2,25 +2,25 @@
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
-(defn get-region-height [& args]
+(defn getRegionHeight [& args]
   (apply texture-region/getRegionHeight args))
 
-(defn get-region-width [& args]
+(defn getRegionWidth [& args]
   (apply texture-region/getRegionWidth args))
 
-(defn get-texture [& args]
+(defn getTexture [& args]
   (apply texture-region/getTexture args))
 
-(defn get-u [& args]
+(defn getU [& args]
   (apply texture-region/getU args))
 
-(defn get-u2 [& args]
+(defn getU2 [& args]
   (apply texture-region/getU2 args))
 
-(defn get-v [& args]
+(defn getV [& args]
   (apply texture-region/getV args))
 
-(defn get-v2 [& args]
+(defn getV2 [& args]
   (apply texture-region/getV2 args))
 
 (defn new [& args]
