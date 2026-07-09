@@ -1,9 +1,6 @@
 (ns clojure.levelgen-test
-  (:require [org.lwjgl.system.configuration :as configuration]
-            [clojure.gdx :as gdx]
+  (:require [clojure.gdx :as gdx]
             [gdx.lwjgl3-application :as lwjgl3-application]
-            [clojure.os :as os]
-            [clojure.shared-library-loader :as shared-library-loader]
             [clojure.levelgen-test.create :as create]
             [clojure.levelgen-test.dispose :as dispose]
             [clojure.levelgen-test.render :as render]
@@ -31,8 +28,6 @@
    :camera-movement-speed 1})
 
 (defn -main []
-  (when (= shared-library-loader/os os/mac-os-x)
-    (configuration/set! configuration/glfw-library-name "glfw_async"))
   (lwjgl3-application/create
    {:create! (fn []
                (reset! state (create/create state config (gdx/app))))
