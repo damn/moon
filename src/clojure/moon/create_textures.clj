@@ -1,6 +1,6 @@
 (ns clojure.moon.create-textures
-  (:require [clojure.ctx-textures :as ctx-textures]))
+  (:require [clojure.create-textures :as create-textures]))
 
-(defn f [ctx]
-  (assoc ctx :ctx/textures (ctx-textures/step ctx {:folder "resources/"
-                                                   :extensions #{"png" "bmp"}})))
+(defn f [{:keys [ctx/files] :as ctx}]
+  (assoc ctx :ctx/textures (create-textures/f files {:folder "resources/"
+                                                      :extensions #{"png" "bmp"}})))
