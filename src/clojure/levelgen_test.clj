@@ -3,7 +3,6 @@
             [org.lwjgl.system.configuration :as configuration]
             [clojure.gdx :as gdx]
             [gdx.lwjgl3-application :as lwjgl3-application]
-            [gdx.lwjgl3-application-configuration :as config]
             [clojure.os :as os]
             [clojure.shared-library-loader :as shared-library-loader]
             [clojure.levelgen-test.create :as create]
@@ -47,7 +46,7 @@
                 (resize/resize @state width height))
      :pause! (fn [])
      :resume! (fn [])})
-   (config/build
-    {:title "Levelgen Test"
-     :windowed-mode {:width 1440 :height 900}
-     :foreground-fps 60})))
+   {:config/set-title "Levelgen Test"
+    :config/set-windowed-mode {:width 1440
+                               :height 900}
+    :config/set-foreground-fps 60}))
