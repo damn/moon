@@ -28,17 +28,26 @@
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
         color21 (float (color-setter batch-color x2 y1))]
-    (doseq [[[x-idx y-idx c-idx u-idx v-idx] [x y c u v]]
-            (map vector batch/vertex-indices
-                       [[x1 y1 color11 u1 v1]
-                        [x1 y2 color12 u1 v2]
-                        [x2 y2 color22 u2 v2]
-                        [x2 y1 color21 u2 v1]])]
-      (aset-float verts x-idx x)
-      (aset-float verts y-idx y)
-      (aset-float verts c-idx c)
-      (aset-float verts u-idx u)
-      (aset-float verts v-idx v))
+    (aset-float verts batch/X1 x1)
+    (aset-float verts batch/Y1 y1)
+    (aset-float verts batch/C1 color11)
+    (aset-float verts batch/U1 u1)
+    (aset-float verts batch/V1 v1)
+    (aset-float verts batch/X2 x1)
+    (aset-float verts batch/Y2 y2)
+    (aset-float verts batch/C2 color12)
+    (aset-float verts batch/U2 u1)
+    (aset-float verts batch/V2 v2)
+    (aset-float verts batch/X3 x2)
+    (aset-float verts batch/Y3 y2)
+    (aset-float verts batch/C3 color22)
+    (aset-float verts batch/U3 u2)
+    (aset-float verts batch/V3 v2)
+    (aset-float verts batch/X4 x2)
+    (aset-float verts batch/Y4 y1)
+    (aset-float verts batch/C4 color21)
+    (aset-float verts batch/U4 u2)
+    (aset-float verts batch/V4 v1)
     (batch/draw-vertices! batch
                           (texture-region/get-texture region)
                           verts

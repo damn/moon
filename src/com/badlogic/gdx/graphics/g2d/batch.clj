@@ -1,14 +1,27 @@
 (ns com.badlogic.gdx.graphics.g2d.batch
-  (:import
-           (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d Batch TextureRegion)
-           ))
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d Batch TextureRegion)))
 
-(def vertex-indices
-  [[Batch/X1 Batch/Y1 Batch/C1 Batch/U1 Batch/V1]
-   [Batch/X2 Batch/Y2 Batch/C2 Batch/U2 Batch/V2]
-   [Batch/X3 Batch/Y3 Batch/C3 Batch/U3 Batch/V3]
-   [Batch/X4 Batch/Y4 Batch/C4 Batch/U4 Batch/V4]])
+(def X1 Batch/X1)
+(def Y1 Batch/Y1)
+(def C1 Batch/C1)
+(def U1 Batch/U1)
+(def V1 Batch/V1)
+(def X2 Batch/X2)
+(def Y2 Batch/Y2)
+(def C2 Batch/C2)
+(def U2 Batch/U2)
+(def V2 Batch/V2)
+(def X3 Batch/X3)
+(def Y3 Batch/Y3)
+(def C3 Batch/C3)
+(def U3 Batch/U3)
+(def V3 Batch/V3)
+(def X4 Batch/X4)
+(def Y4 Batch/Y4)
+(def C4 Batch/C4)
+(def U4 Batch/U4)
+(def V4 Batch/V4)
 
 (defn begin! [batch]
   (Batch/.begin batch))

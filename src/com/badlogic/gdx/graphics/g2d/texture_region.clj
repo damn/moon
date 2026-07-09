@@ -1,9 +1,7 @@
 (ns com.badlogic.gdx.graphics.g2d.texture-region
   (:refer-clojure :exclude [new])
-  (:import
-           (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
-           ))
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 (defn get-region-height [region]
   (TextureRegion/.getRegionHeight region))
