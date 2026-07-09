@@ -1,13 +1,13 @@
-(ns clojure.find-next-cell
-  (:require [clojure.nearest-entity :as nearest-entity]
-            [clojure.nearest-entity-distance :as nearest-entity-distance]
-            [clojure.moon-faction :as faction]
-            [clojure.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
-            [clojure.filter-viable-cells :as filter-viable-cells]
+(ns clojure.grid.find-next-cell
+  (:require [clojure.filter-viable-cells :as filter-viable-cells]
             [clojure.get-min-dist-cell :refer [get-min-dist-cell]]
+            [clojure.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
+            [clojure.moon-faction :as faction]
+            [clojure.nearest-entity :as nearest-entity]
+            [clojure.nearest-entity-distance :as nearest-entity-distance]
             [clojure.viable-cell :refer [viable-cell?]]))
 
-(defn f
+(defn find-next-cell
   "returns {:target-entity eid} or {:target-cell cell}. Cell can be nil."
   [grid eid own-cell]
   (let [faction (faction/enemy (:entity/faction @eid))
@@ -24,19 +24,19 @@
         {:target-cell (let [cells (filter-viable-cells/f eid adjacent-cells)
                             min-key-cell (get-min-dist-cell distance-to cells)]
                         (cond
-                         (not min-key-cell)  ; red
-                         own-cell
+                          (not min-key-cell) ; red
+                          own-cell
 
-                         (not own-dist)
-                         min-key-cell
+                          (not own-dist)
+                          min-key-cell
 
-                         (> (float (distance-to min-key-cell)) (float own-dist)) ; red
-                         own-cell
+                          (> (float (distance-to min-key-cell)) (float own-dist)) ; red
+                          own-cell
 
-                         (< (float (distance-to min-key-cell)) (float own-dist)) ; green
-                         min-key-cell
+                          (< (float (distance-to min-key-cell)) (float own-dist)) ; green
+                          min-key-cell
 
-                         (= (distance-to min-key-cell) own-dist) ; yellow
-                         (or
-                          (some #(viable-cell? grid distance-to own-dist eid %) cells)
-                          own-cell)))}))))
+                          (= (distance-to min-key-cell) own-dist) ; yellow
+                          (or
+                           (some #(viable-cell? grid distance-to own-dist eid %) cells)
+                           own-cell)))}))))
