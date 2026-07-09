@@ -1,5 +1,6 @@
 (ns clojure.levelgen-test.create
-  (:require [clojure.scene2d.actor.add-listener]
+  (:require [clojure.application :as application]
+            [clojure.scene2d.actor.add-listener]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.create-textures :as create-textures]
             [clojure.creature-tiles :as creature-tiles]
@@ -52,10 +53,10 @@
     ctx))
 
 (defn create
-  [state config ^com.badlogic.gdx.Application app]
-  (let [files (.getFiles app)
-        input (.getInput app)
-        graphics (.getGraphics app)
+  [state config application]
+  (let [files (application/get-files application)
+        input (application/get-input application)
+        graphics (application/get-graphics application)
         sprite-batch (sprite-batch/new)
         ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                          (:ui-viewport-height config))

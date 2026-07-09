@@ -11,8 +11,8 @@
             [clojure.editor.create-widget-register-methods]
             [clojure.malli-form-register-methods]))
 
-(defn create [^com.badlogic.gdx.Application app]
-  (-> {:ctx/app app}
+(defn create [application]
+  (-> {:ctx/app application}
       input/f
       audio/f
       files/f

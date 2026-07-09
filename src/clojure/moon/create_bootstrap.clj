@@ -1,10 +1,11 @@
-(ns clojure.moon.create-bootstrap)
+(ns clojure.moon.create-bootstrap
+  (:require [clojure.application :as application]))
 
-(defn f [^com.badlogic.gdx.Application app]
-  {:ctx/audio (.getAudio app)
-   :ctx/files (.getFiles app)
-   :ctx/graphics (.getGraphics app)
-   :ctx/input (.getInput app)
+(defn f [application]
+  {:ctx/audio    (application/get-audio    application)
+   :ctx/files    (application/get-files    application)
+   :ctx/graphics (application/get-graphics application)
+   :ctx/input    (application/get-input    application)
    :ctx/unit-scale (atom 1)
    :ctx/active-entities nil
    :ctx/delta-time nil

@@ -26,8 +26,8 @@
             [clojure.moon.create-tiled-map :as create-tiled-map]
             [clojure.moon.create-world-viewport :as create-world-viewport]))
 
-(defn create [^com.badlogic.gdx.Application app]
-  (-> app
+(defn create [application]
+  (-> application
       create-bootstrap/f
       create-batch/f
       create-audio/f
