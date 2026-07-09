@@ -23,29 +23,28 @@
 (def U4 Batch/U4)
 (def V4 Batch/V4)
 
-(defn begin! [batch]
+(defn begin [batch]
   (Batch/.begin batch))
 
-(defn end! [batch]
+(defn end [batch]
   (Batch/.end batch))
 
-(defn set-color! [^Batch batch r g b a]
+(defn set-color [^Batch batch r g b a]
   (Batch/.setColor batch (float r) (float g) (float b) (float a)))
 
 (defn get-color [batch]
   (Batch/.getColor batch))
 
-(defn set-projection-matrix! [batch matrix4]
+(defn set-projection-matrix [batch matrix4]
   (Batch/.setProjectionMatrix batch matrix4))
 
-(defn draw-vertices! [batch texture verts offset cnt]
-  (Batch/.draw batch
-               ^Texture texture
-               ^floats verts
-               (int offset)
-               (int cnt)))
-
-(defn draw-texture-region!
+(defn draw
+  ([^Batch batch ^Texture texture ^floats verts offset cnt]
+   (Batch/.draw batch
+                texture
+                verts
+                (int offset)
+                (int cnt)))
   ([^Batch batch ^TextureRegion texture-region x y w h]
    (Batch/.draw batch texture-region (float x) (float y) (float w) (float h)))
   ([^Batch batch ^TextureRegion texture-region x y origin-x origin-y w h scale-x scale-y rotation]

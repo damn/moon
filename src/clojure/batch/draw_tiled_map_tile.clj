@@ -48,7 +48,7 @@
     (aset-float verts batch/C4 color21)
     (aset-float verts batch/U4 u2)
     (aset-float verts batch/V4 v1)
-    (batch/draw-vertices! batch
+    (batch/draw! batch
                           (texture-region/get-texture region)
                           verts
                           0

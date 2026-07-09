@@ -85,7 +85,7 @@
                                             (mapv (comp float (partial * world-unit-scale))
                                                   dimensions)))]
                              (if center?
-                               (batch/draw-texture-region! batch
+                               (batch/draw! batch
                                                            texture-region
                                                            (- (float x) (/ (float w) 2))
                                                            (- (float y) (/ (float h) 2))
@@ -96,7 +96,7 @@
                                                            1
                                                            1
                                                            (or rotation 0))
-                               (batch/draw-texture-region! batch texture-region x y w h))))
+                               (batch/draw! batch texture-region x y w h))))
    :draw/with-line-width (fn [{:keys [ctx/shape-drawer]
                                 :as ctx}
                                width
