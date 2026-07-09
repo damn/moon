@@ -5,7 +5,7 @@
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.repl :as repl]))
 
-(defmacro m [& body]
+(defmacro with-err-str [& body]
   `(let [s# (java.io.StringWriter.)]
      (binding [*err* s#]
        ~@body
@@ -14,8 +14,7 @@
 (defn create
   [{:keys [skin throwable]}]
   (let [label-text (binding [*print-level* 3]
-                     (with-err-str/m
-                       (repl/pst throwable)))]
+                     (with-err-str (repl/pst throwable)))]
     (doto (window/create
            {:title "Error"
             :skin skin

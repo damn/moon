@@ -5,7 +5,7 @@
             [clojure.moon-faction :as faction]
             [clojure.nearest-entity :as nearest-entity]
             [clojure.nearest-entity-distance :as nearest-entity-distance]
-            [clojure.viable-cell :refer [viable-cell?]]))
+            [clojure.grid.viable-cell :refer [viable-cell?]]))
 
 (defn find-next-cell
   "returns {:target-entity eid} or {:target-cell cell}. Cell can be nil."

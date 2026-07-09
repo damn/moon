@@ -1,4 +1,4 @@
-(ns clojure.viable-cell
+(ns clojure.grid.viable-cell
   (:require [clojure.filter-viable-cells :as filter-viable-cells]
             [clojure.get-min-dist-cell :refer [get-min-dist-cell]]
             [clojure.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]))
