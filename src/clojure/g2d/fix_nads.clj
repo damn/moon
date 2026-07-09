@@ -1,4 +1,4 @@
-(ns clojure.fix-nads
+(ns clojure.g2d.fix-nads
   (:require [clojure.m.assoc-ks :refer [assoc-ks]]
             [clojure.g2d.get-nads :refer [get-nads]]
             [clojure.g2d.cells :refer [->cells]]

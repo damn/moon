@@ -1,5 +1,5 @@
 (ns clojure.grid.find-next-cell
-  (:require [clojure.filter-viable-cells :as filter-viable-cells]
+  (:require [clojure.grid.filter-viable-cells :as filter-viable-cells]
             [clojure.get-min-dist-cell :refer [get-min-dist-cell]]
             [clojure.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
             [clojure.moon-faction :as faction]

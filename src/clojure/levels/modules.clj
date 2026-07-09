@@ -1,6 +1,6 @@
 (ns clojure.levels.modules
   (:require [clojure.caves.gen :as caves]
-            [clojure.fix-nads :as fix-nads]
+            [clojure.g2d.fix-nads :as fix-nads]
             [clojure.load-schema-tiled-map :as load-schema-tiled-map]
             [clojure.print-grid :refer [print-grid]]
             [clojure.levels.modules.calculate-start :as calculate-start]

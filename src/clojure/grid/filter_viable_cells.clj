@@ -1,4 +1,4 @@
-(ns clojure.filter-viable-cells
+(ns clojure.grid.filter-viable-cells
   (:require [clojure.is-pf-blocked :as pf-blocked?]
             [clojure.is-occupied-by-other :as occupied-by-other?]
             [clojure.remove-not-allowed-diagonals :as remove-not-allowed-diagonals]))
