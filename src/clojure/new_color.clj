@@ -1,6 +1,6 @@
 (ns clojure.new-color
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.graphics Color)))
+  (:require [com.badlogic.gdx.graphics.color :as color]))
 
-(defn f [[r g b a]]
-  (Color. r g b a))
+(defn f [& args]
+  (apply color/f args))

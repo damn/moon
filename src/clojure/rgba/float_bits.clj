@@ -1,8 +1,5 @@
 (ns clojure.rgba.float-bits
-  (:import (com.badlogic.gdx.graphics Color)))
+  (:require [com.badlogic.gdx.graphics.color :as color]))
 
-(defn f [[r g b a]]
-  (Color/toFloatBits (float r)
-                     (float g)
-                     (float b)
-                     (float a)))
+(defn f [& args]
+  (apply color/to-float-bits args))

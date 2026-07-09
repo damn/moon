@@ -1,4 +1,5 @@
 (ns clojure.texture$texture-filter
-  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)))
+  (:require [com.badlogic.gdx.graphics.texture$texture-filter :as texture-texture-filter]))
 
-(def linear Texture$TextureFilter/Linear)
+(def linear
+  texture-texture-filter/linear)

@@ -1,46 +1,45 @@
 (ns clojure.tiled-map-tile-layer
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
-                                               TiledMapTileLayer$Cell)))
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]))
 
-(defn get-cell [^TiledMapTileLayer layer x y]
-  (.getCell layer (int x) (int y)))
+(defn get-cell [& args]
+  (apply tiled-map-tile-layer/get-cell args))
 
-(defn get-height [^TiledMapTileLayer layer]
-  (.getHeight layer))
+(defn get-height [& args]
+  (apply tiled-map-tile-layer/get-height args))
 
-(defn get-name [^TiledMapTileLayer layer]
-  (TiledMapTileLayer/.getName layer))
+(defn get-name [& args]
+  (apply tiled-map-tile-layer/get-name args))
 
-(defn get-render-offset-x [^TiledMapTileLayer layer]
-  (.getRenderOffsetX layer))
+(defn get-render-offset-x [& args]
+  (apply tiled-map-tile-layer/get-render-offset-x args))
 
-(defn get-render-offset-y [^TiledMapTileLayer layer]
-  (.getRenderOffsetY layer))
+(defn get-render-offset-y [& args]
+  (apply tiled-map-tile-layer/get-render-offset-y args))
 
-(defn get-tile-height [^TiledMapTileLayer layer]
-  (.getTileHeight layer))
+(defn get-tile-height [& args]
+  (apply tiled-map-tile-layer/get-tile-height args))
 
-(defn get-tile-width [^TiledMapTileLayer layer]
-  (.getTileWidth layer))
+(defn get-tile-width [& args]
+  (apply tiled-map-tile-layer/get-tile-width args))
 
-(defn get-properties [^TiledMapTileLayer layer]
-  (.getProperties layer))
+(defn get-properties [& args]
+  (apply tiled-map-tile-layer/get-properties args))
 
-(defn get-width [^TiledMapTileLayer layer]
-  (.getWidth layer))
+(defn get-width [& args]
+  (apply tiled-map-tile-layer/get-width args))
 
-(defn visible? [^TiledMapTileLayer layer]
-  (TiledMapTileLayer/.isVisible layer))
+(defn visible? [& args]
+  (apply tiled-map-tile-layer/visible? args))
 
-(defn new [width height tilewidth tileheight]
-  (TiledMapTileLayer. (int width) (int height) (int tilewidth) (int tileheight)))
+(defn new [& args]
+  (apply tiled-map-tile-layer/new args))
 
-(defn set-cell! [^TiledMapTileLayer layer x y ^TiledMapTileLayer$Cell cell]
-  (TiledMapTileLayer/.setCell layer (int x) (int y) cell))
+(defn set-cell! [& args]
+  (apply tiled-map-tile-layer/set-cell! args))
 
-(defn set-name! [^TiledMapTileLayer layer ^String name]
-  (TiledMapTileLayer/.setName layer name))
+(defn set-name! [& args]
+  (apply tiled-map-tile-layer/set-name! args))
 
-(defn set-visible! [layer visible?]
-  (TiledMapTileLayer/.setVisible layer visible?))
+(defn set-visible! [& args]
+  (apply tiled-map-tile-layer/set-visible! args))

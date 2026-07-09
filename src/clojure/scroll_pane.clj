@@ -1,7 +1,6 @@
 (ns clojure.scroll-pane
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane Skin)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]))
 
-(defn new [^Actor actor ^Skin skin]
-  (ScrollPane. actor skin))
+(defn new [& args]
+  (apply scroll-pane/new args))

@@ -1,20 +1,20 @@
 (ns clojure.input
-  (:import (com.badlogic.gdx Input)))
+  (:require [com.badlogic.gdx.input :as input]))
 
-(defn get-x [input]
-  (Input/.getX input))
+(defn get-x [& args]
+  (apply input/get-x args))
 
-(defn get-y [input]
-  (Input/.getY input))
+(defn get-y [& args]
+  (apply input/get-y args))
 
-(defn button-just-pressed? [input button-code]
-  (Input/.isButtonJustPressed input button-code))
+(defn button-just-pressed? [& args]
+  (apply input/button-just-pressed? args))
 
-(defn key-just-pressed? [input key-code]
-  (Input/.isKeyJustPressed input key-code))
+(defn key-just-pressed? [& args]
+  (apply input/key-just-pressed? args))
 
-(defn key-pressed? [input key-code]
-  (Input/.isKeyPressed input key-code))
+(defn key-pressed? [& args]
+  (apply input/key-pressed? args))
 
-(defn set-input-processor! [input processor]
-  (Input/.setInputProcessor input processor))
+(defn set-input-processor! [& args]
+  (apply input/set-input-processor! args))

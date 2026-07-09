@@ -1,10 +1,9 @@
 (ns clojure.scene2d.actor.set-position
   (:refer-clojure :exclude [new remove])
-  (:import (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn f
-  ([^Actor actor x y]
-   (Actor/.setPosition actor (float x) (float y)))
-  ([^Actor actor x y align]
-   (Actor/.setPosition actor (float x) (float y) align)))
+  ([actor x y]
+   (actor/set-position actor x y))
+  ([actor x y align]
+   (actor/set-position actor x y align)))

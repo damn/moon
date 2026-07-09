@@ -1,16 +1,15 @@
 (ns clojure.vector2
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.math Vector2)))
+  (:require [com.badlogic.gdx.math.vector2 :as vector2]))
 
-(defn new [[x y]]
-  (Vector2. x y))
+(defn new [& args]
+  (apply vector2/new args))
 
-(defn x [^Vector2 v]
-  (.x v))
+(defn x [& args]
+  (apply vector2/x args))
 
-(defn y [^Vector2 v]
-  (.y v))
+(defn y [& args]
+  (apply vector2/y args))
 
-(defn clojurize [v2]
-  [(x v2)
-   (y v2)])
+(defn clojurize [& args]
+  (apply vector2/clojurize args))

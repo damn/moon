@@ -1,6 +1,6 @@
 (ns clojure.text-button
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]))
 
-(defn new [^String text ^Skin skin]
-  (TextButton. text skin))
+(defn new [& args]
+  (apply text-button/new args))

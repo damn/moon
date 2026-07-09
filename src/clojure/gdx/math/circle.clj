@@ -1,8 +1,6 @@
 (ns clojure.gdx.math.circle
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.math Circle)))
+  (:require [com.badlogic.gdx.math.circle :as circle]))
 
-(defn new [{:keys [position radius]}]
-  (Circle. (float (position 0))
-           (float (position 1))
-           radius))
+(defn new [& args]
+  (apply circle/new args))

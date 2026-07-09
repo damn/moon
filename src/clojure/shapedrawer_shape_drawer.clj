@@ -1,36 +1,36 @@
 (ns clojure.shapedrawer-shape-drawer
   (:refer-clojure :exclude [new])
-  (:import (space.earlygrey.shapedrawer ShapeDrawer)))
+  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 
-(defn circle! [^ShapeDrawer shape-drawer x y radius]
-  (ShapeDrawer/.circle shape-drawer x y radius))
+(defn circle! [& args]
+  (apply shape-drawer/circle! args))
 
-(defn ellipse! [^ShapeDrawer shape-drawer x y radius-x radius-y]
-  (ShapeDrawer/.ellipse shape-drawer x y radius-x radius-y))
+(defn ellipse! [& args]
+  (apply shape-drawer/ellipse! args))
 
-(defn filled-circle! [^ShapeDrawer shape-drawer x y radius]
-  (ShapeDrawer/.filledCircle shape-drawer (float x) (float y) (float radius)))
+(defn filled-circle! [& args]
+  (apply shape-drawer/filled-circle! args))
 
-(defn filled-rectangle! [^ShapeDrawer shape-drawer x y w h]
-  (ShapeDrawer/.filledRectangle shape-drawer (float x) (float y) (float w) (float h)))
+(defn filled-rectangle! [& args]
+  (apply shape-drawer/filled-rectangle! args))
 
-(defn get-default-line-width [^ShapeDrawer shape-drawer]
-  (ShapeDrawer/.getDefaultLineWidth shape-drawer))
+(defn get-default-line-width [& args]
+  (apply shape-drawer/get-default-line-width args))
 
-(defn line! [^ShapeDrawer shape-drawer sx sy ex ey]
-  (ShapeDrawer/.line shape-drawer (float sx) (float sy) (float ex) (float ey)))
+(defn line! [& args]
+  (apply shape-drawer/line! args))
 
-(defn new [batch texture-region]
-  (ShapeDrawer. batch texture-region))
+(defn new [& args]
+  (apply shape-drawer/new args))
 
-(defn rectangle! [^ShapeDrawer shape-drawer x y w h]
-  (ShapeDrawer/.rectangle shape-drawer x y w h))
+(defn rectangle! [& args]
+  (apply shape-drawer/rectangle! args))
 
-(defn sector! [^ShapeDrawer shape-drawer center-x center-y radius start-radians radians]
-  (ShapeDrawer/.sector shape-drawer center-x center-y radius start-radians radians))
+(defn sector! [& args]
+  (apply shape-drawer/sector! args))
 
-(defn set-color! [^ShapeDrawer shape-drawer color-float-bits]
-  (ShapeDrawer/.setColor shape-drawer (float color-float-bits)))
+(defn set-color! [& args]
+  (apply shape-drawer/set-color! args))
 
-(defn set-default-line-width! [^ShapeDrawer shape-drawer line-width]
-  (ShapeDrawer/.setDefaultLineWidth shape-drawer line-width))
+(defn set-default-line-width! [& args]
+  (apply shape-drawer/set-default-line-width! args))

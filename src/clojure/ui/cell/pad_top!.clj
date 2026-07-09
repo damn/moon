@@ -1,5 +1,5 @@
 (ns clojure.ui.cell.pad-top!
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]))
 
-(defn f [^Cell cell n]
-  (.padTop cell (float n)))
+(defn f [& args]
+  (apply cell/pad-top args))

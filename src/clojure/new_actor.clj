@@ -1,13 +1,6 @@
 (ns clojure.new-actor
   (:refer-clojure :exclude [new remove])
-  (:import (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
-(defn f [act! draw!]
-  (proxy [Actor] []
-    (act [delta]
-      (act! this delta)
-      (let [^Actor this this]
-        (proxy-super act delta)))
-    (draw [batch parent-alpha]
-      (draw! this batch parent-alpha))))
+(defn f [& args]
+  (apply actor/new args))

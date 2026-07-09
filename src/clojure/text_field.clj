@@ -1,9 +1,9 @@
 (ns clojure.text-field
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextField)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]))
 
-(defn new [^String text ^Skin skin]
-  (TextField. text skin))
+(defn new [& args]
+  (apply text-field/new args))
 
-(defn get-text [^TextField text-field]
-  (TextField/.getText text-field))
+(defn get-text [& args]
+  (apply text-field/get-text args))

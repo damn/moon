@@ -1,4 +1,5 @@
 (ns clojure.touchable
-  (:import (com.badlogic.gdx.scenes.scene2d Touchable)))
+  (:require [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]))
 
-(def disabled Touchable/disabled)
+(def disabled
+  touchable/disabled)

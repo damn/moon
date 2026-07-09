@@ -1,16 +1,15 @@
 (ns clojure.table
   (:refer-clojure :exclude [new add])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Table)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]))
 
-(defn add! [^Table table ^Actor actor]
-  (Table/.add table actor))
+(defn add! [& args]
+  (apply table/add! args))
 
-(defn defaults [^Table table]
-  (.defaults table))
+(defn defaults [& args]
+  (apply table/defaults args))
 
-(defn new []
-  (Table.))
+(defn new [& args]
+  (apply table/new args))
 
-(defn row! [^Table table]
-  (Table/.row table))
+(defn row! [& args]
+  (apply table/row! args))

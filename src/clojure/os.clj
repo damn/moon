@@ -1,4 +1,5 @@
 (ns clojure.os
-  (:import (com.badlogic.gdx.utils Os)))
+  (:require [com.badlogic.gdx.utils.os :as os]))
 
-(def mac-os-x Os/MacOsX)
+(def mac-os-x
+  os/mac-os-x)

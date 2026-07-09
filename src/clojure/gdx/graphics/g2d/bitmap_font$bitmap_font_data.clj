@@ -1,11 +1,11 @@
 (ns clojure.gdx.graphics.g2d.bitmap-font$bitmap-font-data
-  (:import (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData)))
+  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-bitmap-font-data]))
 
-(defn get-scale-x [^BitmapFont$BitmapFontData data]
-  (.scaleX data))
+(defn get-scale-x [& args]
+  (apply bitmap-font-bitmap-font-data/get-scale-x args))
 
-(defn set-markup-enabled! [^BitmapFont$BitmapFontData data enabled?]
-  (set! (.markupEnabled data) enabled?))
+(defn set-markup-enabled! [& args]
+  (apply bitmap-font-bitmap-font-data/set-markup-enabled! args))
 
-(defn set-scale! [^BitmapFont$BitmapFontData data scale]
-  (BitmapFont$BitmapFontData/.setScale data scale))
+(defn set-scale! [& args]
+  (apply bitmap-font-bitmap-font-data/set-scale! args))

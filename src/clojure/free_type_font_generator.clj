@@ -1,6 +1,5 @@
 (ns clojure.free-type-font-generator
-  (:import (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator)))
+  (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]))
 
-(defn f [^FileHandle file-handle]
-  (FreeTypeFontGenerator. file-handle))
+(defn f [& args]
+  (apply free-type-font-generator/f args))

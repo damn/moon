@@ -1,13 +1,12 @@
 (ns clojure.static-tiled-map-tile
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
+  (:require [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
-(defn new [^TextureRegion texture-region]
-  (StaticTiledMapTile. texture-region))
+(defn new [& args]
+  (apply static-tiled-map-tile/new args))
 
-(defn new-tile [^StaticTiledMapTile tile]
-  (StaticTiledMapTile. tile))
+(defn new-tile [& args]
+  (apply static-tiled-map-tile/new-tile args))
 
-(defn get-properties [tile]
-  (StaticTiledMapTile/.getProperties tile))
+(defn get-properties [& args]
+  (apply static-tiled-map-tile/get-properties args))

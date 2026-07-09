@@ -1,7 +1,6 @@
 (ns clojure.scene2d.actor.set-name
   (:refer-clojure :exclude [new remove])
-  (:import (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor)))
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
-(defn f [^Actor actor name]
-  (Actor/.setName actor name))
+(defn f [& args]
+  (apply actor/set-name args))

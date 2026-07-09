@@ -1,8 +1,8 @@
 (ns clojure.tooltip-manager
-  (:import (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]))
 
-(defn get-instance []
-  (TooltipManager/getInstance))
+(defn get-instance [& args]
+  (apply tooltip-manager/get-instance args))
 
-(defn set-initial-time! [^TooltipManager tooltip-manager initial-time]
-  (set! (.initialTime tooltip-manager) initial-time))
+(defn set-initial-time! [& args]
+  (apply tooltip-manager/set-initial-time! args))

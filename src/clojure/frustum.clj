@@ -1,5 +1,5 @@
 (ns clojure.frustum
-  (:import (com.badlogic.gdx.math Frustum)))
+  (:require [com.badlogic.gdx.math.frustum :as frustum]))
 
-(defn plane-points [^Frustum frustum]
-  (.planePoints frustum))
+(defn plane-points [& args]
+  (apply frustum/plane-points args))

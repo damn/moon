@@ -1,10 +1,9 @@
 (ns clojure.skin
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
-(defn new [file-handle]
-  (Skin. ^FileHandle file-handle))
+(defn new [& args]
+  (apply skin/new args))
 
-(defn get-font [skin font-name]
-  (Skin/.getFont skin font-name))
+(defn get-font [& args]
+  (apply skin/get-font args))

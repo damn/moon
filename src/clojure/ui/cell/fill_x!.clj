@@ -1,5 +1,5 @@
 (ns clojure.ui.cell.fill-x!
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]))
 
-(defn f [^Cell cell]
-  (.fillX cell))
+(defn f [& args]
+  (apply cell/fill-x args))

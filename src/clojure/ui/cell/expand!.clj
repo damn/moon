@@ -1,5 +1,5 @@
 (ns clojure.ui.cell.expand!
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]))
 
-(defn f [^Cell cell]
-  (.expand cell))
+(defn f [& args]
+  (apply cell/expand args))

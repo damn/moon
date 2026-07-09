@@ -1,6 +1,6 @@
 (ns clojure.stack
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Stack)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]))
 
-(defn new []
-  (Stack.))
+(defn new [& args]
+  (apply stack/new args))

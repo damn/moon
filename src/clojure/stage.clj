@@ -1,14 +1,14 @@
 (ns clojure.stage
-  (:import (com.badlogic.gdx.scenes.scene2d Stage)))
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
-(defn act! [stage]
-  (Stage/.act stage))
+(defn act! [& args]
+  (apply stage/act! args))
 
-(defn add-actor! [stage actor]
-  (Stage/.addActor stage actor))
+(defn add-actor! [& args]
+  (apply stage/add-actor! args))
 
-(defn draw! [stage]
-  (Stage/.draw stage))
+(defn draw! [& args]
+  (apply stage/draw! args))
 
-(defn hit [^Stage stage x y touchable?]
-  (.hit stage (float x) (float y) touchable?))
+(defn hit [& args]
+  (apply stage/hit args))

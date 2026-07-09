@@ -1,6 +1,6 @@
 (ns clojure.text-tooltip
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextTooltip)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]))
 
-(defn new [^String tooltip ^Skin skin]
-  (TextTooltip. tooltip skin))
+(defn new [& args]
+  (apply text-tooltip/new args))

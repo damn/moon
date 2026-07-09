@@ -1,5 +1,5 @@
 (ns clojure.map-layers.get
-  (:import (com.badlogic.gdx.maps MapLayers)))
+  (:require [com.badlogic.gdx.maps.map-layers :as map-layers]))
 
-(defn f [map-layers layer-name]
-  (MapLayers/.get map-layers ^String layer-name))
+(defn f [& args]
+  (apply map-layers/get args))

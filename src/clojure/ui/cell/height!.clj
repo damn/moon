@@ -1,5 +1,5 @@
 (ns clojure.ui.cell.height!
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]))
 
-(defn f [^Cell cell n]
-  (.height cell (float n)))
+(defn f [& args]
+  (apply cell/height args))

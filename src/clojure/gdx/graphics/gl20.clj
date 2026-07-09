@@ -1,10 +1,11 @@
 (ns clojure.gdx.graphics.gl20
-  (:import (com.badlogic.gdx.graphics GL20)))
+  (:require [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
-(def color-buffer-bit GL20/GL_COLOR_BUFFER_BIT)
+(def color-buffer-bit
+  gl20/color-buffer-bit)
 
-(defn clear! [gl bit-mask]
-  (GL20/.glClear gl bit-mask))
+(defn clear! [& args]
+  (apply gl20/clear! args))
 
-(defn clear-color! [gl r g b a]
-  (GL20/.glClearColor gl r g b a))
+(defn clear-color! [& args]
+  (apply gl20/clear-color! args))

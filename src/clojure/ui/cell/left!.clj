@@ -1,5 +1,5 @@
 (ns clojure.ui.cell.left!
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]))
 
-(defn f [^Cell cell]
-  (.left cell))
+(defn f [& args]
+  (apply cell/left args))

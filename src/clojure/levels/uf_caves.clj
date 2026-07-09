@@ -6,8 +6,8 @@
             [clojure.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.levels.uf-caves.initial-grid]
             [clojure.levels.uf-caves.fix-nads]
-            [clojure.levels.uf-caves.last-steps])
-  (:import (java.util Random)))
+            [clojure.levels.uf-caves.last-steps]
+            [clojure.java.util.random :as random]))
 
 (defn create
   [world-fn-ctx]
@@ -36,7 +36,7 @@
              :grid2d-fix-nads-fn grid2d-fix-nads-fn
              :size cave-size
              :cave-style cave-style
-             :random (Random.)
+             :random (random/new-random)
              :level/tile-size tile-size
              :level/create-tile (let [texture (get textures texture-path)]
                                   (memoize

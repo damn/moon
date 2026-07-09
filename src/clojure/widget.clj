@@ -1,8 +1,6 @@
 (ns clojure.widget
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Widget)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]))
 
-(defn new [draw-fn]
-  (proxy [Widget] []
-    (draw [batch parent-alpha]
-      (draw-fn this batch parent-alpha))))
+(defn new [& args]
+  (apply widget/new args))

@@ -1,18 +1,18 @@
 (ns clojure.scene2d.group
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
+  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]))
 
-(defn add-actor! [^Group group ^Actor actor]
-  (Group/.addActor group actor))
+(defn add-actor! [& args]
+  (apply group/add-actor! args))
 
-(defn clear-children! [^Group group]
-  (Group/.clearChildren group))
+(defn clear-children! [& args]
+  (apply group/clear-children! args))
 
-(defn find-actor [^Group group name]
-  (Group/.findActor group name))
+(defn find-actor [& args]
+  (apply group/find-actor args))
 
-(defn get-children [^Group group]
-  (Group/.getChildren group))
+(defn get-children [& args]
+  (apply group/get-children args))
 
-(defn new []
-  (Group.))
+(defn new [& args]
+  (apply group/new args))

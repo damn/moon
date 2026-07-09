@@ -1,31 +1,27 @@
 (ns clojure.texture-region
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)))
+  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
-(defn get-region-height [region]
-  (TextureRegion/.getRegionHeight region))
+(defn get-region-height [& args]
+  (apply texture-region/get-region-height args))
 
-(defn get-region-width [region]
-  (TextureRegion/.getRegionWidth region))
+(defn get-region-width [& args]
+  (apply texture-region/get-region-width args))
 
-(defn get-texture [region]
-  (TextureRegion/.getTexture region))
+(defn get-texture [& args]
+  (apply texture-region/get-texture args))
 
-(defn get-u [region]
-  (TextureRegion/.getU region))
+(defn get-u [& args]
+  (apply texture-region/get-u args))
 
-(defn get-u2 [region]
-  (TextureRegion/.getU2 region))
+(defn get-u2 [& args]
+  (apply texture-region/get-u2 args))
 
-(defn get-v [region]
-  (TextureRegion/.getV region))
+(defn get-v [& args]
+  (apply texture-region/get-v args))
 
-(defn get-v2 [region]
-  (TextureRegion/.getV2 region))
+(defn get-v2 [& args]
+  (apply texture-region/get-v2 args))
 
-(defn new
-  ([texture x y w h]
-   (TextureRegion. ^Texture texture (int x) (int y) (int w) (int h)))
-  ([texture]
-   (TextureRegion. ^Texture texture)))
+(defn new [& args]
+  (apply texture-region/new args))

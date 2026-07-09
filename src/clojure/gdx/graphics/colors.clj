@@ -1,5 +1,5 @@
 (ns clojure.gdx.graphics.colors
-  (:import (com.badlogic.gdx.graphics Colors)))
+  (:require [com.badlogic.gdx.graphics.colors :as colors]))
 
-(defn put! [name color]
-  (Colors/put name color))
+(defn put! [& args]
+  (apply colors/put! args))

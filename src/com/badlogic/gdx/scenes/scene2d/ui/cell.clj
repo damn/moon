@@ -1,0 +1,47 @@
+(ns com.badlogic.gdx.scenes.scene2d.ui.cell
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Cell)))
+
+(defn bottom [^Cell cell]
+  (.bottom cell))
+
+(defn center [^Cell cell]
+  (.center cell))
+
+(defn colspan [^Cell cell n]
+  (.colspan cell (int n)))
+
+(defn expand [^Cell cell]
+  (.expand cell))
+
+(defn expand-x [^Cell cell]
+  (.expandX cell))
+
+(defn expand-y [^Cell cell]
+  (.expandY cell))
+
+(defn fill-x [^Cell cell]
+  (.fillX cell))
+
+(defn fill-y [^Cell cell]
+  (.fillY cell))
+
+(defn height [^Cell cell n]
+  (.height cell (float n)))
+
+(defn left [^Cell cell]
+  (.left cell))
+
+(defn pad [^Cell cell n]
+  (.pad cell (float n)))
+
+(defn pad-bottom [^Cell cell n]
+  (.padBottom cell (float n)))
+
+(defn pad-top [^Cell cell n]
+  (.padTop cell (float n)))
+
+(defn right [^Cell cell]
+  (.right cell))
+
+(defn width [^Cell cell n]
+  (.width cell (float n)))

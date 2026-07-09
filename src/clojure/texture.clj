@@ -1,10 +1,9 @@
 (ns clojure.texture
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Pixmap Texture)))
+  (:require [com.badlogic.gdx.graphics.texture :as texture]))
 
-(defn new [^FileHandle file-handle]
-  (Texture. file-handle))
+(defn new [& args]
+  (apply texture/new args))
 
-(defn new-from-pixmap [^Pixmap pixmap]
-  (Texture. pixmap))
+(defn new-from-pixmap [& args]
+  (apply texture/new-from-pixmap args))

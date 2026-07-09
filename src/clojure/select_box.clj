@@ -1,15 +1,15 @@
 (ns clojure.select-box
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox Skin)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]))
 
-(defn get-selected [^SelectBox select-box]
-  (SelectBox/.getSelected select-box))
+(defn get-selected [& args]
+  (apply select-box/get-selected args))
 
-(defn new [^Skin skin]
-  (SelectBox. skin))
+(defn new [& args]
+  (apply select-box/new args))
 
-(defn set-items! [^SelectBox select-box items]
-  (SelectBox/.setItems select-box ^"[Ljava.lang.Object;" (into-array items)))
+(defn set-items! [& args]
+  (apply select-box/set-items! args))
 
-(defn set-selected! [^SelectBox select-box selected]
-  (SelectBox/.setSelected select-box selected))
+(defn set-selected! [& args]
+  (apply select-box/set-selected! args))

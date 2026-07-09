@@ -1,12 +1,12 @@
 (ns clojure.rectangle
   (:refer-clojure :exclude [new contains?])
-  (:import (com.badlogic.gdx.math Rectangle)))
+  (:require [com.badlogic.gdx.math.rectangle :as rectangle]))
 
-(defn new [x y width height]
-  (Rectangle. (float x) (float y) (float width) (float height)))
+(defn new [& args]
+  (apply rectangle/new args))
 
-(defn overlaps? [^Rectangle a ^Rectangle b]
-  (.overlaps a b))
+(defn overlaps? [& args]
+  (apply rectangle/overlaps? args))
 
-(defn contains? [^Rectangle rectangle [x y]]
-  (.contains rectangle (float x) (float y)))
+(defn contains? [& args]
+  (apply rectangle/contains? args))

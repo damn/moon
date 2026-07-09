@@ -1,4 +1,5 @@
 (ns clojure.pixmap$format
-  (:import (com.badlogic.gdx.graphics Pixmap$Format)))
+  (:require [com.badlogic.gdx.graphics.pixmap$format :as pixmap-format]))
 
-(def rgba8888 Pixmap$Format/RGBA8888)
+(def rgba8888
+  pixmap-format/rgba8888)

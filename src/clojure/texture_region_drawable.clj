@@ -1,14 +1,12 @@
 (ns clojure.texture-region-drawable
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.graphics Color)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.utils TextureRegionDrawable)))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
-(defn new [^TextureRegion texture-region]
-  (TextureRegionDrawable. texture-region))
+(defn new [& args]
+  (apply texture-region-drawable/new args))
 
-(defn set-min-size! [^TextureRegionDrawable drawable min-width min-height]
-  (TextureRegionDrawable/.setMinSize drawable min-width min-height))
+(defn set-min-size! [& args]
+  (apply texture-region-drawable/set-min-size! args))
 
-(defn tint! [^TextureRegionDrawable drawable ^Color color]
-  (.tint drawable color))
+(defn tint! [& args]
+  (apply texture-region-drawable/tint! args))

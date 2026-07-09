@@ -1,5 +1,5 @@
 (ns clojure.gdx
-  (:import (com.badlogic.gdx Gdx)))
+  (:require [com.badlogic.gdx.gdx :as gdx]))
 
-(defn app []
-  Gdx/app)
+(defn app [& args]
+  (apply gdx/app args))

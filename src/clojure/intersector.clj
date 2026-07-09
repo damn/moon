@@ -1,6 +1,5 @@
 (ns clojure.intersector
-  (:import (com.badlogic.gdx.math Circle Intersector)
-           (com.badlogic.gdx.math Rectangle)))
+  (:require [com.badlogic.gdx.math.intersector :as intersector]))
 
-(defn overlaps? [^Circle circle ^Rectangle rectangle]
-  (Intersector/overlaps circle rectangle))
+(defn overlaps? [& args]
+  (apply intersector/overlaps? args))

@@ -1,6 +1,6 @@
 (ns clojure.sprite-batch
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.graphics.g2d SpriteBatch)))
+  (:require [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]))
 
-(defn new []
-  (SpriteBatch.))
+(defn new [& args]
+  (apply sprite-batch/new args))

@@ -1,12 +1,12 @@
 (ns clojure.horizontal-group
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]))
 
-(defn new []
-  (HorizontalGroup.))
+(defn new [& args]
+  (apply horizontal-group/new args))
 
-(defn pad! [^HorizontalGroup group n]
-  (HorizontalGroup/.pad group (float n)))
+(defn pad! [& args]
+  (apply horizontal-group/pad! args))
 
-(defn space! [^HorizontalGroup group n]
-  (HorizontalGroup/.space group (float n)))
+(defn space! [& args]
+  (apply horizontal-group/space! args))

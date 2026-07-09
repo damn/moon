@@ -1,5 +1,5 @@
 (ns clojure.play
-  (:import (com.badlogic.gdx.audio Sound)))
+  (:require [com.badlogic.gdx.audio.sound :as sound]))
 
-(defn f [sound]
-  (Sound/.play sound))
+(defn f [& args]
+  (apply sound/f args))

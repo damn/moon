@@ -1,36 +1,36 @@
 (ns clojure.orthographic-camera
   (:refer-clojure :exclude [new update])
-  (:import (com.badlogic.gdx.graphics OrthographicCamera)))
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]))
 
-(defn combined [^OrthographicCamera camera]
-  (.combined camera))
+(defn combined [& args]
+  (apply orthographic-camera/combined args))
 
-(defn frustum [^OrthographicCamera camera]
-  (.frustum camera))
+(defn frustum [& args]
+  (apply orthographic-camera/frustum args))
 
-(defn new []
-  (OrthographicCamera.))
+(defn new [& args]
+  (apply orthographic-camera/new args))
 
-(defn position [^OrthographicCamera camera]
-  (.position camera))
+(defn position [& args]
+  (apply orthographic-camera/position args))
 
-(defn set-to-ortho! [^OrthographicCamera camera y-down viewport-width viewport-height]
-  (.setToOrtho camera y-down viewport-width viewport-height))
+(defn set-to-ortho! [& args]
+  (apply orthographic-camera/set-to-ortho! args))
 
-(defn set-zoom! [^OrthographicCamera camera amount]
-  (set! (.zoom camera) amount))
+(defn set-zoom! [& args]
+  (apply orthographic-camera/set-zoom! args))
 
-(defn up [^OrthographicCamera camera]
-  (.up camera))
+(defn up [& args]
+  (apply orthographic-camera/up args))
 
-(defn update! [^OrthographicCamera camera]
-  (.update camera))
+(defn update! [& args]
+  (apply orthographic-camera/update! args))
 
-(defn viewport-height [^OrthographicCamera camera]
-  (.viewportHeight camera))
+(defn viewport-height [& args]
+  (apply orthographic-camera/viewport-height args))
 
-(defn viewport-width [^OrthographicCamera camera]
-  (.viewportWidth camera))
+(defn viewport-width [& args]
+  (apply orthographic-camera/viewport-width args))
 
-(defn zoom [^OrthographicCamera camera]
-  (.zoom camera))
+(defn zoom [& args]
+  (apply orthographic-camera/zoom args))

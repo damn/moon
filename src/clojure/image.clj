@@ -1,18 +1,15 @@
 (ns clojure.image
   (:refer-clojure :exclude [new])
-  (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d.ui Image)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]))
 
-(defn new [^TextureRegion texture-region]
-  (Image. texture-region))
+(defn new [& args]
+  (apply image/new args))
 
-(defn new-drawable [^Drawable drawable]
-  (Image. drawable))
+(defn new-drawable [& args]
+  (apply image/new-drawable args))
 
-(defn new-texture [^Texture texture]
-  (Image. texture))
+(defn new-texture [& args]
+  (apply image/new-texture args))
 
-(defn set-drawable! [^Image image ^Drawable drawable]
-  (Image/.setDrawable image drawable))
+(defn set-drawable! [& args]
+  (apply image/set-drawable! args))

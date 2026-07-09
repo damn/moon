@@ -1,4 +1,5 @@
 (ns clojure.gdx.utils.align
-  (:import (com.badlogic.gdx.utils Align)))
+  (:require [com.badlogic.gdx.utils.align :as align]))
 
-(def center Align/center)
+(def center
+  align/center)

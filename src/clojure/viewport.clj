@@ -1,9 +1,8 @@
 (ns clojure.viewport
-  (:import (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.utils.viewport Viewport)))
+  (:require [com.badlogic.gdx.utils.viewport.viewport :as viewport]))
 
-(defn update! [viewport width height center-camera?]
-  (Viewport/.update viewport width height center-camera?))
+(defn update! [& args]
+  (apply viewport/update! args))
 
-(defn unproject [viewport vector2]
-  (Viewport/.unproject viewport ^Vector2 vector2))
+(defn unproject [& args]
+  (apply viewport/unproject args))

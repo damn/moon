@@ -1,5 +1,5 @@
 (ns clojure.set-fill-parent!
-  (:import (com.badlogic.gdx.scenes.scene2d.utils Layout)))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
 
-(defn f [^Layout layout fill-parent?]
-  (Layout/.setFillParent layout fill-parent?))
+(defn f [& args]
+  (apply layout/set-fill-parent args))

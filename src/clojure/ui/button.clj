@@ -1,5 +1,6 @@
 (ns clojure.ui.button
   (:refer-clojure :exclude [class])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Button)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.button :as button]))
 
-(def class Button)
+(def class
+  button/class)

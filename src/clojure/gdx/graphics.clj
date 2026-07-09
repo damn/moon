@@ -1,18 +1,17 @@
 (ns clojure.gdx.graphics
-  (:import (com.badlogic.gdx Graphics)
-           (com.badlogic.gdx.graphics Cursor Pixmap)))
+  (:require [com.badlogic.gdx.graphics :as graphics]))
 
-(defn get-delta-time [graphics]
-  (Graphics/.getDeltaTime graphics))
+(defn get-delta-time [& args]
+  (apply graphics/get-delta-time args))
 
-(defn get-frames-per-second [graphics]
-  (Graphics/.getFramesPerSecond graphics))
+(defn get-frames-per-second [& args]
+  (apply graphics/get-frames-per-second args))
 
-(defn get-gl20 [graphics]
-  (Graphics/.getGL20 graphics))
+(defn get-gl20 [& args]
+  (apply graphics/get-gl20 args))
 
-(defn new-cursor [graphics ^Pixmap pixmap hotspot-x hotspot-y]
-  (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y))
+(defn new-cursor [& args]
+  (apply graphics/new-cursor args))
 
-(defn set-cursor! [graphics ^Cursor cursor]
-  (Graphics/.setCursor graphics cursor))
+(defn set-cursor! [& args]
+  (apply graphics/set-cursor! args))

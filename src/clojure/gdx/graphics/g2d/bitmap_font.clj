@@ -1,14 +1,14 @@
 (ns clojure.gdx.graphics.g2d.bitmap-font
-  (:import (com.badlogic.gdx.graphics.g2d Batch BitmapFont)))
+  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]))
 
-(defn draw! [^BitmapFont font ^Batch batch text x y target-width halign wrap?]
-  (BitmapFont/.draw font batch text (float x) (float y) (float target-width) halign wrap?))
+(defn draw! [& args]
+  (apply bitmap-font/draw! args))
 
-(defn get-data [font]
-  (BitmapFont/.getData font))
+(defn get-data [& args]
+  (apply bitmap-font/get-data args))
 
-(defn get-line-height [^BitmapFont font]
-  (BitmapFont/.getLineHeight font))
+(defn get-line-height [& args]
+  (apply bitmap-font/get-line-height args))
 
-(defn set-use-integer-positions! [^BitmapFont font use-integer-positions?]
-  (BitmapFont/.setUseIntegerPositions font use-integer-positions?))
+(defn set-use-integer-positions! [& args]
+  (apply bitmap-font/set-use-integer-positions! args))

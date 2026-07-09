@@ -1,11 +1,12 @@
 (ns clojure.label
   (:refer-clojure :exclude [class new])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Label Skin)))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.label :as label]))
 
-(def class Label)
+(def class
+  label/class)
 
-(defn new [^String text ^Skin skin]
-  (Label. text skin))
+(defn new [& args]
+  (apply label/new args))
 
-(defn set-text! [^Label label ^String text]
-  (Label/.setText label text))
+(defn set-text! [& args]
+  (apply label/set-text! args))
