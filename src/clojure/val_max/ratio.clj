@@ -1,5 +1,5 @@
-(ns clojure.val-max-ratio
-  (:require [clojure.val-max-validate :as validate]))
+(ns clojure.val-max.ratio
+  (:require [clojure.val-max.validate :as validate]))
 
 (defn f
   "If mx and v is 0, returns 0, otherwise (/ v mx)"

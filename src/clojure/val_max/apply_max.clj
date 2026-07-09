@@ -1,6 +1,6 @@
 (ns clojure.val-max.apply-max
   (:require [clojure.modifiers-get-value :as get-value]
-            [clojure.val-max-validate :as validate]
+            [clojure.val-max.validate :as validate]
             [clojure.to-pos-int :as ->pos-int]))
 
 (defn f [val-max modifiers modifier-k]

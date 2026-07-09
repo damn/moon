@@ -6,7 +6,7 @@
             [clojure.moon-textures :as textures]
             [clojure.readable :as readable]
             [clojure.scene2d-actor :as actor]
-            [clojure.val-max-ratio :as ratio]))
+            [clojure.val-max.ratio :as ratio]))
 
 (defn hp-mana-bar-create
   [{:keys [ctx/textures
