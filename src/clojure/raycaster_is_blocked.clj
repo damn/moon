@@ -1,5 +1,5 @@
 (ns clojure.raycaster-is-blocked
-  (:import (moon RayCaster)))
+  (:import (clojure RayCaster)))
 
 (defn f [this [start-x start-y] [target-x target-y]]
   (RayCaster/rayBlocked (double start-x)

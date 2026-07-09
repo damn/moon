@@ -1,4 +1,4 @@
-package moon;
+package clojure;
 
 public class RayCaster {
 

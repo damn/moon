@@ -1,5 +1,5 @@
 (ns clojure.set-ctx
-  (:import (moon Stage)))
+  (:import (clojure Stage)))
 
 (defn f [^Stage stage ctx]
   (set! (.ctx stage) ctx))
