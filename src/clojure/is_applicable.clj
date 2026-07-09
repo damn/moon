@@ -1,5 +1,5 @@
 (ns clojure.is-applicable
-  (:require [clojure.creature-melee-damage :as melee-damage]
+  (:require [clojure.stats.melee-damage :as melee-damage]
             [clojure.moon-faction :as faction]))
 
 (defmulti f

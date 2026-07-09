@@ -1,4 +1,4 @@
-(ns clojure.creature-melee-damage
+(ns clojure.stats.melee-damage
   (:require [clojure.stats.get-stat-value :refer [get-stat-value]]))
 
 ; TODO pass stats directly

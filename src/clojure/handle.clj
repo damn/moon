@@ -1,7 +1,7 @@
 (ns clojure.handle
   (:require [clojure.stats.add-mods :as add-mods]
             [clojure.stats.calc-damage :as calc-damage]
-            [clojure.creature-melee-damage :as melee-damage]
+            [clojure.stats.melee-damage :as melee-damage]
             [clojure.stats.effective-armor-save :as effective-armor-save]
             [clojure.body.end-point :refer [end-point]]
             [clojure.stats.get-hitpoints :as get-hitpoints]
