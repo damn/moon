@@ -1,5 +1,6 @@
 (ns clojure.creature-tiles)
 
+; TODO what concept is this? inline???
 (defn prepare [creature-properties image->texture-region]
   (for [{:keys [entity/animation
                 creature/level
