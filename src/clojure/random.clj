@@ -1,4 +1,4 @@
-(ns clojure.weighted)
+(ns clojure.random)
 
 (defn get-rand-weighted-item
   "given a sequence of items and their weight, returns a weighted random item.

@@ -1,4 +1,4 @@
-(ns clojure.visible-tiles
+(ns clojure.orthographic-camera.visible-tiles
   (:require [clojure.orthographic-camera-frustum :refer [frustum]]))
 
 (defn visible-tiles [camera]

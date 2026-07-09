@@ -9,7 +9,7 @@
             [clojure.orthographic-camera :as orthographic-camera]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.throwable :as throwable]
-            [clojure.visible-tiles :refer [visible-tiles]]
+            [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (def ^:private render-layers

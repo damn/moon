@@ -1,5 +1,5 @@
 (ns clojure.position-tile-fn
-  (:require [clojure.weighted :refer [get-rand-weighted-item]]))
+  (:require [clojure.random :refer [get-rand-weighted-item]]))
 
 (defn f [grid]
   (let [uf-grounds (for [x [1 5]
