@@ -13,7 +13,7 @@
             [clojure.v2.length :as length]
             [clojure.move :as move]
             [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
-            [clojure.npc-pathing :as npc-pathing]
+            [clojure.grid.find-direction :refer [find-direction]]
             [clojure.overlaps :refer [overlaps?]]
             [clojure.stats.remove-mods :as remove-mods]
             [clojure.stopped :refer [stopped?]]
@@ -144,7 +144,7 @@
      (let [effect-ctx (create-effect-ctx/f ctx eid)]
        (if-let [skill (choose-skill/f ctx @eid effect-ctx)]
          [[:tx/event eid :start-action [skill effect-ctx]]]
-         [[:tx/event eid :movement-direction (or (npc-pathing/find-direction (:ctx/grid ctx) eid)
+         [[:tx/event eid :movement-direction (or (find-direction (:ctx/grid ctx) eid)
                                                  [0 0])]])))
 
    :entity/movement

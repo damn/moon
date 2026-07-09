@@ -1,10 +1,6 @@
 (ns clojure.create-value
   (:require [clojure.db.get-raw :refer [get-raw]]))
 
-; TODO create-value is for 'schema'
-; and build-values is on 'schemas'
-; =>>!>
-
 (defmulti create-value (fn [[k] _v _db]
                          k))
 
