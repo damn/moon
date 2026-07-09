@@ -1,5 +1,10 @@
 (ns clojure.moon
-  (:require [clojure.lwjgl3-application :as lwjgl3-application]
+  (:require [clojure.application-listener :as application-listener]
+            [clojure.configuration :as configuration]
+            [clojure.lwjgl3-application :as lwjgl3-application]
+            [clojure.lwjgl3-application-configuration :as config]
+            [clojure.os :as os]
+            [clojure.shared-library-loader :as shared-library-loader]
             [clojure.moon.create :as create]
             [clojure.moon.dispose :as dispose]
             [clojure.moon.render :as render]
@@ -9,17 +14,21 @@
 (def state (atom nil))
 
 (defn -main []
-  (lwjgl3-application/f
-   {:create! (fn [app]
-               (reset! state (create/create app)))
-    :dispose! (fn []
-                (dispose/dispose @state))
-    :render! (fn []
-               (swap! state render/render))
-    :resize! (fn [width height]
-               (resize/resize @state width height))
-    :pause! (fn [])
-    :resume! (fn [])}
-   {:title "Moon"
-    :windowed-mode {:width 1440 :height 900}
-    :foreground-fps 60}))
+  (when (= shared-library-loader/os os/mac-os-x)
+    (configuration/set! configuration/glfw-library-name "glfw_async"))
+  (lwjgl3-application/create
+   (application-listener/create
+    {:create! (fn [app]
+                (reset! state (create/create app)))
+     :dispose! (fn []
+                 (dispose/dispose @state))
+     :render! (fn []
+                (swap! state render/render))
+     :resize! (fn [width height]
+                (resize/resize @state width height))
+     :pause! (fn [])
+     :resume! (fn [])})
+   (config/build
+    {:title "Moon"
+     :windowed-mode {:width 1440 :height 900}
+     :foreground-fps 60})))
