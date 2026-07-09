@@ -6,7 +6,7 @@
   (apply pixmap/new args))
 
 (defn set-color! [& args]
-  (apply pixmap/set-color! args))
+  (apply pixmap/setColor args))
 
 (defn draw-pixel! [& args]
-  (apply pixmap/draw-pixel! args))
+  (apply pixmap/drawPixel args))

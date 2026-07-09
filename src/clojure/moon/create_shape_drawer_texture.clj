@@ -8,6 +8,6 @@
   (let [pixmap (doto (pixmap/new 1 1 pixmap-format/rgba8888)
                 (pixmap/set-color! 1 1 1 1)
                 (pixmap/draw-pixel! 0 0))
-        texture* (texture/new-from-pixmap pixmap)]
+        texture* (texture/new pixmap)]
     (disposable/dispose! pixmap)
     (assoc ctx :ctx/shape-drawer-texture texture*)))
