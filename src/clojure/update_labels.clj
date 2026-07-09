@@ -1,33 +1,17 @@
 (ns clojure.update-labels
-  (:require [clojure.orthographic-camera :as orthographic-camera]
-            [clojure.gdx.graphics :as graphics]
-            [clojure.readable :as readable]))
+  (:require [clojure.update-labels.elapsed-time :as elapsed-time]
+            [clojure.update-labels.fps :as fps]
+            [clojure.update-labels.gui :as gui]
+            [clojure.update-labels.mouseover-entity-id :as mouseover-entity-id]
+            [clojure.update-labels.paused :as paused]
+            [clojure.update-labels.world :as world]
+            [clojure.update-labels.zoom :as zoom]))
 
 (def v
-  [
-   {:label "elapsed-time"
-    :update-fn (fn [{:keys [ctx/elapsed-time]}]
-                 (str (readable/f elapsed-time) " seconds"))
-    :icon "images/clock.png"}
-   {:label "FPS"
-    :update-fn (fn [{:keys [ctx/graphics]}]
-                 (graphics/get-frames-per-second graphics))
-    :icon "images/fps.png"}
-   {:label "Mouseover-entity id"
-    :update-fn (fn [{:keys [ctx/mouseover-eid]}]
-                 (when-let [entity (and mouseover-eid @mouseover-eid)]
-                   (:entity/id entity)))
-    :icon "images/mouseover.png"}
-   {:label "paused?"
-    :update-fn :ctx/paused?}
-   {:label "GUI"
-    :update-fn (fn [{:keys [ctx/ui-mouse-position]}]
-                 (mapv int ui-mouse-position))}
-   {:label "World"
-    :update-fn (fn [{:keys [ctx/world-mouse-position]}]
-                 (mapv int world-mouse-position))}
-   {:label "Zoom"
-    :update-fn (fn [{:keys [ctx/world-viewport]}]
-                 (orthographic-camera/zoom (:viewport/camera world-viewport)))
-    :icon "images/zoom.png"}
-   ])
+  [elapsed-time/item
+   fps/item
+   mouseover-entity-id/item
+   paused/item
+   gui/item
+   world/item
+   zoom/item])

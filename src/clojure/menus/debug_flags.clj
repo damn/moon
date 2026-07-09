@@ -1,4 +1,4 @@
-(ns clojure.debug-flags)
+(ns clojure.menus.debug-flags)
 
 (def item
   {:label "Debug"
