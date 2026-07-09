@@ -1,4 +1,4 @@
-(ns clojure.input-position
+(ns clojure.input.position
   (:require [clojure.input :as input]))
 
 (defn f [input]

@@ -1,4 +1,4 @@
-(ns clojure.key-pressed
+(ns clojure.input.key-pressed
   (:require [clojure.input :as input]
             [clojure.input$keys :as input-keys]))
 

@@ -1,6 +1,6 @@
 (ns clojure.moon.assoc-paused
-  (:require [clojure.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
-            [clojure.key-pressed :refer [f] :rename {f key-pressed?}]
+  (:require [clojure.input.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
+            [clojure.input.key-pressed :refer [f] :rename {f key-pressed?}]
             [clojure.pausing :refer [pausing?]]
             [clojure.state-pause-game :refer [state->pause-game?]]))
 

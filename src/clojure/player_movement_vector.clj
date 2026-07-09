@@ -2,7 +2,7 @@
   (:require [clojure.v2.add :as add]
             [clojure.v2.length :as length]
             [clojure.v2.normalise :as normalise]
-            [clojure.key-pressed :as key-pressed?]))
+            [clojure.input.key-pressed :as key-pressed?]))
 
 (defn player-movement-vector [{:keys [ctx/input]}]
   (let [r (when (key-pressed?/f input :input.keys/d) [1  0])

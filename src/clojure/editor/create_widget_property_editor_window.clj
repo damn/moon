@@ -9,7 +9,7 @@
             [clojure.editor.widget-value :refer [widget-value]]
             [clojure.event :as event]
             [clojure.scene2d.group :as group]
-            [clojure.key-just-pressed :as key-just-pressed?]
+            [clojure.input.key-just-pressed :as key-just-pressed?]
             [clojure.scene2d-actor :as actor]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.type :refer [property->type]]

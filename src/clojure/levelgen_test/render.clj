@@ -4,7 +4,7 @@
             [clojure.gdx.graphics.gl20 :as gl20]
             [clojure.gdx.graphics :as graphics]
             [clojure.inc-zoom :refer [inc-zoom!]]
-            [clojure.key-pressed :as key-pressed?]
+            [clojure.input.key-pressed :as key-pressed?]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
             [clojure.stage :as stage]))

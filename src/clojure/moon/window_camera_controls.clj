@@ -3,8 +3,8 @@
             [clojure.scene2d.actor.visible]
             [clojure.scene2d.group :as group]
             [clojure.inc-zoom :refer [inc-zoom!]]
-            [clojure.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
-            [clojure.key-pressed :refer [f] :rename {f key-pressed?}]))
+            [clojure.input.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
+            [clojure.input.key-pressed :refer [f] :rename {f key-pressed?}]))
 
 (def zoom-speed 0.025)
 

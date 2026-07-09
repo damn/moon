@@ -1,4 +1,4 @@
-(ns clojure.input-button-just-pressed
+(ns clojure.input.button-just-pressed
   (:require [clojure.input :as input]
             [clojure.input$buttons :as input-buttons]))
 

@@ -1,5 +1,5 @@
 (ns clojure.moon.k-handle-input.player-item-on-cursor
-  (:require [clojure.input-button-just-pressed :as button-just-pressed?]
+  (:require [clojure.input.button-just-pressed :as button-just-pressed?]
             [clojure.mouseover-actor :refer [mouseover-actor]]))
 
 (defn f
