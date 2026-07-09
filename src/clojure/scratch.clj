@@ -2,7 +2,7 @@
 
  (require '[clojure.db.build :refer [build]]
           '[clojure.application :as application]
-          '[clojure.gdx :as gdx]
+          '[com.badlogic.gdx.gdx :as gdx]
           )
  (application/post-runnable! (gdx/app)
   (fn []

@@ -1,6 +1,5 @@
 (ns clojure.levelgen-test
-  (:require [clojure.gdx :as gdx]
-            [gdx.lwjgl3-application :as lwjgl3-application]
+  (:require [gdx.lwjgl3-application :as lwjgl3-application]
             [clojure.levelgen-test.create :as create]
             [clojure.levelgen-test.dispose :as dispose]
             [clojure.levelgen-test.render :as render]
@@ -29,8 +28,8 @@
 
 (defn -main []
   (lwjgl3-application/create
-   {:create! (fn []
-               (reset! state (create/create state config (gdx/app))))
+   {:create! (fn [app]
+               (reset! state (create/create state config app)))
     :dispose! (fn []
                 (dispose/dispose @state))
     :render! (fn []

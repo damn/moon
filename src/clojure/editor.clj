@@ -1,6 +1,5 @@
 (ns clojure.editor
-  (:require [clojure.gdx :as gdx]
-            [gdx.lwjgl3-application :as lwjgl3-application]
+  (:require [gdx.lwjgl3-application :as lwjgl3-application]
             [clojure.editor.create :as create]
             [clojure.editor.dispose :as dispose]
             [clojure.editor.render :as render]
@@ -9,16 +8,14 @@
 (def state (atom nil))
 
 (defn -main []
-  (lwjgl3-application/create {:create! (fn []
-                                         (reset! state (create/create (gdx/app))))
+  (lwjgl3-application/create {:create! (fn [app]
+                                         (reset! state (create/create app)))
                               :dispose! (fn []
                                           (dispose/dispose @state))
                               :render! (fn []
                                          (swap! state render/render))
                               :resize! (fn [width height]
-                                         (resize/resize @state width height))
-                              :pause! (fn [])
-                              :resume! (fn [])}
+                                         (resize/resize @state width height))}
                              {:config/set-title "!Editor!"
                               :config/set-windowed-mode {:width 1440
                                                          :height 900}

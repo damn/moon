@@ -2,6 +2,7 @@
   (:require [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as app]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
+            [com.badlogic.gdx.gdx :as gdx]
             [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
             [com.badlogic.gdx.utils.os :as os]
             [org.lwjgl.system.configuration :as configuration]))
@@ -21,10 +22,25 @@
               (assert apply! (str "Unknown lwjgl3 config option: " k))
               (apply! config v)))
           config))
+
+      build-listener
+      (fn [{:keys [create! dispose! render! resize!]}]
+        (listener/create
+         {:create! (fn []
+                     (create! (gdx/app)))
+          :dispose! dispose!
+          :render! render!
+          :resize! resize!
+          :pause! (fn [])
+          :resume! (fn [])}))
+
+      use-glfw-async!
+      (fn []
+        (when (= shared-library-loader/os os/mac-os-x)
+          (configuration/set! configuration/glfw-library-name "glfw_async")))
       ]
   (defn create [listener
                 config-opts]
-    (when (= shared-library-loader/os os/mac-os-x)
-      (configuration/set! configuration/glfw-library-name "glfw_async"))
-    (app/new (listener/create listener)
+    (use-glfw-async!)
+    (app/new (build-listener listener)
              (build-config config-opts))))

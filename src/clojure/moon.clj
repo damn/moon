@@ -1,6 +1,5 @@
 (ns clojure.moon
-  (:require [clojure.gdx :as gdx]
-            [gdx.lwjgl3-application :as lwjgl3-application]
+  (:require [gdx.lwjgl3-application :as lwjgl3-application]
             [clojure.moon.create :as create]
             [clojure.moon.dispose :as dispose]
             [clojure.moon.render :as render]
@@ -11,8 +10,8 @@
 
 (defn -main []
   (lwjgl3-application/create
-   {:create! (fn []
-               (reset! state (create/create (gdx/app))))
+   {:create! (fn [app]
+               (reset! state (create/create app)))
     :dispose! (fn []
                 (dispose/dispose @state))
     :render! (fn []
