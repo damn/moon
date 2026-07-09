@@ -1,10 +1,9 @@
 (ns clojure.schemas-validate
   (:require [clojure.malli-form :refer [malli-form]]
-            [clojure.malli.schema :as schema]
-            [clojure.validate-humanize :refer [validate-humanize]]))
+            [clojure.malli.schema :as schema]))
 
 (defn validate [schemas k value]
   (-> (get schemas k)
       (malli-form schemas)
       schema/create
-      (validate-humanize value)))
+      (schema/validate-humanize value)))
