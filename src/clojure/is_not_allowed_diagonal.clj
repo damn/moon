@@ -1,6 +1,6 @@
 (ns clojure.is-not-allowed-diagonal
   (:require [clojure.positions :refer [positions]]
-            [clojure.diagonal-direction :as diagonal-direction?]
+            [clojure.position.diagonal-direction :as diagonal-direction?]
             [clojure.get-8-neighbours :refer [get-8-neighbours]]))
 
 (let [order (get-8-neighbours [0 0])]
