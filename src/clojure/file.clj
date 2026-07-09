@@ -1,4 +1,4 @@
-(ns clojure.create-assets-edn
+(ns clojure.file
   (:require [clojure.java.io :as io]
             [clojure.string :as str])
   (:import (java.io File)))

@@ -1,5 +1,5 @@
 (ns clojure.editor.render
-  (:require [clojure.clear-screen :as clear-screen]
+  (:require [clojure.ctx.clear-screen :as clear-screen]
             [clojure.set-ctx :as set-ctx]
             [clojure.stage :as stage]))
 

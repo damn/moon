@@ -1,7 +1,7 @@
 (ns clojure.validate-humanize
-  (:require [clojure.create-ex-info :refer [create-ex-info]]
+  (:require [clojure.malli.schema :as malli-schema]
             [clojure.malli-validate :refer [validate]]))
 
 (defn validate-humanize [schema value]
   (when-not (validate schema value)
-    (throw (create-ex-info schema value))))
+    (throw (malli-schema/create-ex-info schema value))))

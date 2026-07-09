@@ -1,5 +1,5 @@
 (ns clojure.levels.uf-caves
-  (:require [clojure.caves :as caves]
+  (:require [clojure.caves.gen :as caves]
             [clojure.fix-nads :as fix-nads]
             [clojure.texture-region :as texture-region]
             [clojure.create-static-tiled-map-tile :as create-tile]

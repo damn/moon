@@ -1,4 +1,4 @@
-(ns clojure.circle-to-cells
+(ns clojure.g2d.circle-to-cells
   (:require [clojure.outer-rectangle :refer [outer-rectangle]]
             [clojure.touched-tiles :refer [touched-tiles]]
             [clojure.g2d.get-cells :refer [get-cells]]))

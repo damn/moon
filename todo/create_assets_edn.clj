@@ -1,7 +1,7 @@
 (comment
 
  (spit "config/sounds.edn"
-       (vec (dev.create-assets-edn/list-files "wav/" ".wav")))
+       (vec (clojure.file/list-files "wav/" ".wav")))
 
 
  )

@@ -1,4 +1,4 @@
-(ns clojure.caves
+(ns clojure.caves.gen
   (:require [clojure.caves.create :as create]
             [clojure.caves.k-to-adj-num :refer [k->adj-num]]))
 

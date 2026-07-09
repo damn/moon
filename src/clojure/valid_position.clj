@@ -3,7 +3,7 @@
             [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.overlaps :refer [overlaps?]]
             [clojure.grid.cell.is-blocked :as blocked?]
-            [clojure.cells-entities :as cells->entities]))
+            [clojure.grid.cells-entities :as cells->entities]))
 
 (defn valid-position? [g2d {:keys [body/z-order] :as body} entity-id]
   (assert (:body/collides? body))

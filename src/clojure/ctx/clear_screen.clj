@@ -1,4 +1,4 @@
-(ns clojure.clear-screen
+(ns clojure.ctx.clear-screen
   (:require [clojure.gdx.graphics :as graphics]
             [clojure.gdx.graphics.gl20 :as gl20]))
 

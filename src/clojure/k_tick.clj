@@ -2,7 +2,7 @@
   (:require [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.grid.cell.is-blocked :as blocked?]
-            [clojure.cells-entities :as cells->entities]
+            [clojure.grid.cells-entities :as cells->entities]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.grid.circle-entities :refer [circle->entities]]
             [clojure.moon.npc-effect-ctx :as create-effect-ctx]

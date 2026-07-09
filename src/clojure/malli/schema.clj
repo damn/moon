@@ -1,4 +1,4 @@
-(ns clojure.create-ex-info
+(ns clojure.malli.schema
   (:require [malli.core :as m]
             [malli.error :as me]))
 
