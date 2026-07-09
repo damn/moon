@@ -3,5 +3,5 @@
 
 (defn create [application-listener
               lwjgl3-application-configuration]
-  (lwjgl3-application/create application-listener
-                             lwjgl3-application-configuration))
+  (lwjgl3-application/new application-listener
+                          lwjgl3-application-configuration))

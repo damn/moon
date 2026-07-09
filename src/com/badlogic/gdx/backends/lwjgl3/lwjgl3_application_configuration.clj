@@ -1,7 +1,8 @@
 (ns com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration
+  (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
 
-(defn create []
+(defn new []
   (Lwjgl3ApplicationConfiguration.))
 
 (defn set-title! [config title]

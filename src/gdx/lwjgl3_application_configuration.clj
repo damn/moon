@@ -3,13 +3,13 @@
 
 (let [k->opts
       {
-       :title          this/set-title!
-       :windowed-mode  this/set-windowed-mode!
-       :foreground-fps this/set-foreground-fps!
+       :title          this/set-title
+       :windowed-mode  this/set-windowed-mode
+       :foreground-fps this/set-foreground-fps
        }
       ]
   (defn build [opts]
-    (let [configuration (this/create)]
+    (let [configuration (this/new)]
       (doseq [[k v] opts]
         (let [apply! (k->opts k)]
           (assert apply! (str "Unknown lwjgl3 config option: " k))
