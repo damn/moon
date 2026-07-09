@@ -1,9 +1,9 @@
-(ns clojure.valid-position
-  (:require [clojure.g2d.get-cells :refer [get-cells]]
-            [clojure.body.touched-tiles :refer [touched-tiles]]
-            [clojure.overlaps :refer [overlaps?]]
+(ns clojure.grid.valid-position
+  (:require [clojure.body.touched-tiles :refer [touched-tiles]]
+            [clojure.g2d.get-cells :refer [get-cells]]
             [clojure.grid.cell.is-blocked :as blocked?]
-            [clojure.grid.cells-entities :as cells->entities]))
+            [clojure.grid.cells-entities :as cells->entities]
+            [clojure.overlaps :refer [overlaps?]]))
 
 (defn valid-position? [g2d {:keys [body/z-order] :as body} entity-id]
   (assert (:body/collides? body))
@@ -16,4 +16,4 @@
                             (and (not= (:entity/id other-entity) entity-id)
                                  (:body/collides? (:entity/body other-entity))
                                  (overlaps? (:entity/body other-entity)
-                                                 body)))))))))
+                                            body)))))))))

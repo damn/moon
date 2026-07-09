@@ -2,7 +2,7 @@
   (:require [clojure.content-grid.update-entity :as update-entity]
             [clojure.set-occupied-cells :refer [set-occupied-cells!]]
             [clojure.set-touched-cells :refer [set-touched-cells!]]
-            [clojure.valid-position :refer [valid-position?]]))
+            [clojure.grid.valid-position :refer [valid-position?]]))
 
 (defn do! [ctx eid]
   (assert (and (not (contains? @eid :entity/id))))

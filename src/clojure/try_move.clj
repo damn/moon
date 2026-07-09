@@ -1,5 +1,5 @@
 (ns clojure.try-move
-  (:require [clojure.valid-position :refer [valid-position?]]
+  (:require [clojure.grid.valid-position :refer [valid-position?]]
             [clojure.move :as move]))
 
 (defn f [grid body entity-id movement]
