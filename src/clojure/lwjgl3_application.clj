@@ -1,8 +1,9 @@
 (ns clojure.lwjgl3-application
-  (:require [clojure.gdx :as gdx])
-  (:import (com.badlogic.gdx ApplicationListener)
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.utils Os SharedLibraryLoader)
+  (:require [clojure.application-listener :as application-listener])
+  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application
+                                             Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.utils Os
+                                   SharedLibraryLoader)
            (org.lwjgl.system Configuration)))
 
 (defn- set-title! [config title]
@@ -28,29 +29,8 @@
         (apply! configuration v)))
     configuration))
 
-(defn- listener
-  [{:keys [create!
-           dispose!
-           render!
-           resize!
-           pause!
-           resume!]}]
-  (reify ApplicationListener
-    (create [_]
-      (create! (gdx/app)))
-    (dispose [_]
-      (dispose!))
-    (render [_]
-      (render!))
-    (resize [_ width height]
-      (resize! width height))
-    (pause [_]
-      (pause!))
-    (resume [_]
-      (resume!))))
-
 (defn f [listener-callbacks config-opts]
   (when (= SharedLibraryLoader/os Os/MacOsX)
     (Configuration/.set Configuration/GLFW_LIBRARY_NAME "glfw_async"))
-  (Lwjgl3Application. (listener listener-callbacks)
+  (Lwjgl3Application. (application-listener/create listener-callbacks)
                       (config config-opts)))
