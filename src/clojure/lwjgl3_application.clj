@@ -1,5 +1,6 @@
 (ns clojure.lwjgl3-application
-  (:import (com.badlogic.gdx Gdx ApplicationListener)
+  (:require [clojure.gdx :as gdx])
+  (:import (com.badlogic.gdx ApplicationListener)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.utils Os SharedLibraryLoader)
            (org.lwjgl.system Configuration)))
@@ -36,7 +37,7 @@
            resume!]}]
   (reify ApplicationListener
     (create [_]
-      (create! (Gdx/app)))
+      (create! (gdx/app)))
     (dispose [_]
       (dispose!))
     (render [_]

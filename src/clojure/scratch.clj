@@ -1,8 +1,10 @@
 (comment
 
  (require '[clojure.db.build :refer [build]]
-          '[clojure.application :as application])
- (application/post-runnable! (com.badlogic.gdx.Gdx/app)
+          '[clojure.application :as application]
+          '[clojure.gdx :as gdx]
+          )
+ (application/post-runnable! (gdx/app)
   (fn []
     (let [{:keys [ctx/db]
            :as ctx} @state]
