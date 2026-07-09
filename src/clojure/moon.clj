@@ -1,6 +1,7 @@
 (ns clojure.moon
   (:require [clojure.application-listener :as application-listener]
             [clojure.configuration :as configuration]
+            [clojure.gdx :as gdx]
             [clojure.lwjgl3-application :as lwjgl3-application]
             [clojure.lwjgl3-application-configuration :as config]
             [clojure.os :as os]
@@ -18,8 +19,8 @@
     (configuration/set! configuration/glfw-library-name "glfw_async"))
   (lwjgl3-application/create
    (application-listener/create
-    {:create! (fn [app]
-                (reset! state (create/create app)))
+    {:create! (fn []
+                (reset! state (create/create (gdx/app))))
      :dispose! (fn []
                  (dispose/dispose @state))
      :render! (fn []

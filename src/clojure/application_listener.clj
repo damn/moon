@@ -1,5 +1,4 @@
 (ns clojure.application-listener
-  (:require [clojure.gdx :as gdx])
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn create
@@ -11,7 +10,7 @@
            resume!]}]
   (reify ApplicationListener
     (create [_]
-      (create! (gdx/app)))
+      (create!))
     (dispose [_]
       (dispose!))
     (render [_]
