@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.math.rectangle
   (:refer-clojure :exclude [new contains?])
-  (:import
-           (com.badlogic.gdx.math Rectangle)
-           ))
+  (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn new [x y width height]
   (Rectangle. (float x) (float y) (float width) (float height)))

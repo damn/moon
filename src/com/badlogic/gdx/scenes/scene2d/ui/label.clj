@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.label
   (:refer-clojure :exclude [class new])
-  (:import
-           (com.badlogic.gdx.scenes.scene2d.ui Label Skin)
-           ))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Label Skin)))
 
 (def class Label)
 

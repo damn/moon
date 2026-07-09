@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.graphics
-  (:import
-           (com.badlogic.gdx Graphics)
-           (com.badlogic.gdx.graphics Cursor Pixmap)
-           ))
+  (:import (com.badlogic.gdx Graphics)
+           (com.badlogic.gdx.graphics Cursor Pixmap)))
 
 (defn get-delta-time [graphics]
   (Graphics/.getDeltaTime graphics))

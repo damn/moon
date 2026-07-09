@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.widget
   (:refer-clojure :exclude [new])
-  (:import
-           (com.badlogic.gdx.scenes.scene2d.ui Widget)
-           ))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Widget)))
 
 (defn new [draw-fn]
   (proxy [Widget] []

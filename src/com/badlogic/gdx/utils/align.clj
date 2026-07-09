@@ -1,6 +1,4 @@
 (ns com.badlogic.gdx.utils.align
-  (:import
-           (com.badlogic.gdx.utils Align)
-           ))
+  (:import (com.badlogic.gdx.utils Align)))
 
 (def center Align/center)

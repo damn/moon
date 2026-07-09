@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.math.vector3
   (:refer-clojure :exclude [new])
-  (:import
-           (com.badlogic.gdx.math Vector3)
-           ))
+  (:import (com.badlogic.gdx.math Vector3)))
 
 (defn x [^Vector3 v]
   (.x v))
@@ -19,7 +17,7 @@
 (defn set-y! [vector3 y]
   (set! (.y ^Vector3 vector3) y))
 
-(defn clojurize [v3]
+(defn clojurize [v3] ; TODO remove!
   [(x v3)
    (y v3)
    (z v3)])

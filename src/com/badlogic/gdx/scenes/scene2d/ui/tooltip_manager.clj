@@ -1,7 +1,5 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager
-  (:import
-           (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)
-           ))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui TooltipManager)))
 
 (defn get-instance []
   (TooltipManager/getInstance))

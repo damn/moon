@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.horizontal-group
   (:refer-clojure :exclude [new])
-  (:import
-           (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)
-           ))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
 (defn new []
   (HorizontalGroup.))

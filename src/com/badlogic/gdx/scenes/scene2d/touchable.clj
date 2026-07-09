@@ -1,6 +1,4 @@
 (ns com.badlogic.gdx.scenes.scene2d.touchable
-  (:import
-           (com.badlogic.gdx.scenes.scene2d Touchable)
-           ))
+  (:import (com.badlogic.gdx.scenes.scene2d Touchable)))
 
 (def disabled Touchable/disabled)

@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.select-box
   (:refer-clojure :exclude [new])
-  (:import
-           (com.badlogic.gdx.scenes.scene2d.ui SelectBox Skin)
-           ))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui SelectBox Skin)))
 
 (defn get-selected [^SelectBox select-box]
   (SelectBox/.getSelected select-box))

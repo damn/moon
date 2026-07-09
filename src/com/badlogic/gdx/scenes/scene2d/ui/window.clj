@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.window
   (:refer-clojure :exclude [new class])
-  (:import
-           (com.badlogic.gdx.scenes.scene2d.ui Skin Window)
-           ))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin Window)))
 
 (def class Window)
 

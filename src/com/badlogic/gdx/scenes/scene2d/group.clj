@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.scenes.scene2d.group
   (:refer-clojure :exclude [new])
-  (:import
-           (com.badlogic.gdx.scenes.scene2d Actor Group)
-           ))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
 (defn add-actor! [^Group group ^Actor actor]
   (Group/.addActor group actor))

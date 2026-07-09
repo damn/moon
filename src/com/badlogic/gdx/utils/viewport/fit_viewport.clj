@@ -1,5 +1,5 @@
 (ns com.badlogic.gdx.utils.viewport.fit-viewport
-  (:import (clojure.lang ILookup)
+  (:import (clojure.lang ILookup) ; TODO REMOVE THIS HACK
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn create

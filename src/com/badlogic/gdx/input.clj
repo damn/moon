@@ -1,7 +1,5 @@
 (ns com.badlogic.gdx.input
-  (:import
-           (com.badlogic.gdx Input)
-           ))
+  (:import (com.badlogic.gdx Input)))
 
 (defn get-x [input]
   (Input/.getX input))

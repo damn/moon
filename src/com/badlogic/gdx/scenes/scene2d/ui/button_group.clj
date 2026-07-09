@@ -1,8 +1,8 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.button-group
-  (:refer-clojure :exclude [new remove])
-  (:import
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup)
-           ))
+  (:refer-clojure :exclude [new remove]) ; TODO remove has '! ' but we want to remove '!'
+  ; maybe we should put down _rules_
+  ; and make it machine checkable
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup)))
 
 (defn add! [^ButtonGroup button-group ^Button button]
   (ButtonGroup/.add button-group button))

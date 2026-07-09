@@ -3,4 +3,4 @@
   (:require [com.badlogic.gdx.graphics.color :as color]))
 
 (defn f [& args]
-  (apply color/f args))
+  (apply color/new args))

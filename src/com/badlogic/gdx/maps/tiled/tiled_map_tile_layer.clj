@@ -1,8 +1,6 @@
 (ns com.badlogic.gdx.maps.tiled.tiled-map-tile-layer
   (:refer-clojure :exclude [new])
-  (:import
-           (com.badlogic.gdx.maps.tiled TiledMapTileLayer TiledMapTileLayer$Cell)
-           ))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer TiledMapTileLayer$Cell)))
 
 (defn get-cell [^TiledMapTileLayer layer x y]
   (.getCell layer (int x) (int y)))

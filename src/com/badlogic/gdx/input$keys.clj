@@ -1,8 +1,7 @@
 (ns com.badlogic.gdx.input$keys
-  (:import
-           (com.badlogic.gdx Input$Keys)
-           ))
+  (:import (com.badlogic.gdx Input$Keys)))
 
+; TODO enumerate values
 (defn key-to-value [k]
   (case k
     :input.keys/d Input$Keys/D
