@@ -1,5 +1,11 @@
 (ns clojure.editor.create-widget-property-editor-window
   (:require [clojure.scene2d.actor.get-stage]
+            [clojure.ui.error-window :as error-window]
+            [clojure.scene2d.actor.remove-actor]
+            [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [clojure.set-ctx :as set-ctx]
+            [clojure.stage :as stage]
+            [clojure.throwable :as throwable]
             [clojure.scene2d.actor.set-name]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.scene2d.actor.add-listener]
@@ -17,8 +23,24 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.window :as gdx-window]
-            [clojure.with-window-close :as with-window-close]))
+            [clojure.window :as gdx-window]))
+
+(defn with-window-close [f]
+  (fn [actor {:keys [ctx/skin
+                     ctx/stage]
+              :as ctx}]
+    (try
+     (let [new-ctx (update ctx :ctx/db f)
+           stage (clojure.scene2d.actor.get-stage/f actor)]
+       (set-ctx/f stage new-ctx))
+     (clojure.scene2d.actor.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
+     (catch Throwable t
+       (throwable/pretty-pst t)
+       (stage/add-actor! stage
+                         (error-window/create
+                          {:type :ui/error-window
+                           :skin skin
+                           :throwable t}))))))
 
 (defn property-editor-window
   [{:keys [ctx
@@ -32,10 +54,10 @@
         scroll-pane-height (:viewport/world-height (:stage/viewport stage))
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
-        clicked-delete-fn (with-window-close/f (fn [db]
-                                                 (delete! db property-id)))
-        clicked-save-fn (with-window-close/f (fn [db]
-                                               (update! db (get-widget-value))))
+        clicked-delete-fn (with-window-close (fn [db]
+                                               (delete! db property-id)))
+        clicked-save-fn (with-window-close (fn [db]
+                                             (update! db (get-widget-value))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
