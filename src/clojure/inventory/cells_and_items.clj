@@ -1,7 +1,7 @@
 (ns clojure.inventory.cells-and-items
-  (:require [clojure.valid-slots :as valid-slots]))
+  (:require [clojure.inventory.slot :as slot]))
 
 (defn f [inventory slot]
-  (assert (valid-slots/v slot) (str "Slot :" (pr-str slot)))
+  (assert (slot/v slot) (str "Slot :" (pr-str slot)))
   (for [[position item] (slot inventory)]
     [[slot position] item]))

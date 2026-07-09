@@ -1,10 +1,10 @@
 (ns clojure.free-cell
-  (:require [clojure.is-stackable :as stackable?]
-            [clojure.valid-slots :as valid-slots]
+  (:require [clojure.inventory.slot :as slot]
+            [clojure.is-stackable :as stackable?]
             [clojure.inventory.cells-and-items :as cells-and-items]))
 
 (defn f [inventory slot item]
-  (assert (valid-slots/v slot) (str "Slot :" (pr-str slot)))
+  (assert (slot/v slot) (str "Slot :" (pr-str slot)))
   (first (filter (fn [[_cell cell-item]]
                    (or (stackable?/f item cell-item)
                        (nil? cell-item)))

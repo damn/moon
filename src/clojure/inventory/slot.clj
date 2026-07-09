@@ -1,4 +1,4 @@
-(ns clojure.valid-slots)
+(ns clojure.inventory.slot)
 
 (def v
   #{:inventory.slot/bag
