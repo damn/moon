@@ -9,8 +9,7 @@
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
-            [clojure.ui.window.add-close-button :as add-close-button]
-            [clojure.v-text :refer [v->text]]))
+            [clojure.ui.window.add-close-button :as add-close-button]))
 
 (defn create
   [{:keys [title
@@ -32,7 +31,15 @@
                                                                                     :height 500
                                                                                     :skin skin}))))))
                      (label/create
-                      {:text (v->text v)
+                      {:text (cond
+                              (or (keyword? v)
+                                  (number? v)
+                                  (boolean? v)
+                                  (string? v))
+                              (str "[GOLD]" v "[]")
+
+                              :else
+                              (str (class v)))
                        :skin skin})))
         rows (for [[k v] (sort-by key data)]
                {:label (k->label-str k)
