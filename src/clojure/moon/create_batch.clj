@@ -1,5 +1,5 @@
 (ns clojure.moon.create-batch
-  (:require [clojure.ctx-batch :as ctx-batch]))
+  (:require [clojure.sprite-batch :as sprite-batch]))
 
 (defn f [ctx]
-  (assoc ctx :ctx/batch (ctx-batch/step ctx)))
+  (assoc ctx :ctx/batch (sprite-batch/new)))
