@@ -1,4 +1,5 @@
-(ns clojure.editor.files)
+(ns clojure.editor.files
+  (:require [clojure.application :as application]))
 
 (defn f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/files (.getFiles app)))
+  (assoc ctx :ctx/files (application/get-files app)))
