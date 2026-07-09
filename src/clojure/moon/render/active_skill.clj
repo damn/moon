@@ -1,6 +1,6 @@
 (ns clojure.moon.render.active-skill
   (:require [clojure.math :as math]
-            [clojure.effect-render :as render]
+            [clojure.moon.effect-render :as render]
             [clojure.ratio :as ratio]
             [clojure.moon-textures :as textures]))
 

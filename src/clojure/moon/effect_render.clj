@@ -1,4 +1,4 @@
-(ns clojure.effect-render
+(ns clojure.moon.effect-render
   (:require [clojure.body.end-point :refer [end-point]]
             [clojure.body.in-range :refer [in-range?]]
             [clojure.moon-target-all :as target-all]
