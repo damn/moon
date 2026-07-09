@@ -1,4 +1,4 @@
-(ns clojure.lwjgl3-application
+(ns gdx.lwjgl3-application
   (:require [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]))
 
 (defn create [& args]

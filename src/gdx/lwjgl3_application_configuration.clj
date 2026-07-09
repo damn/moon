@@ -1,4 +1,4 @@
-(ns clojure.lwjgl3-application-configuration
+(ns gdx.lwjgl3-application-configuration
   (:require [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as lwjgl3-application-configuration]))
 
 (defn set-title! [& args]
