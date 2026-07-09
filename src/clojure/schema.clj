@@ -1,8 +1,8 @@
 (ns clojure.schema
-  (:require [clojure.create-schema :refer [create-schema]]))
+  (:require [clojure.malli.schema :as schema]))
 
 (def v
-  (create-schema
+  (schema/create
    [:and
     [:vector {:min 2 :max 2} [:int {:min 0}]]
     [:fn {:error/fn (fn [{[^int v ^int mx] :value} _]

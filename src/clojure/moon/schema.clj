@@ -1,8 +1,8 @@
 (ns clojure.moon.schema
-  (:require [clojure.create-schema :refer [create-schema]]))
+  (:require [clojure.malli.schema :as schema]))
 
 (def schema
-  (create-schema
+  (schema/create
    [:map {:closed true}
     [:ctx/input :some]
     [:ctx/graphics :some]
