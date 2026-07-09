@@ -1,7 +1,5 @@
 (ns com.badlogic.gdx.audio.sound
-  (:import
-           (com.badlogic.gdx.audio Sound)
-           ))
+  (:import (com.badlogic.gdx.audio Sound)))
 
-(defn f [sound]
+(defn play! [sound]
   (Sound/.play sound))
