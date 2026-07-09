@@ -3,8 +3,13 @@
             [clojure.ui-label :as label]
             [clojure.ui-window :as window]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [clojure.repl :as repl]
-            [clojure.with-err-str :as with-err-str]))
+            [clojure.repl :as repl]))
+
+(defmacro m [& body]
+  `(let [s# (java.io.StringWriter.)]
+     (binding [*err* s#]
+       ~@body
+       (str s#))))
 
 (defn create
   [{:keys [skin throwable]}]
