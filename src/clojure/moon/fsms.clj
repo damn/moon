@@ -1,4 +1,4 @@
-(ns clojure.fsms
+(ns clojure.moon.fsms
   (:require [reduce-fsm :as fsm]))
 
 (def fsms

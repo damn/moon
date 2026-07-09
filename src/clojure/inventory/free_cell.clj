@@ -1,4 +1,4 @@
-(ns clojure.free-cell
+(ns clojure.inventory.free-cell
   (:require [clojure.inventory.slot :as slot]
             [clojure.is-stackable :as stackable?]
             [clojure.inventory.cells-and-items :as cells-and-items]))

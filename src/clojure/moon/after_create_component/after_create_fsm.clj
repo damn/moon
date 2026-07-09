@@ -1,5 +1,5 @@
 (ns clojure.moon.after-create-component.after-create-fsm
-  (:require [clojure.fsms :refer [fsms]]
+  (:require [clojure.moon.fsms :refer [fsms]]
             [clojure.moon.create-entity-state :as create-entity-state]))
 
 (defn create-fsm
