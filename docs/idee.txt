@@ -1,0 +1,23 @@
+* Start organising with loose files in src/clojure/*
+
+And start with the easy/simple ones
+  (orthographci-camera, existing categories, input, etc. )
+
+  => so maybe make a folder 'difficult'' ????
+
+  => MECHANICAL ORDERING WOULD BE NICE .....
+
+  It's just about the 'names' in my app
+
+  src/clojure/gdx/
+    => dealing with java package 'com.badlogic.gdx'
+      => 1 namespace for each class ?
+        => 1 folder for each class?
+
+
+  grid/cell -> verschachtelt -> the 'cell' is the 'tile' or 'square'
+    and is just a data structure
+    which can be explained without the grid ??
+
+
+  modules/uf-caves verschachtelt?

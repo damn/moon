@@ -1,0 +1,130 @@
+Drop item at player's feet — change log
+======================================
+Date: 2026-07-08
+
+SUMMARY
+-------
+Ground drop and cursor preview no longer use mouse position or click-distance
+clamp. Items spawn and preview at the player's body center (:body/position).
+
+WHY
+---
+- Simpler inventory/sim boundary: drop no longer needs :ctx/world-mouse-position
+  or :entity/click-distance-tiles in item-place-position.
+- Removes "throw over hill / out of sight" behaviour (old comment in
+  item_place_position.clj).
+- Aligns with inventory/sim separation discussion: explicit drop at feet instead
+  of frame-dependent placement math.
+
+IN GAME
+-------
+- Hold item (item-on-cursor state), left-click map (not UI) → item on ground
+  under player.
+- Ghost preview while dragging shows at feet, not at cursor.
+
+NOT CHANGED
+-----------
+- FSM :player-item-on-cursor and state-exit still perform ground spawn.
+- Inventory put still dissoc's before :dropped-item to avoid double spawn.
+- Click world still required (k-handle-input); only position changed.
+
+FILES TOUCHED
+-------------
+  src/clojure/item_place_position.clj
+  src/clojure/k_state_exit/player_item_on_cursor.clj
+  src/clojure/k_render/player_item_on_cursor.clj
+  test/moon/item_on_cursor_test.clj          (untracked in git at time of write)
+  docs/item-on-cursor.md                     (untracked)
+  docs/item-on-cursor-manual-qa.md           (untracked)
+
+GIT DIFF (tracked files)
+------------------------
+
+diff --git a/src/clojure/item_place_position.clj b/src/clojure/item_place_position.clj
+--- a/src/clojure/item_place_position.clj
++++ b/src/clojure/item_place_position.clj
+@@ -1,18 +1,6 @@
+-(ns clojure.item-place-position
+-  (:require [clojure.add :as add]
+-            [clojure.direction :as direction]
+-            [clojure.distance :as distance]
+-            [clojure.scale :as scale]))
++(ns clojure.item-place-position)
+ 
+-; It is possible to put items out of sight, losing them.
+-; Because line of sight checks center of entity only, not corners
+-; this is okay, you have thrown the item over a hill, thats possible.
+-(defn item-place-position [{:keys [ctx/world-mouse-position]} player-entity]
+-  (assert world-mouse-position)
+-  (let [player-position (:body/position (:entity/body player-entity))
+-        ; so you cannot put it out of your own reach
+-        maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
+-    (add/f player-position
+-           (scale/f (direction/f player-position world-mouse-position)
+-                    (min maxrange
+-                         (distance/f player-position world-mouse-position))))))
++(defn item-place-position
++  "World position for dropping / previewing item on cursor — at player's feet."
++  [entity]
++  (:body/position (:entity/body entity)))
+
+diff --git a/src/clojure/k_render/player_item_on_cursor.clj b/src/clojure/k_render/player_item_on_cursor.clj
+--- a/src/clojure/k_render/player_item_on_cursor.clj
++++ b/src/clojure/k_render/player_item_on_cursor.clj
+@@ -4,12 +4,9 @@
+             [clojure.moon-textures :as textures]))
+ 
+ (defn f
+-  [{:keys [item]}
+-   entity
+-   {:keys [ctx/textures]
+-    :as ctx}]
++  [{:keys [item]} entity {:keys [ctx/textures] :as ctx}]
+   (when-not (mouseover-actor ctx)
+     [[:draw/texture-region
+       (textures/texture-region textures (:entity/image item))
+-      (item-place-position ctx entity)
++      (item-place-position entity)
+       {:center? true}]]))
+
+diff --git a/src/clojure/k_state_exit/player_item_on_cursor.clj b/src/clojure/k_state_exit/player_item_on_cursor.clj
+--- a/src/clojure/k_state_exit/player_item_on_cursor.clj
++++ b/src/clojure/k_state_exit/player_item_on_cursor.clj
+@@ -1,8 +1,9 @@
+ (ns clojure.k-state-exit.player-item-on-cursor
++  "Ground drop on leaving cursor state. See docs/item-on-cursor.md."
+   (:require [clojure.item-place-position :refer [item-place-position]]))
+ 
+ (defn f
+-  [_ eid ctx]
++  [_ eid _ctx]
+   ; at clicked-cell when we put it into a inventory-cell
+   ...
+       [[:tx/sound "bfxr_itemputground"]
+        [:tx/dissoc eid :entity/item-on-cursor]
+        [:tx/spawn-item
+-        (item-place-position ctx entity)
++        (item-place-position entity)
+         (:entity/item-on-cursor entity)]])))
+
+TEST CHANGES (test/moon/item_on_cursor_test.clj)
+------------------------------------------------
+- cursor-exit-spawns-when-item-on-cursor: expects spawn at [5 5] (player body in
+  fixture), ctx no longer needed for position.
+- cursor-exit-skips-when-already-cleared: same.
+- Replaced item-place-position-clamped-to-click-distance with
+  item-place-position-at-feet.
+
+  lein test :only moon.item-on-cursor-test  → 12 tests, 0 failures
+
+DOC CHANGES
+-----------
+- docs/item-on-cursor.md: placement described as body center, no mouse/reach.
+- docs/item-on-cursor-manual-qa.md: DROP row says item at player's feet.
+
+FOLLOW-UP (not in this diff)
+----------------------------
+- docs/item-on-cursor-redesign.md: :entity/dragging, explicit :tx/inv/drop,
+  remove FSM exit side effect.
+- :tx/stack-item still missing (stack from cursor broken).
+- Optional: remove ghost entirely or dedicated inventory screen.

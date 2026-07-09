@@ -1,0 +1,17 @@
+* No name collisions = clojure.caves and clojure.caves/ folder
+ Makes grep replace more difficult
+ cant replace ns name without replacing all
+
+* No sub-folders (interleaving concepts ? )
+  => adj-num is its own 'thing'
+    (its a small thing but has fixed input/output!!!)
+
+* Rather simple but more things - ONE LI?NE ??? possible ???
+
+  => start with 'Application'
+
+  => even dev menu stuffs can be update-labels menu
+
+  => binding names same as the object name == 'app' =? application'
+
+  => source folder is docs is names is operations

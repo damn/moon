@@ -1,0 +1,155 @@
+Clojure namespace consolidation plan
+====================================
+
+Context
+-------
+589 .clj files live in a single flat src/clojure/. About 436 of them are
+15 lines or fewer. The problem is less "too many namespaces" in the abstract
+and more one-function-per-file at the wrong granularity, with LibGDX shims,
+sim logic, UI, registries, and app wiring all mixed together.
+
+
+Diagnosis
+---------
+
+Bucket                    ~count   Example
+---------------------------------------------------------------------------
+Tiny helpers              ~436     set_name.clj, max_delta.clj, get_mana.clj
+GDX 1:1 shims             dozens   bitmap_font.clj, texture$texture_filter.clj
+k-* registries            13       k_tick.clj, k_render.clj
+Domain logic              rest     movement.clj, handle.clj, npc_pathing.clj
+
+The old pattern was: every fn -> namespace -> ctx key -> EDN entry.
+The flattening work (moon-start, editor-start) correctly reverses the app
+side; the remaining 589 files are mostly fallout from that pattern.
+
+
+Target shape (not one giant file)
+---------------------------------
+
+Do NOT merge everything into moon-start. Sim code (handle, movement, render
+fns) cannot :require the full app ns without load cycles.
+
+Sane end state:
+
+  src/
+    gdx/              LibGDX wrappers only (keep 1 class ~ 1 ns rule)
+    clojure/          pure game/sim/domain (~80-150 ns, not 589)
+    moon/             moon-start (+ schema/constants), -main
+    editor/           editor-start
+    dev/              loop, nrepl
+
+clojure.application stays a small atom holder (state only).
+Game constants + Malli schema live in clojure.moon-start.
+
+If load cycles appear: split moon-start into a constants-only file (same ns,
+no heavy requires) and an impl file loaded from -main only — not via (load)
+from the constants file while ctx-do is on the stack.
+
+
+Consolidation strategy (phased)
+-------------------------------
+
+Phase 1 — Stop the bleeding (in progress)
+  - Entry ns owns: boot, create, render loop, dispose, constants, schema.
+  - No constants on :ctx/*.
+  - Delete orphaned pipeline / validate / schema ns as they are absorbed.
+
+Phase 2 — Collapse the thinnest layer (~300 files)
+  Merge GDX convenience one-liners into small topic files:
+
+    gdx/scene2d.clj     set_name, set_visible, get_user_object, actor_set_position, ...
+    gdx/graphics.clj    set_color, begin, end, clear_screen, ...
+    gdx/viewport.clj    fit_viewport, unproject, inc_zoom, ...
+
+  Keep Java interop in gdx/; game code should not grow new 3-line wrapper ns.
+
+  Constants like max_delta, zoom_speed, world_unit_scale -> top of moon-start
+  (or one moon/config.clj), not scattered 3-line files.
+
+Phase 3 — Replace k-* maps with defmulti (~13 registry files -> ~6 domain files)
+
+  Instead of:
+    k_tick.clj -> map -> tick_animation.clj
+
+  Use:
+    ;; clojure/sim/tick.clj
+    (defmulti tick :component-key)
+    (defmethod tick :entity/movement [v eid ctx] ...)
+    (defmethod tick :entity/animation [v eid ctx] ...)
+
+  Same for render, create, destroy, FSM enter/exit, handle-input, cursor.
+  The dispatch table is the namespace, not a separate registry ns + 20 handler ns.
+
+Phase 4 — Domain bundles (~50 files)
+
+  Namespace              Holds
+  ---------------------------------------------------------------------------
+  clojure.sim.movement   movement, try-move, body/cells
+  clojure.sim.combat     handle, calc-damage, effects
+  clojure.sim.fsm        player/npc enter/exit + states
+  clojure.sim.render     all render_* + effect_render
+  clojure.sim.tick       all tick_*
+  clojure.world          tmx, caves, uf-caves, spawn
+  clojure.ui             windows, tables, dev menu, inventory
+  clojure.moon.tx         tx fns + tx-fn-map (one place)
+
+  Each file can be 200-400 lines — that is fine and readable.
+
+Phase 5 — Ctx shrink (from ctx-refactor-notes.txt)
+  Group runtime ctx into sub-maps and a small schema:
+
+    {:ctx/gdx {...}      batch, stage, input — resources
+     :ctx/world {...}    grid, map, raycaster
+     :ctx/sim {...}      delta-time, entities, paused?
+     :ctx/debug {...}}   toggles
+
+  Validate once at end of create, not twice per frame.
+
+
+What to delete vs move vs keep
+------------------------------
+
+Delete / inline aggressively
+  - Any ns whose only caller is one place (inventory create helpers, etc.)
+  - Duplicate validate/schema ns after move to moon-start
+  - get_* / set_* that are pure forwarding
+
+Move to gdx/
+  - Anything whose only job is (SomeJavaType/.method ...)
+
+Keep separate
+  - Real algorithms: pathing, line-of-sight, damage, levelgen
+  - Multimethod dispatch domains
+  - Entry points: moon-start, editor-start, lwjgl3-application
+
+
+Rough target numbers
+--------------------
+
+  Now                         Reasonable target
+  ---------------------------------------------------------------------------
+  589 in clojure/             ~80-150 in clojure/ + ~200 in gdx/ + 2-3 app entry ns
+  436 files <= 15 lines       < 30 tiny files (only where interop forces it)
+  13 k-* registries           0 (replaced by defmulti)
+
+
+Suggested next concrete step
+----------------------------
+
+Pick one vertical slice and do it end-to-end:
+
+  1. render_* + k_render + colors -> single clojure.sim.render ns;
+     colors as def in moon-start; render fns require only clojure.moon-start
+     for colors (constants file must not load ctx-do).
+
+  2. Or tick_* + k_tick + movement -> single clojure.sim.tick.
+
+That removes ~25 files and establishes the pattern for the rest.
+
+
+Rule of thumb going forward
+---------------------------
+
+  New code: one namespace per subsystem, not per function.
+  Old code: if a file is < 20 lines and has one public f, it is a merge candidate.

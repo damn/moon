@@ -1,0 +1,159 @@
+Ctx refactor notes — app-schema & unorganised
+==============================================
+
+Summary
+-------
+unorganised/step is the junk drawer and app-schema.edn is the contract that
+legitimizes it. Much of what they carry is not per-frame runtime state.
+
+Constants and registries should leave ctx. Only mutable frame state and
+resources stay — ideally grouped into sub-ctxs with smaller schemas.
+
+
+Three buckets in unorganised/step
+---------------------------------
+
+1. True constants → namespace vars (def)
+
+   Set once, never change. No reason to live in ctx or app-schema.
+
+   :ctx/zoom-speed              0.025
+   :ctx/world-unit-scale        (float (/ 48))
+   :ctx/max-delta               0.04
+   :ctx/minimum-size            0.39
+   :ctx/factions-iterations    {:good 15 :evil 5}
+   :ctx/z-orders                [:z-order/on-ground :z-order/ground ...]
+   :ctx/pausing?                true
+   :ctx/state->pause-game?      pause rules map
+
+   Put these in domain namespaces, e.g. clojure.game-config or split further:
+   clojure.sim-config, clojure.camera-config.
+
+   Callers require the ns or take values only when testing.
+
+
+2. Registries / wiring → vars, ideally defmethod
+
+   Loaded once at startup, looked up by key — same pattern as EDN config
+   already being flattened elsewhere (malli-form, handle, etc.).
+
+   :ctx/k->tick
+   :ctx/k->destroy
+   :ctx/k->after-create
+   :ctx/k->handle-input
+   :ctx/k->cursor
+   :ctx/draw-fns
+   :ctx/fsms
+   :ctx/info
+
+   These are dispatch tables, not frame state. Vars work; multimethods are
+   better and match the direction of the flattening refactors.
+
+
+3. Actual runtime state → stays in ctx (in sub-ctxs)
+
+   :ctx/delta-time, :ctx/elapsed-time, :ctx/paused?     — per frame
+   :ctx/active-entities, :ctx/mouseover-eid              — sim / input
+   :ctx/ui-mouse-position, :ctx/world-mouse-position
+   :ctx/entity-ids, :ctx/id-counter                     — atoms, sim
+   :ctx/potential-field-cache
+   :ctx/unit-scale                                      — atom, mutated during world draw
+   :ctx/show-cell-entities? etc.                        — debug toggles (dev menu mutates)
+
+   GDX handles (:ctx/batch, :ctx/stage, :ctx/input, …) and world
+   (:ctx/tiled-map, :ctx/grid, :ctx/raycaster, …) are resources, not
+   constants — they stay in ctx but nested under sub-ctxs.
+
+
+Effect on app-schema.edn
+------------------------
+
+Today render-validate validates the whole ctx every frame:
+
+  (validate-humanize (:ctx/schema ctx) ctx)
+
+So the schema grew to match everything unorganised dumps in. Pull constants
+and registries out → schema shrinks to real runtime shape → sub-ctx schemas
+become feasible.
+
+Example target shape:
+
+  {:ctx/frame {...}   ; delta-time, paused?, elapsed
+   :ctx/sim   {...}   ; entities, ids, player-eid
+   :ctx/world {...}   ; map, grid, raycaster
+   :ctx/gdx   {...}}  ; batch, stage, input
+
+Constants never appear in schema — they are not in ctx.
+
+
+:ctx/schema itself
+------------------
+
+Meta inside the thing it validates (chicken-and-egg). Options once god-map
+validation is relaxed:
+
+  - validate sub-ctxs at boundaries only
+  - drop runtime validation in prod, Malli for dev only
+  - put schema in vars (game-schema/frame, etc.), not in ctx
+
+
+Suggested sub-ctx clusters (from pipeline + unorganised)
+--------------------------------------------------------
+
+  GDX / platform     input, graphics, batch, audio, skin, stage, fonts, cursors
+  World / map        tiled-map, grid, content-grid, start-position, raycaster,
+                     explored-tile-corners
+  Simulation         entity-ids, active-entities, db, k->* (until defmethods),
+                     fsms
+  Render / debug     draw-fns, z-orders, shape-drawer, debug flags
+  Input / UI         mouse positions, interaction-state, stage actors
+  Runtime frame      delta-time, paused?, elapsed-time, camera
+
+
+Practical migration order
+-------------------------
+
+Do not move everything at once.
+
+1. Pick one cluster — e.g. sim constants (max-delta, factions-iterations,
+   minimum-size) → clojure.sim-config defs.
+
+2. Remove from unorganised and app-schema; update call sites.
+
+3. Repeat for camera (zoom-speed, world-unit-scale).
+
+4. Tackle k->* EDN maps — biggest win if converted to defmethods (like
+   malli-form, handle).
+
+5. unorganised eventually becomes init-sim-state (nil atoms, false flags)
+   or goes away entirely.
+
+
+Inlining moon-start as discovery phase
+--------------------------------------
+
+Inlining pipeline steps is useful to see coupling, not as the end state.
+Goal: map domains, then split into sub-ctx modules. Endgame is not one giant
+moon-start — it is visible wiring then carve into :ctx/gdx, :ctx/world,
+:ctx/sim with steps that only know their slice.
+
+unorganised/step is the real monolith; inlining tiny glue ns files barely
+helps. Decomposing unorganised and shrinking app-schema is the main work.
+
+
+Debug flags nuance
+------------------
+
+:ctx/show-cell-entities?, :ctx/show-cell-occupied?, :ctx/show-body-bounds?,
+:ctx/show-potential-field-colors? start as false but change at runtime via
+dev menu. These stay in ctx (e.g. :ctx/debug sub-ctx), not config vars.
+
+
+Rule of thumb for constants vs ctx
+----------------------------------
+
+  Constants / config     → def in a namespace
+  Dispatch tables        → defmethod (or def var while migrating)
+  Per-frame mutable      → sub-ctx
+  Resources (GDX, map)   → sub-ctx
+  Debug toggles          → sub-ctx (mutable, but not "config")

@@ -1,0 +1,11 @@
+grid from :ctx/grid
+or grid-cell would be one ns below grid
+right now its in ctx/ so part of moon
+
+moon.grid
+moon.content-grid
+?
+
+but then moon top level folders are functions
+
+inline all of them????

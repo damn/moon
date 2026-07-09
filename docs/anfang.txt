@@ -1,0 +1,10 @@
+* Fange mit 'com.badlogic.gdx' package an
+
+Warum nicht namespace name == class name ??
+
+'window' is from ui okay
+then scene2d even more info
+then gdx
+
+=> verschachtelt....
+=> only 1 layer folders
