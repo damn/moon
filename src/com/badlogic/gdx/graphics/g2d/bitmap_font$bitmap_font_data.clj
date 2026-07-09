@@ -1,11 +1,11 @@
 (ns com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data
   (:import (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData)))
 
-(defn scale-x [^BitmapFont$BitmapFontData data]
-  (.scaleX data))
+(defn scaleX [data]
+  (.scaleX ^BitmapFont$BitmapFontData data))
 
-(defn set-markup-enabled [^BitmapFont$BitmapFontData data enabled?]
-  (set! (.markupEnabled data) enabled?))
+(defn set-markupEnabled [data enabled?]
+  (set! (.markupEnabled ^BitmapFont$BitmapFontData data) enabled?))
 
-(defn set-scale [^BitmapFont$BitmapFontData data scale]
-  (.setScale data scale))
+(defn setScale [data scale]
+  (.setScale ^BitmapFont$BitmapFontData data scale))
