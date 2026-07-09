@@ -2,7 +2,8 @@
   (:require [clojure.caves.gen :as caves]
             [clojure.fix-nads :as fix-nads]
             [clojure.texture-region :as texture-region]
-            [clojure.create-static-tiled-map-tile :as create-tile]
+            [clojure.map-properties :as map-properties]
+            [clojure.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.levels.uf-caves.initial-grid]
             [clojure.levels.uf-caves.fix-nads]
             [clojure.levels.uf-caves.last-steps])
@@ -41,13 +42,15 @@
                                   (memoize
                                    (fn [& {:keys [sprite-idx movement]}]
                                      {:pre [#{"all" "air" "none"} movement]}
-                                     (create-tile/f
-                                      (texture-region/new texture
-                                                        (* (sprite-idx 0) tile-size)
-                                                        (* (sprite-idx 1) tile-size)
-                                                        tile-size
-                                                        tile-size)
-                                      "movement" movement))))
+                                     (let [texture-region (texture-region/new texture
+                                                                              (* (sprite-idx 0) tile-size)
+                                                                              (* (sprite-idx 1) tile-size)
+                                                                              tile-size
+                                                                              tile-size)
+                                           tile (static-tiled-map-tile/new texture-region)]
+                                       (map-properties/put! (static-tiled-map-tile/get-properties tile)
+                                                            "movement" movement)
+                                       tile))))
              :level/spawn-rate spawn-rate
              :level/scaling scaling
              :level/creature-properties creature-properties}
