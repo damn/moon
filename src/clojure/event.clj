@@ -1,5 +1,5 @@
 (ns clojure.event
-  (:import (com.badlogic.gdx.scenes.scene2d Event)))
+  (:require [com.badlogic.gdx.scenes.scene2d.event :as event]))
 
-(defn get-stage [^Event event]
-  (Event/.getStage event))
+(defn get-stage [event]
+  (event/get-stage event))

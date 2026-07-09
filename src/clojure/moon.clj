@@ -1,6 +1,6 @@
 (ns clojure.moon
   (:require [clojure.application-listener :as application-listener]
-            [clojure.configuration :as configuration]
+            [org.lwjgl.system.configuration :as configuration]
             [clojure.gdx :as gdx]
             [clojure.lwjgl3-application :as lwjgl3-application]
             [clojure.lwjgl3-application-configuration :as config]

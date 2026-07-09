@@ -1,17 +1,17 @@
 (ns clojure.application
-  (:import (com.badlogic.gdx Application)))
+  (:require [com.badlogic.gdx.application :as application]))
 
 (defn get-audio [application]
-  (Application/.getAudio application))
+  (application/get-audio application))
 
 (defn get-files [application]
-  (Application/.getFiles application))
+  (application/get-files application))
 
 (defn get-graphics [application]
-  (Application/.getGraphics application))
+  (application/get-graphics application))
 
 (defn get-input [application]
-  (Application/.getInput application))
+  (application/get-input application))
 
 (defn post-runnable! [application f]
-  (Application/.postRunnable application f))
+  (application/post-runnable! application f))

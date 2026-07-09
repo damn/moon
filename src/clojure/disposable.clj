@@ -1,5 +1,5 @@
 (ns clojure.disposable
-  (:import (com.badlogic.gdx.utils Disposable)))
+  (:require [com.badlogic.gdx.utils.disposable :as disposable]))
 
 (defn dispose! [disposable]
-  (Disposable/.dispose disposable))
+  (disposable/dispose! disposable))

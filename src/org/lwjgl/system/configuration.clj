@@ -1,4 +1,4 @@
-(ns clojure.configuration
+(ns org.lwjgl.system.configuration
   (:refer-clojure :exclude [set!])
   (:import (org.lwjgl.system Configuration)))
 

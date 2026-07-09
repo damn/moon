@@ -1,14 +1,14 @@
 (ns clojure.file-handle
-  (:import (com.badlogic.gdx.files FileHandle)))
+  (:require [com.badlogic.gdx.files.file-handle :as fh]))
 
-(defn directory? [^FileHandle file-handle]
-  (.isDirectory file-handle))
+(defn directory? [file-handle]
+  (fh/directory? file-handle))
 
-(defn extension [^FileHandle file-handle]
-  (.extension file-handle))
+(defn extension [file-handle]
+  (fh/extension file-handle))
 
-(defn list-files [^FileHandle file-handle]
-  (.list file-handle))
+(defn list-files [file-handle]
+  (fh/list-files file-handle))
 
-(defn path [^FileHandle file-handle]
-  (.path file-handle))
+(defn path [file-handle]
+  (fh/path file-handle))

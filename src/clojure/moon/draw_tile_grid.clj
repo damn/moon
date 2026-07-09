@@ -1,5 +1,5 @@
 (ns clojure.moon.draw-tile-grid
-  (:require [clojure.float-bits]
+  (:require [clojure.rgba.float-bits]
             [clojure.orthographic-camera-frustum :refer [frustum]]))
 
 (defn f
@@ -12,4 +12,4 @@
       (+ 2 (int (:viewport/world-height world-viewport)))
       1
       1
-      (clojure.float-bits/f [1 1 1 0.8])]]))
+      (clojure.rgba.float-bits/f [1 1 1 0.8])]]))
