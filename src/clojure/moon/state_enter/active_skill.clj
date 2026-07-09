@@ -1,5 +1,5 @@
 (ns clojure.moon.state-enter.active-skill
-  (:require [clojure.pay-mana-cost :as pay-mana-cost]))
+  (:require [clojure.stats.pay-mana-cost :as pay-mana-cost]))
 
 (defn f
   [{:keys [skill]} eid]

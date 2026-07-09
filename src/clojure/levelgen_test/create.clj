@@ -2,7 +2,7 @@
   (:require [clojure.application :as application]
             [clojure.scene2d.actor.add-listener]
             [clojure.db.all-raw :refer [all-raw]]
-            [clojure.create-textures :as create-textures]
+            [clojure.files.create-textures :as create-textures]
             [clojure.creature-tiles :as creature-tiles]
             [clojure.disposable :as disposable]
             [clojure.files :as files]

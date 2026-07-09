@@ -1,4 +1,4 @@
-(ns clojure.pay-mana-cost
+(ns clojure.stats.pay-mana-cost
   (:require [clojure.stats.get-mana :as get-mana]))
 
 (defn f [stats cost]
