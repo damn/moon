@@ -3,7 +3,7 @@
             [clojure.body.draw-rectangle :as draw-rectangle]
             [clojure.moon.draw :refer [draw!]]
             [clojure.moon.draw-component :refer [draw-component]]
-            [clojure.factions-iterations :refer [factions-iterations]]
+            [clojure.moon.factions-iterations :refer [factions-iterations]]
             [clojure.shape-drawer :as shape-drawer]
             [clojure.line-of-sight :as line-of-sight?]
             [clojure.orthographic-camera :as orthographic-camera]

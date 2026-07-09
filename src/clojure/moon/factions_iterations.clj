@@ -1,4 +1,4 @@
-(ns clojure.factions-iterations)
+(ns clojure.moon.factions-iterations)
 
 (def factions-iterations
   {:good 15

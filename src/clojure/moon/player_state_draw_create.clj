@@ -1,7 +1,7 @@
 (ns clojure.moon.player-state-draw-create
   (:require [clojure.scene2d.actor.get-stage]
             [clojure.moon.draw :refer [draw!]]
-            [clojure.entity-state-draw-ui-view :as entity-state-draw-ui-view]
+            [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
             [clojure.scene2d-actor :as actor]))
 
 (defn player-state-draw-create [_ctx]

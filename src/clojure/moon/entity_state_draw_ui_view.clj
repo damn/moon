@@ -1,4 +1,4 @@
-(ns clojure.entity-state-draw-ui-view
+(ns clojure.moon.entity-state-draw-ui-view
   (:require [clojure.mouseover-actor :refer [mouseover-actor]]
             [clojure.moon-textures :as textures]))
 
