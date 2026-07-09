@@ -1,7 +1,5 @@
 (ns com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration
-  (:import
-           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)
-           ))
+  (:import (com.badlogic.gdx.backends.lwjgl3 Lwjgl3ApplicationConfiguration)))
 
 (defn set-title! [config title]
   (Lwjgl3ApplicationConfiguration/.setTitle config title))
