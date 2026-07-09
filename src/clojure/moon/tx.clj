@@ -25,7 +25,7 @@
             [clojure.moon.state-enter :refer [k->state-enter]]
             [clojure.moon.state-exit :refer [k->state-exit]]
             [clojure.moon-textures :as textures]
-            [clojure.play :as play]
+            [gdx.sound :as sound]
             [clojure.records-entity :as entity]
             [clojure.register-eid :as register-eid]
             [clojure.scene2d.actor.remove-actor]
@@ -223,7 +223,7 @@
    (fn [{:keys [ctx/audio]} sound-name]
      (let [sounds audio]
        (assert (contains? sounds sound-name) (str sound-name))
-       (play/f (get sounds sound-name)))
+       (sound/play! (get sounds sound-name)))
      nil)
 
    :tx/spawn-alert
