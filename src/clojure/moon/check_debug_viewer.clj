@@ -1,6 +1,6 @@
 (ns clojure.moon.check-debug-viewer
   (:require [clojure.input-button-just-pressed :as button-just-pressed?]
-            [clojure.data-viewer-window :as data-viewer-window]
+            [clojure.ui.data-viewer-window :as data-viewer-window]
             [clojure.stage :as stage]))
 
 (defn f

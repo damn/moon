@@ -1,16 +1,16 @@
-(ns clojure.data-viewer-window
-  (:require
+(ns clojure.ui.data-viewer-window
+  (:require [clojure.k-label-str :refer [k->label-str]]
             [clojure.scene2d.actor.add-listener]
-            [clojure.scene2d.actor.get-stage] [clojure.stage :as stage]
-            [clojure.v-text :refer [v->text]]
+            [clojure.scene2d.actor.get-stage]
+            [clojure.scene2d.utils.change-listener :as change-listener]
+            [clojure.stage :as stage]
             [clojure.ui-label :as label]
             [clojure.ui-scroll-pane :as scroll-pane]
-            [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
-            [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.k-label-str :refer [k->label-str]]))
+            [clojure.ui.window.add-close-button :as add-close-button]
+            [clojure.v-text :refer [v->text]]))
 
 (defn create
   [{:keys [title
@@ -23,14 +23,14 @@
                    (if (map? v)
                      (doto (text-button/create {:text "Map" :skin skin})
                        (clojure.scene2d.actor.add-listener/f (change-listener/create
-                                        (fn [_event actor]
-                                          (stage/add-actor! (clojure.scene2d.actor.get-stage/f actor)
-                                                       (create
-                                                        {:title "title"
-                                                         :data v
-                                                         :width 500
-                                                         :height 500
-                                                         :skin skin}))))))
+                                                              (fn [_event actor]
+                                                                (stage/add-actor! (clojure.scene2d.actor.get-stage/f actor)
+                                                                                  (create
+                                                                                   {:title "title"
+                                                                                    :data v
+                                                                                    :width 500
+                                                                                    :height 500
+                                                                                    :skin skin}))))))
                      (label/create
                       {:text (v->text v)
                        :skin skin})))

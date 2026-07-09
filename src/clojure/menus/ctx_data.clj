@@ -1,5 +1,5 @@
 (ns clojure.menus.ctx-data
-  (:require [clojure.data-viewer-window :as data-viewer-window]
+  (:require [clojure.ui.data-viewer-window :as data-viewer-window]
             [clojure.stage :as stage]))
 
 (def item
