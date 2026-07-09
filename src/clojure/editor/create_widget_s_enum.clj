@@ -1,6 +1,6 @@
 (ns clojure.editor.create-widget-s-enum
   (:require [clojure.editor.create-widget :refer [create-widget]]
-            [clojure.edn-str :refer [->edn-str]]
+            [clojure.edn.v-to-str :refer [->edn-str]]
             [clojure.ui-select-box :as select-box]))
 
 (defmethod create-widget :s/enum

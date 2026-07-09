@@ -1,6 +1,6 @@
 (ns clojure.editor.create-widget-default
   (:require [clojure.editor.create-widget :refer [create-widget]]
-            [clojure.edn-str :refer [->edn-str]]
+            [clojure.edn.v-to-str :refer [->edn-str]]
             [clojure.truncate :refer [truncate]]
             [clojure.ui-label :as label]))
 
