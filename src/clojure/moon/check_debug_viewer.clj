@@ -1,17 +1,18 @@
 (ns clojure.moon.check-debug-viewer
-  (:require [clojure.ctx-button-just-pressed :refer [button-just-pressed?]]
+  (:require [clojure.input-button-just-pressed :as button-just-pressed?]
             [clojure.data-viewer-window :as data-viewer-window]
             [clojure.stage :as stage]))
 
 (defn f
-  [{:keys [ctx/controls
+  [{:keys [ctx/input
+           ctx/controls
            ctx/mouseover-eid
            ctx/skin
            ctx/stage
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
-  (when (button-just-pressed? ctx (:open-debug-button controls))
+  (when (button-just-pressed?/f input (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage
