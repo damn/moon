@@ -1,4 +1,4 @@
-(ns clojure.create-effect-ctx
+(ns clojure.moon.npc-effect-ctx
   (:require [clojure.body.direction :as direction]
             [clojure.nearest-enemy :refer [nearest-enemy]]
             [clojure.line-of-sight :as line-of-sight?]))

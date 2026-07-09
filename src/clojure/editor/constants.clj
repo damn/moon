@@ -1,4 +1,4 @@
-(ns clojure.constants)
+(ns clojure.editor.constants)
 
 (def property-type->overview-table-props
   {:properties/audiovisuals {:columns 10

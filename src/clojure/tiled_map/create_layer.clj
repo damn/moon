@@ -1,4 +1,4 @@
-(ns clojure.create-layer
+(ns clojure.tiled-map.create-layer
   (:require [clojure.tiled-map :as tiled-map]
             [clojure.map-properties :as map-properties]
             [clojure.tiled-tiled-map-tile-layer :as tiled-map-tile-layer]))

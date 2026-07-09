@@ -9,7 +9,7 @@
             [clojure.db.build :refer [build]]
             [clojure.inventory.can-pickup-item :as can-pickup-item]
             [clojure.moon.create-component :refer [create-component]]
-            [clojure.create-entity-state :as create-entity-state]
+            [clojure.moon.create-entity-state :as create-entity-state]
             [clojure.scene2d.group :as group]
             [clojure.handle :as handle]
             [clojure.increment :as increment]

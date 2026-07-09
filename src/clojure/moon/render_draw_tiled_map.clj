@@ -1,5 +1,5 @@
 (ns clojure.moon.render-draw-tiled-map
-  (:require [clojure.color-setter :refer [tile-color-setter*]]
+  (:require [clojure.moon.color-setter :refer [tile-color-setter*]]
             [clojure.gdx-draw-tiled-map :as draw-tiled-map]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.raycaster-is-blocked :as blocked?]

@@ -5,7 +5,7 @@
             [clojure.cells-entities :as cells->entities]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.grid.circle-entities :refer [circle->entities]]
-            [clojure.create-effect-ctx :as create-effect-ctx]
+            [clojure.moon.npc-effect-ctx :as create-effect-ctx]
             [clojure.g2d.get-cells :refer [get-cells]]
             [clojure.stats.get-stat-value :refer [get-stat-value]]
             [clojure.is-applicable :as applicable?]

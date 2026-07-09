@@ -1,4 +1,4 @@
-(ns clojure.color-setter)
+(ns clojure.moon.color-setter)
 
 (defn tile-color-setter*
   [{:keys [ray-blocked?

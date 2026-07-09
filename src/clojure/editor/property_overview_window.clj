@@ -8,7 +8,7 @@
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.scene2d.actor.add-listener]
             [clojure.db.all-raw :refer [all-raw]]
-            [clojure.constants :refer [property-type->overview-table-props]]
+            [clojure.editor.constants :refer [property-type->overview-table-props]]
             [clojure.moon-textures :as textures]
             [clojure.property-image :as property-image]
             [clojure.table-rows :refer [overview-table-rows*]]

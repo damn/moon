@@ -1,4 +1,4 @@
-(ns clojure.create-entity-state
+(ns clojure.moon.create-entity-state
   (:require [clojure.stats.apply-action-speed-modifier :as apply-action-speed-modifier]
             [clojure.stats.get-stat-value :refer [get-stat-value]]
             [clojure.timer-create :refer [create-timer]]))
