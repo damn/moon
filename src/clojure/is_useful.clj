@@ -2,7 +2,7 @@
   (:require [clojure.v2.distance :as distance]
             [clojure.double-ray-endpositions :as double-ray-endpositions]
             [clojure.in-range :refer [in-range?]]
-            [clojure.raycaster-is-blocked :as blocked?]))
+            [clojure.raycaster :as raycaster]))
 
 (defmulti f
   (fn [[k _v] _effect-ctx _ctx]
@@ -28,8 +28,8 @@
                                                                                target-p
                                                                                (:projectile/size projectile))]
                 (or
-                 (blocked?/f raycaster start1 target1)
-                 (blocked?/f raycaster start2 target2))))
+                 (raycaster/blocked? raycaster start1 target1)
+                 (raycaster/blocked? raycaster start2 target2))))
          ; TODO not taking into account body sizes
          (< (distance/f source-p ; entity/distance function protocol EntityPosition
                         target-p)

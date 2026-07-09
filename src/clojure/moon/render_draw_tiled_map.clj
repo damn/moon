@@ -2,7 +2,7 @@
   (:require [clojure.moon.color-setter :refer [tile-color-setter*]]
             [clojure.gdx-draw-tiled-map :as draw-tiled-map]
             [clojure.orthographic-camera-position :as get-position]
-            [clojure.raycaster-is-blocked :as blocked?]
+            [clojure.raycaster :as raycaster]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (defn f
@@ -18,7 +18,7 @@
                      (:viewport/camera world-viewport)
                      tiled-map
                      (tile-color-setter*
-                      {:ray-blocked? (partial blocked?/f raycaster)
+                      {:ray-blocked? (partial raycaster/blocked? raycaster)
                        :explored-tile-corners explored-tile-corners
                        :light-position (get-position/f (:viewport/camera world-viewport))
                        :see-all-tiles? false
