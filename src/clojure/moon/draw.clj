@@ -1,4 +1,4 @@
-(ns clojure.draw
+(ns clojure.moon.draw
   (:require [clojure.gdx.utils.align :as align]
             [clojure.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]

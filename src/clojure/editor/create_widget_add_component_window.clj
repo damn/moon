@@ -3,7 +3,7 @@
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.scene2d.actor.add-listener]
             [clojure.ui.table.add-rows :refer [add-rows!]]
-            [clojure.default-value :refer [default-value]]
+            [clojure.schemas :as schemas]
             [clojure.editor.create-widget-build-widget :as build-widget]
             [clojure.editor.create-widget-create-component-row :as create-component-row]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
@@ -43,7 +43,7 @@
                                                                              :editor-widget (build-widget/build-widget ctx
                                                                                                                           (get schemas k)
                                                                                                                           k
-                                                                                                                          (default-value schemas k))
+                                                                                                                          (schemas/default-value schemas k))
                                                                              :k k
                                                                              :display-remove-component-button? (optional? schemas schema k)
                                                                              :table map-widget-table})])

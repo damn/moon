@@ -1,10 +1,10 @@
-(ns clojure.gdx-draw-tiled-map
+(ns clojure.batch.draw-tiled-map
   (:require [clojure.gdx.graphics.g2d.batch :as batch]
             [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.tiled-map-tile :as tiled-map-tile]
             [clojure.tiled-map :as tiled-map]
             [clojure.orthographic-camera :as orthographic-camera]
-            [clojure.draw-tiled-map-tile-layer :as draw-tiled-map-tile-layer]
+            [clojure.batch.draw-tiled-map-tile-layer :as draw-tiled-map-tile-layer]
             [clojure.vector3 :as vector3]))
 
 (defn f!

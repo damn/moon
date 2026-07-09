@@ -1,6 +1,6 @@
 (ns clojure.effect-render
-  (:require [clojure.end-point :refer [end-point]]
-            [clojure.in-range :refer [in-range?]]
+  (:require [clojure.body.end-point :refer [end-point]]
+            [clojure.body.in-range :refer [in-range?]]
             [clojure.moon-target-all :as target-all]
             [clojure.start-point :refer [start-point]]))
 

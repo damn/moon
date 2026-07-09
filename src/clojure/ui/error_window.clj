@@ -1,4 +1,4 @@
-(ns clojure.error-window
+(ns clojure.ui.error-window
   (:require [clojure.window :as gdx-window]
             [clojure.ui-label :as label]
             [clojure.ui-window :as window]

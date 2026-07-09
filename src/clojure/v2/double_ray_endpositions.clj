@@ -1,4 +1,4 @@
-(ns clojure.double-ray-endpositions
+(ns clojure.v2.double-ray-endpositions
   (:require [clojure.v2.normal-vectors :as normal-vectors]
             [clojure.v2.add :as add]
             [clojure.v2.direction :as direction]

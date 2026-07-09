@@ -3,7 +3,7 @@
             [clojure.scene2d.actor.get-user-object]
             [clojure.scene2d.actor.set-name :as set-name]
             [clojure.scene2d.actor.set-user-object :as set-user-object]
-            [clojure.draw :refer [draw!]]
+            [clojure.moon.draw :refer [draw!]]
             [clojure.scene2d-actor :as actor]))
 
 (defn player-message-actor-create [_ctx]

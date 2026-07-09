@@ -1,6 +1,6 @@
 (ns clojure.moon.when-not-paused
   (:require [clojure.moon.ctx-do :refer [do!]]
-            [clojure.error-window :as error-window]
+            [clojure.ui.error-window :as error-window]
             [clojure.factions-iterations :refer [factions-iterations]]
             [clojure.gdx.graphics :as graphics]
             [clojure.grid-update-potential-fields :as update-potential-fields]

@@ -1,6 +1,6 @@
 (ns clojure.moon.inventory-window-create
   (:require [clojure.moon.ctx-do :refer [do!]]
-            [clojure.draw :refer [draw!]]
+            [clojure.moon.draw :refer [draw!]]
             [clojure.moon-textures :as textures]
             [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
             [clojure.ui.inventory-window :refer [inventory-window-build]]))

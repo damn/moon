@@ -4,7 +4,7 @@
             [clojure.scene2d.actor.remove-actor] [clojure.stage :as stage]
             [clojure.window :as window]
             [clojure.throwable :as throwable]
-            [clojure.error-window :as error-window]
+            [clojure.ui.error-window :as error-window]
             [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.set-ctx :as set-ctx]))
 

@@ -1,4 +1,4 @@
-(ns clojure.in-range
+(ns clojure.body.in-range
   (:require [clojure.v2.distance :as distance]))
 
 (defn in-range? [body target-body maxrange]

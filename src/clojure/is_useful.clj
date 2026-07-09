@@ -1,7 +1,7 @@
 (ns clojure.is-useful
   (:require [clojure.v2.distance :as distance]
-            [clojure.double-ray-endpositions :as double-ray-endpositions]
-            [clojure.in-range :refer [in-range?]]
+            [clojure.v2.double-ray-endpositions :as double-ray-endpositions]
+            [clojure.body.in-range :refer [in-range?]]
             [clojure.raycaster :as raycaster]))
 
 (defmulti f

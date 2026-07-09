@@ -1,4 +1,4 @@
-(ns clojure.draw-tile-grid
+(ns clojure.moon.draw-tile-grid
   (:require [clojure.float-bits]
             [clojure.orthographic-camera-frustum :refer [frustum]]))
 

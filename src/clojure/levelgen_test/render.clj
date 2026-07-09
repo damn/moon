@@ -1,6 +1,6 @@
 (ns clojure.levelgen-test.render
   (:require [clojure.float-bits]
-            [clojure.gdx-draw-tiled-map :as draw-tiled-map]
+            [clojure.batch.draw-tiled-map :as draw-tiled-map]
             [clojure.gdx.graphics.gl20 :as gl20]
             [clojure.gdx.graphics :as graphics]
             [clojure.inc-zoom :refer [inc-zoom!]]

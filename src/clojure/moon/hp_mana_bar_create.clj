@@ -1,6 +1,6 @@
 (ns clojure.moon.hp-mana-bar-create
   (:require [clojure.scene2d.actor.get-stage]
-            [clojure.draw :refer [draw!]]
+            [clojure.moon.draw :refer [draw!]]
             [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.stats.get-mana :as get-mana]
             [clojure.moon-textures :as textures]

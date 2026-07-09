@@ -1,4 +1,4 @@
-(ns clojure.end-point
+(ns clojure.body.end-point
   (:require [clojure.v2.add :as add]
             [clojure.v2.direction :as direction]
             [clojure.v2.scale :as scale]

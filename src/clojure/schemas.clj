@@ -1,4 +1,4 @@
-(ns clojure.default-value)
+(ns clojure.schemas)
 
 (defn default-value [schemas k]
   (let [schema (get schemas k)]

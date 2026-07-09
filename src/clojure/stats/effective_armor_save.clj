@@ -1,4 +1,4 @@
-(ns clojure.effective-armor-save
+(ns clojure.stats.effective-armor-save
   (:require [clojure.stats.get-stat-value :refer [get-stat-value]]))
 
 ; not in stats because projectile as source doesnt have stats
