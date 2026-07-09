@@ -1,4 +1,4 @@
-(ns clojure.create-value
+(ns clojure.db.create-value
   (:require [clojure.db.get-raw :refer [get-raw]]))
 
 (defmulti create-value (fn [[k] _v _db]
@@ -35,5 +35,3 @@
   (build-values (:db/schemas db)
                 (get-raw db property-id)
                 db))
-
-
