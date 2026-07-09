@@ -1,6 +1,6 @@
 (ns clojure.grid.cached-adjacent-cells
   (:require [clojure.g2d.get-cells :refer [get-cells]]
-            [clojure.get-8-neighbours :refer [get-8-neighbours]]))
+            [clojure.position.neighbours-8 :refer [get-8-neighbours]]))
 
 ; works on cell , not g2d first param
 ; secondly cached-get-8-neighbours is the name

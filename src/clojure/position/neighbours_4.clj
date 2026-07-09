@@ -1,4 +1,4 @@
-(ns clojure.get-4-neighbours)
+(ns clojure.position.neighbours-4)
 
 (defn get-4-neighbours [[x y]]
   [[(inc x) y]

@@ -1,6 +1,6 @@
 (ns clojure.g2d.area-level-grid
   (:require [clojure.g2d.cells :refer [->cells]]
-            [clojure.get-4-neighbours :refer [get-4-neighbours]]))
+            [clojure.position.neighbours-4 :refer [get-4-neighbours]]))
 
 ; can adjust:
 ; * split percentage , for higher level areas may scale faster (need to be more careful)

@@ -1,7 +1,7 @@
 (ns clojure.is-not-allowed-diagonal
   (:require [clojure.positions :refer [positions]]
             [clojure.position.diagonal-direction :as diagonal-direction?]
-            [clojure.get-8-neighbours :refer [get-8-neighbours]]))
+            [clojure.position.neighbours-8 :refer [get-8-neighbours]]))
 
 (let [order (get-8-neighbours [0 0])]
   (def diagonal-check-indizes

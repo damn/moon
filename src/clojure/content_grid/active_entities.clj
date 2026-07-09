@@ -1,5 +1,5 @@
 (ns clojure.content-grid.active-entities
-  (:require [clojure.get-8-neighbours :refer [get-8-neighbours]]))
+  (:require [clojure.position.neighbours-8 :refer [get-8-neighbours]]))
 
 (defn f
   [{:keys [grid]} center-entity]

@@ -4,7 +4,7 @@
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
   (:require [clojure.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
-            [clojure.get-4-neighbours :refer [get-4-neighbours]]
+            [clojure.position.neighbours-4 :refer [get-4-neighbours]]
             [clojure.m.assoc-ks :refer [assoc-ks]]
             [clojure.sshuffle :refer [sshuffle]]
             [clojure.srand :refer [srand]]))

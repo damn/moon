@@ -1,5 +1,5 @@
 (ns clojure.levels.modules.transitions
-  (:require [clojure.get-4-neighbours :refer [get-4-neighbours]]))
+  (:require [clojure.position.neighbours-4 :refer [get-4-neighbours]]))
 
 (let [idxvalues-order [[1 0] [-1 0] [0 1] [0 -1]]]
   (assert (= (get-4-neighbours [0 0])
