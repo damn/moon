@@ -1,6 +1,6 @@
 (comment
 
- (require '[clojure.db.build :refer [build]]
+ (require '[clojure.db :as db]
           '[com.badlogic.gdx.application :as application]
           '[com.badlogic.gdx.gdx :as gdx]
           )
@@ -11,7 +11,7 @@
       (txs/handle! ctx
                    [[:tx/spawn-creature
                      {:position [35 73]
-                      :creature-property (build db :creatures/dragon-red)
+                      :creature-property (db/build db :creatures/dragon-red)
                       :components {:entity/fsm {:fsm :fsms/npc
                                                 :initial-state :npc-sleeping}
                                    :entity/faction :evil}}]]))))

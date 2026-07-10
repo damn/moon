@@ -1,5 +1,5 @@
 (ns clojure.editor.create-widget-property-editor-window
-  (:require 
+  (:require
             [clojure.table-set-opts :as table-set-opts]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.ui.error-window :as error-window]
@@ -8,8 +8,7 @@
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.throwable :as throwable]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [clojure.db.update :refer [update!]]
-            [clojure.db.delete :refer [delete!]]
+            [clojure.db :as db]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.widget-value :refer [widget-value]]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
@@ -55,9 +54,9 @@
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
         clicked-delete-fn (with-window-close (fn [db]
-                                               (delete! db property-id)))
+                                               (db/delete! db property-id)))
         clicked-save-fn (with-window-close (fn [db]
-                                             (update! db (get-widget-value))))
+                                             (db/update! db (get-widget-value))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor (doto (text-button/new "Save [LIGHT_GRAY](ENTER)[]" skin)
                                      (actor/addListener (change-listener/create

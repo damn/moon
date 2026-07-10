@@ -2,8 +2,7 @@
 ; but the game is not called ctx?
 (ns clojure.moon
   (:require [clojure.content-grid :as content-grid]
-            [clojure.db.all-raw :refer [all-raw]]
-            [clojure.db.build :refer [build]]
+            [clojure.db :as db]
             [clojure.edn :as edn]
             [clojure.files.create-textures :as create-textures]
             [clojure.g2d.cells :refer [->cells]]
@@ -71,7 +70,6 @@
             [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.v2.direction :as direction]
             [clojure.v2.length :as length]
-            [clojure.moon-db :as db]
             [clojure.moon-faction :as faction]
             [clojure.moon-textures :as textures]
             [clojure.ratio :as timer-ratio]
@@ -907,7 +905,7 @@
   (let [{:keys [tiled-map
                 start-position]} (tmx/vampire
                                    {:level/creature-properties (creature-tiles/prepare
-                                                                 (all-raw (:ctx/db ctx) :properties/creatures)
+                                                                 (db/all-raw (:ctx/db ctx) :properties/creatures)
                                                                  #(textures/texture-region (:ctx/textures ctx) %))
                                     :textures (:ctx/textures ctx)})]
     (assoc ctx
@@ -957,7 +955,7 @@
 (defn create-spawn-player [ctx]
   (do! ctx
        [[:tx/spawn-creature {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
-                             :creature-property (build (:ctx/db ctx) :creatures/vampire)
+                             :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
                              :components {:entity/fsm {:fsm :fsms/player
                                                        :initial-state :player-idle}
                                           :entity/faction :good
@@ -976,7 +974,7 @@
   (do! ctx
        (for [[position creature-id] (spawn-positions/f (:ctx/tiled-map ctx))]
          [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
-                              :creature-property (build (:ctx/db ctx) (keyword creature-id))
+                              :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
                               :components {:entity/fsm {:fsm :fsms/npc
                                                         :initial-state :npc-sleeping}
                                            :entity/faction :evil}}]))

@@ -1,11 +1,11 @@
 (ns clojure.editor.main-window
-  (:require 
+  (:require
             [clojure.table-set-opts :as table-set-opts]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget-property-editor-window :refer [property-editor-window]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.db.get-raw :refer [get-raw]]
+            [clojure.db :as db]
             [clojure.property-types :refer [property-types]]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.string :as str]
@@ -38,4 +38,4 @@
                                                                                                 (stage/addActor stage
                                                                                                                   (property-editor-window
                                                                                                                    {:ctx ctx
-                                                                                                                    :property (get-raw db id)})))})))))))}])})))
+                                                                                                                    :property (db/get-raw db id)})))})))))))}])})))

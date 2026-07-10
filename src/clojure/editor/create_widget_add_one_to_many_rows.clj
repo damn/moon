@@ -4,7 +4,7 @@
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.db.get-raw :refer [get-raw]]
+            [clojure.db :as db]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clojure.moon-textures :as textures]
@@ -49,7 +49,7 @@
                                                                   (actor/remove (find-ancestor actor (partial instance? gdx-window/class)))
                                                                   (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
-        (let [property (get-raw db property-id)]
+        (let [property (db/get-raw db property-id)]
           {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
                     (actor/addListener (text-tooltip/new (tooltip/f property) skin))
                     (actor/setUserObject property-id))}))

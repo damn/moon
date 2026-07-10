@@ -7,7 +7,7 @@
             [clojure.moon.after-create-component :refer [after-create-component]]
             [com.badlogic.gdx.utils.align :as align]
             [clojure.v2.angle-from-vector :as angle-from-vector]
-            [clojure.db.build :refer [build]]
+            [clojure.db :as db]
             [clojure.inventory.can-pickup-item :as can-pickup-item]
             [clojure.moon.create-component :refer [create-component]]
             [clojure.moon.create-entity-state :as create-entity-state]
@@ -79,7 +79,7 @@
    :tx/audiovisual
    (fn [{:keys [ctx/db]} position audiovisual]
      (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
-                                                  (build db audiovisual)
+                                                  (db/build db audiovisual)
                                                   audiovisual)]
        [[:tx/sound sound]
         [:tx/spawn-effect

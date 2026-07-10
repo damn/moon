@@ -1,9 +1,9 @@
 (ns clojure.editor.property-overview-window
-  (:require 
+  (:require
             [clojure.table-set-opts :as table-set-opts]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [clojure.db.all-raw :refer [all-raw]]
+            [clojure.db :as db]
             [clojure.editor.constants :refer [property-type->overview-table-props]]
             [clojure.moon-textures :as textures]
             [clojure.property-image :as property-image]
@@ -25,7 +25,7 @@
                                     extra-info-text
                                     columns
                                     image-scale]} (get property-type->overview-table-props property-type)]
-                        (->> (all-raw db property-type)
+                        (->> (db/all-raw db property-type)
                              (sort-by sort-by-fn)
                              (map (fn [property]
                                     {:texture-region (textures/texture-region textures (property-image/f property))

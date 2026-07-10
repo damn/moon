@@ -1,9 +1,9 @@
 (ns clojure.levelgen-test.create
-  (:require 
+  (:require
             [clojure.table-set-opts :as table-set-opts]
             [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [clojure.db.all-raw :refer [all-raw]]
+            [clojure.db :as db]
             [clojure.files.create-textures :as create-textures]
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.files :as files]
@@ -12,7 +12,6 @@
             [clojure.tiled-map.get-property :as get-property]
             [com.badlogic.gdx.input :as input]
             [clojure.malli-form-register-methods]
-            [clojure.moon-db :as db]
             [clojure.moon-textures :as textures]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
@@ -37,7 +36,7 @@
    level-fn]
   (let [level (level-fn
                {:level/creature-properties (creature-tiles/prepare
-                                            (all-raw db :properties/creatures)
+                                            (db/all-raw db :properties/creatures)
                                             #(textures/texture-region textures %))
                 :textures textures})
         tiled-map (:tiled-map level)
