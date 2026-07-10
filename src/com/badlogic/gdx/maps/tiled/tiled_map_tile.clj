@@ -1,18 +1,17 @@
 (ns com.badlogic.gdx.maps.tiled.tiled-map-tile
   (:import (com.badlogic.gdx.maps.tiled TiledMapTile TiledMapTileLayer$Cell)))
 
-(defn get-offset-x [tile]
-  (TiledMapTile/.getOffsetX tile))
+(defn getOffsetX [tile]
+  (.getOffsetX ^TiledMapTile tile))
 
-(defn get-offset-y [tile]
-  (TiledMapTile/.getOffsetY tile))
+(defn getOffsetY [tile]
+  (.getOffsetY ^TiledMapTile tile))
 
-(defn get-properties [tile]
-  (TiledMapTile/.getProperties tile))
+(defn getProperties [tile]
+  (.getProperties ^TiledMapTile tile))
 
-(defn get-texture-region [tile]
-  (TiledMapTile/.getTextureRegion tile))
+(defn getTextureRegion [tile]
+  (.getTextureRegion ^TiledMapTile tile))
 
-; TODO decide where to put type hints for whole app?
-(defn get-tile [^TiledMapTileLayer$Cell cell]
+(defn getTile [^TiledMapTileLayer$Cell cell]
   (.getTile cell))

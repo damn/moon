@@ -6,4 +6,4 @@
   (apply static-tiled-map-tile/new args))
 
 (defn get-properties [& args]
-  (apply static-tiled-map-tile/get-properties args))
+  (apply static-tiled-map-tile/getProperties args))

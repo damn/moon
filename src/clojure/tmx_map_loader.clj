@@ -6,4 +6,4 @@
   (apply tmx-map-loader/new args))
 
 (defn load! [& args]
-  (apply tmx-map-loader/load! args))
+  (apply tmx-map-loader/load args))

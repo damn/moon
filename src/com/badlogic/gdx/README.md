@@ -18,8 +18,8 @@ libGDX (Java)
 
 | Layer | Job | Docs |
 |-------|-----|------|
-| `com.badlogic.gdx.*` | Mirror methods, constructors, static fields | This file + one javadoc link per namespace |
-| `gdx.*` | Clojure-shaped API over FFI | Docstrings on public vars |
+| `com.badlogic.gdx.*` | Curated mirror — only what this project uses | Javadoc copied 1:1 onto vars (pinned version) |
+| `gdx.*` | Clojure-shaped API over FFI | Clojure docs — keywords, examples, ergonomics |
 | `clojure.moon.*` | Game | Domain docs / specs |
 
 ## Rules
@@ -109,35 +109,82 @@ Use `(:refer-clojure :exclude [...])` when FFI names collide with `clojure.core`
 
 ## Documentation
 
+We pin libGDX (see `project.clj`). FFI names mirror Java 1:1 — **docstrings copy Java javadoc 1:1** from that same pinned version.
+
+Because this layer is a **curated abstraction** (only exposed members exist), every public var gets a docstring. `(doc …)` in the REPL should be enough; no browser required for day-to-day work.
+
+### Pinned sources
+
+| Artifact | Version / ref |
+|----------|----------------|
+| `com.github.damn/com.badlogic.gdx` | git SHA in `project.clj` |
+| `gdx-backend-lwjgl3`, natives, freetype | `1.14.2` |
+
+When bumping libGDX, refresh docstrings for touched namespaces from javadoc for that version.
+
 ### This file
 
 Layer-wide rules and architecture. Read this once.
 
 ### Per-namespace docstring
 
-Each `.clj` file has **one** namespace docstring with a link to the mirrored Java class javadoc. No per-var docstrings — var names already match Java.
+Class-level javadoc (first paragraph) plus link to the class page:
 
 ```clj
 (ns com.badlogic.gdx.input
-  "FFI for com.badlogic.gdx.Input.
+  "Input processor and polling. FFI for com.badlogic.gdx.Input.
    https://libgdx.badlogicgames.com/ci/nightlies/docs/api/com/badlogic/gdx/Input.html"
   (:import (com.badlogic.gdx Input)))
 ```
 
-Pin the javadoc base URL in one place when we add `com.badlogic.gdx.javadoc` (optional shared helper).
+Use the javadoc URL that matches the pinned release, not necessarily nightlies, when a stable doc set exists.
 
-### Behavior details
+### Per-var docstrings — copy Java 1:1
 
-For what a method *does*, use Java javadoc — not duplicated prose here.
+Copy the method/field javadoc from the pinned libGDX sources into the Clojure docstring. Keep HTML out; plain text or minimal markdown is fine.
 
-In the REPL:
+Names already match (`getX` ↔ `getX()`), so docs match too:
+
+```clj
+(defn getX
+  "Returns the x coordinate of the last touch on touch screen devices and the current mouse position on desktop for mouse
+  and touchpad input. The screen is included in the input area and has the same origin (0,0) as the screen.
+  This means that the x coordinate returned will be larger than the screen width if the touch was made right of the screen."
+  [input]
+  (.getX ^Input input))
+```
+
+For `def` static fields, copy the field javadoc the same way.
+
+**Do not** rewrite or summarize in FFI — copy from the pinned javadoc, then only fix formatting for Clojure strings (escape quotes, strip `{@link Foo}` to plain `Foo` if needed).
+
+### What `gdx.*` documents instead
+
+| FFI doc | `gdx` doc |
+|---------|-----------|
+| Java javadoc, copied 1:1 | Clojure API — keyword opts, `[x y]`, when to clojurize |
+| What `Input#getX` does | What `get-x` means in your app, defaults, composition |
+
+FFI = **what libGDX says**. `gdx` = **how we use it in Clojure**.
+
+### Adding a new binding
+
+1. Add the FFI var (name mirrors Java).
+2. Copy javadoc from pinned libGDX for that method/field.
+3. Wrap in `gdx.*` only if game code needs a Clojure-shaped surface.
+
+Optional later: a small tool that reads javadoc from the pinned JAR and emits docstrings when scaffolding a new namespace — same rules as manual copy.
+
+### REPL fallback
+
+If a docstring is missing or stale, look up the Java member directly:
 
 ```clj
 (require '[clojure.java.javadoc :refer [javadoc]])
-(javadoc com.badlogic.gdx.Input)
+(javadoc com.badlogic.gdx.Input/getX)
 ```
 
-Or use [clojure.java.doc](https://github.com/clojure/java.javadoc) / CIDER `cider-javadoc` for in-editor lookup.
+Or [clojure.java.doc](https://github.com/clojure/java.javadoc) / CIDER `cider-javadoc`.
 
 ## What does not belong here
 
@@ -153,7 +200,7 @@ Or use [clojure.java.doc](https://github.com/clojure/java.javadoc) / CIDER `cide
 
 ```clj
 (ns com.badlogic.gdx.example
-  "FFI for com.badlogic.gdx.Example.
+  "Class-level javadoc (first paragraph). FFI for com.badlogic.gdx.Example.
    https://libgdx.badlogicgames.com/ci/nightlies/docs/api/com/badlogic/gdx/Example.html"
   (:refer-clojure :exclude [new]) ; if needed
   (:import (com.badlogic.gdx Example)))
@@ -161,7 +208,9 @@ Or use [clojure.java.doc](https://github.com/clojure/java.javadoc) / CIDER `cide
 (defn new []
   (Example.))
 
-(defn someMethod [example arg]
+(defn someMethod
+  "Method javadoc copied 1:1 from pinned libGDX Example#someMethod."
+  [example arg]
   (.someMethod ^Example example arg))
 ```
 

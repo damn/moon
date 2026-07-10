@@ -5,9 +5,9 @@
 
 (defn new
   ([source]
-    (if (instance? StaticTiledMapTile source)
-      (StaticTiledMapTile. ^StaticTiledMapTile source)
-      (StaticTiledMapTile. ^TextureRegion      source))))
+   (if (instance? StaticTiledMapTile source)
+     (StaticTiledMapTile. ^StaticTiledMapTile source)
+     (StaticTiledMapTile. ^TextureRegion source))))
 
-(defn get-properties [tile]
-  (StaticTiledMapTile/.getProperties tile))
+(defn getProperties [tile]
+  (.getProperties ^StaticTiledMapTile tile))

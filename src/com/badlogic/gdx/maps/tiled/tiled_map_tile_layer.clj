@@ -2,44 +2,44 @@
   (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer TiledMapTileLayer$Cell)))
 
-(defn get-cell [^TiledMapTileLayer layer x y]
-  (.getCell layer (int x) (int y)))
-
-(defn get-height [^TiledMapTileLayer layer]
-  (.getHeight layer))
-
-(defn get-name [^TiledMapTileLayer layer]
-  (TiledMapTileLayer/.getName layer))
-
-(defn get-render-offset-x [^TiledMapTileLayer layer]
-  (.getRenderOffsetX layer))
-
-(defn get-render-offset-y [^TiledMapTileLayer layer]
-  (.getRenderOffsetY layer))
-
-(defn get-tile-height [^TiledMapTileLayer layer]
-  (.getTileHeight layer))
-
-(defn get-tile-width [^TiledMapTileLayer layer]
-  (.getTileWidth layer))
-
-(defn get-properties [^TiledMapTileLayer layer]
-  (.getProperties layer))
-
-(defn get-width [^TiledMapTileLayer layer]
-  (.getWidth layer))
-
-(defn visible? [^TiledMapTileLayer layer]
-  (TiledMapTileLayer/.isVisible layer))
-
 (defn new [width height tilewidth tileheight]
   (TiledMapTileLayer. (int width) (int height) (int tilewidth) (int tileheight)))
 
-(defn set-cell! [^TiledMapTileLayer layer x y ^TiledMapTileLayer$Cell cell]
-  (TiledMapTileLayer/.setCell layer (int x) (int y) cell))
+(defn getCell [^TiledMapTileLayer layer x y]
+  (.getCell layer (int x) (int y)))
 
-(defn set-name! [^TiledMapTileLayer layer ^String name]
-  (TiledMapTileLayer/.setName layer name))
+(defn getHeight [^TiledMapTileLayer layer]
+  (.getHeight layer))
 
-(defn set-visible! [layer visible?]
-  (TiledMapTileLayer/.setVisible layer visible?))
+(defn getName [^TiledMapTileLayer layer]
+  (.getName layer))
+
+(defn getRenderOffsetX [^TiledMapTileLayer layer]
+  (.getRenderOffsetX layer))
+
+(defn getRenderOffsetY [^TiledMapTileLayer layer]
+  (.getRenderOffsetY layer))
+
+(defn getTileHeight [^TiledMapTileLayer layer]
+  (.getTileHeight layer))
+
+(defn getTileWidth [^TiledMapTileLayer layer]
+  (.getTileWidth layer))
+
+(defn getProperties [^TiledMapTileLayer layer]
+  (.getProperties layer))
+
+(defn getWidth [^TiledMapTileLayer layer]
+  (.getWidth layer))
+
+(defn isVisible [^TiledMapTileLayer layer]
+  (.isVisible layer))
+
+(defn setCell [^TiledMapTileLayer layer x y ^TiledMapTileLayer$Cell cell]
+  (.setCell layer (int x) (int y) cell))
+
+(defn setName [^TiledMapTileLayer layer ^String name]
+  (.setName layer name))
+
+(defn setVisible [^TiledMapTileLayer layer visible?]
+  (.setVisible layer visible?))
