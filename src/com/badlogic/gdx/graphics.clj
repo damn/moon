@@ -2,17 +2,17 @@
   (:import (com.badlogic.gdx Graphics)
            (com.badlogic.gdx.graphics Cursor Pixmap)))
 
-(defn get-delta-time [graphics]
-  (Graphics/.getDeltaTime graphics))
+(defn getDeltaTime [graphics]
+  (.getDeltaTime ^Graphics graphics))
 
-(defn get-frames-per-second [graphics]
-  (Graphics/.getFramesPerSecond graphics))
+(defn getFramesPerSecond [graphics]
+  (.getFramesPerSecond ^Graphics graphics))
 
-(defn get-gl20 [graphics]
-  (Graphics/.getGL20 graphics))
+(defn getGL20 [graphics]
+  (.getGL20 ^Graphics graphics))
 
-(defn new-cursor [graphics ^Pixmap pixmap hotspot-x hotspot-y]
-  (Graphics/.newCursor graphics pixmap hotspot-x hotspot-y))
+(defn newCursor [graphics ^Pixmap pixmap hotspot-x hotspot-y]
+  (.newCursor ^Graphics graphics pixmap hotspot-x hotspot-y))
 
-(defn set-cursor! [graphics ^Cursor cursor]
-  (Graphics/.setCursor graphics cursor))
+(defn setCursor [graphics ^Cursor cursor]
+  (.setCursor ^Graphics graphics cursor))

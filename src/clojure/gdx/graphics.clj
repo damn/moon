@@ -2,16 +2,16 @@
   (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (defn get-delta-time [& args]
-  (apply graphics/get-delta-time args))
+  (apply graphics/getDeltaTime args))
 
 (defn get-frames-per-second [& args]
-  (apply graphics/get-frames-per-second args))
+  (apply graphics/getFramesPerSecond args))
 
 (defn get-gl20 [& args]
-  (apply graphics/get-gl20 args))
+  (apply graphics/getGL20 args))
 
 (defn new-cursor [& args]
-  (apply graphics/new-cursor args))
+  (apply graphics/newCursor args))
 
 (defn set-cursor! [& args]
-  (apply graphics/set-cursor! args))
+  (apply graphics/setCursor args))
