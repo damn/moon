@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx ApplicationListener)))
 
-(defn create
+(defn new
   [{:keys [create!
            dispose!
            render!

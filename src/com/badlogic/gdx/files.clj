@@ -2,4 +2,4 @@
   (:import (com.badlogic.gdx Files)))
 
 (defn internal [files path]
-  (.internal ^Internal files path))
+  (.internal ^Files files path))
