@@ -2,7 +2,7 @@
   (:require [gdl.align :as align]
             [gdl.batch :as batch]
             [gdl.bitmap-font :as bitmap-font]
-            [gdl.bitmap-font.data :as bitmap-font-data]
+            [gdl.bitmap-font-data :as bitmap-font-data]
             [clojure.shape-drawer :as shape-drawer]
             [clojure.string :as str]
             [clojure.texture-region :as texture-region]

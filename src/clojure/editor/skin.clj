@@ -1,7 +1,7 @@
 (ns clojure.editor.skin
   (:require [clojure.files :as files]
             [gdl.bitmap-font :as bitmap-font]
-            [gdl.bitmap-font.data :as bitmap-font-data]
+            [gdl.bitmap-font-data :as bitmap-font-data]
             [clojure.skin :as skin]))
 
 (defn f [{:keys [ctx/files] :as ctx}]
