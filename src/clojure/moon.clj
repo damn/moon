@@ -1,6 +1,5 @@
 (ns clojure.moon
-  (:require [clojure.body.distance :as distance]
-            [clojure.body.draw-rectangle :as draw-rectangle]
+  (:require [clojure.body.draw-rectangle :as draw-rectangle]
             [clojure.content-grid.active-entities :as active-entities]
             [clojure.ctx.clear-screen :as ctx-clear-screen]
             [clojure.db.all-raw :refer [all-raw]]
@@ -58,11 +57,11 @@
             [clojure.moon.z-orders :refer [z-orders]]
             [clojure.mouse-position :refer [mouse-position]]
             [clojure.mouseover-actor :refer [mouseover-actor]]
-            [clojure.move :as move]
-            [clojure.movement-property :as movement-property]
-            [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
-            [clojure.overlaps :refer [overlaps?]]
-            [clojure.readable :as readable]
+            [clojure.move :as move] ; to position?
+            [clojure.movement-property :as movement-property] ;tiled-map ?
+            [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]] ; cell ?
+            [clojure.overlaps :refer [overlaps?]] ; ?
+            [clojure.readable :as readable] ; ?
             [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.stats.get-mana :as get-mana]
             [clojure.stats.get-stat-value :refer [get-stat-value]]
@@ -98,6 +97,10 @@
             [clojure.ui.error-window :as error-window]
             [clojure.unproject :as unproject]
             [clojure.usable-state :as usable-state]
+            [clojure.v2.distance :as distance]
+
+            ; THIS IS SIMPLE
+            ; ONLY SIMPLE ALLOWED!
             [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.audio :as audio]
             [com.badlogic.gdx.files :as files]
@@ -129,12 +132,17 @@
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
+
+            ; TODO THIS IS NOT SIMPLE
             [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdl.graphics.g2d.freetype.font-generator :as free-type-font-generator]
             [gdl.input.buttons :as input-buttons]
             [gdl.input.keys :as input-keys]
             [gdl.maps.map-properties :as map-properties]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
+            ;
+
+            ; SIMPLE
             [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
             [qrecord.core :as q])
   (:gen-class))
@@ -1061,8 +1069,8 @@
            (:entity/clickable @mouseover-eid))
       [:interaction-state/clickable-mouseover-eid
        {:clicked-eid mouseover-eid
-        :in-click-range? (< (distance/f (:entity/body @player-eid)
-                                        (:entity/body @mouseover-eid))
+        :in-click-range? (< (distance/f (:body/position (:entity/body @player-eid))
+                                        (:body/position (:entity/body @mouseover-eid)))
                             (:entity/click-distance-tiles @player-eid))}]
 
       :else
