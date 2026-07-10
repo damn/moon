@@ -33,9 +33,10 @@
                                     (draw-cell-rect @player-eid
                                                     (clojure.scene2d.actor.get-x/f this)
                                                     (clojure.scene2d.actor.get-y/f this)
-                                                    (let [[x y] (vector2/clojurize
+                                                    (let [[mx my] ui-mouse-position
+                                                          [x y] (vector2/clojurize
                                                                  (clojure.scene2d.actor.stage-to-local-coordinates/f this
-                                                                                              (vector2/new ui-mouse-position)))]
+                                                                                              (vector2/new mx my)))]
                                                       (clojure.scene2d.actor.hit/f this x y true))
                                                     (clojure.scene2d.actor.get-user-object/f (clojure.scene2d.actor.get-parent/f this)))))))})
               (doto (image/new-drawable background-drawable)

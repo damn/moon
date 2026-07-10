@@ -17,5 +17,5 @@
 (defn set-y! [& args]
   (apply vector3/set-y! args))
 
-(defn clojurize [& args]
-  (apply vector3/clojurize args))
+(defn clojurize [v3]
+  [(x v3) (y v3) (z v3)])

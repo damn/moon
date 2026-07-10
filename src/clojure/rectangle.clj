@@ -6,7 +6,7 @@
   (apply rectangle/new args))
 
 (defn overlaps? [& args]
-  (apply rectangle/overlaps? args))
+  (apply rectangle/overlaps args))
 
-(defn contains? [& args]
-  (apply rectangle/contains? args))
+(defn contains? [rectangle [x y]]
+  (rectangle/contains rectangle x y))

@@ -2,7 +2,7 @@
   (:require [clojure.vector2 :as vector2]
             [clojure.viewport :as viewport]))
 
-(defn f [viewport xy]
+(defn f [viewport [x y]]
   (-> viewport
-      (viewport/unproject (vector2/new xy))
+      (viewport/unproject (vector2/new x y))
       vector2/clojurize))

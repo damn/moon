@@ -11,5 +11,5 @@
 (defn y [& args]
   (apply vector2/y args))
 
-(defn clojurize [& args]
-  (apply vector2/clojurize args))
+(defn clojurize [v2]
+  [(x v2) (y v2)])

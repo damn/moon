@@ -12,12 +12,7 @@
   (.z v))
 
 (defn set-x! [vector3 x]
-  (set! (.x ^Vector3 vector3) x))
+  (.setX ^Vector3 vector3 (float x)))
 
 (defn set-y! [vector3 y]
-  (set! (.y ^Vector3 vector3) y))
-
-(defn clojurize [v3] ; TODO remove!
-  [(x v3)
-   (y v3)
-   (z v3)])
+  (.setY ^Vector3 vector3 (float y)))

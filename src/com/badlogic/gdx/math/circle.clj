@@ -2,7 +2,5 @@
   (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx.math Circle)))
 
-(defn new [{:keys [position radius]}] ; TODO ??? no logic?
-  (Circle. (float (position 0))
-           (float (position 1))
-           radius))
+(defn new [x y radius]
+  (Circle. (float x) (float y) (float radius)))

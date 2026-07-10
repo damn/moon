@@ -5,9 +5,11 @@
             [clojure.g2d.circle-to-cells :refer [circle->cells]]
             [clojure.grid.cells-entities :as cells->entities]))
 
-(defn circle->entities [g2d circle]
-  (->> (circle->cells g2d circle)
-       (map deref)
-       cells->entities/f
-       (filter #(intersector/overlaps? (circle/new circle)
-                                      (->rectangle (:entity/body @%))))))
+(defn circle->entities [g2d {:keys [position radius] :as circle}]
+  (let [[x y] position
+        gdx-circle (circle/new x y radius)]
+    (->> (circle->cells g2d circle)
+         (map deref)
+         cells->entities/f
+         (filter #(intersector/overlaps? gdx-circle
+                                        (->rectangle (:entity/body @%))))))
