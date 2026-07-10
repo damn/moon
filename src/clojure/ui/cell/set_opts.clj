@@ -1,35 +1,21 @@
 (ns clojure.ui.cell.set-opts
-  (:require [clojure.ui.cell.bottom! :as bottom!]
-            [clojure.ui.cell.center! :as center!]
-            [clojure.ui.cell.colspan! :as colspan!]
-            [clojure.ui.cell.expand! :as expand!]
-            [clojure.ui.cell.expand-x! :as expand-x!]
-            [clojure.ui.cell.expand-y! :as expand-y!]
-            [clojure.ui.cell.fill-x! :as fill-x!]
-            [clojure.ui.cell.fill-y! :as fill-y!]
-            [clojure.ui.cell.height! :as height!]
-            [clojure.ui.cell.left! :as left!]
-            [clojure.ui.cell.pad! :as pad!]
-            [clojure.ui.cell.pad-bottom! :as pad-bottom!]
-            [clojure.ui.cell.pad-top! :as pad-top!]
-            [clojure.ui.cell.right! :as right!]
-            [clojure.ui.cell.width! :as width!]))
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]))
 
 (defn f [cell opts]
   (doseq [[option arg] opts]
     (case option
-      :fill-x?    (fill-x!/f cell)
-      :fill-y?    (fill-y!/f cell)
-      :expand?    (expand!/f cell)
-      :expand-x?  (expand-x!/f cell)
-      :expand-y?  (expand-y!/f cell)
-      :bottom?    (bottom!/f cell)
-      :colspan    (colspan!/f cell arg)
-      :pad        (pad!/f cell arg)
-      :pad-top    (pad-top!/f cell arg)
-      :pad-bottom (pad-bottom!/f cell arg)
-      :width      (width!/f cell arg)
-      :height     (height!/f cell arg)
-      :center?    (center!/f cell)
-      :right?     (right!/f cell)
-      :left?      (left!/f cell))))
+      :fill-x?    (cell/fillX cell)
+      :fill-y?    (cell/fillY cell)
+      :expand?    (cell/expand cell)
+      :expand-x?  (cell/expandX cell)
+      :expand-y?  (cell/expandY cell)
+      :bottom?    (cell/bottom cell)
+      :colspan    (cell/colspan cell arg)
+      :pad        (cell/pad cell arg)
+      :pad-top    (cell/padTop cell arg)
+      :pad-bottom (cell/padBottom cell arg)
+      :width      (cell/width cell arg)
+      :height     (cell/height cell arg)
+      :center?    (cell/center cell)
+      :right?     (cell/right cell)
+      :left?      (cell/left cell))))
