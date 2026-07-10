@@ -1,9 +1,9 @@
 (ns clojure.set-touched-cells
-  (:require [clojure.body.touched-tiles :refer [touched-tiles]]
+  (:require [clojure.body :as body]
             [clojure.g2d.get-cells :refer [get-cells]]))
 
 (defn set-touched-cells! [grid eid]
-  (let [cells (get-cells grid (touched-tiles (:entity/body @eid)))]
+  (let [cells (get-cells grid (body/touched-tiles (:entity/body @eid)))]
     (assert (not-any? nil? cells))
     (swap! eid assoc :entity/touched-cells cells)
     (doseq [cell cells]

@@ -1,8 +1,8 @@
 (ns clojure.overlaps
   (:require [gdl.math.rectangle :as rectangle]
             [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
-            [clojure.body.rectangle :refer [->rectangle]]))
+            [clojure.body :as body]))
 
 (defn overlaps? [body other-body]
-  (gdx-rectangle/overlaps (->rectangle body)
-                      (->rectangle other-body)))
+  (gdx-rectangle/overlaps (body/rectangle body)
+                          (body/rectangle other-body)))
