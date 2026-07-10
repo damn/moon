@@ -8,7 +8,7 @@
             [clojure.movement-property :as movement-property]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
             [clojure.g2d.area-level-grid :as area-level-grid]
-            [clojure.map-layers.get :as get]))
+            [gdl.map-layers :as map-layers]))
 
 (defn step
   [{:keys [world/max-area-level
@@ -44,7 +44,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (get/f (tiled-map/get-layers tiled-map) "creatures")
+                                                    (property-value (map-layers/get (tiled-map/get-layers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

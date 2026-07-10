@@ -6,7 +6,7 @@
             [gdl.disposable :as disposable]
             [clojure.files :as files]
             [clojure.fit-viewport :as fit-viewport]
-            [clojure.map-layers.get :as get]
+            [gdl.map-layers :as map-layers]
             [clojure.tiled-map.get-property :as get-property]
             [clojure.input :as input]
             [clojure.malli-form-register-methods]
@@ -43,7 +43,7 @@
     (assert tiled-map)
     (-> tiled-map
         tiled-map/get-layers
-        (get/f "creatures")
+        (map-layers/get "creatures")
         (tiled-map-tile-layer/set-visible! true))
     (set-position! camera [(/ (get-property/f tiled-map "width") 2)
                            (/ (get-property/f tiled-map "height") 2)])
