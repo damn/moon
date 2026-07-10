@@ -12,7 +12,7 @@
   (.z v))
 
 (defn set-x! [vector3 x]
-  (.setX ^Vector3 vector3 (float x)))
+  (set! (.x ^Vector3 vector3) x))
 
 (defn set-y! [vector3 y]
-  (.setY ^Vector3 vector3 (float y)))
+  (set! (.y ^Vector3 vector3) y))

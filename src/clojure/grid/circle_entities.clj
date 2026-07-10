@@ -12,4 +12,4 @@
          (map deref)
          cells->entities/f
          (filter #(intersector/overlaps? gdx-circle
-                                        (->rectangle (:entity/body @%))))))
+                                        (->rectangle (:entity/body @%)))))))
