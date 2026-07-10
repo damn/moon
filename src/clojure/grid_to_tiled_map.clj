@@ -14,7 +14,7 @@
   (let [copy-tile (memoize
                    (fn [tile]
                      (assert tile)
-                     (static-tiled-map-tile/new-tile tile)))]
+                     (static-tiled-map-tile/new tile)))]
     {:properties (merge (map-properties/clojurize (tiled-map/get-properties schema-tiled-map))
                         {"width" (->width grid)
                          "height" (->height grid)})

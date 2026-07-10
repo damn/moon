@@ -10,3 +10,6 @@
 
 (defn draw-pixel! [& args]
   (apply pixmap/drawPixel args))
+
+(defn get-format [& args]
+  (apply pixmap/getFormat args))

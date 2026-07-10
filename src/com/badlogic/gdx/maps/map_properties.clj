@@ -3,7 +3,7 @@
   (:import (com.badlogic.gdx.maps MapProperties)))
 
 (defn get [map-properties k]
-  (.get ^MapPropertiesmap-properties k))
+  (.get ^MapProperties map-properties k))
 
 (defn getKeys [map-properties]
   (.getKeys ^MapProperties map-properties))

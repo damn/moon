@@ -3,12 +3,11 @@
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
-(defn new [^TextureRegion texture-region]
-  (StaticTiledMapTile. texture-region))
+(defn new
+  ([source]
+    (if (instance? StaticTiledMapTile source)
+      (StaticTiledMapTile. ^StaticTiledMapTile source)
+      (StaticTiledMapTile. ^TextureRegion      source))))
 
-(defn new-tile [^StaticTiledMapTile tile] ; ?
-  (StaticTiledMapTile. tile))
-
-; Lower lvl ?
 (defn get-properties [tile]
   (StaticTiledMapTile/.getProperties tile))

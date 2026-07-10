@@ -5,8 +5,5 @@
 (defn new [& args]
   (apply static-tiled-map-tile/new args))
 
-(defn new-tile [& args]
-  (apply static-tiled-map-tile/new-tile args))
-
 (defn get-properties [& args]
   (apply static-tiled-map-tile/get-properties args))
