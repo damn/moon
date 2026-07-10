@@ -16,21 +16,21 @@
      (let [stack (stack/new)]
        (run! #(group/addActor stack %)
              [(widget/new
-               {:draw! (fn [this _batch _parent-alpha]
-                         (when-let [stage (actor/getStage this)]
-                           (let [{:keys [ctx/player-eid
-                                         ctx/ui-mouse-position]
-                                  :as ctx} (:stage/ctx stage)]
-                             (draw! ctx
-                                    (draw-cell-rect @player-eid
-                                                    (actor/getX this)
-                                                    (actor/getY this)
-                                                    (let [[mx my] ui-mouse-position
-                                                          [x y] (vector2/clojurize
-                                                                 (actor/stageToLocalCoordinates this
-                                                                                              (gdx-vector2/new mx my)))]
-                                                      (actor/hit this x y true))
-                                                    (actor/getUserObject (actor/getParent this)))))))})
+               (fn [this _batch _parent-alpha]
+                 (when-let [stage (actor/getStage this)]
+                   (let [{:keys [ctx/player-eid
+                                 ctx/ui-mouse-position]
+                          :as ctx} (:stage/ctx stage)]
+                     (draw! ctx
+                            (draw-cell-rect @player-eid
+                                            (actor/getX this)
+                                            (actor/getY this)
+                                            (let [[mx my] ui-mouse-position
+                                                  [x y] (vector2/clojurize
+                                                         (actor/stageToLocalCoordinates this
+                                                                                          (gdx-vector2/new mx my)))]
+                                              (actor/hit this x y true))
+                                            (actor/getUserObject (actor/getParent this))))))))
               (doto (image/newDrawable background-drawable)
                 (actor/setName "image-widget")
                 (actor/setUserObject {:background-drawable background-drawable

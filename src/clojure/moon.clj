@@ -1,3 +1,24 @@
+; 1. all ctx here - till nowhere else ctx is used (grep)
+; 2. see where its passed whole and which sub-keys -> can I make a sub-map ?
+; 3. .... => goal:
+; depend only on for example:
+; clojure.moon.ui
+; clojure.moon.audio
+; clojure.moon.controls
+; clojure.moon.world (!) (grid, content-grid, raycaster, tiled-map, ... ?? , time, eids, ...)
+; clojure.moon.graphics (?): (??)
+; clojure.moon.?
+
+; or maybe just:
+; clojure.moon.plattform -> or ??? all gdx stuff ???
+; clojure.moon.world
+
+; or : APPLICATION / WORLD
+; WORLD EVENTS _> APPLICATION REACTS
+
+; => better more keys not too much
+
+
 (ns clojure.moon
   (:require [clojure.body.distance :as distance]
             [clojure.body.draw-rectangle :as draw-rectangle]
