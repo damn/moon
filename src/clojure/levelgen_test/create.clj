@@ -1,5 +1,7 @@
 (ns clojure.levelgen-test.create
-  (:require [com.badlogic.gdx.application :as application]
+  (:require 
+            [clojure.table-set-opts :as table-set-opts]
+            [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.files.create-textures :as create-textures]
@@ -21,10 +23,10 @@
             [clojure.tiled-map.creature-tiles :as creature-tiles]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [clojure.ui-text-button :as text-button]
-            [clojure.ui-window :as window]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [clojure.scene2d.utils.change-listener :as utils-change-listener]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clojure.orthographic-camera.zoom-to-rect :as zoom-to-rect]))
 
 (defn- generate-level
@@ -85,18 +87,16 @@
         ctx (generate-level ctx (:initial-level-fn config))]
     (input/setInputProcessor input stage)
     (stage/addActor (:ctx/stage ctx)
-                      (window/create
-                       {:title "Edit"
+                      (doto (window/new "Edit" skin)
+    (table-set-opts/set-opts! {:title "Edit"
                         :skin skin
                         :table/rows (for [[label level-fn] (:level-fns config)
                                           :let [on-click #(do
                                                             (disposable/dispose (:ctx/tiled-map %))
                                                             (generate-level % level-fn))]]
-                                      [{:actor (doto (text-button/create
-                                                      {:text (str "Generate " label)
-                                                       :skin skin})
+                                      [{:actor (doto (text-button/new (str "Generate " label) skin)
                                                (actor/addListener
-                                                (utils-change-listener/create
+                                                (change-listener/create
                                                  (fn [_event _actor]
-                                                   (swap! state on-click)))))}])}))
+                                                   (swap! state on-click)))))}])})))
     ctx))

@@ -2,7 +2,7 @@
   (:require [clojure.ui.action-bar.selected-skill :as selected-skill]
             [clojure.scene2d.actor.mouseover-info :refer [mouseover-actor-info]]
             [clojure.body.distance :as distance]
-            [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [clojure.mouseover-actor :refer [mouseover-actor]]
             [clojure.player-effect-ctx :as player-effect-ctx]
             [clojure.usable-state :as usable-state]))
@@ -29,7 +29,7 @@
       :else
       (if-let [skill-id (-> stage
                             :stage/root
-                            (#(group/find-actor % "moon.ui.action-bar"))
+                            (#(group/findActor % "moon.ui.action-bar"))
                             selected-skill/f)]
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))

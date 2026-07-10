@@ -2,20 +2,20 @@
   (:require
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.math.vector2 :as gdx-vector2] [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
-            [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [gdl.math.vector2 :as vector2]
-            [clojure.ui-widget :as widget]
-            [clojure.scene2d.utils.click-listener :as click-listener]
-            [clojure.ui-stack :as stack]))
+            [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
+            [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
+            [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]))
 
 (defn ->cell [do! draw! on-click-cell slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
-     (let [stack (stack/create)]
-       (run! #(group/add-actor! stack %)
-             [(widget/f
+     (let [stack (stack/new)]
+       (run! #(group/addActor stack %)
+             [(widget/new
                {:draw! (fn [this _batch _parent-alpha]
                          (when-let [stage (actor/getStage this)]
                            (let [{:keys [ctx/player-eid

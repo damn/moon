@@ -1,8 +1,8 @@
 (ns clojure.editor.widget-value
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [clojure.ui.checkbox :as checkbox]
+            [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
             [clojure.edn :as edn]
-            [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.select-box :as gdx-select-box]
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as gdx-text-field]))
 
@@ -12,7 +12,7 @@
 
 (defn map-widget-table-get-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? actor/getUserObject) (group/get-children table))
+        (for [widget (filter (comp vector? actor/getUserObject) (group/getChildren table))
               :let [[k _] (actor/getUserObject widget)]]
           [k (widget-value (get schemas k) widget schemas)])))
 
@@ -22,7 +22,7 @@
 
 (defmethod widget-value :s/boolean
   [_ widget _schemas]
-  (checkbox/checked? widget))
+  (check-box/isChecked widget))
 
 (defmethod widget-value :s/enum
   [_ widget _schemas]
@@ -38,13 +38,13 @@
 
 (defmethod widget-value :s/one-to-many
   [_ widget _schemas]
-  (->> (group/get-children widget)
+  (->> (group/getChildren widget)
        (keep actor/getUserObject)
        set))
 
 (defmethod widget-value :s/one-to-one
   [_ widget _schemas]
-  (->> (group/get-children widget)
+  (->> (group/getChildren widget)
        (keep actor/getUserObject)
        first))
 

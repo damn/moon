@@ -1,13 +1,15 @@
 (ns clojure.editor.create-widget-create-component-row
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require 
+            [clojure.table-set-opts :as table-set-opts]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [clojure.k-label-text :as k-label-text]
-            [clojure.ui-label :as label]
-            [clojure.ui-table :as table]
-            [clojure.ui-text-button :as text-button]
-            [clojure.scene2d.utils.change-listener :as change-listener]))
+            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn create-component-row
   [{:keys [skin
@@ -15,24 +17,20 @@
            display-remove-component-button?
            k
            table]}]
-  [{:actor (table/create
-            {:table/cell-defaults {:pad 2}
+  [{:actor (doto (table/new)
+    (table-set-opts/set-opts! {:table/cell-defaults {:pad 2}
              :table/rows [[{:actor (when display-remove-component-button?
-                                     (doto (text-button/create
-                                            {:text "-"
-                                             :skin skin})
+                                     (doto (text-button/new "-" skin)
                                        (actor/addListener (change-listener/create
                                                                 (fn [event _actor]
                                                                   (actor/remove (first (filter (fn [actor]
                                                                                                           (and (actor/getUserObject actor)
                                                                                                                (= k ((actor/getUserObject actor) 0))))
-                                                                                                        (group/get-children table))))
+                                                                                                        (group/getChildren table))))
                                                                   (let [ctx (:stage/ctx (event/getStage event))]
                                                                     (rebuild-editor-window/rebuild-editor-window! ctx)))))))
                             :left? true}
-                           {:actor (label/create
-                                    {:text (k-label-text/f k)
-                                     :skin skin})}]]})
+                           {:actor (label/new (k-label-text/f k) skin)}]]}))
     :right? true}
    {:actor nil
     :pad-top 2

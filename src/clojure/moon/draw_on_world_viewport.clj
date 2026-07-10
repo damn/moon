@@ -4,7 +4,7 @@
             [clojure.moon.draw :refer [draw!]]
             [clojure.moon.draw-component :refer [draw-component]]
             [clojure.moon.factions-iterations :refer [factions-iterations]]
-            [clojure.shape-drawer :as shape-drawer]
+            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
             [clojure.line-of-sight :as line-of-sight?]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.sort-by-order :as sort-by-order]
@@ -103,14 +103,14 @@
   (batch/setColor batch 1 1 1 1)
   (batch/setProjectionMatrix batch (orthographic-camera/combined (viewport/getCamera world-viewport)))
   (batch/begin batch)
-  (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
-    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
+  (let [old-line-width (shape-drawer/getDefaultLineWidth shape-drawer)]
+    (shape-drawer/setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
     (doseq [draw-fn [draw-cell-debug
                      draw-entities!
                      highlight-mouseover-tile]]
       (draw! ctx (draw-fn ctx)))
     (reset! unit-scale 1)
-    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
+    (shape-drawer/setDefaultLineWidth shape-drawer old-line-width))
   (batch/end batch)
   ctx)

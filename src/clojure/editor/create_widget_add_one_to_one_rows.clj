@@ -5,16 +5,16 @@
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.db.get-raw :refer [get-raw]]
-            [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clojure.moon-textures :as textures]
-            [clojure.pack! :as pack!]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [clojure.property-image :as property-image]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.tooltip :as tooltip]
-            [clojure.ui-text-button :as text-button]
-            [clojure.ui-text-tooltip :as text-tooltip]
-            [clojure.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn add-one-to-one-rows
@@ -25,13 +25,13 @@
    property-type
    property-id]
   (let [redo-rows (fn [ctx id]
-                    (group/clear-children! table)
+                    (group/clearChildren table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (pack!/f (find-ancestor table (partial instance? gdx-window/class))))]
+                    (layout/pack (find-ancestor table (partial instance? gdx-window/class))))]
     (add-rows!
      table
      [[(when-not property-id
-         {:actor (doto (text-button/create {:text "+" :skin skin})
+         {:actor (doto (text-button/new "+" skin)
                    (actor/addListener (change-listener/create
                                             (fn [event _actor]
                                               (let [{:keys [ctx/db
@@ -52,12 +52,10 @@
       [(when property-id
          (let [property (get-raw db property-id)]
            {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
-                     (actor/addListener (text-tooltip/create (tooltip/f property) skin))
+                     (actor/addListener (text-tooltip/new (tooltip/f property) skin))
                      (actor/setUserObject property-id))}))]
       [(when property-id
-         {:actor (doto (text-button/create
-                        {:text "-"
-                         :skin skin})
+         {:actor (doto (text-button/new "-" skin)
                    (actor/addListener (change-listener/create
                                             (fn [event _actor]
                                               (redo-rows (:stage/ctx (event/getStage event))

@@ -1,13 +1,12 @@
 (ns clojure.ui-info-window
   (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor] [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as gdx-label]
-            [clojure.pack! :as pack!]
-            [clojure.scene2d.actor.set-position! :refer [set-position!]]
-            [clojure.scene2d-actor :as scene2d-actor]
-            [clojure.ui-label :as label]
-            [clojure.ui-table :as table]
-            [clojure.ui-window :as window]))
+            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
+            [clojure.table-set-opts :as table-set-opts]))
 
 (defn create
   [{:keys [title
@@ -16,19 +15,18 @@
            position
            set-label-text!
            skin]}]
-  (let [label (label/create
-               {:text "MY LABEL TEXT"
-                :skin skin})
-        window (doto (window/create
-                      {:title title
-                       :skin skin
-                       :table/rows [[{:actor label :expand? true}]]})
+  (let [label (label/new "MY LABEL TEXT" skin)
+        window (doto (doto (window/new title skin)
+                      (table-set-opts/set-opts!
+                       {:table/rows [[{:actor label :expand? true}]]}))
                  (actor/setName actor-name)
-                 (actor/setVisible visible?)
-                 (set-position! position))]
-    (group/add-actor! window (scene2d-actor/f
-                         {:act! (fn [this delta]
-                                  (when-let [stage (actor/getStage this)]
-                                    (gdx-label/setText label (set-label-text! (:stage/ctx stage))))
-                                  (pack!/f window))}))
+                 (actor/setVisible visible?))]
+    (let [[x y] position]
+      (actor/setPosition window x y))
+    (group/addActor window (actor/new
+                            (fn [this _delta]
+                              (when-let [stage (actor/getStage this)]
+                                (gdx-label/setText label (set-label-text! (:stage/ctx stage))))
+                              (layout/pack window))
+                            (fn [_actor _batch _parent-alpha])))
     window))

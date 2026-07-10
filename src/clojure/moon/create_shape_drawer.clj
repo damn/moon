@@ -1,5 +1,5 @@
 (ns clojure.moon.create-shape-drawer
-  (:require [clojure.shape-drawer :as shape-drawer]
+  (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
 (defn f [ctx]

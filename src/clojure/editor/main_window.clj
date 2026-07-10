@@ -1,5 +1,7 @@
 (ns clojure.editor.main-window
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require 
+            [clojure.table-set-opts :as table-set-opts]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget-property-editor-window :refer [property-editor-window]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
@@ -7,20 +9,18 @@
             [clojure.property-types :refer [property-types]]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.string :as str]
-            [clojure.ui-text-button :as text-button]
-            [clojure.ui-window :as window]
-            [clojure.scene2d.utils.change-listener :as change-listener]))
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn f
   [{:keys [ctx/db
            ctx/skin]}]
-  (window/create
-   {:title "Edit"
+  (doto (window/new "Edit" skin)
+    (table-set-opts/set-opts! {:title "Edit"
     :skin skin
     :table/rows (for [property-type (sort (property-types db))]
-                  [{:actor (doto (text-button/create
-                                  {:text (str/capitalize (name property-type))
-                                   :skin skin})
+                  [{:actor (doto (text-button/new (str/capitalize (name property-type)) skin)
                              (actor/addListener (change-listener/create
                                                       (fn [event _actor]
                                                         (let [{:keys [ctx/db
@@ -38,4 +38,4 @@
                                                                                                 (stage/addActor stage
                                                                                                                   (property-editor-window
                                                                                                                    {:ctx ctx
-                                                                                                                    :property (get-raw db id)})))})))))))}])}))
+                                                                                                                    :property (get-raw db id)})))})))))))}])})))

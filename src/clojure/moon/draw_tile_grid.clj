@@ -1,5 +1,5 @@
 (ns clojure.moon.draw-tile-grid
-  (:require [clojure.rgba.float-bits]
+  (:require [com.badlogic.gdx.graphics.color :as color]
             [clojure.orthographic-camera-frustum :refer [frustum]]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]))
 
@@ -13,4 +13,4 @@
       (+ 2 (int (viewport/getWorldHeight world-viewport)))
       1
       1
-      (clojure.rgba.float-bits/f [1 1 1 0.8])]]))
+      (color/toFloatBits [1 1 1 0.8])]]))

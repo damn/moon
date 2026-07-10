@@ -1,5 +1,7 @@
 (ns clojure.editor.create-widget-property-editor-window
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require 
+            [clojure.table-set-opts :as table-set-opts]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.ui.error-window :as error-window]
             [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.set-ctx :as set-ctx]
@@ -11,15 +13,15 @@
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.widget-value :refer [widget-value]]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [clojure.scene2d.group :as group]
-            [clojure.input.key-just-pressed :as key-just-pressed?]
-            [clojure.scene2d-actor :as scene2d-actor]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
+            [com.badlogic.gdx.input :as input]
+            [gdl.input.keys :as input-keys]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.type :refer [property->type]]
-            [clojure.ui-table :as table]
-            [clojure.ui-text-button :as text-button]
-            [clojure.ui-window :as window]
-            [clojure.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]))
 
@@ -57,36 +59,35 @@
         clicked-save-fn (with-window-close (fn [db]
                                              (update! db (get-widget-value))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor (doto (text-button/create
-                                          {:text "Save [LIGHT_GRAY](ENTER)[]"
-                                           :skin skin})
+                          [{:actor (doto (text-button/new "Save [LIGHT_GRAY](ENTER)[]" skin)
                                      (actor/addListener (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-save-fn actor (:stage/ctx (event/getStage event)))))))
                             :center? true}
-                           {:actor (doto (text-button/create
-                                          {:text "Delete"
-                                           :skin skin})
+                           {:actor (doto (text-button/new "Delete" skin)
                                      (actor/addListener (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-delete-fn actor (:stage/ctx (event/getStage event)))))))
                             :center? true}]]]
-    (doto (window/create
-           {:title "[SKY]Property[]"
+    (doto (doto (window/new "[SKY]Property[]" skin)
+    (table-set-opts/set-opts! {:title "[SKY]Property[]"
             :skin skin
             :table/cell-defaults {:pad 5}
             :table/rows [[(scroll-pane-cell/create
-                           (table/create {:table/cell-defaults {:pad 5}
-                                          :table/rows scroll-pane-rows})
+                           (doto (table/new)
+    (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}
+                                          :table/rows scroll-pane-rows}))
                            skin
                            scroll-pane-height
-                           50)]]})
+                           50)]]}))
       (add-close-button/f! skin)
       (gdx-window/setModal true)
-      (group/add-actor! (scene2d-actor/f
-                         {:act! (fn [this delta]
-                                  (when-let [stage (actor/getStage this)]
-                                    (let [ctx (:stage/ctx stage)]
-                                      (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
-                                        (clicked-save-fn this ctx)))))}))
+      (group/addActor (actor/new
+                       (fn [this _delta]
+                         (when-let [stage (actor/getStage this)]
+                           (let [ctx (:stage/ctx stage)]
+                             (when (input/isKeyJustPressed (:ctx/input ctx)
+                                                           (input-keys/key-to-value :input.keys/enter))
+                               (clicked-save-fn this ctx)))))
+                       (fn [_actor _batch _parent-alpha])))
       (actor/setName "moon.ui.clojure.editor-window"))))

@@ -1,5 +1,7 @@
 (ns clojure.editor.property-overview-window
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+  (:require 
+            [clojure.table-set-opts :as table-set-opts]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.editor.constants :refer [property-type->overview-table-props]]
@@ -7,7 +9,7 @@
             [clojure.property-image :as property-image]
             [clojure.table-rows :refer [overview-table-rows*]]
             [clojure.tooltip :as tooltip]
-            [clojure.ui-window :as window]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn property-overview-window
@@ -16,8 +18,8 @@
            skin
            property-type
            clicked-id-fn]}]
-  (doto (window/create
-         {:title "Edit"
+  (doto (doto (window/new "Edit" skin)
+    (table-set-opts/set-opts! {:title "Edit"
           :skin skin
           :table/rows (let [{:keys [sort-by-fn
                                     extra-info-text
@@ -32,6 +34,6 @@
                                      :tooltip (tooltip/f property)
                                      :extra-info-text (extra-info-text property)}))
                              (partition-all columns)
-                             (overview-table-rows* skin image-scale)))})
+                             (overview-table-rows* skin image-scale)))}))
     (add-close-button/f! skin)
     (gdx-window/setModal true)))

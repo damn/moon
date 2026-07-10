@@ -1,9 +1,10 @@
 (ns clojure.moon.k-handle-input.player-item-on-cursor
-  (:require [clojure.input.button-just-pressed :as button-just-pressed?]
+  (:require [com.badlogic.gdx.input :as input]
+            [gdl.input.buttons :as input-buttons]
             [clojure.mouseover-actor :refer [mouseover-actor]]))
 
 (defn f
   [eid ctx]
-  (when (and (button-just-pressed?/f (:ctx/input ctx) :input.buttons/left)
+  (when (and (input/isButtonJustPressed (:ctx/input ctx) (input-buttons/key-to-value :input.buttons/left))
              (not (mouseover-actor ctx)))
     [[:tx/event eid :drop-item]]))

@@ -1,10 +1,11 @@
 (ns clojure.levelgen-test.render
-  (:require [clojure.rgba.float-bits]
+  (:require [com.badlogic.gdx.graphics.color :as color]
             [clojure.batch.draw-tiled-map :as draw-tiled-map]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics :as graphics]
             [clojure.inc-zoom :refer [inc-zoom!]]
-            [clojure.input.key-pressed :as key-pressed?]
+            [com.badlogic.gdx.input :as input]
+            [gdl.input.keys :as input-keys]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
@@ -28,18 +29,24 @@
                      world-unit-scale
                      (viewport/getCamera world-viewport)
                      tiled-map
-                     (constantly (clojure.rgba.float-bits/f [1 1 1 1])))
-  (when (key-pressed?/f input :input.keys/minus) (inc-zoom! camera zoom-speed))
-  (when (key-pressed?/f input :input.keys/equals) (inc-zoom! camera (- zoom-speed)))
+                     (constantly (color/toFloatBits [1 1 1 1])))
+  (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/minus))
+    (inc-zoom! camera zoom-speed))
+  (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/equals))
+    (inc-zoom! camera (- zoom-speed)))
   (let [apply-position (fn [idx f]
                          (set-position! camera
                                         (update (get-position/f camera)
                                                 idx
                                                 #(f % camera-movement-speed))))]
-    (if (key-pressed?/f input :input.keys/left) (apply-position 0 -))
-    (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
-    (if (key-pressed?/f input :input.keys/up) (apply-position 1 +))
-    (if (key-pressed?/f input :input.keys/down) (apply-position 1 -)))
+    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/left))
+      (apply-position 0 -))
+    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/right))
+      (apply-position 0 +))
+    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/up))
+      (apply-position 1 +))
+    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/down))
+      (apply-position 1 -)))
   (stage/act stage)
   (stage/draw stage)
   ctx)

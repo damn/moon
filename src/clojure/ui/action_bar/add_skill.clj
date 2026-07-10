@@ -3,10 +3,11 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor] [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [com.badlogic.gdx.graphics.texture :as texture]
-            [clojure.ui.button-group :as button-group]
-            [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.ui.button :as button]
+            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
-            [clojure.ui-text-tooltip :as text-tooltip]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.ui.action-bar.get-data :as get-data]))
 
 (defn f
@@ -21,8 +22,8 @@
                       (doto (texture-region-drawable/new texture-region)
                         (texture-region-drawable/setMinSize (* scale (texture-region/getRegionWidth texture-region))
                                         (* scale (texture-region/getRegionHeight texture-region)))))
-                 (actor/addListener (text-tooltip/create tooltip-text skin))
+                 (actor/addListener (text-tooltip/new tooltip-text skin))
                  (actor/setUserObject skill-id))]
-    (group/add-actor! horizontal-group button)
-    (button-group/add! button-group button)
+    (group/addActor horizontal-group button)
+    (button-group/add button-group button)
     nil))

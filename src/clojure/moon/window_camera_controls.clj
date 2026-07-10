@@ -1,9 +1,9 @@
 (ns clojure.moon.window-camera-controls
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [clojure.inc-zoom :refer [inc-zoom!]]
-            [clojure.input.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
-            [clojure.input.key-pressed :refer [f] :rename {f key-pressed?}]
+            [com.badlogic.gdx.input :as input]
+            [gdl.input.keys :as input-keys]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]))
 
 (def zoom-speed 0.025)
@@ -14,22 +14,22 @@
            ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (when (key-pressed? input (:zoom-in controls))
+  (when (input/isKeyPressed input (input-keys/key-to-value (:zoom-in controls)))
     (inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
 
-  (when (key-pressed? input (:zoom-out controls))
+  (when (input/isKeyPressed input (input-keys/key-to-value (:zoom-out controls)))
     (inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
 
-  (when (key-just-pressed? input (:close-windows-key controls))
-    (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
-         group/get-children
+  (when (input/isKeyJustPressed input (input-keys/key-to-value (:close-windows-key controls)))
+    (->> (group/findActor (:stage/root stage) "moon.ui.windows")
+         group/getChildren
          (run! #(actor/setVisible % false))))
 
-  (when (key-just-pressed? input (:toggle-inventory controls))
-    (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
+  (when (input/isKeyJustPressed input (input-keys/key-to-value (:toggle-inventory controls)))
+    (let [inventory (group/findActor (:stage/root stage) "moon.ui.windows.inventory")]
       (actor/setVisible inventory (not (actor/isVisible inventory)))))
 
-  (when (key-just-pressed? input (:toggle-entity-info controls))
-    (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
+  (when (input/isKeyJustPressed input (input-keys/key-to-value (:toggle-entity-info controls)))
+    (let [entity-info (group/findActor (:stage/root stage) "moon.ui.windows.entity-info")]
       (actor/setVisible entity-info (not (actor/isVisible entity-info)))))
   ctx)

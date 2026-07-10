@@ -1,16 +1,17 @@
 (ns clojure.moon.tx
-  (:require [clojure.ui.action-bar.add-skill :as add-skill-ui]
+  (:require 
+            [clojure.table-set-opts :as table-set-opts]
+            [clojure.ui.action-bar.add-skill :as add-skill-ui]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.stats.add-mods :as add-mods]
             [clojure.moon.after-create-component :refer [after-create-component]]
             [com.badlogic.gdx.utils.align :as align]
             [clojure.v2.angle-from-vector :as angle-from-vector]
-            [clojure.scene2d.actor.set-position! :refer [set-position!]]
             [clojure.db.build :refer [build]]
             [clojure.inventory.can-pickup-item :as can-pickup-item]
             [clojure.moon.create-component :refer [create-component]]
             [clojure.moon.create-entity-state :as create-entity-state]
-            [clojure.scene2d.group :as group]
+            [com.badlogic.gdx.scenes.scene2d.group :as group]
             [clojure.handle :as handle]
             [clojure.increment :as increment]
             [clojure.inventory-window-remove-item :as remove-item-ui]
@@ -37,12 +38,12 @@
             [clojure.set-touched-cells :refer [set-touched-cells!]]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.timer-create :refer [create-timer]]
-            [clojure.ui-label :as label]
-            [clojure.ui-text-button :as text-button]
-            [clojure.ui-window :as window]
+            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [clojure.content-grid.update-entity :as update-entity]
-            [clojure.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [reduce-fsm :as fsm]))
 
@@ -187,32 +188,31 @@
    (fn [{:keys [ctx/stage] :as _ctx} message]
      (-> stage
          :stage/root
-         (#(group/find-actor % "player-message"))
+         (#(group/findActor % "player-message"))
          (actor/setUserObject (atom {:text message :counter 0})))
      nil)
 
    :tx/show-modal
    (fn [{:keys [ctx/skin ctx/stage] :as _ctx}
         {:keys [title text button-text on-click]}]
-     (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
+     (assert (not (group/findActor (:stage/root stage) "moon.ui.modal-window")))
      (stage/addActor stage
-                       (doto (window/create
-                              {:title title
+                       (doto (doto (window/new title skin)
+    (table-set-opts/set-opts! {:title title
                                :skin skin
-                               :table/rows [[{:actor (label/create {:text text :skin skin})}]
-                                            [{:actor (doto (text-button/create {:text button-text :skin skin})
+                               :table/rows [[{:actor (label/new text skin)}]
+                                            [{:actor (doto (text-button/new button-text skin)
                                                         (actor/addListener
                                                          (change-listener/create
                                                           (fn [_event _actor]
                                                             (actor/remove
-                                                             (group/find-actor (:stage/root stage)
+                                                             (group/findActor (:stage/root stage)
                                                                                "moon.ui.modal-window"))
-                                                            (on-click)))))}]]})
+                                                            (on-click)))))}]]}))
                          (gdx-window/setModal true)
                          (actor/setName "moon.ui.modal-window")
-                         (set-position! [(/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
-                                         (* (viewport/getWorldHeight (:stage/viewport stage)) (/ 3 4))]
-                                        align/center)))
+                         (actor/setPosition (/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
+                                         (* (viewport/getWorldHeight (:stage/viewport stage)) (/ 3 4)) align/center)))
      nil)
 
    :tx/sound
@@ -323,7 +323,7 @@
 
    :tx/toggle-inventory-visible
    (fn [{:keys [ctx/stage]}]
-     (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
+     (let [inventory (group/findActor (:stage/root stage) "moon.ui.windows.inventory")]
        (actor/setVisible inventory (not (actor/isVisible inventory)))
        nil))
 
@@ -331,7 +331,7 @@
    (fn [{:keys [ctx/stage]} _eid cell]
      (-> stage
          :stage/root
-         (#(group/find-actor % "moon.ui.windows.inventory"))
+         (#(group/findActor % "moon.ui.windows.inventory"))
          (remove-item-ui/f cell))
      nil)
 
@@ -339,7 +339,7 @@
    (fn [{:keys [ctx/skin ctx/stage ctx/textures] :as ctx} _eid cell item]
      (-> stage
          :stage/root
-         (#(group/find-actor % "moon.ui.windows.inventory"))
+         (#(group/findActor % "moon.ui.windows.inventory"))
          (set-item-ui/f cell
                         {:texture-region (textures/texture-region textures (:entity/image item))
                          :tooltip-text (item/info-text item ctx)}
@@ -350,7 +350,7 @@
    (fn [{:keys [ctx/skin ctx/stage ctx/textures] :as ctx} _eid skill]
      (-> stage
          :stage/root
-         (#(group/find-actor % "moon.ui.action-bar"))
+         (#(group/findActor % "moon.ui.action-bar"))
          (add-skill-ui/f {:skill-id (:property/id skill)
                           :texture-region (textures/texture-region textures (:entity/image skill))
                           :tooltip-text (info-text skill ctx)}

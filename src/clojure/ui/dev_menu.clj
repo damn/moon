@@ -1,24 +1,24 @@
 (ns clojure.ui.dev-menu
   (:require
+            
+            [clojure.table-set-opts :as table-set-opts]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
-            [clojure.set-fill-parent! :as set-fill-parent!]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [clojure.ui.dev-menu.main-table :as main-table]
-            [clojure.ui-label :as label]
-            [clojure.ui-table :as table]))
+            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]))
 
 (defn create
   [{:keys [menus update-labels skin]}]
-  (doto (table/create
-         {:table/rows [[{:actor (main-table/f skin menus update-labels)
+  (doto (doto (table/new)
+    (table-set-opts/set-opts! {:table/rows [[{:actor (main-table/f skin menus update-labels)
                          :expand-x? true
                          :fill-x? true
                          :colspan 1}]
-                       [{:actor (doto (label/create
-                                       {:text ""
-                                        :skin skin})
+                       [{:actor (doto (label/new "" skin)
                                   (actor/setTouchable touchable/disabled))
                          :expand? true
                          :fill-x? true
-                         :fill-y? true}]]})
-    (set-fill-parent!/f true)))
+                         :fill-y? true}]]}))
+    (layout/setFillParent true)))

@@ -5,7 +5,6 @@
             [clojure.stats.get-mana :as get-mana]
             [clojure.moon-textures :as textures]
             [clojure.readable :as readable]
-            [clojure.scene2d-actor :as scene2d-actor]
             [clojure.val-max.ratio :as ratio]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]))
 
@@ -48,8 +47,9 @@
                          (concat
                           (render-hpmana-bar x y-hp hpcontent-file (get-hitpoints/f stats) "HP")
                           (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
-    (scene2d-actor/f
-     {:draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (actor/getStage this)]
-                 (draw! (:stage/ctx stage)
-                        (create-draws (:stage/ctx stage)))))})))
+    (actor/new
+     (fn [_actor _delta])
+     (fn [this _batch _parent-alpha]
+       (when-let [stage (actor/getStage this)]
+         (draw! (:stage/ctx stage)
+                (create-draws (:stage/ctx stage))))))))
