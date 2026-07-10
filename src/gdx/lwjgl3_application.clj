@@ -36,7 +36,7 @@
 
       use-glfw-async!
       (fn []
-        (when (= shared-library-loader/os os/mac-os-x)
+        (when (= shared-library-loader/os os/MacOsX)
           (configuration/set! configuration/glfw-library-name "glfw_async")))
       ]
   (defn create [listener

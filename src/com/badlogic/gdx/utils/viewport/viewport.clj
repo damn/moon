@@ -1,4 +1,5 @@
 (ns com.badlogic.gdx.utils.viewport.viewport
+  (:refer-clojure :exclude [update])
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
