@@ -1,8 +1,8 @@
 (ns clojure.ui.data-viewer-window
   (:require [clojure.k-label-str :refer [k->label-str]]
-            [gdl.actor :as actor]
+            [gdl.scenes.scene2d.actor :as actor]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [gdl.stage :as stage]
+            [gdl.scenes.scene2d.stage :as stage]
             [clojure.ui-label :as label]
             [clojure.ui-scroll-pane :as scroll-pane]
             [clojure.ui-table :as table]

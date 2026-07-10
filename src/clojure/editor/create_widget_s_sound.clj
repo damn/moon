@@ -1,10 +1,10 @@
 (ns clojure.editor.create-widget-s-sound
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.create-widget-open-select-sounds-handler :as open-select-sounds-handler]
             [clojure.editor.create-widget-sound-columns :as sound-columns]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.scene2d.utils.change-listener :as change-listener]))

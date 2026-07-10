@@ -1,6 +1,6 @@
 (ns clojure.get-cell
   (:require
-            [gdl.actor :as actor] [clojure.scene2d.group :as group]))
+            [gdl.scenes.scene2d.actor :as actor] [clojure.scene2d.group :as group]))
 
 (defn f [inventory-window cell]
   (->> "inventory-cell-table"

@@ -1,9 +1,9 @@
 (ns clojure.editor.create-widget-rebuild-editor-window
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget-property-editor-window :as property-editor-window]
             [clojure.editor.widget-value :refer [map-widget-table-get-value]]
             [clojure.scene2d.group :as group]
-            [gdl.stage :as stage]))
+            [gdl.scenes.scene2d.stage :as stage]))
 
 (defn rebuild-editor-window!
   [{:keys [ctx/db

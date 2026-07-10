@@ -1,6 +1,6 @@
 (ns clojure.scroll-pane-cell
   (:require
-            [gdl.actor :as actor]
+            [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui-scroll-pane :as scroll-pane]))
 
 (defn create [table skin scroll-pane-height buffer]

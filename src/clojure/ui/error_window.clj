@@ -1,5 +1,5 @@
 (ns clojure.ui.error-window
-  (:require [gdl.window :as gdx-window]
+  (:require [gdl.scenes.scene2d.ui.window :as gdx-window]
             [clojure.ui-label :as label]
             [clojure.ui-window :as window]
             [clojure.ui.window.add-close-button :as add-close-button]

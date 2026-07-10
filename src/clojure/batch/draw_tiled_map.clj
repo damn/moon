@@ -1,11 +1,11 @@
 (ns clojure.batch.draw-tiled-map
-  (:require [gdl.batch :as batch]
-            [gdl.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdl.tiled-map-tile :as tiled-map-tile]
-            [gdl.tiled-map :as tiled-map]
-            [gdl.orthographic-camera :as orthographic-camera]
+  (:require [gdl.graphics.g2d.batch :as batch]
+            [gdl.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [gdl.maps.tiled.tiled-map-tile :as tiled-map-tile]
+            [gdl.maps.tiled.tiled-map :as tiled-map]
+            [gdl.graphics.orthographic-camera :as orthographic-camera]
             [clojure.batch.draw-tiled-map-tile-layer :as draw-tiled-map-tile-layer]
-            [gdl.vector3 :as vector3]))
+            [gdl.math.vector3 :as vector3]))
 
 (defn f!
   [batch

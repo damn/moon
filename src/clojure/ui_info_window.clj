@@ -1,7 +1,7 @@
 (ns clojure.ui-info-window
   (:require
-            [gdl.actor :as actor] [clojure.scene2d.group :as group]
-            [gdl.label :as gdx-label]
+            [gdl.scenes.scene2d.actor :as actor] [clojure.scene2d.group :as group]
+            [gdl.scenes.scene2d.ui.label :as gdx-label]
             [clojure.pack! :as pack!]
             [clojure.scene2d.actor.set-position! :refer [set-position!]]
             [clojure.scene2d-actor :as scene2d-actor]

@@ -1,10 +1,10 @@
 (ns clojure.ui.inventory-window
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.scene2d.actor.set-position! :as actor-set-position]
             [clojure.ui.inventory-window.cell :refer [->cell]]
             [clojure.is-valid-slot :as valid-slot?]
             [clojure.new-color]
-            [gdl.texture-region-drawable :as texture-region-drawable]
+            [gdl.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.ui-table :as table]
             [clojure.ui-window :as window]))
 

@@ -1,5 +1,5 @@
 (ns clojure.editor.create-widget-add-component-window
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.schemas :as schemas]
@@ -7,7 +7,7 @@
             [clojure.editor.create-widget-create-component-row :as create-component-row]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
             [clojure.editor.widget-value :refer [widget-value]]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.optional :refer [optional?]]
             [clojure.pack! :as pack!]
             [clojure.schemas-map-keys :refer [map-keys]]
@@ -15,7 +15,7 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [gdl.window :as gdx-window]))
+            [gdl.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn add-component-window
   [{:keys [schemas schema map-widget-table skin]}]

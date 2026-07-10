@@ -1,5 +1,5 @@
 (ns clojure.body.rectangle
-  (:require [gdl.rectangle :as rectangle]))
+  (:require [gdl.math.rectangle :as rectangle]))
 
 (defn ->rectangle
   [{:keys [body/position

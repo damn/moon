@@ -1,9 +1,9 @@
 (ns clojure.batch.draw-tiled-map-tile
-  (:require [gdl.batch :as batch]
-            [gdl.tiled-map-tile :as tiled-map-tile]
-            [gdl.tiled-map :as tiled-map]
-            [gdl.texture-region :as texture-region]
-            [gdl.texture :as texture]))
+  (:require [gdl.graphics.g2d.batch :as batch]
+            [gdl.maps.tiled.tiled-map-tile :as tiled-map-tile]
+            [gdl.maps.tiled.tiled-map :as tiled-map]
+            [gdl.graphics.g2d.texture-region :as texture-region]
+            [gdl.graphics.texture :as texture]))
 
 (defn f!
   [x

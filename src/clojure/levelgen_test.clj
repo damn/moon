@@ -1,5 +1,5 @@
 (ns clojure.levelgen-test
-  (:require [gdl.lwjgl3-application :as lwjgl3-application]
+  (:require [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [clojure.levelgen-test.create :as create]
             [clojure.levelgen-test.dispose :as dispose]
             [clojure.levelgen-test.render :as render]

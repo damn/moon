@@ -1,21 +1,21 @@
 (ns clojure.editor.create-widget-add-one-to-many-rows
   (:require [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [gdl.actor :as actor]
+            [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.db.get-raw :refer [get-raw]]
             [clojure.scene2d.group :as group]
-            [gdl.image :as image]
+            [gdl.scenes.scene2d.ui.image :as image]
             [clojure.moon-textures :as textures]
             [clojure.pack! :as pack!]
             [clojure.property-image :as property-image]
-            [gdl.stage :as stage]
+            [gdl.scenes.scene2d.stage :as stage]
             [clojure.tooltip :as tooltip]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-text-tooltip :as text-tooltip]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [gdl.window :as gdx-window]))
+            [gdl.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn add-one-to-many-rows
   [{:keys [ctx/db

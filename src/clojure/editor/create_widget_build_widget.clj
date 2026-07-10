@@ -1,5 +1,5 @@
 (ns clojure.editor.create-widget-build-widget
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget :refer [create-widget]]))
 
 (defn build-widget [ctx schema k v]

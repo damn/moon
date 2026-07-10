@@ -1,7 +1,7 @@
 (ns clojure.orthographic-camera-frustum
-  (:require [gdl.orthographic-camera :as orthographic-camera]
-            [gdl.frustum :as frustum]
-            [gdl.vector3 :as vector3]))
+  (:require [gdl.graphics.orthographic-camera :as orthographic-camera]
+            [gdl.math.frustum :as frustum]
+            [gdl.math.vector3 :as vector3]))
 
 (defn frustum [camera]
   (let [plane-points (mapv vector3/clojurize (frustum/plane-points (orthographic-camera/frustum camera)))

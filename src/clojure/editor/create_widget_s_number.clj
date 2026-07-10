@@ -1,5 +1,5 @@
 (ns clojure.editor.create-widget-s-number
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.edn.v-to-str :refer [->edn-str]]
             [clojure.ui-text-field :as text-field]

@@ -1,16 +1,16 @@
 (ns clojure.editor.create-widget-property-editor-window
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.error-window :as error-window]
             [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.set-ctx :as set-ctx]
-            [gdl.stage :as stage]
+            [gdl.scenes.scene2d.stage :as stage]
             [clojure.throwable :as throwable]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.db.update :refer [update!]]
             [clojure.db.delete :refer [delete!]]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.widget-value :refer [widget-value]]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.input.key-just-pressed :as key-just-pressed?]
             [clojure.scene2d-actor :as scene2d-actor]
@@ -20,8 +20,8 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [gdl.viewport :as viewport]
-            [gdl.window :as gdx-window]))
+            [gdl.utils.viewport :as viewport]
+            [gdl.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn with-window-close [f]
   (fn [actor {:keys [ctx/skin

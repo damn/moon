@@ -1,5 +1,5 @@
 (ns clojure.ui-label
-  (:require [gdl.label :as label]))
+  (:require [gdl.scenes.scene2d.ui.label :as label]))
 
 (defn create
   [{:keys [text skin]}]

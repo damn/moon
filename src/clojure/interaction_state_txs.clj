@@ -1,6 +1,6 @@
 (ns clojure.interaction-state-txs
   (:require
-            [gdl.actor :as actor] [clojure.scene2d.group :as group]
+            [gdl.scenes.scene2d.actor :as actor] [clojure.scene2d.group :as group]
             [clojure.inventory.can-pickup-item :as can-pickup-item]))
 
 (defn interaction-state->txs [[k params] stage player-eid]

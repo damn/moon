@@ -1,5 +1,5 @@
 (ns clojure.moon.create-stage
-  (:require [gdl.fit-viewport :as fit-viewport]
+  (:require [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [gdl.input :as input]
             [clojure.scene2d-stage :as scene2d-stage]))
 

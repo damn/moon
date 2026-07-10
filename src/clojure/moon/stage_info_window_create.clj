@@ -1,7 +1,7 @@
 (ns clojure.moon.stage-info-window-create
   (:require [clojure.info :refer [info-text]]
             [clojure.ui-info-window :as info-window]
-            [gdl.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]))
 
 (defn stage-info-window-create
   [{:keys [ctx/skin

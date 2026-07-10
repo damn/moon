@@ -1,8 +1,8 @@
 (ns clojure.ui.dev-menu
   (:require
-            [gdl.actor :as actor]
+            [gdl.scenes.scene2d.actor :as actor]
             [clojure.set-fill-parent! :as set-fill-parent!]
-            [gdl.touchable :as touchable]
+            [gdl.scenes.scene2d.touchable :as touchable]
             [clojure.ui.dev-menu.main-table :as main-table]
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]))

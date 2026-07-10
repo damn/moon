@@ -1,8 +1,8 @@
 (ns clojure.inventory-window-set-item
   (:require
-            [gdl.actor :as actor] [gdl.texture-region-drawable :as texture-region-drawable]
-            [gdl.texture :as texture]
-            [gdl.image :as image]
+            [gdl.scenes.scene2d.actor :as actor] [gdl.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [gdl.graphics.texture :as texture]
+            [gdl.scenes.scene2d.ui.image :as image]
             [clojure.scene2d.group :as group]
             [clojure.ui-text-tooltip :as text-tooltip]
             [clojure.get-cell :as get-cell]))

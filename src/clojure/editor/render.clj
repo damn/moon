@@ -1,7 +1,7 @@
 (ns clojure.editor.render
   (:require [clojure.ctx.clear-screen :as clear-screen]
             [clojure.set-ctx :as set-ctx]
-            [gdl.stage :as stage]))
+            [gdl.scenes.scene2d.stage :as stage]))
 
 (defn render [{:keys [ctx/stage]
                      :as ctx}]

@@ -1,5 +1,5 @@
 (ns clojure.moon.windows-create
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.scene2d.group :as group]))
 
 (defn windows-create [ctx actor-fns]

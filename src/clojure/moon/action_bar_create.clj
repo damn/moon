@@ -1,7 +1,7 @@
 (ns clojure.moon.action-bar-create
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.button-group :as button-group]
-            [gdl.horizontal-group :as horizontal-group]
+            [gdl.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [clojure.set-fill-parent! :as set-fill-parent!]
             [clojure.ui-table :as table]))
 

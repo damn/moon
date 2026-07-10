@@ -1,11 +1,11 @@
 (ns clojure.moon.draw
-  (:require [gdl.align :as align]
-            [gdl.batch :as batch]
-            [gdl.bitmap-font :as bitmap-font]
-            [gdl.bitmap-font-data :as bitmap-font-data]
+  (:require [gdl.utils.align :as align]
+            [gdl.graphics.g2d.batch :as batch]
+            [gdl.graphics.g2d.bitmap-font :as bitmap-font]
+            [gdl.graphics.g2d.bitmap-font.bitmap-font-data :as bitmap-font-data]
             [clojure.shape-drawer :as shape-drawer]
             [clojure.string :as str]
-            [gdl.texture-region :as texture-region]
+            [gdl.graphics.g2d.texture-region :as texture-region]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (declare draw!)

@@ -1,5 +1,5 @@
 (ns clojure.ui-stack
-  (:require [gdl.stack :as stack]))
+  (:require [gdl.scenes.scene2d.ui.stack :as stack]))
 
 (defn create []
   (stack/new))

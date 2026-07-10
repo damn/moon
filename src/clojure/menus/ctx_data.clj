@@ -1,6 +1,6 @@
 (ns clojure.menus.ctx-data
   (:require [clojure.ui.data-viewer-window :as data-viewer-window]
-            [gdl.stage :as stage]))
+            [gdl.scenes.scene2d.stage :as stage]))
 
 (def item
   {:label "Ctx Data"

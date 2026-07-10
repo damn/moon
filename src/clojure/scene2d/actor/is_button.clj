@@ -1,6 +1,6 @@
 (ns clojure.scene2d.actor.is-button
   (:require
-            [gdl.actor :as actor]
+            [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.button :as button]))
 
 (let [button-class? (fn [actor]

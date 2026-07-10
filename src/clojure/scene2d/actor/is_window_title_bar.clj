@@ -1,7 +1,7 @@
 (ns clojure.scene2d.actor.is-window-title-bar
   (:require
-            [gdl.actor :as actor] [gdl.window :as window]
-            [gdl.label :as label]))
+            [gdl.scenes.scene2d.actor :as actor] [gdl.scenes.scene2d.ui.window :as window]
+            [gdl.scenes.scene2d.ui.label :as label]))
 
 (defn f [actor]
   (when (instance? label/class actor)

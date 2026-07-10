@@ -1,7 +1,7 @@
 (ns clojure.ui.dev-menu.main-table
   (:require
-            [gdl.actor :as actor] [gdl.stage :as stage]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.actor :as actor] [gdl.scenes.scene2d.stage :as stage]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.ui-text-button :as text-button]
             [clojure.ui.window.add-close-button :as add-close-button]

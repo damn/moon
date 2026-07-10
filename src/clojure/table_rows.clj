@@ -1,12 +1,12 @@
 (ns clojure.table-rows
   (:require
-            [gdl.actor :as actor] [gdl.texture-region :as texture-region]
-            [gdl.texture-region-drawable :as texture-region-drawable]
-            [gdl.texture :as texture]
+            [gdl.scenes.scene2d.actor :as actor] [gdl.graphics.g2d.texture-region :as texture-region]
+            [gdl.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [gdl.graphics.texture :as texture]
             [clojure.scene2d.group :as group]
-            [gdl.event :as event]
-            [gdl.image-button :as image-button]
-            [gdl.touchable :as touchable]
+            [gdl.scenes.scene2d.event :as event]
+            [gdl.scenes.scene2d.ui.image-button :as image-button]
+            [gdl.scenes.scene2d.touchable :as touchable]
             [clojure.ui-stack :as stack]
             [clojure.ui-text-tooltip :as text-tooltip]
             [clojure.scene2d.utils.change-listener :as change-listener]

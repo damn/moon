@@ -1,7 +1,7 @@
 (ns clojure.movement-properties
-  (:require [gdl.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdl.tiled-map-tile :as tiled-map-tile]
-            [gdl.tiled-map :as tiled-map]
+  (:require [gdl.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [gdl.maps.tiled.tiled-map-tile :as tiled-map-tile]
+            [gdl.maps.tiled.tiled-map :as tiled-map]
             [clojure.tile-movement-property :as tile-movement-property]
             [clojure.movement-property-layers :as movement-property-layers]))
 

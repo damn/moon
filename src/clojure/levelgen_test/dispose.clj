@@ -1,5 +1,5 @@
 (ns clojure.levelgen-test.dispose
-  (:require [gdl.disposable :as disposable]))
+  (:require [gdl.utils.disposable :as disposable]))
 
 (defn dispose
   [{:keys [ctx/skin

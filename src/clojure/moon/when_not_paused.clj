@@ -5,7 +5,7 @@
             [gdl.graphics :as graphics]
             [clojure.grid-update-potential-fields :as update-potential-fields]
             [clojure.max-delta :refer [max-delta]]
-            [gdl.stage :as stage]
+            [gdl.scenes.scene2d.stage :as stage]
             [clojure.tick-component :refer [tick-component]]
             [clojure.throwable :as throwable]))
 

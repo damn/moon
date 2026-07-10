@@ -1,7 +1,7 @@
 (ns clojure.moon.create-content-grid
   (:require [clojure.grid2d :as g2d]
-            [gdl.map-properties :as map-properties]
-            [gdl.tiled-map :as tiled-map]))
+            [gdl.maps.map-properties :as map-properties]
+            [gdl.maps.tiled.tiled-map :as tiled-map]))
 
 (defn f [ctx]
   (let [width (map-properties/get (tiled-map/get-properties (:ctx/tiled-map ctx)) "width")

@@ -1,6 +1,6 @@
 (ns clojure.levels.modules.place-step
-  (:require [gdl.tiled-map :as tiled-map]
-            [gdl.map-properties :as map-properties]
+  (:require [gdl.maps.tiled.tiled-map :as tiled-map]
+            [gdl.maps.map-properties :as map-properties]
             [clojure.levels.modules.place-star :refer [place-module*]]))
 
 (defn f

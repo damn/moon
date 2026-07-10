@@ -1,5 +1,5 @@
 (ns clojure.ui.table.add-rows
-  (:require [gdl.table :as table]
+  (:require [gdl.scenes.scene2d.ui.table :as table]
             [clojure.ui.table.add-cell :refer [add-cell!]]))
 
 (defn add-rows! [table rows]

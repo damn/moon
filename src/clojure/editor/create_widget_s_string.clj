@@ -1,5 +1,5 @@
 (ns clojure.editor.create-widget-s-string
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.ui-text-field :as text-field]
             [clojure.ui-text-tooltip :as text-tooltip]

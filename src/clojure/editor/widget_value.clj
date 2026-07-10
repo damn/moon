@@ -1,10 +1,10 @@
 (ns clojure.editor.widget-value
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.checkbox :as checkbox]
             [clojure.edn :as edn]
             [clojure.scene2d.group :as group]
-            [gdl.select-box :as gdx-select-box]
-            [gdl.text-field :as gdx-text-field]))
+            [gdl.scenes.scene2d.ui.select-box :as gdx-select-box]
+            [gdl.scenes.scene2d.ui.text-field :as gdx-text-field]))
 
 (defmulti widget-value
   (fn [[schema-k :as _schema] widget schemas]

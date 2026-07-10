@@ -1,5 +1,5 @@
 (ns clojure.editor.property-overview-window
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.editor.constants :refer [property-type->overview-table-props]]
@@ -8,7 +8,7 @@
             [clojure.table-rows :refer [overview-table-rows*]]
             [clojure.tooltip :as tooltip]
             [clojure.ui-window :as window]
-            [gdl.window :as gdx-window]))
+            [gdl.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn property-overview-window
   [{:keys [db

@@ -1,7 +1,7 @@
 (ns clojure.moon.create-init-tooltip
-  (:require [gdl.colors :as colors]
+  (:require [gdl.graphics.colors :as colors]
             [clojure.new-color]
-            [gdl.tooltip-manager :as tooltip-manager]))
+            [gdl.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]))
 
 (defn f [ctx]
   (tooltip-manager/set-initial-time! (tooltip-manager/get-instance) 0)

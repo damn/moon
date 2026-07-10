@@ -1,5 +1,5 @@
 (ns clojure.moon.resize
-  (:require [gdl.viewport :as viewport]))
+  (:require [gdl.utils.viewport :as viewport]))
 
 (defn resize
   [{:keys [ctx/stage

@@ -1,17 +1,17 @@
 (ns clojure.moon.draw-on-world-viewport
-  (:require [gdl.batch :as batch]
+  (:require [gdl.graphics.g2d.batch :as batch]
             [clojure.body.draw-rectangle :as draw-rectangle]
             [clojure.moon.draw :refer [draw!]]
             [clojure.moon.draw-component :refer [draw-component]]
             [clojure.moon.factions-iterations :refer [factions-iterations]]
             [clojure.shape-drawer :as shape-drawer]
             [clojure.line-of-sight :as line-of-sight?]
-            [gdl.orthographic-camera :as orthographic-camera]
+            [gdl.graphics.orthographic-camera :as orthographic-camera]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.throwable :as throwable]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]
-            [gdl.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]))
 
 (def ^:private render-layers
   [#{:entity/mouseover?

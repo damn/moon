@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-s-animation
-  (:require [gdl.texture-region :as texture-region]
-            [gdl.texture-region-drawable :as texture-region-drawable]
-            [gdl.image-button :as image-button]
+  (:require [gdl.graphics.g2d.texture-region :as texture-region]
+            [gdl.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [gdl.scenes.scene2d.ui.image-button :as image-button]
             [clojure.moon-textures :as textures]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.ui-table :as table]))

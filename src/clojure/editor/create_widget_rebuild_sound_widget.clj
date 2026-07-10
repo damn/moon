@@ -1,10 +1,10 @@
 (ns clojure.editor.create-widget-rebuild-sound-widget
   (:require [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
-            [gdl.actor :as actor]
+            [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.scene2d.group :as group]
             [clojure.pack! :as pack!]
-            [gdl.window :as gdx-window]))
+            [gdl.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]

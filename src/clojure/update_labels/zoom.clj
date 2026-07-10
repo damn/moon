@@ -1,6 +1,6 @@
 (ns clojure.update-labels.zoom
-  (:require [gdl.orthographic-camera :as orthographic-camera]
-            [gdl.viewport :as viewport]))
+  (:require [gdl.graphics.orthographic-camera :as orthographic-camera]
+            [gdl.utils.viewport :as viewport]))
 
 (def item
   {:label "Zoom"

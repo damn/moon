@@ -1,9 +1,9 @@
 (ns clojure.batch.draw-tiled-map-tile-layer
-  (:require [gdl.batch :as batch]
-            [gdl.tiled-map-tile-layer-cell :as tiled-map-tile-layer-cell]
-            [gdl.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdl.tiled-map-tile :as tiled-map-tile]
-            [gdl.tiled-map :as tiled-map]
+  (:require [gdl.graphics.g2d.batch :as batch]
+            [gdl.maps.tiled.tiled-map-tile-layer.cell :as tiled-map-tile-layer-cell]
+            [gdl.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [gdl.maps.tiled.tiled-map-tile :as tiled-map-tile]
+            [gdl.maps.tiled.tiled-map :as tiled-map]
             [clojure.batch.draw-tiled-map-tile :as draw-tile]))
 
 (defn f!

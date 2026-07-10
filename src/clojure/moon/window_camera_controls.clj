@@ -1,10 +1,10 @@
 (ns clojure.moon.window-camera-controls
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.scene2d.group :as group]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.input.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
             [clojure.input.key-pressed :refer [f] :rename {f key-pressed?}]
-            [gdl.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]))
 
 (def zoom-speed 0.025)
 

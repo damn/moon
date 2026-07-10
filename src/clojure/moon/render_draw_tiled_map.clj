@@ -4,7 +4,7 @@
             [clojure.orthographic-camera-position :as get-position]
             [clojure.raycaster :as raycaster]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]
-            [gdl.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]))
 
 (defn f
   [{:keys [ctx/batch

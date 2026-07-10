@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-create-component-row
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.k-label-text :as k-label-text]
             [clojure.ui-label :as label]

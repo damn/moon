@@ -1,6 +1,6 @@
 (ns clojure.scene2d.actor.find-ancestor
   (:require
-            [gdl.actor :as actor]))
+            [gdl.scenes.scene2d.actor :as actor]))
 
 (defn find-ancestor [actor pred?]
   (loop [a actor]

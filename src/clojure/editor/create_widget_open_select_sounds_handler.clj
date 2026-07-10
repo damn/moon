@@ -1,19 +1,19 @@
 (ns clojure.editor.create-widget-open-select-sounds-handler
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.moon.ctx-do :refer [do!]]
             [clojure.editor.create-widget-rebuild-sound-widget :as rebuild-sound-widget]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
-            [gdl.stage :as stage]
+            [gdl.scenes.scene2d.stage :as stage]
             [clojure.ui-scroll-pane :as scroll-pane]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [gdl.viewport :as viewport]
-            [gdl.window :as gdx-window]))
+            [gdl.utils.viewport :as viewport]
+            [gdl.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin

@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-sound-columns
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.moon.ctx-do :refer [do!]]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.ui-text-button :as text-button]
             [clojure.scene2d.utils.change-listener :as change-listener]))
 

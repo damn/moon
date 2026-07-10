@@ -1,10 +1,10 @@
 (ns clojure.moon.create-cursors
-  (:require [gdl.disposable :as disposable]
+  (:require [gdl.utils.disposable :as disposable]
             [clojure.edn :as edn]
             [gdl.files :as files]
             [gdl.graphics :as graphics]
             [clojure.java.io :as io]
-            [gdl.pixmap :as pixmap]))
+            [gdl.graphics.pixmap :as pixmap]))
 
 (defn f [ctx]
   (assoc ctx

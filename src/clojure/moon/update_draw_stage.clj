@@ -1,6 +1,6 @@
 (ns clojure.moon.update-draw-stage
   (:require [clojure.set-ctx :as set-ctx]
-            [gdl.stage :as stage]))
+            [gdl.scenes.scene2d.stage :as stage]))
 
 (defn f
   [{:keys [ctx/stage] :as ctx}]

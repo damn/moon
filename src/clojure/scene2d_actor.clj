@@ -1,6 +1,6 @@
 (ns clojure.scene2d-actor
   (:require
-            [gdl.actor :as actor]))
+            [gdl.scenes.scene2d.actor :as actor]))
 
 (defn f
   [{:keys [act! draw!]}]

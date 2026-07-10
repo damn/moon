@@ -1,14 +1,14 @@
 (ns clojure.levelgen-test.render
   (:require [clojure.rgba.float-bits]
             [clojure.batch.draw-tiled-map :as draw-tiled-map]
-            [gdl.gl20 :as gl20]
+            [gdl.graphics.gl20 :as gl20]
             [gdl.graphics :as graphics]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.input.key-pressed :as key-pressed?]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
-            [gdl.stage :as stage]
-            [gdl.viewport :as viewport]))
+            [gdl.scenes.scene2d.stage :as stage]
+            [gdl.utils.viewport :as viewport]))
 
 (defn render
   [{:keys [ctx/input

@@ -1,9 +1,9 @@
 (ns clojure.editor.stage
   (:require [clojure.editor.main-window :as main-window]
-            [gdl.fit-viewport :as fit-viewport]
+            [gdl.utils.viewport.fit-viewport :as fit-viewport]
             [gdl.input :as input]
             [clojure.scene2d-stage :as scene2d-stage]
-            [gdl.stage :as stage]))
+            [gdl.scenes.scene2d.stage :as stage]))
 
 (defn f [{:keys [ctx/input
                 ctx/batch] :as ctx}]

@@ -1,12 +1,12 @@
 (ns clojure.editor.create-widget-map-widget-table-create
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.editor.create-widget-add-component-window :as add-component-window]
             [clojure.editor.create-widget-create-component-row :as create-component-row]
-            [gdl.event :as event]
+            [gdl.scenes.scene2d.event :as event]
             [clojure.horiz-sep :as horiz-sep]
             [clojure.interpose-f :refer [interpose-f]]
-            [gdl.stage :as stage]
+            [gdl.scenes.scene2d.stage :as stage]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.scene2d.utils.change-listener :as change-listener]))

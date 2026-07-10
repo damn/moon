@@ -1,7 +1,7 @@
 (ns clojure.moon.draw-tile-grid
   (:require [clojure.rgba.float-bits]
             [clojure.orthographic-camera-frustum :refer [frustum]]
-            [gdl.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]))
 
 (defn f
   [{:keys [ctx/world-viewport]}]

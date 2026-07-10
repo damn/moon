@@ -4,7 +4,7 @@
             [clojure.moon-textures :as textures]
             [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
             [clojure.ui.inventory-window :refer [inventory-window-build]]
-            [gdl.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]))
 
 (defn inventory-window-create
   [{:keys [ctx/colors

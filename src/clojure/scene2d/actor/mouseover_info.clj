@@ -1,6 +1,6 @@
 (ns clojure.scene2d.actor.mouseover-info
   (:require
-            [gdl.actor :as actor]
+            [gdl.scenes.scene2d.actor :as actor]
             [clojure.scene2d.actor.is-button :as button?]
             [clojure.scene2d.actor.is-window-title-bar :as window-title-bar?]))
 

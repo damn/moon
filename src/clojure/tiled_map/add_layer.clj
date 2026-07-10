@@ -1,6 +1,6 @@
 (ns clojure.tiled-map.add-layer
-  (:require [gdl.tiled-map :as tiled-map]
-            [gdl.map-layers :as map-layers]
+  (:require [gdl.maps.tiled.tiled-map :as tiled-map]
+            [gdl.maps.map-layers :as map-layers]
             [clojure.tiled-map.create-layer :as create-layer]))
 
 (defn f [tiled-map layer]

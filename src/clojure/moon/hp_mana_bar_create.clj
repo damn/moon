@@ -1,5 +1,5 @@
 (ns clojure.moon.hp-mana-bar-create
-  (:require [gdl.actor :as actor]
+  (:require [gdl.scenes.scene2d.actor :as actor]
             [clojure.moon.draw :refer [draw!]]
             [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.stats.get-mana :as get-mana]
@@ -7,7 +7,7 @@
             [clojure.readable :as readable]
             [clojure.scene2d-actor :as scene2d-actor]
             [clojure.val-max.ratio :as ratio]
-            [gdl.viewport :as viewport]))
+            [gdl.utils.viewport :as viewport]))
 
 (defn hp-mana-bar-create
   [{:keys [ctx/textures

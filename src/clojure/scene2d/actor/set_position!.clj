@@ -1,5 +1,5 @@
 (ns clojure.scene2d.actor.set-position!
-  (:require [gdl.actor :as actor]))
+  (:require [gdl.scenes.scene2d.actor :as actor]))
 
 (defn set-position!
   ([actor [x y]]

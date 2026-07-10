@@ -1,7 +1,7 @@
 (ns clojure.set-label-text-actor
   (:require
-            [gdl.actor :as actor]
-            [gdl.label :as gdx-label]
+            [gdl.scenes.scene2d.actor :as actor]
+            [gdl.scenes.scene2d.ui.label :as gdx-label]
             [clojure.scene2d-actor :as scene2d-actor]))
 
 (defn set-label-text-actor [label text-fn]

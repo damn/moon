@@ -1,13 +1,13 @@
 (ns clojure.grid-to-tiled-map
-  (:require [gdl.tiled-map-tile-layer-cell :as tiled-map-tile-layer-cell]
-            [gdl.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdl.tiled-map-tile :as tiled-map-tile]
-            [gdl.tiled-map :as tiled-map]
-            [gdl.static-tiled-map-tile :as static-tiled-map-tile]
+  (:require [gdl.maps.tiled.tiled-map-tile-layer.cell :as tiled-map-tile-layer-cell]
+            [gdl.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [gdl.maps.tiled.tiled-map-tile :as tiled-map-tile]
+            [gdl.maps.tiled.tiled-map :as tiled-map]
+            [gdl.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.g2d.posis :as posis]
             [clojure.g2d.width :refer [->width]]
             [clojure.g2d.height :refer [->height]]
-            [gdl.map-properties :as map-properties]))
+            [gdl.maps.map-properties :as map-properties]))
 
 (defn grid->tiled-map
   [schema-tiled-map grid]
