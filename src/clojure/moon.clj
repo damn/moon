@@ -55,11 +55,11 @@
             [clojure.moon.z-orders :refer [z-orders]]
             [clojure.mouse-position :refer [mouse-position]]
             [clojure.mouseover-actor :refer [mouseover-actor]]
-            [clojure.move :as move] ; to position?
-            [clojure.movement-property :as movement-property] ;tiled-map ?
-            [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]] ; cell ?
-            [clojure.overlaps :refer [overlaps?]] ; ?
-            [clojure.readable :as readable] ; ?
+            [clojure.move :as move]
+            [clojure.movement-property :as movement-property]
+            [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
+            [clojure.overlaps :refer [overlaps?]]
+            [clojure.readable :as readable]
             [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.stats.get-mana :as get-mana]
             [clojure.stats.get-stat-value :refer [get-stat-value]]
