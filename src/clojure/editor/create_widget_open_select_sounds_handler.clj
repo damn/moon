@@ -14,6 +14,7 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
+            [clojure.viewport :as viewport]
             [clojure.window :as gdx-window]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
@@ -45,7 +46,7 @@
                                          {:actor table
                                           :skin skin})
                                  :width  (+ (clojure.scene2d.actor.get-width/f table) 50)
-                                 :height (min (- (:viewport/world-height (:stage/viewport stage)) 50)
+                                 :height (min (- (viewport/get-world-height (:stage/viewport stage)) 50)
                                               (clojure.scene2d.actor.get-height/f table))})]]})
                             (add-close-button/f! skin)
                             (gdx-window/set-modal! true)))))

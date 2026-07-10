@@ -10,7 +10,8 @@
             [clojure.sort-by-order :as sort-by-order]
             [clojure.throwable :as throwable]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
-            [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
+            [clojure.moon.world-unit-scale :refer [world-unit-scale]]
+            [clojure.viewport :as viewport]))
 
 (def ^:private render-layers
   [#{:entity/mouseover?
@@ -34,7 +35,7 @@
            ctx/show-cell-entities?
            ctx/show-cell-occupied?]}]
   (apply concat
-         (for [[x y] (visible-tiles (:viewport/camera world-viewport))
+         (for [[x y] (visible-tiles (viewport/get-camera world-viewport))
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]
@@ -100,7 +101,7 @@
            ctx/world-viewport]
     :as ctx}]
   (batch/set-color! batch 1 1 1 1)
-  (batch/set-projection-matrix! batch (orthographic-camera/combined (:viewport/camera world-viewport)))
+  (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
   (batch/begin! batch)
   (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))

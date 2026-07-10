@@ -6,7 +6,8 @@
             [clojure.moon-textures :as textures]
             [clojure.readable :as readable]
             [clojure.scene2d-actor :as actor]
-            [clojure.val-max.ratio :as ratio]))
+            [clojure.val-max.ratio :as ratio]
+            [clojure.viewport :as viewport]))
 
 (defn hp-mana-bar-create
   [{:keys [ctx/textures
@@ -22,7 +23,7 @@
                           :hpcontent-file "images/hp.png"
                           :manacontent-file "images/mana.png"
                           :y-mana 80}
-        [x y-mana] [(/ (:viewport/world-width (:stage/viewport stage)) 2)
+        [x y-mana] [(/ (viewport/get-world-width (:stage/viewport stage)) 2)
                     y-mana]
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)

@@ -23,6 +23,7 @@
             [clojure.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
+            [clojure.viewport :as viewport]
             [clojure.scene2d.utils.change-listener :as utils-change-listener]
             [clojure.orthographic-camera.zoom-to-rect :as zoom-to-rect]))
 
@@ -80,7 +81,7 @@
              :ctx/sprite-batch sprite-batch
              :ctx/skin skin
              :ctx/world-viewport world-viewport
-             :ctx/camera (:viewport/camera world-viewport)}
+             :ctx/camera (viewport/get-camera world-viewport)}
         ctx (generate-level ctx (:initial-level-fn config))]
     (input/set-input-processor! input stage)
     (stage/add-actor! (:ctx/stage ctx)

@@ -1,6 +1,7 @@
 (ns clojure.moon.stage-info-window-create
   (:require [clojure.info :refer [info-text]]
-            [clojure.ui-info-window :as info-window]))
+            [clojure.ui-info-window :as info-window]
+            [clojure.viewport :as viewport]))
 
 (defn stage-info-window-create
   [{:keys [ctx/skin
@@ -9,7 +10,7 @@
    {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
     :visible? false
-    :position [(:viewport/world-width (:stage/viewport stage)) 0]
+    :position [(viewport/get-world-width (:stage/viewport stage)) 0]
     :set-label-text! (fn [{:keys [ctx/mouseover-eid]
                            :as ctx}]
                        (if-let [eid mouseover-eid]

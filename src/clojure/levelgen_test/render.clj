@@ -7,7 +7,8 @@
             [clojure.input.key-pressed :as key-pressed?]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
-            [clojure.stage :as stage]))
+            [clojure.stage :as stage]
+            [clojure.viewport :as viewport]))
 
 (defn render
   [{:keys [ctx/input
@@ -25,7 +26,7 @@
     (gl20/clear! gl gl20/color-buffer-bit))
   (draw-tiled-map/f! sprite-batch
                      world-unit-scale
-                     (:viewport/camera world-viewport)
+                     (viewport/get-camera world-viewport)
                      tiled-map
                      (constantly (clojure.rgba.float-bits/f [1 1 1 1])))
   (when (key-pressed?/f input :input.keys/minus) (inc-zoom! camera zoom-speed))

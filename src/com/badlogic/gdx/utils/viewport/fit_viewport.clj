@@ -1,19 +1,9 @@
 (ns com.badlogic.gdx.utils.viewport.fit-viewport
-  (:import (clojure.lang ILookup) ; TODO REMOVE THIS HACK
-           (com.badlogic.gdx.utils.viewport FitViewport)))
+  (:refer-clojure :exclude [new])
+  (:import (com.badlogic.gdx.utils.viewport FitViewport)))
 
-(defn create
+(defn new
   ([width height]
-   (proxy [FitViewport ILookup] [width height]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this)))))
+   (FitViewport. (float width) (float height)))
   ([width height camera]
-   (proxy [FitViewport ILookup] [width height camera]
-     (valAt [k]
-       (case k
-         :viewport/camera       (FitViewport/.getCamera      this)
-         :viewport/world-width  (FitViewport/.getWorldWidth  this)
-         :viewport/world-height (FitViewport/.getWorldHeight this))))))
+   (FitViewport. (float width) (float height) camera)))

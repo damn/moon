@@ -4,7 +4,8 @@
             [clojure.scene2d.actor.set-name :as set-name]
             [clojure.scene2d.actor.set-user-object :as set-user-object]
             [clojure.moon.draw :refer [draw!]]
-            [clojure.scene2d-actor :as actor]))
+            [clojure.scene2d-actor :as actor]
+            [clojure.viewport :as viewport]))
 
 (defn player-message-actor-create [_ctx]
   (let [message-duration-seconds 0.5]
@@ -13,8 +14,8 @@
                      (when-let [stage (clojure.scene2d.actor.get-stage/f this)]
                        (draw! (:stage/ctx stage)
                               [(let [state (clojure.scene2d.actor.get-user-object/f this)
-                                     vp-width (:viewport/world-width (:stage/viewport stage))
-                                     vp-height (:viewport/world-height (:stage/viewport stage))]
+                                     vp-width (viewport/get-world-width (:stage/viewport stage))
+                                     vp-height (viewport/get-world-height (:stage/viewport stage))]
                                  (when-let [text (:text @state)]
                                    [:draw/text {:x (/ vp-width 2)
                                                 :y (+ (/ vp-height 2) 200)

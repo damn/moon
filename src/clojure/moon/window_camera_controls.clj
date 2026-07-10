@@ -4,7 +4,8 @@
             [clojure.scene2d.group :as group]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.input.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
-            [clojure.input.key-pressed :refer [f] :rename {f key-pressed?}]))
+            [clojure.input.key-pressed :refer [f] :rename {f key-pressed?}]
+            [clojure.viewport :as viewport]))
 
 (def zoom-speed 0.025)
 
@@ -15,10 +16,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (key-pressed? input (:zoom-in controls))
-    (inc-zoom! (:viewport/camera world-viewport) zoom-speed))
+    (inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
 
   (when (key-pressed? input (:zoom-out controls))
-    (inc-zoom! (:viewport/camera world-viewport) (- zoom-speed)))
+    (inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
 
   (when (key-just-pressed? input (:close-windows-key controls))
     (->> (group/find-actor (:stage/root stage) "moon.ui.windows")

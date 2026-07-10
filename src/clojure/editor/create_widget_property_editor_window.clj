@@ -23,6 +23,7 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
+            [clojure.viewport :as viewport]
             [clojure.window :as gdx-window]))
 
 (defn with-window-close [f]
@@ -51,7 +52,7 @@
         schemas (:db/schemas db)
         schema (get schemas (property->type property))
         widget (create-widget schema property ctx)
-        scroll-pane-height (:viewport/world-height (:stage/viewport stage))
+        scroll-pane-height (viewport/get-world-height (:stage/viewport stage))
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
         clicked-delete-fn (with-window-close (fn [db]
