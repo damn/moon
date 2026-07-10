@@ -1,3 +1,5 @@
+; TODO is this actually just 'clojure.ctx' ???
+; but the game is not called ctx?
 (ns clojure.moon
   (:require [clojure.db.all-raw :refer [all-raw]]
             [clojure.db.build :refer [build]]
@@ -20,32 +22,34 @@
             [clojure.grid.cells-entities :as cells->entities]
             [clojure.grid.circle-entities :refer [circle->entities]]
             [clojure.grid.find-direction :refer [find-direction]]
-            [clojure.info :refer [info-text]]
+
+            [clojure.info :refer [info-text]] ; CTX - but item/info also depends on this ( gets ctx !)
+
             [clojure.is-applicable :as applicable?]
             [clojure.is-nearly-equal :as nearly-equal?]
-            [clojure.item-place-position :refer [item-place-position]]
+            [clojure.item-place-position :refer [item-place-position]] ; GETS CTX
             [clojure.malli-form-register-methods]
             [clojure.malli.schema :as malli-schema]
             [clojure.math :as math]
             [clojure.menus.help :refer [controls-info]]
-            [clojure.menus.v :as menus]
+            [clojure.menus.v :as menus] ; clojure.menus.v working on ctx
             [clojure.minimum-size :refer [minimum-size]]
             [clojure.moon.content-grid :as content-grid]
             [clojure.moon.choose-skill :as choose-skill]
-            [clojure.moon.ctx-do :refer [do!]]
-            [clojure.moon.draw :refer [draw!]]
-            [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
-            [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
-            [clojure.moon.k-handle-input.player-idle :as player-idle]
-            [clojure.moon.k-handle-input.player-item-on-cursor :as player-item-on-cursor-input]
-            [clojure.moon.k-handle-input.player-moving :as player-moving]
-            [clojure.moon.effect-render :as effect-render]
-            [clojure.moon.npc-effect-ctx :as create-effect-ctx]
+            [clojure.moon.ctx-do :refer [do!]] ; FIXME used @ editor
+            [clojure.moon.draw :refer [draw!]] ; FIXME
+            [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view] ; FIXME
+            [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell] ; FIXME
+            [clojure.moon.k-handle-input.player-idle :as player-idle] ; FIXME
+            [clojure.moon.k-handle-input.player-item-on-cursor :as player-item-on-cursor-input] ; FIXME
+            [clojure.moon.k-handle-input.player-moving :as player-moving] ; FIXME
+            [clojure.moon.effect-render :as effect-render] ; FIXME
+            [clojure.moon.npc-effect-ctx :as create-effect-ctx] ; FIXME
             [clojure.moon.schema :refer [schema]]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]
             [clojure.moon.z-orders :refer [z-orders]]
-            [clojure.mouse-position :refer [mouse-position]]
-            [clojure.mouseover-actor :refer [mouseover-actor]]
+            [clojure.mouse-position :refer [mouse-position]] ; FIXME
+            [clojure.mouseover-actor :refer [mouseover-actor]] ; FIXME
             [clojure.move :as move]
             [clojure.movement-property :as movement-property]
             [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
@@ -61,8 +65,8 @@
             [clojure.ui.dev-menu :as dev-menu]
             [clojure.ui.inventory-window :refer [inventory-window-build]]
             [clojure.ui-info-window :as info-window]
-            [clojure.update-labels :as update-labels]
-            [clojure.update-effect-ctx :as update-effect-ctx]
+            [clojure.update-labels :as update-labels] ; ; FIXME
+            [clojure.update-effect-ctx :as update-effect-ctx]  ; ; FIXME
             [clojure.val-max.ratio :as ratio]
             [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.v2.direction :as direction]
