@@ -3,36 +3,6 @@
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)))
 
-(defn add-listener [actor listener]
-  (Actor/.addListener actor listener))
-
-(defn get-height [^Actor actor]
-  (Actor/.getHeight actor))
-
-(defn get-name [^Actor actor]
-  (Actor/.getName actor))
-
-(defn get-parent [^Actor actor]
-  (Actor/.getParent actor))
-
-(defn get-stage [actor]
-  (Actor/.getStage actor))
-
-(defn get-user-object [^Actor actor]
-  (Actor/.getUserObject actor))
-
-(defn get-width [^Actor actor]
-  (Actor/.getWidth actor))
-
-(defn get-x [^Actor actor]
-  (Actor/.getX actor))
-
-(defn get-y [^Actor actor]
-  (Actor/.getY actor))
-
-(defn hit [^Actor actor x y touchable?]
-  (Actor/.hit actor (float x) (float y) touchable?))
-
 (defn new [act! draw!]
   (proxy [Actor] []
     (act [delta]
@@ -42,29 +12,59 @@
     (draw [batch parent-alpha]
       (draw! this batch parent-alpha))))
 
+(defn addListener [^Actor actor listener]
+  (.addListener actor listener))
+
+(defn getHeight [^Actor actor]
+  (.getHeight actor))
+
+(defn getName [^Actor actor]
+  (.getName actor))
+
+(defn getParent [^Actor actor]
+  (.getParent actor))
+
+(defn getStage [actor]
+  (.getStage ^Actor actor))
+
+(defn getUserObject [^Actor actor]
+  (.getUserObject actor))
+
+(defn getWidth [^Actor actor]
+  (.getWidth actor))
+
+(defn getX [^Actor actor]
+  (.getX actor))
+
+(defn getY [^Actor actor]
+  (.getY actor))
+
+(defn hit [^Actor actor x y touchable?]
+  (.hit actor (float x) (float y) touchable?))
+
 (defn remove [^Actor actor]
-  (Actor/.remove actor))
+  (.remove actor))
 
-(defn set-name [^Actor actor name]
-  (Actor/.setName actor name))
+(defn setName [^Actor actor name]
+  (.setName actor name))
 
-(defn set-position
+(defn setPosition
   ([^Actor actor x y]
-   (Actor/.setPosition actor (float x) (float y)))
+   (.setPosition actor (float x) (float y)))
   ([^Actor actor x y align]
-   (Actor/.setPosition actor (float x) (float y) align)))
+   (.setPosition actor (float x) (float y) align)))
 
-(defn set-touchable [^Actor actor touchable]
-  (Actor/.setTouchable actor touchable))
+(defn setTouchable [^Actor actor touchable]
+  (.setTouchable actor touchable))
 
-(defn set-user-object [^Actor actor user-object]
-  (Actor/.setUserObject actor user-object))
+(defn setUserObject [^Actor actor user-object]
+  (.setUserObject actor user-object))
 
-(defn set-visible [^Actor actor visible?]
-  (Actor/.setVisible actor visible?))
+(defn setVisible [^Actor actor visible?]
+  (.setVisible actor visible?))
 
-(defn stage-to-local-coordinates [^Actor actor ^Vector2 screen-coords]
-  (Actor/.stageToLocalCoordinates actor screen-coords))
+(defn stageToLocalCoordinates [^Actor actor ^Vector2 screen-coords]
+  (.stageToLocalCoordinates actor screen-coords))
 
-(defn visible? [^Actor actor]
-  (Actor/.isVisible actor))
+(defn isVisible [^Actor actor]
+  (.isVisible actor))

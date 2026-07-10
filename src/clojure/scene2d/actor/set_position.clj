@@ -4,6 +4,6 @@
 
 (defn f
   ([actor x y]
-   (actor/set-position actor x y))
+   (actor/setPosition actor x y))
   ([actor x y align]
-   (actor/set-position actor x y align)))
+   (actor/setPosition actor x y align)))

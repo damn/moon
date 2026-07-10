@@ -3,4 +3,4 @@
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn f [& args]
-  (apply actor/set-user-object args))
+  (apply actor/setUserObject args))

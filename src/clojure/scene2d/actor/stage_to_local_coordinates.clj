@@ -3,4 +3,4 @@
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn f [& args]
-  (apply actor/stage-to-local-coordinates args))
+  (apply actor/stageToLocalCoordinates args))
