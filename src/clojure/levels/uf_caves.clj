@@ -1,5 +1,5 @@
 (ns clojure.levels.uf-caves
-  (:require [clojure.caves.gen :as caves]
+  (:require [clojure.caves :as caves]
             [clojure.g2d.fix-nads :as fix-nads]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [gdl.maps.map-properties :as map-properties]

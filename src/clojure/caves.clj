@@ -1,19 +1,20 @@
-(ns clojure.caves.create
+(ns clojure.caves
   "Cave Algorithmus.
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
-  (:require [clojure.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
+  (:require [clojure.srand :refer [srand]]
+            [clojure.srand-int :refer [srand-int]]
+            [clojure.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
             [clojure.position.neighbours-4 :refer [get-4-neighbours]]
             [clojure.m.assoc-ks :refer [assoc-ks]]
-            [clojure.sshuffle :refer [sshuffle]]
-            [clojure.srand :refer [srand]]))
+            [clojure.sshuffle :refer [sshuffle]]))
 
 ; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5
 ; besser 150x150 anstatt 100x100 w h
 ; TODO glaubich einziger unterschied noch: openpaths wird bei jeder cell neu berechnet?
 ; TODO max-tries wenn er nie über min-cells kommt? -> im let dazu definieren vlt max 30 sekunden -> in tries umgerechnet??
-(defn f [random min-cells max-cells get-adj-num-fn]
+(defn generate [random min-cells max-cells get-adj-num-fn]
   (let [create-order (fn [] (sshuffle (range 4) random))
         turn-ratio 0.25
         start [0 0]
@@ -22,7 +23,7 @@
                    ;(println "Reached cells: " cell-cnt) ; TODO cell-cnt stimmt net genau
                    ; TODO already called there down ... make mincells check there
                    (if (< cell-cnt min-cells)
-                     (f random min-cells max-cells get-adj-num-fn) ; recur?
+                     (generate random min-cells max-cells get-adj-num-fn) ; recur?
                      (let [[grid convert] (mapgrid->vectorgrid/f grid #(if (nil? %) :wall :ground))]
                        {:grid  grid
                         :start (convert start)
@@ -53,3 +54,47 @@
                    current-order)
             ; TODO here min-cells check ?
             (finished grid (last posi-seq) cell-cnt)))))))
+
+(def k->adj-num
+  {:wide
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       (case (int (srand-int 3 random))
+         0 1
+         2)
+       (case (int (srand-int 4 random))
+         0 1
+         1 2
+         2 3
+         3 4
+         1)))
+
+   :thin
+   ; höhle mit breite 1 überall nur -> turn-ratio verringern besser
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       1
+       (case (int (srand-int 7 random))
+         0 0
+         1 2
+         1)))
+
+   :default
+   ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
+   (fn [open-paths random]
+     (if (= open-paths 1)
+       (case (int (srand-int 4 random))
+         0 1
+         1 1
+         2 1
+         3 2
+         1)
+       (case (int (srand-int 4 random))
+         0 0
+         1 1
+         2 1
+         3 2
+         1)))})
+
+(defn create [random min-cells max-cells adjnum-type]
+  (generate random min-cells max-cells (k->adj-num adjnum-type)))
