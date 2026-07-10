@@ -1,15 +1,3 @@
-; TODO 'gdl.start' ???
-; => stuff could be clojure' protoocls ' all implemented by gdl.start ???
-
-; start could be the only one holding com.badlogic.gdx
-; - everything else could be clojure protocols???
-; - we always create a stage/sprite-batch/ ???
-; - ?!
-; --- TOO BIG LAYER !!!! WHAT ARE WE ACTUALLY COMPOSING
-; ACTUALLY WE ARE JUST COLLECTING FUNCTIONS FOR COM BADLOGIC GDX AGAIN
-
-; ETF
-
 (ns gdl.backends.lwjgl3.lwjgl3-application
   (:require [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as app]
