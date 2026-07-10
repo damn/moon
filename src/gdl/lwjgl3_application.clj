@@ -1,3 +1,5 @@
+; TODO 'gdl.start' ???
+; => stuff could be clojure' protoocls ' all implemented by gdl.start ???
 (ns gdl.lwjgl3-application
   (:require [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as app]

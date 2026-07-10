@@ -1,5 +1,5 @@
 (ns clojure.editor.dispose
-  (:require [clojure.disposable :as disposable]))
+  (:require [gdl.disposable :as disposable]))
 
 (defn dispose [{:keys [ctx/skin
                              ctx/batch

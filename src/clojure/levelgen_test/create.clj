@@ -3,7 +3,7 @@
             [clojure.scene2d.actor.add-listener]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.files.create-textures :as create-textures]
-            [clojure.disposable :as disposable]
+            [gdl.disposable :as disposable]
             [clojure.files :as files]
             [clojure.fit-viewport :as fit-viewport]
             [clojure.map-layers.get :as get]
