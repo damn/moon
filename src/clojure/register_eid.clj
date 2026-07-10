@@ -1,5 +1,5 @@
 (ns clojure.register-eid
-  (:require [clojure.content-grid.update-entity :as update-entity]
+  (:require [clojure.content-grid :as content-grid]
             [clojure.set-occupied-cells :refer [set-occupied-cells!]]
             [clojure.set-touched-cells :refer [set-touched-cells!]]
             [clojure.grid.valid-position :refer [valid-position?]]))
@@ -12,7 +12,7 @@
     (swap! (:ctx/entity-ids ctx) assoc id eid))
 
   (assert (:entity/body @eid)) ; -< inside content grid
-  (update-entity/f! (:ctx/content-grid ctx) eid)
+  (content-grid/update-entity! (:ctx/content-grid ctx) eid)
 
   (assert (:entity/body @eid)) ; <- inside the grid add fn ?
   (when (:body/collides? (:entity/body @eid))

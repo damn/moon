@@ -1,7 +1,8 @@
 ; TODO is this actually just 'clojure.ctx' ???
 ; but the game is not called ctx?
 (ns clojure.moon
-  (:require [clojure.db.all-raw :refer [all-raw]]
+  (:require [clojure.content-grid :as content-grid]
+            [clojure.db.all-raw :refer [all-raw]]
             [clojure.db.build :refer [build]]
             [clojure.edn :as edn]
             [clojure.files.create-textures :as create-textures]
@@ -34,7 +35,6 @@
             [clojure.menus.help :refer [controls-info]]
             [clojure.menus.v :as menus] ; clojure.menus.v working on ctx
             [clojure.minimum-size :refer [minimum-size]]
-            [clojure.moon.content-grid :as content-grid]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.moon.ctx-do :refer [do!]] ; FIXME used @ editor
             [clojure.moon.draw :refer [draw!]] ; FIXME
@@ -934,15 +934,7 @@
   (let [width (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "width")
         height (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "height")
         cell-size 16]
-    (assoc ctx
-           :ctx/content-grid {:grid (g2d/create-grid
-                                     (inc (int (/ width cell-size)))
-                                     (inc (int (/ height cell-size)))
-                                     (fn [idx]
-                                       (atom {:idx idx
-                                              :entities #{}})))
-                              :cell-w cell-size
-                              :cell-h cell-size})))
+    (assoc ctx :ctx/content-grid (content-grid/create width height cell-size))))
 
 (defn create-explored-tile-corners [ctx]
   (assoc ctx

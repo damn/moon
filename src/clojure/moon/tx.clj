@@ -1,5 +1,5 @@
 (ns clojure.moon.tx
-  (:require 
+  (:require
             [clojure.table-set-opts :as table-set-opts]
             [clojure.ui.action-bar.add-skill :as add-skill-ui]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
@@ -29,7 +29,7 @@
             [com.badlogic.gdx.audio.sound :as sound]
             [clojure.records-entity :as entity]
             [clojure.register-eid :as register-eid]
-            [clojure.content-grid.remove-entity :as remove-entity]
+            [clojure.content-grid :as content-grid]
             [clojure.remove-from-occupied-cells :refer [remove-from-occupied-cells!]]
             [clojure.remove-from-touched-cells :refer [remove-from-touched-cells!]]
             [clojure.stats.remove-mods :as remove-mods]
@@ -42,7 +42,6 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [clojure.content-grid.update-entity :as update-entity]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [reduce-fsm :as fsm]))
@@ -136,7 +135,7 @@
 
    :tx/move-entity
    (fn [{:keys [ctx/content-grid ctx/grid]} eid]
-     (update-entity/f! content-grid eid)
+     (content-grid/update-entity! content-grid eid)
      (remove-from-touched-cells! grid eid)
      (set-touched-cells! grid eid)
      (when (:body/collides? (:entity/body @eid))
@@ -362,7 +361,7 @@
      (let [id (:entity/id @eid)]
        (assert (contains? @entity-ids id))
        (swap! entity-ids dissoc id))
-     (remove-entity/f! content-grid eid)
+     (content-grid/remove-entity! content-grid eid)
      (remove-from-touched-cells! grid eid)
      (when (:body/collides? (:entity/body @eid))
        (remove-from-occupied-cells! grid eid))
