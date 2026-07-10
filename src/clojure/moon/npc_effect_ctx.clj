@@ -1,5 +1,5 @@
 (ns clojure.moon.npc-effect-ctx
-  (:require [clojure.body.direction :as direction]
+  (:require [clojure.body :as body]
             [clojure.nearest-enemy :refer [nearest-enemy]]
             [clojure.line-of-sight :as line-of-sight?]))
 
@@ -15,5 +15,5 @@
     {:effect/source eid
      :effect/target target
      :effect/target-direction (when target
-                                (direction/f (:entity/body entity)
-                                             (:entity/body @target)))}))
+                                (body/direction (:entity/body entity)
+                                                (:entity/body @target)))}))
