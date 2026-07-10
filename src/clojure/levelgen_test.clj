@@ -1,12 +1,42 @@
 (ns clojure.levelgen-test
-  (:require [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
-            [clojure.levelgen-test.create :as create]
-            [clojure.levelgen-test.dispose :as dispose]
-            [clojure.levelgen-test.render :as render]
-            [clojure.levelgen-test.resize :as resize]
+  (:require [clojure.db :as db]
+            [clojure.files.create-textures :as create-textures]
+            [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.levels.modules :as modules]
             [clojure.levels.tmx :as tmx]
-            [clojure.levels.uf-caves :as uf-caves]))
+            [clojure.levels.uf-caves :as uf-caves]
+            [clojure.malli-form-register-methods]
+            [clojure.moon-textures :as textures]
+            [clojure.orthographic-camera-position :as get-position]
+            [clojure.orthographic-camera-set-position :refer [set-position!]]
+            [clojure.orthographic-camera.zoom-to-rect :as zoom-to-rect]
+            [clojure.scene2d-stage]
+            [clojure.table-set-opts :as table-set-opts]
+            [clojure.tiled-map.creature-tiles :as creature-tiles]
+            [clojure.tiled-map.get-property :as get-property]
+            [com.badlogic.gdx.application :as application]
+            [com.badlogic.gdx.files :as files]
+            [com.badlogic.gdx.graphics :as graphics]
+            [com.badlogic.gdx.graphics.color :as color]
+            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [com.badlogic.gdx.graphics.gl20 :as gl20]
+            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [com.badlogic.gdx.input :as input]
+            [com.badlogic.gdx.maps.map-layers :as map-layers]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [com.badlogic.gdx.utils.disposable :as disposable]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [com.badlogic.gdx.utils.viewport.viewport :as viewport]
+            [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
+            [gdl.input.keys :as input-keys]
+            [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]))
 
 (def state (atom nil))
 
@@ -26,16 +56,145 @@
    :zoom-speed 0.1
    :camera-movement-speed 1})
 
+(defn- generate-level
+  [{:keys [ctx/camera
+           ctx/db
+           ctx/textures]
+    :as ctx}
+   level-fn]
+  (let [level (level-fn
+               {:level/creature-properties (creature-tiles/prepare
+                                            (db/all-raw db :properties/creatures)
+                                            #(textures/texture-region textures %))
+                :textures textures})
+        tiled-map (:tiled-map level)
+        ctx (assoc ctx :ctx/tiled-map tiled-map)]
+    (assert tiled-map)
+    (-> tiled-map
+        tiled-map/getLayers
+        (map-layers/get "creatures")
+        (tiled-map-tile-layer/setVisible true))
+    (set-position! camera [(/ (get-property/f tiled-map "width") 2)
+                           (/ (get-property/f tiled-map "height") 2)])
+    (zoom-to-rect/f camera {:left [0 0]
+                            :top [0 (get-property/f tiled-map "height")]
+                            :right [(get-property/f tiled-map "width") 0]
+                            :bottom [0 0]})
+    ctx))
+
+(defn create
+  [state config application]
+  (let [files (application/getFiles application)
+        input (application/getInput application)
+        graphics (application/getGraphics application)
+        sprite-batch (sprite-batch/new)
+        ui-viewport (fit-viewport/new (:ui-viewport-width config)
+                                      (:ui-viewport-height config))
+        world-unit-scale (float (/ (:tile-size config)))
+        stage (clojure.scene2d-stage/create ui-viewport sprite-batch)
+        skin (skin/new (files/internal files (:ui-skin-path config)))
+        world-viewport (let [world-width (* (:world-viewport-width config) world-unit-scale)
+                             world-height (* (:world-viewport-height config) world-unit-scale)]
+                         (fit-viewport/new world-width
+                                           world-height
+                                           (doto (orthographic-camera/new)
+                                             (orthographic-camera/setToOrtho false world-width world-height))))
+        ctx {:ctx/input input
+             :ctx/graphics graphics
+             :ctx/stage stage
+             :ctx/zoom-speed (:zoom-speed config)
+             :ctx/camera-movement-speed (:camera-movement-speed config)
+             :ctx/world-unit-scale world-unit-scale
+             :ctx/db (db/create)
+             :ctx/textures (create-textures/f files (:textures-config config))
+             :ctx/sprite-batch sprite-batch
+             :ctx/skin skin
+             :ctx/world-viewport world-viewport
+             :ctx/camera (viewport/getCamera world-viewport)}
+        ctx (generate-level ctx (:initial-level-fn config))]
+    (input/setInputProcessor input stage)
+    (stage/addActor (:ctx/stage ctx)
+                    (doto (window/new "Edit" skin)
+                      (table-set-opts/set-opts! {:title "Edit"
+                                                 :skin skin
+                                                 :table/rows (for [[label level-fn] (:level-fns config)
+                                                                   :let [on-click #(do
+                                                                                     (disposable/dispose (:ctx/tiled-map %))
+                                                                                     (generate-level % level-fn))]]
+                                                               [{:actor (doto (text-button/new (str "Generate " label) skin)
+                                                                              (actor/addListener
+                                                                               (change-listener/create
+                                                                                (fn [_event _actor]
+                                                                                  (swap! state on-click)))))}])})))
+    ctx))
+
+(defn dispose
+  [{:keys [ctx/skin
+           ctx/sprite-batch
+           ctx/textures
+           ctx/tiled-map]}]
+  (disposable/dispose sprite-batch)
+  (disposable/dispose skin)
+  (run! disposable/dispose (vals textures))
+  (disposable/dispose tiled-map))
+
+(defn render
+  [{:keys [ctx/input
+           ctx/camera
+           ctx/zoom-speed
+           ctx/camera-movement-speed
+           ctx/sprite-batch
+           ctx/tiled-map
+           ctx/world-viewport
+           ctx/world-unit-scale
+           ctx/graphics
+           ctx/stage] :as ctx}]
+  (let [gl (graphics/getGL20 graphics)]
+    (gl20/glClearColor gl 0 0 0 0)
+    (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
+  (draw-tiled-map/draw! sprite-batch
+                        world-unit-scale
+                        (viewport/getCamera world-viewport)
+                        tiled-map
+                        (constantly (color/toFloatBits [1 1 1 1])))
+  (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/minus))
+    (inc-zoom! camera zoom-speed))
+  (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/equals))
+    (inc-zoom! camera (- zoom-speed)))
+  (let [apply-position (fn [idx f]
+                         (set-position! camera
+                                        (update (get-position/f camera)
+                                                idx
+                                                #(f % camera-movement-speed))))]
+    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/left))
+      (apply-position 0 -))
+    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/right))
+      (apply-position 0 +))
+    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/up))
+      (apply-position 1 +))
+    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/down))
+      (apply-position 1 -)))
+  (stage/act stage)
+  (stage/draw stage)
+  ctx)
+
+(defn resize
+  [{:keys [ctx/stage
+           ctx/world-viewport]}
+   width height]
+  (viewport/update (:stage/viewport stage) width height true)
+  (viewport/update world-viewport width height false))
+
 (defn -main []
   (lwjgl3-application/create
    {:create! (fn [app]
-               (reset! state (create/create state config app)))
+               (reset! state (create state config app)))
     :dispose! (fn []
-                (dispose/dispose @state))
+                (dispose @state))
     :render! (fn []
-               (swap! state render/render))
+               (swap! state render))
     :resize! (fn [width height]
-               (resize/resize @state width height))
+               (resize @state width height))
     :pause! (fn [])
     :resume! (fn [])}
    {:config/set-title "Levelgen Test"
