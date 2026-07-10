@@ -1,6 +1,5 @@
 (ns clojure.moon
-  (:require [clojure.body.draw-rectangle :as draw-rectangle]
-            [clojure.content-grid.active-entities :as active-entities]
+  (:require [clojure.content-grid.active-entities :as active-entities]
             [clojure.ctx.clear-screen :as ctx-clear-screen]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.db.build :refer [build]]
@@ -988,6 +987,18 @@
                   (let [ratio (/ distance (factions-iterations faction))]
                     [:draw/filled-rectangle x y 1 1 ((:colors/debug-potential-field colors) ratio)]))))])))
 
+(defn draw-entity-rectangle!
+  [ctx
+   entity
+   color-float-bits]
+  (draw! ctx
+         (let [{:keys [body/position
+                       body/width
+                       body/height]} (:entity/body entity)
+               [x y] [(- (position 0) (/ width  2))
+                      (- (position 1) (/ height 2))]]
+           [[:draw/rectangle x y width height color-float-bits]])))
+
 (defn- draw-entities!
   [{:keys [ctx/active-entities
            ctx/colors
@@ -1010,15 +1021,18 @@
       (try
         (do
           (when show-body-bounds?
-            (draw! ctx (draw-rectangle/f (:entity/body entity)
-                                         (if (:body/collides? (:entity/body entity))
-                                           (:colors/debug-body-outline-collides colors)
-                                           (:colors/debug-body-outline colors)))))
+            (draw-entity-rectangle! ctx
+                                    entity
+                                    (if (:body/collides? (:entity/body entity))
+                                      (:colors/debug-body-outline-collides colors)
+                                      (:colors/debug-body-outline colors))))
           (doseq [[k v] entity
                   :when (get render-layer k)]
             (draw! ctx (draw-component ctx entity k v))))
         (catch Throwable t
-          (draw! ctx (draw-rectangle/f (:entity/body entity) (:colors/debug-body-outline-render-error colors)))
+          (draw-entity-rectangle! ctx
+                                  entity
+                                  (:colors/debug-body-outline-render-error colors))
           (throwable/pretty-pst t))))))
 
 (defn- highlight-mouseover-tile
