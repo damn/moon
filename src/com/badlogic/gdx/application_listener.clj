@@ -1,4 +1,5 @@
 (ns com.badlogic.gdx.application-listener
+  (:refer-clojure :exclude [new])
   (:import (com.badlogic.gdx ApplicationListener)))
 
 (defn create

@@ -25,7 +25,7 @@
 
       build-listener
       (fn [{:keys [create! dispose! render! resize!]}]
-        (listener/create
+        (listener/new
          {:create! (fn []
                      (create! (gdx/app)))
           :dispose! dispose!
