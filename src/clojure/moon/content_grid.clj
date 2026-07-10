@@ -1,7 +1,7 @@
-(ns clojure.content-grid.active-entities
+(ns clojure.moon.content-grid
   (:require [clojure.position.neighbours-8 :refer [get-8-neighbours]]))
 
-(defn f
+(defn active-entities
   [{:keys [grid]} center-entity]
   (->> (let [idx (-> center-entity
                      :moon.content-grid/content-cell

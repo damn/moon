@@ -1,20 +1,35 @@
 (ns clojure.moon
-  (:require [clojure.content-grid.active-entities :as active-entities]
-            [clojure.ctx.clear-screen :as ctx-clear-screen]
+  (:require
+   ; moon.graphics
+   [clojure.ctx.clear-screen :as ctx-clear-screen]
+   ; moon.db
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.db.build :refer [build]]
             [clojure.edn :as edn]
+            ; moon.files
             [clojure.files.create-textures :as create-textures]
+
+            ; clojure.g2d/
             [clojure.g2d.cells :refer [->cells]]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
+
+            ; moon.grid
             [clojure.grid.cell.blocks-vision :as blocks-vision?]
             [clojure.grid-update-potential-fields :as update-potential-fields]
+
+            ; moon.cell
             [clojure.grid-cell :as grid-cell]
             [clojure.grid2d :as g2d]
+
+            ; moon.camera? no
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.java.io :as io]
+
+            ; moon.levels.*
             [clojure.levels.tmx :as tmx]
+
+            ; moon.raycaster
             [clojure.line-of-sight :as line-of-sight?]
             [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.g2d.get-cells :refer [get-cells]]
@@ -30,6 +45,7 @@
             [clojure.menus.help :refer [controls-info]]
             [clojure.menus.v :as menus]
             [clojure.minimum-size :refer [minimum-size]]
+            [clojure.moon.content-grid :as content-grid]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.moon.ctx-do :refer [do!]]
             [clojure.moon.draw :refer [draw!]]
@@ -916,7 +932,7 @@
            ctx/content-grid]
     :as ctx}]
   (assoc ctx :ctx/active-entities
-         (active-entities/f content-grid @player-eid)))
+         (content-grid/active-entities content-grid @player-eid)))
 
 (defn set-camera-position
   [{:keys [ctx/player-eid
