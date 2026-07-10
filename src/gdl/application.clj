@@ -1,4 +1,4 @@
-(ns clojure.application
+(ns gdl.application
   (:require [com.badlogic.gdx.application :as application]))
 
 (defn get-audio [application]

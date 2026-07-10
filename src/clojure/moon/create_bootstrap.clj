@@ -1,5 +1,5 @@
 (ns clojure.moon.create-bootstrap
-  (:require [clojure.application :as application]))
+  (:require [gdl.application :as application]))
 
 (defn f [application]
   {:ctx/audio    (application/get-audio    application)

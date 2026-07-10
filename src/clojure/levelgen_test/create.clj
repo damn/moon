@@ -1,5 +1,5 @@
 (ns clojure.levelgen-test.create
-  (:require [clojure.application :as application]
+  (:require [gdl.application :as application]
             [clojure.scene2d.actor.add-listener]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.files.create-textures :as create-textures]

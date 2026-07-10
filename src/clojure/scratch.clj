@@ -1,7 +1,7 @@
 (comment
 
  (require '[clojure.db.build :refer [build]]
-          '[clojure.application :as application]
+          '[gdl.application :as application]
           '[com.badlogic.gdx.gdx :as gdx]
           )
  (application/post-runnable! (gdx/app)
