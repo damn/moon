@@ -3,17 +3,13 @@
   (:import (com.badlogic.gdx.maps MapProperties)))
 
 (defn get [map-properties k]
-  (MapProperties/.get map-properties k))
+  (.get ^MapPropertiesmap-properties k))
 
-(defn get-keys [^MapProperties props]
-  (.getKeys props))
+(defn getKeys [map-properties]
+  (.getKeys ^MapProperties map-properties))
 
-(defn get-values [^MapProperties props] ; todo where type hints ???
-  (.getValues props))
+(defn getValues [map-properties]
+  (.getValues ^MapProperties map-properties))
 
-(defn put! [map-properties k v]
-  (MapProperties/.put map-properties k v))
-
-(defn clojurize [props] ; TODO REMOVE !
-  (zipmap (get-keys props)
-          (get-values props)))
+(defn put [map-properties k v]
+  (.put ^MapProperties map-properties k v))

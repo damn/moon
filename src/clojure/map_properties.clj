@@ -5,14 +5,9 @@
 (defn get [& args]
   (apply map-properties/get args))
 
-(defn get-keys [& args]
-  (apply map-properties/get-keys args))
-
-(defn get-values [& args]
-  (apply map-properties/get-values args))
-
 (defn put! [& args]
-  (apply map-properties/put! args))
+  (apply map-properties/put args))
 
-(defn clojurize [& args]
-  (apply map-properties/clojurize args))
+(defn clojurize [map-properties]
+  (zipmap (map-properties/getKeys   map-properties)
+          (map-properties/getValues map-properties)))
