@@ -1,4 +1,4 @@
-(ns clojure.moon.create-controls-info
+(ns clojure.moon.controls-info
   (:require [clojure.string :as str]))
 
 (def controls-info
