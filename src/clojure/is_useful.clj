@@ -1,7 +1,7 @@
 (ns clojure.is-useful
   (:require [clojure.v2.distance :as distance]
             [clojure.v2.double-ray-endpositions :as double-ray-endpositions]
-            [clojure.body.in-range :refer [in-range?]]
+            [clojure.body :as body]
             [clojure.raycaster :as raycaster]))
 
 (defmulti f
@@ -41,9 +41,9 @@
 
 (defmethod f :effects/target-entity
   [[_ {:keys [maxrange]}] {:keys [effect/source effect/target]} _ctx]
-  (in-range? (:entity/body @source)
-             (:entity/body @target)
-             maxrange))
+  (body/in-range? (:entity/body @source)
+                  (:entity/body @target)
+                  maxrange))
 
 (defmethod f :effects.target/audiovisual
   [_ _effect-ctx _ctx]

@@ -3,9 +3,8 @@
             [clojure.stats.calc-damage :as calc-damage]
             [clojure.stats.melee-damage :as melee-damage]
             [clojure.stats.effective-armor-save :as effective-armor-save]
-            [clojure.body.end-point :refer [end-point]]
+            [clojure.body :as body]
             [clojure.stats.get-hitpoints :as get-hitpoints]
-            [clojure.body.in-range :refer [in-range?]]
             [clojure.int-between :refer [rand-int-between]]
             [clojure.moon-target-all :as target-all]
             [clojure.projectile-start-point :as projectile-start-point]
@@ -69,7 +68,7 @@
    {:keys [ctx/colors]}]
   (let [body        (:entity/body @source)
         target-body (:entity/body @target)]
-    (if (in-range? body target-body maxrange)
+    (if (body/in-range? body target-body maxrange)
       [[:tx/spawn-line {:start (start-point body target-body)
                         :end (:body/position target-body)
                         :duration 0.05
@@ -77,7 +76,7 @@
                         :thick? true}]
        [:tx/effect effect-ctx entity-effects]]
       [[:tx/audiovisual
-        (end-point body target-body maxrange)
+        (body/end-point body target-body maxrange)
         :audiovisuals/hit-ground]])))
 
 (defmethod f :effects.target/audiovisual

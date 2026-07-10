@@ -1,5 +1,5 @@
 (ns clojure.moon.effect-render
-  (:require [clojure.body.end-point :refer [end-point]]
+  (:require [clojure.body :as body]
             [clojure.body.in-range :refer [in-range?]]
             [clojure.moon-target-all :as target-all]
             [clojure.start-point :refer [start-point]]))
@@ -35,7 +35,7 @@
           target-body (:entity/body @target)]
       [[:draw/line
         (start-point body target-body)
-        (end-point body target-body maxrange)
+        (body/end-point body target-body maxrange)
         (if (in-range? body target-body maxrange)
           (:colors/target-entity-in-range colors)
           (:colors/target-entity-not-in-range colors))]])))
