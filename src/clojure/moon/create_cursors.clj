@@ -4,7 +4,7 @@
             [clojure.files :as files]
             [gdl.graphics :as graphics]
             [clojure.java.io :as io]
-            [clojure.pixmap :as pixmap]))
+            [gdl.pixmap :as pixmap]))
 
 (defn f [ctx]
   (assoc ctx

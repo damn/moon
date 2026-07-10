@@ -1,7 +1,7 @@
 (ns clojure.moon.create-shape-drawer-texture
   (:require [gdl.disposable :as disposable]
-            [clojure.pixmap :as pixmap]
-            [clojure.pixmap$format :as pixmap-format]
+            [gdl.pixmap :as pixmap]
+            [gdl.pixmap-format :as pixmap-format]
             [clojure.texture :as texture]
             [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]))
 
