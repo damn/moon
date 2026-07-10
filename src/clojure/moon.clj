@@ -23,8 +23,10 @@
             [clojure.info :refer [info-text]]
             [clojure.is-applicable :as applicable?]
             [clojure.is-nearly-equal :as nearly-equal?]
+            [clojure.item-place-position :refer [item-place-position]]
             [clojure.malli-form-register-methods]
             [clojure.malli.schema :as malli-schema]
+            [clojure.math :as math]
             [clojure.menus.help :refer [controls-info]]
             [clojure.menus.v :as menus]
             [clojure.minimum-size :refer [minimum-size]]
@@ -37,19 +39,8 @@
             [clojure.moon.k-handle-input.player-idle :as player-idle]
             [clojure.moon.k-handle-input.player-item-on-cursor :as player-item-on-cursor-input]
             [clojure.moon.k-handle-input.player-moving :as player-moving]
+            [clojure.moon.effect-render :as effect-render]
             [clojure.moon.npc-effect-ctx :as create-effect-ctx]
-            [clojure.moon.render.active-skill :as active-skill]
-            [clojure.moon.render.animation :as animation]
-            [clojure.moon.render.clickable :as clickable]
-            [clojure.moon.render.image :as image]
-            [clojure.moon.render.line-render :as line-render]
-            [clojure.moon.render.mouseover :as mouseover]
-            [clojure.moon.render.npc-sleeping :as npc-sleeping]
-            [clojure.moon.render.player-item-on-cursor :as render-player-item-on-cursor]
-            [clojure.moon.render.stats :as stats]
-            [clojure.moon.render.string-effect :as string-effect]
-            [clojure.moon.render.stunned :as stunned]
-            [clojure.moon.render.temp-modifier :as temp-modifier]
             [clojure.moon.schema :refer [schema]]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]
             [clojure.moon.z-orders :refer [z-orders]]
@@ -77,7 +68,9 @@
             [clojure.v2.direction :as direction]
             [clojure.v2.length :as length]
             [clojure.moon-db :as db]
+            [clojure.moon-faction :as faction]
             [clojure.moon-textures :as textures]
+            [clojure.ratio :as timer-ratio]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :as camera-set-position]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
@@ -214,6 +207,162 @@
 (def render-z-order
   (apply hash-map (interleave z-orders (range))))
 
+(def ^:private active-skill-radius
+  (let [tile-size 48
+        image-width 32]
+    (/ (/ image-width tile-size) 2)))
+
+(defn- render-image
+  [image {:keys [entity/body]} {:keys [ctx/textures]}]
+  [[:draw/texture-region
+    (textures/texture-region textures image)
+    (:body/position body)
+    {:center? true
+     :rotation (or (:body/rotation-angle body)
+                   0)}]])
+
+(defn- render-clickable
+  [{:keys [text]}
+   {:keys [entity/body
+           entity/mouseover?]}
+   _ctx]
+  (when (and mouseover? text)
+    (let [[x y] (:body/position body)]
+      [[:draw/text {:text text
+                    :x x
+                    :y (+ y (/ (:body/height body) 2))
+                    :up? true}]])))
+
+(defn- render-animation
+  [{:keys [frames
+           cnt
+           frame-duration]}
+   entity
+   ctx]
+  (render-image (frames (min (int (/ (float cnt) (float frame-duration)))
+                               (dec (count frames))))
+                entity
+                ctx))
+
+(defn- render-line-render
+  [{:keys [thick? end color]}
+   {:keys [entity/body]}
+   _ctx]
+  (let [position (:body/position body)]
+    (if thick?
+      [[:draw/with-line-width
+        4
+        [[:draw/line position end color]]]]
+      [[:draw/line position end color]])))
+
+(defn- render-mouseover
+  [_
+   {:keys [entity/body
+           entity/faction]}
+   {:keys [ctx/colors
+           ctx/player-eid]}]
+  (let [player @player-eid]
+    [[:draw/with-line-width 5
+      [[:draw/ellipse
+        (:body/position body)
+        (/ (:body/width  body) 2)
+        (/ (:body/height body) 2)
+        (cond (= faction (faction/enemy (:entity/faction player)))
+              (:colors/enemy-color colors)
+              (= faction (:entity/faction player))
+              (:colors/friendly-color colors)
+              :else
+              (:colors/neutral-color colors))]]]]))
+
+(defn- render-npc-sleeping
+  [_ {:keys [entity/body]} _ctx]
+  (let [[x y] (:body/position body)]
+    [[:draw/text {:text "zzz"
+                  :x x
+                  :y (+ y (/ (:body/height body) 2))
+                  :up? true}]]))
+
+(defn- render-player-item-on-cursor
+  [{:keys [item]}
+   entity
+   {:keys [ctx/textures]
+    :as ctx}]
+  (when-not (mouseover-actor ctx)
+    [[:draw/texture-region
+      (textures/texture-region textures (:entity/image item))
+      (item-place-position ctx entity)
+      {:center? true}]]))
+
+(defn- render-stats
+  [_ entity {:keys [ctx/colors]}]
+  (let [ratio (ratio/f (get-hitpoints/f (:entity/stats entity)))]
+    (when (or (< ratio 1) (:entity/mouseover? entity))
+      (let [{:keys [body/position body/width body/height]} (:entity/body entity)
+            [x y] position
+            x (- x (/ width  2))
+            y (+ y (/ height 2))
+            height (* 5 world-unit-scale)
+            border (* 1 world-unit-scale)]
+        [[:draw/filled-rectangle x y width height (:colors/hp-bar-rect colors)]
+         [:draw/filled-rectangle
+          (+ x border)
+          (+ y border)
+          (- (* width ratio) (* 2 border))
+          (- height          (* 2 border))
+          ((:colors/hp-bar colors) ratio)]]))))
+
+(defn- render-string-effect
+  [{:keys [text]} entity _ctx]
+  (let [[x y] (:body/position (:entity/body entity))]
+    [[:draw/text {:text text
+                  :x x
+                  :y (+ y
+                        (/ (:body/height (:entity/body entity)) 2)
+                        (* 5 world-unit-scale))
+                  :scale 2
+                  :up? true}]]))
+
+(defn- render-stunned
+  [_ {:keys [entity/body]} {:keys [ctx/colors]}]
+  [[:draw/circle
+    (:body/position body)
+    0.5
+    (:colors/stunned colors)]])
+
+(defn- render-temp-modifier
+  [_ entity {:keys [ctx/colors]}]
+  [[:draw/filled-circle
+    (:body/position (:entity/body entity))
+    0.5
+    (:colors/temp-modifier colors)]])
+
+(defn- render-active-skill
+  [{:keys [skill effect-ctx counter]}
+   entity
+   {:keys [ctx/colors
+           ctx/elapsed-time
+           ctx/textures]
+    :as ctx}]
+  (let [{:keys [entity/image skill/effects]} skill
+        radius active-skill-radius]
+    (concat (let [action-counter-ratio (timer-ratio/f elapsed-time counter)
+                  texture-region (textures/texture-region textures image)
+                  [x y] (:body/position (:entity/body entity))
+                  y (+ (float y)
+                       (float (/ (:body/height (:entity/body entity)) 2))
+                       (float 0.15))
+                  center [x (+ y radius)]]
+              [[:draw/filled-circle center radius (:colors/active-skill-circle colors)]
+               [:draw/sector
+                center
+                radius
+                (math/to-radians 90)
+                (math/to-radians (* (float action-counter-ratio) 360))
+                (:colors/active-skill-sector colors)]
+               [:draw/texture-region texture-region [(- (float x) radius) y]]])
+            (mapcat #(effect-render/f % effect-ctx ctx)
+                    effects))))
+
 (defn tile-color-setter*
   [{:keys [ray-blocked?
            explored-tile-corners
@@ -247,18 +396,18 @@
               visible-tile-color))))))
 
 (def k->render
-  {:entity/clickable clickable/f
-   :player-item-on-cursor render-player-item-on-cursor/f
-   :entity/animation animation/f
-   :entity/image image/f
-   :entity/line-render line-render/f
-   :entity/mouseover? mouseover/f
-   :entity/stats stats/f
-   :entity/string-effect string-effect/f
-   :entity/temp-modifier temp-modifier/f
-   :active-skill active-skill/f
-   :npc-sleeping npc-sleeping/f
-   :stunned stunned/f})
+  {:entity/clickable render-clickable
+   :player-item-on-cursor render-player-item-on-cursor
+   :entity/animation render-animation
+   :entity/image render-image
+   :entity/line-render render-line-render
+   :entity/mouseover? render-mouseover
+   :entity/stats render-stats
+   :entity/string-effect render-string-effect
+   :entity/temp-modifier render-temp-modifier
+   :active-skill render-active-skill
+   :npc-sleeping render-npc-sleeping
+   :stunned render-stunned})
 
 (defn draw-component
   [ctx entity k v]
