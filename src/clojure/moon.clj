@@ -18,39 +18,53 @@
             [clojure.java.io :as io]
             [clojure.levels.tmx :as tmx]
             [clojure.line-of-sight :as line-of-sight?]
+            [clojure.info :refer [info-text]]
+            [clojure.k-tick :refer [k->tick]]
             [clojure.malli-form-register-methods]
             [clojure.malli.schema :as malli-schema]
-            [clojure.max-delta :refer [max-delta]]
+            [clojure.menus.help :refer [controls-info]]
+            [clojure.menus.v :as menus]
             [clojure.minimum-size :refer [minimum-size]]
+            [clojure.moon.ctx-do :refer [do!]]
+            [clojure.moon.draw :refer [draw!]]
+            [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
+            [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
+            [clojure.moon.k-handle-input.player-idle :as player-idle]
+            [clojure.moon.k-handle-input.player-item-on-cursor :as player-item-on-cursor-input]
+            [clojure.moon.k-handle-input.player-moving :as player-moving]
+            [clojure.moon.render.active-skill :as active-skill]
+            [clojure.moon.render.animation :as animation]
+            [clojure.moon.render.clickable :as clickable]
+            [clojure.moon.render.image :as image]
+            [clojure.moon.render.line-render :as line-render]
+            [clojure.moon.render.mouseover :as mouseover]
+            [clojure.moon.render.npc-sleeping :as npc-sleeping]
+            [clojure.moon.render.player-item-on-cursor :as render-player-item-on-cursor]
+            [clojure.moon.render.stats :as stats]
+            [clojure.moon.render.string-effect :as string-effect]
+            [clojure.moon.render.stunned :as stunned]
+            [clojure.moon.render.temp-modifier :as temp-modifier]
+            [clojure.moon.schema :refer [schema]]
+            [clojure.moon.world-unit-scale :refer [world-unit-scale]]
+            [clojure.moon.z-orders :refer [z-orders]]
             [clojure.mouse-position :refer [mouse-position]]
             [clojure.mouseover-actor :refer [mouseover-actor]]
             [clojure.movement-property :as movement-property]
-            [clojure.menus.help :refer [controls-info]]
-            [clojure.moon.action-bar-create :refer [action-bar-create]]
-            [clojure.moon.color-setter :refer [tile-color-setter*]]
-            [clojure.moon.context :as context]
-            [clojure.moon.ctx-do :refer [do!]]
-            [clojure.moon.draw :refer [draw!]]
-            [clojure.moon.draw-component :refer [draw-component]]
-            [clojure.moon.factions-iterations :refer [factions-iterations]]
-            [clojure.moon.hp-mana-bar-create :refer [hp-mana-bar-create]]
-            [clojure.moon.inventory-window-create :refer [inventory-window-create]]
-            [clojure.moon.k-handle-input :refer [k->handle-input]]
-            [clojure.moon.player-message-actor-create :refer [player-message-actor-create]]
-            [clojure.moon.player-state-draw-create :refer [player-state-draw-create]]
-            [clojure.moon.schema :refer [schema]]
-            [clojure.moon.stage-dev-menu-create :refer [stage-dev-menu-create]]
-            [clojure.moon.stage-info-window-create :refer [stage-info-window-create]]
-            [clojure.moon.windows-create :refer [windows-create]]
-            [clojure.moon.world-unit-scale :refer [world-unit-scale]]
-            [clojure.moon.z-orders :refer [z-orders]]
+            [clojure.readable :as readable]
+            [clojure.stats.get-hitpoints :as get-hitpoints]
+            [clojure.stats.get-mana :as get-mana]
+            [clojure.table-set-opts :as table-set-opts]
+            [clojure.ui.dev-menu :as dev-menu]
+            [clojure.ui.inventory-window :refer [inventory-window-build]]
+            [clojure.ui-info-window :as info-window]
+            [clojure.update-labels :as update-labels]
+            [clojure.val-max.ratio :as ratio]
+            [clojure.v2.direction :as direction]
             [clojure.moon-db :as db]
             [clojure.moon-textures :as textures]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :as camera-set-position]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
-            [clojure.pausing :refer [pausing?]]
-            [clojure.player-effect-ctx :as player-effect-ctx]
             [clojure.point-to-entities :refer [point->entities]]
             [clojure.raycaster :as raycaster]
             [clojure.scene2d-stage :as scene2d-stage]
@@ -58,8 +72,6 @@
             [clojure.set-ctx :as set-ctx]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.spawn-positions :as spawn-positions]
-            [clojure.state-pause-game :refer [state->pause-game?]]
-            [clojure.tick-component :refer [tick-component]]
             [clojure.tiled-map.creature-tiles :as creature-tiles]
             [clojure.throwable :as throwable]
             [clojure.ui.action-bar.selected-skill :as selected-skill]
@@ -89,7 +101,11 @@
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+            [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
@@ -100,8 +116,27 @@
             [gdl.input.keys :as input-keys]
             [gdl.maps.map-properties :as map-properties]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
-            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer])
+            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
+            [qrecord.core :as q])
   (:gen-class))
+
+(q/defrecord R [])
+
+(def max-delta 0.04)
+
+(def pausing? true)
+
+(def state->pause-game?
+  {:active-skill false
+   :stunned false
+   :player-moving false
+   :player-idle true
+   :player-dead true
+   :player-item-on-cursor true})
+
+(def factions-iterations
+  {:good 15
+   :evil 5})
 
 (def colors
   (let [outline-alpha 0.4]
@@ -160,6 +195,247 @@
 
 (def render-z-order
   (apply hash-map (interleave z-orders (range))))
+
+(defn tile-color-setter*
+  [{:keys [ray-blocked?
+           explored-tile-corners
+           light-position
+           see-all-tiles?
+           explored-tile-color
+           visible-tile-color
+           invisible-tile-color]}]
+  #_(reset! do-once false)
+  (let [light-cache (atom {})]
+    (fn tile-color-setter [_color x y]
+      (let [position [(int x) (int y)]
+            explored? (get @explored-tile-corners position) ; TODO needs int call ?
+            base-color (if explored?
+                         explored-tile-color
+                         invisible-tile-color)
+            cache-entry (get @light-cache position :not-found)
+            blocked? (if (= cache-entry :not-found)
+                       (let [blocked? (ray-blocked? light-position position)]
+                         (swap! light-cache assoc position blocked?)
+                         blocked?)
+                       cache-entry)]
+        #_(when @do-once
+            (swap! ray-positions conj position))
+        (if blocked?
+          (if see-all-tiles?
+            visible-tile-color
+            base-color)
+          (do (when-not explored?
+                (swap! explored-tile-corners assoc (mapv int position) true))
+              visible-tile-color))))))
+
+(def k->render
+  {:entity/clickable clickable/f
+   :player-item-on-cursor render-player-item-on-cursor/f
+   :entity/animation animation/f
+   :entity/image image/f
+   :entity/line-render line-render/f
+   :entity/mouseover? mouseover/f
+   :entity/stats stats/f
+   :entity/string-effect string-effect/f
+   :entity/temp-modifier temp-modifier/f
+   :active-skill active-skill/f
+   :npc-sleeping npc-sleeping/f
+   :stunned stunned/f})
+
+(defn draw-component
+  [ctx entity k v]
+  ((k->render k) v entity ctx))
+
+(defn action-bar-create [_ctx]
+  (doto (doto (table/new)
+              (table-set-opts/set-opts! {:table/cell-defaults {:pad 2}
+                                         :table/rows [[{:actor (doto (horizontal-group/new)
+                                                                    (horizontal-group/space 2)
+                                                                    (horizontal-group/pad 2)
+                                                                    (actor/setName "moon.ui.action-bar.horizontal-group")
+                                                                    (actor/setUserObject (doto (button-group/new)
+                                                                                           (button-group/setMaxCheckCount 1)
+                                                                                           (button-group/setMinCheckCount 0))))
+                                                       :expand? true
+                                                       :bottom? true}]]}))
+    (layout/setFillParent true)
+    (actor/setName "moon.ui.action-bar")))
+
+(defn hp-mana-bar-create
+  [{:keys [ctx/textures
+           ctx/stage]}]
+  (let [{:keys [rahmen-file
+                rahmenw
+                rahmenh
+                hpcontent-file
+                manacontent-file
+                y-mana]} {:rahmen-file "images/rahmen.png"
+                          :rahmenw 150
+                          :rahmenh 26
+                          :hpcontent-file "images/hp.png"
+                          :manacontent-file "images/mana.png"
+                          :y-mana 80}
+        [x y-mana] [(/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
+                    y-mana]
+        rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
+        y-hp (+ y-mana rahmenh)
+        render-hpmana-bar (fn [x y content-file minmaxval name]
+                            [[:draw/texture-region rahmen-tex-reg [x y]]
+                             [:draw/texture-region
+                              (textures/texture-region textures
+                                                       {:image/file content-file
+                                                        :image/bounds [0 0 (* rahmenw (ratio/f minmaxval)) rahmenh]})
+                              [x y]]
+                             [:draw/text {:text (str (readable/f (minmaxval 0))
+                                                     "/"
+                                                     (minmaxval 1)
+                                                     " "
+                                                     name)
+                                          :x (+ x 75)
+                                          :y (+ y 2)
+                                          :up? true}]])
+        create-draws (fn [{:keys [ctx/player-eid]}]
+                       (let [stats (:entity/stats @player-eid)
+                             x (- x (/ rahmenw 2))]
+                         (concat
+                          (render-hpmana-bar x y-hp hpcontent-file (get-hitpoints/f stats) "HP")
+                          (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
+    (actor/new
+     (fn [_actor _delta])
+     (fn [this _batch _parent-alpha]
+       (when-let [stage (actor/getStage this)]
+         (draw! (:stage/ctx stage)
+                (create-draws (:stage/ctx stage))))))))
+
+(defn inventory-window-create
+  [{:keys [ctx/colors
+           ctx/skin
+           ctx/stage
+           ctx/textures]}]
+  (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
+                                             :shield 1
+                                             :rings 2
+                                             :necklace 3
+                                             :helm 4
+                                             :cloak 5
+                                             :chest 6
+                                             :leg 7
+                                             :glove 8
+                                             :boot 9
+                                             :bag 10}
+        slot->texture-region (fn [slot]
+                               (let [width 48
+                                     height 48
+                                     sprite-x 21
+                                     sprite-y (+ (slot->y-sprite-idx slot) 2)
+                                     bounds [(* sprite-x width)
+                                             (* sprite-y height)
+                                             width
+                                             height]]
+                                 (textures/texture-region textures
+                                                          {:image/file "images/items.png"
+                                                           :image/bounds bounds})))]
+    (inventory-window-build
+     {:do! do!
+      :draw! draw!
+      :on-click-cell handle-clicked-inventory-cell/f
+      :item-rect-color (:colors/item-rect colors)
+      :droppable-item-color (:colors/droppable-item colors)
+      :not-allowed-drop-item-color (:colors/not-allowed-drop-item colors)
+      :skin skin
+      :position [(viewport/getWorldWidth (:stage/viewport stage))
+                 (viewport/getWorldHeight (:stage/viewport stage))]
+      :slot->texture-region slot->texture-region
+      :cell-size 48})))
+
+(defn windows-create [ctx actor-fns]
+  (let [group* (group/new)]
+    (run! #(group/addActor group* %) (for [f actor-fns] (f ctx)))
+    (doto group*
+      (actor/setName "moon.ui.windows"))))
+
+(defn stage-dev-menu-create
+  [{:keys [ctx/skin
+           ctx/textures]}]
+  (dev-menu/create
+   {:menus menus/v
+    :update-labels (for [item update-labels/v]
+                     (if (:icon item)
+                       (update item :icon #(get textures %))
+                       item))
+    :skin skin}))
+
+(defn stage-info-window-create
+  [{:keys [ctx/skin
+           ctx/stage]}]
+  (info-window/create
+   {:title "Entity Info"
+    :actor-name "moon.ui.windows.entity-info"
+    :visible? false
+    :position [(viewport/getWorldWidth (:stage/viewport stage)) 0]
+    :set-label-text! (fn [{:keys [ctx/mouseover-eid]
+                           :as ctx}]
+                       (if-let [eid mouseover-eid]
+                         (info-text (apply dissoc @eid [:entity/skills
+                                                        :entity/faction
+                                                        :active-skill])
+                                    ctx)
+                         ""))
+    :skin skin}))
+
+(defn player-state-draw-create [_ctx]
+  (actor/new
+   (fn [_actor _delta])
+   (fn [this _batch _parent-alpha]
+     (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/getStage this))
+           entity @player-eid
+           state-k (:state (:entity/fsm entity))]
+       (draw! ctx (entity-state-draw-ui-view/f [state-k (state-k entity)] player-eid ctx))))))
+
+(defn player-message-actor-create [_ctx]
+  (let [message-duration-seconds 0.5]
+    (doto (actor/new
+           (fn [this delta]
+             (let [state (actor/getUserObject this)]
+               (when (:text @state)
+                 (swap! state update :counter + delta)
+                 (when (>= (:counter @state) message-duration-seconds)
+                   (reset! state nil)))))
+           (fn [this _batch _parent-alpha]
+             (when-let [stage (actor/getStage this)]
+               (draw! (:stage/ctx stage)
+                      [(let [state (actor/getUserObject this)
+                             vp-width (viewport/getWorldWidth (:stage/viewport stage))
+                             vp-height (viewport/getWorldHeight (:stage/viewport stage))]
+                         (when-let [text (:text @state)]
+                           [:draw/text {:x (/ vp-width 2)
+                                        :y (+ (/ vp-height 2) 200)
+                                        :text text
+                                        :scale 2.5
+                                        :up? true}]))]))))
+      (actor/setName "player-message")
+      (actor/setUserObject (atom nil)))))
+
+(def k->handle-input
+  {:player-idle player-idle/f
+   :player-moving player-moving/f
+   :player-item-on-cursor player-item-on-cursor-input/f})
+
+(defn player-effect-ctx [mouseover-eid world-mouse-position player-eid]
+  (let [target-position (or (and mouseover-eid
+                                 (:body/position (:entity/body @mouseover-eid)))
+                            world-mouse-position)]
+    {:effect/source player-eid
+     :effect/target mouseover-eid
+     :effect/target-position target-position
+     :effect/target-direction (direction/f (:body/position (:entity/body @player-eid))
+                                         target-position)}))
+
+(defn tick-component
+  [ctx eid [k v]]
+  (if-let [f (k->tick k)]
+    (f v eid ctx)
+    nil))
 
 (defn create-bootstrap [application]
   {:ctx/audio    (application/getAudio    application)
@@ -277,7 +553,7 @@
                              font)))
 
 (defn create-context [ctx]
-  (merge (context/map->R {}) ctx))
+  (merge (map->R {}) ctx))
 
 (defn create-game-config [ctx]
   (-> ctx
@@ -622,7 +898,7 @@
                             selected-skill/f)]
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))
-              effect-ctx (player-effect-ctx/f mouseover-eid world-mouse-position player-eid)
+              effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
               state (usable-state/f skill entity effect-ctx)]
           (if (= state :usable)
             [:interaction-state.skill/usable [skill effect-ctx]]
