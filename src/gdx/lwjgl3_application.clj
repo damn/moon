@@ -9,9 +9,10 @@
 
 (let [k->opts
       {
-       :config/set-title          config/set-title
-       :config/set-windowed-mode  config/set-windowed-mode
-       :config/set-foreground-fps config/set-foreground-fps
+       :config/set-title          config/setTitle
+       :config/set-windowed-mode  (fn [config {:keys [width height]}]
+                                    (config/setWindowedMode config width height))
+       :config/set-foreground-fps config/setForegroundFPS
        }
 
       build-config
@@ -37,7 +38,7 @@
       use-glfw-async!
       (fn []
         (when (= shared-library-loader/os os/MacOsX)
-          (configuration/set! configuration/glfw-library-name "glfw_async")))
+          (configuration/set configuration/GLFW_LIBRARY_NAME "glfw_async")))
       ]
   (defn create [listener
                 config-opts]

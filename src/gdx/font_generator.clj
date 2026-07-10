@@ -10,8 +10,8 @@
       k->opts
       {
        ; TODO convert texture-filter from keyword?
-       :set-mag-filter parameter/set-mag-filter
-       :set-min-filter parameter/set-min-filter
+       :set-mag-filter parameter/set-magFilter
+       :set-min-filter parameter/set-minFilter
        :set-size       parameter/set-size
        }
 
@@ -25,4 +25,4 @@
           config))
       ]
   (defn generate-font [generator parameter]
-    (free-type-font-generator/generate-font generator (build parameter))))
+    (free-type-font-generator/generateFont generator (build parameter))))

@@ -45,7 +45,21 @@ Clojure vars use the same names as Java methods and fields.
 | `Application.postRunnable()` | `postRunnable` |
 | `Input.Keys.D` | `D` (as `def`) |
 
-Do **not** use kebab-case (`get-x`), `!` suffixes (`set-input-processor!`), or `?` suffixes (`visible?`) on FFI vars. Use Java names (`setInputProcessor`, `isVisible`).
+Do **not** use kebab-case (`get-x`), `!` suffixes (`set-input-processor!`), or `?` suffixes (`visible?`) on FFI vars. Use Java names (`setInputProcessor`, `isVisible`) for **methods**.
+
+### 2b. Instance fields → `set-<fieldName>`
+
+Java **public instance fields** (no setter method) get a thin wrapper that uses `set!`:
+
+```clj
+;; Java: parameter.magFilter = filter
+(defn set-magFilter [^FreeTypeFontParameter parameter ^Texture$TextureFilter filter]
+  (set! (.magFilter parameter) filter))
+```
+
+Name: `set-` + the Java field name **as written** (`magFilter` → `set-magFilter`, `size` → `set-size`). Not full kebab-case (`set-mag-filter`), not a fake method name (`setMagFilter`).
+
+Static fields stay `def` (rule 5). Instance methods stay camelCase (rule 2).
 
 ### 3. Interop style
 
@@ -159,6 +173,7 @@ This tree is being migrated to the rules above:
 - `.method ^Type` interop
 - constructors at top
 - static fields as `def`
+- instance field assignment as `set-<fieldName>`
 - no docstrings
 
 Files not yet updated still follow the old style (`get-x`, `Class/.method`) until touched.
@@ -172,6 +187,7 @@ Files not yet updated still follow the old style (`get-x`, `Class/.method`) unti
 | `get-x` | `getX` |
 | `visible?` | `isVisible` |
 | `add-actor!` | `addActor` |
+| `(set! (.magFilter p) f)` inline | `set-magFilter` |
 | `Input/.getX input` | `(.getX ^Input input)` |
 | `(defn get-x ...)` before `(defn new ...)` | `(defn new ...)` first |
 | docstring on every var | no docstrings |

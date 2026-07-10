@@ -7,5 +7,5 @@
 (defn new [^FileHandle file-handle]
   (FreeTypeFontGenerator. file-handle))
 
-(defn generate-font [generator ^FreeTypeFontGenerator$FreeTypeFontParameter parameter]
-  (FreeTypeFontGenerator/.generateFont generator parameter))
+(defn generateFont [generator ^FreeTypeFontGenerator$FreeTypeFontParameter parameter]
+  (.generateFont ^FreeTypeFontGenerator generator parameter))

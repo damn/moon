@@ -5,11 +5,11 @@
 (defn new []
   (Lwjgl3ApplicationConfiguration.))
 
-(defn set-title [config title]
-  (Lwjgl3ApplicationConfiguration/.setTitle config title))
+(defn setTitle [config title]
+  (.setTitle ^Lwjgl3ApplicationConfiguration config title))
 
-(defn set-windowed-mode [config {:keys [width height]}]
-  (Lwjgl3ApplicationConfiguration/.setWindowedMode config (int width) (int height)))
+(defn setWindowedMode [config width height]
+  (.setWindowedMode ^Lwjgl3ApplicationConfiguration config (int width) (int height)))
 
-(defn set-foreground-fps [config foreground-fps]
-  (Lwjgl3ApplicationConfiguration/.setForegroundFPS config (int foreground-fps)))
+(defn setForegroundFPS [config foreground-fps]
+  (.setForegroundFPS ^Lwjgl3ApplicationConfiguration config (int foreground-fps)))
