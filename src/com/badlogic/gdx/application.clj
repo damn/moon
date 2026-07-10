@@ -1,17 +1,17 @@
 (ns com.badlogic.gdx.application
   (:import (com.badlogic.gdx Application)))
 
-(defn get-audio [application]
-  (Application/.getAudio application))
+(defn getAudio [application]
+  (.getAudio ^Application application))
 
-(defn get-files [application]
-  (Application/.getFiles application))
+(defn getFiles [application]
+  (.getFiles ^Application application))
 
-(defn get-graphics [application]
-  (Application/.getGraphics application))
+(defn getGraphics [application]
+  (.getGraphics ^Application application))
 
-(defn get-input [application]
-  (Application/.getInput application))
+(defn getInput [application]
+  (.getInput ^Application application))
 
-(defn post-runnable! [application f]
-  (Application/.postRunnable application f))
+(defn postRunnable [application f]
+  (.postRunnable ^Application application f))

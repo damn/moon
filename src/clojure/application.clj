@@ -2,16 +2,16 @@
   (:require [com.badlogic.gdx.application :as application]))
 
 (defn get-audio [application]
-  (application/get-audio application))
+  (application/getAudio application))
 
 (defn get-files [application]
-  (application/get-files application))
+  (application/getFiles application))
 
 (defn get-graphics [application]
-  (application/get-graphics application))
+  (application/getGraphics application))
 
 (defn get-input [application]
-  (application/get-input application))
+  (application/getInput application))
 
 (defn post-runnable! [application f]
-  (application/post-runnable! application f))
+  (application/postRunnable application f))
