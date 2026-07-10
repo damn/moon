@@ -1,6 +1,6 @@
 (ns clojure.levelgen-test.render
   (:require [com.badlogic.gdx.graphics.color :as color]
-            [clojure.batch.draw-tiled-map :as draw-tiled-map]
+            [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics :as graphics]
             [clojure.inc-zoom :refer [inc-zoom!]]
@@ -25,7 +25,7 @@
   (let [gl (graphics/getGL20 graphics)]
     (gl20/glClearColor gl 0 0 0 0)
     (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
-  (draw-tiled-map/f! sprite-batch
+  (draw-tiled-map/draw! sprite-batch
                      world-unit-scale
                      (viewport/getCamera world-viewport)
                      tiled-map

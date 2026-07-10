@@ -1,12 +1,10 @@
-(ns clojure.batch.draw-tiled-map-tile-layer
+(ns gdx.maps.tiled.draw-tile-layer
   (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [clojure.batch.draw-tiled-map-tile :as draw-tile]))
+            [gdx.maps.tiled.draw-tile :as draw-tile]))
 
-(defn f!
+(defn draw!
   [layer
    batch
    unit-scale
@@ -52,15 +50,15 @@
           (when (< col col2)
             (when-let [cell (tiled-map-tile-layer/getCell layer col row)]
               (when-let [tile (tiled-map-tile-layer-cell/getTile cell)]
-                (draw-tile/f! x
-                              y
-                              tile
-                              unit-scale
-                              color-setter
-                              batch-color
-                              verts
-                              batch
-                              num-vertices)))
+                (draw-tile/draw! x
+                                 y
+                                 tile
+                                 unit-scale
+                                 color-setter
+                                 batch-color
+                                 verts
+                                 batch
+                                 num-vertices)))
             (recur (inc col)
                    (+ x layer-tile-width))))
         (recur (dec row)

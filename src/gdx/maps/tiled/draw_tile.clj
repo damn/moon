@@ -1,11 +1,9 @@
-(ns clojure.batch.draw-tiled-map-tile
+(ns gdx.maps.tiled.draw-tile
   (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.graphics.texture :as texture]))
+            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
-(defn f!
+(defn draw!
   [x
    y
    tile
@@ -49,7 +47,7 @@
     (aset-float verts batch/U4 u2)
     (aset-float verts batch/V4 v1)
     (batch/draw batch
-                          (texture-region/getTexture region)
-                          verts
-                          0
-                          num-vertices)))
+                (texture-region/getTexture region)
+                verts
+                0
+                num-vertices)))
