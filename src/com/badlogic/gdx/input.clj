@@ -1,20 +1,20 @@
 (ns com.badlogic.gdx.input
-  (:import (com.badlogic.gdx Input)))
+  (:import (com.badlogic.gdx Input InputProcessor)))
 
-(defn get-x [input]
-  (Input/.getX input))
+(defn getX [input]
+  (.getX ^Input input))
 
-(defn get-y [input]
-  (Input/.getY input))
+(defn getY [input]
+  (.getY ^Input input))
 
-(defn button-just-pressed? [input button-code]
-  (Input/.isButtonJustPressed input button-code))
+(defn isButtonJustPressed [input button-code]
+  (.isButtonJustPressed ^Input input button-code))
 
-(defn key-just-pressed? [input key-code]
-  (Input/.isKeyJustPressed input key-code))
+(defn isKeyJustPressed [input key-code]
+  (.isKeyJustPressed ^Input input key-code))
 
-(defn key-pressed? [input key-code]
-  (Input/.isKeyPressed input key-code))
+(defn isKeyPressed [input key-code]
+  (.isKeyPressed ^Input input key-code))
 
-(defn set-input-processor! [input processor]
-  (Input/.setInputProcessor input processor))
+(defn setInputProcessor [input processor]
+  (.setInputProcessor ^Input input ^InputProcessor processor))
