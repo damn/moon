@@ -15,7 +15,7 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.window :as gdx-window]))
+            [gdl.window :as gdx-window]))
 
 (defn add-component-window
   [{:keys [schemas schema map-widget-table skin]}]

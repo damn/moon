@@ -6,12 +6,12 @@
             [clojure.moon.factions-iterations :refer [factions-iterations]]
             [clojure.shape-drawer :as shape-drawer]
             [clojure.line-of-sight :as line-of-sight?]
-            [clojure.orthographic-camera :as orthographic-camera]
+            [gdl.orthographic-camera :as orthographic-camera]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.throwable :as throwable]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]
-            [clojure.viewport :as viewport]))
+            [gdl.viewport :as viewport]))
 
 (def ^:private render-layers
   [#{:entity/mouseover?

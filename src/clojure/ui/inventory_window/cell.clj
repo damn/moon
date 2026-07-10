@@ -1,9 +1,9 @@
 (ns clojure.ui.inventory-window.cell
   (:require
-            [gdl.actor :as actor] [clojure.image :as image]
+            [gdl.actor :as actor] [gdl.image :as image]
             [clojure.scene2d.group :as group]
             [gdl.event :as event]
-            [clojure.vector2 :as vector2]
+            [gdl.vector2 :as vector2]
             [clojure.ui-widget :as widget]
             [clojure.scene2d.utils.click-listener :as click-listener]
             [clojure.ui-stack :as stack]))

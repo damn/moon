@@ -1,5 +1,5 @@
 (ns clojure.ui-select-box
-  (:require [clojure.select-box :as select-box]))
+  (:require [gdl.select-box :as select-box]))
 
 (defn create
   [{:keys [items selected skin]}]

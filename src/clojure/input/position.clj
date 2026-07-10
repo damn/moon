@@ -1,5 +1,5 @@
 (ns clojure.input.position
-  (:require [clojure.input :as input]))
+  (:require [gdl.input :as input]))
 
 (defn f [input]
   [(input/get-x input)

@@ -1,11 +1,11 @@
 (ns clojure.ui.action-bar.add-skill
   (:require
-            [gdl.actor :as actor] [clojure.texture-region :as texture-region]
-            [clojure.texture-region-drawable :as texture-region-drawable]
-            [clojure.texture :as texture]
+            [gdl.actor :as actor] [gdl.texture-region :as texture-region]
+            [gdl.texture-region-drawable :as texture-region-drawable]
+            [gdl.texture :as texture]
             [clojure.ui.button-group :as button-group]
             [clojure.scene2d.group :as group]
-            [clojure.image-button :as image-button]
+            [gdl.image-button :as image-button]
             [clojure.ui-text-tooltip :as text-tooltip]
             [clojure.ui.action-bar.get-data :as get-data]))
 

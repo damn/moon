@@ -1,5 +1,5 @@
 (ns clojure.ui-widget
-  (:require [clojure.widget :as widget]))
+  (:require [gdl.widget :as widget]))
 
 (defn f
   [{:keys [draw!]}]

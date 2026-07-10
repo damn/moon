@@ -1,5 +1,5 @@
 (ns clojure.levels.modules.last-steps
-  (:require [clojure.tiled-map :as tiled-map]
+  (:require [gdl.tiled-map :as tiled-map]
             [clojure.property-value :refer [property-value]]
             [clojure.g2d.cells :refer [->cells]]
             [clojure.scale-grid :as scale-grid]

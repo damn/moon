@@ -1,5 +1,5 @@
 (ns clojure.ui-window
-  (:require [clojure.window :as window]
+  (:require [gdl.window :as window]
             [clojure.table-set-opts :refer [set-opts!]]))
 
 (defn f [{:keys [title skin]}]

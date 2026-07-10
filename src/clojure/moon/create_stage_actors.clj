@@ -7,7 +7,7 @@
             [clojure.moon.stage-dev-menu-create :refer [stage-dev-menu-create]]
             [clojure.moon.stage-info-window-create :refer [stage-info-window-create]]
             [clojure.moon.windows-create :refer [windows-create]]
-            [clojure.stage :as stage]))
+            [gdl.stage :as stage]))
 
 (defn f [ctx]
   (doseq [[actor-fn & params] [[action-bar-create]

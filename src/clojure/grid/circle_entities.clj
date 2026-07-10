@@ -1,6 +1,6 @@
 (ns clojure.grid.circle-entities
   (:require [gdl.circle :as circle]
-            [clojure.intersector :as intersector]
+            [gdl.intersector :as intersector]
             [clojure.body.rectangle :refer [->rectangle]]
             [clojure.g2d.circle-to-cells :refer [circle->cells]]
             [clojure.grid.cells-entities :as cells->entities]))

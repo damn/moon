@@ -1,9 +1,9 @@
 (ns clojure.moon.create-grid
   (:require [clojure.grid-cell :as grid-cell]
             [clojure.grid2d :as g2d]
-            [clojure.map-properties :as map-properties]
+            [gdl.map-properties :as map-properties]
             [clojure.movement-property :as movement-property]
-            [clojure.tiled-map :as tiled-map]))
+            [gdl.tiled-map :as tiled-map]))
 
 (defn f [ctx]
   (assoc ctx

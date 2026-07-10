@@ -5,7 +5,7 @@
             [gdl.event :as event]
             [clojure.db.get-raw :refer [get-raw]]
             [clojure.property-types :refer [property-types]]
-            [clojure.stage :as stage]
+            [gdl.stage :as stage]
             [clojure.string :as str]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]

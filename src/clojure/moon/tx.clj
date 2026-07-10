@@ -35,15 +35,15 @@
             [clojure.safe-merge :refer [safe-merge]]
             [clojure.set-occupied-cells :refer [set-occupied-cells!]]
             [clojure.set-touched-cells :refer [set-touched-cells!]]
-            [clojure.stage :as stage]
+            [gdl.stage :as stage]
             [clojure.timer-create :refer [create-timer]]
             [clojure.ui-label :as label]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
-            [clojure.viewport :as viewport]
+            [gdl.viewport :as viewport]
             [clojure.content-grid.update-entity :as update-entity]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.window :as gdx-window]
+            [gdl.window :as gdx-window]
             [reduce-fsm :as fsm]))
 
 (def f

@@ -1,5 +1,5 @@
 (ns clojure.overlaps
-  (:require [clojure.rectangle :as rectangle]
+  (:require [gdl.rectangle :as rectangle]
             [clojure.body.rectangle :refer [->rectangle]]))
 
 (defn overlaps? [body other-body]

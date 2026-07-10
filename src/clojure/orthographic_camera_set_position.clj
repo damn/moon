@@ -1,6 +1,6 @@
 (ns clojure.orthographic-camera-set-position
-  (:require [clojure.orthographic-camera :as orthographic-camera]
-            [clojure.vector3 :as vector3]))
+  (:require [gdl.orthographic-camera :as orthographic-camera]
+            [gdl.vector3 :as vector3]))
 
 (defn set-position! [camera [x y]]
   (let [pos (orthographic-camera/position camera)]

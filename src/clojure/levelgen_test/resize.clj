@@ -1,5 +1,5 @@
 (ns clojure.levelgen-test.resize
-  (:require [clojure.viewport :as viewport]))
+  (:require [gdl.viewport :as viewport]))
 
 (defn resize
   [{:keys [ctx/stage

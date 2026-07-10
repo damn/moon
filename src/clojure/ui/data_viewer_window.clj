@@ -2,7 +2,7 @@
   (:require [clojure.k-label-str :refer [k->label-str]]
             [gdl.actor :as actor]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.stage :as stage]
+            [gdl.stage :as stage]
             [clojure.ui-label :as label]
             [clojure.ui-scroll-pane :as scroll-pane]
             [clojure.ui-table :as table]

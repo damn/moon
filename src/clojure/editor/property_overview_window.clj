@@ -8,7 +8,7 @@
             [clojure.table-rows :refer [overview-table-rows*]]
             [clojure.tooltip :as tooltip]
             [clojure.ui-window :as window]
-            [clojure.window :as gdx-window]))
+            [gdl.window :as gdx-window]))
 
 (defn property-overview-window
   [{:keys [db

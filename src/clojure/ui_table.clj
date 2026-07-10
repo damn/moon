@@ -1,5 +1,5 @@
 (ns clojure.ui-table
-  (:require [clojure.table :as table]
+  (:require [gdl.table :as table]
             [clojure.table-set-opts :refer [set-opts!]]))
 
 (defn create

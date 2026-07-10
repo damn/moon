@@ -7,8 +7,8 @@
             [clojure.input.key-pressed :as key-pressed?]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
-            [clojure.stage :as stage]
-            [clojure.viewport :as viewport]))
+            [gdl.stage :as stage]
+            [gdl.viewport :as viewport]))
 
 (defn render
   [{:keys [ctx/input

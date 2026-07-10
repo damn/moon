@@ -1,5 +1,5 @@
 (ns clojure.hit
-  (:require [clojure.stage :as stage]))
+  (:require [gdl.stage :as stage]))
 
 (defn hit [stage [x y]]
   (stage/hit stage x y true))

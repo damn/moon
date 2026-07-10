@@ -1,6 +1,6 @@
 (ns clojure.ui.window.add-close-button
   (:require
-            [gdl.actor :as actor] [clojure.window :as window]
+            [gdl.actor :as actor] [gdl.window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.ui.table.add-cell :refer [add-cell!]]
             [clojure.ui-text-button :as text-button]))

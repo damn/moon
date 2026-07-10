@@ -2,7 +2,7 @@
   (:require [gdl.actor :as actor]
             [clojure.moon.draw :refer [draw!]]
             [clojure.scene2d-actor :as scene2d-actor]
-            [clojure.viewport :as viewport]))
+            [gdl.viewport :as viewport]))
 
 (defn player-message-actor-create [_ctx]
   (let [message-duration-seconds 0.5]

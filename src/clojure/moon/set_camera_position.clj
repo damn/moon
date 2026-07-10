@@ -1,6 +1,6 @@
 (ns clojure.moon.set-camera-position
   (:require [clojure.orthographic-camera-set-position :as camera-set-position]
-            [clojure.viewport :as viewport]))
+            [gdl.viewport :as viewport]))
 
 (defn f
   [{:keys [ctx/player-eid

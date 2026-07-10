@@ -1,6 +1,6 @@
 (ns clojure.inventory-window-remove-item
   (:require
-            [gdl.actor :as actor] [clojure.image :as image]
+            [gdl.actor :as actor] [gdl.image :as image]
             [clojure.scene2d.group :as group]
             [clojure.get-cell :as get-cell]))
 

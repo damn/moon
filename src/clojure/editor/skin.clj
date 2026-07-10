@@ -1,8 +1,8 @@
 (ns clojure.editor.skin
-  (:require [clojure.files :as files]
+  (:require [gdl.files :as files]
             [gdl.bitmap-font :as bitmap-font]
             [gdl.bitmap-font-data :as bitmap-font-data]
-            [clojure.skin :as skin]))
+            [gdl.skin :as skin]))
 
 (defn f [{:keys [ctx/files] :as ctx}]
   (let [skin (skin/new (files/internal files "skin/uiskin.json"))]

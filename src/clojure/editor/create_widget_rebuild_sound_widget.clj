@@ -4,7 +4,7 @@
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.scene2d.group :as group]
             [clojure.pack! :as pack!]
-            [clojure.window :as gdx-window]))
+            [gdl.window :as gdx-window]))
 
 (defn rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]

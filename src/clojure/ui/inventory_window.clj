@@ -4,7 +4,7 @@
             [clojure.ui.inventory-window.cell :refer [->cell]]
             [clojure.is-valid-slot :as valid-slot?]
             [clojure.new-color]
-            [clojure.texture-region-drawable :as texture-region-drawable]
+            [gdl.texture-region-drawable :as texture-region-drawable]
             [clojure.ui-table :as table]
             [clojure.ui-window :as window]))
 

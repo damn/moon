@@ -6,7 +6,7 @@
             [gdl.event :as event]
             [clojure.horiz-sep :as horiz-sep]
             [clojure.interpose-f :refer [interpose-f]]
-            [clojure.stage :as stage]
+            [gdl.stage :as stage]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.scene2d.utils.change-listener :as change-listener]))

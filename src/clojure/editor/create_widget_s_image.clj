@@ -1,9 +1,9 @@
 (ns clojure.editor.create-widget-s-image
   (:require [clojure.editor.create-widget :refer [create-widget]]
-            [clojure.image-button :as image-button]
+            [gdl.image-button :as image-button]
             [clojure.moon-textures :as textures]
-            [clojure.texture-region :as texture-region]
-            [clojure.texture-region-drawable :as texture-region-drawable]))
+            [gdl.texture-region :as texture-region]
+            [gdl.texture-region-drawable :as texture-region-drawable]))
 
 (defmethod create-widget :s/image
   [_ image {:keys [ctx/textures]}]

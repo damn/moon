@@ -1,6 +1,6 @@
 (ns clojure.moon.create-world-viewport
-  (:require [clojure.fit-viewport :as fit-viewport]
-            [clojure.orthographic-camera :as orthographic-camera]
+  (:require [gdl.fit-viewport :as fit-viewport]
+            [gdl.orthographic-camera :as orthographic-camera]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (defn f [ctx]

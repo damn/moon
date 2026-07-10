@@ -1,7 +1,7 @@
 (ns clojure.tiled-map.add-creatures-layer
   (:require [clojure.tiled-map.add-layer :as add-layer]
-            [clojure.map-properties :as map-properties]
-            [clojure.static-tiled-map-tile :as static-tiled-map-tile]))
+            [gdl.map-properties :as map-properties]
+            [gdl.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f [tiled-map spawn-positions]
   (add-layer/f tiled-map

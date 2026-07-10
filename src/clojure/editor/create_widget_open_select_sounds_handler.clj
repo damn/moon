@@ -6,14 +6,14 @@
             [clojure.editor.create-widget-rebuild-sound-widget :as rebuild-sound-widget]
             [gdl.event :as event]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
-            [clojure.stage :as stage]
+            [gdl.stage :as stage]
             [clojure.ui-scroll-pane :as scroll-pane]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.viewport :as viewport]
-            [clojure.window :as gdx-window]))
+            [gdl.viewport :as viewport]
+            [gdl.window :as gdx-window]))
 
 (defn open-select-sounds-handler [table ->sound-columns]
   (fn [{:keys [ctx/skin

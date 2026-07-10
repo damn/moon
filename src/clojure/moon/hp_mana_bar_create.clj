@@ -7,7 +7,7 @@
             [clojure.readable :as readable]
             [clojure.scene2d-actor :as scene2d-actor]
             [clojure.val-max.ratio :as ratio]
-            [clojure.viewport :as viewport]))
+            [gdl.viewport :as viewport]))
 
 (defn hp-mana-bar-create
   [{:keys [ctx/textures

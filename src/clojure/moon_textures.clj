@@ -1,6 +1,6 @@
 (ns clojure.moon-textures
-  (:require [clojure.texture-region :as texture-region]
-            [clojure.texture :as texture]))
+  (:require [gdl.texture-region :as texture-region]
+            [gdl.texture :as texture]))
 
 (defn texture-region
   [textures {:keys [image/file image/bounds]}]

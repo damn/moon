@@ -1,5 +1,5 @@
 (ns clojure.ui.table.add-cell
-  (:require [clojure.table :as table]
+  (:require [gdl.table :as table]
             [clojure.ui.cell.set-opts :as set-opts]))
 
 (defn add-cell! [table cell-declaration]

@@ -5,7 +5,7 @@
             [gdl.bitmap-font-data :as bitmap-font-data]
             [clojure.shape-drawer :as shape-drawer]
             [clojure.string :as str]
-            [clojure.texture-region :as texture-region]
+            [gdl.texture-region :as texture-region]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (declare draw!)

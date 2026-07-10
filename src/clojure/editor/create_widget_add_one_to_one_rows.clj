@@ -6,16 +6,16 @@
             [gdl.event :as event]
             [clojure.db.get-raw :refer [get-raw]]
             [clojure.scene2d.group :as group]
-            [clojure.image :as image]
+            [gdl.image :as image]
             [clojure.moon-textures :as textures]
             [clojure.pack! :as pack!]
             [clojure.property-image :as property-image]
-            [clojure.stage :as stage]
+            [gdl.stage :as stage]
             [clojure.tooltip :as tooltip]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-text-tooltip :as text-tooltip]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.window :as gdx-window]))
+            [gdl.window :as gdx-window]))
 
 (defn add-one-to-one-rows
   [{:keys [ctx/db

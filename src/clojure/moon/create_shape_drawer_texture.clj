@@ -2,7 +2,7 @@
   (:require [gdl.disposable :as disposable]
             [gdl.pixmap :as pixmap]
             [gdl.pixmap-format :as pixmap-format]
-            [clojure.texture :as texture]
+            [gdl.texture :as texture]
             [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]))
 
 (defn f [ctx]

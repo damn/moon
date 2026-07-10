@@ -1,7 +1,7 @@
 (ns clojure.moon.create-cursors
   (:require [gdl.disposable :as disposable]
             [clojure.edn :as edn]
-            [clojure.files :as files]
+            [gdl.files :as files]
             [gdl.graphics :as graphics]
             [clojure.java.io :as io]
             [gdl.pixmap :as pixmap]))

@@ -3,8 +3,8 @@
             [clojure.ui.checkbox :as checkbox]
             [clojure.edn :as edn]
             [clojure.scene2d.group :as group]
-            [clojure.select-box :as gdx-select-box]
-            [clojure.text-field :as gdx-text-field]))
+            [gdl.select-box :as gdx-select-box]
+            [gdl.text-field :as gdx-text-field]))
 
 (defmulti widget-value
   (fn [[schema-k :as _schema] widget schemas]

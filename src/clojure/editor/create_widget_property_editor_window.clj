@@ -3,7 +3,7 @@
             [clojure.ui.error-window :as error-window]
             [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.set-ctx :as set-ctx]
-            [clojure.stage :as stage]
+            [gdl.stage :as stage]
             [clojure.throwable :as throwable]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.db.update :refer [update!]]
@@ -20,8 +20,8 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.viewport :as viewport]
-            [clojure.window :as gdx-window]))
+            [gdl.viewport :as viewport]
+            [gdl.window :as gdx-window]))
 
 (defn with-window-close [f]
   (fn [actor {:keys [ctx/skin

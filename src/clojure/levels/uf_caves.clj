@@ -1,9 +1,9 @@
 (ns clojure.levels.uf-caves
   (:require [clojure.caves.gen :as caves]
             [clojure.g2d.fix-nads :as fix-nads]
-            [clojure.texture-region :as texture-region]
-            [clojure.map-properties :as map-properties]
-            [clojure.static-tiled-map-tile :as static-tiled-map-tile]
+            [gdl.texture-region :as texture-region]
+            [gdl.map-properties :as map-properties]
+            [gdl.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.levels.uf-caves.initial-grid]
             [clojure.levels.uf-caves.fix-nads]
             [clojure.levels.uf-caves.last-steps]

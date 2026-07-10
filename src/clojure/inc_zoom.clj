@@ -1,5 +1,5 @@
 (ns clojure.inc-zoom
-  (:require [clojure.orthographic-camera :as orthographic-camera]
+  (:require [gdl.orthographic-camera :as orthographic-camera]
             [clojure.set-zoom :refer [set-zoom!]]))
 
 (defn inc-zoom! [cam by]

@@ -1,7 +1,7 @@
 (ns clojure.moon.create-audio
   (:require [gdl.audio :as audio]
             [clojure.edn :as edn]
-            [clojure.files :as files]
+            [gdl.files :as files]
             [clojure.java.io :as io]))
 
 (defn f [ctx]

@@ -4,7 +4,7 @@
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.input.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
             [clojure.input.key-pressed :refer [f] :rename {f key-pressed?}]
-            [clojure.viewport :as viewport]))
+            [gdl.viewport :as viewport]))
 
 (def zoom-speed 0.025)
 

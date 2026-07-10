@@ -2,7 +2,7 @@
   (:require
             [gdl.actor :as actor]
             [clojure.set-fill-parent! :as set-fill-parent!]
-            [clojure.touchable :as touchable]
+            [gdl.touchable :as touchable]
             [clojure.ui.dev-menu.main-table :as main-table]
             [clojure.ui-label :as label]
             [clojure.ui-table :as table]))

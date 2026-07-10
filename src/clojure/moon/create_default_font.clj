@@ -2,9 +2,9 @@
   (:require [gdl.bitmap-font :as bitmap-font]
             [gdl.bitmap-font-data :as bitmap-font-data]
             [gdl.disposable :as disposable]
-            [clojure.files :as files]
+            [gdl.files :as files]
             [gdl.font-generator :as free-type-font-generator]
-            [clojure.texture$texture-filter :as texture-filter]))
+            [gdl.texture-texture-filter :as texture-filter]))
 
 (defn f [ctx]
   (assoc ctx

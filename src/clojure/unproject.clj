@@ -1,6 +1,6 @@
 (ns clojure.unproject
-  (:require [clojure.vector2 :as vector2]
-            [clojure.viewport :as viewport]))
+  (:require [gdl.vector2 :as vector2]
+            [gdl.viewport :as viewport]))
 
 (defn f [viewport [x y]]
   (-> viewport

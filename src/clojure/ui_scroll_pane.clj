@@ -1,5 +1,5 @@
 (ns clojure.ui-scroll-pane
-  (:require [clojure.scroll-pane :as scroll-pane]))
+  (:require [gdl.scroll-pane :as scroll-pane]))
 
 (defn create
   [{:keys [actor skin]}]
