@@ -1,6 +1,5 @@
 (ns clojure.moon.action-bar-create
-  (:require [clojure.scene2d.actor.set-name :as set-name]
-            [clojure.scene2d.actor.set-user-object :as set-user-object]
+  (:require [gdl.actor :as actor]
             [clojure.ui.button-group :as button-group]
             [clojure.horizontal-group :as horizontal-group]
             [clojure.set-fill-parent! :as set-fill-parent!]
@@ -12,11 +11,11 @@
           :table/rows [[{:actor (doto (horizontal-group/new)
                                   (horizontal-group/space! 2)
                                   (horizontal-group/pad! 2)
-                                  (set-name/f "moon.ui.action-bar.horizontal-group")
-                                  (set-user-object/f (doto (button-group/new)
+                                  (actor/set-name "moon.ui.action-bar.horizontal-group")
+                                  (actor/set-user-object (doto (button-group/new)
                                                        (button-group/set-max-check-count! 1)
                                                        (button-group/set-min-check-count! 0))))
                          :expand? true
                          :bottom? true}]]})
     (set-fill-parent!/f true)
-    (set-name/f "moon.ui.action-bar")))
+    (actor/set-name "moon.ui.action-bar")))

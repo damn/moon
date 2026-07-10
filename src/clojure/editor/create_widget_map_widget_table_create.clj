@@ -1,6 +1,5 @@
 (ns clojure.editor.create-widget-map-widget-table-create
-  (:require [clojure.scene2d.actor.set-name]
-            [clojure.scene2d.actor.add-listener]
+  (:require [gdl.actor :as actor]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.editor.create-widget-add-component-window :as add-component-window]
             [clojure.editor.create-widget-create-component-row :as create-component-row]
@@ -21,7 +20,7 @@
            opt?]}]
   (let [table (doto (table/create
                      {:table/cell-defaults {:pad 5}})
-                (clojure.scene2d.actor.set-name/f "moon.db.schema.map.ui.widget"))
+                (actor/set-name "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep/f colspan)
                                     (map (fn [k]
@@ -38,7 +37,7 @@
                 [{:actor (doto (text-button/create
                                 {:text "Add component"
                                  :skin skin})
-                           (clojure.scene2d.actor.add-listener/f (change-listener/create
+                           (actor/add-listener (change-listener/create
                                                     (fn [event actor]
                                                       (let [{:keys [ctx/db
                                                                     ctx/stage

@@ -1,11 +1,11 @@
 (ns clojure.moon.hp-mana-bar-create
-  (:require [clojure.scene2d.actor.get-stage]
+  (:require [gdl.actor :as actor]
             [clojure.moon.draw :refer [draw!]]
             [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.stats.get-mana :as get-mana]
             [clojure.moon-textures :as textures]
             [clojure.readable :as readable]
-            [clojure.scene2d-actor :as actor]
+            [clojure.scene2d-actor :as scene2d-actor]
             [clojure.val-max.ratio :as ratio]
             [clojure.viewport :as viewport]))
 
@@ -48,8 +48,8 @@
                          (concat
                           (render-hpmana-bar x y-hp hpcontent-file (get-hitpoints/f stats) "HP")
                           (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
-    (actor/f
+    (scene2d-actor/f
      {:draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (clojure.scene2d.actor.get-stage/f this)]
+               (when-let [stage (actor/get-stage this)]
                  (draw! (:stage/ctx stage)
                         (create-draws (:stage/ctx stage)))))})))

@@ -1,12 +1,6 @@
 (ns clojure.editor.property-overview-window
-  (:require [clojure.scene2d.actor.get-height]
-            [clojure.scene2d.actor.get-stage]
-            [clojure.scene2d.actor.get-user-object]
-            [clojure.scene2d.actor.get-width]
-            [clojure.scene2d.actor.remove-actor]
-            [clojure.scene2d.actor.set-user-object]
+  (:require [gdl.actor :as actor]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [clojure.scene2d.actor.add-listener]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.editor.constants :refer [property-type->overview-table-props]]
             [clojure.moon-textures :as textures]

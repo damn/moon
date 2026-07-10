@@ -1,7 +1,6 @@
 (ns clojure.editor.create-widget-add-component-window
-  (:require [clojure.scene2d.actor.remove-actor]
+  (:require [gdl.actor :as actor]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [clojure.scene2d.actor.add-listener]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.schemas :as schemas]
             [clojure.editor.create-widget-build-widget :as build-widget]
@@ -34,9 +33,9 @@
        [{:actor (doto (text-button/create
                        {:skin skin
                         :text (name k)})
-                  (clojure.scene2d.actor.add-listener/f (change-listener/create
+                  (actor/add-listener (change-listener/create
                                            (fn [event _actor]
-                                             (clojure.scene2d.actor.remove-actor/f window)
+                                             (actor/remove-actor window)
                                              (let [ctx (:stage/ctx (event/get-stage event))]
                                                (add-rows! map-widget-table [(create-component-row/create-component-row
                                                                             {:skin skin

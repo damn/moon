@@ -1,11 +1,11 @@
 (ns clojure.set-label-text-actor
   (:require
-            [clojure.scene2d.actor.get-stage]
+            [gdl.actor :as actor]
             [clojure.label :as gdx-label]
-            [clojure.scene2d-actor :as actor]))
+            [clojure.scene2d-actor :as scene2d-actor]))
 
 (defn set-label-text-actor [label text-fn]
-  (actor/f
+  (scene2d-actor/f
    {:act! (fn [this _delta]
-            (when-let [stage (clojure.scene2d.actor.get-stage/f this)]
+            (when-let [stage (actor/get-stage this)]
               (gdx-label/set-text! label (text-fn (:stage/ctx stage)))))}))

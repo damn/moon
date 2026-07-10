@@ -1,19 +1,16 @@
 (ns clojure.moon.player-message-actor-create
-  (:require [clojure.scene2d.actor.get-stage]
-            [clojure.scene2d.actor.get-user-object]
-            [clojure.scene2d.actor.set-name :as set-name]
-            [clojure.scene2d.actor.set-user-object :as set-user-object]
+  (:require [gdl.actor :as actor]
             [clojure.moon.draw :refer [draw!]]
-            [clojure.scene2d-actor :as actor]
+            [clojure.scene2d-actor :as scene2d-actor]
             [clojure.viewport :as viewport]))
 
 (defn player-message-actor-create [_ctx]
   (let [message-duration-seconds 0.5]
-    (doto (actor/f
+    (doto (scene2d-actor/f
            {:draw! (fn [this _batch _parent-alpha]
-                     (when-let [stage (clojure.scene2d.actor.get-stage/f this)]
+                     (when-let [stage (actor/get-stage this)]
                        (draw! (:stage/ctx stage)
-                              [(let [state (clojure.scene2d.actor.get-user-object/f this)
+                              [(let [state (actor/get-user-object this)
                                      vp-width (viewport/get-world-width (:stage/viewport stage))
                                      vp-height (viewport/get-world-height (:stage/viewport stage))]
                                  (when-let [text (:text @state)]
@@ -23,10 +20,10 @@
                                                 :scale 2.5
                                                 :up? true}]))])))
             :act! (fn [this delta]
-                    (let [state (clojure.scene2d.actor.get-user-object/f this)]
+                    (let [state (actor/get-user-object this)]
                       (when (:text @state)
                         (swap! state update :counter + delta)
                         (when (>= (:counter @state) message-duration-seconds)
                           (reset! state nil)))))})
-      (set-name/f "player-message")
-      (set-user-object/f (atom nil)))))
+      (actor/set-name "player-message")
+      (actor/set-user-object (atom nil)))))

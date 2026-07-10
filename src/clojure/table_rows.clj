@@ -1,7 +1,6 @@
 (ns clojure.table-rows
   (:require
-            [clojure.scene2d.actor.add-listener]
-            [clojure.scene2d.actor.set-touchable] [clojure.texture-region :as texture-region]
+            [gdl.actor :as actor] [clojure.texture-region :as texture-region]
             [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
             [clojure.scene2d.group :as group]
@@ -25,12 +24,12 @@
                               (doto (texture-region-drawable/new texture-region)
                                 (texture-region-drawable/set-min-size! (* image-scale (texture-region/getRegionWidth texture-region))
                                                 (* image-scale (texture-region/getRegionHeight texture-region)))))
-                        (clojure.scene2d.actor.add-listener/f (change-listener/create
+                        (actor/add-listener (change-listener/create
                                          (fn [event actor]
                                            (on-clicked actor (:stage/ctx (event/get-stage event))))))
-                        (clojure.scene2d.actor.add-listener/f (text-tooltip/create tooltip skin)))
+                        (actor/add-listener (text-tooltip/create tooltip skin)))
                        (doto (label/create
                               {:text extra-info-text
                                :skin skin})
-                         (clojure.scene2d.actor.set-touchable/f touchable/disabled))])
+                         (actor/set-touchable touchable/disabled))])
                 stack)})))

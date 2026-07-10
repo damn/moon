@@ -1,5 +1,5 @@
 (ns clojure.editor.widget-value
-  (:require [clojure.scene2d.actor.get-user-object]
+  (:require [gdl.actor :as actor]
             [clojure.ui.checkbox :as checkbox]
             [clojure.edn :as edn]
             [clojure.scene2d.group :as group]
@@ -12,13 +12,13 @@
 
 (defn map-widget-table-get-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? clojure.scene2d.actor.get-user-object/f) (group/get-children table))
-              :let [[k _] (clojure.scene2d.actor.get-user-object/f widget)]]
+        (for [widget (filter (comp vector? actor/get-user-object) (group/get-children table))
+              :let [[k _] (actor/get-user-object widget)]]
           [k (widget-value (get schemas k) widget schemas)])))
 
 (defmethod widget-value :default
   [_ widget _schemas]
-  ((clojure.scene2d.actor.get-user-object/f widget) 1))
+  ((actor/get-user-object widget) 1))
 
 (defmethod widget-value :s/boolean
   [_ widget _schemas]
@@ -39,13 +39,13 @@
 (defmethod widget-value :s/one-to-many
   [_ widget _schemas]
   (->> (group/get-children widget)
-       (keep clojure.scene2d.actor.get-user-object/f)
+       (keep actor/get-user-object)
        set))
 
 (defmethod widget-value :s/one-to-one
   [_ widget _schemas]
   (->> (group/get-children widget)
-       (keep clojure.scene2d.actor.get-user-object/f)
+       (keep actor/get-user-object)
        first))
 
 (defmethod widget-value :s/string

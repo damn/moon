@@ -1,15 +1,6 @@
 (ns clojure.ui.inventory-window.cell
   (:require
-            [clojure.scene2d.actor.hit]
-            [clojure.scene2d.actor.add-listener]
-            [clojure.scene2d.actor.get-parent]
-            [clojure.scene2d.actor.get-stage]
-            [clojure.scene2d.actor.get-user-object]
-            [clojure.scene2d.actor.get-x]
-            [clojure.scene2d.actor.get-y]
-            [clojure.scene2d.actor.set-name]
-            [clojure.scene2d.actor.set-user-object]
-            [clojure.scene2d.actor.stage-to-local-coordinates] [clojure.image :as image]
+            [gdl.actor :as actor] [clojure.image :as image]
             [clojure.scene2d.group :as group]
             [clojure.event :as event]
             [clojure.vector2 :as vector2]
@@ -25,29 +16,29 @@
        (run! #(group/add-actor! stack %)
              [(widget/f
                {:draw! (fn [this _batch _parent-alpha]
-                         (when-let [stage (clojure.scene2d.actor.get-stage/f this)]
+                         (when-let [stage (actor/get-stage this)]
                            (let [{:keys [ctx/player-eid
                                          ctx/ui-mouse-position]
                                   :as ctx} (:stage/ctx stage)]
                              (draw! ctx
                                     (draw-cell-rect @player-eid
-                                                    (clojure.scene2d.actor.get-x/f this)
-                                                    (clojure.scene2d.actor.get-y/f this)
+                                                    (actor/get-x this)
+                                                    (actor/get-y this)
                                                     (let [[mx my] ui-mouse-position
                                                           [x y] (vector2/clojurize
-                                                                 (clojure.scene2d.actor.stage-to-local-coordinates/f this
+                                                                 (actor/stage-to-local-coordinates this
                                                                                               (vector2/new mx my)))]
-                                                      (clojure.scene2d.actor.hit/f this x y true))
-                                                    (clojure.scene2d.actor.get-user-object/f (clojure.scene2d.actor.get-parent/f this)))))))})
+                                                      (actor/hit this x y true))
+                                                    (actor/get-user-object (actor/get-parent this)))))))})
               (doto (image/new-drawable background-drawable)
-                (clojure.scene2d.actor.set-name/f "image-widget")
-                (clojure.scene2d.actor.set-user-object/f {:background-drawable background-drawable
+                (actor/set-name "image-widget")
+                (actor/set-user-object {:background-drawable background-drawable
                                     :cell-size cell-size}))])
        (doto stack
-         (clojure.scene2d.actor.add-listener/f (click-listener/create
+         (actor/add-listener (click-listener/create
                           (fn [event _x _y]
                             (let [{:keys [ctx/player-eid]
                                    :as ctx} (:stage/ctx (event/get-stage event))]
                               (do! ctx (on-click-cell player-eid cell))))))
-         (clojure.scene2d.actor.set-name/f "inventory-cell")
-         (clojure.scene2d.actor.set-user-object/f cell)))}))
+         (actor/set-name "inventory-cell")
+         (actor/set-user-object cell)))}))

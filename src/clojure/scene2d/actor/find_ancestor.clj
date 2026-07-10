@@ -1,10 +1,10 @@
 (ns clojure.scene2d.actor.find-ancestor
   (:require
-            [clojure.scene2d.actor.get-parent]))
+            [gdl.actor :as actor]))
 
 (defn find-ancestor [actor pred?]
   (loop [a actor]
-    (if-let [p (clojure.scene2d.actor.get-parent/f a)]
+    (if-let [p (actor/get-parent a)]
       (if (pred? p)
         p
         (recur p))

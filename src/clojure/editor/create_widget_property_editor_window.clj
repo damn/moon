@@ -1,14 +1,11 @@
 (ns clojure.editor.create-widget-property-editor-window
-  (:require [clojure.scene2d.actor.get-stage]
+  (:require [gdl.actor :as actor]
             [clojure.ui.error-window :as error-window]
-            [clojure.scene2d.actor.remove-actor]
             [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.set-ctx :as set-ctx]
             [clojure.stage :as stage]
             [clojure.throwable :as throwable]
-            [clojure.scene2d.actor.set-name]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [clojure.scene2d.actor.add-listener]
             [clojure.db.update :refer [update!]]
             [clojure.db.delete :refer [delete!]]
             [clojure.editor.create-widget :refer [create-widget]]
@@ -16,7 +13,7 @@
             [clojure.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.input.key-just-pressed :as key-just-pressed?]
-            [clojure.scene2d-actor :as actor]
+            [clojure.scene2d-actor :as scene2d-actor]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.type :refer [property->type]]
             [clojure.ui-table :as table]
@@ -32,9 +29,9 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (clojure.scene2d.actor.get-stage/f actor)]
+           stage (actor/get-stage actor)]
        (set-ctx/f stage new-ctx))
-     (clojure.scene2d.actor.remove-actor/f (find-ancestor actor (partial instance? gdx-window/class)))
+     (actor/remove-actor (find-ancestor actor (partial instance? gdx-window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
        (stage/add-actor! stage
@@ -63,14 +60,14 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (clojure.scene2d.actor.add-listener/f (change-listener/create
+                                     (actor/add-listener (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (clojure.scene2d.actor.add-listener/f (change-listener/create
+                                     (actor/add-listener (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
@@ -86,10 +83,10 @@
                            50)]]})
       (add-close-button/f! skin)
       (gdx-window/set-modal! true)
-      (group/add-actor! (actor/f
+      (group/add-actor! (scene2d-actor/f
                          {:act! (fn [this delta]
-                                  (when-let [stage (clojure.scene2d.actor.get-stage/f this)]
+                                  (when-let [stage (actor/get-stage this)]
                                     (let [ctx (:stage/ctx stage)]
                                       (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                         (clicked-save-fn this ctx)))))}))
-      (clojure.scene2d.actor.set-name/f "moon.ui.clojure.editor-window"))))
+      (actor/set-name "moon.ui.clojure.editor-window"))))

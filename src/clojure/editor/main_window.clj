@@ -1,5 +1,5 @@
 (ns clojure.editor.main-window
-  (:require [clojure.scene2d.actor.add-listener]
+  (:require [gdl.actor :as actor]
             [clojure.editor.create-widget-property-editor-window :refer [property-editor-window]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
             [clojure.event :as event]
@@ -21,7 +21,7 @@
                   [{:actor (doto (text-button/create
                                   {:text (str/capitalize (name property-type))
                                    :skin skin})
-                             (clojure.scene2d.actor.add-listener/f (change-listener/create
+                             (actor/add-listener (change-listener/create
                                                       (fn [event _actor]
                                                         (let [{:keys [ctx/db
                                                                       ctx/skin

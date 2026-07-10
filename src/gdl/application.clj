@@ -1,6 +1,9 @@
 (ns gdl.application
   (:require [com.badlogic.gdx.application :as application]))
 
+; TODO pass data?
+; as one ???
+
 (defn get-audio [application]
   (application/getAudio application))
 

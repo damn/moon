@@ -1,6 +1,6 @@
 (ns clojure.ui.dev-menu.main-table
   (:require
-            [clojure.scene2d.actor.add-listener] [clojure.stage :as stage]
+            [gdl.actor :as actor] [clojure.stage :as stage]
             [clojure.event :as event]
             [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.ui-text-button :as text-button]
@@ -15,7 +15,7 @@
                {:table/rows [(for [{:keys [label items]} menus]
                                {:actor
                                 (doto (text-button/create {:text label :skin skin})
-                                  (clojure.scene2d.actor.add-listener/f (change-listener/create
+                                  (actor/add-listener (change-listener/create
                                                    (fn [event actor]
                                                      (stage/add-actor! (event/get-stage event)
                                                                   (doto (window/create
@@ -24,7 +24,7 @@
                                                                           :table/rows [(for [{:keys [label on-click]} items]
                                                                                          {:actor
                                                                                           (doto (text-button/create {:text label :skin skin})
-                                                                                            (clojure.scene2d.actor.add-listener/f (change-listener/create
+                                                                                            (actor/add-listener (change-listener/create
                                                                                                              (fn [event actor]
                                                                                                                (let [stage (event/get-stage event)]
                                                                                                                  (set-ctx/f stage

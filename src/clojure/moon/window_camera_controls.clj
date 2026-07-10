@@ -1,6 +1,5 @@
 (ns clojure.moon.window-camera-controls
-  (:require [clojure.scene2d.actor.set-visible]
-            [clojure.scene2d.actor.visible]
+  (:require [gdl.actor :as actor]
             [clojure.scene2d.group :as group]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.input.key-just-pressed :refer [f] :rename {f key-just-pressed?}]
@@ -24,13 +23,13 @@
   (when (key-just-pressed? input (:close-windows-key controls))
     (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
          group/get-children
-         (run! #(clojure.scene2d.actor.set-visible/f % false))))
+         (run! #(actor/set-visible % false))))
 
   (when (key-just-pressed? input (:toggle-inventory controls))
     (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-      (clojure.scene2d.actor.set-visible/f inventory (not (clojure.scene2d.actor.visible/f inventory)))))
+      (actor/set-visible inventory (not (actor/visible? inventory)))))
 
   (when (key-just-pressed? input (:toggle-entity-info controls))
     (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
-      (clojure.scene2d.actor.set-visible/f entity-info (not (clojure.scene2d.actor.visible/f entity-info)))))
+      (actor/set-visible entity-info (not (actor/visible? entity-info)))))
   ctx)

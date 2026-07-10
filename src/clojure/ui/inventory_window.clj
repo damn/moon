@@ -1,7 +1,6 @@
 (ns clojure.ui.inventory-window
-  (:require [clojure.scene2d.actor.set-name :as set-name]
+  (:require [gdl.actor :as actor]
             [clojure.scene2d.actor.set-position! :as actor-set-position]
-            [clojure.scene2d.actor.set-visible]
             [clojure.ui.inventory-window.cell :refer [->cell]]
             [clojure.is-valid-slot :as valid-slot?]
             [clojure.new-color]
@@ -56,8 +55,8 @@
                                                               (for [y (range 4)]
                                                                 (for [x (range 6)]
                                                                   (->cell :inventory.slot/bag :position [x y]))))})
-                                    (set-name/f "inventory-cell-table"))
+                                    (actor/set-name "inventory-cell-table"))
                            :pad 4}]]})
-      (set-name/f "moon.ui.windows.inventory")
-      (clojure.scene2d.actor.set-visible/f false)
+      (actor/set-name "moon.ui.windows.inventory")
+      (actor/set-visible false)
       (actor-set-position/set-position! position))))

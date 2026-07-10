@@ -1,15 +1,13 @@
 (ns clojure.scene2d.actor.mouseover-info
   (:require
-            [clojure.scene2d.actor.get-name]
-            [clojure.scene2d.actor.get-parent]
-            [clojure.scene2d.actor.get-user-object]
+            [gdl.actor :as actor]
             [clojure.scene2d.actor.is-button :as button?]
             [clojure.scene2d.actor.is-window-title-bar :as window-title-bar?]))
 
 (defn mouseover-actor-info [actor]
-  (let [inventory-slot (and (clojure.scene2d.actor.get-parent/f actor)
-                            (= "inventory-cell" (clojure.scene2d.actor.get-name/f (clojure.scene2d.actor.get-parent/f actor)))
-                            (clojure.scene2d.actor.get-user-object/f (clojure.scene2d.actor.get-parent/f actor)))]
+  (let [inventory-slot (and (actor/get-parent actor)
+                            (= "inventory-cell" (actor/get-name (actor/get-parent actor)))
+                            (actor/get-user-object (actor/get-parent actor)))]
     (cond
      inventory-slot
      [:mouseover-actor/inventory-cell inventory-slot]

@@ -1,11 +1,11 @@
 (ns clojure.scene2d.actor.is-window-title-bar
   (:require
-            [clojure.scene2d.actor.get-parent] [clojure.window :as window]
+            [gdl.actor :as actor] [clojure.window :as window]
             [clojure.label :as label]))
 
 (defn f [actor]
   (when (instance? label/class actor)
-    (when-let [p (clojure.scene2d.actor.get-parent/f actor)]
-      (when-let [p (clojure.scene2d.actor.get-parent/f p)]
+    (when-let [p (actor/get-parent actor)]
+      (when-let [p (actor/get-parent p)]
         (and (instance? window/class p)
              (= (window/get-title-label p) actor))))))

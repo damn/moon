@@ -1,6 +1,6 @@
 (ns clojure.moon.tx
   (:require [clojure.ui.action-bar.add-skill :as add-skill-ui]
-            [clojure.scene2d.actor.add-listener]
+            [gdl.actor :as actor]
             [clojure.stats.add-mods :as add-mods]
             [clojure.moon.after-create-component :refer [after-create-component]]
             [gdl.align :as align]
@@ -28,7 +28,6 @@
             [gdl.sound :as sound]
             [clojure.records-entity :as entity]
             [clojure.register-eid :as register-eid]
-            [clojure.scene2d.actor.remove-actor]
             [clojure.content-grid.remove-entity :as remove-entity]
             [clojure.remove-from-occupied-cells :refer [remove-from-occupied-cells!]]
             [clojure.remove-from-touched-cells :refer [remove-from-touched-cells!]]
@@ -36,9 +35,6 @@
             [clojure.safe-merge :refer [safe-merge]]
             [clojure.set-occupied-cells :refer [set-occupied-cells!]]
             [clojure.set-touched-cells :refer [set-touched-cells!]]
-            [clojure.scene2d.actor.set-user-object]
-            [clojure.scene2d.actor.set-visible]
-            [clojure.scene2d.actor.set-name]
             [clojure.stage :as stage]
             [clojure.timer-create :refer [create-timer]]
             [clojure.ui-label :as label]
@@ -47,7 +43,6 @@
             [clojure.viewport :as viewport]
             [clojure.content-grid.update-entity :as update-entity]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [clojure.scene2d.actor.visible]
             [clojure.window :as gdx-window]
             [reduce-fsm :as fsm]))
 
@@ -193,7 +188,7 @@
      (-> stage
          :stage/root
          (#(group/find-actor % "player-message"))
-         (clojure.scene2d.actor.set-user-object/f (atom {:text message :counter 0})))
+         (actor/set-user-object (atom {:text message :counter 0})))
      nil)
 
    :tx/show-modal
@@ -206,15 +201,15 @@
                                :skin skin
                                :table/rows [[{:actor (label/create {:text text :skin skin})}]
                                             [{:actor (doto (text-button/create {:text button-text :skin skin})
-                                                        (clojure.scene2d.actor.add-listener/f
+                                                        (actor/add-listener
                                                          (change-listener/create
                                                           (fn [_event _actor]
-                                                            (clojure.scene2d.actor.remove-actor/f
+                                                            (actor/remove-actor
                                                              (group/find-actor (:stage/root stage)
                                                                                "moon.ui.modal-window"))
                                                             (on-click)))))}]]})
                          (gdx-window/set-modal! true)
-                         (clojure.scene2d.actor.set-name/f "moon.ui.modal-window")
+                         (actor/set-name "moon.ui.modal-window")
                          (set-position! [(/ (viewport/get-world-width (:stage/viewport stage)) 2)
                                          (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))]
                                         align/center)))
@@ -329,7 +324,7 @@
    :tx/toggle-inventory-visible
    (fn [{:keys [ctx/stage]}]
      (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-       (clojure.scene2d.actor.set-visible/f inventory (not (clojure.scene2d.actor.visible/f inventory)))
+       (actor/set-visible inventory (not (actor/visible? inventory)))
        nil))
 
    :tx/ui-remove-item
