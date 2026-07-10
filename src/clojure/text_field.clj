@@ -6,4 +6,4 @@
   (apply text-field/new args))
 
 (defn get-text [& args]
-  (apply text-field/get-text args))
+  (apply text-field/getText args))

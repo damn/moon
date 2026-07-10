@@ -6,10 +6,10 @@
   (apply image/new args))
 
 (defn new-drawable [& args]
-  (apply image/new-drawable args))
+  (apply image/newDrawable args))
 
 (defn new-texture [& args]
-  (apply image/new-texture args))
+  (apply image/newTexture args))
 
 (defn set-drawable! [& args]
-  (apply image/set-drawable! args))
+  (apply image/setDrawable args))

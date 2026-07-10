@@ -1,0 +1,10 @@
+* com.badlogic.gdx.scenes.scene2d.ui.image constructor
+* static tiled-map tile if statement
+* viewport/utils
+* com.badlogic.gdx.scenes.scene2d.ui.select-box into-array???
+* com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager setInitialTime should be set-foo!
+  ( set! FFI RULE )
+
+  * But basically we could also do 'class -> construct, method, get, or set - that's it'
+    - java class API -
+      - classes implementi t automatically'

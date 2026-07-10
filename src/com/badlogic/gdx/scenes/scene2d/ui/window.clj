@@ -4,14 +4,14 @@
 
 (def class Window)
 
-(defn get-title-label [^Window window]
-  (Window/.getTitleLabel window))
-
-(defn get-title-table [^Window window]
-  (Window/.getTitleTable window))
-
 (defn new [^String title ^Skin skin]
   (Window. title skin))
 
-(defn set-modal! [^Window window modal?]
-  (Window/.setModal window modal?))
+(defn getTitleLabel [^Window window]
+  (.getTitleLabel window))
+
+(defn getTitleTable [^Window window]
+  (.getTitleTable window))
+
+(defn setModal [^Window window modal?]
+  (.setModal window modal?))

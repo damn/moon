@@ -5,8 +5,8 @@
 (defn new [text skin]
   (CheckBox. ^String text ^Skin skin))
 
-(defn set-checked! [^CheckBox checkbox checked?]
-  (CheckBox/.setChecked checkbox checked?))
+(defn setChecked [^CheckBox checkbox checked?]
+  (.setChecked checkbox checked?))
 
-(defn checked? [^CheckBox checkbox]
-  (CheckBox/.isChecked checkbox))
+(defn isChecked [^CheckBox checkbox]
+  (.isChecked checkbox))

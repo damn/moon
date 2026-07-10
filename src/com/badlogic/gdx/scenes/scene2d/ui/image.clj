@@ -8,11 +8,11 @@
 (defn new [^TextureRegion texture-region]
   (Image. texture-region))
 
-(defn new-drawable [^Drawable drawable]
+(defn newDrawable [^Drawable drawable]
   (Image. drawable))
 
-(defn new-texture [^Texture texture]
+(defn newTexture [^Texture texture]
   (Image. texture))
 
-(defn set-drawable! [^Image image ^Drawable drawable]
-  (Image/.setDrawable image drawable))
+(defn setDrawable [^Image image ^Drawable drawable]
+  (.setDrawable image drawable))

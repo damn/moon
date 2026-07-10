@@ -3,14 +3,14 @@
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
-(defn add! [^Table table ^Actor actor]
-  (Table/.add table actor))
+(defn new []
+  (Table.))
+
+(defn add [^Table table ^Actor actor]
+  (.add table actor))
 
 (defn defaults [^Table table]
   (.defaults table))
 
-(defn new []
-  (Table.))
-
-(defn row! [^Table table]
-  (Table/.row table))
+(defn row [^Table table]
+  (.row table))

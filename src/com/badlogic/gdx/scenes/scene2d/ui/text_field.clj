@@ -5,5 +5,5 @@
 (defn new [^String text ^Skin skin]
   (TextField. text skin))
 
-(defn get-text [^TextField text-field]
-  (TextField/.getText text-field))
+(defn getText [^TextField text-field]
+  (.getText text-field))

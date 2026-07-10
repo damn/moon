@@ -1,23 +1,21 @@
 (ns com.badlogic.gdx.scenes.scene2d.ui.button-group
-  (:refer-clojure :exclude [new remove]) ; TODO remove has '! ' but we want to remove '!'
-  ; maybe we should put down _rules_
-  ; and make it machine checkable
+  (:refer-clojure :exclude [new remove])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup)))
-
-(defn add! [^ButtonGroup button-group ^Button button]
-  (ButtonGroup/.add button-group button))
-
-(defn get-checked [^ButtonGroup button-group]
-  (ButtonGroup/.getChecked button-group))
 
 (defn new []
   (ButtonGroup.))
 
-(defn remove! [^ButtonGroup button-group ^Button button]
-  (ButtonGroup/.remove button-group button))
+(defn add [^ButtonGroup button-group ^Button button]
+  (.add button-group button))
 
-(defn set-max-check-count! [^ButtonGroup button-group n]
-  (ButtonGroup/.setMaxCheckCount button-group (int n)))
+(defn getChecked [^ButtonGroup button-group]
+  (.getChecked button-group))
 
-(defn set-min-check-count! [^ButtonGroup button-group n]
-  (ButtonGroup/.setMinCheckCount button-group (int n)))
+(defn remove [^ButtonGroup button-group ^Button button]
+  (.remove button-group button))
+
+(defn setMaxCheckCount [^ButtonGroup button-group n]
+  (.setMaxCheckCount button-group (int n)))
+
+(defn setMinCheckCount [^ButtonGroup button-group n]
+  (.setMinCheckCount button-group (int n)))

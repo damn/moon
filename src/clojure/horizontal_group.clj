@@ -6,7 +6,7 @@
   (apply horizontal-group/new args))
 
 (defn pad! [& args]
-  (apply horizontal-group/pad! args))
+  (apply horizontal-group/pad args))
 
 (defn space! [& args]
-  (apply horizontal-group/space! args))
+  (apply horizontal-group/space args))

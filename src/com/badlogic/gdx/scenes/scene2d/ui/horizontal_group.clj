@@ -5,8 +5,8 @@
 (defn new []
   (HorizontalGroup.))
 
-(defn pad! [^HorizontalGroup group n]
-  (HorizontalGroup/.pad group (float n)))
+(defn pad [^HorizontalGroup group n]
+  (.pad group (float n)))
 
-(defn space! [^HorizontalGroup group n]
-  (HorizontalGroup/.space group (float n)))
+(defn space [^HorizontalGroup group n]
+  (.space group (float n)))

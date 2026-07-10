@@ -6,5 +6,5 @@
 (defn new [file-handle]
   (Skin. ^FileHandle file-handle))
 
-(defn get-font [skin font-name]
-  (Skin/.getFont skin font-name))
+(defn getFont [skin font-name]
+  (.getFont ^Skin skin font-name))

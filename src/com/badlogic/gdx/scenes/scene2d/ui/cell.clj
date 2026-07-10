@@ -13,16 +13,16 @@
 (defn expand [^Cell cell]
   (.expand cell))
 
-(defn expand-x [^Cell cell]
+(defn expandX [^Cell cell]
   (.expandX cell))
 
-(defn expand-y [^Cell cell]
+(defn expandY [^Cell cell]
   (.expandY cell))
 
-(defn fill-x [^Cell cell]
+(defn fillX [^Cell cell]
   (.fillX cell))
 
-(defn fill-y [^Cell cell]
+(defn fillY [^Cell cell]
   (.fillY cell))
 
 (defn height [^Cell cell n]
@@ -34,10 +34,10 @@
 (defn pad [^Cell cell n]
   (.pad cell (float n)))
 
-(defn pad-bottom [^Cell cell n]
+(defn padBottom [^Cell cell n]
   (.padBottom cell (float n)))
 
-(defn pad-top [^Cell cell n]
+(defn padTop [^Cell cell n]
   (.padTop cell (float n)))
 
 (defn right [^Cell cell]

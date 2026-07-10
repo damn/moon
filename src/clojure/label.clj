@@ -9,4 +9,4 @@
   (apply label/new args))
 
 (defn set-text! [& args]
-  (apply label/set-text! args))
+  (apply label/setText args))

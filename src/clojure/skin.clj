@@ -6,4 +6,4 @@
   (apply skin/new args))
 
 (defn get-font [& args]
-  (apply skin/get-font args))
+  (apply skin/getFont args))

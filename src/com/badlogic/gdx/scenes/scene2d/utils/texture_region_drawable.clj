@@ -7,8 +7,8 @@
 (defn new [^TextureRegion texture-region]
   (TextureRegionDrawable. texture-region))
 
-(defn set-min-size! [^TextureRegionDrawable drawable min-width min-height]
-  (TextureRegionDrawable/.setMinSize drawable min-width min-height))
+(defn setMinSize [^TextureRegionDrawable drawable min-width min-height]
+  (.setMinSize drawable min-width min-height))
 
-(defn tint! [^TextureRegionDrawable drawable ^Color color]
+(defn tint [^TextureRegionDrawable drawable ^Color color]
   (.tint drawable color))

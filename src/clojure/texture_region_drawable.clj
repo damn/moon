@@ -6,7 +6,7 @@
   (apply texture-region-drawable/new args))
 
 (defn set-min-size! [& args]
-  (apply texture-region-drawable/set-min-size! args))
+  (apply texture-region-drawable/setMinSize args))
 
 (defn tint! [& args]
-  (apply texture-region-drawable/tint! args))
+  (apply texture-region-drawable/tint args))

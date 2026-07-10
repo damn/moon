@@ -2,7 +2,7 @@
   (:import (com.badlogic.gdx.scenes.scene2d.utils Layout)))
 
 (defn pack [^Layout layout]
-  (Layout/.pack layout))
+  (.pack layout))
 
-(defn set-fill-parent [^Layout layout fill-parent?]
-  (Layout/.setFillParent layout fill-parent?))
+(defn setFillParent [^Layout layout fill-parent?]
+  (.setFillParent layout fill-parent?))
