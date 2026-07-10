@@ -1,5 +1,5 @@
 (ns clojure.editor.property-overview-window
-  (:require [gdl.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.editor.constants :refer [property-type->overview-table-props]]
@@ -8,7 +8,7 @@
             [clojure.table-rows :refer [overview-table-rows*]]
             [clojure.tooltip :as tooltip]
             [clojure.ui-window :as window]
-            [gdl.scenes.scene2d.ui.window :as gdx-window]))
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn property-overview-window
   [{:keys [db
@@ -34,4 +34,4 @@
                              (partition-all columns)
                              (overview-table-rows* skin image-scale)))})
     (add-close-button/f! skin)
-    (gdx-window/set-modal! true)))
+    (gdx-window/setModal true)))

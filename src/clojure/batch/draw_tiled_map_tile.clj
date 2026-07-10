@@ -1,9 +1,9 @@
 (ns clojure.batch.draw-tiled-map-tile
-  (:require [gdl.graphics.g2d.batch :as batch]
-            [gdl.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [gdl.maps.tiled.tiled-map :as tiled-map]
-            [gdl.graphics.g2d.texture-region :as texture-region]
-            [gdl.graphics.texture :as texture]))
+  (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [com.badlogic.gdx.graphics.texture :as texture]))
 
 (defn f!
   [x
@@ -15,9 +15,9 @@
    verts
    batch
    num-vertices]
-  (let [region (tiled-map-tile/get-texture-region tile)
-        x1 (+ x (* (tiled-map-tile/get-offset-x tile) unit-scale))
-        y1 (+ y (* (tiled-map-tile/get-offset-y tile) unit-scale))
+  (let [region (tiled-map-tile/getTextureRegion tile)
+        x1 (+ x (* (tiled-map-tile/getOffsetX tile) unit-scale))
+        y1 (+ y (* (tiled-map-tile/getOffsetY tile) unit-scale))
         x2 (+ x1 (* (texture-region/getRegionWidth region) unit-scale))
         y2 (+ y1 (* (texture-region/getRegionHeight region) unit-scale))
         u1 (texture-region/getU region)
@@ -48,7 +48,7 @@
     (aset-float verts batch/C4 color21)
     (aset-float verts batch/U4 u2)
     (aset-float verts batch/V4 v1)
-    (batch/draw! batch
+    (batch/draw batch
                           (texture-region/getTexture region)
                           verts
                           0

@@ -1,13 +1,13 @@
 (ns clojure.menus.ctx-data
   (:require [clojure.ui.data-viewer-window :as data-viewer-window]
-            [gdl.scenes.scene2d.stage :as stage]))
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (def item
   {:label "Ctx Data"
    :items [{:label "Show data"
             :on-click (fn [{:keys [ctx/skin
                                    ctx/stage] :as ctx}]
-                        (stage/add-actor! stage
+                        (stage/addActor stage
                                           (data-viewer-window/create
                                            {:title "Data View"
                                             :data ctx

@@ -1,5 +1,5 @@
 (ns clojure.editor.audio
-  (:require [gdl.application :as application]))
+  (:require [com.badlogic.gdx.application :as application]))
 
 (defn f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/audio (application/get-audio app)))
+  (assoc ctx :ctx/audio (application/getAudio app)))

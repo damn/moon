@@ -1,11 +1,11 @@
 (ns clojure.moon.draw
-  (:require [gdl.utils.align :as align]
-            [gdl.graphics.g2d.batch :as batch]
-            [gdl.graphics.g2d.bitmap-font :as bitmap-font]
-            [gdl.graphics.g2d.bitmap-font.bitmap-font-data :as bitmap-font-data]
+  (:require [com.badlogic.gdx.utils.align :as align]
+            [com.badlogic.gdx.graphics.g2d.batch :as batch]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [clojure.shape-drawer :as shape-drawer]
             [clojure.string :as str]
-            [gdl.graphics.g2d.texture-region :as texture-region]
+            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]))
 
 (declare draw!)
@@ -52,14 +52,14 @@
                  (let [font (or font default-font)
                        unit-scale @unit-scale
                        scale (or scale 1)
-                       font-data (bitmap-font/get-data font)
-                       old-scale (bitmap-font-data/get-scale-x font-data)
+                       font-data (bitmap-font/getData font)
+                       old-scale (bitmap-font-data/scaleX font-data)
                        target-width 0
                        wrap? false
                        scale (* (float unit-scale)
                                 (float scale))]
-                   (bitmap-font-data/set-scale! font-data (* old-scale scale))
-                   (bitmap-font/draw! font
+                   (bitmap-font-data/setScale font-data (* old-scale scale))
+                   (bitmap-font/draw font
                                       batch
                                       text
                                       x
@@ -67,12 +67,12 @@
                                              (-> text
                                                  (str/split #"\n")
                                                  count
-                                                 (* (bitmap-font/get-line-height font)))
+                                                 (* (bitmap-font/getLineHeight font)))
                                              0))
                                       target-width
                                       align/center
                                       wrap?)
-                   (bitmap-font-data/set-scale! font-data old-scale)))
+                   (bitmap-font-data/setScale font-data old-scale)))
    :draw/texture-region (fn [{:keys [ctx/batch
                                       ctx/unit-scale]}
                                texture-region
@@ -85,7 +85,7 @@
                                             (mapv (comp float (partial * world-unit-scale))
                                                   dimensions)))]
                              (if center?
-                               (batch/draw! batch
+                               (batch/draw batch
                                                            texture-region
                                                            (- (float x) (/ (float w) 2))
                                                            (- (float y) (/ (float h) 2))
@@ -96,7 +96,7 @@
                                                            1
                                                            1
                                                            (or rotation 0))
-                               (batch/draw! batch texture-region x y w h))))
+                               (batch/draw batch texture-region x y w h))))
    :draw/with-line-width (fn [{:keys [ctx/shape-drawer]
                                 :as ctx}
                                width

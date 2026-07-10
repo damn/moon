@@ -1,7 +1,7 @@
 (ns clojure.ui.dev-menu.main-table
   (:require
-            [gdl.scenes.scene2d.actor :as actor] [gdl.scenes.scene2d.stage :as stage]
-            [gdl.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor] [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.scene2d.utils.change-listener :as change-listener]
             [clojure.ui-text-button :as text-button]
             [clojure.ui.window.add-close-button :as add-close-button]
@@ -15,18 +15,18 @@
                {:table/rows [(for [{:keys [label items]} menus]
                                {:actor
                                 (doto (text-button/create {:text label :skin skin})
-                                  (actor/add-listener (change-listener/create
+                                  (actor/addListener (change-listener/create
                                                    (fn [event actor]
-                                                     (stage/add-actor! (event/get-stage event)
+                                                     (stage/addActor (event/getStage event)
                                                                   (doto (window/create
                                                                          {:title label
                                                                           :skin skin
                                                                           :table/rows [(for [{:keys [label on-click]} items]
                                                                                          {:actor
                                                                                           (doto (text-button/create {:text label :skin skin})
-                                                                                            (actor/add-listener (change-listener/create
+                                                                                            (actor/addListener (change-listener/create
                                                                                                              (fn [event actor]
-                                                                                                               (let [stage (event/get-stage event)]
+                                                                                                               (let [stage (event/getStage event)]
                                                                                                                  (set-ctx/f stage
                                                                                                                             (on-click (:stage/ctx stage))))))))})]})
                                                                     (add-close-button/f! skin)))))))})]})]

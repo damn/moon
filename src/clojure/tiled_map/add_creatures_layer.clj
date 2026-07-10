@@ -1,7 +1,7 @@
 (ns clojure.tiled-map.add-creatures-layer
   (:require [clojure.tiled-map.add-layer :as add-layer]
             [gdl.maps.map-properties :as map-properties]
-            [gdl.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f [tiled-map spawn-positions]
   (add-layer/f tiled-map
@@ -11,7 +11,7 @@
                                       (assert (and id
                                                    texture-region))
                                       (let [tile (static-tiled-map-tile/new texture-region)]
-                                        (map-properties/put! (static-tiled-map-tile/get-properties tile) "id" id)
+                                        (map-properties/put! (static-tiled-map-tile/getProperties tile) "id" id)
                                         tile)))]
                  {:name "creatures"
                   :visible? false

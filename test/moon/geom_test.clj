@@ -6,7 +6,7 @@
 ;(comment
 ; (require '[moon.grid :as grid])
 ; (require '[clojure.outer-rectangle :as circle])
-; [gdl.rgba.float-bits :as float-bits]
+; [com.badlogic.gdx.rgba.float-bits :as float-bits]
 ;
 ; (defn geom-test
 ;   [{:keys [ctx/grid

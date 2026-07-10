@@ -1,10 +1,10 @@
 (ns clojure.ui.inventory-window
-  (:require [gdl.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.scene2d.actor.set-position! :as actor-set-position]
             [clojure.ui.inventory-window.cell :refer [->cell]]
             [clojure.is-valid-slot :as valid-slot?]
             [clojure.new-color]
-            [gdl.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.ui-table :as table]
             [clojure.ui-window :as window]))
 
@@ -21,8 +21,8 @@
            cell-size]}]
   (let [slot->drawable (fn [slot]
                          (doto (texture-region-drawable/new (slot->texture-region slot))
-                           (texture-region-drawable/set-min-size! cell-size cell-size)
-                           (texture-region-drawable/tint! (clojure.new-color/f [1 1 1 0.4]))))
+                           (texture-region-drawable/setMinSize cell-size cell-size)
+                           (texture-region-drawable/tint (clojure.new-color/f [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?
@@ -55,8 +55,8 @@
                                                               (for [y (range 4)]
                                                                 (for [x (range 6)]
                                                                   (->cell :inventory.slot/bag :position [x y]))))})
-                                    (actor/set-name "inventory-cell-table"))
+                                    (actor/setName "inventory-cell-table"))
                            :pad 4}]]})
-      (actor/set-name "moon.ui.windows.inventory")
-      (actor/set-visible false)
+      (actor/setName "moon.ui.windows.inventory")
+      (actor/setVisible false)
       (actor-set-position/set-position! position))))

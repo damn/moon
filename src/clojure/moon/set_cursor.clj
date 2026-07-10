@@ -1,5 +1,5 @@
 (ns clojure.moon.set-cursor
-  (:require [gdl.graphics :as graphics]))
+  (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (def k->cursor
   {:player-item-on-cursor :cursors/hand-grab
@@ -63,5 +63,5 @@
                      cursor-fn
                      (cursor-fn eid ctx))]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! graphics (get cursors cursor-key)))
+    (graphics/setCursor graphics (get cursors cursor-key)))
   ctx)

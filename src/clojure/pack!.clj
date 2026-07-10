@@ -1,5 +1,5 @@
 (ns clojure.pack!
-  (:require [gdl.scenes.scene2d.utils.layout :as layout]))
+  (:require [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
 
 (defn f [& args]
   (apply layout/pack args))

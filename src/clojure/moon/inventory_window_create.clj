@@ -4,7 +4,7 @@
             [clojure.moon-textures :as textures]
             [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
             [clojure.ui.inventory-window :refer [inventory-window-build]]
-            [gdl.utils.viewport :as viewport]))
+            [com.badlogic.gdx.utils.viewport.viewport :as viewport]))
 
 (defn inventory-window-create
   [{:keys [ctx/colors
@@ -42,7 +42,7 @@
       :droppable-item-color (:colors/droppable-item colors)
       :not-allowed-drop-item-color (:colors/not-allowed-drop-item colors)
       :skin skin
-      :position [(viewport/get-world-width (:stage/viewport stage))
-                 (viewport/get-world-height (:stage/viewport stage))]
+      :position [(viewport/getWorldWidth (:stage/viewport stage))
+                 (viewport/getWorldHeight (:stage/viewport stage))]
       :slot->texture-region slot->texture-region
       :cell-size 48})))

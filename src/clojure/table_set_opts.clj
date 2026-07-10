@@ -1,5 +1,5 @@
 (ns clojure.table-set-opts
-  (:require [gdl.scenes.scene2d.ui.table :as table]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [clojure.pack! :as pack!]
             [clojure.ui.cell.set-opts :as set-opts]
             [clojure.ui.table.add-rows :refer [add-rows!]]))

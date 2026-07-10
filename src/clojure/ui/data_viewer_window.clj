@@ -1,8 +1,8 @@
 (ns clojure.ui.data-viewer-window
   (:require [clojure.k-label-str :refer [k->label-str]]
-            [gdl.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [gdl.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.ui-label :as label]
             [clojure.ui-scroll-pane :as scroll-pane]
             [clojure.ui-table :as table]
@@ -20,9 +20,9 @@
   (let [v->actor (fn [v skin]
                    (if (map? v)
                      (doto (text-button/create {:text "Map" :skin skin})
-                       (actor/add-listener (change-listener/create
+                       (actor/addListener (change-listener/create
                                                               (fn [_event actor]
-                                                                (stage/add-actor! (actor/get-stage actor)
+                                                                (stage/addActor (actor/getStage actor)
                                                                                   (create
                                                                                    {:title "title"
                                                                                     :data v

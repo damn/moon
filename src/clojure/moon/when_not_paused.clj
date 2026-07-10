@@ -2,17 +2,17 @@
   (:require [clojure.moon.ctx-do :refer [do!]]
             [clojure.ui.error-window :as error-window]
             [clojure.moon.factions-iterations :refer [factions-iterations]]
-            [gdl.graphics :as graphics]
+            [com.badlogic.gdx.graphics :as graphics]
             [clojure.grid-update-potential-fields :as update-potential-fields]
             [clojure.max-delta :refer [max-delta]]
-            [gdl.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.tick-component :refer [tick-component]]
             [clojure.throwable :as throwable]))
 
 (defn- update-time
   [{:keys [ctx/graphics]
     :as ctx}]
-  (let [delta-ms (min (graphics/get-delta-time graphics) max-delta)]
+  (let [delta-ms (min (graphics/getDeltaTime graphics) max-delta)]
     (-> ctx
         (assoc :ctx/delta-time delta-ms)
         (update :ctx/elapsed-time + delta-ms))))
@@ -46,7 +46,7 @@
                  active-entities))
     (catch Throwable t
       (throwable/pretty-pst t)
-      (stage/add-actor! stage
+      (stage/addActor stage
                         (error-window/create
                          {:skin skin
                           :throwable t}))))

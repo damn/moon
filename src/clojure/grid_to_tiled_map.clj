@@ -1,9 +1,9 @@
 (ns clojure.grid-to-tiled-map
-  (:require [gdl.maps.tiled.tiled-map-tile-layer.cell :as tiled-map-tile-layer-cell]
-            [gdl.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdl.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [gdl.maps.tiled.tiled-map :as tiled-map]
-            [gdl.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.g2d.posis :as posis]
             [clojure.g2d.width :refer [->width]]
             [clojure.g2d.height :refer [->height]]
@@ -15,16 +15,16 @@
                    (fn [tile]
                      (assert tile)
                      (static-tiled-map-tile/new tile)))]
-    {:properties (merge (map-properties/clojurize (tiled-map/get-properties schema-tiled-map))
+    {:properties (merge (map-properties/clojurize (tiled-map/getProperties schema-tiled-map))
                         {"width" (->width grid)
                          "height" (->height grid)})
-     :layers (for [layer (tiled-map/get-layers schema-tiled-map)]
-               {:name (tiled-map-tile-layer/get-name layer)
-                :visible? (tiled-map-tile-layer/visible? layer)
-                :properties (map-properties/clojurize (tiled-map-tile-layer/get-properties layer))
+     :layers (for [layer (tiled-map/getLayers schema-tiled-map)]
+               {:name (tiled-map-tile-layer/getName layer)
+                :visible? (tiled-map-tile-layer/isVisible layer)
+                :properties (map-properties/clojurize (tiled-map-tile-layer/getProperties layer))
                 :tiles (for [position (posis/f grid)
                              :let [local-position (get grid position)]
                              :when local-position]
                          (when (vector? local-position)
-                           (when-let [cell (tiled-map-tile-layer/get-cell layer (local-position 0) (local-position 1))]
-                             [position (copy-tile (tiled-map-tile-layer-cell/get-tile cell))])))})}))
+                           (when-let [cell (tiled-map-tile-layer/getCell layer (local-position 0) (local-position 1))]
+                             [position (copy-tile (tiled-map-tile-layer-cell/getTile cell))])))})}))

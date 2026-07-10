@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-sound-columns
-  (:require [gdl.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.moon.ctx-do :refer [do!]]
-            [gdl.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.ui-text-button :as text-button]
             [clojure.scene2d.utils.change-listener :as change-listener]))
 
@@ -9,14 +9,14 @@
   [{:actor (doto (text-button/create
                    {:text sound-name
                     :skin skin})
-             (actor/add-listener (change-listener/create
+             (actor/addListener (change-listener/create
                                       (fn [event _actor]
                                         ((open-select-sounds-handler table)
-                                         (:stage/ctx (event/get-stage event)))))))}
+                                         (:stage/ctx (event/getStage event)))))))}
    {:actor (doto (text-button/create
                   {:text "play!"
                    :skin skin})
-             (actor/add-listener (change-listener/create
+             (actor/addListener (change-listener/create
                                       (fn [event _actor]
-                                        (do! (:stage/ctx (event/get-stage event))
+                                        (do! (:stage/ctx (event/getStage event))
                                              [[:tx/sound sound-name]])))))}])

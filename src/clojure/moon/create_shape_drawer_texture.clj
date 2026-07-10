@@ -1,17 +1,17 @@
 (ns clojure.moon.create-shape-drawer-texture
-  (:require [gdl.utils.disposable :as disposable]
-            [gdl.graphics.pixmap :as pixmap]
-            [gdl.graphics.pixmap.format :as pixmap-format]
-            [gdl.graphics.texture :as texture]
-            [gdl.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]))
+  (:require [com.badlogic.gdx.utils.disposable :as disposable]
+            [com.badlogic.gdx.graphics.pixmap :as pixmap]
+            [com.badlogic.gdx.graphics.pixmap$format :as pixmap-format]
+            [com.badlogic.gdx.graphics.texture :as texture]
+            [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]))
 
 (defn f [ctx]
-  (let [pixmap (doto (pixmap/new 1 1 pixmap-format/rgba8888)
-                 (pixmap/set-color! 1 1 1 1)
-                 (pixmap/draw-pixel! 0 0))
+  (let [pixmap (doto (pixmap/new 1 1 pixmap-format/RGBA8888)
+                 (pixmap/setColor 1 1 1 1)
+                 (pixmap/drawPixel 0 0))
         texture (texture/new (pixmap-texture-data/new pixmap
-                                                      (pixmap/get-format pixmap)
+                                                      (pixmap/getFormat pixmap)
                                                       false
                                                       false))]
-    (disposable/dispose! pixmap)
+    (disposable/dispose pixmap)
     (assoc ctx :ctx/shape-drawer-texture texture)))

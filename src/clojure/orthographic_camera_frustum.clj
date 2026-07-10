@@ -1,10 +1,10 @@
 (ns clojure.orthographic-camera-frustum
-  (:require [gdl.graphics.orthographic-camera :as orthographic-camera]
-            [gdl.math.frustum :as frustum]
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [com.badlogic.gdx.math.frustum :as frustum]
             [gdl.math.vector3 :as vector3]))
 
 (defn frustum [camera]
-  (let [plane-points (mapv vector3/clojurize (frustum/plane-points (orthographic-camera/frustum camera)))
+  (let [plane-points (mapv vector3/clojurize (frustum/planePoints (orthographic-camera/frustum camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))

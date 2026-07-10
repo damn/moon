@@ -1,5 +1,5 @@
 #_(ns app-test
-  (:require [gdl.backends.lwjgl :as lwjgl]))
+  (:require [com.badlogic.gdx.backends.lwjgl :as lwjgl]))
 
 #_(defn -main []
   (lwjgl/application!

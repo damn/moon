@@ -1,7 +1,7 @@
 (ns clojure.moon.check-debug-viewer
   (:require [clojure.input.button-just-pressed :as button-just-pressed?]
             [clojure.ui.data-viewer-window :as data-viewer-window]
-            [gdl.scenes.scene2d.stage :as stage]))
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn f
   [{:keys [ctx/input
@@ -15,7 +15,7 @@
   (when (button-just-pressed?/f input (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
-      (stage/add-actor! stage
+      (stage/addActor stage
                         (data-viewer-window/create
                          {:title "Data View"
                           :data data

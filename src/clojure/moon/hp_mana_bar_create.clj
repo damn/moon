@@ -1,5 +1,5 @@
 (ns clojure.moon.hp-mana-bar-create
-  (:require [gdl.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.moon.draw :refer [draw!]]
             [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.stats.get-mana :as get-mana]
@@ -7,7 +7,7 @@
             [clojure.readable :as readable]
             [clojure.scene2d-actor :as scene2d-actor]
             [clojure.val-max.ratio :as ratio]
-            [gdl.utils.viewport :as viewport]))
+            [com.badlogic.gdx.utils.viewport.viewport :as viewport]))
 
 (defn hp-mana-bar-create
   [{:keys [ctx/textures
@@ -23,7 +23,7 @@
                           :hpcontent-file "images/hp.png"
                           :manacontent-file "images/mana.png"
                           :y-mana 80}
-        [x y-mana] [(/ (viewport/get-world-width (:stage/viewport stage)) 2)
+        [x y-mana] [(/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
                     y-mana]
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
@@ -50,6 +50,6 @@
                           (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
     (scene2d-actor/f
      {:draw! (fn [this _batch _parent-alpha]
-               (when-let [stage (actor/get-stage this)]
+               (when-let [stage (actor/getStage this)]
                  (draw! (:stage/ctx stage)
                         (create-draws (:stage/ctx stage)))))})))

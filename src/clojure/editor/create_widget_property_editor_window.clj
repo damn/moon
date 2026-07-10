@@ -1,16 +1,16 @@
 (ns clojure.editor.create-widget-property-editor-window
-  (:require [gdl.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.ui.error-window :as error-window]
             [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
             [clojure.set-ctx :as set-ctx]
-            [gdl.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.throwable :as throwable]
             [clojure.ui.window.add-close-button :as add-close-button]
             [clojure.db.update :refer [update!]]
             [clojure.db.delete :refer [delete!]]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.widget-value :refer [widget-value]]
-            [gdl.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.input.key-just-pressed :as key-just-pressed?]
             [clojure.scene2d-actor :as scene2d-actor]
@@ -20,8 +20,8 @@
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [gdl.utils.viewport :as viewport]
-            [gdl.scenes.scene2d.ui.window :as gdx-window]))
+            [com.badlogic.gdx.utils.viewport.viewport :as viewport]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]))
 
 (defn with-window-close [f]
   (fn [actor {:keys [ctx/skin
@@ -29,12 +29,12 @@
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (actor/get-stage actor)]
+           stage (actor/getStage actor)]
        (set-ctx/f stage new-ctx))
-     (actor/remove-actor (find-ancestor actor (partial instance? gdx-window/class)))
+     (actor/remove (find-ancestor actor (partial instance? gdx-window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
-       (stage/add-actor! stage
+       (stage/addActor stage
                          (error-window/create
                           {:type :ui/error-window
                            :skin skin
@@ -49,7 +49,7 @@
         schemas (:db/schemas db)
         schema (get schemas (property->type property))
         widget (create-widget schema property ctx)
-        scroll-pane-height (viewport/get-world-height (:stage/viewport stage))
+        scroll-pane-height (viewport/getWorldHeight (:stage/viewport stage))
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
         clicked-delete-fn (with-window-close (fn [db]
@@ -60,16 +60,16 @@
                           [{:actor (doto (text-button/create
                                           {:text "Save [LIGHT_GRAY](ENTER)[]"
                                            :skin skin})
-                                     (actor/add-listener (change-listener/create
+                                     (actor/addListener (change-listener/create
                                                               (fn [event actor]
-                                                                (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
+                                                                (clicked-save-fn actor (:stage/ctx (event/getStage event)))))))
                             :center? true}
                            {:actor (doto (text-button/create
                                           {:text "Delete"
                                            :skin skin})
-                                     (actor/add-listener (change-listener/create
+                                     (actor/addListener (change-listener/create
                                                               (fn [event actor]
-                                                                (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
+                                                                (clicked-delete-fn actor (:stage/ctx (event/getStage event)))))))
                             :center? true}]]]
     (doto (window/create
            {:title "[SKY]Property[]"
@@ -82,11 +82,11 @@
                            scroll-pane-height
                            50)]]})
       (add-close-button/f! skin)
-      (gdx-window/set-modal! true)
+      (gdx-window/setModal true)
       (group/add-actor! (scene2d-actor/f
                          {:act! (fn [this delta]
-                                  (when-let [stage (actor/get-stage this)]
+                                  (when-let [stage (actor/getStage this)]
                                     (let [ctx (:stage/ctx stage)]
                                       (when (key-just-pressed?/f (:ctx/input ctx) :input.keys/enter)
                                         (clicked-save-fn this ctx)))))}))
-      (actor/set-name "moon.ui.clojure.editor-window"))))
+      (actor/setName "moon.ui.clojure.editor-window"))))

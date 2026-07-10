@@ -1,7 +1,7 @@
 (ns clojure.editor.create-widget-create-component-row
-  (:require [gdl.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
-            [gdl.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.k-label-text :as k-label-text]
             [clojure.ui-label :as label]
@@ -21,13 +21,13 @@
                                      (doto (text-button/create
                                             {:text "-"
                                              :skin skin})
-                                       (actor/add-listener (change-listener/create
+                                       (actor/addListener (change-listener/create
                                                                 (fn [event _actor]
-                                                                  (actor/remove-actor (first (filter (fn [actor]
-                                                                                                          (and (actor/get-user-object actor)
-                                                                                                               (= k ((actor/get-user-object actor) 0))))
+                                                                  (actor/remove (first (filter (fn [actor]
+                                                                                                          (and (actor/getUserObject actor)
+                                                                                                               (= k ((actor/getUserObject actor) 0))))
                                                                                                         (group/get-children table))))
-                                                                  (let [ctx (:stage/ctx (event/get-stage event))]
+                                                                  (let [ctx (:stage/ctx (event/getStage event))]
                                                                     (rebuild-editor-window/rebuild-editor-window! ctx)))))))
                             :left? true}
                            {:actor (label/create

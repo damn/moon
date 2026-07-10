@@ -1,8 +1,9 @@
 (ns clojure.ui.inventory-window.cell
   (:require
-            [gdl.scenes.scene2d.actor :as actor] [gdl.scenes.scene2d.ui.image :as image]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.math.vector2 :as gdx-vector2] [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [clojure.scene2d.group :as group]
-            [gdl.scenes.scene2d.event :as event]
+            [com.badlogic.gdx.scenes.scene2d.event :as event]
             [gdl.math.vector2 :as vector2]
             [clojure.ui-widget :as widget]
             [clojure.scene2d.utils.click-listener :as click-listener]
@@ -16,29 +17,29 @@
        (run! #(group/add-actor! stack %)
              [(widget/f
                {:draw! (fn [this _batch _parent-alpha]
-                         (when-let [stage (actor/get-stage this)]
+                         (when-let [stage (actor/getStage this)]
                            (let [{:keys [ctx/player-eid
                                          ctx/ui-mouse-position]
                                   :as ctx} (:stage/ctx stage)]
                              (draw! ctx
                                     (draw-cell-rect @player-eid
-                                                    (actor/get-x this)
-                                                    (actor/get-y this)
+                                                    (actor/getX this)
+                                                    (actor/getY this)
                                                     (let [[mx my] ui-mouse-position
                                                           [x y] (vector2/clojurize
-                                                                 (actor/stage-to-local-coordinates this
-                                                                                              (vector2/new mx my)))]
+                                                                 (actor/stageToLocalCoordinates this
+                                                                                              (gdx-vector2/new mx my)))]
                                                       (actor/hit this x y true))
-                                                    (actor/get-user-object (actor/get-parent this)))))))})
-              (doto (image/new-drawable background-drawable)
-                (actor/set-name "image-widget")
-                (actor/set-user-object {:background-drawable background-drawable
+                                                    (actor/getUserObject (actor/getParent this)))))))})
+              (doto (image/newDrawable background-drawable)
+                (actor/setName "image-widget")
+                (actor/setUserObject {:background-drawable background-drawable
                                     :cell-size cell-size}))])
        (doto stack
-         (actor/add-listener (click-listener/create
+         (actor/addListener (click-listener/create
                           (fn [event _x _y]
                             (let [{:keys [ctx/player-eid]
-                                   :as ctx} (:stage/ctx (event/get-stage event))]
+                                   :as ctx} (:stage/ctx (event/getStage event))]
                               (do! ctx (on-click-cell player-eid cell))))))
-         (actor/set-name "inventory-cell")
-         (actor/set-user-object cell)))}))
+         (actor/setName "inventory-cell")
+         (actor/setUserObject cell)))}))

@@ -1,9 +1,9 @@
 (ns clojure.moon.tx
   (:require [clojure.ui.action-bar.add-skill :as add-skill-ui]
-            [gdl.scenes.scene2d.actor :as actor]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.stats.add-mods :as add-mods]
             [clojure.moon.after-create-component :refer [after-create-component]]
-            [gdl.utils.align :as align]
+            [com.badlogic.gdx.utils.align :as align]
             [clojure.v2.angle-from-vector :as angle-from-vector]
             [clojure.scene2d.actor.set-position! :refer [set-position!]]
             [clojure.db.build :refer [build]]
@@ -25,7 +25,7 @@
             [clojure.moon.state-enter :refer [k->state-enter]]
             [clojure.moon.state-exit :refer [k->state-exit]]
             [clojure.moon-textures :as textures]
-            [gdl.audio.sound :as sound]
+            [com.badlogic.gdx.audio.sound :as sound]
             [clojure.records-entity :as entity]
             [clojure.register-eid :as register-eid]
             [clojure.content-grid.remove-entity :as remove-entity]
@@ -35,15 +35,15 @@
             [clojure.safe-merge :refer [safe-merge]]
             [clojure.set-occupied-cells :refer [set-occupied-cells!]]
             [clojure.set-touched-cells :refer [set-touched-cells!]]
-            [gdl.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.timer-create :refer [create-timer]]
             [clojure.ui-label :as label]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
-            [gdl.utils.viewport :as viewport]
+            [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [clojure.content-grid.update-entity :as update-entity]
             [clojure.scene2d.utils.change-listener :as change-listener]
-            [gdl.scenes.scene2d.ui.window :as gdx-window]
+            [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [reduce-fsm :as fsm]))
 
 (def f
@@ -188,30 +188,30 @@
      (-> stage
          :stage/root
          (#(group/find-actor % "player-message"))
-         (actor/set-user-object (atom {:text message :counter 0})))
+         (actor/setUserObject (atom {:text message :counter 0})))
      nil)
 
    :tx/show-modal
    (fn [{:keys [ctx/skin ctx/stage] :as _ctx}
         {:keys [title text button-text on-click]}]
      (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
-     (stage/add-actor! stage
+     (stage/addActor stage
                        (doto (window/create
                               {:title title
                                :skin skin
                                :table/rows [[{:actor (label/create {:text text :skin skin})}]
                                             [{:actor (doto (text-button/create {:text button-text :skin skin})
-                                                        (actor/add-listener
+                                                        (actor/addListener
                                                          (change-listener/create
                                                           (fn [_event _actor]
-                                                            (actor/remove-actor
+                                                            (actor/remove
                                                              (group/find-actor (:stage/root stage)
                                                                                "moon.ui.modal-window"))
                                                             (on-click)))))}]]})
-                         (gdx-window/set-modal! true)
-                         (actor/set-name "moon.ui.modal-window")
-                         (set-position! [(/ (viewport/get-world-width (:stage/viewport stage)) 2)
-                                         (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))]
+                         (gdx-window/setModal true)
+                         (actor/setName "moon.ui.modal-window")
+                         (set-position! [(/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
+                                         (* (viewport/getWorldHeight (:stage/viewport stage)) (/ 3 4))]
                                         align/center)))
      nil)
 
@@ -219,7 +219,7 @@
    (fn [{:keys [ctx/audio]} sound-name]
      (let [sounds audio]
        (assert (contains? sounds sound-name) (str sound-name))
-       (sound/play! (get sounds sound-name)))
+       (sound/play (get sounds sound-name)))
      nil)
 
    :tx/spawn-alert
@@ -324,7 +324,7 @@
    :tx/toggle-inventory-visible
    (fn [{:keys [ctx/stage]}]
      (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-       (actor/set-visible inventory (not (actor/visible? inventory)))
+       (actor/setVisible inventory (not (actor/isVisible inventory)))
        nil))
 
    :tx/ui-remove-item

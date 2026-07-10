@@ -1,29 +1,29 @@
 (ns clojure.levelgen-test.create
-  (:require [gdl.application :as application]
-            [gdl.scenes.scene2d.actor :as actor]
+  (:require [com.badlogic.gdx.application :as application]
+            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.db.all-raw :refer [all-raw]]
             [clojure.files.create-textures :as create-textures]
-            [gdl.utils.disposable :as disposable]
-            [gdl.files :as files]
-            [gdl.utils.viewport.fit-viewport :as fit-viewport]
-            [gdl.maps.map-layers :as map-layers]
+            [com.badlogic.gdx.utils.disposable :as disposable]
+            [com.badlogic.gdx.files :as files]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [com.badlogic.gdx.maps.map-layers :as map-layers]
             [clojure.tiled-map.get-property :as get-property]
-            [gdl.input :as input]
+            [com.badlogic.gdx.input :as input]
             [clojure.malli-form-register-methods]
             [clojure.moon-db :as db]
             [clojure.moon-textures :as textures]
-            [gdl.graphics.orthographic-camera :as orthographic-camera]
+            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
             [clojure.scene2d-stage]
-            [gdl.scenes.scene2d.ui.skin :as skin]
-            [gdl.graphics.g2d.sprite-batch :as sprite-batch]
-            [gdl.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [clojure.tiled-map.creature-tiles :as creature-tiles]
-            [gdl.maps.tiled.tiled-map :as tiled-map]
-            [gdl.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.ui-text-button :as text-button]
             [clojure.ui-window :as window]
-            [gdl.utils.viewport :as viewport]
+            [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [clojure.scene2d.utils.change-listener :as utils-change-listener]
             [clojure.orthographic-camera.zoom-to-rect :as zoom-to-rect]))
 
@@ -42,9 +42,9 @@
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
     (-> tiled-map
-        tiled-map/get-layers
+        tiled-map/getLayers
         (map-layers/get "creatures")
-        (tiled-map-tile-layer/set-visible! true))
+        (tiled-map-tile-layer/setVisible true))
     (set-position! camera [(/ (get-property/f tiled-map "width") 2)
                            (/ (get-property/f tiled-map "height") 2)])
     (zoom-to-rect/f camera {:left [0 0]
@@ -55,21 +55,21 @@
 
 (defn create
   [state config application]
-  (let [files (application/get-files application)
-        input (application/get-input application)
-        graphics (application/get-graphics application)
+  (let [files (application/getFiles application)
+        input (application/getInput application)
+        graphics (application/getGraphics application)
         sprite-batch (sprite-batch/new)
-        ui-viewport (fit-viewport/create (:ui-viewport-width config)
+        ui-viewport (fit-viewport/new (:ui-viewport-width config)
                                          (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
         stage (clojure.scene2d-stage/create ui-viewport sprite-batch)
         skin (skin/new (files/internal files (:ui-skin-path config)))
         world-viewport (let [world-width (* (:world-viewport-width config) world-unit-scale)
                              world-height (* (:world-viewport-height config) world-unit-scale)]
-                         (fit-viewport/create world-width
+                         (fit-viewport/new world-width
                                               world-height
                                               (doto (orthographic-camera/new)
-                                                (orthographic-camera/set-to-ortho! false world-width world-height))))
+                                                (orthographic-camera/setToOrtho false world-width world-height))))
         ctx {:ctx/input input
              :ctx/graphics graphics
              :ctx/stage stage
@@ -81,21 +81,21 @@
              :ctx/sprite-batch sprite-batch
              :ctx/skin skin
              :ctx/world-viewport world-viewport
-             :ctx/camera (viewport/get-camera world-viewport)}
+             :ctx/camera (viewport/getCamera world-viewport)}
         ctx (generate-level ctx (:initial-level-fn config))]
-    (input/set-input-processor! input stage)
-    (stage/add-actor! (:ctx/stage ctx)
+    (input/setInputProcessor input stage)
+    (stage/addActor (:ctx/stage ctx)
                       (window/create
                        {:title "Edit"
                         :skin skin
                         :table/rows (for [[label level-fn] (:level-fns config)
                                           :let [on-click #(do
-                                                            (disposable/dispose! (:ctx/tiled-map %))
+                                                            (disposable/dispose (:ctx/tiled-map %))
                                                             (generate-level % level-fn))]]
                                       [{:actor (doto (text-button/create
                                                       {:text (str "Generate " label)
                                                        :skin skin})
-                                               (actor/add-listener
+                                               (actor/addListener
                                                 (utils-change-listener/create
                                                  (fn [_event _actor]
                                                    (swap! state on-click)))))}])}))

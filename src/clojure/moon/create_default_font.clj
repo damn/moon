@@ -1,10 +1,10 @@
 (ns clojure.moon.create-default-font
-  (:require [gdl.graphics.g2d.bitmap-font :as bitmap-font]
-            [gdl.graphics.g2d.bitmap-font.bitmap-font-data :as bitmap-font-data]
-            [gdl.utils.disposable :as disposable]
-            [gdl.files :as files]
+  (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+            [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
+            [com.badlogic.gdx.utils.disposable :as disposable]
+            [com.badlogic.gdx.files :as files]
             [gdl.graphics.g2d.freetype.font-generator :as free-type-font-generator]
-            [gdl.graphics.texture.texture-filter :as texture-filter]))
+            [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]))
 
 (defn f [ctx]
   (assoc ctx
@@ -18,13 +18,13 @@
                                  generator (free-type-font-generator/new (files/internal (:ctx/files ctx) path))
                                  parameter {
                                             :set-size (* size quality-scaling)
-                                            :set-min-filter texture-filter/linear
-                                            :set-mag-filter texture-filter/linear
+                                            :set-min-filter texture-filter/Linear
+                                            :set-mag-filter texture-filter/Linear
                                             }
                                  font (free-type-font-generator/generate-font generator parameter)
-                                 font-data (bitmap-font/get-data font)]
-                             (disposable/dispose! generator)
-                             (bitmap-font-data/set-scale! font-data (/ quality-scaling))
-                             (bitmap-font-data/set-markup-enabled! font-data true)
-                             (bitmap-font/set-use-integer-positions! font use-integer-positions?)
+                                 font-data (bitmap-font/getData font)]
+                             (disposable/dispose generator)
+                             (bitmap-font-data/setScale font-data (/ quality-scaling))
+                             (bitmap-font-data/set-markupEnabled font-data true)
+                             (bitmap-font/setUseIntegerPositions font use-integer-positions?)
                              font)))

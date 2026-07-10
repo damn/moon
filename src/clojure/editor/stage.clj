@@ -1,14 +1,14 @@
 (ns clojure.editor.stage
   (:require [clojure.editor.main-window :as main-window]
-            [gdl.utils.viewport.fit-viewport :as fit-viewport]
-            [gdl.input :as input]
+            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [com.badlogic.gdx.input :as input]
             [clojure.scene2d-stage :as scene2d-stage]
-            [gdl.scenes.scene2d.stage :as stage]))
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn f [{:keys [ctx/input
                 ctx/batch] :as ctx}]
-  (let [stage* (scene2d-stage/create (fit-viewport/create 1440 900) batch)]
-    (input/set-input-processor! input stage*)
+  (let [stage* (scene2d-stage/create (fit-viewport/new 1440 900) batch)]
+    (input/setInputProcessor input stage*)
     (let [ctx (assoc ctx :ctx/stage stage*)]
-      (stage/add-actor! (:ctx/stage ctx) (main-window/f ctx))
+      (stage/addActor (:ctx/stage ctx) (main-window/f ctx))
       ctx)))

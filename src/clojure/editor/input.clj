@@ -1,5 +1,5 @@
 (ns clojure.editor.input
-  (:require [gdl.application :as application]))
+  (:require [com.badlogic.gdx.application :as application]))
 
 (defn f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/input (application/get-input app)))
+  (assoc ctx :ctx/input (application/getInput app)))

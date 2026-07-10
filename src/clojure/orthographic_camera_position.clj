@@ -1,5 +1,5 @@
 (ns clojure.orthographic-camera-position
-  (:require [gdl.graphics.orthographic-camera :as orthographic-camera]
+  (:require [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [gdl.math.vector3 :as vector3]))
 
 (defn f [camera]

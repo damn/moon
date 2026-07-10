@@ -1,14 +1,14 @@
 (ns clojure.levelgen-test.render
   (:require [clojure.rgba.float-bits]
             [clojure.batch.draw-tiled-map :as draw-tiled-map]
-            [gdl.graphics.gl20 :as gl20]
-            [gdl.graphics :as graphics]
+            [com.badlogic.gdx.graphics.gl20 :as gl20]
+            [com.badlogic.gdx.graphics :as graphics]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.input.key-pressed :as key-pressed?]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
-            [gdl.scenes.scene2d.stage :as stage]
-            [gdl.utils.viewport :as viewport]))
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+            [com.badlogic.gdx.utils.viewport.viewport :as viewport]))
 
 (defn render
   [{:keys [ctx/input
@@ -21,12 +21,12 @@
            ctx/world-unit-scale
            ctx/graphics
            ctx/stage] :as ctx}]
-  (let [gl (graphics/get-gl20 graphics)]
-    (gl20/clear-color! gl 0 0 0 0)
-    (gl20/clear! gl gl20/color-buffer-bit))
+  (let [gl (graphics/getGL20 graphics)]
+    (gl20/glClearColor gl 0 0 0 0)
+    (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
   (draw-tiled-map/f! sprite-batch
                      world-unit-scale
-                     (viewport/get-camera world-viewport)
+                     (viewport/getCamera world-viewport)
                      tiled-map
                      (constantly (clojure.rgba.float-bits/f [1 1 1 1])))
   (when (key-pressed?/f input :input.keys/minus) (inc-zoom! camera zoom-speed))
@@ -40,6 +40,6 @@
     (if (key-pressed?/f input :input.keys/right) (apply-position 0 +))
     (if (key-pressed?/f input :input.keys/up) (apply-position 1 +))
     (if (key-pressed?/f input :input.keys/down) (apply-position 1 -)))
-  (stage/act! stage)
-  (stage/draw! stage)
+  (stage/act stage)
+  (stage/draw stage)
   ctx)

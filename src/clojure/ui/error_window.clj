@@ -1,5 +1,5 @@
 (ns clojure.ui.error-window
-  (:require [gdl.scenes.scene2d.ui.window :as gdx-window]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [clojure.ui-label :as label]
             [clojure.ui-window :as window]
             [clojure.ui.window.add-close-button :as add-close-button]
@@ -22,4 +22,4 @@
                                    {:text label-text
                                     :skin skin})}]]})
       (add-close-button/f! skin)
-      (gdx-window/set-modal! true))))
+      (gdx-window/setModal true))))

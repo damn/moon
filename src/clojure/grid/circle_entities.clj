@@ -1,6 +1,6 @@
 (ns clojure.grid.circle-entities
-  (:require [gdl.math.circle :as circle]
-            [gdl.math.intersector :as intersector]
+  (:require [com.badlogic.gdx.math.circle :as circle]
+            [com.badlogic.gdx.math.intersector :as intersector]
             [clojure.body.rectangle :refer [->rectangle]]
             [clojure.g2d.circle-to-cells :refer [circle->cells]]
             [clojure.grid.cells-entities :as cells->entities]))
@@ -11,5 +11,5 @@
     (->> (circle->cells g2d circle)
          (map deref)
          cells->entities/f
-         (filter #(intersector/overlaps? gdx-circle
+         (filter #(intersector/overlaps gdx-circle
                                         (->rectangle (:entity/body @%)))))))

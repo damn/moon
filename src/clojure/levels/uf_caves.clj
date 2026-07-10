@@ -1,9 +1,9 @@
 (ns clojure.levels.uf-caves
   (:require [clojure.caves.gen :as caves]
             [clojure.g2d.fix-nads :as fix-nads]
-            [gdl.graphics.g2d.texture-region :as texture-region]
+            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [gdl.maps.map-properties :as map-properties]
-            [gdl.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.levels.uf-caves.initial-grid]
             [clojure.levels.uf-caves.fix-nads]
             [clojure.levels.uf-caves.last-steps]
@@ -48,7 +48,7 @@
                                                                               tile-size
                                                                               tile-size)
                                            tile (static-tiled-map-tile/new texture-region)]
-                                       (map-properties/put! (static-tiled-map-tile/get-properties tile)
+                                       (map-properties/put! (static-tiled-map-tile/getProperties tile)
                                                             "movement" movement)
                                        tile))))
              :level/spawn-rate spawn-rate

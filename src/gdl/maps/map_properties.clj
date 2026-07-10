@@ -2,11 +2,11 @@
   (:refer-clojure :exclude [get])
   (:require [com.badlogic.gdx.maps.map-properties :as map-properties]))
 
-(defn get [& args]
-  (apply map-properties/get args))
+(defn get [map-properties k]
+  (map-properties/get map-properties k))
 
-(defn put! [& args]
-  (apply map-properties/put args))
+(defn put! [map-properties k v]
+  (map-properties/put map-properties k v))
 
 (defn clojurize [map-properties]
   (zipmap (map-properties/getKeys   map-properties)

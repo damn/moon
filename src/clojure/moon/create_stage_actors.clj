@@ -7,7 +7,7 @@
             [clojure.moon.stage-dev-menu-create :refer [stage-dev-menu-create]]
             [clojure.moon.stage-info-window-create :refer [stage-info-window-create]]
             [clojure.moon.windows-create :refer [windows-create]]
-            [gdl.scenes.scene2d.stage :as stage]))
+            [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn f [ctx]
   (doseq [[actor-fn & params] [[action-bar-create]
@@ -17,5 +17,5 @@
                                                  inventory-window-create]]
                                 [player-state-draw-create]
                                 [player-message-actor-create]]]
-    (stage/add-actor! (:ctx/stage ctx) (apply actor-fn ctx params)))
+    (stage/addActor (:ctx/stage ctx) (apply actor-fn ctx params)))
   ctx)

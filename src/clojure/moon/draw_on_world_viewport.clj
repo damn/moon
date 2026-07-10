@@ -1,17 +1,17 @@
 (ns clojure.moon.draw-on-world-viewport
-  (:require [gdl.graphics.g2d.batch :as batch]
+  (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [clojure.body.draw-rectangle :as draw-rectangle]
             [clojure.moon.draw :refer [draw!]]
             [clojure.moon.draw-component :refer [draw-component]]
             [clojure.moon.factions-iterations :refer [factions-iterations]]
             [clojure.shape-drawer :as shape-drawer]
             [clojure.line-of-sight :as line-of-sight?]
-            [gdl.graphics.orthographic-camera :as orthographic-camera]
+            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.throwable :as throwable]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
             [clojure.moon.world-unit-scale :refer [world-unit-scale]]
-            [gdl.utils.viewport :as viewport]))
+            [com.badlogic.gdx.utils.viewport.viewport :as viewport]))
 
 (def ^:private render-layers
   [#{:entity/mouseover?
@@ -35,7 +35,7 @@
            ctx/show-cell-entities?
            ctx/show-cell-occupied?]}]
   (apply concat
-         (for [[x y] (visible-tiles (viewport/get-camera world-viewport))
+         (for [[x y] (visible-tiles (viewport/getCamera world-viewport))
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]
@@ -100,9 +100,9 @@
            ctx/unit-scale
            ctx/world-viewport]
     :as ctx}]
-  (batch/set-color! batch 1 1 1 1)
-  (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
-  (batch/begin! batch)
+  (batch/setColor batch 1 1 1 1)
+  (batch/setProjectionMatrix batch (orthographic-camera/combined (viewport/getCamera world-viewport)))
+  (batch/begin batch)
   (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
@@ -112,5 +112,5 @@
       (draw! ctx (draw-fn ctx)))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (batch/end! batch)
+  (batch/end batch)
   ctx)

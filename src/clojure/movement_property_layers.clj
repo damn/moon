@@ -1,12 +1,12 @@
 (ns clojure.movement-property-layers
-  (:require [gdl.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdl.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [gdl.maps.tiled.tiled-map :as tiled-map]
+  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
+            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [gdl.maps.map-properties :as map-properties]))
 
 (defn f
   [tiled-map]
   (->> tiled-map
-       tiled-map/get-layers
+       tiled-map/getLayers
        reverse
-       (filter #(map-properties/get (tiled-map-tile-layer/get-properties %) "movement-properties"))))
+       (filter #(map-properties/get (tiled-map-tile-layer/getProperties %) "movement-properties"))))

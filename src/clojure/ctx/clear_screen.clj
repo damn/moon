@@ -1,10 +1,10 @@
 (ns clojure.ctx.clear-screen
-  (:require [gdl.graphics :as graphics]
-            [gdl.graphics.gl20 :as gl20]))
+  (:require [com.badlogic.gdx.graphics :as graphics]
+            [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
 (defn step
   [{:keys [ctx/graphics] :as ctx}]
-  (let [gl (graphics/get-gl20 graphics)]
-    (gl20/clear-color! gl 0 0 0 0)
-    (gl20/clear! gl gl20/color-buffer-bit))
+  (let [gl (graphics/getGL20 graphics)]
+    (gl20/glClearColor gl 0 0 0 0)
+    (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
   ctx)

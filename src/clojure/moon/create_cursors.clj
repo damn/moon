@@ -1,10 +1,10 @@
 (ns clojure.moon.create-cursors
-  (:require [gdl.utils.disposable :as disposable]
+  (:require [com.badlogic.gdx.utils.disposable :as disposable]
             [clojure.edn :as edn]
-            [gdl.files :as files]
-            [gdl.graphics :as graphics]
+            [com.badlogic.gdx.files :as files]
+            [com.badlogic.gdx.graphics :as graphics]
             [clojure.java.io :as io]
-            [gdl.graphics.pixmap :as pixmap]))
+            [com.badlogic.gdx.graphics.pixmap :as pixmap]))
 
 (defn f [ctx]
   (assoc ctx
@@ -13,6 +13,6 @@
                                       (fn [[path-segment [hotspot-x hotspot-y]]]
                                         (let [path (format path-format path-segment)
                                               pixmap* (pixmap/new (files/internal (:ctx/files ctx) path))
-                                              cursor (graphics/new-cursor (:ctx/graphics ctx) pixmap* hotspot-x hotspot-y)]
-                                          (disposable/dispose! pixmap*)
+                                              cursor (graphics/newCursor (:ctx/graphics ctx) pixmap* hotspot-x hotspot-y)]
+                                          (disposable/dispose pixmap*)
                                           cursor))))))
