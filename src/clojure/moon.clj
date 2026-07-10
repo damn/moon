@@ -1,35 +1,18 @@
 (ns clojure.moon
-  (:require
-   ; moon.graphics
-   [clojure.ctx.clear-screen :as ctx-clear-screen]
-   ; moon.db
-            [clojure.db.all-raw :refer [all-raw]]
+  (:require [clojure.db.all-raw :refer [all-raw]]
             [clojure.db.build :refer [build]]
             [clojure.edn :as edn]
-            ; moon.files
             [clojure.files.create-textures :as create-textures]
-
-            ; clojure.g2d/
             [clojure.g2d.cells :refer [->cells]]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
-
-            ; moon.grid
             [clojure.grid.cell.blocks-vision :as blocks-vision?]
             [clojure.grid-update-potential-fields :as update-potential-fields]
-
-            ; moon.cell
             [clojure.grid-cell :as grid-cell]
             [clojure.grid2d :as g2d]
-
-            ; moon.camera? no
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.java.io :as io]
-
-            ; moon.levels.*
             [clojure.levels.tmx :as tmx]
-
-            ; moon.raycaster
             [clojure.line-of-sight :as line-of-sight?]
             [clojure.body.touched-tiles :refer [touched-tiles]]
             [clojure.g2d.get-cells :refer [get-cells]]
@@ -113,15 +96,13 @@
             [clojure.unproject :as unproject]
             [clojure.usable-state :as usable-state]
             [clojure.v2.distance :as distance]
-
-            ; THIS IS SIMPLE
-            ; ONLY SIMPLE ALLOWED!
             [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.audio :as audio]
             [com.badlogic.gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.colors :as colors]
+            [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
@@ -147,17 +128,12 @@
             [com.badlogic.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-
-            ; TODO THIS IS NOT SIMPLE
             [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdl.graphics.g2d.freetype.font-generator :as free-type-font-generator]
             [gdl.input.buttons :as input-buttons]
             [gdl.input.keys :as input-keys]
             [gdl.maps.map-properties :as map-properties]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
-            ;
-
-            ; SIMPLE
             [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]
             [qrecord.core :as q])
   (:gen-class))
@@ -942,8 +918,12 @@
                                      (:body/position (:entity/body @player-eid)))
   ctx)
 
-(defn clear-screen [ctx]
-  (ctx-clear-screen/step ctx))
+(defn clear-screen
+  [{:keys [ctx/graphics] :as ctx}]
+  (let [gl (graphics/getGL20 graphics)]
+    (gl20/glClearColor gl 0 0 0 0)
+    (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
+  ctx)
 
 (defn render-draw-tiled-map
   [{:keys [ctx/batch
