@@ -10,7 +10,7 @@
 
 ; ETF
 
-(ns gdl.lwjgl3-application
+(ns gdl.backends.lwjgl3.lwjgl3-application
   (:require [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as app]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
