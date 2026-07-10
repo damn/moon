@@ -1,4 +1,4 @@
-(ns clojure.gdx.graphics.g2d.batch
+(ns gdl.batch
   (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]))
 
 (def X1 batch/X1)

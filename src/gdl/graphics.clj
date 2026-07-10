@@ -1,4 +1,4 @@
-(ns clojure.gdx.graphics
+(ns gdl.graphics
   (:require [com.badlogic.gdx.graphics :as graphics]))
 
 (defn get-delta-time [& args]

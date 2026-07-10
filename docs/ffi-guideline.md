@@ -2,16 +2,18 @@
 
 Rules for `com.badlogic.gdx.*` — the thin Clojure mirror of [libGDX](https://libgdx.com/).
 
+**GDL** (Clojure Game development libraries, `gdl.*` / `src/gdl/`) is the Clojure-shaped API above this FFI layer.
+
 This layer is **foreign function interface only**. It exposes Java classes as Clojure vars. It is not the game API and not idiomatic Clojure.
 
-Game code should not require this layer directly. Use `gdx.*` (Clojure API) or `clojure.*` (game domain) instead.
+Game code should not require this layer directly. Use `gdl.*` (GDL) or `clojure.*` (game domain) instead.
 
 ## Layer stack
 
 ```
 clojure.moon.*          game — entities, txs, rules (no libGDX imports)
         ↑
-gdx.*                   Clojure API — documented, idiomatic, short names
+gdl.*                   GDL — Clojure Game development libraries
         ↑
 com.badlogic.gdx.*      FFI (this tree) — mirror Java 1:1
         ↑
@@ -21,7 +23,7 @@ libGDX (Java)
 | Layer | Job | Docs |
 |-------|-----|------|
 | `com.badlogic.gdx.*` | Curated mirror — only what this project uses | None — names mirror Java; use libGDX javadoc when needed |
-| `gdx.*` | Clojure-shaped API over FFI | Clojure docs — keywords, examples, ergonomics |
+| `gdl.*` | GDL — Clojure-shaped API over FFI | Clojure docs — keywords, examples, ergonomics |
 | `clojure.moon.*` | Game | Domain docs / specs |
 
 ## Rules
@@ -30,7 +32,7 @@ libGDX (Java)
 
 FFI vars only forward to Java. No `case`, `cond`, keyword mapping, defaults, validation, or game semantics.
 
-If it needs a `case` or domain knowledge, it belongs in `gdx.*` or `clojure.*`.
+If it needs a `case` or domain knowledge, it belongs in `gdl.*` or `clojure.*`.
 
 **Allowed:** `proxy` / `reify` only where Java requires subclassing (e.g. anonymous `Actor`, `ApplicationListener`). Callback bodies are passed in from above; the proxy wiring stays here.
 
@@ -133,16 +135,16 @@ Use `(:refer-clojure :exclude [...])` when FFI names collide with `clojure.core`
 
 FFI namespaces and vars have **no docstrings**. Names mirror Java 1:1 — the binding is self-explanatory. For behavior details, read libGDX javadoc for the pinned version (see `project.clj`).
 
-Documentation belongs in `gdx.*` (Clojure API) and `clojure.moon.*` (game domain), not here.
+Documentation belongs in `gdl.*` (Clojure API) and `clojure.moon.*` (game domain), not here.
 
 ## What does not belong here
 
 | Concern | Where |
 |---------|--------|
-| Docstrings, examples, keyword opts | `gdx.*` |
+| Docstrings, examples, keyword opts | `gdl.*` |
 | `:input.keys/d` → key code | `clojure.input$keys` |
-| `clojurize` Vector2 → `[x y]` | `gdx.vec2` / `clojure.vector2` |
-| App bootstrap, keyword config maps | `gdx.app` |
+| `clojurize` Vector2 → `[x y]` | `gdl.vec2` / `clojure.vector2` |
+| App bootstrap, keyword config maps | `gdl.app` |
 | Inventory UI, game txs | `clojure.moon.*` |
 | Pure `[x y]` math | `clojure.v2.*` |
 
@@ -163,7 +165,7 @@ Documentation belongs in `gdx.*` (Clojure API) and `clojure.moon.*` (game domain
 ## Adding a new binding
 
 1. Add the FFI var (name mirrors Java).
-2. Wrap in `gdx.*` only if game code needs a Clojure-shaped surface.
+2. Wrap in `gdl.*` only if game code needs a Clojure-shaped surface.
 
 ## Migration
 

@@ -1,5 +1,5 @@
 (ns clojure.update-labels.fps
-  (:require [clojure.gdx.graphics :as graphics]))
+  (:require [gdl.graphics :as graphics]))
 
 (def item
   {:label "FPS"

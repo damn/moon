@@ -1,6 +1,6 @@
 (ns clojure.ctx.clear-screen
-  (:require [clojure.gdx.graphics :as graphics]
-            [clojure.gdx.graphics.gl20 :as gl20]))
+  (:require [gdl.graphics :as graphics]
+            [gdl.gl20 :as gl20]))
 
 (defn step
   [{:keys [ctx/graphics] :as ctx}]

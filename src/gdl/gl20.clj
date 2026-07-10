@@ -1,4 +1,4 @@
-(ns clojure.gdx.graphics.gl20
+(ns gdl.gl20
   (:require [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
 (def color-buffer-bit

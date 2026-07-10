@@ -1,5 +1,5 @@
 (ns clojure.editor
-  (:require [gdx.lwjgl3-application :as lwjgl3-application]
+  (:require [gdl.lwjgl3-application :as lwjgl3-application]
             [clojure.editor.create :as create]
             [clojure.editor.dispose :as dispose]
             [clojure.editor.render :as render]

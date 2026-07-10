@@ -33,13 +33,13 @@ fns) cannot :require the full app ns without load cycles.
 Sane end state:
 
   src/
-    gdx/              LibGDX wrappers only (keep 1 class ~ 1 ns rule)
+    gdl/              GDL — Clojure Game development libraries (libGDX wrappers)
     clojure/          pure game/sim/domain (~80-150 ns, not 589)
     moon/             moon-start (+ schema/constants), -main
     editor/           editor-start
     dev/              loop, nrepl
 
-clojure.application stays a small atom holder (state only).
+gdl.application wraps com.badlogic.gdx.application (LibGDX wrapper).
 Game constants + Malli schema live in clojure.moon-start.
 
 If load cycles appear: split moon-start into a constants-only file (same ns,
@@ -58,11 +58,11 @@ Phase 1 — Stop the bleeding (in progress)
 Phase 2 — Collapse the thinnest layer (~300 files)
   Merge GDX convenience one-liners into small topic files:
 
-    gdx/scene2d.clj     set_name, set_visible, get_user_object, actor_set_position, ...
-    gdx/graphics.clj    set_color, begin, end, clear_screen, ...
-    gdx/viewport.clj    fit_viewport, unproject, inc_zoom, ...
+    gdl/scene2d.clj     set_name, set_visible, get_user_object, actor_set_position, ...
+    gdl/graphics.clj    set_color, begin, end, clear_screen, ...
+    gdl/viewport.clj    fit_viewport, unproject, inc_zoom, ...
 
-  Keep Java interop in gdx/; game code should not grow new 3-line wrapper ns.
+  Keep Java interop in gdl/; game code should not grow new 3-line wrapper ns.
 
   Constants like max_delta, zoom_speed, world_unit_scale -> top of moon-start
   (or one moon/config.clj), not scattered 3-line files.
@@ -115,7 +115,7 @@ Delete / inline aggressively
   - Duplicate validate/schema ns after move to moon-start
   - get_* / set_* that are pure forwarding
 
-Move to gdx/
+Move to gdl/
   - Anything whose only job is (SomeJavaType/.method ...)
 
 Keep separate
@@ -129,7 +129,7 @@ Rough target numbers
 
   Now                         Reasonable target
   ---------------------------------------------------------------------------
-  589 in clojure/             ~80-150 in clojure/ + ~200 in gdx/ + 2-3 app entry ns
+  589 in clojure/             ~80-150 in clojure/ + ~200 in gdl/ + 2-3 app entry ns
   436 files <= 15 lines       < 30 tiny files (only where interop forces it)
   13 k-* registries           0 (replaced by defmulti)
 

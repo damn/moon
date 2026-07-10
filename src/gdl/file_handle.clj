@@ -1,10 +1,10 @@
-(ns gdx.file-handle
+(ns gdl.file-handle
   (:require [com.badlogic.gdx.files.file-handle :as file-handle]))
 
 ; TODO name suggestion: com.badlogic.gdx.files.file-handle.recursively-search/f
 ; ??
-; or gdx.files.file-handle
-; or gdx.file-handle
+; or gdl.files.file-handle
+; or gdl.file-handle
 ; or 'clojure.file-handle' (we are now in clojure land are we?) idk
 ; 'clojure.file-handle.recursively-search/f'
 ; or _DIRECTLY INLINE_ ????

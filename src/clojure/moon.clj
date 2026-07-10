@@ -1,5 +1,5 @@
 (ns clojure.moon
-  (:require [gdx.lwjgl3-application :as lwjgl3-application]
+  (:require [gdl.lwjgl3-application :as lwjgl3-application]
             [clojure.moon.create :as create]
             [clojure.moon.dispose :as dispose]
             [clojure.moon.render :as render]

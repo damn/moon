@@ -1,8 +1,8 @@
 (ns clojure.levelgen-test.render
   (:require [clojure.rgba.float-bits]
             [clojure.batch.draw-tiled-map :as draw-tiled-map]
-            [clojure.gdx.graphics.gl20 :as gl20]
-            [clojure.gdx.graphics :as graphics]
+            [gdl.gl20 :as gl20]
+            [gdl.graphics :as graphics]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.input.key-pressed :as key-pressed?]
             [clojure.orthographic-camera-position :as get-position]

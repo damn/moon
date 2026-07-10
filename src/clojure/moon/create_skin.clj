@@ -1,7 +1,7 @@
 (ns clojure.moon.create-skin
   (:require [clojure.files :as files]
-            [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [clojure.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
+            [gdl.bitmap-font :as bitmap-font]
+            [gdl.bitmap-font.data :as bitmap-font-data]
             [clojure.skin :as skin]))
 
 (defn f [{:keys [ctx/files] :as ctx}]

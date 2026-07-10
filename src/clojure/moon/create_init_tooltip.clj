@@ -1,5 +1,5 @@
 (ns clojure.moon.create-init-tooltip
-  (:require [clojure.gdx.graphics.colors :as colors]
+  (:require [gdl.colors :as colors]
             [clojure.new-color]
             [clojure.tooltip-manager :as tooltip-manager]))
 

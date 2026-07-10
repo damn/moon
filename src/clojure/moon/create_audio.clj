@@ -1,5 +1,5 @@
 (ns clojure.moon.create-audio
-  (:require [clojure.gdx.audio :as audio]
+  (:require [gdl.audio :as audio]
             [clojure.edn :as edn]
             [clojure.files :as files]
             [clojure.java.io :as io]))

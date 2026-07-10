@@ -31,10 +31,10 @@
 # game/
     Just the state, should probably be merged with 'ctx'
 
-# gdx/
-    convinience layer which exposes combinatioric functions/shorter names
-        for dealing with libgdx framework libraries (space/com/lwjgl through org/...)
-            ideally only one who knows about com/space/org.lwjgl
+# gdl/
+    GDL — Clojure Game development libraries.
+    Clojure-shaped API over FFI (com/space/org/lwjgl): idiomatic names,
+    keyword opts, docstrings. Game code uses gdl.*; only gdl/ talks to FFI.
 
 # levelgen-test/
     another application, same rules as editor/ctx
@@ -58,4 +58,4 @@
 # world-fns
     not totally well defined yet
         the world creation pipelines not sure they should be in multiple files
-        some hlepers could maybe go to core/clojure or gdx ?
+        some hlepers could maybe go to core/clojure or gdl ?

@@ -1,4 +1,4 @@
-(ns gdx.font-generator
+(ns gdl.font-generator
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as free-type-font-generator]
             [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator$free-type-font-parameter :as parameter]))

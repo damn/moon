@@ -1,4 +1,4 @@
-(ns clojure.gdx.graphics.g2d.bitmap-font
+(ns gdl.bitmap-font
   (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]))
 
 (defn draw! [& args]

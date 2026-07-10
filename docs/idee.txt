@@ -9,7 +9,7 @@ And start with the easy/simple ones
 
   It's just about the 'names' in my app
 
-  src/clojure/gdx/
+  src/gdl/
     => dealing with java package 'com.badlogic.gdx'
       => 1 namespace for each class ?
         => 1 folder for each class?

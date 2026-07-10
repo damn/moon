@@ -1,4 +1,4 @@
-(ns clojure.gdx.audio
+(ns gdl.audio
   (:require [com.badlogic.gdx.audio :as audio]))
 
 (defn new-sound [& args]
