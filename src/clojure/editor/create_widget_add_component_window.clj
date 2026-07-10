@@ -7,7 +7,7 @@
             [clojure.editor.create-widget-create-component-row :as create-component-row]
             [clojure.editor.create-widget-rebuild-editor-window :as rebuild-editor-window]
             [clojure.editor.widget-value :refer [widget-value]]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.optional :refer [optional?]]
             [clojure.pack! :as pack!]
             [clojure.schemas-map-keys :refer [map-keys]]

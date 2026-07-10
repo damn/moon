@@ -3,7 +3,7 @@
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.editor.create-widget-add-component-window :as add-component-window]
             [clojure.editor.create-widget-create-component-row :as create-component-row]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.horiz-sep :as horiz-sep]
             [clojure.interpose-f :refer [interpose-f]]
             [clojure.stage :as stage]

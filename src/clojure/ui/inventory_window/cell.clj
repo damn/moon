@@ -2,7 +2,7 @@
   (:require
             [gdl.actor :as actor] [clojure.image :as image]
             [clojure.scene2d.group :as group]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.vector2 :as vector2]
             [clojure.ui-widget :as widget]
             [clojure.scene2d.utils.click-listener :as click-listener]

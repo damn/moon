@@ -3,7 +3,7 @@
             [gdl.actor :as actor]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.db.get-raw :refer [get-raw]]
             [clojure.scene2d.group :as group]
             [clojure.image :as image]

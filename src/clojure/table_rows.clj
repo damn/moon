@@ -4,7 +4,7 @@
             [clojure.texture-region-drawable :as texture-region-drawable]
             [clojure.texture :as texture]
             [clojure.scene2d.group :as group]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.image-button :as image-button]
             [clojure.touchable :as touchable]
             [clojure.ui-stack :as stack]

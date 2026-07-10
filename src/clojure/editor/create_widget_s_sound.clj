@@ -4,7 +4,7 @@
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.create-widget-open-select-sounds-handler :as open-select-sounds-handler]
             [clojure.editor.create-widget-sound-columns :as sound-columns]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.ui-table :as table]
             [clojure.ui-text-button :as text-button]
             [clojure.scene2d.utils.change-listener :as change-listener]))

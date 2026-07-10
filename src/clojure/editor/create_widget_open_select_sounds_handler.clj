@@ -4,7 +4,7 @@
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.moon.ctx-do :refer [do!]]
             [clojure.editor.create-widget-rebuild-sound-widget :as rebuild-sound-widget]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.stage :as stage]
             [clojure.ui-scroll-pane :as scroll-pane]

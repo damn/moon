@@ -10,7 +10,7 @@
             [clojure.db.delete :refer [delete!]]
             [clojure.editor.create-widget :refer [create-widget]]
             [clojure.editor.widget-value :refer [widget-value]]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.scene2d.group :as group]
             [clojure.input.key-just-pressed :as key-just-pressed?]
             [clojure.scene2d-actor :as scene2d-actor]

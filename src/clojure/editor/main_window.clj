@@ -2,7 +2,7 @@
   (:require [gdl.actor :as actor]
             [clojure.editor.create-widget-property-editor-window :refer [property-editor-window]]
             [clojure.editor.property-overview-window :refer [property-overview-window]]
-            [clojure.event :as event]
+            [gdl.event :as event]
             [clojure.db.get-raw :refer [get-raw]]
             [clojure.property-types :refer [property-types]]
             [clojure.stage :as stage]
