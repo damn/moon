@@ -1,7 +1,10 @@
 (ns moon.stats
-  (:require [clojure.modifiers-get-value :as get-value]
+  (:require [clojure.mods.add :as add-mods-op]
+            [clojure.mods.remove :as remove-mods-op]
+            [clojure.modifiers-get-value :as get-value]
             [clojure.string :as str]
-            [clojure.val-max.apply-max :as apply-max]))
+            [clojure.val-max.apply-max :as apply-max]
+            [clojure.val-max.apply-min :as apply-min]))
 
 (def ^:private non-val-max-stat-ks
   [:stats/movement-speed
@@ -29,6 +32,40 @@
     (get-value/f base-value
                  (:stats/modifiers stats)
                  (keyword "modifier" (name stat-k)))))
+
+(defn add-mods [stats mods]
+  (update stats :stats/modifiers add-mods-op/f mods))
+
+(defn remove-mods [stats mods]
+  (update stats :stats/modifiers remove-mods-op/f mods))
+
+(defn apply-action-speed-modifier [stats skill action-time]
+  (/ action-time
+     (or (get-value stats (:skill/action-time-modifier-key skill))
+         1)))
+
+(defn calc-damage
+  ([source target damage]
+   (update (calc-damage source damage)
+           :damage/min-max
+           apply-max/f
+           (:stats/modifiers target)
+           :modifier/damage-receive-max))
+  ([source damage]
+   (update damage
+           :damage/min-max
+           #(-> %
+                (apply-min/f (:stats/modifiers source) :modifier/damage-deal-min)
+                (apply-max/f (:stats/modifiers source) :modifier/damage-deal-max)))))
+
+(defn effective-armor-save [source-stats target-stats]
+  (max (- (or (get-value source-stats :stats/armor-save) 0)
+          (or (get-value target-stats :stats/armor-pierce) 0))
+       0))
+
+(defn melee-damage [{:keys [entity/stats]}]
+  (let [strength (or (get-value stats :stats/strength) 0)]
+    {:damage/min-max [strength strength]}))
 
 (defn format-text
   [stats]

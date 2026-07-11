@@ -1,12 +1,12 @@
 (ns moon.stats.effective-armor-save-test
-  (:require [clojure.stats.effective-armor-save :as effective-armor-save]))
+  (:require [moon.stats :as stats]))
 
 (comment
 
- (effective-armor-save/f {} {:stats/modifiers {:modifiers/armor-save {:op/inc 10}}
+ (stats/effective-armor-save {} {:stats/modifiers {:modifiers/armor-save {:op/inc 10}}
                              :stats/armor-save 0})
  ; broken
  (let [source* {:stats/armor-pierce 0.4}
        target* {:stats/armor-save   0.5}]
-   (effective-armor-save/f source* target*))
+   (stats/effective-armor-save source* target*))
  )

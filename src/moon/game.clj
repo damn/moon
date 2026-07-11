@@ -45,12 +45,6 @@
             [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.spawn-positions :as spawn-positions]
-            [clojure.stats.add-mods :as add-mods]
-            [clojure.stats.apply-action-speed-modifier :as apply-action-speed-modifier]
-            [clojure.stats.calc-damage :as calc-damage]
-            [clojure.stats.effective-armor-save :as effective-armor-save]
-            [clojure.stats.melee-damage :as melee-damage]
-            [clojure.stats.remove-mods :as remove-mods]
             [clojure.stopped :refer [stopped?]]
             [clojure.string :as str]
             [clojure.table-set-opts :as table-set-opts]
@@ -268,13 +262,13 @@
 
      (and (:entity/stats source*)
           (:entity/stats target*)
-          (< (rand) (effective-armor-save/f (:entity/stats source*)
+          (< (rand) (stats/effective-armor-save (:entity/stats source*)
                                             (:entity/stats target*))))
      [[:tx/add-text-effect target "[WHITE]ARMOR" 0.3]]
 
      :else
      (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
-                     (:damage/min-max (calc-damage/f (:entity/stats source*)
+                     (:damage/min-max (stats/calc-damage (:entity/stats source*)
                                                      (:entity/stats target*)
                                                      damage))
                      (:damage/min-max damage))
@@ -294,7 +288,7 @@
   [_ {:keys [effect/source] :as effect-ctx} ctx]
   ; TODO AT EFFECT CREATION MAKE
   ; same @ applicable
-  (handle-effect [:effects.target/damage (melee-damage/f @source)] effect-ctx ctx))
+  (handle-effect [:effects.target/damage (stats/melee-damage @source)] effect-ctx ctx))
 
 (defmethod handle-effect :effects.target/spiderweb
   [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]
@@ -302,7 +296,7 @@
   (when-not (:entity/temp-modifier @target)
     [[:tx/assoc target :entity/temp-modifier {:modifiers spiderweb-modifiers
                                               :counter (create-timer elapsed-time spiderweb-duration)}]
-     [:tx/update target :entity/stats add-mods/f spiderweb-modifiers]]))
+     [:tx/update target :entity/stats stats/add-mods spiderweb-modifiers]]))
 
 (defmethod handle-effect :effects.target/stun
   [[_ duration] {:keys [effect/target]} _ctx]
@@ -356,7 +350,7 @@
 
 (defmethod effect-applicable? :effects.target/melee-damage
   [_ {:keys [effect/source] :as effect-ctx}]
-  (effect-applicable? [:effects.target/damage (melee-damage/f @source)] effect-ctx))
+  (effect-applicable? [:effects.target/damage (stats/melee-damage @source)] effect-ctx))
 
 (defmethod effect-applicable? :effects.target/spiderweb
   [_ {:keys [effect/target]}]
@@ -611,7 +605,7 @@
    :effect-ctx effect-ctx
    :counter (->> skill
                  :skill/action-time
-                 (apply-action-speed-modifier/f (:entity/stats @eid) skill)
+                 (stats/apply-action-speed-modifier (:entity/stats @eid) skill)
                  (create-timer elapsed-time))})
 
 (defmethod create-entity-state :stunned
@@ -952,7 +946,7 @@
        (assert item)
        [[:tx/assoc-in eid (cons :entity/inventory cell) nil]
         (when (applies-modifiers?/f cell)
-          [:tx/update eid :entity/stats remove-mods/f (:stats/modifiers item)])
+          [:tx/update eid :entity/stats stats/remove-mods (:stats/modifiers item)])
         (when (:entity/player? @eid)
           [:tx/ui-remove-item eid cell])]))
 
@@ -970,7 +964,7 @@
                     (valid-slot?/f cell item)))
        [[:tx/assoc-in eid (cons :entity/inventory cell) item]
         (when (applies-modifiers?/f cell)
-          [:tx/update eid :entity/stats add-mods/f (:stats/modifiers item)])
+          [:tx/update eid :entity/stats stats/add-mods (:stats/modifiers item)])
         (when (:entity/player? @eid)
           [:tx/ui-set-item eid cell item])]))
 
@@ -2091,7 +2085,7 @@
         {:keys [ctx/elapsed-time]}]
      (when (stopped? elapsed-time counter)
        [[:tx/dissoc eid :entity/temp-modifier]
-        [:tx/update eid :entity/stats remove-mods/f modifiers]]))
+        [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
 
    :entity/projectile-collision
    (fn [{:keys [entity-effects already-hit-bodies piercing?]}
