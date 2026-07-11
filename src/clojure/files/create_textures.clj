@@ -15,5 +15,5 @@
                        pixmap (pixmap/new file)]]
              [path (texture/new (file-texture-data/new file
                                                        pixmap
-                                                       (pixmap/getFormat pixmap)
+                                                       (pixmap/get-format pixmap)
                                                        false))])))

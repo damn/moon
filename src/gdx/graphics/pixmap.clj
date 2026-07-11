@@ -4,3 +4,6 @@
 
 (defn new [file-handle]
   (pixmap/new file-handle))
+
+(defn get-format [pixmap]
+  (pixmap/getFormat pixmap))
