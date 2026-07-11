@@ -23,11 +23,7 @@
             [clojure.is-useful :as useful?]
             [clojure.nearest-enemy :refer [nearest-enemy]]
             [clojure.speed :as speed]
-            [clojure.moon.schema :refer [schema]]
-            [clojure.moon.state-enter :refer [k->state-enter]]
-            [clojure.moon.state-exit :refer [k->state-exit]]
-            [clojure.moon.world-unit-scale :refer [world-unit-scale]]
-            [clojure.moon.z-orders :refer [z-orders]]
+            [clojure.stats.pay-mana-cost :as pay-mana-cost]
             [clojure.mouse-position :refer [mouse-position]]
             [clojure.mouseover-actor :refer [mouseover-actor]]
             [clojure.move :as move]
@@ -167,6 +163,14 @@
 
 (def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
 (def spiderweb-duration 5)
+
+(def world-unit-scale (float (/ 48)))
+
+(def z-orders
+  [:z-order/on-ground
+   :z-order/ground
+   :z-order/flying
+   :z-order/effect])
 
 (defn affected-targets
   [active-entities raycaster entity]
@@ -608,6 +612,77 @@
   (if-let [f (k->after-create k)]
     (f v eid ctx)
     nil))
+
+(defn- state-enter-player-item-on-cursor
+  [{:keys [item]} eid]
+  [[:tx/assoc eid :entity/item-on-cursor item]])
+
+(defn- state-enter-active-skill
+  [{:keys [skill]} eid]
+  [[:tx/sound (:skill/start-action-sound skill)]
+   [:tx/set-cooldown eid skill]
+   [:tx/update eid :entity/stats pay-mana-cost/f (:skill/cost skill)]])
+
+(defn- state-enter-npc-dead
+  [_ eid]
+  [[:tx/mark-destroyed eid]])
+
+(defn- state-enter-player-moving
+  [{:keys [movement-vector]} eid]
+  [[:tx/assoc eid :entity/movement {:direction movement-vector
+                                    :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                               0)}]])
+
+(defn- state-enter-player-dead
+  [_ _eid]
+  [[:tx/sound "bfxr_playerdeath"]
+   [:tx/show-modal {:title "YOU DIED - again!"
+                    :text "Good luck next time!"
+                    :button-text "OK"
+                    :on-click (fn [])}]])
+
+(defn- state-enter-npc-moving
+  [{:keys [movement-vector]} eid]
+  [[:tx/assoc eid :entity/movement {:direction movement-vector
+                                    :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                               0)}]])
+
+(def k->state-enter
+  {:player-item-on-cursor state-enter-player-item-on-cursor
+   :active-skill state-enter-active-skill
+   :npc-dead state-enter-npc-dead
+   :player-moving state-enter-player-moving
+   :player-dead state-enter-player-dead
+   :npc-moving state-enter-npc-moving})
+
+(defn- state-exit-player-item-on-cursor
+  [_ eid ctx]
+  (let [entity @eid]
+    (when (:entity/item-on-cursor entity)
+      [[:tx/sound "bfxr_itemputground"]
+       [:tx/dissoc eid :entity/item-on-cursor]
+       [:tx/spawn-item
+        (item-place-position ctx entity)
+        (:entity/item-on-cursor entity)]])))
+
+(defn- state-exit-player-moving
+  [_ eid _ctx]
+  [[:tx/dissoc eid :entity/movement]])
+
+(defn- state-exit-npc-sleeping
+  [_ eid _ctx]
+  [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]
+   [:tx/add-text-effect eid "[WHITE]!" 1]])
+
+(defn- state-exit-npc-moving
+  [_ eid _ctx]
+  [[:tx/dissoc eid :entity/movement]])
+
+(def k->state-exit
+  {:player-item-on-cursor state-exit-player-item-on-cursor
+   :player-moving state-exit-player-moving
+   :npc-sleeping state-exit-npc-sleeping
+   :npc-moving state-exit-npc-moving})
 
 (def tx-fn-map
   {:tx/add-skill
@@ -2086,6 +2161,50 @@
 (defn stage-ctx
   [{:keys [ctx/stage] :as ctx}]
   (or (:stage/ctx stage) ctx))
+
+(def schema
+  (malli-schema/create
+   [:map {:closed true}
+    [:ctx/input :some]
+    [:ctx/graphics :some]
+    [:ctx/audio :some]
+    [:ctx/batch :some]
+    [:ctx/cursors :some]
+    [:ctx/default-font :some]
+    [:ctx/unit-scale :some]
+    [:ctx/world-viewport :some]
+    [:ctx/shape-drawer :some]
+    [:ctx/shape-drawer-texture :some]
+    [:ctx/textures :some]
+    [:ctx/skin :some]
+    [:ctx/stage :some]
+    [:ctx/active-entities :any]
+    [:ctx/delta-time :any]
+    [:ctx/mouseover-eid :any]
+    [:ctx/ui-mouse-position :any]
+    [:ctx/world-mouse-position :any]
+    [:ctx/colors :some]
+    [:ctx/controls :some]
+    [:ctx/controls-info :some]
+    [:ctx/max-speed :some]
+    [:ctx/render-z-order :some]
+    [:ctx/content-grid :some]
+    [:ctx/entity-ids :some]
+    [:ctx/explored-tile-corners :some]
+    [:ctx/grid :some]
+    [:ctx/id-counter :some]
+    [:ctx/potential-field-cache :some]
+    [:ctx/raycaster :some]
+    [:ctx/start-position :some]
+    [:ctx/tiled-map :some]
+    [:ctx/db :some]
+    [:ctx/elapsed-time :some]
+    [:ctx/paused? :some]
+    [:ctx/player-eid :some]
+    [:ctx/show-potential-field-colors? :any]
+    [:ctx/show-cell-entities? :boolean]
+    [:ctx/show-cell-occupied? :boolean]
+    [:ctx/show-body-bounds? :boolean]]))
 
 (defn render-validate [ctx]
   (malli-schema/validate-humanize schema ctx)
