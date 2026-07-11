@@ -1,14 +1,8 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
-            [clojure.inc-zoom :refer [inc-zoom!]]
-            [clojure.int-between :refer [rand-int-between]]
-            [clojure.moon-target-all :as target-all]
-            [clojure.projectile-start-point :as projectile-start-point]
-            [clojure.stats.calc-damage :as calc-damage]
-            [clojure.stats.effective-armor-save :as effective-armor-save]
-            [clojure.stats.melee-damage :as melee-damage]
             [clojure.increment :as increment]
             [clojure.info :refer [info-text]]
+            [clojure.int-between :refer [rand-int-between]]
             [clojure.inventory-window-remove-item :as remove-item-ui]
             [clojure.inventory-window-set-item :as set-item-ui]
             [clojure.inventory.can-pickup-item :as can-pickup-item]
@@ -29,6 +23,7 @@
             [clojure.menus.v :as menus]
             [clojure.minimum-size :refer [minimum-size]]
             [clojure.moon-faction :as faction]
+            [clojure.moon-target-all :as target-all]
             [clojure.moon.after-create-component :refer [after-create-component]]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.moon.create-component :refer [create-component]]
@@ -56,6 +51,7 @@
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
             [clojure.overlaps :refer [overlaps?]]
             [clojure.point-to-entities :refer [point->entities]]
+            [clojure.projectile-start-point :as projectile-start-point]
             [clojure.ratio :as timer-ratio]
             [clojure.readable :as readable]
             [clojure.records-entity :as entity]
@@ -71,9 +67,12 @@
             [clojure.sort-by-order :as sort-by-order]
             [clojure.spawn-positions :as spawn-positions]
             [clojure.stats.add-mods :as add-mods]
+            [clojure.stats.calc-damage :as calc-damage]
+            [clojure.stats.effective-armor-save :as effective-armor-save]
             [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.stats.get-mana :as get-mana]
             [clojure.stats.get-stat-value :refer [get-stat-value]]
+            [clojure.stats.melee-damage :as melee-damage]
             [clojure.stats.remove-mods :as remove-mods]
             [clojure.stopped :refer [stopped?]]
             [clojure.table-set-opts :as table-set-opts]
@@ -136,6 +135,7 @@
             [gdl.maps.map-properties :as map-properties]
             [gdx.files :as files]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
+            [gdx.graphics.orthographic-camera :as gdx-orthographic-camera]
             [gdx.utils.disposable :as disposable]
             [moon.audio :as audio]
             [moon.body :as body]
@@ -1898,10 +1898,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (input/isKeyPressed input (input-keys/key-to-value (:zoom-in controls)))
-    (inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
+    (gdx-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
 
   (when (input/isKeyPressed input (input-keys/key-to-value (:zoom-out controls)))
-    (inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
+    (gdx-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
 
   (when (input/isKeyJustPressed input (input-keys/key-to-value (:close-windows-key controls)))
     (->> (group/findActor (:stage/root stage) "moon.ui.windows")

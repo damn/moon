@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [moon.db :as db]
-            [clojure.inc-zoom :refer [inc-zoom!]]
+            [gdx.graphics.orthographic-camera :as gdx-orthographic-camera]
             [clojure.levels.modules :as modules]
             [clojure.levels.tmx :as tmx]
             [clojure.levels.uf-caves :as uf-caves]
@@ -157,9 +157,9 @@
                         tiled-map
                         (constantly (color/toFloatBits [1 1 1 1])))
   (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/minus))
-    (inc-zoom! camera zoom-speed))
+    (gdx-orthographic-camera/inc-zoom! camera zoom-speed))
   (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/equals))
-    (inc-zoom! camera (- zoom-speed)))
+    (gdx-orthographic-camera/inc-zoom! camera (- zoom-speed)))
   (let [apply-position (fn [idx f]
                          (set-position! camera
                                         (update (get-position/f camera)
