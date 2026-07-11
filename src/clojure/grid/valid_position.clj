@@ -1,7 +1,7 @@
 (ns clojure.grid.valid-position
   (:require [clojure.body :as body]
             [clojure.g2d.get-cells :refer [get-cells]]
-            [clojure.grid.cell.is-blocked :as blocked?]
+            [moon.cell.is-blocked :as blocked?]
             [clojure.grid.cells-entities :as cells->entities]
             [clojure.overlaps :refer [overlaps?]]))
 

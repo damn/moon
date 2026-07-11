@@ -6,14 +6,23 @@
             [com.badlogic.gdx.graphics.texture :as texture]
             [clojure.string :as str]))
 
-; 2 things
-; * which are my texture paths to load ( why other apps need it - creature have paths??)
-; moon.files/textures
+; IMPLICIT com.badlogic.gdx.Gdx dependency
+; - this is APPLICATION level logic
+; - GDX APPLICATION LEVEL -
 
-; * convert a file-handle into a pixmap and file-texture-data and texture
-; moon.file-handle/texture
+; - GDX == Static global state - the glue holding libgdx together
+; and messing up boundaries
 
-; Why cant editor/levelgen just call moon.game/textures, moon.game/create-?
+; => For each class in libgdx 'com.badlogic.gdx' namespace or shape-drawer
+; see if implicit dependency to Gdx (look at java sources imports)
+; => REQUIRE / dispatch on com.badlogic.gdx.Application as first param
+; e.g. for texture-loading
+; => honest connetions
+
+; ALSO COMPLECTS: texture file-handles ( ! can be as config also with folder extensions PROJECT SPECIFIC)
+
+; AND FOR DEPLOYMENT ANYWAY NEED A DIFFERENT LIST
+; AND FILE-HANDLE -> texture pipeline ( WHICH NEEDS GDX GLOBAL STTE )!
 
 (defn f
   [files {:keys [folder extensions]}]

@@ -1,4 +1,4 @@
-(ns clojure.grid.cell.blocks-vision)
+(ns moon.cell.blocks-vision)
 
 (defn f [{:keys [movement]}]
   (= movement :none))
