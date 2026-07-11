@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]
-            [clojure.recur-sort :refer [recur-sort]]
+            [moon.m :refer [recur-sort]]
             [moon.schemas :refer [validate]]
             [clojure.type :refer [property->type]]))
 
