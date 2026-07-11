@@ -1,5 +1,5 @@
 (ns clojure.is-pf-blocked
-  (:require [moon.cell.is-blocked :as blocked?]))
+  (:require [moon.cell :as cell]))
 
 (defn f [this]
-  (blocked?/f this :z-order/ground))
+  (cell/blocked? this :z-order/ground))

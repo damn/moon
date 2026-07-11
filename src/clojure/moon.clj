@@ -6,7 +6,7 @@
             [clojure.g2d.cells :refer [->cells]]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
-            [moon.cell.blocks-vision :as blocks-vision?]
+            [moon.cell :as cell]
             [clojure.grid-update-potential-fields :as update-potential-fields]
             [clojure.grid-cell :as grid-cell]
             [clojure.grid2d :as g2d]
@@ -16,7 +16,6 @@
             [clojure.line-of-sight :as line-of-sight?]
             [clojure.body :as body]
             [clojure.g2d.get-cells :refer [get-cells]]
-            [moon.cell.is-blocked :as blocked?]
             [clojure.grid.cells-entities :as cells->entities]
             [clojure.grid.circle-entities :refer [circle->entities]]
             [clojure.grid.find-direction :refer [find-direction]]
@@ -665,7 +664,7 @@
                                                       (:entity/body @%)))
                                      (cells->entities/f cells*)))
            destroy? (or (and hit-entity (not piercing?))
-                        (some #(blocked?/f % (:body/z-order (:entity/body entity))) cells*))]
+                        (some #(cell/blocked? % (:body/z-order (:entity/body entity))) cells*))]
        [(when destroy?
           [:tx/mark-destroyed eid])
         (when hit-entity
@@ -944,7 +943,7 @@
         height (->height grid)
         cells (for [cell (map deref (->cells grid))]
                 [(:position cell)
-                 (boolean (blocks-vision?/f cell))])
+                 (boolean (cell/blocks-vision? cell))])
         arr (make-array Boolean/TYPE width height)]
     (doseq [[[x y] blocked?] cells]
       (aset arr x y (boolean blocked?)))

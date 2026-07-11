@@ -1,6 +1,9 @@
-(ns moon.cell.is-blocked)
+(ns moon.cell)
 
-(defn f [{:keys [movement]} z-order]
+(defn blocks-vision? [{:keys [movement]}]
+  (= movement :none))
+
+(defn blocked? [{:keys [movement]} z-order]
   (case movement
     :none true
     :air (case z-order
