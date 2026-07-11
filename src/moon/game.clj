@@ -33,7 +33,7 @@
             [moon.grid.point-to-entities :refer [point->entities]]
             [clojure.projectile-start-point :as projectile-start-point]
             [clojure.readable :as readable]
-            [clojure.remove-newlines :refer [remove-newlines]]
+            [moon.string :as string]
             [moon.m :refer [safe-merge]]
             [moon.stage :as moon-stage]
             [moon.button :refer [is?]]
@@ -511,7 +511,7 @@
                       (when (map? v)
                         (str "\n" (info-text v ctx))))))
          (str/join "\n")
-         remove-newlines)))
+         string/remove-newlines)))
 
 (defn- create-component-animation
   [{:keys [animation/frames
