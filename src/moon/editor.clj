@@ -1,5 +1,6 @@
 (ns moon.editor
   (:require [moon.db :as db]
+            [moon.property :as property]
             [clojure.edn :as edn]
             [clojure.coll :refer [interpose-f]]
             [moon.schema.register-methods]
@@ -20,7 +21,6 @@
             [clojure.throwable :as throwable]
             [clojure.tooltip :as tooltip]
             [moon.string.truncate :refer [truncate]]
-            [clojure.type :refer [property->type]]
             [moon.error-window :as error-window]
             [moon.table :refer [add-rows!]]
             [moon.window :refer [add-close-button!]]
@@ -262,7 +262,7 @@
                 ctx/skin
                 ctx/stage]} ctx
         schemas (:db/schemas db)
-        schema (get schemas (property->type property))
+        schema (get schemas (property/type property))
         widget (create-widget schema property ctx)
         scroll-pane-height (viewport/getWorldHeight (:stage/viewport stage))
         get-widget-value #(widget-value schema widget schemas)
