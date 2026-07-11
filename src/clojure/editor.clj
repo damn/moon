@@ -2,7 +2,6 @@
   (:require [clojure.ctx :as ctx]
             [clojure.db :as db]
             [clojure.edn :as edn]
-            [clojure.edn.v-to-str :refer [->edn-str]]
             [clojure.files.create-textures :as create-textures]
             [clojure.horiz-sep :as horiz-sep]
             [clojure.interpose-f :refer [interpose-f]]
@@ -520,7 +519,10 @@
 
 (defmethod create-widget :default
   [_ v {:keys [ctx/skin]}]
-  (label/new (truncate (->edn-str v) 60) skin))
+  (label/new (truncate (binding [*print-level* nil]
+                         (pr-str v))
+                       60)
+             skin))
 
 (defmethod create-widget :s/animation
   [_ animation {:keys [ctx/textures]}]
@@ -543,8 +545,8 @@
 (defmethod create-widget :s/enum
   [schema v {:keys [ctx/skin]}]
   (doto (select-box/new skin)
-    (select-box/setItems (map ->edn-str (rest schema)))
-    (select-box/setSelected (->edn-str v))))
+    (select-box/setItems (map pr-str (rest schema)))
+    (select-box/setSelected (pr-str v))))
 
 (defmethod create-widget :s/image
   [_ image {:keys [ctx/textures]}]
@@ -575,7 +577,7 @@
 
 (defmethod create-widget :s/number
   [schema v {:keys [ctx/skin]}]
-  (doto (text-field/new (->edn-str v) skin)
+  (doto (text-field/new (pr-str v) skin)
     (actor/addListener (text-tooltip/new (str schema) skin))))
 
 (defmethod create-widget :s/one-to-many
@@ -617,7 +619,7 @@
 
 (defmethod create-widget :s/val-max
   [schema v {:keys [ctx/skin]}]
-  (doto (text-field/new (->edn-str v) skin)
+  (doto (text-field/new (pr-str v) skin)
     (actor/addListener (text-tooltip/new (str schema) skin))))
 
 (defn- main-window-f

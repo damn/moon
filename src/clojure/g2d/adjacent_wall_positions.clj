@@ -3,6 +3,7 @@
             [clojure.g2d.posis :as posis]))
 
 (defn f [grid]
+  ; extract conditional ? ??
   (filter (fn [p] (and (= :wall (get grid p))
                        (some #(= :ground (get grid %))
                              (get-8-neighbours p))))

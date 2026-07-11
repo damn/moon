@@ -6,6 +6,15 @@
             [com.badlogic.gdx.graphics.texture :as texture]
             [clojure.string :as str]))
 
+; 2 things
+; * which are my texture paths to load ( why other apps need it - creature have paths??)
+; moon.files/textures
+
+; * convert a file-handle into a pixmap and file-texture-data and texture
+; moon.file-handle/texture
+
+; Why cant editor/levelgen just call moon.game/textures, moon.game/create-?
+
 (defn f
   [files {:keys [folder extensions]}]
   (into {} (for [path (map (fn [path]

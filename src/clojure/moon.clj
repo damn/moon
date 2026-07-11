@@ -1,5 +1,6 @@
-; TODO is this actually just 'clojure.ctx' ???
-; but the game is not called ctx?
+; It seems namespaces are also data-boundaries
+; e.g. this namespace deals with 'ctx' = the application data structure of the game
+; mostly fns input ctx output new ctx
 (ns clojure.moon
   (:require [clojure.content-grid :as content-grid]
             [clojure.db :as db]
