@@ -10,7 +10,7 @@
             [gdx.math.vector3 :as vector3]
             [moon.map-properties :as map-properties]
             [moon.orthographic-camera :as orthographic-camera]
-            [moon.tiled-map-tile-layer.create :as moon-tile-layer]))
+            [moon.tiled-map-tile-layer :as moon-tile-layer]))
 
 (defn get-property [tiled-map k]
   (-> tiled-map
@@ -24,7 +24,7 @@
            properties
            tiles]}]
   (let [props (tiled-map/getProperties tiled-map)]
-    (moon-tile-layer/f
+    (moon-tile-layer/create
      {:width      (map-properties/get props "width")
       :height     (map-properties/get props "height")
       :tilewidth  (map-properties/get props "tilewidth")
@@ -75,6 +75,23 @@
                                                                     (position 1))]
                      " and layer " (tiled-map-tile-layer/getName layer) " is undefined."))
         value))))
+
+(defn movement-property-layers [tiled-map]
+  (->> tiled-map
+       tiled-map/getLayers
+       reverse
+       (filter #(map-properties/get (tiled-map-tile-layer/getProperties %) "movement-properties"))))
+
+(defn movement-properties [tiled-map position]
+  (for [layer (movement-property-layers tiled-map)]
+    [(tiled-map-tile-layer/getName layer)
+     (tile-movement-property tiled-map layer position)]))
+
+(defn movement-property [tiled-map position]
+  (or (->> tiled-map
+           movement-property-layers
+           (some #(tile-movement-property tiled-map % position)))
+      "none"))
 
 (defn prepare-creature-tiles [creature-properties image->texture-region]
   (for [{:keys [entity/animation

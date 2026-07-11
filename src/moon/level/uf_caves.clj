@@ -1,7 +1,6 @@
 (ns moon.level.uf-caves
-  (:require [moon.movement-property :as movement-property]
+  (:require [moon.tiled-map :as moon-tiled-map]
             [moon.rand :as rand]
-            [moon.tiled-map :as moon-tiled-map]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.map-properties :as map-properties]
@@ -88,7 +87,7 @@
                               :properties {"movement-properties" true}
                               :tiles (for [position (g2d/posis grid)]
                                        [position (create-tile (position->tile position))])}]})
-        can-spawn? #(= "all" (movement-property/f tiled-map %))
+        can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)

@@ -6,14 +6,13 @@
             [moon.schema.register-methods]
             [moon.textures :as textures]
             [moon.audio :as audio]
-            [moon.schemas.optional :refer [optional?]]
             [moon.stage :as moon-stage]
             [moon.actor :refer [find-ancestor]]
-            [moon.schemas :refer [default-value map-keys optional-keyset]]
+            [moon.schemas :refer [default-value map-keys optional-keyset optional?]]
             [clojure.set :as set]
             [clojure.string :as str]
             [moon.throwable :as throwable]
-            [moon.string.truncate :refer [truncate]]
+            [moon.string :as string]
             [moon.error-window :as error-window]
             [moon.table :as moon-table :refer [add-rows!]]
             [moon.window :refer [add-close-button!]]
@@ -540,7 +539,7 @@
 
 (defmethod create-widget :default
   [_ v {:keys [ctx/skin]}]
-  (label/new (truncate (binding [*print-level* nil]
+  (label/new (string/truncate (binding [*print-level* nil]
                          (pr-str v))
                        60)
              skin))

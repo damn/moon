@@ -1,9 +1,8 @@
 (ns moon.level.modules
   (:require [moon.rand :as rand]
-            [moon.tmx :as tmx]
-            [moon.movement-property :as movement-property]
-            [moon.tiled-map-tile-layer :refer [property-value]]
+            [moon.tmx-map-loader :as tmx-map-loader]
             [moon.tiled-map :as moon-tiled-map]
+            [moon.tiled-map-tile-layer :refer [property-value]]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
@@ -46,7 +45,7 @@
   (assoc w :scaled-grid (g2d/scale-by (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (tmx/load-tiled-map "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (tmx-map-loader/load-tiled-map "maps/modules.tmx")))
 
 (defn- module-index->tiled-map-positions
   [[module-x module-y]
@@ -198,7 +197,7 @@
            scaled-grid
            tiled-map
            start-position]}]
-  (let [can-spawn? #(= "all" (movement-property/f tiled-map %))
+  (let [can-spawn? #(= "all" (moon-tiled-map/movement-property tiled-map %))
         _ (assert (can-spawn? start-position))
         spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
         {:keys [_steps area-level-grid]} (g2d/area-level-grid

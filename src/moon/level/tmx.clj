@@ -1,10 +1,10 @@
 (ns moon.level.tmx
-  (:require [moon.tmx :as tmx]))
+  (:require [moon.tmx-map-loader :as tmx-map-loader]))
 
 (defn create
   [{:keys [tmx-file
            start-position]}]
-  {:tiled-map (tmx/load-tiled-map tmx-file)
+  {:tiled-map (tmx-map-loader/load-tiled-map tmx-file)
    :start-position start-position})
 
 (defn vampire [_]

@@ -9,3 +9,8 @@
     (if (= (count new-s) (count s))
       s
       (remove-newlines new-s))))
+
+(defn truncate ^String [s limit]
+  (if (> (count s) limit)
+    (str (subs s 0 limit) "...")
+    s))

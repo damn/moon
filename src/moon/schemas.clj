@@ -33,6 +33,9 @@
 (defn optional-keyset [schemas schema]
   (map-schema/optional-keyset (schema/malli-form schema schemas)))
 
+(defn optional? [schemas schema k]
+  (map-schema/optional? (schema/malli-form schema schemas) k))
+
 (defn validate [schemas k value]
   (-> (get schemas k)
       (schema/malli-form schemas)

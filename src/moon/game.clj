@@ -67,7 +67,6 @@
             [moon.malli :as malli-schema]
             [moon.map-properties :as map-properties]
             [moon.mods :as mods]
-            [moon.movement-property :as movement-property]
             [moon.number :as number]
             [moon.orthographic-camera :as orthographic-camera]
             [moon.pixmap :as pixmap]
@@ -2340,7 +2339,7 @@
                                        (cell/map->R
                                         {:position position
                                          :middle (mapv (partial + 0.5) position)
-                                         :movement (case (movement-property/f (:ctx/tiled-map ctx) position)
+                                         :movement (case (moon-tiled-map/movement-property (:ctx/tiled-map ctx) position)
                                                       "none" :none
                                                       "air" :air
                                                       "all" :all)
