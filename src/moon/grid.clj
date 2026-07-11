@@ -1,8 +1,47 @@
 (ns moon.grid
-  (:require [clojure.update-potential-fields-generate :refer [generate-potential-field]]))
+  (:require [clojure.grid.find-next-cell :refer [find-next-cell]]
+            [clojure.grid.inside-cell :refer [inside-cell?]]
+            [clojure.is-occupied-by-other :as occupied-by-other?]
+            [clojure.update-potential-fields-generate :refer [generate-potential-field]]
+            [com.badlogic.gdx.math.circle :as circle]
+            [com.badlogic.gdx.math.intersector :as intersector]
+            [moon.body :as body]
+            [moon.circle :as moon-circle]
+            [moon.g2d :as g2d]
+            [moon.rectangle :as rectangle]
+            [moon.v2 :as v2]))
 
 (defn entities [cells]
   (into #{} (mapcat :entities) cells))
+
+(defn circle->entities [g2d {:keys [position radius] :as circle}]
+  (let [[x y] position
+        gdx-circle (circle/new x y radius)]
+    (->> circle
+         moon-circle/outer-rectangle
+         rectangle/touched-tiles
+         (g2d/get-cells g2d)
+         (map deref)
+         entities
+         (filter #(intersector/overlaps gdx-circle
+                                        (body/rectangle (:entity/body @%)))))))
+
+(defn find-direction [grid eid]
+  (let [position (:body/position (:entity/body @eid))
+        own-cell (grid (mapv int position))
+        {:keys [target-entity target-cell]} (find-next-cell grid eid own-cell)]
+    (cond
+      target-entity
+      (v2/direction position (:body/position (:entity/body @target-entity)))
+
+      (nil? target-cell)
+      nil
+
+      :else
+      (when-not (and (= target-cell own-cell)
+                     (occupied-by-other?/f @own-cell eid))
+        (when-not (inside-cell? grid @eid target-cell)
+          (v2/direction position (:middle @target-cell)))))))
 
 ; Assumption: The map contains no not-allowed diagonal cells, diagonal wall cells where both
 ; adjacent cells are walls and blocked.

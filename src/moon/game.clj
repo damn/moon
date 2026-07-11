@@ -1,7 +1,5 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
-            [clojure.grid.circle-entities :refer [circle->entities]]
-            [clojure.grid.find-direction :refer [find-direction]]
             [clojure.handle :as handle]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.increment :as increment]
@@ -974,7 +972,7 @@
        (cons [:tx/mark-destroyed eid]
              (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
                                       :radius 4}
-                                     (circle->entities grid)
+                                     (grid/circle->entities grid)
                                      (filter #(= (:entity/faction @%) faction)))]
                [:tx/event friendly-eid :alert]))))
 
@@ -1071,7 +1069,7 @@
      (let [effect-ctx (create-effect-ctx/f ctx eid)]
        (if-let [skill (choose-skill/f ctx @eid effect-ctx)]
          [[:tx/event eid :start-action [skill effect-ctx]]]
-         [[:tx/event eid :movement-direction (or (find-direction (:ctx/grid ctx) eid)
+         [[:tx/event eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
                                                  [0 0])]])))
 
    :entity/movement
