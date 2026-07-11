@@ -1,4 +1,4 @@
-(ns clojure.levelgen
+(ns moon.levelgen
   (:require [moon.db :as db]
             [clojure.files.create-textures :as create-textures]
             [clojure.inc-zoom :refer [inc-zoom!]]
