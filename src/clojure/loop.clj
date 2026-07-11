@@ -4,11 +4,6 @@
             [clojure.tools.namespace.repl]
             [nrepl.server]))
 
-; moon.loop?
-; knows about moon applications ?
-
-; moon/applcai
-
 (clojure.tools.namespace.repl/disable-reload!) ; keep same connection/nrepl-server up throughout refreshs
 
 (def ^Object obj (Object.))

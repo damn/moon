@@ -1,7 +1,9 @@
 (ns dev
   (:require [clojure.java.io :as io]
-            [clojure.java.nio.file.files :as files]
-            [clojure.string :as str]))
+            [clojure.string :as str])
+  (:import (java.nio.file Files
+                          Paths
+                          StandardCopyOption)))
 
 (defn- ns->file [ns-string]
   (str "src/"
@@ -26,8 +28,11 @@
   (doseq [file (matching-files ["src" "resources" "test"])]
     (replace-in-file! file from to)))
 
-(defn- move-file! [& args]
-  (apply files/move args))
+(defn move [source-path target-path]
+  (Files/move
+   (Paths/get source-path (make-array String 0))
+   (Paths/get target-path (make-array String 0))
+   (into-array StandardCopyOption [StandardCopyOption/REPLACE_EXISTING])))
 
 (defn move-and-rename! [from-ns to-ns]
   (let [from-file (ns->file from-ns)
