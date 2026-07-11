@@ -1,5 +1,5 @@
 (ns moon.textures
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
+  (:require [gdx.graphics.g2d.texture-region :as texture-region]))
 
 (defn texture-region
   [textures {:keys [image/file image/bounds]}]
