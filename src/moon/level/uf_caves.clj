@@ -1,4 +1,4 @@
-(ns clojure.levels.uf-caves
+(ns moon.level.uf-caves
   (:require [clojure.java.util.random :as random]
             [clojure.movement-property :as movement-property]
             [clojure.random :refer [get-rand-weighted-item]]

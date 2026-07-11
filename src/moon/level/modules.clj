@@ -1,4 +1,4 @@
-(ns clojure.levels.modules
+(ns moon.level.modules
   (:require [clojure.java.util.random :as random]
             [clojure.load-tmx-map :as load-tmx-map]
             [clojure.movement-property :as movement-property]

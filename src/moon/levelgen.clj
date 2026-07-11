@@ -1,9 +1,9 @@
 (ns moon.levelgen
   (:require [moon.db :as db]
             [gdx.graphics.orthographic-camera :as gdx-orthographic-camera]
-            [clojure.levels.modules :as modules]
-            [clojure.levels.tmx :as tmx]
-            [clojure.levels.uf-caves :as uf-caves]
+            [moon.level.modules :as modules]
+            [moon.level.tmx :as tmx]
+            [moon.level.uf-caves :as uf-caves]
             [clojure.malli-form-register-methods]
             [moon.textures :as textures]
             [clojure.orthographic-camera-position :as get-position]
