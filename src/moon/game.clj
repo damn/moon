@@ -26,7 +26,6 @@
             [clojure.moon.create-component :refer [create-component]]
             [clojure.moon.create-entity-state :as create-entity-state]
             [clojure.moon.draw :refer [draw!]]
-            [clojure.moon.effect-render :as effect-render]
             [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
             [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
             [clojure.moon.k-handle-input.player-idle :as player-idle]
@@ -927,6 +926,41 @@
     0.5
     (:colors/temp-modifier colors)]])
 
+(defmulti effect-render
+  (fn [[k _v] _effect-ctx _ctx]
+    k))
+
+(defmethod effect-render :default
+  [_ _effect-ctx _ctx]
+  nil)
+
+(defmethod effect-render :effects/target-all
+  [_
+   {:keys [effect/source]}
+   {:keys [ctx/active-entities
+           ctx/colors
+           ctx/raycaster]}]
+  (let [source* @source]
+    (for [target* (map deref (target-all/affected-targets active-entities raycaster source*))]
+      [:draw/line
+       (:body/position (:entity/body source*))
+       (:body/position (:entity/body target*))
+       (:colors/target-all-render colors)])))
+
+(defmethod effect-render :effects/target-entity
+  [[_ {:keys [maxrange]}]
+   {:keys [effect/source effect/target]}
+   {:keys [ctx/colors]}]
+  (when target
+    (let [body        (:entity/body @source)
+          target-body (:entity/body @target)]
+      [[:draw/line
+        (body/start-point body target-body)
+        (body/end-point body target-body maxrange)
+        (if (body/in-range? body target-body maxrange)
+          (:colors/target-entity-in-range colors)
+          (:colors/target-entity-not-in-range colors))]])))
+
 (defn- render-active-skill
   [{:keys [skill effect-ctx counter]}
    entity
@@ -951,7 +985,7 @@
                 (math/to-radians (* (float action-counter-ratio) 360))
                 (:colors/active-skill-sector colors)]
                [:draw/texture-region texture-region [(- (float x) radius) y]]])
-            (mapcat #(effect-render/f % effect-ctx ctx)
+            (mapcat #(effect-render % effect-ctx ctx)
                     effects))))
 
 (defn tile-color-setter*
