@@ -1,33 +1,20 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
-
-            ; clojure concept
             [moon.rand :as rand]
-
             [moon.inventory-window :as inventory-window :refer [inventory-window-build]]
             [moon.inventory :as inventory]
             [moon.inventory.cell :as inventory-cell]
             [moon.input :as input]
-
-            ; clojure conept
             [moon.number :as number]
-
             [moon.item :as item]
-
             [clojure.java.io :as io]
-
-            ; TODO game should not depend on specific level ?
             [moon.level.uf-caves :as uf-caves]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
-
-            ; FIXME - what concept ?
             [moon.schema.register-methods]
             [moon.malli :as malli-schema]
-
             [clojure.math :as math]
             [moon.faction :as faction]
-
             [moon.movement-property :as movement-property]
             [moon.orthographic-camera :as orthographic-camera]
             [moon.grid.point-to-entities :refer [point->entities]]
