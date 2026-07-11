@@ -30,6 +30,11 @@
   [stats {:keys [skill/cost]}]
   (> cost ((get-mana stats) 0)))
 
+(defn pay-mana-cost [stats cost]
+  (let [mana-val ((get-mana stats) 0)]
+    (assert (<= cost mana-val))
+    (assoc-in stats [:stats/mana 0] (- mana-val cost))))
+
 (defn get-value
   [stats stat-k]
   (when-let [base-value (stat-k stats)]

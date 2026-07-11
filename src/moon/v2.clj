@@ -4,6 +4,9 @@
 (defn add [v1 v2]
   (mapv + v1 v2))
 
+(defn move [position {:keys [direction speed delta-time]}]
+  (mapv #(+ %1 (* %2 speed delta-time)) position direction))
+
 (defn scale [[x y] scalar]
   [(* x scalar)
    (* y scalar)])

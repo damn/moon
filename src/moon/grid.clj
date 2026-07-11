@@ -2,17 +2,28 @@
   (:require [clojure.grid.find-next-cell :refer [find-next-cell]]
             [clojure.grid.inside-cell :refer [inside-cell?]]
             [clojure.is-occupied-by-other :as occupied-by-other?]
+            [clojure.nearest-entity :as nearest-entity]
+            [clojure.nearest-entity-distance :as nearest-entity-distance]
             [clojure.update-potential-fields-generate :refer [generate-potential-field]]
             [com.badlogic.gdx.math.circle :as circle]
             [com.badlogic.gdx.math.intersector :as intersector]
             [moon.body :as body]
             [moon.circle :as moon-circle]
+            [moon.faction :as faction]
             [moon.g2d :as g2d]
             [moon.rectangle :as rectangle]
             [moon.v2 :as v2]))
 
 (defn entities [cells]
   (into #{} (mapcat :entities) cells))
+
+(defn nearest-enemy [grid entity]
+  (nearest-entity/f @(grid (mapv int (:body/position (:entity/body entity))))
+                    (faction/enemy (:entity/faction entity))))
+
+(defn nearest-enemy-distance [grid entity]
+  (nearest-entity-distance/f @(grid (mapv int (:body/position (:entity/body entity))))
+                               (faction/enemy (:entity/faction entity))))
 
 (defn circle->entities [g2d {:keys [position radius] :as circle}]
   (let [[x y] position

@@ -1,25 +1,33 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
+
+            ; clojure concept
             [moon.rand :refer [int-between]]
+
             [moon.inventory-window :as inventory-window]
             [moon.inventory :as inventory]
             [moon.inventory.cell :as inventory-cell]
+
+            ; clojure conept
             [moon.number :as number]
+
             [moon.item :as item]
+
             [clojure.java.io :as io]
+
+            ; TODO game should not depend on specific level ?
             [moon.level.uf-caves :as uf-caves]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
+
+            ; FIXME - what concept ?
             [clojure.malli-form-register-methods]
             [clojure.malli.schema :as malli-schema]
+
             [clojure.math :as math]
             [moon.faction :as faction]
-            [clojure.nearest-enemy :refer [nearest-enemy]]
-            [clojure.speed :as speed]
-            [clojure.stats.pay-mana-cost :as pay-mana-cost]
-            [clojure.move :as move]
+
             [clojure.movement-property :as movement-property]
-            [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :as camera-set-position]
             [clojure.orthographic-camera-frustum :refer [frustum]]
@@ -765,7 +773,7 @@
   [{:keys [skill]} eid]
   [[:tx/sound (:skill/start-action-sound skill)]
    [:tx/set-cooldown eid skill]
-   [:tx/update eid :entity/stats pay-mana-cost/f (:skill/cost skill)]])
+   [:tx/update eid :entity/stats stats/pay-mana-cost (:skill/cost skill)]])
 
 (defn- state-enter-npc-dead
   [_ eid]
@@ -1972,7 +1980,8 @@
   [eid ctx]
   (if-let [movement-vector (player-movement-vector ctx)]
     [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                      :speed (speed/f @eid)}]]
+                                      :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                 0)}]]
     [[:tx/event eid :no-movement-input]]))
 
 (defn- handle-input-player-item-on-cursor
@@ -2013,7 +2022,7 @@
            ctx/raycaster]}
    eid]
   (let [entity @eid
-        target (nearest-enemy grid entity)
+        target (grid/nearest-enemy grid entity)
         target (when (and target
                           (raycaster/line-of-sight? raycaster entity @target))
                  target)]
@@ -2146,7 +2155,7 @@
    :npc-sleeping
    (fn [_ eid {:keys [ctx/grid]}]
      (let [entity @eid]
-       (when-let [distance (nearest-enemy-distance grid entity)]
+       (when-let [distance (grid/nearest-enemy-distance grid entity)]
          (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
            [[:tx/event eid :alert]]))))
 
@@ -2180,7 +2189,7 @@
              body (:entity/body @eid)]
          (when-let [body (if (:body/collides? body)
                             (try-move-solid-body/f grid body (:entity/id @eid) movement)
-                            (update body :body/position move/f movement))]
+                            (update body :body/position v2/move movement))]
            [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
             (when rotate-in-movement-direction?
               [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v2/angle-from-vector direction)])
