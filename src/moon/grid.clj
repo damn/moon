@@ -1,4 +1,4 @@
-(ns clojure.grid-update-potential-fields
+(ns moon.grid
   (:require [clojure.update-potential-fields-generate :refer [generate-potential-field]]))
 
 ; Assumption: The map contains no not-allowed diagonal cells, diagonal wall cells where both
@@ -14,7 +14,8 @@
 ; => is coupled to max-steps & also
 ; to friendly units follow player distance
 
-(defn tick! [grid pf-cache faction entities max-iterations]
+(defn update!
+  [grid pf-cache faction entities max-iterations]
   (let [tiles->entities (let [entities (filter #(= (:entity/faction @%) faction)
                                                entities)]
                           (zipmap (map #(mapv int (:body/position (:entity/body @%))) entities)

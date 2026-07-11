@@ -4,7 +4,7 @@
             [clojure.edn :as edn]
             [moon.g2d :as moon-g2d]
             [moon.cell :as cell]
-            [clojure.grid-update-potential-fields :as update-potential-fields]
+            [moon.grid :as grid]
             [clojure.grid-cell :as grid-cell]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.java.io :as io]
@@ -1695,11 +1695,11 @@
            ctx/potential-field-cache]
     :as ctx}]
   (doseq [[faction max-iterations] factions-iterations]
-    (update-potential-fields/tick! grid
-                                   potential-field-cache
-                                   faction
-                                   active-entities
-                                   max-iterations))
+    (grid/update! grid
+                  potential-field-cache
+                  faction
+                  active-entities
+                  max-iterations))
   ctx)
 
 (defn- tick-entities
