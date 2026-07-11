@@ -1,8 +1,8 @@
 (ns malli.is-optional-test
-  (:require [clojure.is-optional :as optional?]))
+  (:require [clojure.map-schema :as map-schema]))
 
 (comment
- (= (optional?/f :foo
+ (= (map-schema/optional? :foo
                  [:map {:closed true}
                   [:foo]
                   [:bar]
@@ -11,7 +11,7 @@
                   [:asdf {:optional true}]])
     nil)
 
- (= (optional?/f :baz
+ (= (map-schema/optional? :baz
                  [:map {:closed true}
                   [:foo]
                   [:bar]
@@ -20,7 +20,7 @@
                   [:asdf {:optional true}]])
     true)
 
- (= (optional?/f :asdf
+ (= (map-schema/optional? :asdf
                  [:map {:closed true}
                   [:foo]
                   [:bar]

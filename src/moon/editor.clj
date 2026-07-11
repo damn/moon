@@ -2,7 +2,6 @@
   (:require [moon.db :as db]
             [clojure.edn :as edn]
             [clojure.coll :refer [interpose-f]]
-            [clojure.k-label-text :as k-label-text]
             [clojure.malli-form-register-methods]
             [moon.textures :as textures]
             [moon.audio :as audio]
@@ -59,6 +58,10 @@
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [moon.application :as application]))
+
+(defn k-label-text [k]
+  (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
+  )
 
 (def state (atom nil))
 
@@ -426,7 +429,7 @@
                                                                   (let [ctx (:stage/ctx (event/getStage event))]
                                                                     (rebuild-editor-window! ctx)))))))
                             :left? true}
-                           {:actor (label/new (k-label-text/f k) skin)}]]}))
+                           {:actor (label/new (k-label-text k) skin)}]]}))
     :right? true}
    {:actor nil
     :pad-top 2

@@ -1,6 +1,5 @@
 (ns moon.data-viewer-window
-  (:require [clojure.k-label-str :refer [k->label-str]]
-            [clojure.table-set-opts :as table-set-opts]
+  (:require [clojure.table-set-opts :as table-set-opts]
             [moon.window :refer [add-close-button!]]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
@@ -10,6 +9,13 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
+
+(defn label-str [k]
+  (str "[LIGHT_GRAY]:"
+       (when-let [ns (namespace k)] (str ns "/"))
+       "[][WHITE]"
+       (name k)
+       "[]"))
 
 (defn create
   [{:keys [title
@@ -41,7 +47,7 @@
                                   (str (class v)))
                                 skin)))
         rows (for [[k v] (sort-by key data)]
-               {:label (k->label-str k)
+               {:label (label-str k)
                 :actor (v->actor v skin)})
         scroll-pane-table (doto (table/new)
                             (table-set-opts/set-opts! {:table/rows (for [{:keys [label actor]} rows]
