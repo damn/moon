@@ -11,12 +11,11 @@
             [clojure.item-is-valid :as valid?]
             [clojure.java.io :as io]
             [clojure.levels.uf-caves :as uf-caves]
+            [clojure.levels.modules :as modules]
+            [clojure.levels.tmx :as tmx]
             [clojure.malli-form-register-methods]
             [clojure.malli.schema :as malli-schema]
             [clojure.math :as math]
-            [clojure.menus.ctx-data :as ctx-data-menu]
-            [clojure.menus.debug-flags :as debug-flags-menu]
-            [clojure.menus.select-world :as select-world-menu]
             [moon.faction :as faction]
             [clojure.nearest-enemy :refer [nearest-enemy]]
             [clojure.speed :as speed]
@@ -68,8 +67,6 @@
             [clojure.ui.error-window :as error-window]
             [clojure.ui.inventory-window :refer [inventory-window-build]]
             [clojure.unproject :as unproject]
-            [clojure.update-effect-ctx :as update-effect-ctx]
-            [clojure.update-labels :as update-labels]
             [clojure.val-max.ratio :as ratio]
             [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.graphics :as graphics]
@@ -1238,11 +1235,89 @@
   {:label "Help"
    :items [{:label controls-info}]})
 
+(def ctx-data-menu-item
+  {:label "Ctx Data"
+   :items [{:label "Show data"
+            :on-click (fn [{:keys [ctx/skin
+                                   ctx/stage] :as ctx}]
+                        (stage/addActor stage
+                                        (data-viewer-window/create
+                                         {:title "Data View"
+                                          :data ctx
+                                          :width 1000
+                                          :height 1000
+                                          :skin skin}))
+                        ctx)}]})
+
+(def debug-flags-menu-item
+  {:label "Debug"
+   :items [{:label "Toggle show-tile-grid?"
+            :on-click #(update % :ctx/show-tile-grid? not)}
+           {:label "Toggle show-cell-entities?"
+            :on-click #(update % :ctx/show-cell-entities? not)}
+           {:label "Toggle show-cell-occupied?"
+            :on-click #(update % :ctx/show-cell-occupied? not)}
+           {:label "Toggle show-body-bounds?"
+            :on-click #(update % :ctx/show-body-bounds? not)}
+           {:label "Potential field colors: off"
+            :on-click #(assoc % :ctx/show-potential-field-colors? nil)}
+           {:label "Potential field colors: :good"
+            :on-click #(assoc % :ctx/show-potential-field-colors? :good)}
+           {:label "Potential field colors: :evil"
+            :on-click #(assoc % :ctx/show-potential-field-colors? :evil)}]})
+
+(def select-world-menu-item
+  {:label "Select World"
+   :items (for [[label world-fn] [["Vampire" tmx/vampire]
+                                  ["UF Caves" uf-caves/create]
+                                  ["Modules" modules/create]]]
+            {:label (str "Start " label)
+             :on-click (fn [ctx]
+                         #_(let [rebuild-actors! nil
+                                 #_(fn rebuild-actors! [stage ctx]
+                                     (.clear stage)
+                                     ((requiring-resolve 'game.create.add-actors/step) ctx))
+                                 create-world nil
+                                 #_(requiring-resolve 'game.create.world/step)
+                                 ui stage
+                                 stage (get-stage actor)]
+                             (rebuild-actors! ui ctx)
+                             #_(disposable/dispose! (:ctx/tiled-map ctx))
+                             (set! (.ctx ^Stage stage) (create-world ctx world-fn)))
+                         ctx)})})
+
 (def dev-menus
-  [ctx-data-menu/item
-   debug-flags-menu/item
+  [ctx-data-menu-item
+   debug-flags-menu-item
    help-menu-item
-   select-world-menu/item])
+   select-world-menu-item])
+
+(def dev-update-labels
+  [{:label "elapsed-time"
+    :update-fn (fn [{:keys [ctx/elapsed-time]}]
+                 (str (readable/f elapsed-time) " seconds"))
+    :icon "images/clock.png"}
+   {:label "FPS"
+    :update-fn (fn [{:keys [ctx/graphics]}]
+                 (graphics/getFramesPerSecond graphics))
+    :icon "images/fps.png"}
+   {:label "Mouseover-entity id"
+    :update-fn (fn [{:keys [ctx/mouseover-eid]}]
+                 (when-let [entity (and mouseover-eid @mouseover-eid)]
+                   (:entity/id entity)))
+    :icon "images/mouseover.png"}
+   {:label "paused?"
+    :update-fn :ctx/paused?}
+   {:label "GUI"
+    :update-fn (fn [{:keys [ctx/ui-mouse-position]}]
+                 (mapv int ui-mouse-position))}
+   {:label "World"
+    :update-fn (fn [{:keys [ctx/world-mouse-position]}]
+                 (mapv int world-mouse-position))}
+   {:label "Zoom"
+    :update-fn (fn [{:keys [ctx/world-viewport]}]
+                 (orthographic-camera/zoom (viewport/getCamera world-viewport)))
+    :icon "images/zoom.png"}])
 
 (def max-speed
   (/ minimum-size max-delta))
@@ -1755,7 +1830,7 @@
            ctx/textures]}]
   (dev-menu/create
    {:menus dev-menus
-    :update-labels (for [item update-labels/v]
+    :update-labels (for [item dev-update-labels]
                      (if (:icon item)
                        (update item :icon #(get textures %))
                        item))
@@ -1957,6 +2032,14 @@
                                 (body/direction (:entity/body entity)
                                                 (:entity/body @target)))}))
 
+(defn- update-effect-ctx
+  [raycaster {:keys [effect/source effect/target] :as effect-ctx}]
+  (if (and target
+           (not (:entity/destroyed? @target))
+           (raycaster/line-of-sight? raycaster @source @target))
+    effect-ctx
+    (dissoc effect-ctx :effect/target)))
+
 (def k->tick
   {:entity/animation
    (fn [{:keys [delete-after-stopped?
@@ -2044,7 +2127,7 @@
         eid
         {:keys [ctx/elapsed-time
                 ctx/raycaster]}]
-     (let [effect-ctx (update-effect-ctx/f raycaster effect-ctx)]
+     (let [effect-ctx (update-effect-ctx raycaster effect-ctx)]
        (cond
         (not (seq (filter #(effect-applicable? % effect-ctx)
                           (:skill/effects skill))))
