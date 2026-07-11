@@ -11,7 +11,7 @@
             [clojure.property-image :as property-image]
             [clojure.property-types :refer [property-types]]
             [clojure.scene2d-stage :as scene2d-stage]
-            [clojure.scene2d.actor.find-ancestor :refer [find-ancestor]]
+            [moon.actor :refer [find-ancestor]]
             [clojure.schemas :as schemas]
             [clojure.schemas-map-keys :refer [map-keys]]
             [clojure.schemas-optional-keyset :refer [optional-keyset]]

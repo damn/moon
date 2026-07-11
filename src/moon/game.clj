@@ -39,7 +39,8 @@
             [clojure.remove-newlines :refer [remove-newlines]]
             [clojure.safe-merge :refer [safe-merge]]
             [clojure.scene2d-stage :as scene2d-stage]
-            [clojure.scene2d.actor.mouseover-info :refer [mouseover-actor-info]]
+            [moon.button :refer [is?]]
+            [moon.window :refer [title-bar?]]
             [clojure.set-ctx :as set-ctx]
             [clojure.set-occupied-cells :refer [set-occupied-cells!]]
             [clojure.set-touched-cells :refer [set-touched-cells!]]
@@ -735,6 +736,23 @@
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
   (let [[x y] (unproject/f (:stage/viewport stage) (mouse-position ctx))]
     (stage/hit stage x y true)))
+
+(defn- mouseover-actor-info [actor]
+  (let [inventory-slot (and (actor/getParent actor)
+                            (= "inventory-cell" (actor/getName (actor/getParent actor)))
+                            (actor/getUserObject (actor/getParent actor)))]
+    (cond
+      inventory-slot
+      [:mouseover-actor/inventory-cell inventory-slot]
+
+      (title-bar? actor)
+      [:mouseover-actor/window-title-bar]
+
+      (is? actor)
+      [:mouseover-actor/button]
+
+      :else
+      [:mouseover-actor/unspecified])))
 
 (defn- register-eid! [ctx eid]
   (assert (and (not (contains? @eid :entity/id))))

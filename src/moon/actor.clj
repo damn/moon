@@ -1,6 +1,5 @@
-(ns clojure.scene2d.actor.find-ancestor
-  (:require
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+(ns moon.actor
+  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 
 (defn find-ancestor [actor pred?]
   (loop [a actor]
