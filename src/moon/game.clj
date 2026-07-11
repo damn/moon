@@ -42,7 +42,7 @@
             [moon.button :refer [is?]]
             [moon.window :refer [title-bar?]]
             [clojure.set-ctx :as set-ctx]
-            [clojure.sort-by-k-order :refer [sort-by-k-order]]
+            [clojure.k-order :as k-order]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.spawn-positions :as spawn-positions]
             [clojure.stopped :refer [stopped?]]
@@ -506,7 +506,7 @@
                              (str "[" color "]" s "[]")
                              s)))]
     (->> entity
-         (sort-by-k-order k-order)
+         (k-order/sort-by-k-order k-order)
          (keep (fn [{k 0 v 1 :as component}]
                  (str (try (component-info component)
                            (catch Throwable _t

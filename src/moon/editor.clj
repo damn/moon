@@ -17,7 +17,7 @@
             [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.set :as set]
             [clojure.set-ctx :as set-ctx]
-            [clojure.sort-by-k-order :refer [sort-by-k-order]]
+            [clojure.k-order :as k-order]
             [clojure.string :as str]
             [clojure.table-rows :refer [overview-table-rows*]]
             [clojure.table-set-opts :as table-set-opts]
@@ -577,7 +577,7 @@
                        (for [[k v] m]
                          [k (build-widget ctx (get schemas k) k v)]))
       :k->optional? #(optional? schemas schema %)
-      :ks-sorted (map first (sort-by-k-order property-k-sort-order m))
+      :ks-sorted (map first (k-order/sort-by-k-order property-k-sort-order m))
       :opt? (seq (set/difference (optional-keyset schemas schema)
                                  (set (keys m))))})))
 
