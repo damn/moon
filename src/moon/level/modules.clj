@@ -2,7 +2,7 @@
   (:require [clojure.java.util.random :as random]
             [moon.tmx :as tmx]
             [moon.movement-property :as movement-property]
-            [clojure.property-value :refer [property-value]]
+            [moon.tiled-map-tile-layer :refer [property-value]]
             [moon.tiled-map :as moon-tiled-map]
             [moon.tiled-map.create :as tiled-tiled-map]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
