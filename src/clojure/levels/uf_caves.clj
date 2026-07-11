@@ -1,6 +1,6 @@
 (ns clojure.levels.uf-caves
   (:require [moon.caves :as caves]
-            [clojure.g2d.fix-nads :as fix-nads]
+            [moon.g2d :as g2d]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [gdl.maps.map-properties :as map-properties]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
@@ -22,7 +22,7 @@
                 cave-size
                 cave-style]}
         (merge {:initial-grid-create-fn caves/create
-                :grid2d-fix-nads-fn fix-nads/f
+                :grid2d-fix-nads-fn g2d/fix-nads
                 :tile-size 48
                 :texture-path "images/uf_terrain.png"
                 :spawn-rate 0.02

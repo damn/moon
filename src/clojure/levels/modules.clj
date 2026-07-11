@@ -1,6 +1,6 @@
 (ns clojure.levels.modules
   (:require [moon.caves :as caves]
-            [clojure.g2d.fix-nads :as fix-nads]
+            [moon.g2d :as g2d]
             [clojure.load-schema-tiled-map :as load-schema-tiled-map]
             [clojure.print-grid :refer [print-grid]]
             [clojure.levels.modules.calculate-start :as calculate-start]
@@ -14,7 +14,7 @@
 (defn create
   [world-fn-ctx]
   (let [world-fn-ctx (merge {:initial-grid-fn caves/create
-                             :grid2d-fix-nads-fn fix-nads/f
+                             :grid2d-fix-nads-fn g2d/fix-nads
                              :world/map-size 5
                              :world/max-area-level 3
                              :world/spawn-rate 0.05}

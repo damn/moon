@@ -1,7 +1,6 @@
 (ns moon.grid2d.utils-test
   (:require [moon.caves :as caves]
-            [moon.g2d :as g2d]
-            [clojure.g2d.flood-fill :as flood-fill])
+            [moon.g2d :as g2d])
   (:import (java.util Random)))
 
 (comment
@@ -16,6 +15,6 @@
        ;           "start " start "\n")
        ;_ (println (g2d/posis grid))
        _ (println "\n\n")
-       filled (flood-fill/f grid start (fn [p] (= :ground (get grid p))))
+       filled (g2d/flood-fill grid start (fn [p] (= :ground (get grid p))))
        _ (g2d/print-y-up (reduce #(assoc %1 %2 nil) grid filled))])
  )

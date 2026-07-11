@@ -3,7 +3,6 @@
             [clojure.property-value :refer [property-value]]
             [moon.g2d :as g2d]
             [clojure.scale-grid :as scale-grid]
-            [clojure.g2d.flood-fill :as flood-fill]
             [clojure.movement-property :as movement-property]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
             [com.badlogic.gdx.maps.map-layers :as map-layers]))
@@ -20,7 +19,7 @@
            start-position]}]
   (let [can-spawn? #(= "all" (movement-property/f tiled-map %))
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
-        spawn-positions (flood-fill/f scaled-grid start-position can-spawn?)
+        spawn-positions (g2d/flood-fill scaled-grid start-position can-spawn?)
         ;_ (println "scaled grid with filled nil: '?' \n")
         ;_ (g2d/print-y-up (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
         ;_ (println "\n")

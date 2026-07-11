@@ -1,6 +1,5 @@
 (ns clojure.levels.uf-caves.last-steps
-  (:require [clojure.g2d.flood-fill :as flood-fill]
-            [clojure.position-tile-fn :as position-tile-fn]
+  (:require [clojure.position-tile-fn :as position-tile-fn]
             [clojure.levels.uf-caves.scale-grid :as scale-grid]
             [clojure.movement-property :as movement-property]
             [moon.g2d :as g2d]
@@ -38,7 +37,7 @@
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
         level (inc (rand-int 6))
         creatures (filter #(= level (:creature/level %)) creature-properties)
-        spawn-positions (flood-fill/f grid start-position can-spawn?)
+        spawn-positions (g2d/flood-fill grid start-position can-spawn?)
         creatures (for [position spawn-positions
                         :when (<= (rand) spawn-rate)]
                     [position (rand-nth creatures)])]
