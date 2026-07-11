@@ -5,7 +5,6 @@
             [moon.g2d :as moon-g2d]
             [moon.cell :as cell]
             [moon.grid :as grid]
-            [clojure.grid-cell :as grid-cell]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.java.io :as io]
             [clojure.levels.tmx :as tmx]
@@ -1264,7 +1263,7 @@
                                     (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "height")
                                     (fn [position]
                                       (atom
-                                       (grid-cell/map->R
+                                       (cell/map->R
                                         {:position position
                                          :middle (mapv (partial + 0.5) position)
                                          :movement (case (movement-property/f (:ctx/tiled-map ctx) position)

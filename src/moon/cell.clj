@@ -1,5 +1,14 @@
 (ns moon.cell)
 
+(defrecord R [position
+              middle
+              adjacent-cells
+              movement
+              entities
+              occupied
+              good
+              evil])
+
 (defn blocks-vision? [{:keys [movement]}]
   (= movement :none))
 
