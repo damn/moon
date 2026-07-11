@@ -4,6 +4,7 @@
             [moon.cell :as cell]
             [com.badlogic.gdx.math.circle :as circle]
             [com.badlogic.gdx.math.intersector :as intersector]
+            [com.badlogic.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.circle :as moon-circle]
             [moon.faction :as faction]
@@ -213,6 +214,11 @@
                           (or
                            (some #(viable-cell? grid distance-to own-dist eid %) cells)
                            own-cell)))}))))
+
+(defn point->entities [g2d pos]
+  (when-let [cell (g2d (mapv int pos))]
+    (filter #(gdx-rectangle/contains (body/rectangle (:entity/body @%)) (first pos) (second pos))
+            (:entities @cell))))
 
 (defn circle->entities [g2d {:keys [position radius] :as circle}]
   (let [[x y] position

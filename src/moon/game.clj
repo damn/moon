@@ -53,7 +53,6 @@
                                         remove-from-touched-cells!
                                         set-occupied-cells!
                                         set-touched-cells!]]
-            [moon.grid.point-to-entities :refer [point->entities]]
             [moon.info-window :as info-window]
             [moon.input :as input]
             [moon.inventory :as inventory]
@@ -2478,7 +2477,7 @@
                   nil
                   (let [player @player-eid
                         hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
-                                     (point->entities grid position))]
+                                     (grid/point->entities grid position))]
                     (->> render-z-order
                          (coll/sort-by-order hits #(:body/z-order (:entity/body @%)))
                          reverse
