@@ -32,7 +32,7 @@
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
+            [moon.tiled-map.draw :as tiled-map-draw]
             [moon.action-bar :as action-bar]
             [moon.application :as application]
             [moon.audio :as audio]
@@ -2543,7 +2543,7 @@
            ctx/tiled-map
            ctx/world-viewport]
     :as ctx}]
-  (draw-tiled-map/draw! batch
+  (tiled-map-draw/draw! batch
                      world-unit-scale
                      (viewport/getCamera world-viewport)
                      tiled-map
