@@ -8,7 +8,6 @@
             [clojure.int-between :refer [rand-int-between]]
             [clojure.moon-target-all :as target-all]
             [clojure.projectile-start-point :as projectile-start-point]
-            [clojure.start-point :refer [start-point]]
             [clojure.timer-create :refer [create-timer]]))
 
 (def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
@@ -69,7 +68,7 @@
   (let [body        (:entity/body @source)
         target-body (:entity/body @target)]
     (if (body/in-range? body target-body maxrange)
-      [[:tx/spawn-line {:start (start-point body target-body)
+      [[:tx/spawn-line {:start (body/start-point body target-body)
                         :end (:body/position target-body)
                         :duration 0.05
                         :color (:colors/target-entity-line colors)

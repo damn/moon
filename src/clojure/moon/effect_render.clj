@@ -1,7 +1,6 @@
 (ns clojure.moon.effect-render
   (:require [moon.body :as body]
-            [clojure.moon-target-all :as target-all]
-            [clojure.start-point :refer [start-point]]))
+            [clojure.moon-target-all :as target-all]))
 
 (defmulti f
   (fn [[k _v] _effect-ctx _ctx]
@@ -33,7 +32,7 @@
     (let [body        (:entity/body @source)
           target-body (:entity/body @target)]
       [[:draw/line
-        (start-point body target-body)
+        (body/start-point body target-body)
         (body/end-point body target-body maxrange)
         (if (body/in-range? body target-body maxrange)
           (:colors/target-entity-in-range colors)
