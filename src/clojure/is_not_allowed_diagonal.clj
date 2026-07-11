@@ -1,5 +1,5 @@
 (ns clojure.is-not-allowed-diagonal
-  (:require [clojure.positions :refer [positions]]
+  (:require [clojure.coll :refer [positions]]
             [moon.position :as position]))
 
 ; ?? inline

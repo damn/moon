@@ -1,7 +1,7 @@
 (ns moon.editor
   (:require [moon.db :as db]
             [clojure.edn :as edn]
-            [clojure.interpose-f :refer [interpose-f]]
+            [clojure.coll :refer [interpose-f]]
             [clojure.k-label-text :as k-label-text]
             [clojure.malli-form-register-methods]
             [moon.textures :as textures]

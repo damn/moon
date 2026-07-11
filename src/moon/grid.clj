@@ -1,6 +1,5 @@
 (ns moon.grid
-  (:require [clojure.is-diagonal :refer [diagonal?]]
-            [clojure.is-not-allowed-diagonal :as is-not-allowed-diagonal]
+  (:require [clojure.is-not-allowed-diagonal :as is-not-allowed-diagonal]
             [moon.cell :as cell]
             [com.badlogic.gdx.math.circle :as circle]
             [com.badlogic.gdx.math.intersector :as intersector]
@@ -49,8 +48,8 @@
             :when (not (or (cell/pf-blocked? adjacent-cell*)
                            (marked? adjacent-cell*)))
             :let [distance-value (+ (float (distance cell*))
-                                    (float (if (diagonal? (:position cell*)
-                                                          (:position adjacent-cell*))
+                                    (float (if (position/diagonal? (:position cell*)
+                                                                   (:position adjacent-cell*))
                                              1.4 ; square root of 2 * 10
                                              1)))]]
       (swap! adjacent-cell assoc faction {:distance distance-value
