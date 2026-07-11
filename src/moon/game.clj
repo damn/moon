@@ -1,6 +1,6 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
-            [clojure.increment :as increment]
+            [moon.timer :as timer]
             [clojure.info :refer [info-text]]
             [clojure.int-between :refer [rand-int-between]]
             [clojure.inventory-window-remove-item :as remove-item-ui]
@@ -320,7 +320,7 @@
        (if-let [existing (:entity/string-effect @eid)]
          (-> existing
              (update :text str "\n" text)
-             (update :counter increment/f duration))
+             (update :counter timer/increment duration))
          {:text text
           :counter (create-timer elapsed-time duration)})]])
 
