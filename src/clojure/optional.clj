@@ -1,6 +1,6 @@
 (ns clojure.optional
   (:require [clojure.malli-form :refer [malli-form]]
-            [clojure.is-optional :as optional?]))
+            [clojure.map-schema :as map-schema]))
 
 (defn optional? [schemas schema k]
-  (optional?/f k (malli-form schema schemas)))
+  (map-schema/optional? k (malli-form schema schemas)))
