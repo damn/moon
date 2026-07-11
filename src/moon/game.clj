@@ -1,4 +1,4 @@
-(ns clojure.moon
+(ns moon.game
   (:require [moon.content-grid :as content-grid]
             [moon.db :as db]
             [clojure.edn :as edn]
