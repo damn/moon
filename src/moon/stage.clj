@@ -1,7 +1,9 @@
 (ns moon.stage
   (:import (clojure.lang ILookup)
-           (clojure Stage))
-  (:require [clojure.set-ctx :as set-ctx]))
+           (clojure Stage)))
+
+(defn set-ctx! [^Stage stage ctx]
+  (set! (.ctx stage) ctx))
 
 (defn create [viewport batch]
   (proxy [Stage ILookup] [viewport batch]
@@ -12,4 +14,4 @@
         :stage/viewport (.getViewport ^Stage this)))))
 
 (defn apply-ctx! [stage f]
-  (set-ctx/f stage (f (:stage/ctx stage))))
+  (set-ctx! stage (f (:stage/ctx stage))))

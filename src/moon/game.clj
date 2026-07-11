@@ -41,7 +41,6 @@
             [moon.stage :as moon-stage]
             [moon.button :refer [is?]]
             [moon.window :refer [title-bar?]]
-            [clojure.set-ctx :as set-ctx]
             [clojure.k-order :as k-order]
             [clojure.sort-by-order :as sort-by-order]
             [moon.tiled-map.spawn-positions :as spawn-positions]
@@ -2940,7 +2939,7 @@
 
 (defn update-draw-stage
   [{:keys [ctx/stage] :as ctx}]
-  (set-ctx/f stage ctx)
+  (moon-stage/set-ctx! stage ctx)
   (stage/act stage)
   (stage/draw stage)
   (:stage/ctx stage))

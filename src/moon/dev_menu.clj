@@ -1,6 +1,6 @@
 (ns moon.dev-menu
-  (:require [clojure.set-ctx :as set-ctx]
-            [clojure.set-label-text-actor :refer [set-label-text-actor]]
+  (:require [clojure.set-label-text-actor :refer [set-label-text-actor]]
+            [moon.stage :as moon-stage]
             [clojure.table-set-opts :as table-set-opts]
             [moon.table :refer [add-cell!]]
             [moon.window :refer [add-close-button!]]
@@ -51,8 +51,8 @@
                                                                                                                                                             (actor/addListener (change-listener/create
                                                                                                                                                                                 (fn [event actor]
                                                                                                                                                                                   (let [stage (event/getStage event)]
-                                                                                                                                                                                    (set-ctx/f stage
-                                                                                                                                                                                               (on-click (:stage/ctx stage))))))))})]}))
+                                                                                                                                                                                    (moon-stage/set-ctx! stage
+                                                                                                                                                                                                         (on-click (:stage/ctx stage))))))))})]}))
                                                                                                               (add-close-button! skin)))))))})]}))]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]

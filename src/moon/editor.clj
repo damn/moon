@@ -15,7 +15,6 @@
             [clojure.schemas-optional-keyset :refer [optional-keyset]]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.set :as set]
-            [clojure.set-ctx :as set-ctx]
             [clojure.k-order :as k-order]
             [clojure.string :as str]
             [clojure.table-rows :refer [overview-table-rows*]]
@@ -248,7 +247,7 @@
     (try
      (let [new-ctx (update ctx :ctx/db f)
            stage (actor/getStage actor)]
-       (set-ctx/f stage new-ctx))
+       (moon-stage/set-ctx! stage new-ctx))
      (actor/remove (find-ancestor actor (partial instance? window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
@@ -730,7 +729,7 @@
         ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (set-ctx/f stage ctx)
+    (moon-stage/set-ctx! stage ctx)
     (stage/act stage)
     (stage/draw stage)
     (:stage/ctx stage)))
