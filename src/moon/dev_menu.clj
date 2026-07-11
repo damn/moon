@@ -1,6 +1,5 @@
 (ns moon.dev-menu
-  (:require [clojure.set-label-text-actor :refer [set-label-text-actor]]
-            [moon.stage :as moon-stage]
+  (:require [moon.stage :as moon-stage]
             [clojure.table-set-opts :as table-set-opts]
             [moon.table :refer [add-cell!]]
             [moon.window :refer [add-close-button!]]
@@ -16,6 +15,13 @@
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
+
+(defn- set-label-text-actor [label-widget text-fn]
+  (actor/new
+   (fn [this _delta]
+     (when-let [stage (actor/getStage this)]
+       (label/setText label-widget (text-fn (:stage/ctx stage)))))
+   (fn [_actor _batch _parent-alpha])))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
