@@ -26,7 +26,8 @@
             [clojure.menus.v :as menus] ; clojure.menus.v working on ctx
             [clojure.minimum-size :refer [minimum-size]]
             [clojure.moon.choose-skill :as choose-skill]
-            [clojure.moon.ctx-do :refer [do!]] ; FIXME used @ editor
+            [clojure.moon.tx :as tx]
+            [clojure.txs-fn-map.actions :refer [actions!]]
             [clojure.moon.draw :refer [draw!]] ; FIXME
             [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view] ; FIXME
             [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell] ; FIXME
@@ -138,6 +139,13 @@
 (def factions-iterations
   {:good 15
    :evil 5})
+
+(defn do!
+  [ctx txs]
+  (try (actions! tx/f ctx txs)
+       (catch Throwable t
+         (throw (ex-info "Error handling txs"
+                         {:txs txs} t)))))
 
 (def colors
   (let [outline-alpha 0.4]
