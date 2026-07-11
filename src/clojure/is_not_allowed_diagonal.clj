@@ -1,11 +1,13 @@
 (ns clojure.is-not-allowed-diagonal
   (:require [clojure.positions :refer [positions]]
-            [clojure.position.diagonal-direction :as diagonal-direction?]
             [moon.position :as position]))
 
-(let [order (position/get-8-neighbours [0 0])]
+(let [order (position/get-8-neighbours [0 0])
+      diagonal? (fn [[^int x ^int y]]
+                  (and (not (zero? x))
+                       (not (zero? y))))]
   (def diagonal-check-indizes
-    (into {} (for [[x y] (filter diagonal-direction?/f order)]
+    (into {} (for [[x y] (filter diagonal? order)]
                [(first (positions #(= % [x y]) order))
                 (vec (positions #(some #{%} [[x 0] [0 y]])
                                 order))]))))
