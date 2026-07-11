@@ -14,4 +14,4 @@
           (recur remaining (conj result (file-handle/path handle)))
 
           :else
-          (recur remaining result)))
+          (recur remaining result))))

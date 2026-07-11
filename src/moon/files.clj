@@ -1,4 +1,4 @@
-(ns gdx.files
+(ns moon.files
   (:require [com.badlogic.gdx.files :as files]))
 
 (defn internal [files path]

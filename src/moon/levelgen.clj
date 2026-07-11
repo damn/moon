@@ -1,6 +1,6 @@
 (ns moon.levelgen
   (:require [moon.db :as db]
-            [gdx.graphics.orthographic-camera :as gdx-orthographic-camera]
+            [moon.orthographic-camera :as moon-orthographic-camera]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
@@ -13,7 +13,7 @@
             [clojure.table-set-opts :as table-set-opts]
             [clojure.tiled-map.creature-tiles :as creature-tiles]
             [clojure.tiled-map.get-property :as get-property]
-            [gdx.files :as files]
+            [moon.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -29,7 +29,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [gdx.utils.disposable :as disposable]
+            [moon.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [moon.application :as application]
@@ -155,9 +155,9 @@
                         tiled-map
                         (constantly (color/toFloatBits [1 1 1 1])))
   (when (input/key-pressed? input :input.keys/minus)
-    (gdx-orthographic-camera/inc-zoom! camera zoom-speed))
+    (moon-orthographic-camera/inc-zoom! camera zoom-speed))
   (when (input/key-pressed? input :input.keys/equals)
-    (gdx-orthographic-camera/inc-zoom! camera (- zoom-speed)))
+    (moon-orthographic-camera/inc-zoom! camera (- zoom-speed)))
   (let [apply-position (fn [idx f]
                          (set-position! camera
                                         (update (get-position/f camera)

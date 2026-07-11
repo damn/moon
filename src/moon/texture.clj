@@ -1,4 +1,4 @@
-(ns gdx.graphics.texture
+(ns moon.texture
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.texture :as texture]))
 

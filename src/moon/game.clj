@@ -78,8 +78,7 @@
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [com.badlogic.gdx.graphics.pixmap :as pixmap]
-            [com.badlogic.gdx.graphics.pixmap$format :as pixmap-format]
+            [moon.pixmap :as pixmap]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
@@ -103,10 +102,10 @@
             [moon.application :as application]
             [moon.font-generator :as font-generator]
             [moon.map-properties :as map-properties]
-            [gdx.files :as files]
+            [moon.files :as files]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
-            [gdx.graphics.orthographic-camera :as gdx-orthographic-camera]
-            [gdx.utils.disposable :as disposable]
+            [moon.orthographic-camera :as moon-orthographic-camera]
+            [moon.disposable :as disposable]
             [moon.audio :as audio]
             [moon.body :as body]
             [moon.cell :as cell]
@@ -2226,11 +2225,11 @@
          :ctx/audio (audio/create (:ctx/audio ctx) (:ctx/files ctx))))
 
 (defn create-shape-drawer-texture [ctx]
-  (let [pixmap (doto (pixmap/new 1 1 pixmap-format/RGBA8888)
-                 (pixmap/setColor 1 1 1 1)
-                 (pixmap/drawPixel 0 0))
+  (let [pixmap (doto (pixmap/new 1 1 pixmap/rgba8888)
+                 (pixmap/set-color! 1 1 1 1)
+                 (pixmap/draw-pixel! 0 0))
         texture (texture/new (pixmap-texture-data/new pixmap
-                                                      (pixmap/getFormat pixmap)
+                                                      (pixmap/get-format pixmap)
                                                       false
                                                       false))]
     (disposable/dispose! pixmap)
@@ -2825,7 +2824,7 @@
              (and pausing?
                   (state->pause-game? (:state (:entity/fsm @player-eid)))
                   (not (or (input/key-just-pressed? input (:unpause-once controls))
-                           (input/key-pressed? input (:unpause-continously controls)))))))))
+                           (input/key-pressed? input (:unpause-continously controls))))))))
 
 (defn- update-time
   [{:keys [ctx/graphics]
@@ -2911,10 +2910,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (input/key-pressed? input (:zoom-in controls))
-    (gdx-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
+    (moon-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
 
   (when (input/key-pressed? input (:zoom-out controls))
-    (gdx-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
+    (moon-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (group/findActor (:stage/root stage) "moon.ui.windows")

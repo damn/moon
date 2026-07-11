@@ -29,7 +29,7 @@
             [clojure.ui.error-window :as error-window]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [gdx.files :as files]
+            [moon.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
@@ -56,7 +56,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [gdx.utils.disposable :as disposable]
+            [moon.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [moon.application :as application]))

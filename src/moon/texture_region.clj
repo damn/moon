@@ -1,4 +1,4 @@
-(ns gdx.graphics.g2d.texture-region
+(ns moon.texture-region
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 

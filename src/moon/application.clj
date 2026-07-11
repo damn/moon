@@ -1,3 +1,19 @@
+; Everything which depends on 'Gdx'
+; is part of the application now
+
+; moon.application.audio
+; moon.application.files
+; moon.application.graphics
+; moon.application.input
+; stage? batch? textures? sounds? world-viewport? shape-drawer?
+; world-viewport owns camera
+; stage owns ui-viewport owns that camera
+; moon.application.stage.viewport.camera
+; moon.application.world-viewport.camera
+; pixmap, texture, texture-region, tiled-map is also plattform?
+; files.file-handle too (files owns it)
+; font generator too
+; disposable?
 (ns moon.application
   (:require [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.application-listener :as listener]
