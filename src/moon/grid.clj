@@ -1,5 +1,6 @@
 (ns moon.grid
   (:require [clojure.coll :refer [positions]]
+            [clojure.math :as math]
             [moon.cell :as cell]
             [com.badlogic.gdx.math.circle :as circle]
             [com.badlogic.gdx.math.intersector :as intersector]
@@ -105,6 +106,18 @@
                                  (:body/collides? (:entity/body other-entity))
                                  (body/overlaps? (:entity/body other-entity)
                                                  body)))))))))
+
+(defn try-move [grid body entity-id movement]
+  (let [new-body (update body :body/position v2/move movement)]
+    (when (valid-position? grid new-body entity-id)
+      new-body)))
+
+(defn try-move-solid-body [grid body entity-id {[vx vy] :direction :as movement}]
+  (let [xdir (math/signum (float vx))
+        ydir (math/signum (float vy))]
+    (or (try-move grid body entity-id movement)
+        (try-move grid body entity-id (assoc movement :direction [xdir 0]))
+        (try-move grid body entity-id (assoc movement :direction [0 ydir])))))
 
 (defn nearest-enemy [grid entity]
   (nearest-entity @(grid (mapv int (:body/position (:entity/body entity))))

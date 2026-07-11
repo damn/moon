@@ -46,7 +46,6 @@
             [clojure.throwable :as throwable]
             [moon.tiled-map :as moon-tiled-map]
             [moon.txs-fn-map :refer [actions!]]
-            [clojure.try-move-solid-body :as try-move-solid-body]
             [moon.info-window :as info-window]
             [moon.action-bar :as action-bar]
             [moon.data-viewer-window :as data-viewer-window]
@@ -2187,7 +2186,7 @@
        (let [movement (assoc movement :delta-time delta-time)
              body (:entity/body @eid)]
          (when-let [body (if (:body/collides? body)
-                            (try-move-solid-body/f grid body (:entity/id @eid) movement)
+                            (grid/try-move-solid-body grid body (:entity/id @eid) movement)
                             (update body :body/position v2/move movement))]
            [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
             (when rotate-in-movement-direction?
