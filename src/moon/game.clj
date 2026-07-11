@@ -2,9 +2,8 @@
   (:require [clojure.edn :as edn]
             [moon.rand :refer [int-between]]
             [moon.inventory-window :as inventory-window]
-            [clojure.inventory.can-pickup-item :as can-pickup-item]
-            [clojure.not-enough-mana :as not-enough-mana?]
-            [clojure.is-applies-modifiers :as applies-modifiers?]
+            [moon.inventory :as inventory]
+            [moon.inventory.cell :as inventory-cell]
             [clojure.is-nearly-equal :as nearly-equal?]
             [clojure.is-stackable :as stackable?]
             [clojure.is-valid-slot :as valid-slot?]
@@ -410,7 +409,7 @@
    cooling-down?
    :cooldown
 
-   (not-enough-mana?/f (:entity/stats entity) skill)
+   (stats/not-enough-mana? (:entity/stats entity) skill)
    :not-enough-mana
 
    (not (seq (filter #(effect-applicable? % effect-ctx) effects)))
@@ -931,7 +930,7 @@
    :tx/pickup-item
    (fn [_ctx eid item]
      (assert (valid?/f item))
-     (let [[cell cell-item] (can-pickup-item/f? (:entity/inventory @eid) item)]
+     (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
        (assert cell)
        (assert (or (stackable?/f item cell-item)
                    (nil? cell-item)))
@@ -945,7 +944,7 @@
            item (get-in (:entity/inventory entity) cell)]
        (assert item)
        [[:tx/assoc-in eid (cons :entity/inventory cell) nil]
-        (when (applies-modifiers?/f cell)
+        (when (inventory-cell/applies-modifiers? cell)
           [:tx/update eid :entity/stats stats/remove-mods (:stats/modifiers item)])
         (when (:entity/player? @eid)
           [:tx/ui-remove-item eid cell])]))
@@ -963,7 +962,7 @@
        (assert (and (nil? (get-in inventory cell))
                     (valid-slot?/f cell item)))
        [[:tx/assoc-in eid (cons :entity/inventory cell) item]
-        (when (applies-modifiers?/f cell)
+        (when (inventory-cell/applies-modifiers? cell)
           [:tx/update eid :entity/stats stats/add-mods (:stats/modifiers item)])
         (when (:entity/player? @eid)
           [:tx/ui-set-item eid cell item])]))
@@ -1932,7 +1931,7 @@
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]
 
-             (can-pickup-item/f? (:entity/inventory @player-eid) item)
+             (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
              [[:tx/sound "bfxr_pickup"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/pickup-item player-eid item]]

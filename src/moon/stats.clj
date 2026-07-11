@@ -26,6 +26,10 @@
            stats/modifiers]}]
   (apply-max/f mana modifiers :modifier/mana-max))
 
+(defn not-enough-mana?
+  [stats {:keys [skill/cost]}]
+  (> cost ((get-mana stats) 0)))
+
 (defn get-value
   [stats stat-k]
   (when-let [base-value (stat-k stats)]
