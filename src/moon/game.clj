@@ -34,8 +34,6 @@
             [clojure.projectile-start-point :as projectile-start-point]
             [clojure.ratio :as timer-ratio]
             [clojure.readable :as readable]
-            [clojure.remove-from-occupied-cells :refer [remove-from-occupied-cells!]]
-            [clojure.remove-from-touched-cells :refer [remove-from-touched-cells!]]
             [clojure.remove-newlines :refer [remove-newlines]]
             [moon.m :refer [safe-merge]]
             [moon.stage :as moon-stage]
@@ -103,7 +101,10 @@
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.g2d :as moon-g2d]
-            [moon.grid :as grid :refer [set-occupied-cells! set-touched-cells!]]
+            [moon.grid :as grid :refer [set-occupied-cells!
+                                       set-touched-cells!
+                                       remove-from-occupied-cells!
+                                       remove-from-touched-cells!]]
             [moon.item :as item]
             [moon.mods :as mods]
             [moon.raycaster :as raycaster]

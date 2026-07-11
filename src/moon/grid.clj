@@ -138,6 +138,16 @@
       (assert (not (get (:entities @cell) eid)))
       (swap! cell update :entities conj eid))))
 
+(defn remove-from-occupied-cells! [_ eid]
+  (doseq [cell (:entity/occupied-cells @eid)]
+    (assert (get (:occupied @cell) eid))
+    (swap! cell update :occupied disj eid)))
+
+(defn remove-from-touched-cells! [_ eid]
+  (doseq [cell (:entity/touched-cells @eid)]
+    (assert (get (:entities @cell) eid))
+    (swap! cell update :entities disj eid)))
+
 (defn filter-viable-cells [eid adjacent-cells]
   (remove-not-allowed-diagonals
    (mapv #(when-not (or (cell/pf-blocked? @%)
