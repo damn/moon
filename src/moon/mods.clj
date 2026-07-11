@@ -10,6 +10,11 @@
 (defn remove [mods other-mods]
   (merge-with ops/remove mods other-mods))
 
+(defn get-value [base-value modifiers modifier-k]
+  {:pre [(= "modifier" (namespace modifier-k))]}
+  (ops/apply (modifier-k modifiers)
+             base-value))
+
 (defn format-text
   [mods]
   (when (seq mods)

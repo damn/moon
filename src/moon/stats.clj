@@ -1,6 +1,5 @@
 (ns moon.stats
   (:require [moon.mods :as mods]
-            [clojure.modifiers-get-value :as get-value]
             [clojure.string :as str]
             [moon.val-max :refer [apply-min apply-max]]))
 
@@ -36,7 +35,7 @@
 (defn get-value
   [stats stat-k]
   (when-let [base-value (stat-k stats)]
-    (get-value/f base-value
+    (mods/get-value base-value
                  (:stats/modifiers stats)
                  (keyword "modifier" (name stat-k)))))
 
