@@ -1,5 +1,5 @@
 (ns clojure.grid.body-occupied-cells
-  (:require [clojure.body :as body]
+  (:require [moon.body :as body]
             [clojure.g2d.get-cells :refer [get-cells]]))
 
 (defn body->occupied-cells

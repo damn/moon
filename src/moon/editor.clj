@@ -1,6 +1,6 @@
-(ns clojure.editor
+(ns moon.editor
   (:require [clojure.ctx :as ctx]
-            [clojure.db :as db]
+            [moon.db :as db]
             [clojure.edn :as edn]
             [clojure.files.create-textures :as create-textures]
             [clojure.horiz-sep :as horiz-sep]

@@ -1,4 +1,4 @@
-(ns clojure.db
+(ns moon.db
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.pprint :as pprint]

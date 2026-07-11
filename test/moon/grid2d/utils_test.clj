@@ -1,5 +1,5 @@
 (ns moon.grid2d.utils-test
-  (:require [clojure.caves :as caves]
+  (:require [moon.caves :as caves]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
             [clojure.g2d.printgrid :as printgrid]

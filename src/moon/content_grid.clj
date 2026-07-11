@@ -1,4 +1,4 @@
-(ns clojure.content-grid
+(ns moon.content-grid
   (:require [clojure.grid2d :as g2d]
             [clojure.position.neighbours-8 :refer [get-8-neighbours]]))
 

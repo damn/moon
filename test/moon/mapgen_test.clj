@@ -1,7 +1,7 @@
 #_(ns moon.mapgen-test
   (:require [clojure.string :as str]
             [clojure.pprint :refer [pprint]]
-            [clojure.db :as db]
+            [moon.db :as db]
             [moon.utils.camera :as camera-utils]))
 
 (def ^:private infotext

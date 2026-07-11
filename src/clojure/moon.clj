@@ -1,6 +1,6 @@
 (ns clojure.moon
-  (:require [clojure.content-grid :as content-grid]
-            [clojure.db :as db]
+  (:require [moon.content-grid :as content-grid]
+            [moon.db :as db]
             [clojure.edn :as edn]
             [clojure.files.create-textures :as create-textures]
             [clojure.g2d.cells :refer [->cells]]
@@ -14,7 +14,7 @@
             [clojure.java.io :as io]
             [clojure.levels.tmx :as tmx]
             [clojure.line-of-sight :as line-of-sight?]
-            [clojure.body :as body]
+            [moon.body :as body]
             [clojure.g2d.get-cells :refer [get-cells]]
             [clojure.grid.cells-entities :as cells->entities]
             [clojure.grid.circle-entities :refer [circle->entities]]

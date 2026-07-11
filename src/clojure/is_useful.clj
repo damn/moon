@@ -1,7 +1,7 @@
 (ns clojure.is-useful
   (:require [clojure.v2.distance :as distance]
             [clojure.v2.double-ray-endpositions :as double-ray-endpositions]
-            [clojure.body :as body]
+            [moon.body :as body]
             [clojure.raycaster :as raycaster]))
 
 (defmulti f

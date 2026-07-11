@@ -1,6 +1,6 @@
 (ns clojure.point-to-entities
   (:require [gdl.math.rectangle :as rectangle]
-            [clojure.body :as body]))
+            [moon.body :as body]))
 
 (defn point->entities [g2d pos]
   (when-let [cell (g2d (mapv int pos))]

@@ -1,5 +1,5 @@
 (ns clojure.levels.modules
-  (:require [clojure.caves :as caves]
+  (:require [moon.caves :as caves]
             [clojure.g2d.fix-nads :as fix-nads]
             [clojure.load-schema-tiled-map :as load-schema-tiled-map]
             [clojure.print-grid :refer [print-grid]]

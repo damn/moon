@@ -1,5 +1,5 @@
 (ns clojure.moon.effect-render
-  (:require [clojure.body :as body]
+  (:require [moon.body :as body]
             [clojure.moon-target-all :as target-all]
             [clojure.start-point :refer [start-point]]))
 

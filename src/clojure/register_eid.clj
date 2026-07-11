@@ -1,5 +1,5 @@
 (ns clojure.register-eid
-  (:require [clojure.content-grid :as content-grid]
+  (:require [moon.content-grid :as content-grid]
             [clojure.set-occupied-cells :refer [set-occupied-cells!]]
             [clojure.set-touched-cells :refer [set-touched-cells!]]
             [clojure.grid.valid-position :refer [valid-position?]]))

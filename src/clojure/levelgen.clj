@@ -1,5 +1,5 @@
 (ns clojure.levelgen
-  (:require [clojure.db :as db]
+  (:require [moon.db :as db]
             [clojure.files.create-textures :as create-textures]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.levels.modules :as modules]

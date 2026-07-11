@@ -1,4 +1,4 @@
-(ns clojure.caves
+(ns moon.caves
   "Cave Algorithmus.
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html

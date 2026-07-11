@@ -1,5 +1,5 @@
 (ns clojure.moon.npc-effect-ctx
-  (:require [clojure.body :as body]
+  (:require [moon.body :as body]
             [clojure.nearest-enemy :refer [nearest-enemy]]
             [clojure.line-of-sight :as line-of-sight?]))
 

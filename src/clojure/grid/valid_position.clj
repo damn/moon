@@ -1,5 +1,5 @@
 (ns clojure.grid.valid-position
-  (:require [clojure.body :as body]
+  (:require [moon.body :as body]
             [clojure.g2d.get-cells :refer [get-cells]]
             [moon.cell :as cell]
             [clojure.grid.cells-entities :as cells->entities]

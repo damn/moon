@@ -3,7 +3,7 @@
             [clojure.stats.calc-damage :as calc-damage]
             [clojure.stats.melee-damage :as melee-damage]
             [clojure.stats.effective-armor-save :as effective-armor-save]
-            [clojure.body :as body]
+            [moon.body :as body]
             [clojure.stats.get-hitpoints :as get-hitpoints]
             [clojure.int-between :refer [rand-int-between]]
             [clojure.moon-target-all :as target-all]
