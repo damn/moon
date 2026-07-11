@@ -1,5 +1,5 @@
 (ns moon.level.modules
-  (:require [clojure.java.util.random :as random]
+  (:require [moon.rand :as rand]
             [moon.tmx :as tmx]
             [moon.movement-property :as movement-property]
             [moon.tiled-map-tile-layer :refer [property-value]]
@@ -26,7 +26,7 @@
            grid2d-fix-nads-fn
            world/map-size]
     :as world-fn-ctx}]
-  (let [{:keys [start grid]} (initial-grid-fn (random/new-random) map-size map-size :wide)
+  (let [{:keys [start grid]} (initial-grid-fn (rand/new-random) map-size map-size :wide)
         grid (grid2d-fix-nads-fn grid)]
     (assoc world-fn-ctx
            :start start

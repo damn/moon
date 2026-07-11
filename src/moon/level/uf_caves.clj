@@ -1,7 +1,6 @@
 (ns moon.level.uf-caves
-  (:require [clojure.java.util.random :as random]
-            [moon.movement-property :as movement-property]
-            [moon.rand :refer [get-rand-weighted-item]]
+  (:require [moon.movement-property :as movement-property]
+            [moon.rand :as rand]
             [moon.tiled-map :as moon-tiled-map]
             [moon.tiled-map.create :as tiled-tiled-map]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
@@ -43,8 +42,8 @@
                    [x y])
         transition? (fn [[x y]]
                       (= :ground (get grid [x (dec y)])))
-        rand-0-3 (fn [] (get-rand-weighted-item {0 60 1 1 2 1 3 1}))
-        rand-0-5 (fn [] (get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
+        rand-0-3 (fn [] (rand/get-rand-weighted-item {0 60 1 1 2 1 3 1}))
+        rand-0-5 (fn [] (rand/get-rand-weighted-item {0 30 1 1 2 1 3 1 4 1 5 1}))
         [ground-x ground-y] (rand-nth uf-grounds)
         {wall-x 0 wall-y 1} (rand-nth uf-walls)
         [transition-x transition-y] [wall-x (inc wall-y)]
@@ -129,7 +128,7 @@
              :grid2d-fix-nads-fn grid2d-fix-nads-fn
              :size cave-size
              :cave-style cave-style
-             :random (random/new-random)
+             :random (rand/new-random)
              :level/tile-size tile-size
              :level/create-tile (let [texture (get textures texture-path)]
                                   (memoize

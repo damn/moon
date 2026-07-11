@@ -3,8 +3,7 @@
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
-  (:require [clojure.java.util.random :as random]
-            [clojure.srand-int :refer [srand-int]]
+  (:require [moon.rand :as rand]
             [moon.g2d :as g2d]
             [moon.position :as position]
             [moon.m :as m]))
@@ -14,7 +13,7 @@
 ; TODO glaubich einziger unterschied noch: openpaths wird bei jeder cell neu berechnet?
 ; TODO max-tries wenn er nie über min-cells kommt? -> im let dazu definieren vlt max 30 sekunden -> in tries umgerechnet??
 (defn generate [random min-cells max-cells get-adj-num-fn]
-  (let [create-order (fn [] (random/sshuffle (range 4) random))
+  (let [create-order (fn [] (rand/sshuffle (range 4) random))
         turn-ratio 0.25
         start [0 0]
         start-grid (assoc {} start :ground) ; grid of posis to :ground or no entry for walls
@@ -36,7 +35,7 @@
         (finished grid
                   (last posi-seq)
                   cell-cnt)
-        (let [current-order (if (< (random/srand random) turn-ratio)
+        (let [current-order (if (< (rand/srand random) turn-ratio)
                               (create-order)
                               current-order)
               neighbours (position/get-4-neighbours (last posi-seq))
@@ -58,10 +57,10 @@
   {:wide
    (fn [open-paths random]
      (if (= open-paths 1)
-       (case (int (srand-int 3 random))
+       (case (int (rand/srand-int 3 random))
          0 1
          2)
-       (case (int (srand-int 4 random))
+       (case (int (rand/srand-int 4 random))
          0 1
          1 2
          2 3
@@ -73,7 +72,7 @@
    (fn [open-paths random]
      (if (= open-paths 1)
        1
-       (case (int (srand-int 7 random))
+       (case (int (rand/srand-int 7 random))
          0 0
          1 2
          1)))
@@ -82,13 +81,13 @@
    ; etwas breiter als 1 aber immernoch zu dünn für m ein game -> turn-ratio verringern besser
    (fn [open-paths random]
      (if (= open-paths 1)
-       (case (int (srand-int 4 random))
+       (case (int (rand/srand-int 4 random))
          0 1
          1 1
          2 1
          3 2
          1)
-       (case (int (srand-int 4 random))
+       (case (int (rand/srand-int 4 random))
          0 0
          1 1
          2 1

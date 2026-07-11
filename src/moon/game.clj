@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
 
             ; clojure concept
-            [moon.rand :refer [int-between]]
+            [moon.rand :as rand]
 
             [moon.inventory-window :as inventory-window :refer [inventory-window-build]]
             [moon.inventory :as inventory]
@@ -259,7 +259,7 @@
                                                      (:entity/stats target*)
                                                      damage))
                      (:damage/min-max damage))
-           dmg-amount (int-between min-max)
+           dmg-amount (rand/int-between min-max)
            new-hp-val (max (- (hp 0) dmg-amount)
                            0)]
        [[:tx/assoc-in target [:entity/stats :stats/hp 0] new-hp-val]
