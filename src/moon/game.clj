@@ -90,7 +90,7 @@
             [clojure.v2.distance :as distance]
             [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.audio :as audio]
-            [com.badlogic.gdx.files :as files]
+            [gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.colors :as colors]

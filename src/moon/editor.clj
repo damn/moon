@@ -32,7 +32,7 @@
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.ui.window.add-close-button :as add-close-button]
             [com.badlogic.gdx.application :as application]
-            [com.badlogic.gdx.files :as files]
+            [gdx.files :as files]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]

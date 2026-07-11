@@ -15,7 +15,7 @@
             [clojure.tiled-map.creature-tiles :as creature-tiles]
             [clojure.tiled-map.get-property :as get-property]
             [com.badlogic.gdx.application :as application]
-            [com.badlogic.gdx.files :as files]
+            [gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
