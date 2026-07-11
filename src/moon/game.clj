@@ -20,11 +20,8 @@
             [clojure.menus.v :as menus]
             [clojure.minimum-size :refer [minimum-size]]
             [moon.faction :as faction]
-            [clojure.moon.choose-skill :as choose-skill]
-            [clojure.moon.fsms :refer [fsms]]
-            [clojure.moon.npc-effect-ctx :as create-effect-ctx]
-            [clojure.player-movement-vector :refer [player-movement-vector]]
-            [clojure.interaction-state-txs :refer [interaction-state->txs]]
+            [clojure.is-useful :as useful?]
+            [clojure.nearest-enemy :refer [nearest-enemy]]
             [clojure.speed :as speed]
             [clojure.moon.schema :refer [schema]]
             [clojure.moon.state-enter :refer [k->state-enter]]
@@ -513,6 +510,54 @@
 (defmethod create-entity-state :player-item-on-cursor
   [[_k item] _eid _ctx]
   {:item item})
+
+(def fsms
+  {:npc (fsm/fsm-inc
+          [[:npc-sleeping
+            :kill -> :npc-dead
+            :stun -> :stunned
+            :alert -> :npc-idle]
+           [:npc-idle
+            :kill -> :npc-dead
+            :stun -> :stunned
+            :start-action -> :active-skill
+            :movement-direction -> :npc-moving]
+           [:npc-moving
+            :kill -> :npc-dead
+            :stun -> :stunned
+            :timer-finished -> :npc-idle]
+           [:active-skill
+            :kill -> :npc-dead
+            :stun -> :stunned
+            :action-done -> :npc-idle]
+           [:stunned
+            :kill -> :npc-dead
+            :effect-wears-off -> :npc-idle]
+           [:npc-dead]])
+   :player (fsm/fsm-inc
+            [[:player-idle
+              :kill -> :player-dead
+              :stun -> :stunned
+              :start-action -> :active-skill
+              :pickup-item -> :player-item-on-cursor
+              :movement-input -> :player-moving]
+             [:player-moving
+              :kill -> :player-dead
+              :stun -> :stunned
+              :no-movement-input -> :player-idle]
+             [:active-skill
+              :kill -> :player-dead
+              :stun -> :stunned
+              :action-done -> :player-idle]
+             [:stunned
+              :kill -> :player-dead
+              :effect-wears-off -> :player-idle]
+             [:player-item-on-cursor
+              :kill -> :player-dead
+              :stun -> :stunned
+              :drop-item -> :player-idle
+              :dropped-item -> :player-idle]
+             [:player-dead]])})
 
 (defn- create-fsm
   [fsm initial-state]
@@ -1533,6 +1578,66 @@
       (actor/setName "player-message")
       (actor/setUserObject (atom nil)))))
 
+(defn- player-movement-vector [{:keys [ctx/input]}]
+  (let [r (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/d)) [1  0])
+        l (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/a)) [-1 0])
+        u (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/w)) [0  1])
+        d (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/s)) [0 -1])]
+    (when (or r l u d)
+      (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
+        (when (pos? (v2/length v))
+          v)))))
+
+(defn- interaction-state->txs [[k params] stage player-eid]
+  (case k
+    :interaction-state/mouseover-actor nil
+
+    :interaction-state/clickable-mouseover-eid
+    (let [{:keys [clicked-eid
+                  in-click-range?]} params]
+      (if in-click-range?
+        (case (:type (:entity/clickable @clicked-eid))
+          :clickable/player
+          [[:tx/toggle-inventory-visible]]
+
+          :clickable/item
+          (let [item (:entity/item @clicked-eid)]
+            (cond
+             (-> stage
+                 :stage/root
+                 (#(group/findActor % "moon.ui.windows.inventory"))
+                 actor/isVisible)
+             [[:tx/sound "bfxr_takeit"]
+              [:tx/mark-destroyed clicked-eid]
+              [:tx/event player-eid :pickup-item item]]
+
+             (can-pickup-item/f? (:entity/inventory @player-eid) item)
+             [[:tx/sound "bfxr_pickup"]
+              [:tx/mark-destroyed clicked-eid]
+              [:tx/pickup-item player-eid item]]
+
+             :else
+             [[:tx/sound "bfxr_denied"]
+              [:tx/show-message "Your Inventory is full"]])))
+        [[:tx/sound "bfxr_denied"]
+         [:tx/show-message "Too far away"]]))
+
+    :interaction-state.skill/usable
+    (let [[skill effect-ctx] params]
+      [[:tx/event player-eid :start-action [skill effect-ctx]]])
+
+    :interaction-state.skill/not-usable
+    (let [state params]
+      [[:tx/sound "bfxr_denied"]
+       [:tx/show-message (case state
+                           :cooldown "Skill is still on cooldown"
+                           :not-enough-mana "Not enough mana"
+                           :invalid-params "Cannot use this here")]])
+
+    :interaction-state/no-skill-selected
+    [[:tx/sound "bfxr_denied"]
+     [:tx/show-message "No selected skill"]]))
+
 (defn- handle-input-player-idle
   [player-eid {:keys [ctx/input
                       ctx/interaction-state
@@ -1572,6 +1677,33 @@
      :effect/target-position target-position
      :effect/target-direction (v2/direction (:body/position (:entity/body @player-eid))
                                          target-position)}))
+
+(defn- choose-skill [ctx entity effect-ctx]
+  (->> entity
+       :entity/skills
+       vals
+       (sort-by :skill/cost)
+       reverse
+       (filter #(and (= :usable (usable-state/f % entity effect-ctx))
+                     (->> (:skill/effects %)
+                          (filter (fn [e] (applicable?/f e effect-ctx)))
+                          (some (fn [e] (useful?/f e effect-ctx ctx))))))
+       first))
+
+(defn- create-effect-ctx
+  [{:keys [ctx/grid
+           ctx/raycaster]}
+   eid]
+  (let [entity @eid
+        target (nearest-enemy grid entity)
+        target (when (and target
+                          (raycaster/line-of-sight? raycaster entity @target))
+                 target)]
+    {:effect/source eid
+     :effect/target target
+     :effect/target-direction (when target
+                                (body/direction (:entity/body entity)
+                                                (:entity/body @target)))}))
 
 (def k->tick
   {:entity/animation
@@ -1694,8 +1826,8 @@
 
    :npc-idle
    (fn [_ eid ctx]
-     (let [effect-ctx (create-effect-ctx/f ctx eid)]
-       (if-let [skill (choose-skill/f ctx @eid effect-ctx)]
+     (let [effect-ctx (create-effect-ctx ctx eid)]
+       (if-let [skill (choose-skill ctx @eid effect-ctx)]
          [[:tx/event eid :start-action [skill effect-ctx]]]
          [[:tx/event eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
                                                  [0 0])]])))
