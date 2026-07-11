@@ -3,7 +3,6 @@
             [clojure.property-value :refer [property-value]]
             [moon.g2d :as g2d]
             [clojure.scale-grid :as scale-grid]
-            [clojure.g2d.printgrid :as printgrid]
             [clojure.g2d.flood-fill :as flood-fill]
             [clojure.movement-property :as movement-property]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
@@ -23,14 +22,14 @@
         _ (assert (can-spawn? start-position)) ; assuming hoping bottom left is movable
         spawn-positions (flood-fill/f scaled-grid start-position can-spawn?)
         ;_ (println "scaled grid with filled nil: '?' \n")
-        ;_ (printgrid/f (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
+        ;_ (g2d/print-y-up (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
         ;_ (println "\n")
         {:keys [_steps area-level-grid]} (g2d/area-level-grid
                                           :grid grid
                                           :start start
                                           :max-level max-area-level
                                           :walk-on #{:ground :transition})
-        ;_ (printgrid/f area-level-grid)
+        ;_ (g2d/print-y-up area-level-grid)
         _ (assert (or
                    (= (set (concat [max-area-level] (range max-area-level)))
                       (set (g2d/cells area-level-grid)))

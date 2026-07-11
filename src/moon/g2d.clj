@@ -82,3 +82,21 @@
 
 (defn get-cells [g2d int-positions]
   (into [] (keep g2d) int-positions))
+
+(defn print-y-up
+  [grid]
+  (doseq [y (range (dec (height grid)) -1 -1)]
+    (doseq [x (range (width grid))]
+      (let [celltype (grid [x y])]
+        (print (if (number? celltype)
+                 celltype
+                 (case celltype
+                   nil               "?"
+                   :undefined        " "
+                   :ground           "_"
+                   :wall             "#"
+                   :airwalkable      "."
+                   :module-placement "X"
+                   :start-module     "@"
+                   :transition       "+")))))
+    (println)))

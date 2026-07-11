@@ -4,7 +4,6 @@
             [clojure.levels.uf-caves.scale-grid :as scale-grid]
             [clojure.movement-property :as movement-property]
             [moon.g2d :as g2d]
-            [clojure.g2d.printgrid :as printgrid]
             [clojure.tiled-tiled-map :as tiled-map]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]))
 
