@@ -1,7 +1,7 @@
-(ns clojure.malli-form-s-number
-  (:require [clojure.malli-form :refer [malli-form]]))
+(ns moon.schema.number
+  (:require [moon.schema :as schema]))
 
-(defmethod malli-form :s/number
+(defmethod schema/malli-form :s/number
   [[_ predicate] _]
   (case predicate
     :int     int?

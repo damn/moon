@@ -22,7 +22,7 @@
             [moon.level.tmx :as tmx]
 
             ; FIXME - what concept ?
-            [clojure.malli-form-register-methods]
+            [moon.schema.register-methods]
             [moon.malli :as malli-schema]
 
             [clojure.math :as math]

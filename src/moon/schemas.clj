@@ -1,5 +1,5 @@
 (ns moon.schemas
-  (:require [clojure.malli-form :refer [malli-form]]))
+  (:require [moon.schema :as schema]))
 
 (defn create-map-schema*
   "Can define keys as just keywords or with schema-props like [:foo {:optional true}]."
@@ -17,4 +17,4 @@
 (defn create-map-schema [schemas ks]
   (create-map-schema* ks
                       (fn [k]
-                        (malli-form (get schemas k) schemas))))
+                        (schema/malli-form (get schemas k) schemas))))

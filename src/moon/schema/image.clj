@@ -1,8 +1,8 @@
-(ns clojure.malli-form-s-image
-  (:require [clojure.malli-form :refer [malli-form]]
+(ns moon.schema.image
+  (:require [moon.schema :as schema]
             [moon.schemas :as schemas]))
 
-(defmethod malli-form :s/image
+(defmethod schema/malli-form :s/image
   [_ schemas]
   (schemas/create-map-schema schemas
                              [:image/file

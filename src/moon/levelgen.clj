@@ -4,7 +4,7 @@
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
-            [clojure.malli-form-register-methods]
+            [moon.schema.register-methods]
             [moon.textures :as textures]
             [moon.stage :as moon-stage]
             [clojure.table-set-opts :as table-set-opts]

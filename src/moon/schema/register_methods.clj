@@ -1,0 +1,15 @@
+(ns moon.schema.register-methods
+  (:require [moon.schema.animation]
+            [moon.schema.boolean]
+            [moon.schema.enum]
+            [moon.schema.image]
+            [moon.schema.map]
+            [moon.schema.number]
+            [moon.schema.one-to-many]
+            [moon.schema.one-to-one]
+            [moon.schema.qualified-keyword]
+            [moon.schema.some]
+            [moon.schema.sound]
+            [moon.schema.string]
+            [moon.schema.val-max]
+            [moon.schema.vector]))

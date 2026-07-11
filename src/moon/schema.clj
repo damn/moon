@@ -1,8 +1,4 @@
-(ns clojure.malli-form)
+(ns moon.schema)
 
-
-; use data -k-fn dispatch table
-
-; clojure - SCHEMA -
 (defmulti malli-form (fn [schema _schemas]
                        (first schema)))

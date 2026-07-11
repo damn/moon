@@ -1,6 +1,6 @@
 (ns clojure.schemas-map-keys
-  (:require [clojure.malli-form :refer [malli-form]]
+  (:require [moon.schema :as schema]
             [clojure.malli-map-keys :as map-keys]))
 
 (defn map-keys [schemas schema]
-  (map-keys/f (malli-form schema schemas)))
+  (map-keys/f (schema/malli-form schema schemas)))

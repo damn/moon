@@ -2,7 +2,7 @@
   (:require [moon.db :as db]
             [clojure.edn :as edn]
             [clojure.coll :refer [interpose-f]]
-            [clojure.malli-form-register-methods]
+            [moon.schema.register-methods]
             [moon.textures :as textures]
             [moon.audio :as audio]
             [clojure.optional :refer [optional?]]

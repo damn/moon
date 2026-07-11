@@ -1,8 +1,8 @@
-(ns clojure.malli-form-s-animation
-  (:require [clojure.malli-form :refer [malli-form]]
+(ns moon.schema.animation
+  (:require [moon.schema :as schema]
             [moon.schemas :as schemas]))
 
-(defmethod malli-form :s/animation
+(defmethod schema/malli-form :s/animation
   [_ schemas]
   (schemas/create-map-schema schemas
                              [:animation/frames
