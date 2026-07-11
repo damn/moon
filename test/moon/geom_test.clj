@@ -5,7 +5,7 @@
 ;
 ;(comment
 ; (require '[moon.grid :as grid])
-; (require '[clojure.outer-rectangle :as circle])
+; (require '[moon.circle :as circle])
 ; [com.badlogic.gdx.rgba.float-bits :as float-bits]
 ;
 ; (defn geom-test

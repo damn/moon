@@ -1,4 +1,4 @@
-(ns clojure.outer-rectangle)
+(ns moon.circle)
 
 (defn outer-rectangle
   [{[x y] :position :keys [radius]}]
