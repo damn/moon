@@ -4,7 +4,7 @@
             [clojure.inventory-window-remove-item :as remove-item-ui]
             [clojure.inventory-window-set-item :as set-item-ui]
             [clojure.inventory.can-pickup-item :as can-pickup-item]
-            [clojure.is-applicable :as applicable?]
+            [clojure.not-enough-mana :as not-enough-mana?]
             [clojure.is-applies-modifiers :as applies-modifiers?]
             [clojure.is-nearly-equal :as nearly-equal?]
             [clojure.is-stackable :as stackable?]
@@ -77,7 +77,6 @@
             [clojure.unproject :as unproject]
             [clojure.update-effect-ctx :as update-effect-ctx]
             [clojure.update-labels :as update-labels]
-            [clojure.usable-state :as usable-state]
             [clojure.val-max.ratio :as ratio]
             [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.graphics :as graphics]
@@ -307,6 +306,82 @@
 (defmethod handle-effect :effects.target/stun
   [[_ duration] {:keys [effect/target]} _ctx]
   [[:tx/event target :stun duration]])
+
+(defmulti effect-applicable?
+  (fn [[k _v] _effect-ctx]
+    k))
+
+(defmethod effect-applicable? :effects/audiovisual
+  [_ {:keys [effect/target-position]}]
+  target-position)
+
+(defmethod effect-applicable? :effects/projectile
+  [_ {:keys [effect/target-direction]}]
+  target-direction)
+
+(defmethod effect-applicable? :effects/spawn
+  [_ {:keys [effect/source effect/target-position]}]
+  (and (:entity/faction @source)
+       target-position))
+
+(defmethod effect-applicable? :effects/target-all
+  [_ _]
+  true)
+
+(defmethod effect-applicable? :effects/target-entity
+  [[_ {:keys [entity-effects]}] {:keys [effect/target] :as effect-ctx}]
+  (and target
+       (seq (filter #(effect-applicable? % effect-ctx) entity-effects))))
+
+(defmethod effect-applicable? :effects.target/audiovisual
+  [_ {:keys [effect/target]}]
+  target)
+
+(defmethod effect-applicable? :effects.target/convert
+  [_ {:keys [effect/source effect/target]}]
+  (and target
+       (= (:entity/faction @target)
+          (faction/enemy (:entity/faction @source)))))
+
+(defmethod effect-applicable? :effects.target/damage
+  [_ {:keys [effect/target]}]
+  (and target
+       #_(:stats/hp @target)))
+
+(defmethod effect-applicable? :effects.target/kill
+  [_ {:keys [effect/target]}]
+  (and target
+       (:entity/fsm @target)))
+
+(defmethod effect-applicable? :effects.target/melee-damage
+  [_ {:keys [effect/source] :as effect-ctx}]
+  (effect-applicable? [:effects.target/damage (melee-damage/f @source)] effect-ctx))
+
+(defmethod effect-applicable? :effects.target/spiderweb
+  [_ {:keys [effect/target]}]
+  (:entity/stats @target))
+
+(defmethod effect-applicable? :effects.target/stun
+  [_ {:keys [effect/target]}]
+  (and target
+       (:entity/fsm @target)))
+
+(defn- skill-usable-state
+  [{:keys [skill/cooling-down? skill/effects] :as skill}
+   entity
+   effect-ctx]
+  (cond
+   cooling-down?
+   :cooldown
+
+   (not-enough-mana?/f (:entity/stats entity) skill)
+   :not-enough-mana
+
+   (not (seq (filter #(effect-applicable? % effect-ctx) effects)))
+   :invalid-params
+
+   :else
+   :usable))
 
 (def info
   {:k->fn {:creature/level (fn [v _ctx]
@@ -733,7 +808,7 @@
    :tx/effect
    (fn [ctx effect-ctx effects]
      (mapcat #(handle-effect % effect-ctx ctx)
-             (filter #(applicable?/f % effect-ctx) effects)))
+             (filter #(effect-applicable? % effect-ctx) effects)))
 
    :tx/event
    (fn ([ctx eid event]
@@ -1760,9 +1835,9 @@
        vals
        (sort-by :skill/cost)
        reverse
-       (filter #(and (= :usable (usable-state/f % entity effect-ctx))
+       (filter #(and (= :usable (skill-usable-state % entity effect-ctx))
                      (->> (:skill/effects %)
-                          (filter (fn [e] (applicable?/f e effect-ctx)))
+                          (filter (fn [e] (effect-applicable? e effect-ctx)))
                           (some (fn [e] (useful?/f e effect-ctx ctx))))))
        first))
 
@@ -1870,7 +1945,7 @@
                 ctx/raycaster]}]
      (let [effect-ctx (update-effect-ctx/f raycaster effect-ctx)]
        (cond
-        (not (seq (filter #(applicable?/f % effect-ctx)
+        (not (seq (filter #(effect-applicable? % effect-ctx)
                           (:skill/effects skill))))
         [[:tx/event eid :action-done]]
 
@@ -2472,7 +2547,7 @@
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))
               effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
-              state (usable-state/f skill entity effect-ctx)]
+              state (skill-usable-state skill entity effect-ctx)]
           (if (= state :usable)
             [:interaction-state.skill/usable [skill effect-ctx]]
             [:interaction-state.skill/not-usable state]))
