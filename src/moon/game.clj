@@ -68,9 +68,7 @@
             [clojure.stats.add-mods :as add-mods]
             [clojure.stats.calc-damage :as calc-damage]
             [clojure.stats.effective-armor-save :as effective-armor-save]
-            [clojure.stats.get-hitpoints :as get-hitpoints]
-            [clojure.stats.get-mana :as get-mana]
-            [clojure.stats.get-stat-value :refer [get-stat-value]]
+            [moon.stats :as stats]
             [clojure.stats.melee-damage :as melee-damage]
             [clojure.stats.remove-mods :as remove-mods]
             [clojure.stopped :refer [stopped?]]
@@ -252,7 +250,7 @@
   [[_ damage] {:keys [effect/source effect/target]} _ctx]
   (let [source* @source
         target* @target
-        hp (get-hitpoints/f (:entity/stats target*))]
+        hp (stats/get-hitpoints (:entity/stats target*))]
     (cond
      (zero? (hp 0))
      nil
@@ -781,7 +779,7 @@
 
 (defn- render-stats
   [_ entity {:keys [ctx/colors]}]
-  (let [ratio (ratio/f (get-hitpoints/f (:entity/stats entity)))]
+  (let [ratio (ratio/f (stats/get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [body/position body/width body/height]} (:entity/body entity)
             [x y] position
@@ -951,8 +949,8 @@
                        (let [stats (:entity/stats @player-eid)
                              x (- x (/ rahmenw 2))]
                          (concat
-                          (render-hpmana-bar x y-hp hpcontent-file (get-hitpoints/f stats) "HP")
-                          (render-hpmana-bar x y-mana manacontent-file (get-mana/f stats) "MP"))))]
+                          (render-hpmana-bar x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
+                          (render-hpmana-bar x y-mana manacontent-file (stats/get-mana stats) "MP"))))]
     (actor/new
      (fn [_actor _delta])
      (fn [this _batch _parent-alpha]
@@ -1200,7 +1198,7 @@
    (fn [_ eid {:keys [ctx/grid]}]
      (let [entity @eid]
        (when-let [distance (nearest-enemy-distance grid entity)]
-         (when (<= distance (get-stat-value (:entity/stats entity) :stats/aggro-range))
+         (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
            [[:tx/event eid :alert]]))))
 
    :npc-idle

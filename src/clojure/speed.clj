@@ -1,6 +1,6 @@
 (ns clojure.speed
-  (:require [clojure.stats.get-stat-value :refer [get-stat-value]]))
+  (:require [moon.stats :as stats]))
 
 (defn f [{:keys [entity/stats]}]
-  (or (get-stat-value stats :stats/movement-speed)
+  (or (stats/get-value stats :stats/movement-speed)
       0))

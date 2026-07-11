@@ -1,7 +1,5 @@
 (ns clojure.info
-  (:require [clojure.stats.get-hitpoints :as get-hitpoints]
-            [clojure.stats.get-mana :as get-mana]
-            [clojure.stats.get-stat-value :refer [get-stat-value]]
+  (:require [moon.stats :as stats]
             [clojure.math :as math]
             [clojure.ratio :as ratio]
             [clojure.readable :as readable]
@@ -26,11 +24,11 @@
            :entity/stats (fn [stats _ctx]
                            (str/join "\n" (concat
                                            ["*STATS*"
-                                            (str "Mana: " (get-mana/f stats))
-                                            (str "Hitpoints: " (get-hitpoints/f stats))]
+                                            (str "Mana: " (stats/get-mana stats))
+                                            (str "Hitpoints: " (stats/get-hitpoints stats))]
                                            (for [stat-k non-val-max-stat-ks]
                                              (str (str/capitalize (name stat-k)) ": "
-                                                  (get-stat-value stats stat-k))))))
+                                                  (stats/get-value stats stat-k))))))
            :effects.target/convert (fn [_ _ctx]
                                     "Converts target to your side.")
            :effects.target/damage (fn [{[min max] :damage/min-max} _ctx]

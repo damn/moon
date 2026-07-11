@@ -1,8 +1,8 @@
 (ns clojure.moon.state-enter.npc-moving
-  (:require [clojure.stats.get-stat-value :refer [get-stat-value]]))
+  (:require [moon.stats :as stats]))
 
 (defn f
   [{:keys [movement-vector]} eid]
   [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                    :speed (or (get-stat-value (:entity/stats @eid) :stats/movement-speed)
+                                    :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                0)}]])

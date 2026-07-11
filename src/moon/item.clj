@@ -11,4 +11,4 @@
                      (str "[LIME]" (str/capitalize (name (:item/slot item))) "[]")
                      ; seq because they can be empty map ?
                      (when (seq (:stats/modifiers item))
-                       (str "[CYAN]" ((:stats/modifiers (:k->fn info)) (:stats/modifiers item) _ctx) "[]"))])))
+                       (str "[CYAN]" ((:stats/modifiers (:k->fn info)) (:stats/modifiers item) nil) "[]"))])))

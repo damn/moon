@@ -1,6 +1,6 @@
 (ns clojure.moon.create-entity-state
   (:require [clojure.stats.apply-action-speed-modifier :as apply-action-speed-modifier]
-            [clojure.stats.get-stat-value :refer [get-stat-value]]
+            [moon.stats :as stats]
             [clojure.timer-create :refer [create-timer]]))
 
 (defmulti f
@@ -32,7 +32,7 @@
   [[_k movement-vector] eid {:keys [ctx/elapsed-time]}]
   {:movement-vector movement-vector
    :timer (create-timer elapsed-time
-                        (* (get-stat-value (:entity/stats @eid) :stats/reaction-time)
+                        (* (stats/get-value (:entity/stats @eid) :stats/reaction-time)
                            0.016))})
 
 (defmethod f :player-item-on-cursor
