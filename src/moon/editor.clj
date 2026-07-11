@@ -10,7 +10,6 @@
             [moon.stage :as moon-stage]
             [moon.actor :refer [find-ancestor]]
             [moon.schemas :refer [default-value map-keys optional-keyset]]
-            [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.set :as set]
             [clojure.k-order :as k-order]
             [clojure.string :as str]
@@ -284,13 +283,13 @@
     (table-set-opts/set-opts! {:title "[SKY]Property[]"
             :skin skin
             :table/cell-defaults {:pad 5}
-            :table/rows [[(scroll-pane-cell/create
-                           (doto (table/new)
-    (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}
-                                          :table/rows scroll-pane-rows}))
-                           skin
-                           scroll-pane-height
-                           50)]]}))
+            :table/rows [[(let [table (doto (table/new)
+                                         (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}
+                                                                     :table/rows scroll-pane-rows}))]
+                            {:actor (scroll-pane/new table skin)
+                             :width (+ (actor/getWidth table) 50)
+                             :height (min (- scroll-pane-height 50)
+                                          (actor/getHeight table))})]]}))
       (add-close-button! skin)
       (window/setModal true)
       (group/addActor (actor/new
