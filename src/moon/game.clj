@@ -22,10 +22,10 @@
             [moon.faction :as faction]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.moon.fsms :refer [fsms]]
-            [clojure.moon.k-handle-input.player-idle :as player-idle]
-            [clojure.moon.k-handle-input.player-item-on-cursor :as player-item-on-cursor-input]
-            [clojure.moon.k-handle-input.player-moving :as player-moving]
             [clojure.moon.npc-effect-ctx :as create-effect-ctx]
+            [clojure.player-movement-vector :refer [player-movement-vector]]
+            [clojure.interaction-state-txs :refer [interaction-state->txs]]
+            [clojure.speed :as speed]
             [clojure.moon.schema :refer [schema]]
             [clojure.moon.state-enter :refer [k->state-enter]]
             [clojure.moon.state-exit :refer [k->state-exit]]
@@ -1533,10 +1533,35 @@
       (actor/setName "player-message")
       (actor/setUserObject (atom nil)))))
 
+(defn- handle-input-player-idle
+  [player-eid {:keys [ctx/input
+                      ctx/interaction-state
+                      ctx/stage]
+               :as ctx}]
+  (if-let [movement-vector (player-movement-vector ctx)]
+    [[:tx/event player-eid :movement-input movement-vector]]
+    (when (input/isButtonJustPressed input (input-buttons/key-to-value :input.buttons/left))
+      (interaction-state->txs interaction-state
+                              stage
+                              player-eid))))
+
+(defn- handle-input-player-moving
+  [eid ctx]
+  (if-let [movement-vector (player-movement-vector ctx)]
+    [[:tx/assoc eid :entity/movement {:direction movement-vector
+                                      :speed (speed/f @eid)}]]
+    [[:tx/event eid :no-movement-input]]))
+
+(defn- handle-input-player-item-on-cursor
+  [eid ctx]
+  (when (and (input/isButtonJustPressed (:ctx/input ctx) (input-buttons/key-to-value :input.buttons/left))
+             (not (mouseover-actor ctx)))
+    [[:tx/event eid :drop-item]]))
+
 (def k->handle-input
-  {:player-idle player-idle/f
-   :player-moving player-moving/f
-   :player-item-on-cursor player-item-on-cursor-input/f})
+  {:player-idle handle-input-player-idle
+   :player-moving handle-input-player-moving
+   :player-item-on-cursor handle-input-player-item-on-cursor})
 
 (defn player-effect-ctx [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid
