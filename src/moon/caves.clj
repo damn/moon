@@ -3,19 +3,18 @@
   http://properundead.com/2009/03/cave-generator.html
   http://properundead.com/2009/07/procedural-generation-3-cave-source.html
   http://forums.tigsource.com/index.php?topic=5174.0"
-  (:require [clojure.srand :refer [srand]]
+  (:require [clojure.java.util.random :as random]
             [clojure.srand-int :refer [srand-int]]
             [moon.g2d :as g2d]
             [moon.position :as position]
-            [moon.m :as m]
-            [clojure.sshuffle :refer [sshuffle]]))
+            [moon.m :as m]))
 
 ; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5
 ; besser 150x150 anstatt 100x100 w h
 ; TODO glaubich einziger unterschied noch: openpaths wird bei jeder cell neu berechnet?
 ; TODO max-tries wenn er nie über min-cells kommt? -> im let dazu definieren vlt max 30 sekunden -> in tries umgerechnet??
 (defn generate [random min-cells max-cells get-adj-num-fn]
-  (let [create-order (fn [] (sshuffle (range 4) random))
+  (let [create-order (fn [] (random/sshuffle (range 4) random))
         turn-ratio 0.25
         start [0 0]
         start-grid (assoc {} start :ground) ; grid of posis to :ground or no entry for walls
@@ -37,7 +36,7 @@
         (finished grid
                   (last posi-seq)
                   cell-cnt)
-        (let [current-order (if (< (srand random) turn-ratio)
+        (let [current-order (if (< (random/srand random) turn-ratio)
                               (create-order)
                               current-order)
               neighbours (position/get-4-neighbours (last posi-seq))

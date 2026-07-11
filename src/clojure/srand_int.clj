@@ -1,5 +1,5 @@
 (ns clojure.srand-int
-  (:require [clojure.srand :refer [srand]]))
+  (:require [clojure.java.util.random :as random]))
 
 (defn srand-int [n random]
-  (int (srand n random)))
+  (int (random/srand n random)))
