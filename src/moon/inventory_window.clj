@@ -12,7 +12,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [clojure.table-set-opts :as table-set-opts]
+            [moon.table :as moon-table]
             [gdx.math.vector2 :as vector2]
             [moon.inventory.cell :as inventory-cell]))
 
@@ -103,9 +103,9 @@
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
         ->cell (partial ->cell do! draw! on-click-cell slot->drawable draw-cell-rect cell-size)
         window (doto (doto (window/new "Inventory" skin)
-                           (table-set-opts/set-opts!
+                           (moon-table/set-opts!
                             {:table/rows [[{:actor (doto (doto (table/new)
-                                                               (table-set-opts/set-opts!
+                                                               (moon-table/set-opts!
                                                                 {:table/rows (concat [[nil nil
                                                                                        (->cell :inventory.slot/helm)
                                                                                        (->cell :inventory.slot/necklace)]

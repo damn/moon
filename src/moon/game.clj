@@ -42,8 +42,8 @@
             [moon.tiled-map.spawn-positions :as spawn-positions]
             [moon.timer :as timer]
             [clojure.string :as str]
-            [clojure.table-set-opts :as table-set-opts]
             [clojure.throwable :as throwable]
+            [moon.table :as moon-table]
             [moon.tiled-map :as moon-tiled-map]
             [moon.txs-fn-map :refer [actions!]]
             [moon.info-window :as info-window]
@@ -985,7 +985,7 @@
      (assert (not (group/findActor (:stage/root stage) "moon.ui.modal-window")))
      (stage/addActor stage
                        (doto (doto (window/new title skin)
-    (table-set-opts/set-opts! {:title title
+    (moon-table/set-opts! {:title title
                                :skin skin
                                :table/rows [[{:actor (label/new text skin)}]
                                             [{:actor (doto (text-button/new button-text skin)
@@ -1669,7 +1669,7 @@
 
 (defn action-bar-create [_ctx]
   (doto (doto (table/new)
-              (table-set-opts/set-opts! {:table/cell-defaults {:pad 2}
+              (moon-table/set-opts! {:table/cell-defaults {:pad 2}
                                          :table/rows [[{:actor (doto (horizontal-group/new)
                                                                     (horizontal-group/space 2)
                                                                     (horizontal-group/pad 2)

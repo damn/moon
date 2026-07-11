@@ -1,5 +1,5 @@
 (ns moon.data-viewer-window
-  (:require [clojure.table-set-opts :as table-set-opts]
+  (:require [moon.table :as moon-table]
             [moon.window :refer [add-close-button!]]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
@@ -50,17 +50,17 @@
                {:label (label-str k)
                 :actor (v->actor v skin)})
         scroll-pane-table (doto (table/new)
-                            (table-set-opts/set-opts! {:table/rows (for [{:keys [label actor]} rows]
+                            (moon-table/set-opts! {:table/rows (for [{:keys [label actor]} rows]
                                                                     [{:actor (label/new label skin)}
                                                                      {:actor actor}])}))
         scroll-pane-cell (let [table (doto (table/new)
-                                         (table-set-opts/set-opts! {:table/cell-defaults {:pad 1}
+                                         (moon-table/set-opts! {:table/cell-defaults {:pad 1}
                                                                     :table/rows [[scroll-pane-table]]}))]
                            {:actor (scroll-pane/new table skin)
                             :width width
                             :height 800})]
     (doto (doto (window/new title skin)
-                (table-set-opts/set-opts! {:title title
+                (moon-table/set-opts! {:title title
                                            :skin skin
                                            :table/rows [[scroll-pane-cell]]}))
           (add-close-button! skin))))

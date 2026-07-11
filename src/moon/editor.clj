@@ -13,12 +13,11 @@
             [clojure.set :as set]
             [clojure.k-order :as k-order]
             [clojure.string :as str]
-            [clojure.table-set-opts :as table-set-opts]
             [clojure.throwable :as throwable]
             [clojure.tooltip :as tooltip]
             [moon.string.truncate :refer [truncate]]
             [moon.error-window :as error-window]
-            [moon.table :refer [add-rows!]]
+            [moon.table :as moon-table :refer [add-rows!]]
             [moon.window :refer [add-close-button!]]
             [moon.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
@@ -188,11 +187,11 @@
         :as ctx}]
     (stage/addActor stage
                       (doto (doto (window/new "Choose" skin)
-    (table-set-opts/set-opts! {:title "Choose"
+    (moon-table/set-opts! {:title "Choose"
                               :skin skin
                               :table/rows
                               [[(let [table (doto (table/new)
-    (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}
+    (moon-table/set-opts! {:table/cell-defaults {:pad 5}
                                               :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
                                                             [{:actor (doto (text-button/new sound-name skin)
                                                                            (actor/addListener (change-listener/create
@@ -237,7 +236,7 @@
            property-type
            clicked-id-fn]}]
   (doto (doto (window/new "Edit" skin)
-    (table-set-opts/set-opts! {:title "Edit"
+    (moon-table/set-opts! {:title "Edit"
           :skin skin
           :table/rows (let [{:keys [sort-by-fn
                                     extra-info-text
@@ -301,11 +300,11 @@
                                                                 (clicked-delete-fn actor (:stage/ctx (event/getStage event)))))))
                             :center? true}]]]
     (doto (doto (window/new "[SKY]Property[]" skin)
-    (table-set-opts/set-opts! {:title "[SKY]Property[]"
+    (moon-table/set-opts! {:title "[SKY]Property[]"
             :skin skin
             :table/cell-defaults {:pad 5}
             :table/rows [[(let [table (doto (table/new)
-                                         (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}
+                                         (moon-table/set-opts! {:table/cell-defaults {:pad 5}
                                                                      :table/rows scroll-pane-rows}))]
                             {:actor (scroll-pane/new table skin)
                              :width (+ (actor/getWidth table) 50)
@@ -432,7 +431,7 @@
            k
            table]}]
   [{:actor (doto (table/new)
-    (table-set-opts/set-opts! {:table/cell-defaults {:pad 2}
+    (moon-table/set-opts! {:table/cell-defaults {:pad 2}
              :table/rows [[{:actor (when display-remove-component-button?
                                      (doto (text-button/new "-" skin)
                                        (actor/addListener (change-listener/create
@@ -457,7 +456,7 @@
 (defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (doto (doto (window/new "Choose" skin)
-    (table-set-opts/set-opts! {:title "Choose"
+    (moon-table/set-opts! {:title "Choose"
                        :skin skin
                        :table/cell-defaults {:pad 5}}))
                  (add-close-button! skin)
@@ -502,7 +501,7 @@
            ks-sorted
            opt?]}]
   (let [table (doto (doto (table/new)
-    (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}}))
+    (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))
                 (actor/setName "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (interpose-f (horiz-sep colspan)
@@ -551,7 +550,7 @@
 (defmethod create-widget :s/animation
   [_ animation {:keys [ctx/textures]}]
   (doto (table/new)
-    (table-set-opts/set-opts! {:table/cell-defaults {:pad 1}
+    (moon-table/set-opts! {:table/cell-defaults {:pad 1}
                                :table/rows [(for [image (:animation/frames animation)]
                                               {:actor
                                                (let [scale 2
@@ -607,21 +606,21 @@
 (defmethod create-widget :s/one-to-many
   [[_ property-type] property-ids ctx]
   (let [table (doto (table/new)
-                (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}}))]
+                (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))]
     (add-one-to-many-rows ctx table property-type property-ids)
     table))
 
 (defmethod create-widget :s/one-to-one
   [[_ property-type] property-id ctx]
   (let [table (doto (table/new)
-                (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}}))]
+                (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))]
     (add-one-to-one-rows ctx table property-type property-id)
     table))
 
 (defmethod create-widget :s/sound
   [_ sound-name {:keys [ctx/skin]}]
   (let [table (doto (table/new)
-                (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}}))]
+                (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))]
     (letfn [(sound-columns-fn [skin table sound-name]
               (sound-columns skin table sound-name open-select-fn))
             (open-select-fn [table]
@@ -650,7 +649,7 @@
   [{:keys [ctx/db
            ctx/skin]}]
   (doto (window/new "Edit" skin)
-    (table-set-opts/set-opts! {:title "Edit"
+    (moon-table/set-opts! {:title "Edit"
                                :skin skin
                                :table/rows (for [property-type (sort (db/property-types db))]
                                              [{:actor (doto (text-button/new (str/capitalize (name property-type)) skin)

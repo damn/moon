@@ -1,7 +1,6 @@
 (ns moon.dev-menu
-  (:require [moon.stage :as moon-stage]
-            [clojure.table-set-opts :as table-set-opts]
-            [moon.table :refer [add-cell!]]
+  (:require [moon.table :as moon-table :refer [add-cell!]]
+            [moon.stage :as moon-stage]
             [moon.window :refer [add-close-button!]]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
@@ -27,7 +26,7 @@
   ([skin table text-fn icon]
    (let [label (label/new "" skin)
          sub-table (doto (table/new)
-                     (table-set-opts/set-opts! {:table/rows [[{:actor (image/newTexture icon)}
+                     (moon-table/set-opts! {:table/rows [[{:actor (image/newTexture icon)}
                                                               label]]}))]
      (group/addActor table (set-label-text-actor label text-fn))
      (add-cell! table {:actor sub-table
@@ -42,14 +41,14 @@
 
 (defn- main-table [skin menus update-labels]
   (let [table (doto (table/new)
-                (table-set-opts/set-opts! {:table/rows [(for [{:keys [label items]} menus]
+                (moon-table/set-opts! {:table/rows [(for [{:keys [label items]} menus]
                                                            {:actor
                                                             (doto (text-button/new label skin)
                                                               (actor/addListener (change-listener/create
                                                                                   (fn [event actor]
                                                                                     (stage/addActor (event/getStage event)
                                                                                                     (doto (doto (window/new label skin)
-                                                                                                                (table-set-opts/set-opts! {:title label
+                                                                                                                (moon-table/set-opts! {:title label
                                                                                                                                            :skin skin
                                                                                                                                            :table/rows [(for [{:keys [label on-click]} items]
                                                                                                                                                          {:actor
@@ -70,7 +69,7 @@
 (defn create
   [{:keys [menus update-labels skin]}]
   (doto (doto (table/new)
-               (table-set-opts/set-opts! {:table/rows [[{:actor (main-table skin menus update-labels)
+               (moon-table/set-opts! {:table/rows [[{:actor (main-table skin menus update-labels)
                                                            :expand-x? true
                                                            :fill-x? true
                                                            :colspan 1}]

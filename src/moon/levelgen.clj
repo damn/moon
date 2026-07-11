@@ -7,7 +7,7 @@
             [moon.schema.register-methods]
             [moon.textures :as textures]
             [moon.stage :as moon-stage]
-            [clojure.table-set-opts :as table-set-opts]
+            [moon.table :as moon-table]
             [moon.tiled-map :as moon-tiled-map]
             [moon.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
@@ -107,7 +107,7 @@
     (input/set-processor! input stage)
     (stage/addActor (:ctx/stage ctx)
                     (doto (window/new "Edit" skin)
-                      (table-set-opts/set-opts! {:title "Edit"
+                      (moon-table/set-opts! {:title "Edit"
                                                  :skin skin
                                                  :table/rows (for [[label level-fn] (:level-fns config)
                                                                    :let [on-click #(do
