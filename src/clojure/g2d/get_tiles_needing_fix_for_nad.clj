@@ -1,5 +1,5 @@
 (ns clojure.g2d.get-tiles-needing-fix-for-nad
-  (:require [clojure.g2d.is-nad-corner :as nad-corner?]))
+  (:require [moon.g2d :as g2d]))
 
 (defn f [grid [[fromx fromy] [tox toy]]]
   (let [xstep (- tox fromx)
@@ -20,8 +20,8 @@
     ;    (println "cell2 " cell2)
     ;    (println "cell21 " cell21)
     ;    (println "cell3 " cell3)
-    (if-not (nad-corner?/f grid cell1 cell11)
+    (if-not (g2d/nad-corner? grid cell1 cell11)
       [cell1]
-      (if-not (nad-corner?/f grid cell2 cell21)
+      (if-not (g2d/nad-corner? grid cell2 cell21)
         [cell1 cell2]
         [cell1 cell2 cell3]))))

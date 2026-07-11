@@ -1,6 +1,5 @@
 (ns clojure.g2d.get-nads
-  (:require [moon.g2d :as g2d]
-            [clojure.g2d.is-nad-corner :as nad-corner?]))
+  (:require [moon.g2d :as g2d]))
 
 ; could be made faster because accessing the same posis oftentimes at nad-corner? check
 (let [diagonal-steps [[-1 -1] [-1 1] [1 -1] [1 1]]]
@@ -14,7 +13,7 @@
         (let [position (first checkposis)
               diagonal-posis (map #(mapv + position %) diagonal-steps)
               nads (map (fn [nad] [position nad])
-                        (filter #(nad-corner?/f grid position %) diagonal-posis))]
+                        (filter #(g2d/nad-corner? grid position %) diagonal-posis))]
           (recur
            (rest checkposis)
            (doall (concat result nads)))) ; doall else stackoverflow error
