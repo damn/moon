@@ -1,6 +1,5 @@
 (ns moon.editor
-  (:require [clojure.ctx :as ctx]
-            [moon.db :as db]
+  (:require [moon.db :as db]
             [clojure.edn :as edn]
             [clojure.horiz-sep :as horiz-sep]
             [clojure.interpose-f :refer [interpose-f]]
@@ -32,6 +31,8 @@
             [clojure.ui.window.add-close-button :as add-close-button]
             [com.badlogic.gdx.application :as application]
             [gdx.files :as files]
+            [com.badlogic.gdx.graphics :as graphics]
+            [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
@@ -707,9 +708,16 @@
   (disposable/dispose! skin)
   (run! disposable/dispose! (vals textures)))
 
+(defn- clear-screen
+  [{:keys [ctx/graphics] :as ctx}]
+  (let [gl (graphics/getGL20 graphics)]
+    (gl20/glClearColor gl 0 0 0 0)
+    (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
+  ctx)
+
 (defn render [{:keys [ctx/stage]
                :as ctx}]
-  (let [ctx (ctx/clear ctx)
+  (let [ctx (clear-screen ctx)
         ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
