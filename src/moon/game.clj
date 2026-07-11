@@ -21,7 +21,6 @@
             [clojure.minimum-size :refer [minimum-size]]
             [moon.faction :as faction]
             [clojure.moon.choose-skill :as choose-skill]
-            [clojure.moon.create-component :refer [create-component]]
             [clojure.moon.create-entity-state :as create-entity-state]
             [clojure.moon.draw :refer [draw!]]
             [clojure.moon.fsms :refer [fsms]]
@@ -50,6 +49,7 @@
             [clojure.ratio :as timer-ratio]
             [clojure.readable :as readable]
             [clojure.records-entity :as entity]
+            [clojure.records-body :as body-record]
             [clojure.register-eid :as register-eid]
             [clojure.remove-from-occupied-cells :refer [remove-from-occupied-cells!]]
             [clojure.remove-from-touched-cells :refer [remove-from-touched-cells!]]
@@ -413,6 +413,73 @@
                         (str "\n" (info-text v ctx))))))
          (str/join "\n")
          remove-newlines)))
+
+(defn- create-component-animation
+  [{:keys [animation/frames
+           animation/frame-duration
+           animation/looping?
+           delete-after-stopped?]}
+   _ctx]
+  (assert (not (and looping? delete-after-stopped?)))
+  {:frames (vec frames)
+   :frame-duration frame-duration
+   :looping? looping?
+   :cnt 0
+   :maxcnt (* (count frames) (float frame-duration))
+   :delete-after-stopped? delete-after-stopped?})
+
+(defn- create-component-body
+  [{[x y] :position
+    :keys [position
+           width
+           height
+           collides?
+           z-order
+           rotation-angle]}
+   _ctx]
+  (assert position)
+  (assert width)
+  (assert height)
+  (assert (>= width  (if collides? minimum-size 0)))
+  (assert (>= height (if collides? minimum-size 0)))
+  (assert (or (boolean? collides?) (nil? collides?)))
+  (assert ((set z-orders) z-order))
+  (assert (or (nil? rotation-angle)
+              (<= 0 rotation-angle 360)))
+  (body-record/map->R
+   {:position (mapv float position)
+    :width  (float width)
+    :height (float height)
+    :collides? collides?
+    :z-order z-order
+    :rotation-angle (or rotation-angle 0)}))
+
+(defn- create-component-delete-after-duration
+  [duration {:keys [ctx/elapsed-time]}]
+  (create-timer elapsed-time duration))
+
+(defn- create-component-projectile-collision
+  [v _ctx]
+  (assoc v :already-hit-bodies #{}))
+
+(defn- create-component-stats
+  [v _ctx]
+  (-> v
+      (update :stats/mana (fn [v] [v v]))
+      (update :stats/hp   (fn [v] [v v]))))
+
+(def k->create-component
+  {:entity/animation create-component-animation
+   :entity/body create-component-body
+   :entity/delete-after-duration create-component-delete-after-duration
+   :entity/projectile-collision create-component-projectile-collision
+   :entity/stats create-component-stats})
+
+(defn create-component
+  [ctx k v]
+  (if-let [f (k->create-component k)]
+    (f v ctx)
+    v))
 
 (defn- create-fsm
   [fsm initial-state]
