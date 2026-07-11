@@ -106,3 +106,21 @@
    (= :ground (get grid [tox toy])) ; also filters nil/out of map
    (= :wall (get grid [tox fromy]))
    (= :wall (get grid [fromx toy]))))
+
+; could be made faster because accessing the same posis oftentimes at nad-corner? check
+(let [diagonal-steps [[-1 -1] [-1 1] [1 -1] [1 1]]]
+  (defn get-nads [grid]
+    (loop [checkposis (filter (fn [{y 1 :as posi}]
+                                (and (even? y)
+                                     (= :ground (get grid posi))))
+                              (posis grid))
+           result []]
+      (if (seq checkposis)
+        (let [position (first checkposis)
+              diagonal-posis (map #(mapv + position %) diagonal-steps)
+              nads (map (fn [nad] [position nad])
+                        (filter #(nad-corner? grid position %) diagonal-posis))]
+          (recur
+           (rest checkposis)
+           (doall (concat result nads)))) ; doall else stackoverflow error
+        result))))
