@@ -1,11 +1,10 @@
 (ns clojure.vectorgrid
   (:require [moon.g2d :as g2d]
-            [clojure.g2d.height :as height]
             [clojure.g2d.width :as width]))
 
 (deftype VectorGrid [data]
-  height/Height
-  (->height [_]
+  g2d/Height
+  (height [_]
     (count (data 0)))
 
   width/Width

@@ -3,7 +3,6 @@
             [clojure.position-tile-fn :as position-tile-fn]
             [clojure.levels.uf-caves.scale-grid :as scale-grid]
             [clojure.movement-property :as movement-property]
-            [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
             [moon.g2d :as g2d]
             [clojure.g2d.printgrid :as printgrid]
@@ -28,7 +27,7 @@
         position->tile (position-tile-fn/f grid)
         tiled-map (tiled-map/f
                    {:properties {"width"  (->width  grid)
-                                 "height" (->height grid)
+                                 "height" (g2d/height grid)
                                  "tilewidth"  tile-size
                                  "tileheight" tile-size}
                     :layers [{:name "ground"

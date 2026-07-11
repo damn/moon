@@ -1,11 +1,11 @@
 (ns clojure.g2d.printgrid
-  (:require [clojure.g2d.height :refer [->height]]
+  (:require [moon.g2d :as g2d]
             [clojure.g2d.width :refer [->width]]))
 
 (defn f
   "Prints with y-up coordinates."
   [grid]
-  (doseq [y (range (dec (->height grid)) -1 -1)]
+  (doseq [y (range (dec (g2d/height grid)) -1 -1)]
     (doseq [x (range (->width grid))]
       (let [celltype (grid [x y])]
         (print (if (number? celltype)

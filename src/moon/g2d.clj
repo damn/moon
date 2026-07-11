@@ -1,6 +1,9 @@
 (ns moon.g2d
   (:require [moon.position :as position]))
 
+(defprotocol Height
+  (height [_]))
+
 (defprotocol Cells
   (cells [_]))
 
