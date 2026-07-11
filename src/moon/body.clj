@@ -1,26 +1,23 @@
 (ns moon.body
-  (:require [clojure.v2.add :as add]
-            [clojure.v2.direction :as direction]
-            [clojure.v2.scale :as scale]
-            [clojure.v2.distance :as distance]
+  (:require [moon.v2 :as v2]
             [clojure.start-point :refer [start-point]]
             [moon.rectangle :as moon-rectangle]
             [gdl.math.rectangle :as rectangle]
             [com.badlogic.gdx.math.rectangle :as gdx-rectangle]))
 
 (defn direction [body other-body]
-  (direction/f (:body/position body)
-               (:body/position other-body)))
+  (v2/direction (:body/position body)
+                (:body/position other-body)))
 
 (defn end-point [body target-body maxrange]
-  (add/f (start-point body target-body)
-         (scale/f (direction/f (:body/position body)
-                               (:body/position target-body))
-                  maxrange)))
+  (v2/add (start-point body target-body)
+          (v2/scale (v2/direction (:body/position body)
+                                 (:body/position target-body))
+                    maxrange)))
 
 (defn in-range? [body target-body maxrange]
-  (< (- (float (distance/f (:body/position body)
-                           (:body/position target-body)))
+  (< (- (float (v2/distance (:body/position body)
+                            (:body/position target-body)))
         (float (/ (:body/width body)  2))
         (float (/ (:body/width target-body) 2)))
      (float maxrange)))

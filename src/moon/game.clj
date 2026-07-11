@@ -62,9 +62,7 @@
             [clojure.update-labels :as update-labels] ; ; FIXME
             [clojure.update-effect-ctx :as update-effect-ctx]  ; ; FIXME
             [clojure.val-max.ratio :as ratio]
-            [clojure.v2.angle-from-vector :as angle-from-vector]
-            [clojure.v2.direction :as direction]
-            [clojure.v2.length :as length]
+            [moon.v2 :as v2]
             [clojure.moon-faction :as faction]
             [moon.textures :as textures]
             [clojure.ratio :as timer-ratio]
@@ -85,7 +83,6 @@
             [clojure.ui.error-window :as error-window]
             [clojure.unproject :as unproject]
             [clojure.usable-state :as usable-state]
-            [clojure.v2.distance :as distance]
             [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.audio :as audio]
             [gdx.files :as files]
@@ -592,7 +589,7 @@
     {:effect/source player-eid
      :effect/target mouseover-eid
      :effect/target-position target-position
-     :effect/target-direction (direction/f (:body/position (:entity/body @player-eid))
+     :effect/target-direction (v2/direction (:body/position (:entity/body @player-eid))
                                          target-position)}))
 
 (def k->tick
@@ -734,10 +731,10 @@
      (assert (<= 0 speed max-speed)
              (pr-str speed))
      (assert (vector? direction))
-     (assert (or (zero? (length/f direction))
-                 (nearly-equal?/f 1 (length/f direction)))
+     (assert (or (zero? (v2/length direction))
+                 (nearly-equal?/f 1 (v2/length direction)))
              (str "cannot understand direction: " (pr-str direction)))
-     (when-not (or (zero? (length/f direction))
+     (when-not (or (zero? (v2/length direction))
                    (nil? speed)
                    (zero? speed))
        (let [movement (assoc movement :delta-time delta-time)
@@ -747,7 +744,7 @@
                             (update body :body/position move/f movement))]
            [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
             (when rotate-in-movement-direction?
-              [:tx/assoc-in eid [:entity/body :body/rotation-angle] (angle-from-vector/f direction)])
+              [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v2/angle-from-vector direction)])
             [:tx/move-entity eid]]))))})
 
 (defn tick-component
@@ -1217,7 +1214,7 @@
            (:entity/clickable @mouseover-eid))
       [:interaction-state/clickable-mouseover-eid
        {:clicked-eid mouseover-eid
-        :in-click-range? (< (distance/f (:body/position (:entity/body @player-eid))
+        :in-click-range? (< (v2/distance (:body/position (:entity/body @player-eid))
                                         (:body/position (:entity/body @mouseover-eid)))
                             (:entity/click-distance-tiles @player-eid))}]
 

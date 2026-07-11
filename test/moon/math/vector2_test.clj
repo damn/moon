@@ -1,7 +1,6 @@
 (ns moon.math.vector2-test
   (:require [clojure.is-nearly-equal :as nearly-equal?]
-            [clojure.v2.scale :as scale]
-            [clojure.v2.length :as length]
+            [moon.v2 :as v2]
             [clojure.test :refer :all]))
 
 (set! *unchecked-math* :warn-on-boxed)
@@ -15,17 +14,17 @@
                      [0.000001 0.0123])))
 
 (deftest scale
-  (is (nearly-equal? (scale/f [1 3] 0.5)
+  (is (nearly-equal? (v2/scale [1 3] 0.5)
                      [0.5 1.5]))
-  (is (nearly-equal? (scale/f [2 1.2] -3)
+  (is (nearly-equal? (v2/scale [2 1.2] -3)
                      [-6.0 -3.6000001]))
-  (is (nearly-equal? (scale/f [0 0] 10)
+  (is (nearly-equal? (v2/scale [0 0] 10)
                      [0.0 0.0])))
 
 (deftest length
-  (is (nearly-equal?/f (length/f [1.2 0.1])
+  (is (nearly-equal?/f (v2/length [1.2 0.1])
                        1.2041595))
-  (is (nearly-equal?/f (length/f [1.2 -0.1])
+  (is (nearly-equal?/f (v2/length [1.2 -0.1])
                        1.2041595)))
 
 (comment
@@ -40,6 +39,6 @@
            [-1 0]
            [-1 1]]]
     [v
-     (clojure.v2.angle-from-vector/f v)]))
+     (v2/angle-from-vector v)]))
 
  )

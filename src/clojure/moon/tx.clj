@@ -6,7 +6,7 @@
             [clojure.stats.add-mods :as add-mods]
             [clojure.moon.after-create-component :refer [after-create-component]]
             [com.badlogic.gdx.utils.align :as align]
-            [clojure.v2.angle-from-vector :as angle-from-vector]
+            [moon.v2 :as v2]
             [moon.db :as db]
             [clojure.inventory.can-pickup-item :as can-pickup-item]
             [clojure.moon.create-component :refer [create-component]]
@@ -299,7 +299,7 @@
                       :width size
                       :height size
                       :z-order :z-order/flying
-                      :rotation-angle (angle-from-vector/f direction)}
+                      :rotation-angle (v2/angle-from-vector direction)}
         :entity/movement {:direction direction :speed speed}
         :entity/image image
         :entity/faction faction

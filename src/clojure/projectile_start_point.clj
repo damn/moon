@@ -1,8 +1,7 @@
 (ns clojure.projectile-start-point
-  (:require [clojure.v2.add :as add]
-            [clojure.v2.scale :as scale]))
+  (:require [moon.v2 :as v2]))
 
 (defn f [body direction size]
-  (add/f (:body/position body)
-         (scale/f direction
-                  (+ (/ (:body/width body) 2) size 0.1))))
+  (v2/add (:body/position body)
+          (v2/scale direction
+                    (+ (/ (:body/width body) 2) size 0.1))))

@@ -1,6 +1,5 @@
 (ns clojure.is-useful
-  (:require [clojure.v2.distance :as distance]
-            [clojure.v2.double-ray-endpositions :as double-ray-endpositions]
+  (:require [moon.v2 :as v2]
             [moon.body :as body]
             [clojure.raycaster :as raycaster]))
 
@@ -24,14 +23,14 @@
   (let [source-p (:body/position (:entity/body @source))
         target-p (:body/position (:entity/body @target))]
     ; is path blocked ereally needed? we need LOS also right to have a target-direction as AI?
-    (and (not (let [[start1,target1,start2,target2] (double-ray-endpositions/f source-p
+    (and (not (let [[start1,target1,start2,target2] (v2/double-ray-endpositions source-p
                                                                                target-p
                                                                                (:projectile/size projectile))]
                 (or
                  (raycaster/blocked? raycaster start1 target1)
                  (raycaster/blocked? raycaster start2 target2))))
          ; TODO not taking into account body sizes
-         (< (distance/f source-p ; entity/distance function protocol EntityPosition
+         (< (v2/distance source-p ; entity/distance function protocol EntityPosition
                         target-p)
             max-range))))
 

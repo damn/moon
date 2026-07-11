@@ -1,7 +1,5 @@
 (ns clojure.player-movement-vector
-  (:require [clojure.v2.add :as add]
-            [clojure.v2.length :as length]
-            [clojure.v2.normalise :as normalise]
+  (:require [moon.v2 :as v2]
             [com.badlogic.gdx.input :as input]
             [gdl.input.keys :as input-keys]))
 
@@ -11,6 +9,6 @@
         u (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/w)) [0  1])
         d (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/s)) [0 -1])]
     (when (or r l u d)
-      (let [v (normalise/f (reduce add/f [0 0] (remove nil? [r l u d])))]
-        (when (pos? (length/f v))
+      (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
+        (when (pos? (v2/length v))
           v)))))

@@ -1,5 +1,0 @@
-(ns clojure.v2.scale)
-
-(defn f [[x y] scalar]
-  [(* x scalar)
-   (* y scalar)])
