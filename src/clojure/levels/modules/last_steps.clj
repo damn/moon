@@ -2,7 +2,6 @@
   (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.property-value :refer [property-value]]
             [moon.g2d :as g2d]
-            [clojure.scale-grid :as scale-grid]
             [clojure.movement-property :as movement-property]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
             [com.badlogic.gdx.maps.map-layers :as map-layers]))
@@ -34,7 +33,7 @@
                       (set (g2d/cells area-level-grid)))
                    (= (set (concat [:wall max-area-level] (range max-area-level)))
                       (set (g2d/cells area-level-grid)))))
-        scaled-area-level-grid (scale-grid/f area-level-grid scale)
+        scaled-area-level-grid (g2d/scale-by area-level-grid scale)
         get-free-position-in-area-level (fn [area-level]
                                           (rand-nth
                                            (filter

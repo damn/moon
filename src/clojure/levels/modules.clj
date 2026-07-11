@@ -2,7 +2,6 @@
   (:require [moon.caves :as caves]
             [moon.g2d :as g2d]
             [clojure.load-schema-tiled-map :as load-schema-tiled-map]
-            [clojure.print-grid :refer [print-grid]]
             [clojure.levels.modules.calculate-start :as calculate-start]
             [clojure.levels.modules.assoc-transitions :as assoc-transitions]
             [clojure.levels.modules.create-scaled-grid :as create-scaled-grid]
@@ -10,6 +9,11 @@
             [clojure.levels.modules.place :as place-module]
             [clojure.levels.modules.convert-to-tiled-map :as convert-to-tiled-map]
             [clojure.levels.modules.initial-grid :as initial-grid]))
+
+(defn print-grid [{:keys [grid] :as world-fn-ctx}]
+  (g2d/print-y-up grid)
+  (println " - ")
+  world-fn-ctx)
 
 (defn create
   [world-fn-ctx]

@@ -252,3 +252,17 @@
                (calc-newgrid-value (get grid [(+ x min-x -1)
                                               (+ y min-y -1)]))))
      convert]))
+
+(defn scale-uniform [grid factor]
+  (create (* (width grid) factor)
+          (* (height grid) factor)
+          (fn [posi]
+            (get grid (mapv #(int (/ % factor)) posi)))))
+
+(defn scale-by [grid [w h]]
+  (create (* (width grid) w)
+          (* (height grid) h)
+          (fn [[x y]]
+            (get grid
+                 [(int (/ x w))
+                  (int (/ y h))]))))
