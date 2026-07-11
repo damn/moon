@@ -11,7 +11,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdl.maps.map-properties :as map-properties]
+            [moon.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
             [moon.position :as position]))

@@ -101,8 +101,8 @@
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [moon.application :as application]
-            [gdl.graphics.g2d.freetype.font-generator :as free-type-font-generator]
-            [gdl.maps.map-properties :as map-properties]
+            [moon.font-generator :as font-generator]
+            [moon.map-properties :as map-properties]
             [gdx.files :as files]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
             [gdx.graphics.orthographic-camera :as gdx-orthographic-camera]
@@ -2293,13 +2293,13 @@
                                                                    :size 16
                                                                    :quality-scaling 2
                                                                    :use-integer-positions? false}
-                                 generator (free-type-font-generator/new (files/internal (:ctx/files ctx) path))
+                                 generator (font-generator/new (files/internal (:ctx/files ctx) path))
                                  parameter {
                                             :set-size (* size quality-scaling)
                                             :set-min-filter texture-filter/Linear
                                             :set-mag-filter texture-filter/Linear
                                             }
-                                 font (free-type-font-generator/generate-font generator parameter)
+                                 font (font-generator/generate-font generator parameter)
                                  font-data (bitmap-font/getData font)]
                              (disposable/dispose! generator)
                              (bitmap-font-data/setScale font-data (/ quality-scaling))

@@ -1,6 +1,6 @@
 (ns clojure.tiled-map.add-creatures-layer
   (:require [clojure.tiled-map.add-layer :as add-layer]
-            [gdl.maps.map-properties :as map-properties]
+            [moon.map-properties :as map-properties]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
 
 (defn f [tiled-map spawn-positions]

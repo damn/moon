@@ -3,7 +3,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [gdl.maps.map-properties :as map-properties]))
+            [moon.map-properties :as map-properties]))
 
 (defn f
   [tiled-map layer [x y]]

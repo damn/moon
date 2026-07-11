@@ -6,7 +6,7 @@
             [clojure.tiled-tiled-map :as tiled-tiled-map]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdl.maps.map-properties :as map-properties]
+            [moon.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]))
 

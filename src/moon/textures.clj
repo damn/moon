@@ -1,6 +1,6 @@
 (ns moon.textures
   (:require [gdx.files :as files]
-            [gdx.files.file-handle :as file-handle]
+            [moon.file-handle :as file-handle]
             [gdx.graphics.g2d.texture-region :as texture-region]
             [gdx.graphics.glutils.file-texture-data :as file-texture-data]
             [gdx.graphics.pixmap :as pixmap]

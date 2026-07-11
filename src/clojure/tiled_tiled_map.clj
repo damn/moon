@@ -1,6 +1,6 @@
 (ns clojure.tiled-tiled-map
   (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [gdl.maps.map-properties :as map-properties]
+            [moon.map-properties :as map-properties]
             [clojure.tiled-map.add-layer :as add-layer]))
 
 (defn f
