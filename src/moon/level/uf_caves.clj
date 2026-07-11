@@ -1,9 +1,9 @@
 (ns moon.level.uf-caves
   (:require [clojure.java.util.random :as random]
-            [clojure.movement-property :as movement-property]
+            [moon.movement-property :as movement-property]
             [clojure.random :refer [get-rand-weighted-item]]
             [moon.tiled-map :as moon-tiled-map]
-            [clojure.tiled-tiled-map :as tiled-tiled-map]
+            [moon.tiled-map.create :as tiled-tiled-map]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.map-properties :as map-properties]

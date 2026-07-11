@@ -1,10 +1,10 @@
 (ns moon.level.modules
   (:require [clojure.java.util.random :as random]
             [moon.tmx :as tmx]
-            [clojure.movement-property :as movement-property]
+            [moon.movement-property :as movement-property]
             [clojure.property-value :refer [property-value]]
             [moon.tiled-map :as moon-tiled-map]
-            [clojure.tiled-tiled-map :as tiled-tiled-map]
+            [moon.tiled-map.create :as tiled-tiled-map]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]

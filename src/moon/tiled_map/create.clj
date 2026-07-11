@@ -1,4 +1,4 @@
-(ns clojure.tiled-tiled-map
+(ns moon.tiled-map.create
   (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [moon.map-properties :as map-properties]
             [moon.tiled-map :as moon-tiled-map]))

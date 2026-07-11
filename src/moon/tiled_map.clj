@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [clojure.tiled-tiled-map-tile-layer :as tiled-map-tile-layer]
+            [moon.tiled-map-tile-layer.create :as tiled-map-tile-layer]
             [moon.map-properties :as map-properties]))
 
 (defn get-property [tiled-map k]

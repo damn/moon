@@ -28,7 +28,7 @@
             [clojure.math :as math]
             [moon.faction :as faction]
 
-            [clojure.movement-property :as movement-property]
+            [moon.movement-property :as movement-property]
             [moon.orthographic-camera :as orthographic-camera]
             [clojure.point-to-entities :refer [point->entities]]
             [clojure.projectile-start-point :as projectile-start-point]
@@ -44,7 +44,7 @@
             [clojure.set-ctx :as set-ctx]
             [clojure.k-order :as k-order]
             [clojure.sort-by-order :as sort-by-order]
-            [clojure.spawn-positions :as spawn-positions]
+            [moon.tiled-map.spawn-positions :as spawn-positions]
             [clojure.stopped :refer [stopped?]]
             [clojure.string :as str]
             [clojure.table-set-opts :as table-set-opts]
