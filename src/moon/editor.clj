@@ -13,7 +13,6 @@
             [clojure.set :as set]
             [clojure.k-order :as k-order]
             [clojure.string :as str]
-            [clojure.table-rows :refer [overview-table-rows*]]
             [clojure.table-set-opts :as table-set-opts]
             [clojure.throwable :as throwable]
             [clojure.tooltip :as tooltip]
@@ -39,11 +38,13 @@
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
+            [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as ui-skin]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
@@ -208,6 +209,26 @@
                                               (actor/getHeight table))})]]}))
                             (add-close-button! skin)
                             (window/setModal true)))))
+
+(defn- overview-table-rows* [skin image-scale rows]
+  (for [row rows]
+    (for [{:keys [texture-region
+                  on-clicked
+                  tooltip
+                  extra-info-text]} row]
+      {:actor (let [stack (stack/new)]
+                (run! #(group/addActor stack %)
+                      [(doto (image-button/new
+                              (doto (texture-region-drawable/new texture-region)
+                                (texture-region-drawable/setMinSize (* image-scale (texture-region/getRegionWidth texture-region))
+                                                (* image-scale (texture-region/getRegionHeight texture-region)))))
+                        (actor/addListener (change-listener/create
+                                           (fn [event actor]
+                                             (on-clicked actor (:stage/ctx (event/getStage event))))))
+                        (actor/addListener (text-tooltip/new tooltip skin)))
+                       (doto (label/new extra-info-text skin)
+                         (actor/setTouchable touchable/disabled))])
+                stack)})))
 
 (defn- property-overview-window
   [{:keys [db
