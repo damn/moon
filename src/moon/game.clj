@@ -1,6 +1,5 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
-            [clojure.grid.cells-entities :as cells->entities]
             [clojure.grid.circle-entities :refer [circle->entities]]
             [clojure.grid.find-direction :refer [find-direction]]
             [clojure.handle :as handle]
@@ -1013,7 +1012,7 @@
                                            (:body/collides? (:entity/body @%))
                                            (overlaps? (:entity/body entity)
                                                       (:entity/body @%)))
-                                     (cells->entities/f cells*)))
+                                     (grid/entities cells*)))
            destroy? (or (and hit-entity (not piercing?))
                         (some #(cell/blocked? % (:body/z-order (:entity/body entity))) cells*))]
        [(when destroy?

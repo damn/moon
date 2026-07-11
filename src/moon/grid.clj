@@ -1,6 +1,9 @@
 (ns moon.grid
   (:require [clojure.update-potential-fields-generate :refer [generate-potential-field]]))
 
+(defn entities [cells]
+  (into #{} (mapcat :entities) cells))
+
 ; Assumption: The map contains no not-allowed diagonal cells, diagonal wall cells where both
 ; adjacent cells are walls and blocked.
 ; (important for wavefront-expansion and field-following)

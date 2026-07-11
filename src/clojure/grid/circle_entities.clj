@@ -5,7 +5,7 @@
             [moon.circle :as moon-circle]
             [moon.rectangle :as rectangle]
             [moon.g2d :as g2d]
-            [clojure.grid.cells-entities :as cells->entities]))
+            [moon.grid :as grid]))
 
 (defn circle->entities [g2d {:keys [position radius] :as circle}]
   (let [[x y] position
@@ -15,6 +15,6 @@
          rectangle/touched-tiles
          (g2d/get-cells g2d)
          (map deref)
-         cells->entities/f
+         grid/entities
          (filter #(intersector/overlaps gdx-circle
                                         (body/rectangle (:entity/body @%)))))))
