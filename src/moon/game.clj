@@ -1,6 +1,6 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
-            [clojure.int-between :refer [rand-int-between]]
+            [moon.rand :refer [int-between]]
             [moon.inventory-window :as inventory-window]
             [clojure.inventory.can-pickup-item :as can-pickup-item]
             [clojure.not-enough-mana :as not-enough-mana?]
@@ -272,7 +272,7 @@
                                                      (:entity/stats target*)
                                                      damage))
                      (:damage/min-max damage))
-           dmg-amount (rand-int-between min-max)
+           dmg-amount (int-between min-max)
            new-hp-val (max (- (hp 0) dmg-amount)
                            0)]
        [[:tx/assoc-in target [:entity/stats :stats/hp 0] new-hp-val]
