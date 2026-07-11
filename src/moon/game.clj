@@ -2,7 +2,6 @@
   (:require [moon.content-grid :as content-grid]
             [moon.db :as db]
             [clojure.edn :as edn]
-            [clojure.files.create-textures :as create-textures]
             [clojure.g2d.cells :refer [->cells]]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
@@ -838,8 +837,8 @@
                                           cursor))))))
 
 (defn create-textures [{:keys [ctx/files] :as ctx}]
-  (assoc ctx :ctx/textures (create-textures/f files {:folder "resources/"
-                                                      :extensions #{"png" "bmp"}})))
+  (assoc ctx :ctx/textures (textures/create files {:folder "resources/"
+                                                   :extensions #{"png" "bmp"}})))
 
 (defn create-world-viewport [ctx]
   (assoc ctx

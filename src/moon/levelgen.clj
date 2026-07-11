@@ -1,6 +1,5 @@
 (ns moon.levelgen
   (:require [moon.db :as db]
-            [clojure.files.create-textures :as create-textures]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.levels.modules :as modules]
             [clojure.levels.tmx :as tmx]
@@ -106,7 +105,7 @@
              :ctx/camera-movement-speed (:camera-movement-speed config)
              :ctx/world-unit-scale world-unit-scale
              :ctx/db (db/create)
-             :ctx/textures (create-textures/f files (:textures-config config))
+             :ctx/textures (textures/create files (:textures-config config))
              :ctx/sprite-batch sprite-batch
              :ctx/skin skin
              :ctx/world-viewport world-viewport
