@@ -2,7 +2,7 @@
   (:require [clojure.grid.filter-viable-cells :as filter-viable-cells]
             [clojure.get-min-dist-cell :refer [get-min-dist-cell]]
             [clojure.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
-            [clojure.moon-faction :as faction]
+            [moon.faction :as faction]
             [clojure.nearest-entity :as nearest-entity]
             [clojure.nearest-entity-distance :as nearest-entity-distance]
             [clojure.grid.viable-cell :refer [viable-cell?]]))

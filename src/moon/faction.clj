@@ -1,4 +1,4 @@
-(ns clojure.moon-faction)
+(ns moon.faction)
 
 (defn enemy [faction]
   (case faction

@@ -19,7 +19,7 @@
             [clojure.menus.help :refer [controls-info]]
             [clojure.menus.v :as menus]
             [clojure.minimum-size :refer [minimum-size]]
-            [clojure.moon-faction :as faction]
+            [moon.faction :as faction]
             [clojure.moon-target-all :as target-all]
             [clojure.moon.after-create-component :refer [after-create-component]]
             [clojure.moon.choose-skill :as choose-skill]

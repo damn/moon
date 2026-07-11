@@ -1,6 +1,6 @@
 (ns clojure.is-applicable
   (:require [clojure.stats.melee-damage :as melee-damage]
-            [clojure.moon-faction :as faction]))
+            [moon.faction :as faction]))
 
 (defmulti f
   (fn [[k _v] _effect-ctx]
