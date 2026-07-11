@@ -1,5 +1,5 @@
 (ns moon.grid
-  (:require [clojure.is-not-allowed-diagonal :as is-not-allowed-diagonal]
+  (:require [clojure.coll :refer [positions]]
             [moon.cell :as cell]
             [com.badlogic.gdx.math.circle :as circle]
             [com.badlogic.gdx.math.intersector :as intersector]
@@ -17,12 +17,27 @@
 (defn nearest-entity-distance [cell faction]
   (-> cell faction :distance))
 
+(let [order (position/get-8-neighbours [0 0])
+      diagonal? (fn [[^int x ^int y]]
+                  (and (not (zero? x))
+                       (not (zero? y))))]
+  (def ^:private diagonal-check-indizes
+    (into {} (for [[x y] (filter diagonal? order)]
+               [(first (positions #(= % [x y]) order))
+                (vec (positions #(some #{%} [[x 0] [0 y]])
+                                order))]))))
+
+(defn- not-allowed-diagonal? [at-idx adjacent-cells]
+  (when-let [[a b] (get diagonal-check-indizes at-idx)]
+    (and (nil? (adjacent-cells a))
+         (nil? (adjacent-cells b)))))
+
 (defn remove-not-allowed-diagonals [adjacent-cells]
   (remove nil?
           (map-indexed
            (fn [idx cell]
              (when-not (or (nil? cell)
-                           (is-not-allowed-diagonal/f? idx adjacent-cells))
+                           (not-allowed-diagonal? idx adjacent-cells))
                cell))
            adjacent-cells)))
 
