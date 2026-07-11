@@ -11,7 +11,6 @@
             [clojure.is-nearly-equal :as nearly-equal?]
             [clojure.is-stackable :as stackable?]
             [clojure.is-valid-slot :as valid-slot?]
-            [clojure.item :as item]
             [clojure.item-is-valid :as valid?]
             [clojure.item-place-position :refer [item-place-position]]
             [clojure.java.io :as io]
@@ -142,6 +141,7 @@
             [moon.cell :as cell]
             [moon.content-grid :as content-grid]
             [moon.db :as db]
+            [moon.item :as item]
             [moon.g2d :as moon-g2d]
             [moon.grid :as grid]
             [moon.raycaster :as raycaster]
@@ -597,7 +597,7 @@
          (#(group/findActor % "moon.ui.windows.inventory"))
          (set-item-ui/f cell
                         {:texture-region (textures/texture-region textures (:entity/image item))
-                         :tooltip-text (item/info-text item ctx)}
+                         :tooltip-text (item/info-text item)}
                         skin))
      nil)
 

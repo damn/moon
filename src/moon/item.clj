@@ -1,9 +1,9 @@
-(ns clojure.item
+(ns moon.item
   (:require [clojure.string :as str]
             [clojure.info :refer [info]]
             [clojure.item-is-valid :as valid?]))
 
-(defn info-text [item _ctx]
+(defn info-text [item]
   (assert (valid?/f item))
   (str/join "\n"
             (remove nil?
