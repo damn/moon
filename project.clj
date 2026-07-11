@@ -2,27 +2,18 @@
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
                  [com.github.damn/com.badlogic.gdx "361519e8e3"]
-                 [com.badlogicgames.gdx/gdx-backend-lwjgl3    "1.14.2"]
-                 [com.badlogicgames.gdx/gdx-freetype          "1.14.2"]
+                 [com.github.damn/com.badlogic.gdx.backends.lwjgl3 "5042308fb0"]
+                 [com.github.damn/com.badlogic.gdx.graphics.g2d.freetype "38124e642d"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.2" :classifier "natives-desktop"]
-                 [com.badlogicgames.gdx/gdx-platform          "1.14.2" :classifier "natives-desktop"]
-                 [space.earlygrey/shapedrawer "2.6.0"]
-
-                 ; clojure libs
+                 [com.github.damn/space.earlygrey.shapedrawer "1184b47b65"]
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
                  [metosin/malli "0.13.0"]
                  [org.clj-commons/pretty "3.2.0"]
-                 ;
-
-                 ; clojure
                  [org.clojure/clojure "1.12.0"]
-                 ;
-
                  ; development only
                  [nrepl "0.9.0"]
                  [org.clojure/tools.namespace "1.3.0"]
-                 ;
                  ]
   :java-source-paths ["java-src"]
   :source-paths ["src"]
