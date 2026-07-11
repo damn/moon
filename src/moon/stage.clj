@@ -1,5 +1,5 @@
-(ns clojure.scene2d.stage.apply-ctx
+(ns moon.stage
   (:require [clojure.set-ctx :as set-ctx]))
 
-(defn f [stage f]
+(defn apply-ctx! [stage f]
   (set-ctx/f stage (f (:stage/ctx stage))))
