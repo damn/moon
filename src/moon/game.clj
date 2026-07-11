@@ -31,6 +31,7 @@
             [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :as camera-set-position]
+            [clojure.orthographic-camera-frustum :refer [frustum]]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
             [clojure.overlaps :refer [overlaps?]]
             [clojure.point-to-entities :refer [point->entities]]
@@ -1960,7 +1961,8 @@
    :ctx/show-potential-field-colors? nil
    :ctx/show-cell-entities? false
    :ctx/show-cell-occupied? false
-   :ctx/show-body-bounds? false})
+   :ctx/show-body-bounds? false
+   :ctx/show-tile-grid? false})
 
 (defn create-batch [ctx]
   (assoc ctx :ctx/batch (sprite-batch/new)))
@@ -2204,7 +2206,8 @@
     [:ctx/show-potential-field-colors? :any]
     [:ctx/show-cell-entities? :boolean]
     [:ctx/show-cell-occupied? :boolean]
-    [:ctx/show-body-bounds? :boolean]]))
+    [:ctx/show-body-bounds? :boolean]
+    [:ctx/show-tile-grid? :boolean]]))
 
 (defn render-validate [ctx]
   (malli-schema/validate-humanize schema ctx)
@@ -2323,6 +2326,21 @@
    #{:entity/stats
      :active-skill}])
 
+(defn- draw-tile-grid
+  [{:keys [ctx/world-viewport
+           ctx/show-tile-grid?]}]
+  (if show-tile-grid?
+    (let [[left-x _right-x bottom-y _top-y] (frustum (viewport/getCamera world-viewport))]
+      [[:draw/grid
+        (int left-x)
+        (int bottom-y)
+        (inc (int (viewport/getWorldWidth world-viewport)))
+        (+ 2 (int (viewport/getWorldHeight world-viewport)))
+        1
+        1
+        (color/toFloatBits [1 1 1 0.8])]])
+    []))
+
 (defn- draw-cell-debug
   [{:keys [ctx/colors
            ctx/grid
@@ -2417,7 +2435,8 @@
   (let [old-line-width (shape-drawer/getDefaultLineWidth shape-drawer)]
     (shape-drawer/setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
-    (doseq [draw-fn [draw-cell-debug
+    (doseq [draw-fn [draw-tile-grid
+                     draw-cell-debug
                      draw-entities!
                      highlight-mouseover-tile]]
       (draw! ctx (draw-fn ctx)))

@@ -2,7 +2,9 @@
 
 (def item
   {:label "Debug"
-   :items [{:label "Toggle show-cell-entities?"
+   :items [{:label "Toggle show-tile-grid?"
+            :on-click #(update % :ctx/show-tile-grid? not)}
+           {:label "Toggle show-cell-entities?"
             :on-click #(update % :ctx/show-cell-entities? not)}
            {:label "Toggle show-cell-occupied?"
             :on-click #(update % :ctx/show-cell-occupied? not)}
