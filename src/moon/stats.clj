@@ -2,8 +2,7 @@
   (:require [moon.mods :as mods]
             [clojure.modifiers-get-value :as get-value]
             [clojure.string :as str]
-            [clojure.val-max.apply-max :as apply-max]
-            [clojure.val-max.apply-min :as apply-min]))
+            [moon.val-max :refer [apply-min apply-max]]))
 
 (def ^:private non-val-max-stat-ks
   [:stats/movement-speed
@@ -18,12 +17,12 @@
 (defn get-hitpoints
   [{:keys [stats/hp
            stats/modifiers]}]
-  (apply-max/f hp modifiers :modifier/hp-max))
+  (apply-max hp modifiers :modifier/hp-max))
 
 (defn get-mana
   [{:keys [stats/mana
            stats/modifiers]}]
-  (apply-max/f mana modifiers :modifier/mana-max))
+  (apply-max mana modifiers :modifier/mana-max))
 
 (defn not-enough-mana?
   [stats {:keys [skill/cost]}]
@@ -56,15 +55,15 @@
   ([source target damage]
    (update (calc-damage source damage)
            :damage/min-max
-           apply-max/f
+           apply-max
            (:stats/modifiers target)
            :modifier/damage-receive-max))
   ([source damage]
    (update damage
            :damage/min-max
            #(-> %
-                (apply-min/f (:stats/modifiers source) :modifier/damage-deal-min)
-                (apply-max/f (:stats/modifiers source) :modifier/damage-deal-max)))))
+                (apply-min (:stats/modifiers source) :modifier/damage-deal-min)
+                (apply-max (:stats/modifiers source) :modifier/damage-deal-max)))))
 
 (defn effective-armor-save [source-stats target-stats]
   (max (- (or (get-value source-stats :stats/armor-save) 0)

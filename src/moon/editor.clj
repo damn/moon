@@ -26,9 +26,9 @@
             [clojure.tooltip :as tooltip]
             [clojure.truncate :refer [truncate]]
             [clojure.type :refer [property->type]]
-            [clojure.ui.error-window :as error-window]
-            [clojure.ui.table.add-rows :refer [add-rows!]]
-            [clojure.ui.window.add-close-button :as add-close-button]
+            [moon.error-window :as error-window]
+            [moon.table :refer [add-rows!]]
+            [moon.window :refer [add-close-button!]]
             [moon.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
@@ -210,7 +210,7 @@
                                  :width  (+ (actor/getWidth table) 50)
                                  :height (min (- (viewport/getWorldHeight (:stage/viewport stage)) 50)
                                               (actor/getHeight table))})]]}))
-                            (add-close-button/f! skin)
+                            (add-close-button! skin)
                             (window/setModal true)))))
 
 (defn- property-overview-window
@@ -236,7 +236,7 @@
                                      :extra-info-text (extra-info-text property)}))
                              (partition-all columns)
                              (overview-table-rows* skin image-scale)))}))
-    (add-close-button/f! skin)
+    (add-close-button! skin)
     (window/setModal true)))
 
 (defn- with-window-close [f]
@@ -294,7 +294,7 @@
                            skin
                            scroll-pane-height
                            50)]]}))
-      (add-close-button/f! skin)
+      (add-close-button! skin)
       (window/setModal true)
       (group/addActor (actor/new
                        (fn [this _delta]
@@ -443,7 +443,7 @@
     (table-set-opts/set-opts! {:title "Choose"
                        :skin skin
                        :table/cell-defaults {:pad 5}}))
-                 (add-close-button/f! skin)
+                 (add-close-button! skin)
                  (window/setModal true))
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]

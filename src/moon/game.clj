@@ -4,7 +4,7 @@
             ; clojure concept
             [moon.rand :refer [int-between]]
 
-            [moon.inventory-window :as inventory-window]
+            [moon.inventory-window :as inventory-window :refer [inventory-window-build]]
             [moon.inventory :as inventory]
             [moon.inventory.cell :as inventory-cell]
             [moon.input :as input]
@@ -53,17 +53,15 @@
             [clojure.throwable :as throwable]
             [moon.tiled-map :as moon-tiled-map]
             [clojure.timer-create :refer [create-timer]]
+            [moon.txs-fn-map :refer [actions!]]
             [clojure.try-move-solid-body :as try-move-solid-body]
-            [clojure.txs-fn-map.actions :refer [actions!]]
             [clojure.ui-info-window :as info-window]
-            [clojure.ui.action-bar.add-skill :as add-skill-ui]
-            [clojure.ui.action-bar.selected-skill :as selected-skill]
-            [clojure.ui.data-viewer-window :as data-viewer-window]
-            [clojure.ui.dev-menu :as dev-menu]
-            [clojure.ui.error-window :as error-window]
-            [clojure.ui.inventory-window :refer [inventory-window-build]]
+            [moon.action-bar :as action-bar]
+            [moon.data-viewer-window :as data-viewer-window]
+            [moon.dev-menu :as dev-menu]
+            [moon.error-window :as error-window]
             [clojure.unproject :as unproject]
-            [clojure.val-max.ratio :as ratio]
+            [moon.val-max :refer [ratio]]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.color :as color]
@@ -1145,7 +1143,7 @@
      (-> stage
          :stage/root
          (#(group/findActor % "moon.ui.action-bar"))
-         (add-skill-ui/f {:skill-id (:property/id skill)
+         (action-bar/add-skill! {:skill-id (:property/id skill)
                           :texture-region (textures/texture-region textures (:entity/image skill))
                           :tooltip-text (info-text skill ctx)}
                          skin))
@@ -1419,7 +1417,7 @@
 
 (defn- render-stats
   [_ entity {:keys [ctx/colors]}]
-  (let [ratio (ratio/f (stats/get-hitpoints (:entity/stats entity)))]
+  (let [ratio (ratio (stats/get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [body/position body/width body/height]} (:entity/body entity)
             [x y] position
@@ -1714,7 +1712,7 @@
                              [:draw/texture-region
                               (textures/texture-region textures
                                                        {:image/file content-file
-                                                        :image/bounds [0 0 (* rahmenw (ratio/f minmaxval)) rahmenh]})
+                                                        :image/bounds [0 0 (* rahmenw (ratio minmaxval)) rahmenh]})
                               [x y]]
                              [:draw/text {:text (str (readable/f (minmaxval 0))
                                                      "/"
@@ -2734,7 +2732,7 @@
       (if-let [skill-id (-> stage
                             :stage/root
                             (#(group/findActor % "moon.ui.action-bar"))
-                            selected-skill/f)]
+                            action-bar/selected-skill)]
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))
               effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)

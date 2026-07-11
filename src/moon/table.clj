@@ -1,6 +1,10 @@
-(ns clojure.ui.table.add-rows
+(ns moon.table
   (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.ui.table.add-cell :refer [add-cell!]]))
+            [gdx.scenes.scene2d.ui.cell :as cell]))
+
+(defn add-cell! [table cell-declaration]
+  (-> (table/add table (:actor cell-declaration))
+      (cell/set-opts! (dissoc cell-declaration :actor))))
 
 (defn add-rows! [table rows]
   (doseq [row rows]

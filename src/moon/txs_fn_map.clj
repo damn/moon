@@ -1,4 +1,4 @@
-(ns clojure.txs-fn-map.actions)
+(ns moon.txs-fn-map)
 
 (defn actions!
   [txs-fn-map ctx txs]
@@ -13,14 +13,11 @@
                 f (get txs-fn-map k)
                 _ (assert f (str "Cannot find function for tx: " k))
                 new-txs (try
-                         (apply f ctx params)
-                         (catch Throwable t
-                           (throw (ex-info "Error handling tx"
-                                           {:tx tx}
-                                           t))))]
-
-            ; TODO VALID RETURNS -> check!
-            ; either nil? or vector of transactions (vectors = vector with keyword & params?)
+                          (apply f ctx params)
+                          (catch Throwable t
+                            (throw (ex-info "Error handling tx"
+                                            {:tx tx}
+                                            t))))]
             (recur ctx
                    (concat (or new-txs []) (rest txs))
                    (conj handled-txs tx)))
