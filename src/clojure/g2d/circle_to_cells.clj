@@ -1,10 +1,10 @@
 (ns clojure.g2d.circle-to-cells
   (:require [clojure.outer-rectangle :refer [outer-rectangle]]
             [clojure.touched-tiles :refer [touched-tiles]]
-            [clojure.g2d.get-cells :refer [get-cells]]))
+            [moon.g2d :as g2d]))
 
 (defn circle->cells [g2d circle]
   (->> circle
        outer-rectangle
        touched-tiles
-       (get-cells g2d)))
+       (g2d/get-cells g2d)))

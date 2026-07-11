@@ -1,6 +1,6 @@
 (ns clojure.grid.body-occupied-cells
   (:require [moon.body :as body]
-            [clojure.g2d.get-cells :refer [get-cells]]))
+            [moon.g2d :as g2d]))
 
 (defn body->occupied-cells
   [grid
@@ -9,5 +9,5 @@
            body/height]
     :as body}]
   (if (or (> (float width) 1) (> (float height) 1))
-    (get-cells grid (body/touched-tiles body))
+    (g2d/get-cells grid (body/touched-tiles body))
     [(grid (mapv int position))]))

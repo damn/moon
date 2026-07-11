@@ -62,3 +62,17 @@
                      grid)))
           {:steps steps
            :area-level-grid grid})))))
+
+(defn assoc-transition-cells [grid]
+  (let [grid (reduce #(assoc %1 %2 :transition) grid
+                     (adjacent-wall-positions grid))]
+    (assert (or
+             (= #{:wall :ground :transition} (set (cells grid)))
+             (= #{:ground :transition}       (set (cells grid))))
+            (str "(set (cells grid)): " (set (cells grid))))
+    ;_ (printgrid/f grid)
+    ;_ (println)
+    grid))
+
+(defn get-cells [g2d int-positions]
+  (into [] (keep g2d) int-positions))

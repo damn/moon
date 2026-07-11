@@ -1,13 +1,13 @@
 (ns clojure.grid.valid-position
   (:require [moon.body :as body]
-            [clojure.g2d.get-cells :refer [get-cells]]
+            [moon.g2d :as g2d]
             [moon.cell :as cell]
             [clojure.grid.cells-entities :as cells->entities]
             [clojure.overlaps :refer [overlaps?]]))
 
 (defn valid-position? [g2d {:keys [body/z-order] :as body} entity-id]
   (assert (:body/collides? body))
-  (let [cells* (into [] (map deref) (get-cells g2d (body/touched-tiles body)))]
+  (let [cells* (into [] (map deref) (g2d/get-cells g2d (body/touched-tiles body)))]
     (and (not-any? #(cell/blocked? % z-order) cells*)
          (->> cells*
               cells->entities/f

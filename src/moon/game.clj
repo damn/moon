@@ -14,7 +14,6 @@
             [clojure.levels.tmx :as tmx]
             [clojure.line-of-sight :as line-of-sight?]
             [moon.body :as body]
-            [clojure.g2d.get-cells :refer [get-cells]]
             [clojure.grid.cells-entities :as cells->entities]
             [clojure.grid.circle-entities :refer [circle->entities]]
             [clojure.grid.find-direction :refer [find-direction]]
@@ -654,7 +653,7 @@
         eid
         {:keys [ctx/grid]}]
      (let [entity @eid
-           cells* (map deref (get-cells grid (body/touched-tiles (:entity/body entity))))
+           cells* (map deref (moon-g2d/get-cells grid (body/touched-tiles (:entity/body entity))))
            hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                            (not= (:entity/faction entity)
                                                  (:entity/faction @%))

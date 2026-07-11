@@ -1,7 +1,6 @@
 (ns clojure.levels.uf-caves.last-steps
   (:require [clojure.g2d.flood-fill :as flood-fill]
             [clojure.position-tile-fn :as position-tile-fn]
-            [clojure.g2d.assoc-transition-cells :as assoc-transition-cells]
             [clojure.levels.uf-caves.scale-grid :as scale-grid]
             [clojure.movement-property :as movement-property]
             [clojure.g2d.height :refer [->height]]
@@ -25,7 +24,7 @@
     }]
   (assert (= #{:wall :ground} (set (g2d/cells grid))))
   (let [{:keys [start-position grid]} (scale-grid/f grid start scaling)
-        grid (assoc-transition-cells/f grid)
+        grid (g2d/assoc-transition-cells grid)
         position->tile (position-tile-fn/f grid)
         tiled-map (tiled-map/f
                    {:properties {"width"  (->width  grid)
