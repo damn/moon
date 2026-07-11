@@ -7,7 +7,6 @@
             [moon.textures :as textures]
             [moon.audio :as audio]
             [moon.schemas.optional :refer [optional?]]
-            [clojure.property-image :as property-image]
             [clojure.property-types :refer [property-types]]
             [moon.stage :as moon-stage]
             [moon.actor :refer [find-ancestor]]
@@ -228,7 +227,7 @@
                         (->> (db/all-raw db property-type)
                              (sort-by sort-by-fn)
                              (map (fn [property]
-                                    {:texture-region (textures/texture-region textures (property-image/f property))
+                                    {:texture-region (textures/texture-region textures (property/image property))
                                      :on-clicked (fn [actor ctx]
                                                    (clicked-id-fn actor (:property/id property) ctx))
                                      :tooltip (tooltip/f property)
@@ -338,7 +337,7 @@
                                                                   (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
-          {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
+          {:actor (doto (image/new (textures/texture-region textures (property/image property)))
                     (actor/addListener (text-tooltip/new (tooltip/f property) skin))
                     (actor/setUserObject property-id))}))
       (for [id property-ids]
@@ -382,7 +381,7 @@
                                                                     (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
-           {:actor (doto (image/new (textures/texture-region textures (property-image/f property)))
+           {:actor (doto (image/new (textures/texture-region textures (property/image property)))
                      (actor/addListener (text-tooltip/new (tooltip/f property) skin))
                      (actor/setUserObject property-id))}))]
       [(when property-id
