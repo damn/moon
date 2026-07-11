@@ -1,7 +1,7 @@
 (ns clojure.levels.modules.last-steps
   (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.property-value :refer [property-value]]
-            [clojure.g2d.cells :refer [->cells]]
+            [moon.g2d :as g2d]
             [clojure.scale-grid :as scale-grid]
             [clojure.g2d.printgrid :as printgrid]
             [clojure.g2d.flood-fill :as flood-fill]
@@ -34,9 +34,9 @@
         ;_ (printgrid/f area-level-grid)
         _ (assert (or
                    (= (set (concat [max-area-level] (range max-area-level)))
-                      (set (->cells area-level-grid)))
+                      (set (g2d/cells area-level-grid)))
                    (= (set (concat [:wall max-area-level] (range max-area-level)))
-                      (set (->cells area-level-grid)))))
+                      (set (g2d/cells area-level-grid)))))
         scaled-area-level-grid (scale-grid/f area-level-grid scale)
         get-free-position-in-area-level (fn [area-level]
                                           (rand-nth

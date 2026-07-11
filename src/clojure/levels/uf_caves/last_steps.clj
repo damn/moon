@@ -6,7 +6,6 @@
             [clojure.movement-property :as movement-property]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
-            [clojure.g2d.cells :refer [->cells]]
             [moon.g2d :as g2d]
             [clojure.g2d.printgrid :as printgrid]
             [clojure.tiled-tiled-map :as tiled-map]
@@ -24,7 +23,7 @@
            level/scaling]
     :as lvlctx
     }]
-  (assert (= #{:wall :ground} (set (->cells grid))))
+  (assert (= #{:wall :ground} (set (g2d/cells grid))))
   (let [{:keys [start-position grid]} (scale-grid/f grid start scaling)
         grid (assoc-transition-cells/f grid)
         position->tile (position-tile-fn/f grid)

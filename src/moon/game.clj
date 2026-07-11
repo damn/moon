@@ -2,7 +2,7 @@
   (:require [moon.content-grid :as content-grid]
             [moon.db :as db]
             [clojure.edn :as edn]
-            [clojure.g2d.cells :refer [->cells]]
+            [moon.g2d :as moon-g2d]
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
             [moon.cell :as cell]
@@ -940,7 +940,7 @@
   (let [grid (:ctx/grid ctx)
         width (->width grid)
         height (->height grid)
-        cells (for [cell (map deref (->cells grid))]
+        cells (for [cell (map deref (moon-g2d/cells grid))]
                 [(:position cell)
                  (boolean (cell/blocks-vision? cell))])
         arr (make-array Boolean/TYPE width height)]

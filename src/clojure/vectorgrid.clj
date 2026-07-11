@@ -1,6 +1,5 @@
 (ns clojure.vectorgrid
-  (:require [clojure.g2d.cells :as cells]
-            [moon.g2d :as g2d]
+  (:require [moon.g2d :as g2d]
             [clojure.g2d.height :as height]
             [clojure.g2d.width :as width]))
 
@@ -13,8 +12,8 @@
   (->width [_]
     (count data))
 
-  cells/Cells
-  (->cells [_]
+  g2d/Cells
+  (cells [_]
     (apply concat data))
 
   g2d/Positions
@@ -35,7 +34,7 @@
 
   clojure.lang.Seqable
   (seq [this]
-    (map #(vector %1 %2) (g2d/posis this) (cells/->cells this)))
+    (map #(vector %1 %2) (g2d/posis this) (g2d/cells this)))
 
   clojure.lang.IPersistentCollection
   (equiv [this obj]
