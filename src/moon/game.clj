@@ -4,10 +4,8 @@
             [moon.inventory-window :as inventory-window]
             [moon.inventory :as inventory]
             [moon.inventory.cell :as inventory-cell]
-            [clojure.is-nearly-equal :as nearly-equal?]
-            [clojure.is-stackable :as stackable?]
-            [clojure.is-valid-slot :as valid-slot?]
-            [clojure.item-is-valid :as valid?]
+            [moon.number :as number]
+            [moon.item :as item]
             [clojure.java.io :as io]
             [clojure.levels.uf-caves :as uf-caves]
             [clojure.levels.modules :as modules]
@@ -929,12 +927,12 @@
 
    :tx/pickup-item
    (fn [_ctx eid item]
-     (assert (valid?/f item))
+     (assert (item/valid? item))
      (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
        (assert cell)
-       (assert (or (stackable?/f item cell-item)
+       (assert (or (item/stackable? item cell-item)
                    (nil? cell-item)))
-       (if (stackable?/f item cell-item)
+       (if (item/stackable? item cell-item)
          (do #_(tx/stack-item ctx eid cell item))
          [[:tx/set-item eid cell item]])))
 
@@ -960,7 +958,7 @@
      (let [entity @eid
            inventory (:entity/inventory entity)]
        (assert (and (nil? (get-in inventory cell))
-                    (valid-slot?/f cell item)))
+                    (inventory-cell/valid-slot? cell item)))
        [[:tx/assoc-in eid (cons :entity/inventory cell) item]
         (when (inventory-cell/applies-modifiers? cell)
           [:tx/update eid :entity/stats stats/add-mods (:stats/modifiers item)])
@@ -1739,21 +1737,21 @@
         item-on-cursor (:entity/item-on-cursor entity)]
     (cond
      (and (not item-in-cell)
-          (valid-slot?/f cell item-on-cursor))
+          (inventory-cell/valid-slot? cell item-on-cursor))
      [[:tx/sound "bfxr_itemput"]
       [:tx/dissoc eid :entity/item-on-cursor]
       [:tx/set-item eid cell item-on-cursor]
       [:tx/event eid :dropped-item]]
 
      (and item-in-cell
-          (stackable?/f item-in-cell item-on-cursor))
+          (item/stackable? item-in-cell item-on-cursor))
      [[:tx/sound "bfxr_itemput"]
       [:tx/dissoc eid :entity/item-on-cursor]
       [:tx/stack-item eid cell item-on-cursor]
       [:tx/event eid :dropped-item]]
 
      (and item-in-cell
-          (valid-slot?/f cell item-on-cursor))
+          (inventory-cell/valid-slot? cell item-on-cursor))
      [[:tx/sound "bfxr_itemput"]
       [:tx/dissoc eid :entity/item-on-cursor]
       [:tx/remove-item eid cell]
@@ -2173,7 +2171,7 @@
              (pr-str speed))
      (assert (vector? direction))
      (assert (or (zero? (v2/length direction))
-                 (nearly-equal?/f 1 (v2/length direction)))
+                 (number/nearly-equal? 1 (v2/length direction)))
              (str "cannot understand direction: " (pr-str direction)))
      (when-not (or (zero? (v2/length direction))
                    (nil? speed)

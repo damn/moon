@@ -3,7 +3,7 @@
             [clojure.table-set-opts :as table-set-opts]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [clojure.ui.inventory-window.cell :refer [->cell]]
-            [clojure.is-valid-slot :as valid-slot?]
+            [moon.inventory.cell :as inventory-cell]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
@@ -29,7 +29,7 @@
                           (when (and mouseover?
                                      (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                             (let [item (:entity/item-on-cursor player-entity)
-                                  color (if (valid-slot?/f cell item)
+                                  color (if (inventory-cell/valid-slot? cell item)
                                           droppable-item-color
                                           not-allowed-drop-item-color)]
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
