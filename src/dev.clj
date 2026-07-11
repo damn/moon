@@ -38,7 +38,7 @@
   (let [from-file (ns->file from-ns)
         to-file (ns->file to-ns)]
     (println "Moving file " from-file " to " to-file)
-    (move-file! from-file to-file))
+    (move from-file to-file))
   (println "Renaming " from-ns " to " to-ns)
   (rename! from-ns to-ns))
 
