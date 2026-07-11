@@ -29,7 +29,6 @@
             [clojure.ui.error-window :as error-window]
             [clojure.ui.table.add-rows :refer [add-rows!]]
             [clojure.ui.window.add-close-button :as add-close-button]
-            [com.badlogic.gdx.application :as application]
             [gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
@@ -60,7 +59,7 @@
             [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]))
+            [moon.application :as application]))
 
 (def state (atom nil))
 
@@ -649,16 +648,16 @@
                                                                                                                                          :property (db/get-raw db id)})))})))))))}])})))
 
 (defn- input-f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/input (application/getInput app)))
+  (assoc ctx :ctx/input (application/get-input app)))
 
 (defn- audio-f [{:keys [ctx/app ctx/files] :as ctx}]
-  (assoc ctx :ctx/audio (audio/create (application/getAudio app) files)))
+  (assoc ctx :ctx/audio (audio/create (application/get-audio app) files)))
 
 (defn- files-f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/files (application/getFiles app)))
+  (assoc ctx :ctx/files (application/get-files app)))
 
 (defn- graphics-f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/graphics (application/getGraphics app)))
+  (assoc ctx :ctx/graphics (application/get-graphics app)))
 
 (defn- batch-f [ctx]
   (assoc ctx :ctx/batch (sprite-batch/new)))
@@ -729,7 +728,7 @@
   (viewport/update (:stage/viewport stage) width height true))
 
 (defn -main []
-  (lwjgl3-application/create {:create! (fn [app]
+  (application/create {:create! (fn [app]
                                          (reset! state (create app)))
                               :dispose! (fn []
                                           (dispose @state))

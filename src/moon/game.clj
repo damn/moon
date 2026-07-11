@@ -66,8 +66,8 @@
             [clojure.ui.inventory-window :refer [inventory-window-build]]
             [clojure.unproject :as unproject]
             [clojure.val-max.ratio :as ratio]
-            [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.graphics :as graphics]
+            [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
@@ -100,7 +100,7 @@
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
+            [moon.application :as application]
             [gdl.graphics.g2d.freetype.font-generator :as free-type-font-generator]
             [gdl.maps.map-properties :as map-properties]
             [gdx.files :as files]
@@ -2197,10 +2197,10 @@
     nil))
 
 (defn create-bootstrap [application]
-  {:ctx/audio    (application/getAudio    application)
-   :ctx/files    (application/getFiles    application)
-   :ctx/graphics (application/getGraphics application)
-   :ctx/input    (application/getInput    application)
+  {:ctx/audio    (application/get-audio    application)
+   :ctx/files    (application/get-files    application)
+   :ctx/graphics (application/get-graphics application)
+   :ctx/input    (application/get-input    application)
    :ctx/unit-scale (atom 1)
    :ctx/active-entities nil
    :ctx/delta-time nil
@@ -3016,7 +3016,7 @@
   (viewport/update world-viewport width height false))
 
 (defn -main []
-  (lwjgl3-application/create
+  (application/create
    {:create! (fn [app]
                (reset! state (create app)))
     :dispose! (fn []

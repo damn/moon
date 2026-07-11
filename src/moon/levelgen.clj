@@ -13,7 +13,6 @@
             [clojure.table-set-opts :as table-set-opts]
             [clojure.tiled-map.creature-tiles :as creature-tiles]
             [clojure.tiled-map.get-property :as get-property]
-            [com.badlogic.gdx.application :as application]
             [gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
@@ -33,7 +32,7 @@
             [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
+            [moon.application :as application]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]))
 
 (def state (atom nil))
@@ -82,9 +81,9 @@
 
 (defn create
   [state config application]
-  (let [files (application/getFiles application)
-        input (application/getInput application)
-        graphics (application/getGraphics application)
+  (let [files (application/get-files application)
+        input (application/get-input application)
+        graphics (application/get-graphics application)
         sprite-batch (sprite-batch/new)
         ui-viewport (fit-viewport/new (:ui-viewport-width config)
                                       (:ui-viewport-height config))
@@ -184,7 +183,7 @@
   (viewport/update world-viewport width height false))
 
 (defn -main []
-  (lwjgl3-application/create
+  (application/create
    {:create! (fn [app]
                (reset! state (create state config app)))
     :dispose! (fn []

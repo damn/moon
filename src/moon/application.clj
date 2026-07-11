@@ -1,11 +1,27 @@
-(ns gdl.backends.lwjgl3.lwjgl3-application
-  (:require [com.badlogic.gdx.application-listener :as listener]
-            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as app]
+(ns moon.application
+  (:require [com.badlogic.gdx.application :as application]
+            [com.badlogic.gdx.application-listener :as listener]
+            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
             [com.badlogic.gdx.gdx :as gdx]
             [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
             [com.badlogic.gdx.utils.os :as os]
             [org.lwjgl.system.configuration :as configuration]))
+
+(defn get-audio [app]
+  (application/getAudio app))
+
+(defn get-files [app]
+  (application/getFiles app))
+
+(defn get-graphics [app]
+  (application/getGraphics app))
+
+(defn get-input [app]
+  (application/getInput app))
+
+(defn post-runnable! [app f]
+  (application/postRunnable app f))
 
 (let [k->opts
       {
@@ -43,5 +59,5 @@
   (defn create [listener
                 config-opts]
     (use-glfw-async!)
-    (app/new (build-listener listener)
-             (build-config config-opts))))
+    (lwjgl3/new (build-listener listener)
+                (build-config config-opts))))

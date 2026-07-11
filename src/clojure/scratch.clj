@@ -1,10 +1,10 @@
 (comment
 
  (require '[moon.db :as db]
-          '[com.badlogic.gdx.application :as application]
+          '[moon.application :as application]
           '[com.badlogic.gdx.gdx :as gdx]
           )
- (application/postRunnable (gdx/app)
+ (application/post-runnable! (gdx/app)
   (fn []
     (let [{:keys [ctx/db]
            :as ctx} @state]
