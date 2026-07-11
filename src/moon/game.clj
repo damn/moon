@@ -6,7 +6,6 @@
             [moon.cell :as cell]
             [clojure.grid-update-potential-fields :as update-potential-fields]
             [clojure.grid-cell :as grid-cell]
-            [clojure.grid2d :as g2d]
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.java.io :as io]
             [clojure.levels.tmx :as tmx]
@@ -904,7 +903,7 @@
 
 (defn create-grid [ctx]
   (assoc ctx
-         :ctx/grid (g2d/create-grid (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "width")
+         :ctx/grid (moon-g2d/create (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "width")
                                     (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "height")
                                     (fn [position]
                                       (atom
@@ -926,7 +925,7 @@
 
 (defn create-explored-tile-corners [ctx]
   (assoc ctx
-         :ctx/explored-tile-corners (atom (g2d/create-grid (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "width")
+         :ctx/explored-tile-corners (atom (moon-g2d/create (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "width")
                                                             (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "height")
                                                             (constantly false)))))
 

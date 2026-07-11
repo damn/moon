@@ -2,16 +2,10 @@
   (:require [moon.m :as m]
             [moon.position :as position]))
 
-(defprotocol Height
-  (height [_]))
-
-(defprotocol Width
-  (width [_]))
-
-(defprotocol Cells
-  (cells [_]))
-
-(defprotocol Positions
+(defprotocol G2d
+  (height [_])
+  (width [_])
+  (cells [_])
   (posis [_]))
 
 (defn adjacent-wall-positions [g2d]
@@ -172,3 +166,66 @@
              (concat filled next-positions)
              (m/assoc-ks grid next-positions nil))
       filled)))
+
+(deftype VectorGrid [data]
+  G2d
+  (height [_]
+    (count (data 0)))
+
+  (width [_]
+    (count data))
+
+  (cells [_]
+    (apply concat data))
+
+  (posis [this]
+    (for [x (range (width this))
+          y (range (height this))]
+      [x y]))
+
+  clojure.lang.ILookup
+  (valAt [this p]
+    (-> data
+        (nth (p 0) nil)
+        (nth (p 1) nil)))
+
+  clojure.lang.IFn
+  (invoke [this p] (.valAt this p))
+
+  clojure.lang.Seqable
+  (seq [this]
+    (map #(vector %1 %2) (posis this) (cells this)))
+
+  clojure.lang.IPersistentCollection
+  (equiv [this obj]
+    (and (= VectorGrid (class obj))
+         (= (.data ^VectorGrid obj) data)))
+
+  clojure.lang.Associative
+  (assoc [this p v]
+    (VectorGrid. (assoc-in data p v)))
+  (containsKey [this [x y]]
+    (and (contains? data x)
+         (contains? (data 0) y)))
+
+  Object
+  (hashCode [this] (.hashCode data))
+  (equals [this obj]
+    (and (= VectorGrid (class obj))
+         (.equals (.data ^VectorGrid obj) data)))
+  (toString [this]
+    (str "width " (width this) ", height " (height this))))
+
+(defn ->VectorGrid [data]
+  (VectorGrid. data))
+
+; 2dimvector is 7x faster than a hashmap of [x y] to values
+; like in rich hickey ant demo vectors of vectors:
+; https://github.com/juliangamble/clojure-ants-simulation/blob/master/src/ants.clj
+(defn create
+  [w h xyfn]
+  {:pre [(>= w 1) (>= h 1)]}
+  (->VectorGrid
+   (mapv (fn [x] (mapv (fn [y] (xyfn [x y]))
+                       (range h)))
+         (range w))))

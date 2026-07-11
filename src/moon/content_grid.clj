@@ -1,9 +1,9 @@
 (ns moon.content-grid
-  (:require [clojure.grid2d :as g2d]
+  (:require [moon.g2d :as g2d]
             [moon.position :as position]))
 
 (defn create [width height cell-size]
-  {:grid (g2d/create-grid
+  {:grid (g2d/create
           (inc (int (/ width cell-size)))
           (inc (int (/ height cell-size)))
           (fn [idx]

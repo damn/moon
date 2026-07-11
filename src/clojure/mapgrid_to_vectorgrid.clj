@@ -1,5 +1,5 @@
 (ns clojure.mapgrid-to-vectorgrid
-  (:require [clojure.grid2d :as grid2d]))
+  (:require [moon.g2d :as g2d]))
 
 (defn f
   "Transforms a grid of {position value} to a grid2d.
@@ -17,7 +17,7 @@
         convert (fn [[x y]] [(- x min-x -1)
                              (- y min-y -1)])]
     ; +2 so there are walls on all borders around the farthest ground cells
-    [(grid2d/create-grid (+ width 2) (+ height 2)
+    [(g2d/create (+ width 2) (+ height 2)
                          (fn [[x y]]
                            ; new grid starts 1 left/top of leftest cell
                            (calc-newgrid-value (get grid [(+ x min-x -1)

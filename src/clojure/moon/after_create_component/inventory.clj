@@ -1,5 +1,5 @@
 (ns clojure.moon.after-create-component.inventory
-  (:require [clojure.grid2d :as g2d]))
+  (:require [moon.g2d :as g2d]))
 
 (defn f
   [items eid _ctx]
@@ -15,7 +15,7 @@
                                                                :necklace [1 1]
                                                                :rings    [2 1]}
                                               (map (fn [[slot [width height]]]
-                                                     [slot (g2d/create-grid width height (constantly nil))]))
+                                                     [slot (g2d/create width height (constantly nil))]))
                                               (into {}))]
         (for [item items]
           [:tx/pickup-item eid item])))
