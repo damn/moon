@@ -22,7 +22,7 @@
             [clojure.table-set-opts :as table-set-opts]
             [clojure.throwable :as throwable]
             [clojure.tooltip :as tooltip]
-            [clojure.truncate :refer [truncate]]
+            [moon.string.truncate :refer [truncate]]
             [clojure.type :refer [property->type]]
             [moon.error-window :as error-window]
             [moon.table :refer [add-rows!]]
