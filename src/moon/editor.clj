@@ -5,7 +5,7 @@
             [moon.schema.register-methods]
             [moon.textures :as textures]
             [moon.audio :as audio]
-            [clojure.optional :refer [optional?]]
+            [moon.schemas.optional :refer [optional?]]
             [clojure.property-image :as property-image]
             [clojure.property-types :refer [property-types]]
             [moon.stage :as moon-stage]

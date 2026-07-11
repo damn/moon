@@ -1,4 +1,4 @@
-(ns clojure.optional
+(ns moon.schemas.optional
   (:require [moon.schema :as schema]
             [moon.map-schema :as map-schema]))
 

@@ -30,7 +30,7 @@
 
             [moon.movement-property :as movement-property]
             [moon.orthographic-camera :as orthographic-camera]
-            [clojure.point-to-entities :refer [point->entities]]
+            [moon.grid.point-to-entities :refer [point->entities]]
             [clojure.projectile-start-point :as projectile-start-point]
             [clojure.ratio :as timer-ratio]
             [clojure.readable :as readable]
