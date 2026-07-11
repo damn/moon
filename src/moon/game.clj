@@ -51,7 +51,7 @@
             [clojure.string :as str]
             [clojure.table-set-opts :as table-set-opts]
             [clojure.throwable :as throwable]
-            [clojure.tiled-map.creature-tiles :as creature-tiles]
+            [moon.tiled-map :as moon-tiled-map]
             [clojure.timer-create :refer [create-timer]]
             [clojure.try-move-solid-body :as try-move-solid-body]
             [clojure.txs-fn-map.actions :refer [actions!]]
@@ -2347,7 +2347,7 @@
 (defn create-tiled-map [ctx]
   (let [{:keys [tiled-map
                 start-position]} (level-fn
-                                   {:level/creature-properties (creature-tiles/prepare
+                                   {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
                                                                  (db/all-raw (:ctx/db ctx) :properties/creatures)
                                                                  #(textures/texture-region (:ctx/textures ctx) %))
                                     :textures (:ctx/textures ctx)})]

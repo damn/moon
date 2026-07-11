@@ -3,7 +3,7 @@
             [clojure.load-tmx-map :as load-tmx-map]
             [clojure.movement-property :as movement-property]
             [clojure.property-value :refer [property-value]]
-            [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
+            [moon.tiled-map :as moon-tiled-map]
             [clojure.tiled-tiled-map :as tiled-tiled-map]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
@@ -231,7 +231,7 @@
                                    (<= (rand) spawn-rate)
                                    (seq creatures))]
                     [position (rand-nth creatures)])]
-    (add-creatures-layer/f tiled-map creatures)
+    (moon-tiled-map/add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position (get-free-position-in-area-level 0)
      :area-level-grid scaled-area-level-grid}))

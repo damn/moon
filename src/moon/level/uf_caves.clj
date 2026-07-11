@@ -2,7 +2,7 @@
   (:require [clojure.java.util.random :as random]
             [clojure.movement-property :as movement-property]
             [clojure.random :refer [get-rand-weighted-item]]
-            [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
+            [moon.tiled-map :as moon-tiled-map]
             [clojure.tiled-tiled-map :as tiled-tiled-map]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
@@ -98,7 +98,7 @@
         creatures (for [position spawn-positions
                         :when (<= (rand) spawn-rate)]
                     [position (rand-nth creatures)])]
-    (add-creatures-layer/f tiled-map creatures)
+    (moon-tiled-map/add-creatures-layer! tiled-map creatures)
     {:tiled-map tiled-map
      :start-position start-position}))
 

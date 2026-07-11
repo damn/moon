@@ -8,8 +8,7 @@
             [moon.textures :as textures]
             [clojure.scene2d-stage]
             [clojure.table-set-opts :as table-set-opts]
-            [clojure.tiled-map.creature-tiles :as creature-tiles]
-            [clojure.tiled-map.get-property :as get-property]
+            [moon.tiled-map :as moon-tiled-map]
             [moon.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
@@ -56,7 +55,7 @@
     :as ctx}
    level-fn]
   (let [level (level-fn
-               {:level/creature-properties (creature-tiles/prepare
+               {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
                                             (db/all-raw db :properties/creatures)
                                             #(textures/texture-region textures %))
                 :textures textures})
@@ -67,11 +66,11 @@
         tiled-map/getLayers
         (map-layers/get "creatures")
         (tiled-map-tile-layer/setVisible true))
-    (orthographic-camera/set-position! camera [(/ (get-property/f tiled-map "width") 2)
-                           (/ (get-property/f tiled-map "height") 2)])
+    (orthographic-camera/set-position! camera [(/ (moon-tiled-map/get-property tiled-map "width") 2)
+                           (/ (moon-tiled-map/get-property tiled-map "height") 2)])
     (orthographic-camera/zoom-to-rect camera {:left [0 0]
-                            :top [0 (get-property/f tiled-map "height")]
-                            :right [(get-property/f tiled-map "width") 0]
+                            :top [0 (moon-tiled-map/get-property tiled-map "height")]
+                            :right [(moon-tiled-map/get-property tiled-map "width") 0]
                             :bottom [0 0]})
     ctx))
 

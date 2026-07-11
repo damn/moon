@@ -1,7 +1,7 @@
 (ns clojure.tiled-tiled-map
   (:require [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [moon.map-properties :as map-properties]
-            [clojure.tiled-map.add-layer :as add-layer]))
+            [moon.tiled-map :as moon-tiled-map]))
 
 (defn f
   [{:keys [properties
@@ -11,5 +11,5 @@
       (assert (string? k))
       (map-properties/put! (tiled-map/getProperties tiled-map) k v))
     (doseq [layer layers]
-      (add-layer/f tiled-map layer))
+      (moon-tiled-map/add-layer! tiled-map layer))
     tiled-map))
