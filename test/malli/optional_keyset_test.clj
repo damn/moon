@@ -1,8 +1,8 @@
 (ns malli.optional-keyset-test
-  (:require [clojure.malli-optional-keyset :as optional-keyset]))
+  (:require [moon.map-schema :as map-schema]))
 
 (comment
- (= (optional-keyset/f
+ (= (map-schema/optional-keyset
      [:map {:closed true}
       [:foo]
       [:bar]

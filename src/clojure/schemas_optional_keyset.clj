@@ -1,6 +1,6 @@
 (ns clojure.schemas-optional-keyset
   (:require [moon.schema :as schema]
-            [clojure.malli-optional-keyset :as optional-keyset]))
+            [moon.map-schema :as map-schema]))
 
 (defn optional-keyset [schemas schema]
-  (optional-keyset/f (schema/malli-form schema schemas)))
+  (map-schema/optional-keyset (schema/malli-form schema schemas)))

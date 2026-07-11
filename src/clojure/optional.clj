@@ -1,6 +1,6 @@
 (ns clojure.optional
   (:require [moon.schema :as schema]
-            [clojure.map-schema :as map-schema]))
+            [moon.map-schema :as map-schema]))
 
 (defn optional? [schemas schema k]
   (map-schema/optional? (schema/malli-form schema schemas) k))

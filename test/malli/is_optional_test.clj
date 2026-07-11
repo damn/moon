@@ -1,5 +1,5 @@
 (ns malli.is-optional-test
-  (:require [clojure.map-schema :as map-schema]))
+  (:require [moon.map-schema :as map-schema]))
 
 (comment
  (= (map-schema/optional?

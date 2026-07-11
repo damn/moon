@@ -1,8 +1,8 @@
 (ns malli.map-keys-test
-  (:require [clojure.malli-map-keys :as map-keys]))
+  (:require [moon.map-schema :as map-schema]))
 
 (comment
- (= (map-keys/f
+ (= (map-schema/map-keys
      [:map {:closed true}
       [:foo]
       [:bar]
