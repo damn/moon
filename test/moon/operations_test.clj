@@ -1,15 +1,13 @@
 (ns moon.operations-test
-  (:require [clojure.ops.apply :as apply]
-            [clojure.ops.add :as add]
-            [clojure.ops.remove :as remove]
+  (:require [moon.ops :as ops]
             [clojure.test :refer :all]))
 
 (deftest add-and-remove
-  (is (= (add/f {:+ 6}
+  (is (= (ops/add {:+ 6}
                   {:* -5 :+ -1})
          {:+ 5, :* -5}))
 
-  (is (= (remove/f {:+ 6 :* -50}
+  (is (= (ops/remove {:+ 6 :* -50}
                      {:+ 2 :* -50})
          {:+ 4, :* 0})))
 
@@ -33,12 +31,12 @@
      "-30 Hitpoints\n+5% Hitpoints"))
 
 (deftest apply-test
-  (is (= (apply/f {:op/inc 6
+  (is (= (ops/apply {:op/inc 6
                      :op/mult 50}
                     10)
          24))
 
-  (is (= (apply/f {:op/inc -5
+  (is (= (ops/apply {:op/inc -5
                      :op/mult 20}
                     10)
          6)))

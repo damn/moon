@@ -1,7 +1,7 @@
 (ns clojure.modifiers-get-value
-  (:require [clojure.ops.apply :as apply]))
+  (:require [moon.ops :as ops]))
 
 (defn f [base-value modifiers modifier-k]
   {:pre [(= "modifier" (namespace modifier-k))]}
-  (apply/f (modifier-k modifiers)
+  (ops/apply (modifier-k modifiers)
            base-value))

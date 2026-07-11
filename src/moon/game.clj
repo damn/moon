@@ -23,7 +23,7 @@
 
             ; FIXME - what concept ?
             [clojure.malli-form-register-methods]
-            [clojure.malli.schema :as malli-schema]
+            [moon.malli :as malli-schema]
 
             [clojure.math :as math]
             [moon.faction :as faction]

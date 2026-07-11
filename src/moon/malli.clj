@@ -1,4 +1,4 @@
-(ns clojure.malli.schema
+(ns moon.malli
   (:require [malli.core :as m]
             [malli.error :as me]))
 

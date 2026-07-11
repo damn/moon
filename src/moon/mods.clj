@@ -1,13 +1,20 @@
 (ns moon.mods
+  (:refer-clojure :exclude [remove])
   (:require [clojure.math :as math]
-            [clojure.ops.sort :as sort]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [moon.ops :as ops]))
+
+(defn add [mods other-mods]
+  (merge-with ops/add mods other-mods))
+
+(defn remove [mods other-mods]
+  (merge-with ops/remove mods other-mods))
 
 (defn format-text
   [mods]
   (when (seq mods)
     (str/join "\n"
-              (keep (fn [[k ops]]
+              (keep (fn [[k modifier-ops]]
                       (str/join "\n"
                                 (keep (fn [[op-k v]]
                                         (when-not (zero? v)
@@ -20,5 +27,5 @@
                                                  :op/mult (str v "%"))
                                                " "
                                                (str/capitalize (name k)))))
-                                      (sort/f ops))))
+                                      (ops/sort modifier-ops))))
                     mods))))

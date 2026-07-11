@@ -1,6 +1,6 @@
 (ns clojure.schemas-validate
   (:require [clojure.malli-form :refer [malli-form]]
-            [clojure.malli.schema :as schema]))
+            [moon.malli :as schema]))
 
 (defn validate [schemas k value]
   (-> (get schemas k)

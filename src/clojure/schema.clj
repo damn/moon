@@ -1,5 +1,5 @@
 (ns clojure.schema
-  (:require [clojure.malli.schema :as schema]))
+  (:require [moon.malli :as schema]))
 
 (def v
   (schema/create

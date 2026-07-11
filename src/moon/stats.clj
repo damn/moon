@@ -1,6 +1,5 @@
 (ns moon.stats
-  (:require [clojure.mods.add :as add-mods-op]
-            [clojure.mods.remove :as remove-mods-op]
+  (:require [moon.mods :as mods]
             [clojure.modifiers-get-value :as get-value]
             [clojure.string :as str]
             [clojure.val-max.apply-max :as apply-max]
@@ -43,10 +42,10 @@
                  (keyword "modifier" (name stat-k)))))
 
 (defn add-mods [stats mods]
-  (update stats :stats/modifiers add-mods-op/f mods))
+  (update stats :stats/modifiers mods/add mods))
 
 (defn remove-mods [stats mods]
-  (update stats :stats/modifiers remove-mods-op/f mods))
+  (update stats :stats/modifiers mods/remove mods))
 
 (defn apply-action-speed-modifier [stats skill action-time]
   (/ action-time
