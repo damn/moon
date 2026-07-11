@@ -1,5 +1,7 @@
 (ns clojure.malli-create-map-schema)
 
+; inline!
+
 (defn f
   "Can define keys as just keywords or with schema-props like [:foo {:optional true}]."
   [ks k->malli-schema-form]

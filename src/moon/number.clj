@@ -1,4 +1,5 @@
-(ns moon.number)
+(ns moon.number
+  (:require [clojure.math :as math]))
 
 (def ^:private float-rounding-error (double 0.000001))
 
@@ -8,3 +9,10 @@
   ([a b epsilon]
    (<= (Math/abs (- a b))
        epsilon)))
+
+(defn round-n [^double x n]
+  (let [z (math/pow 10 n)]
+    (float
+     (/
+      (math/round (* x z))
+      z))))

@@ -1,6 +1,8 @@
 (ns clojure.positions
   (:require [clojure.indexed :refer [indexed]]))
 
+; moon.cll
+
 (defn positions
   "Returns a lazy sequence containing the positions at which pred
   is true for items in coll."

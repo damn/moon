@@ -2,6 +2,8 @@
   (:require [gdx.math.rectangle :as rectangle]
             [moon.body :as body]))
 
+; moon.grid
+
 (defn point->entities [g2d pos]
   (when-let [cell (g2d (mapv int pos))]
     (filter #(rectangle/contains? (body/rectangle (:entity/body @%)) pos)

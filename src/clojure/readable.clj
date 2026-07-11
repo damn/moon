@@ -1,6 +1,5 @@
 (ns clojure.readable
-  (:require [moon.number :as number]
-            [clojure.round-n-decimals :as round-n-decimals]))
+  (:require [moon.number :as number]))
 
 (defn f [^double x]
   {:pre [(number? x)]}
@@ -8,4 +7,4 @@
        (> x 5)
        (number/nearly-equal? x (int x) 0.001))
     (int x)
-    (round-n-decimals/f x 2)))
+    (number/round-n x 2)))

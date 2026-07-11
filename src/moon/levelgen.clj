@@ -6,7 +6,7 @@
             [moon.level.uf-caves :as uf-caves]
             [clojure.malli-form-register-methods]
             [moon.textures :as textures]
-            [clojure.scene2d-stage]
+            [moon.stage :as moon-stage]
             [clojure.table-set-opts :as table-set-opts]
             [moon.tiled-map :as moon-tiled-map]
             [moon.files :as files]
@@ -83,7 +83,7 @@
         ui-viewport (fit-viewport/new (:ui-viewport-width config)
                                       (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
-        stage (clojure.scene2d-stage/create ui-viewport sprite-batch)
+        stage (moon-stage/create ui-viewport sprite-batch)
         skin (skin/new (files/internal files (:ui-skin-path config)))
         world-viewport (let [world-width (* (:world-viewport-width config) world-unit-scale)
                              world-height (* (:world-viewport-height config) world-unit-scale)]

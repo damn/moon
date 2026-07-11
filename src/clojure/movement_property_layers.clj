@@ -4,6 +4,8 @@
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [moon.map-properties :as map-properties]))
 
+; moon.tiled-map
+
 (defn f
   [tiled-map]
   (->> tiled-map

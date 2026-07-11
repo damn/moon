@@ -1,5 +1,7 @@
 (ns clojure.indexed)
 
+; coll
+
 (defn indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
   from 's' and indexes count up from zero.

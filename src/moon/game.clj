@@ -37,13 +37,11 @@
             [clojure.remove-from-occupied-cells :refer [remove-from-occupied-cells!]]
             [clojure.remove-from-touched-cells :refer [remove-from-touched-cells!]]
             [clojure.remove-newlines :refer [remove-newlines]]
-            [clojure.safe-merge :refer [safe-merge]]
-            [clojure.scene2d-stage :as scene2d-stage]
+            [moon.m :refer [safe-merge]]
+            [moon.stage :as moon-stage]
             [moon.button :refer [is?]]
             [moon.window :refer [title-bar?]]
             [clojure.set-ctx :as set-ctx]
-            [clojure.set-occupied-cells :refer [set-occupied-cells!]]
-            [clojure.set-touched-cells :refer [set-touched-cells!]]
             [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.sort-by-order :as sort-by-order]
             [clojure.spawn-positions :as spawn-positions]
@@ -55,12 +53,12 @@
             [clojure.timer-create :refer [create-timer]]
             [moon.txs-fn-map :refer [actions!]]
             [clojure.try-move-solid-body :as try-move-solid-body]
-            [clojure.ui-info-window :as info-window]
+            [moon.info-window :as info-window]
             [moon.action-bar :as action-bar]
             [moon.data-viewer-window :as data-viewer-window]
             [moon.dev-menu :as dev-menu]
             [moon.error-window :as error-window]
-            [clojure.unproject :as unproject]
+            [moon.viewport :refer [unproject]]
             [moon.val-max :refer [ratio]]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
@@ -106,7 +104,7 @@
             [moon.content-grid :as content-grid]
             [moon.db :as db]
             [moon.g2d :as moon-g2d]
-            [moon.grid :as grid]
+            [moon.grid :as grid :refer [set-occupied-cells! set-touched-cells!]]
             [moon.item :as item]
             [moon.mods :as mods]
             [moon.raycaster :as raycaster]
@@ -732,7 +730,7 @@
   (input/position input))
 
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
-  (let [[x y] (unproject/f (:stage/viewport stage) (mouse-position ctx))]
+  (let [[x y] (unproject (:stage/viewport stage) (mouse-position ctx))]
     (stage/hit stage x y true)))
 
 (defn- mouseover-actor-info [actor]
@@ -2261,7 +2259,7 @@
 
 (defn create-stage [{:keys [ctx/input
                             ctx/batch] :as ctx}]
-  (let [stage* (scene2d-stage/create (fit-viewport/new 1440 900) batch)]
+  (let [stage* (moon-stage/create (fit-viewport/new 1440 900) batch)]
     (input/set-processor! input stage*)
     (assoc ctx :ctx/stage stage*)))
 
@@ -2483,8 +2481,8 @@
     :as ctx}]
   (let [mp (mouse-position ctx)]
     (-> ctx
-        (assoc :ctx/world-mouse-position (unproject/f world-viewport mp))
-        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (unproject/f mp))))))
+        (assoc :ctx/world-mouse-position (unproject world-viewport mp))
+        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (unproject mp))))))
 
 (defn update-mouseover-eid
   [{:keys [ctx/mouseover-eid

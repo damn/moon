@@ -19,7 +19,7 @@
             [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
-            [com.badlogic.gdx.gdx :as gdx]
+            [moon.gdx :as gdx]
             [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
             [com.badlogic.gdx.utils.os :as os]
             [org.lwjgl.system.configuration :as configuration]))

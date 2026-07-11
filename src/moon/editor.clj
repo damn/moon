@@ -1,7 +1,6 @@
 (ns moon.editor
   (:require [moon.db :as db]
             [clojure.edn :as edn]
-            [clojure.horiz-sep :as horiz-sep]
             [clojure.interpose-f :refer [interpose-f]]
             [clojure.k-label-text :as k-label-text]
             [clojure.malli-form-register-methods]
@@ -10,7 +9,7 @@
             [clojure.optional :refer [optional?]]
             [clojure.property-image :as property-image]
             [clojure.property-types :refer [property-types]]
-            [clojure.scene2d-stage :as scene2d-stage]
+            [moon.stage :as moon-stage]
             [moon.actor :refer [find-ancestor]]
             [clojure.schemas :as schemas]
             [clojure.schemas-map-keys :refer [map-keys]]
@@ -468,6 +467,15 @@
     (layout/pack window)
     window))
 
+(defn horiz-sep [colspan]
+  (fn []
+    [{:actor nil #_(com.kotcrab.vis.ui.widget.Separator. "default")
+      :pad-top 2
+      :pad-bottom 2
+      :colspan colspan
+      :fill-x? true
+      :expand-x? true}]))
+
 (defn- map-widget-table-create
   [{:keys [skin
            schema
@@ -479,7 +487,7 @@
     (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}}))
                 (actor/setName "moon.db.schema.map.ui.widget"))
         colspan 3
-        component-rows (interpose-f (horiz-sep/f colspan)
+        component-rows (interpose-f (horiz-sep colspan)
                                     (map (fn [k]
                                            (create-component-row
                                             {:skin skin
@@ -675,7 +683,7 @@
 
 (defn- stage-f [{:keys [ctx/input
                         ctx/batch] :as ctx}]
-  (let [stage* (scene2d-stage/create (fit-viewport/new 1440 900) batch)]
+  (let [stage* (moon-stage/create (fit-viewport/new 1440 900) batch)]
     (input/set-processor! input stage*)
     (let [ctx (assoc ctx :ctx/stage stage*)]
       (stage/addActor (:ctx/stage ctx) (main-window-f ctx))

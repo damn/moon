@@ -5,6 +5,8 @@
             [clojure.tile-movement-property :as tile-movement-property]
             [clojure.movement-property-layers :as movement-property-layers]))
 
+; moon.tiled-map
+
 (defn f [tiled-map position]
   (for [layer (movement-property-layers/f tiled-map)]
     [(tiled-map-tile-layer/getName layer)

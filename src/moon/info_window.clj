@@ -1,12 +1,11 @@
-(ns clojure.ui-info-window
-  (:require
+(ns moon.info-window
+  (:require [clojure.table-set-opts :as table-set-opts]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as gdx-label]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
-            [clojure.table-set-opts :as table-set-opts]))
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
 
 (defn create
   [{:keys [title

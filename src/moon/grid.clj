@@ -109,6 +109,21 @@
     (g2d/get-cells grid (body/touched-tiles body))
     [(grid (mapv int position))]))
 
+(defn set-occupied-cells! [grid eid]
+  (let [cells (body->occupied-cells grid (:entity/body @eid))]
+    (doseq [cell cells]
+      (assert (not (get (:occupied @cell) eid)))
+      (swap! cell update :occupied conj eid))
+    (swap! eid assoc :entity/occupied-cells cells)))
+
+(defn set-touched-cells! [grid eid]
+  (let [cells (g2d/get-cells grid (body/touched-tiles (:entity/body @eid)))]
+    (assert (not-any? nil? cells))
+    (swap! eid assoc :entity/touched-cells cells)
+    (doseq [cell cells]
+      (assert (not (get (:entities @cell) eid)))
+      (swap! cell update :entities conj eid))))
+
 (defn filter-viable-cells [eid adjacent-cells]
   (remove-not-allowed-diagonals
    (mapv #(when-not (or (cell/pf-blocked? @%)

@@ -2,6 +2,8 @@
   (:require [clojure.positions :refer [positions]]
             [moon.position :as position]))
 
+; ?? inline
+
 (let [order (position/get-8-neighbours [0 0])
       diagonal? (fn [[^int x ^int y]]
                   (and (not (zero? x))

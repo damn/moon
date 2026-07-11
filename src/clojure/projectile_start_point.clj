@@ -1,5 +1,6 @@
 (ns clojure.projectile-start-point
   (:require [moon.v2 :as v2]))
+; moon.body or projetile?
 
 (defn f [body direction size]
   (v2/add (:body/position body)
