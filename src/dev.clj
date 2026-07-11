@@ -52,7 +52,7 @@
   ;; Game scratch
   (require '[moon.db :as db]
            '[moon.application :as application]
-           '[moon.gdx :as gdx])
+           '[com.badlogic.gdx.gdx :as gdx])
   (application/post-runnable! (gdx/app)
                                 (fn []
                                   (let [{:keys [ctx/db]

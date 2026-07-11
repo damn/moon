@@ -1,11 +1,10 @@
 (ns moon.application
   (:require [com.badlogic.gdx.application :as application]
-            [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
-            [moon.gdx :as gdx]
             [com.badlogic.gdx.utils.shared-library-loader :as shared-library-loader]
             [com.badlogic.gdx.utils.os :as os]
+            [gdx.application-listener :as application-listener]
             [org.lwjgl.system.configuration :as configuration]))
 
 (defn get-audio [app]
@@ -40,17 +39,6 @@
               (apply! config v)))
           config))
 
-      build-listener
-      (fn [{:keys [create! dispose! render! resize!]}]
-        (listener/new
-         {:create! (fn []
-                     (create! (gdx/app)))
-          :dispose! dispose!
-          :render! render!
-          :resize! resize!
-          :pause! (fn [])
-          :resume! (fn [])}))
-
       use-glfw-async!
       (fn []
         (when (= shared-library-loader/os os/MacOsX)
@@ -59,5 +47,5 @@
   (defn create [listener
                 config-opts]
     (use-glfw-async!)
-    (lwjgl3/new (build-listener listener)
+    (lwjgl3/new (application-listener/new listener)
                 (build-config config-opts))))
