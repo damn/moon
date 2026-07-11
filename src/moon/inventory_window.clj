@@ -1,6 +1,5 @@
 (ns moon.inventory-window
   (:require [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.math.vector2 :as gdx-vector2]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
@@ -58,10 +57,9 @@
                             (draw-cell-rect @player-eid
                                             (actor/getX this)
                                             (actor/getY this)
-                                            (let [[mx my] ui-mouse-position
-                                                  [x y] (vector2/clojurize
+                                            (let [[x y] (vector2/clojurize
                                                          (actor/stageToLocalCoordinates this
-                                                                                          (gdx-vector2/new mx my)))]
+                                                                                          (vector2/new ui-mouse-position)))]
                                               (actor/hit this x y true))
                                             (actor/getUserObject (actor/getParent this))))))))
               (doto (image/newDrawable background-drawable)

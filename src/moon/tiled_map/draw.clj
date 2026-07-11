@@ -5,7 +5,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
-            [com.badlogic.gdx.math.vector3 :as vector3]
+            [gdx.math.vector3 :as vector3]
             [moon.orthographic-camera :as orthographic-camera]))
 
 (defn- draw-tile!

@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.math.frustum :as frustum]
-            [com.badlogic.gdx.math.vector3 :as gdx-vector3]
             [gdx.math.vector3 :as vector3]))
 
 (defn new []
@@ -41,8 +40,8 @@
 
 (defn set-position! [orthographic-camera [x y]]
   (let [pos (position-vec3 orthographic-camera)]
-    (gdx-vector3/set-x! pos x)
-    (gdx-vector3/set-y! pos y))
+    (vector3/set-x! pos x)
+    (vector3/set-y! pos y))
   (camera/update orthographic-camera))
 
 (defn frustum [orthographic-camera]
