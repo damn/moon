@@ -1,6 +1,6 @@
 (ns moon.item
   (:require [clojure.string :as str]
-            [clojure.info :refer [info]]
+            [moon.mods :as mods]
             [clojure.item-is-valid :as valid?]))
 
 (defn info-text [item]
@@ -11,4 +11,4 @@
                      (str "[LIME]" (str/capitalize (name (:item/slot item))) "[]")
                      ; seq because they can be empty map ?
                      (when (seq (:stats/modifiers item))
-                       (str "[CYAN]" ((:stats/modifiers (:k->fn info)) (:stats/modifiers item) nil) "[]"))])))
+                       (str "[CYAN]" (mods/format-text (:stats/modifiers item)) "[]"))])))

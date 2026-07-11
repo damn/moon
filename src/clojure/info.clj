@@ -1,10 +1,9 @@
 (ns clojure.info
   (:require [moon.stats :as stats]
-            [clojure.math :as math]
+            [moon.mods :as mods]
             [clojure.ratio :as ratio]
             [clojure.readable :as readable]
             [clojure.remove-newlines :refer [remove-newlines]]
-            [clojure.ops.sort :as sort]
             [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.string :as str]))
 
@@ -52,23 +51,7 @@
            :entity/fsm (fn [fsm _ctx]
                           (str "State: " (name (:state fsm))))
            :stats/modifiers (fn [mods _ctx]
-                              (when (seq mods)
-                                (str/join "\n"
-                                          (keep (fn [[k ops]]
-                                                  (str/join "\n"
-                                                            (keep (fn [[op-k v]]
-                                                                    (when-not (zero? v)
-                                                                      (str (case (math/signum v)
-                                                                             0.0 ""
-                                                                             1.0 "+"
-                                                                             -1.0 "")
-                                                                           (case op-k
-                                                                             :op/inc  (str v)
-                                                                             :op/mult (str v "%"))
-                                                                           " "
-                                                                           (str/capitalize (name k)))))
-                                                                  (sort/f ops))))
-                                                mods))))
+                              (mods/format-text mods))
            :entity/skills (fn [skills _ctx]
                             ; => recursive info-text leads to endless text wall
                             (when (seq skills)
