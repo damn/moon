@@ -37,7 +37,7 @@
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.input :as input]
+            [moon.input :as input]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
@@ -60,8 +60,7 @@
             [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
-            [gdl.input.keys :as input-keys]))
+            [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]))
 
 (def state (atom nil))
 
@@ -302,8 +301,8 @@
                        (fn [this _delta]
                          (when-let [stage (actor/getStage this)]
                            (let [ctx (:stage/ctx stage)]
-                             (when (input/isKeyJustPressed (:ctx/input ctx)
-                                                           (input-keys/key-to-value :input.keys/enter))
+                             (when (input/key-just-pressed? (:ctx/input ctx)
+                                                           :input.keys/enter)
                                (clicked-save-fn this ctx)))))
                        (fn [_actor _batch _parent-alpha])))
       (actor/setName "moon.ui.clojure.editor-window"))))
@@ -678,7 +677,7 @@
 (defn- stage-f [{:keys [ctx/input
                         ctx/batch] :as ctx}]
   (let [stage* (scene2d-stage/create (fit-viewport/new 1440 900) batch)]
-    (input/setInputProcessor input stage*)
+    (input/set-processor! input stage*)
     (let [ctx (assoc ctx :ctx/stage stage*)]
       (stage/addActor (:ctx/stage ctx) (main-window-f ctx))
       ctx)))

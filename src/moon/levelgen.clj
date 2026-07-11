@@ -20,7 +20,7 @@
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
-            [com.badlogic.gdx.input :as input]
+            [moon.input :as input]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
@@ -34,7 +34,6 @@
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
-            [gdl.input.keys :as input-keys]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]))
 
 (def state (atom nil))
@@ -111,7 +110,7 @@
              :ctx/world-viewport world-viewport
              :ctx/camera (viewport/getCamera world-viewport)}
         ctx (generate-level ctx (:initial-level-fn config))]
-    (input/setInputProcessor input stage)
+    (input/set-processor! input stage)
     (stage/addActor (:ctx/stage ctx)
                     (doto (window/new "Edit" skin)
                       (table-set-opts/set-opts! {:title "Edit"
@@ -156,22 +155,22 @@
                         (viewport/getCamera world-viewport)
                         tiled-map
                         (constantly (color/toFloatBits [1 1 1 1])))
-  (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/minus))
+  (when (input/key-pressed? input :input.keys/minus)
     (gdx-orthographic-camera/inc-zoom! camera zoom-speed))
-  (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/equals))
+  (when (input/key-pressed? input :input.keys/equals)
     (gdx-orthographic-camera/inc-zoom! camera (- zoom-speed)))
   (let [apply-position (fn [idx f]
                          (set-position! camera
                                         (update (get-position/f camera)
                                                 idx
                                                 #(f % camera-movement-speed))))]
-    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/left))
+    (when (input/key-pressed? input :input.keys/left)
       (apply-position 0 -))
-    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/right))
+    (when (input/key-pressed? input :input.keys/right)
       (apply-position 0 +))
-    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/up))
+    (when (input/key-pressed? input :input.keys/up)
       (apply-position 1 +))
-    (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/down))
+    (when (input/key-pressed? input :input.keys/down)
       (apply-position 1 -)))
   (stage/act stage)
   (stage/draw stage)

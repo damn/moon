@@ -7,6 +7,7 @@
             [moon.inventory-window :as inventory-window]
             [moon.inventory :as inventory]
             [moon.inventory.cell :as inventory-cell]
+            [moon.input :as input]
 
             ; clojure conept
             [moon.number :as number]
@@ -81,7 +82,6 @@
             [com.badlogic.gdx.graphics.pixmap$format :as pixmap-format]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
-            [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
@@ -102,8 +102,6 @@
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [gdl.graphics.g2d.freetype.font-generator :as free-type-font-generator]
-            [gdl.input.buttons :as input-buttons]
-            [gdl.input.keys :as input-keys]
             [gdl.maps.map-properties :as map-properties]
             [gdx.files :as files]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
@@ -738,8 +736,7 @@
                           (v2/distance player-position world-mouse-position))))))
 
 (defn- mouse-position [{:keys [ctx/input]}]
-  [(input/getX input)
-   (input/getY input)])
+  (input/position input))
 
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
   (let [[x y] (unproject/f (:stage/viewport stage) (mouse-position ctx))]
@@ -1903,10 +1900,10 @@
       (actor/setUserObject (atom nil)))))
 
 (defn- player-movement-vector [{:keys [ctx/input]}]
-  (let [r (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/d)) [1  0])
-        l (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/a)) [-1 0])
-        u (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/w)) [0  1])
-        d (when (input/isKeyPressed input (input-keys/key-to-value :input.keys/s)) [0 -1])]
+  (let [r (when (input/key-pressed? input :input.keys/d) [1  0])
+        l (when (input/key-pressed? input :input.keys/a) [-1 0])
+        u (when (input/key-pressed? input :input.keys/w) [0  1])
+        d (when (input/key-pressed? input :input.keys/s) [0 -1])]
     (when (or r l u d)
       (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
         (when (pos? (v2/length v))
@@ -1969,7 +1966,7 @@
                :as ctx}]
   (if-let [movement-vector (player-movement-vector ctx)]
     [[:tx/event player-eid :movement-input movement-vector]]
-    (when (input/isButtonJustPressed input (input-buttons/key-to-value :input.buttons/left))
+    (when (input/button-just-pressed? input :input.buttons/left)
       (interaction-state->txs interaction-state
                               stage
                               player-eid))))
@@ -1984,7 +1981,7 @@
 
 (defn- handle-input-player-item-on-cursor
   [eid ctx]
-  (when (and (input/isButtonJustPressed (:ctx/input ctx) (input-buttons/key-to-value :input.buttons/left))
+  (when (and (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
              (not (mouseover-actor ctx)))
     [[:tx/event eid :drop-item]]))
 
@@ -2255,7 +2252,7 @@
 (defn create-stage [{:keys [ctx/input
                             ctx/batch] :as ctx}]
   (let [stage* (scene2d-stage/create (fit-viewport/new 1440 900) batch)]
-    (input/setInputProcessor input stage*)
+    (input/set-processor! input stage*)
     (assoc ctx :ctx/stage stage*)))
 
 (defn create-init-tooltip [ctx]
@@ -2513,7 +2510,7 @@
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
-  (when (input/isButtonJustPressed input (input-buttons/key-to-value (:open-debug-button controls)))
+  (when (input/button-just-pressed? input (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/addActor stage
@@ -2827,8 +2824,8 @@
          (or #_error
              (and pausing?
                   (state->pause-game? (:state (:entity/fsm @player-eid)))
-                  (not (or (input/isKeyJustPressed input (input-keys/key-to-value (:unpause-once controls)))
-                           (input/isKeyPressed input (input-keys/key-to-value (:unpause-continously controls)))))))))
+                  (not (or (input/key-just-pressed? input (:unpause-once controls))
+                           (input/key-pressed? input (:unpause-continously controls)))))))))
 
 (defn- update-time
   [{:keys [ctx/graphics]
@@ -2913,22 +2910,22 @@
            ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (when (input/isKeyPressed input (input-keys/key-to-value (:zoom-in controls)))
+  (when (input/key-pressed? input (:zoom-in controls))
     (gdx-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
 
-  (when (input/isKeyPressed input (input-keys/key-to-value (:zoom-out controls)))
+  (when (input/key-pressed? input (:zoom-out controls))
     (gdx-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
 
-  (when (input/isKeyJustPressed input (input-keys/key-to-value (:close-windows-key controls)))
+  (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (group/findActor (:stage/root stage) "moon.ui.windows")
          group/getChildren
          (run! #(actor/setVisible % false))))
 
-  (when (input/isKeyJustPressed input (input-keys/key-to-value (:toggle-inventory controls)))
+  (when (input/key-just-pressed? input (:toggle-inventory controls))
     (let [inventory (group/findActor (:stage/root stage) "moon.ui.windows.inventory")]
       (actor/setVisible inventory (not (actor/isVisible inventory)))))
 
-  (when (input/isKeyJustPressed input (input-keys/key-to-value (:toggle-entity-info controls)))
+  (when (input/key-just-pressed? input (:toggle-entity-info controls))
     (let [entity-info (group/findActor (:stage/root stage) "moon.ui.windows.entity-info")]
       (actor/setVisible entity-info (not (actor/isVisible entity-info)))))
   ctx)
