@@ -1,6 +1,6 @@
 (ns moon.level.modules
   (:require [clojure.java.util.random :as random]
-            [clojure.load-tmx-map :as load-tmx-map]
+            [moon.tmx :as tmx]
             [clojure.movement-property :as movement-property]
             [clojure.property-value :refer [property-value]]
             [moon.tiled-map :as moon-tiled-map]
@@ -47,7 +47,7 @@
   (assoc w :scaled-grid (g2d/scale-by (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (load-tmx-map/f "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (tmx/load-tiled-map "maps/modules.tmx")))
 
 (defn- module-index->tiled-map-positions
   [[module-x module-y]
