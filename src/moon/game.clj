@@ -21,7 +21,6 @@
             [clojure.minimum-size :refer [minimum-size]]
             [moon.faction :as faction]
             [clojure.moon.choose-skill :as choose-skill]
-            [clojure.moon.create-entity-state :as create-entity-state]
             [clojure.moon.draw :refer [draw!]]
             [clojure.moon.fsms :refer [fsms]]
             [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
@@ -64,6 +63,7 @@
             [clojure.sort-by-order :as sort-by-order]
             [clojure.spawn-positions :as spawn-positions]
             [clojure.stats.add-mods :as add-mods]
+            [clojure.stats.apply-action-speed-modifier :as apply-action-speed-modifier]
             [clojure.stats.calc-damage :as calc-damage]
             [clojure.stats.effective-armor-save :as effective-armor-save]
             [clojure.stats.melee-damage :as melee-damage]
@@ -481,6 +481,42 @@
     (f v ctx)
     v))
 
+(defmulti create-entity-state
+  (fn [[k _v] _eid _ctx]
+    k))
+
+(defmethod create-entity-state :default
+  [[_k v] _eid _ctx]
+  v)
+
+(defmethod create-entity-state :active-skill
+  [[_k [skill effect-ctx]] eid {:keys [ctx/elapsed-time]}]
+  {:skill skill
+   :effect-ctx effect-ctx
+   :counter (->> skill
+                 :skill/action-time
+                 (apply-action-speed-modifier/f (:entity/stats @eid) skill)
+                 (create-timer elapsed-time))})
+
+(defmethod create-entity-state :stunned
+  [[_k duration] _eid {:keys [ctx/elapsed-time]}]
+  {:counter (create-timer elapsed-time duration)})
+
+(defmethod create-entity-state :player-moving
+  [[_k movement-vector] _eid _ctx]
+  {:movement-vector movement-vector})
+
+(defmethod create-entity-state :npc-moving
+  [[_k movement-vector] eid {:keys [ctx/elapsed-time]}]
+  {:movement-vector movement-vector
+   :timer (create-timer elapsed-time
+                        (* (stats/get-value (:entity/stats @eid) :stats/reaction-time)
+                           0.016))})
+
+(defmethod create-entity-state :player-item-on-cursor
+  [[_k item] _eid _ctx]
+  {:item item})
+
 (defn- create-fsm
   [fsm initial-state]
   (assoc ((case fsm
@@ -493,7 +529,7 @@
 (defn- after-create-fsm
   [{:keys [fsm initial-state]} eid ctx]
   [[:tx/assoc eid :entity/fsm (create-fsm fsm initial-state)]
-   [:tx/assoc eid initial-state (create-entity-state/f [initial-state nil] eid ctx)]])
+   [:tx/assoc eid initial-state (create-entity-state [initial-state nil] eid ctx)]])
 
 (defn- after-create-skills
   [skills eid _ctx]
@@ -591,7 +627,7 @@
            (when-not (= old-state-k new-state-k)
              (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
                                    [k (k @eid)])
-                   new-state-obj [new-state-k (create-entity-state/f [new-state-k nil] eid ctx)]]
+                   new-state-obj [new-state-k (create-entity-state [new-state-k nil] eid ctx)]]
                [[:tx/assoc eid :entity/fsm new-fsm]
                 [:tx/assoc eid new-state-k (new-state-obj 1)]
                 [:tx/dissoc eid old-state-k]
@@ -606,7 +642,7 @@
            (when-not (= old-state-k new-state-k)
              (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
                                    [k (k @eid)])
-                   new-state-obj [new-state-k (create-entity-state/f [new-state-k params] eid ctx)]]
+                   new-state-obj [new-state-k (create-entity-state [new-state-k params] eid ctx)]]
                [[:tx/assoc eid :entity/fsm new-fsm]
                 [:tx/assoc eid new-state-k (new-state-obj 1)]
                 [:tx/dissoc eid old-state-k]
