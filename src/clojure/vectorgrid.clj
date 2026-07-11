@@ -1,14 +1,13 @@
 (ns clojure.vectorgrid
-  (:require [moon.g2d :as g2d]
-            [clojure.g2d.width :as width]))
+  (:require [moon.g2d :as g2d]))
 
 (deftype VectorGrid [data]
   g2d/Height
   (height [_]
     (count (data 0)))
 
-  width/Width
-  (->width [_]
+  g2d/Width
+  (width [_]
     (count data))
 
   g2d/Cells
@@ -17,8 +16,8 @@
 
   g2d/Positions
   (posis [this]
-    (for [x (range (width/->width this))
-          y (range (height/->height this))]
+    (for [x (range (g2d/width this))
+          y (range (g2d/height this))]
       [x y]))
 
   clojure.lang.ILookup
@@ -53,4 +52,4 @@
     (and (= VectorGrid (class obj))
          (.equals (.data ^VectorGrid obj) data)))
   (toString [this]
-    (str "width " (width/->width this) ", height " (height/->height this))))
+    (str "width " (g2d/width this) ", height " (g2d/height this))))

@@ -4,6 +4,9 @@
 (defprotocol Height
   (height [_]))
 
+(defprotocol Width
+  (width [_]))
+
 (defprotocol Cells
   (cells [_]))
 

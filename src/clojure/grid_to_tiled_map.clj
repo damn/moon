@@ -5,7 +5,6 @@
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.g2d :as g2d]
-            [clojure.g2d.width :refer [->width]]
             [gdl.maps.map-properties :as map-properties]))
 
 (defn grid->tiled-map
@@ -15,7 +14,7 @@
                      (assert tile)
                      (static-tiled-map-tile/new tile)))]
     {:properties (merge (map-properties/clojurize (tiled-map/getProperties schema-tiled-map))
-                        {"width" (->width grid)
+                        {"width" (g2d/width grid)
                          "height" (g2d/height grid)})
      :layers (for [layer (tiled-map/getLayers schema-tiled-map)]
                {:name (tiled-map-tile-layer/getName layer)

@@ -3,7 +3,6 @@
             [clojure.position-tile-fn :as position-tile-fn]
             [clojure.levels.uf-caves.scale-grid :as scale-grid]
             [clojure.movement-property :as movement-property]
-            [clojure.g2d.width :refer [->width]]
             [moon.g2d :as g2d]
             [clojure.g2d.printgrid :as printgrid]
             [clojure.tiled-tiled-map :as tiled-map]
@@ -26,7 +25,7 @@
         grid (g2d/assoc-transition-cells grid)
         position->tile (position-tile-fn/f grid)
         tiled-map (tiled-map/f
-                   {:properties {"width"  (->width  grid)
+                   {:properties {"width"  (g2d/width  grid)
                                  "height" (g2d/height grid)
                                  "tilewidth"  tile-size
                                  "tileheight" tile-size}
