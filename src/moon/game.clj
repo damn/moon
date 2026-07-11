@@ -1,8 +1,7 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
             [clojure.int-between :refer [rand-int-between]]
-            [clojure.inventory-window-remove-item :as remove-item-ui]
-            [clojure.inventory-window-set-item :as set-item-ui]
+            [moon.inventory-window :as inventory-window]
             [clojure.inventory.can-pickup-item :as can-pickup-item]
             [clojure.not-enough-mana :as not-enough-mana?]
             [clojure.is-applies-modifiers :as applies-modifiers?]
@@ -1043,7 +1042,7 @@
      (-> stage
          :stage/root
          (#(group/findActor % "moon.ui.windows.inventory"))
-         (remove-item-ui/f cell))
+         (inventory-window/remove-item! cell))
      nil)
 
    :tx/ui-set-item
@@ -1051,7 +1050,7 @@
      (-> stage
          :stage/root
          (#(group/findActor % "moon.ui.windows.inventory"))
-         (set-item-ui/f cell
+         (inventory-window/set-item! cell
                         {:texture-region (textures/texture-region textures (:entity/image item))
                          :tooltip-text (item/info-text item)}
                         skin))
