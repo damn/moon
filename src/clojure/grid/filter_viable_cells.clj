@@ -1,6 +1,5 @@
 (ns clojure.grid.filter-viable-cells
-  (:require [clojure.is-pf-blocked :as pf-blocked?]
-            [clojure.is-occupied-by-other :as occupied-by-other?]
+  (:require [moon.cell :as cell]
             [clojure.remove-not-allowed-diagonals :as remove-not-allowed-diagonals]))
 
 ; not using filter because nil cells considered @ remove-not-allowed-diagonals
@@ -8,7 +7,7 @@
 ; TODO always called with cached-adjacent-cells ...
 (defn f [eid adjacent-cells]
   (remove-not-allowed-diagonals/f
-   (mapv #(when-not (or (pf-blocked?/f @%)
-                        (occupied-by-other?/f @% eid))
+   (mapv #(when-not (or (cell/pf-blocked? @%)
+                        (cell/occupied-by-other? @% eid))
             %)
          adjacent-cells)))

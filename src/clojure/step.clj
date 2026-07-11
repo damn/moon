@@ -1,5 +1,5 @@
 (ns clojure.step
-  (:require [clojure.is-pf-blocked :as pf-blocked?]
+  (:require [moon.cell :as cell]
             [clojure.nearest-entity :as nearest-entity]
             [clojure.nearest-entity-distance :as nearest-entity-distance]
             [clojure.grid.cached-adjacent-cells :refer [cached-adjacent-cells]]
@@ -20,7 +20,7 @@
             adjacent-cell (cached-adjacent-cells grid cell)
             :let [cell* @cell
                   adjacent-cell* @adjacent-cell]
-            :when (not (or (pf-blocked?/f adjacent-cell*)
+            :when (not (or (cell/pf-blocked? adjacent-cell*)
                            (marked? adjacent-cell*)))
             :let [distance-value (+ (float (distance cell*))
                                     (float (if (diagonal? (:position cell*)

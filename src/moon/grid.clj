@@ -1,7 +1,7 @@
 (ns moon.grid
   (:require [clojure.grid.find-next-cell :refer [find-next-cell]]
             [clojure.grid.inside-cell :refer [inside-cell?]]
-            [clojure.is-occupied-by-other :as occupied-by-other?]
+            [moon.cell :as cell]
             [clojure.nearest-entity :as nearest-entity]
             [clojure.nearest-entity-distance :as nearest-entity-distance]
             [clojure.update-potential-fields-generate :refer [generate-potential-field]]
@@ -50,7 +50,7 @@
 
       :else
       (when-not (and (= target-cell own-cell)
-                     (occupied-by-other?/f @own-cell eid))
+                     (cell/occupied-by-other? @own-cell eid))
         (when-not (inside-cell? grid @eid target-cell)
           (v2/direction position (:middle @target-cell)))))))
 
