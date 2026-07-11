@@ -16,3 +16,11 @@
      (/
       (math/round (* x z))
       z))))
+
+(defn readable [^double x]
+  {:pre [(number? x)]}
+  (if (or
+       (> x 5)
+       (nearly-equal? x (int x) 0.001))
+    (int x)
+    (round-n x 2)))

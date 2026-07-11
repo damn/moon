@@ -32,7 +32,6 @@
             [moon.orthographic-camera :as orthographic-camera]
             [moon.grid.point-to-entities :refer [point->entities]]
             [clojure.projectile-start-point :as projectile-start-point]
-            [clojure.readable :as readable]
             [moon.string :as string]
             [moon.m :refer [safe-merge]]
             [moon.stage :as moon-stage]
@@ -424,13 +423,13 @@
            :effects.target/spiderweb (fn [_ _ctx]
                                        "Spiderweb slows 50% for 5 seconds.")
            :effects.target/stun (fn [duration _ctx]
-                                  (str "Stuns for " (readable/f duration) " seconds"))
+                                  (str "Stuns for " (number/readable duration) " seconds"))
            :effects/spawn (fn [{:keys [property/pretty-name]} _ctx]
                             (str "Spawns a " pretty-name))
            :effects/target-all (fn [_ _ctx]
                                  "All visible targets")
            :entity/delete-after-duration (fn [counter {:keys [ctx/elapsed-time]}]
-                                             (str "Remaining: " (readable/f (timer/ratio elapsed-time counter)) "/1"))
+                                             (str "Remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
            :entity/faction (fn [faction _ctx]
                              (str "Faction: " (name faction)))
            :entity/fsm (fn [fsm _ctx]
@@ -443,21 +442,21 @@
            :entity/species (fn [species _ctx]
                              (str "Creature - " (str/capitalize (name species))))
            :entity/temp-modifier (fn [{:keys [counter]} {:keys [ctx/elapsed-time]}]
-                                    (str "Spiderweb - remaining: " (readable/f (timer/ratio elapsed-time counter)) "/1"))
+                                    (str "Spiderweb - remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
            :projectile/piercing? (fn [_ _ctx]
                                    "Piercing")
            :property/pretty-name (fn [v _ctx]
                                     v)
            :skill/cooling-down? (fn [counter {:keys [ctx/elapsed-time]}]
-                                   (str "Cooldown: " (readable/f (timer/ratio elapsed-time counter)) "/1"))
+                                   (str "Cooldown: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
            :skill/action-time (fn [v _ctx]
-                                 (str "Action-Time: " (readable/f v) " seconds"))
+                                 (str "Action-Time: " (number/readable v) " seconds"))
            :skill/action-time-modifier-key (fn [v _ctx]
                                               (case v
                                                 :stats/cast-speed "Spell"
                                                 :stats/attack-speed "Attack"))
            :skill/cooldown (fn [v _ctx]
-                             (str "Cooldown: " (readable/f v) " seconds"))
+                             (str "Cooldown: " (number/readable v) " seconds"))
            :skill/cost (fn [v _ctx]
                           (str "Cost: " v " Mana"))
            :maxrange (fn [v _ctx]
@@ -1294,7 +1293,7 @@
 (def dev-update-labels
   [{:label "elapsed-time"
     :update-fn (fn [{:keys [ctx/elapsed-time]}]
-                 (str (readable/f elapsed-time) " seconds"))
+                 (str (number/readable elapsed-time) " seconds"))
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn (fn [{:keys [ctx/graphics]}]
@@ -1709,7 +1708,7 @@
                                                        {:image/file content-file
                                                         :image/bounds [0 0 (* rahmenw (ratio minmaxval)) rahmenh]})
                               [x y]]
-                             [:draw/text {:text (str (readable/f (minmaxval 0))
+                             [:draw/text {:text (str (number/readable (minmaxval 0))
                                                      "/"
                                                      (minmaxval 1)
                                                      " "
