@@ -1,4 +1,4 @@
-(ns clojure.loop
+(ns moon.loop
   (:require [clj-commons.pretty.repl]
             [clojure.java.io]
             [clojure.tools.namespace.repl]
@@ -37,7 +37,7 @@
   (loop []
     (when-not @thrown
       (do
-       (.bindRoot #'refresh-error (clojure.tools.namespace.repl/refresh :after 'clojure.loop/start-dev-loop!))
+       (.bindRoot #'refresh-error (clojure.tools.namespace.repl/refresh :after 'moon.loop/start-dev-loop!))
        (handle-throwable! refresh-error)))
     (locking obj
       (Thread/sleep 10)

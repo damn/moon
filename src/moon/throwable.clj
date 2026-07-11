@@ -1,4 +1,4 @@
-(ns clojure.throwable
+(ns moon.throwable
   (:require [clj-commons.pretty.repl :as pretty-repl]))
 
 (let [print-level 3

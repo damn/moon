@@ -1,5 +1,5 @@
 (ns moon.grid
-  (:require [clojure.coll :refer [positions]]
+  (:require [moon.coll :as coll]
             [clojure.math :as math]
             [moon.cell :as cell]
             [com.badlogic.gdx.math.circle :as circle]
@@ -24,8 +24,8 @@
                        (not (zero? y))))]
   (def ^:private diagonal-check-indizes
     (into {} (for [[x y] (filter diagonal? order)]
-               [(first (positions #(= % [x y]) order))
-                (vec (positions #(some #{%} [[x 0] [0 y]])
+               [(first (coll/positions #(= % [x y]) order))
+                (vec (coll/positions #(some #{%} [[x 0] [0 y]])
                                 order))]))))
 
 (defn- not-allowed-diagonal? [at-idx adjacent-cells]

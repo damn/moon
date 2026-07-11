@@ -2,7 +2,7 @@
   (:require [moon.db :as db]
             [moon.property :as property]
             [clojure.edn :as edn]
-            [clojure.coll :refer [interpose-f]]
+            [moon.coll :as coll]
             [moon.schema.register-methods]
             [moon.textures :as textures]
             [moon.audio :as audio]
@@ -11,10 +11,8 @@
             [moon.actor :refer [find-ancestor]]
             [moon.schemas :refer [default-value map-keys optional-keyset]]
             [clojure.set :as set]
-            [clojure.k-order :as k-order]
             [clojure.string :as str]
-            [clojure.throwable :as throwable]
-            [clojure.tooltip :as tooltip]
+            [moon.throwable :as throwable]
             [moon.string.truncate :refer [truncate]]
             [moon.error-window :as error-window]
             [moon.table :as moon-table :refer [add-rows!]]
@@ -248,7 +246,7 @@
                                     {:texture-region (textures/texture-region textures (property/image property))
                                      :on-clicked (fn [actor ctx]
                                                    (clicked-id-fn actor (:property/id property) ctx))
-                                     :tooltip (tooltip/f property)
+                                     :tooltip (property/tooltip property)
                                      :extra-info-text (extra-info-text property)}))
                              (partition-all columns)
                              (overview-table-rows* skin image-scale)))}))
@@ -356,7 +354,7 @@
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
           {:actor (doto (image/new (textures/texture-region textures (property/image property)))
-                    (actor/addListener (text-tooltip/new (tooltip/f property) skin))
+                    (actor/addListener (text-tooltip/new (property/tooltip property) skin))
                     (actor/setUserObject property-id))}))
       (for [id property-ids]
         {:actor (doto (text-button/new "-" skin)
@@ -400,7 +398,7 @@
       [(when property-id
          (let [property (db/get-raw db property-id)]
            {:actor (doto (image/new (textures/texture-region textures (property/image property)))
-                     (actor/addListener (text-tooltip/new (tooltip/f property) skin))
+                     (actor/addListener (text-tooltip/new (property/tooltip property) skin))
                      (actor/setUserObject property-id))}))]
       [(when property-id
          {:actor (doto (text-button/new "-" skin)
@@ -504,7 +502,7 @@
     (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))
                 (actor/setName "moon.db.schema.map.ui.widget"))
         colspan 3
-        component-rows (interpose-f (horiz-sep colspan)
+        component-rows (coll/interpose-f (horiz-sep colspan)
                                     (map (fn [k]
                                            (create-component-row
                                             {:skin skin
@@ -594,7 +592,7 @@
                        (for [[k v] m]
                          [k (build-widget ctx (get schemas k) k v)]))
       :k->optional? #(optional? schemas schema %)
-      :ks-sorted (map first (k-order/sort-by-k-order property-k-sort-order m))
+      :ks-sorted (map first (coll/sort-by-k-order property-k-sort-order m))
       :opt? (seq (set/difference (optional-keyset schemas schema)
                                  (set (keys m))))})))
 

@@ -1,7 +1,7 @@
 (ns moon.schema.one-to-one
   (:require [moon.schema :as schema]
-            [clojure.type-id-namespace :refer [type->id-namespace]]))
+            [moon.property :as property]))
 
 (defmethod schema/malli-form :s/one-to-one
   [[_ property-type] _]
-  [:qualified-keyword {:namespace (type->id-namespace property-type)}])
+  [:qualified-keyword {:namespace (property/type->id-namespace property-type)}])

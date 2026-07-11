@@ -1,4 +1,5 @@
-(ns clojure.coll)
+(ns moon.coll
+  (:import (clojure.lang PersistentVector)))
 
 (defn indexed
   "Returns a lazy sequence of [index, item] pairs, where items come
@@ -19,3 +20,14 @@
 ; TODO use interpose?
 (defn interpose-f [f coll]
   (drop 1 (interleave (repeatedly f) coll)))
+
+(defn sort-by-k-order [k-order components]
+  (let [max-count (inc (count k-order))]
+    (sort-by (fn [[k _]]
+               (or (let [idx (.indexOf ^PersistentVector k-order k)]
+                     (when (not= -1 idx) idx))
+                   max-count))
+             components)))
+
+(defn sort-by-order [coll get-item-order-k order]
+  (sort-by #((get-item-order-k %) order) < coll))

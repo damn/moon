@@ -31,18 +31,16 @@
             [moon.movement-property :as movement-property]
             [moon.orthographic-camera :as orthographic-camera]
             [moon.grid.point-to-entities :refer [point->entities]]
-            [clojure.projectile-start-point :as projectile-start-point]
             [moon.string :as string]
             [moon.m :refer [safe-merge]]
             [moon.stage :as moon-stage]
             [moon.button :refer [is?]]
             [moon.window :refer [title-bar?]]
-            [clojure.k-order :as k-order]
-            [clojure.sort-by-order :as sort-by-order]
+            [moon.coll :as coll]
             [moon.tiled-map.spawn-positions :as spawn-positions]
             [moon.timer :as timer]
             [clojure.string :as str]
-            [clojure.throwable :as throwable]
+            [moon.throwable :as throwable]
             [moon.table :as moon-table]
             [moon.tiled-map :as moon-tiled-map]
             [moon.txs-fn-map :refer [actions!]]
@@ -161,6 +159,11 @@
        (filter #(raycaster/line-of-sight? raycaster entity @%))
        (remove #(:entity/player? @%))))
 
+(defn projectile-start-point [body direction size]
+  (v2/add (:body/position body)
+          (v2/scale direction
+                    (+ (/ (:body/width body) 2) size 0.1))))
+
 (defmulti handle-effect
   (fn [[k _v] _effect-ctx _ctx]
     k))
@@ -172,7 +175,7 @@
 (defmethod handle-effect :effects/projectile
   [[_ projectile] {:keys [effect/source effect/target-direction]} _ctx]
   [[:tx/spawn-projectile
-    {:position (projectile-start-point/f (:entity/body @source)
+    {:position (projectile-start-point (:entity/body @source)
                                          target-direction
                                          (:projectile/size projectile))
      :direction target-direction
@@ -501,7 +504,7 @@
                              (str "[" color "]" s "[]")
                              s)))]
     (->> entity
-         (k-order/sort-by-k-order k-order)
+         (coll/sort-by-k-order k-order)
          (keep (fn [{k 0 v 1 :as component}]
                  (str (try (component-info component)
                            (catch Throwable _t
@@ -2494,7 +2497,7 @@
                         hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
                                      (point->entities grid position))]
                     (->> render-z-order
-                         (sort-by-order/f hits #(:body/z-order (:entity/body @%)))
+                         (coll/sort-by-order hits #(:body/z-order (:entity/body @%)))
                          reverse
                          (filter #(raycaster/line-of-sight? raycaster player @%))
                          first)))]
@@ -2645,7 +2648,7 @@
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
                            (raycaster/line-of-sight? raycaster player entity)))]
-    (doseq [[z-order entities] (sort-by-order/f (group-by (comp :body/z-order :entity/body) entities)
+    (doseq [[z-order entities] (coll/sort-by-order (group-by (comp :body/z-order :entity/body) entities)
                                                 first
                                                 render-z-order)
             render-layer render-layers
