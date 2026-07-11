@@ -116,7 +116,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
-            [com.badlogic.gdx.utils.disposable :as disposable]
+            [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]

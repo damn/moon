@@ -56,7 +56,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [com.badlogic.gdx.utils.disposable :as disposable]
+            [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]

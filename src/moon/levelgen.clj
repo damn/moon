@@ -30,7 +30,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.utils.disposable :as disposable]
+            [gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [gdl.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
