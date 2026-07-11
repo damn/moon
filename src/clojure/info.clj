@@ -7,27 +7,11 @@
             [clojure.sort-by-k-order :refer [sort-by-k-order]]
             [clojure.string :as str]))
 
-(def ^:private non-val-max-stat-ks
-  [:stats/movement-speed
-   :stats/aggro-range
-   :stats/reaction-time
-   :stats/strength
-   :stats/cast-speed
-   :stats/attack-speed
-   :stats/armor-save
-   :stats/armor-pierce])
-
 (def info
   {:k->fn {:creature/level (fn [v _ctx]
                               (str "Level: " v))
-           :entity/stats (fn [stats _ctx]
-                           (str/join "\n" (concat
-                                           ["*STATS*"
-                                            (str "Mana: " (stats/get-mana stats))
-                                            (str "Hitpoints: " (stats/get-hitpoints stats))]
-                                           (for [stat-k non-val-max-stat-ks]
-                                             (str (str/capitalize (name stat-k)) ": "
-                                                  (stats/get-value stats stat-k))))))
+           :entity/stats (fn [entity-stats _ctx]
+                           (stats/format-text entity-stats))
            :effects.target/convert (fn [_ _ctx]
                                     "Converts target to your side.")
            :effects.target/damage (fn [{[min max] :damage/min-max} _ctx]
