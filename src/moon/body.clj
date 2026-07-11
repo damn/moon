@@ -4,7 +4,7 @@
             [clojure.v2.scale :as scale]
             [clojure.v2.distance :as distance]
             [clojure.start-point :refer [start-point]]
-            [clojure.touched-tiles :as touched-tiles]
+            [moon.rectangle :as moon-rectangle]
             [gdl.math.rectangle :as rectangle]
             [com.badlogic.gdx.math.rectangle :as gdx-rectangle]))
 
@@ -37,7 +37,7 @@
   [{:keys [body/position
            body/width
            body/height]}]
-  (touched-tiles/touched-tiles
+  (moon-rectangle/touched-tiles
    {:x (- (position 0) (/ width  2))
     :y (- (position 1) (/ height 2))
     :width  width
