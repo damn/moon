@@ -4,7 +4,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [clojure.g2d.posis :as posis]
+            [moon.g2d :as g2d]
             [clojure.g2d.width :refer [->width]]
             [clojure.g2d.height :refer [->height]]
             [gdl.maps.map-properties :as map-properties]))
@@ -22,7 +22,7 @@
                {:name (tiled-map-tile-layer/getName layer)
                 :visible? (tiled-map-tile-layer/isVisible layer)
                 :properties (map-properties/clojurize (tiled-map-tile-layer/getProperties layer))
-                :tiles (for [position (posis/f grid)
+                :tiles (for [position (g2d/posis grid)
                              :let [local-position (get grid position)]
                              :when local-position]
                          (when (vector? local-position)

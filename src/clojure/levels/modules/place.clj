@@ -1,5 +1,5 @@
 (ns clojure.levels.modules.place
-  (:require [clojure.g2d.posis :as posis]
+  (:require [moon.g2d :as g2d]
             [clojure.levels.modules.place-step :as place-step]))
 
 (defn step
@@ -12,5 +12,5 @@
                                       scale
                                       scaled-grid
                                       grid
-                                      (filter #(= :ground     (get grid %)) (posis/f grid))
-                                      (filter #(= :transition (get grid %)) (posis/f grid)))))
+                                      (filter #(= :ground     (get grid %)) (g2d/posis grid))
+                                      (filter #(= :transition (get grid %)) (g2d/posis grid)))))

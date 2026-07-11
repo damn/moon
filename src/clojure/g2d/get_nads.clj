@@ -1,5 +1,5 @@
 (ns clojure.g2d.get-nads
-  (:require [clojure.g2d.posis :as posis]
+  (:require [moon.g2d :as g2d]
             [clojure.g2d.is-nad-corner :as nad-corner?]))
 
 ; could be made faster because accessing the same posis oftentimes at nad-corner? check
@@ -8,7 +8,7 @@
     (loop [checkposis (filter (fn [{y 1 :as posi}]
                                 (and (even? y)
                                      (= :ground (get grid posi))))
-                              (posis/f grid))
+                              (g2d/posis grid))
            result []]
       (if (seq checkposis)
         (let [position (first checkposis)

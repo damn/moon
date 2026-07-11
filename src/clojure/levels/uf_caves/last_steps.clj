@@ -7,7 +7,7 @@
             [clojure.g2d.height :refer [->height]]
             [clojure.g2d.width :refer [->width]]
             [clojure.g2d.cells :refer [->cells]]
-            [clojure.g2d.posis :as posis]
+            [moon.g2d :as g2d]
             [clojure.g2d.printgrid :as printgrid]
             [clojure.tiled-tiled-map :as tiled-map]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]))
@@ -36,7 +36,7 @@
                     :layers [{:name "ground"
                               :visible? true
                               :properties {"movement-properties" true}
-                              :tiles (for [position (posis/f grid)]
+                              :tiles (for [position (g2d/posis grid)]
                                        [position (create-tile (position->tile position))])}]})
 
         can-spawn? #(= "all" (movement-property/f tiled-map %))
