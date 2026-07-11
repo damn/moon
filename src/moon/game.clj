@@ -9,22 +9,18 @@
             [clojure.is-stackable :as stackable?]
             [clojure.is-valid-slot :as valid-slot?]
             [clojure.item-is-valid :as valid?]
-            [clojure.item-place-position :refer [item-place-position]]
             [clojure.java.io :as io]
             [clojure.levels.uf-caves :as uf-caves]
             [clojure.malli-form-register-methods]
             [clojure.malli.schema :as malli-schema]
             [clojure.math :as math]
-            [clojure.menus.help :refer [controls-info]]
-            [clojure.menus.v :as menus]
-            [clojure.minimum-size :refer [minimum-size]]
+            [clojure.menus.ctx-data :as ctx-data-menu]
+            [clojure.menus.debug-flags :as debug-flags-menu]
+            [clojure.menus.select-world :as select-world-menu]
             [moon.faction :as faction]
-            [clojure.is-useful :as useful?]
             [clojure.nearest-enemy :refer [nearest-enemy]]
             [clojure.speed :as speed]
             [clojure.stats.pay-mana-cost :as pay-mana-cost]
-            [clojure.mouse-position :refer [mouse-position]]
-            [clojure.mouseover-actor :refer [mouseover-actor]]
             [clojure.move :as move]
             [clojure.movement-property :as movement-property]
             [clojure.nearest-enemy-distance :refer [nearest-enemy-distance]]
@@ -32,14 +28,12 @@
             [clojure.orthographic-camera-set-position :as camera-set-position]
             [clojure.orthographic-camera-frustum :refer [frustum]]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
+            [clojure.grid.valid-position :refer [valid-position?]]
             [clojure.overlaps :refer [overlaps?]]
             [clojure.point-to-entities :refer [point->entities]]
             [clojure.projectile-start-point :as projectile-start-point]
             [clojure.ratio :as timer-ratio]
             [clojure.readable :as readable]
-            [clojure.records-entity :as entity]
-            [clojure.records-body :as body-record]
-            [clojure.register-eid :as register-eid]
             [clojure.remove-from-occupied-cells :refer [remove-from-occupied-cells!]]
             [clojure.remove-from-touched-cells :refer [remove-from-touched-cells!]]
             [clojure.remove-newlines :refer [remove-newlines]]
@@ -141,6 +135,17 @@
   (:gen-class))
 
 (q/defrecord R [])
+
+(q/defrecord EntityRecord [entity/body])
+
+(q/defrecord BodyRecord [body/position
+                         body/width
+                         body/height
+                         body/collides?
+                         body/z-order
+                         body/rotation-angle])
+
+(def minimum-size 0.39)
 
 (def max-delta 0.04)
 
@@ -365,6 +370,47 @@
   (and target
        (:entity/fsm @target)))
 
+(defmulti effect-useful?
+  (fn [[k _v] _effect-ctx _ctx]
+    k))
+
+(defmethod effect-useful? :default
+  [_ _effect-ctx _ctx]
+  true)
+
+(defmethod effect-useful? :effects/audiovisual
+  [_ _effect-ctx _ctx]
+  false)
+
+(defmethod effect-useful? :effects/projectile
+  [[_ {:keys [projectile/max-range] :as projectile}]
+   {:keys [effect/source effect/target]}
+   {:keys [ctx/raycaster]}]
+  (let [source-p (:body/position (:entity/body @source))
+        target-p (:body/position (:entity/body @target))]
+    (and (not (let [[start1,target1,start2,target2] (v2/double-ray-endpositions source-p
+                                                                               target-p
+                                                                               (:projectile/size projectile))]
+                (or
+                 (raycaster/blocked? raycaster start1 target1)
+                 (raycaster/blocked? raycaster start2 target2))))
+         (< (v2/distance source-p target-p)
+            max-range))))
+
+(defmethod effect-useful? :effects/target-all
+  [_ _effect-ctx _ctx]
+  false)
+
+(defmethod effect-useful? :effects/target-entity
+  [[_ {:keys [maxrange]}] {:keys [effect/source effect/target]} _ctx]
+  (body/in-range? (:entity/body @source)
+                  (:entity/body @target)
+                  maxrange))
+
+(defmethod effect-useful? :effects.target/audiovisual
+  [_ _effect-ctx _ctx]
+  false)
+
 (defn- skill-usable-state
   [{:keys [skill/cooling-down? skill/effects] :as skill}
    entity
@@ -519,7 +565,7 @@
   (assert ((set z-orders) z-order))
   (assert (or (nil? rotation-angle)
               (<= 0 rotation-angle 360)))
-  (body-record/map->R
+  (map->BodyRecord
    {:position (mapv float position)
     :width  (float width)
     :height (float height)
@@ -687,6 +733,41 @@
   (if-let [f (k->after-create k)]
     (f v eid ctx)
     nil))
+
+(defn- item-place-position [{:keys [ctx/world-mouse-position]} player-entity]
+  (assert world-mouse-position)
+  (let [player-position (:body/position (:entity/body player-entity))
+        maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
+    (v2/add player-position
+           (v2/scale (v2/direction player-position world-mouse-position)
+                     (min maxrange
+                          (v2/distance player-position world-mouse-position))))))
+
+(defn- mouse-position [{:keys [ctx/input]}]
+  [(input/getX input)
+   (input/getY input)])
+
+(defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
+  (let [[x y] (unproject/f (:stage/viewport stage) (mouse-position ctx))]
+    (stage/hit stage x y true)))
+
+(defn- register-eid! [ctx eid]
+  (assert (and (not (contains? @eid :entity/id))))
+  (let [id (swap! (:ctx/id-counter ctx) inc)]
+    (assert (number? id))
+    (swap! eid assoc :entity/id id)
+    (swap! (:ctx/entity-ids ctx) assoc id eid))
+
+  (assert (:entity/body @eid))
+  (content-grid/update-entity! (:ctx/content-grid ctx) eid)
+
+  (assert (:entity/body @eid))
+  (when (:body/collides? (:entity/body @eid))
+    (assert (valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
+  (set-touched-cells! (:ctx/grid ctx) eid)
+  (when (:body/collides? (:entity/body @eid))
+    (set-occupied-cells! (:ctx/grid ctx) eid))
+  nil)
 
 (defn- state-enter-player-item-on-cursor
   [{:keys [item]} eid]
@@ -970,9 +1051,9 @@
                             (assoc m k (create-component ctx k v)))
                           {}
                           entity)
-           entity (merge (entity/map->R {}) entity)
+           entity (merge (map->EntityRecord {}) entity)
            eid (atom entity)]
-       (register-eid/do! ctx eid)
+       (register-eid! ctx eid)
        (mapcat (fn [component]
                  (after-create-component ctx eid component))
                @eid)))
@@ -1141,6 +1222,27 @@
    :toggle-inventory :input.keys/i
    :toggle-entity-info :input.keys/e
    :open-debug-button :input.buttons/right})
+
+(def controls-info
+  (str/join "\n"
+            ["[W][A][S][D] - Move"
+             "[ESCAPE] - Close windows"
+             "[I] - Inventory window"
+             "[E] - Entity Info window"
+             "[-]/[=] - Zoom"
+             "[P]/[SPACE] - Unpause"
+             "rightclick on tile or entity - open debug data window"
+             "Leftmouse click - use skill/drop item on cursor"]))
+
+(def help-menu-item
+  {:label "Help"
+   :items [{:label controls-info}]})
+
+(def dev-menus
+  [ctx-data-menu/item
+   debug-flags-menu/item
+   help-menu-item
+   select-world-menu/item])
 
 (def max-speed
   (/ minimum-size max-delta))
@@ -1652,7 +1754,7 @@
   [{:keys [ctx/skin
            ctx/textures]}]
   (dev-menu/create
-   {:menus menus/v
+   {:menus dev-menus
     :update-labels (for [item update-labels/v]
                      (if (:icon item)
                        (update item :icon #(get textures %))
@@ -1837,7 +1939,7 @@
        (filter #(and (= :usable (skill-usable-state % entity effect-ctx))
                      (->> (:skill/effects %)
                           (filter (fn [e] (effect-applicable? e effect-ctx)))
-                          (some (fn [e] (useful?/f e effect-ctx ctx))))))
+                          (some (fn [e] (effect-useful? e effect-ctx ctx))))))
        first))
 
 (defn- create-effect-ctx
