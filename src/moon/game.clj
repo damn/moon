@@ -61,6 +61,7 @@
             [moon.v2 :as v2]
             [clojure.moon-faction :as faction]
             [moon.textures :as textures]
+            [moon.audio :as audio]
             [clojure.ratio :as timer-ratio]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :as camera-set-position]
@@ -80,7 +81,6 @@
             [clojure.unproject :as unproject]
             [clojure.usable-state :as usable-state]
             [com.badlogic.gdx.application :as application]
-            [com.badlogic.gdx.audio :as audio]
             [gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
@@ -775,12 +775,7 @@
 
 (defn create-audio [ctx]
   (assoc ctx
-         :ctx/audio (into {}
-                          (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
-                                :let [path (format "sounds/%s.wav" sound-name)]]
-                            [sound-name
-                             (audio/newSound (:ctx/audio ctx)
-                                              (files/internal (:ctx/files ctx) path))]))))
+         :ctx/audio (audio/create (:ctx/audio ctx) (:ctx/files ctx))))
 
 (defn create-shape-drawer-texture [ctx]
   (let [pixmap (doto (pixmap/new 1 1 pixmap-format/RGBA8888)
@@ -1472,7 +1467,7 @@
            ctx/skin
            ctx/textures
            ctx/tiled-map]}]
-  (run! disposable/dispose! (vals audio))
+  (audio/dispose! audio)
   (disposable/dispose! batch)
   (run! disposable/dispose! (vals cursors))
   (disposable/dispose! default-font)

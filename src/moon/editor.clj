@@ -7,7 +7,7 @@
             [clojure.k-label-text :as k-label-text]
             [clojure.malli-form-register-methods]
             [moon.textures :as textures]
-            [clojure.moon.ctx-do :refer [do!]]
+            [moon.audio :as audio]
             [clojure.optional :refer [optional?]]
             [clojure.property-image :as property-image]
             [clojure.property-types :refer [property-types]]
@@ -174,8 +174,8 @@
    {:actor (doto (text-button/new "play!" skin)
              (actor/addListener (change-listener/create
                                       (fn [event _actor]
-                                        (do! (:stage/ctx (event/getStage event))
-                                             [[:tx/sound sound-name]])))))}])
+                                        (audio/play! (:ctx/audio (:stage/ctx (event/getStage event)))
+                                                     sound-name)))))}])
 
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]
@@ -197,7 +197,7 @@
                               :table/rows
                               [[(let [table (doto (table/new)
     (table-set-opts/set-opts! {:table/cell-defaults {:pad 5}
-                                              :table/rows (for [sound-name (map first (:ctx/audio ctx))]
+                                              :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
                                                             [{:actor (doto (text-button/new sound-name skin)
                                                                            (actor/addListener (change-listener/create
                                                                                                     (fn [event actor]
@@ -205,8 +205,8 @@
                                                              {:actor (doto (text-button/new "play!" skin)
                                                                            (actor/addListener (change-listener/create
                                                                                                     (fn [event _actor]
-                                                                                                      (do! (:stage/ctx (event/getStage event))
-                                                                                                           [[:tx/sound sound-name]])))))}])}))]
+                                                                                                      (audio/play! (:ctx/audio (:stage/ctx (event/getStage event)))
+                                                                                                                   sound-name)))))}])}))]
                                 {:actor (scroll-pane/new table skin)
                                  :width  (+ (actor/getWidth table) 50)
                                  :height (min (- (viewport/getWorldHeight (:stage/viewport stage)) 50)
@@ -651,8 +651,8 @@
 (defn- input-f [{:keys [ctx/app] :as ctx}]
   (assoc ctx :ctx/input (application/getInput app)))
 
-(defn- audio-f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/audio (application/getAudio app)))
+(defn- audio-f [{:keys [ctx/app ctx/files] :as ctx}]
+  (assoc ctx :ctx/audio (audio/create (application/getAudio app) files)))
 
 (defn- files-f [{:keys [ctx/app] :as ctx}]
   (assoc ctx :ctx/files (application/getFiles app)))
@@ -689,8 +689,8 @@
 (defn create [application]
   (-> {:ctx/app application}
       input-f
-      audio-f
       files-f
+      audio-f
       graphics-f
       batch-f
       skin-f
@@ -698,9 +698,11 @@
       stage-f
       textures-f))
 
-(defn dispose [{:keys [ctx/skin
+(defn dispose [{:keys [ctx/audio
+                       ctx/skin
                        ctx/batch
                        ctx/textures]}]
+  (audio/dispose! audio)
   (disposable/dispose! batch)
   (disposable/dispose! skin)
   (run! disposable/dispose! (vals textures)))
