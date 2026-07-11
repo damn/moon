@@ -4,7 +4,7 @@
             [com.badlogic.gdx.math.vector2 :as gdx-vector2] [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
-            [gdl.math.vector2 :as vector2]
+            [gdx.math.vector2 :as vector2]
             [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]))

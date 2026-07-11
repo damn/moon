@@ -1,4 +1,4 @@
-(ns gdl.math.rectangle
+(ns gdx.math.rectangle
   (:refer-clojure :exclude [contains?])
   (:require [com.badlogic.gdx.math.rectangle :as rectangle]))
 

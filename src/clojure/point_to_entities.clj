@@ -1,5 +1,5 @@
 (ns clojure.point-to-entities
-  (:require [gdl.math.rectangle :as rectangle]
+  (:require [gdx.math.rectangle :as rectangle]
             [moon.body :as body]))
 
 (defn point->entities [g2d pos]

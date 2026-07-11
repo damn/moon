@@ -1,4 +1,4 @@
-(ns gdl.math.vector3
+(ns gdx.math.vector3
   (:require [com.badlogic.gdx.math.vector3 :as vector3]))
 
 (defn clojurize [v3]

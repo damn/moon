@@ -1,7 +1,6 @@
 (ns moon.body
   (:require [moon.v2 :as v2]
             [moon.rectangle :as moon-rectangle]
-            [gdl.math.rectangle :as rectangle]
             [com.badlogic.gdx.math.rectangle :as gdx-rectangle]))
 
 (defn direction [body other-body]
