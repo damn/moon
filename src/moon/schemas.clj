@@ -1,8 +1,7 @@
-(ns clojure.malli-create-map-schema)
+(ns moon.schemas
+  (:require [clojure.malli-form :refer [malli-form]]))
 
-; inline!
-
-(defn f
+(defn create-map-schema*
   "Can define keys as just keywords or with schema-props like [:foo {:optional true}]."
   [ks k->malli-schema-form]
   (apply vector :map {:closed true}
@@ -14,3 +13,8 @@
             (assert (keyword? k))
             (assert (or (nil? schema-props) (map? schema-props)) (pr-str ks))
             [k schema-props (k->malli-schema-form k)]))))
+
+(defn create-map-schema [schemas ks]
+  (create-map-schema* ks
+                      (fn [k]
+                        (malli-form (get schemas k) schemas))))
