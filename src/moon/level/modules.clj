@@ -4,7 +4,6 @@
             [moon.movement-property :as movement-property]
             [moon.tiled-map-tile-layer :refer [property-value]]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.tiled-map.create :as tiled-tiled-map]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
@@ -184,7 +183,7 @@
   [{:keys [scaled-grid
            schema-tiled-map]
     :as w}]
-  (assoc w :tiled-map (tiled-tiled-map/f (grid->tiled-map schema-tiled-map scaled-grid))))
+  (assoc w :tiled-map (moon-tiled-map/create (grid->tiled-map schema-tiled-map scaled-grid))))
 
 (defn- calculate-start [{:keys [start scale] :as w}]
   (assoc w :start-position (mapv * start scale)))

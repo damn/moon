@@ -2,7 +2,6 @@
   (:require [moon.movement-property :as movement-property]
             [moon.rand :as rand]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.tiled-map.create :as tiled-tiled-map]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [moon.map-properties :as map-properties]
@@ -79,7 +78,7 @@
   (let [{:keys [start-position grid]} (scale-grid grid start scaling)
         grid (g2d/assoc-transition-cells grid)
         position->tile (position-tile-fn grid)
-        tiled-map (tiled-tiled-map/f
+        tiled-map (moon-tiled-map/create
                    {:properties {"width" (g2d/width grid)
                                  "height" (g2d/height grid)
                                  "tilewidth" tile-size

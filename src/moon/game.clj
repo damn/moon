@@ -32,7 +32,6 @@
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [moon.tiled-map.draw :as tiled-map-draw]
             [moon.action-bar :as action-bar]
             [moon.application :as application]
             [moon.audio :as audio]
@@ -83,7 +82,6 @@
             [moon.textures :as textures]
             [moon.throwable :as throwable]
             [moon.tiled-map :as moon-tiled-map]
-            [moon.tiled-map.spawn-positions :as spawn-positions]
             [moon.timer :as timer]
             [moon.txs-fn-map :refer [actions!]]
             [moon.v2 :as v2]
@@ -2394,7 +2392,7 @@
 
 (defn create-spawn-creatures [ctx]
   (do! ctx
-       (for [[position creature-id] (spawn-positions/f (:ctx/tiled-map ctx))]
+       (for [[position creature-id] (moon-tiled-map/spawn-positions (:ctx/tiled-map ctx))]
          [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
                               :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
                               :components {:entity/fsm {:fsm :fsms/npc
@@ -2543,10 +2541,10 @@
            ctx/tiled-map
            ctx/world-viewport]
     :as ctx}]
-  (tiled-map-draw/draw! batch
+  (moon-tiled-map/draw! tiled-map
+                     batch
                      world-unit-scale
                      (viewport/getCamera world-viewport)
-                     tiled-map
                      (tile-color-setter*
                       {:ray-blocked? (partial raycaster/blocked? raycaster)
                        :explored-tile-corners explored-tile-corners
