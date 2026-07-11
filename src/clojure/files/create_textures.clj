@@ -2,8 +2,8 @@
   (:require [gdx.files :as files]
             [gdx.files.file-handle :as file-handle]
             [gdx.graphics.glutils.file-texture-data :as file-texture-data]
-            [com.badlogic.gdx.graphics.pixmap :as pixmap]
-            [com.badlogic.gdx.graphics.texture :as texture]
+            [gdx.graphics.pixmap :as pixmap]
+            [gdx.graphics.texture :as texture]
             [clojure.string :as str]))
 
 (defn f
