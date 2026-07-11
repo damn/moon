@@ -22,7 +22,6 @@
             [moon.faction :as faction]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.moon.fsms :refer [fsms]]
-            [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
             [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
             [clojure.moon.k-handle-input.player-idle :as player-idle]
             [clojure.moon.k-handle-input.player-item-on-cursor :as player-item-on-cursor-input]
@@ -1437,6 +1436,24 @@
                          ""))
     :skin skin}))
 
+(defmulti entity-state-draw-ui-view
+  (fn [[k _v] _eid _ctx]
+    k))
+
+(defmethod entity-state-draw-ui-view :default
+  [_ _eid _ctx]
+  nil)
+
+(defmethod entity-state-draw-ui-view :player-item-on-cursor
+  [_ eid {:keys [ctx/textures
+                 ctx/ui-mouse-position]
+          :as ctx}]
+  (when (mouseover-actor ctx)
+    [[:draw/texture-region
+      (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
+      ui-mouse-position
+      {:center? true}]]))
+
 (defn player-state-draw-create [_ctx]
   (actor/new
    (fn [_actor _delta])
@@ -1444,7 +1461,7 @@
      (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/getStage this))
            entity @player-eid
            state-k (:state (:entity/fsm entity))]
-       (draw! ctx (entity-state-draw-ui-view/f [state-k (state-k entity)] player-eid ctx))))))
+       (draw! ctx (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx))))))
 
 (defn player-message-actor-create [_ctx]
   (let [message-duration-seconds 0.5]
