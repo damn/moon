@@ -7,7 +7,7 @@
             [clojure.interpose-f :refer [interpose-f]]
             [clojure.k-label-text :as k-label-text]
             [clojure.malli-form-register-methods]
-            [clojure.moon-textures :as textures]
+            [moon.textures :as textures]
             [clojure.moon.ctx-do :refer [do!]]
             [clojure.optional :refer [optional?]]
             [clojure.property-image :as property-image]

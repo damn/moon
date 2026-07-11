@@ -68,7 +68,7 @@
             [clojure.v2.direction :as direction]
             [clojure.v2.length :as length]
             [clojure.moon-faction :as faction]
-            [clojure.moon-textures :as textures]
+            [moon.textures :as textures]
             [clojure.ratio :as timer-ratio]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :as camera-set-position]

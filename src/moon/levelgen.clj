@@ -6,7 +6,7 @@
             [clojure.levels.tmx :as tmx]
             [clojure.levels.uf-caves :as uf-caves]
             [clojure.malli-form-register-methods]
-            [clojure.moon-textures :as textures]
+            [moon.textures :as textures]
             [clojure.orthographic-camera-position :as get-position]
             [clojure.orthographic-camera-set-position :refer [set-position!]]
             [clojure.orthographic-camera.zoom-to-rect :as zoom-to-rect]

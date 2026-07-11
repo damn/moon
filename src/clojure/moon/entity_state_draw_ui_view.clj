@@ -1,6 +1,6 @@
 (ns clojure.moon.entity-state-draw-ui-view
   (:require [clojure.mouseover-actor :refer [mouseover-actor]]
-            [clojure.moon-textures :as textures]))
+            [moon.textures :as textures]))
 
 (defmulti f
   (fn [[k _v] _eid _ctx]

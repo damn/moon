@@ -25,7 +25,7 @@
             [clojure.item-is-valid :as valid?]
             [clojure.moon.state-enter :refer [k->state-enter]]
             [clojure.moon.state-exit :refer [k->state-exit]]
-            [clojure.moon-textures :as textures]
+            [moon.textures :as textures]
             [com.badlogic.gdx.audio.sound :as sound]
             [clojure.records-entity :as entity]
             [clojure.register-eid :as register-eid]
