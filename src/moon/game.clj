@@ -22,7 +22,6 @@
             [moon.faction :as faction]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.moon.fsms :refer [fsms]]
-            [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
             [clojure.moon.k-handle-input.player-idle :as player-idle]
             [clojure.moon.k-handle-input.player-item-on-cursor :as player-item-on-cursor-input]
             [clojure.moon.k-handle-input.player-moving :as player-moving]
@@ -1360,6 +1359,53 @@
          (draw! (:stage/ctx stage)
                 (create-draws (:stage/ctx stage))))))))
 
+(defn- clicked-inventory-cell-player-idle
+  [eid cell]
+  (when-let [item (get-in (:entity/inventory @eid) cell)]
+    [[:tx/sound "bfxr_takeit"]
+     [:tx/event eid :pickup-item item]
+     [:tx/remove-item eid cell]]))
+
+(defn- clicked-inventory-cell-player-item-on-cursor
+  [eid cell]
+  (let [entity @eid
+        inventory (:entity/inventory entity)
+        item-in-cell (get-in inventory cell)
+        item-on-cursor (:entity/item-on-cursor entity)]
+    (cond
+     (and (not item-in-cell)
+          (valid-slot?/f cell item-on-cursor))
+     [[:tx/sound "bfxr_itemput"]
+      [:tx/dissoc eid :entity/item-on-cursor]
+      [:tx/set-item eid cell item-on-cursor]
+      [:tx/event eid :dropped-item]]
+
+     (and item-in-cell
+          (stackable?/f item-in-cell item-on-cursor))
+     [[:tx/sound "bfxr_itemput"]
+      [:tx/dissoc eid :entity/item-on-cursor]
+      [:tx/stack-item eid cell item-on-cursor]
+      [:tx/event eid :dropped-item]]
+
+     (and item-in-cell
+          (valid-slot?/f cell item-on-cursor))
+     [[:tx/sound "bfxr_itemput"]
+      [:tx/dissoc eid :entity/item-on-cursor]
+      [:tx/remove-item eid cell]
+      [:tx/set-item eid cell item-on-cursor]
+      [:tx/event eid :dropped-item]
+      [:tx/event eid :pickup-item item-in-cell]])))
+
+(def k->clicked-inventory-cell
+  {:player-item-on-cursor clicked-inventory-cell-player-item-on-cursor
+   :player-idle clicked-inventory-cell-player-idle})
+
+(defn handle-clicked-inventory-cell
+  [player-eid cell]
+  (let [state-k (:state (:entity/fsm @player-eid))]
+    (when-let [handler (k->clicked-inventory-cell state-k)]
+      (handler player-eid cell))))
+
 (defn inventory-window-create
   [{:keys [ctx/colors
            ctx/skin
@@ -1391,7 +1437,7 @@
     (inventory-window-build
      {:do! do!
       :draw! draw!
-      :on-click-cell handle-clicked-inventory-cell/f
+      :on-click-cell handle-clicked-inventory-cell
       :item-rect-color (:colors/item-rect colors)
       :droppable-item-color (:colors/droppable-item colors)
       :not-allowed-drop-item-color (:colors/not-allowed-drop-item colors)
