@@ -3,7 +3,7 @@
             [com.badlogic.gdx.math.vector3 :as vector3]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [moon.orthographic-camera :as orthographic-camera]
             [gdx.maps.tiled.draw-tile-layer :as draw-tile-layer]))
 
 (defn draw!
@@ -14,14 +14,14 @@
    color-setter]
   (batch/setProjectionMatrix batch (orthographic-camera/combined camera))
   (batch/begin batch)
-  (let [width  (* (orthographic-camera/viewportWidth camera) (orthographic-camera/zoom camera))
-        height (* (orthographic-camera/viewportHeight camera) (orthographic-camera/zoom camera))
+  (let [width  (* (orthographic-camera/viewport-width camera) (orthographic-camera/zoom camera))
+        height (* (orthographic-camera/viewport-height camera) (orthographic-camera/zoom camera))
         up (orthographic-camera/up camera)
         w (+ (* width  (Math/abs (float (vector3/y up))))
              (* height (Math/abs (float (vector3/x up)))))
         h (+ (* height (Math/abs (float (vector3/y up))))
              (* width  (Math/abs (float (vector3/x up)))))
-        pos (orthographic-camera/position camera)
+        pos (orthographic-camera/position-vec3 camera)
         viewBounds {:x (- (vector3/x pos) (/ w 2))
                     :y (- (vector3/y pos) (/ h 2))
                     :width w

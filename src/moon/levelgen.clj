@@ -1,14 +1,11 @@
 (ns moon.levelgen
   (:require [moon.db :as db]
-            [moon.orthographic-camera :as moon-orthographic-camera]
+            [moon.orthographic-camera :as orthographic-camera]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
             [clojure.malli-form-register-methods]
             [moon.textures :as textures]
-            [clojure.orthographic-camera-position :as get-position]
-            [clojure.orthographic-camera-set-position :refer [set-position!]]
-            [clojure.orthographic-camera.zoom-to-rect :as zoom-to-rect]
             [clojure.scene2d-stage]
             [clojure.table-set-opts :as table-set-opts]
             [clojure.tiled-map.creature-tiles :as creature-tiles]
@@ -18,7 +15,6 @@
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [moon.input :as input]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
@@ -71,9 +67,9 @@
         tiled-map/getLayers
         (map-layers/get "creatures")
         (tiled-map-tile-layer/setVisible true))
-    (set-position! camera [(/ (get-property/f tiled-map "width") 2)
+    (orthographic-camera/set-position! camera [(/ (get-property/f tiled-map "width") 2)
                            (/ (get-property/f tiled-map "height") 2)])
-    (zoom-to-rect/f camera {:left [0 0]
+    (orthographic-camera/zoom-to-rect camera {:left [0 0]
                             :top [0 (get-property/f tiled-map "height")]
                             :right [(get-property/f tiled-map "width") 0]
                             :bottom [0 0]})
@@ -95,7 +91,7 @@
                          (fit-viewport/new world-width
                                            world-height
                                            (doto (orthographic-camera/new)
-                                             (orthographic-camera/setToOrtho false world-width world-height))))
+                                             (orthographic-camera/set-to-ortho! false world-width world-height))))
         ctx {:ctx/input input
              :ctx/graphics graphics
              :ctx/stage stage
@@ -155,12 +151,12 @@
                         tiled-map
                         (constantly (color/toFloatBits [1 1 1 1])))
   (when (input/key-pressed? input :input.keys/minus)
-    (moon-orthographic-camera/inc-zoom! camera zoom-speed))
+    (orthographic-camera/inc-zoom! camera zoom-speed))
   (when (input/key-pressed? input :input.keys/equals)
-    (moon-orthographic-camera/inc-zoom! camera (- zoom-speed)))
+    (orthographic-camera/inc-zoom! camera (- zoom-speed)))
   (let [apply-position (fn [idx f]
-                         (set-position! camera
-                                        (update (get-position/f camera)
+                         (orthographic-camera/set-position! camera
+                                        (update (orthographic-camera/position camera)
                                                 idx
                                                 #(f % camera-movement-speed))))]
     (when (input/key-pressed? input :input.keys/left)

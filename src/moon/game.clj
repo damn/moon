@@ -29,10 +29,7 @@
             [moon.faction :as faction]
 
             [clojure.movement-property :as movement-property]
-            [clojure.orthographic-camera-position :as get-position]
-            [clojure.orthographic-camera-set-position :as camera-set-position]
-            [clojure.orthographic-camera-frustum :refer [frustum]]
-            [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
+            [moon.orthographic-camera :as orthographic-camera]
             [clojure.point-to-entities :refer [point->entities]]
             [clojure.projectile-start-point :as projectile-start-point]
             [clojure.ratio :as timer-ratio]
@@ -77,7 +74,6 @@
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]
-            [com.badlogic.gdx.graphics.orthographic-camera :as orthographic-camera]
             [moon.pixmap :as pixmap]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
@@ -104,7 +100,6 @@
             [moon.map-properties :as map-properties]
             [moon.files :as files]
             [gdx.graphics.g2d.batch.draw-tiled-map :as draw-tiled-map]
-            [moon.orthographic-camera :as moon-orthographic-camera]
             [moon.disposable :as disposable]
             [moon.audio :as audio]
             [moon.body :as body]
@@ -2281,7 +2276,7 @@
                                (fit-viewport/new world-width
                                                     world-height
                                                     (doto (orthographic-camera/new)
-                                                      (orthographic-camera/setToOrtho false world-width world-height))))))
+                                                      (orthographic-camera/set-to-ortho! false world-width world-height))))))
 
 (defn create-default-font [ctx]
   (assoc ctx
@@ -2532,7 +2527,7 @@
   [{:keys [ctx/player-eid
            ctx/world-viewport]
     :as ctx}]
-  (camera-set-position/set-position! (viewport/getCamera world-viewport)
+  (orthographic-camera/set-position! (viewport/getCamera world-viewport)
                                      (:body/position (:entity/body @player-eid)))
   ctx)
 
@@ -2558,7 +2553,7 @@
                      (tile-color-setter*
                       {:ray-blocked? (partial raycaster/blocked? raycaster)
                        :explored-tile-corners explored-tile-corners
-                       :light-position (get-position/f (viewport/getCamera world-viewport))
+                       :light-position (orthographic-camera/position (viewport/getCamera world-viewport))
                        :see-all-tiles? false
                        :explored-tile-color (:colors/explored-tile colors)
                        :visible-tile-color (:colors/visible-tile colors)
@@ -2583,7 +2578,7 @@
   [{:keys [ctx/world-viewport
            ctx/show-tile-grid?]}]
   (if show-tile-grid?
-    (let [[left-x _right-x bottom-y _top-y] (frustum (viewport/getCamera world-viewport))]
+    (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/getCamera world-viewport))]
       [[:draw/grid
         (int left-x)
         (int bottom-y)
@@ -2602,7 +2597,7 @@
            ctx/show-cell-entities?
            ctx/show-cell-occupied?]}]
   (apply concat
-         (for [[x y] (visible-tiles (viewport/getCamera world-viewport))
+         (for [[x y] (orthographic-camera/visible-tiles (viewport/getCamera world-viewport))
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]
@@ -2910,10 +2905,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (input/key-pressed? input (:zoom-in controls))
-    (moon-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
+    (orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
 
   (when (input/key-pressed? input (:zoom-out controls))
-    (moon-orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
+    (orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (group/findActor (:stage/root stage) "moon.ui.windows")
