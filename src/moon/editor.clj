@@ -10,9 +10,7 @@
             [clojure.property-types :refer [property-types]]
             [moon.stage :as moon-stage]
             [moon.actor :refer [find-ancestor]]
-            [clojure.schemas :as schemas]
-            [clojure.schemas-map-keys :refer [map-keys]]
-            [clojure.schemas-optional-keyset :refer [optional-keyset]]
+            [moon.schemas :refer [default-value map-keys optional-keyset]]
             [clojure.scroll-pane-cell :as scroll-pane-cell]
             [clojure.set :as set]
             [clojure.k-order :as k-order]
@@ -461,7 +459,7 @@
                                                                              :editor-widget (build-widget ctx
                                                                                                           (get schemas k)
                                                                                                           k
-                                                                                                          (schemas/default-value schemas k))
+                                                                                                          (default-value schemas k))
                                                                              :k k
                                                                              :display-remove-component-button? (optional? schemas schema k)
                                                                              :table map-widget-table})])

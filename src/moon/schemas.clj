@@ -1,5 +1,7 @@
 (ns moon.schemas
-  (:require [moon.schema :as schema]))
+  (:require [moon.malli :as malli]
+            [moon.schema :as schema]
+            [moon.map-schema :as map-schema]))
 
 (defn create-map-schema*
   "Can define keys as just keywords or with schema-props like [:foo {:optional true}]."
@@ -18,3 +20,21 @@
   (create-map-schema* ks
                       (fn [k]
                         (schema/malli-form (get schemas k) schemas))))
+
+(defn default-value [schemas k]
+  (let [schema (get schemas k)]
+    (cond
+     (#{:s/map} (schema 0)) {}
+     :else nil)))
+
+(defn map-keys [schemas schema]
+  (map-schema/map-keys (schema/malli-form schema schemas)))
+
+(defn optional-keyset [schemas schema]
+  (map-schema/optional-keyset (schema/malli-form schema schemas)))
+
+(defn validate [schemas k value]
+  (-> (get schemas k)
+      (schema/malli-form schemas)
+      malli/create
+      (malli/validate-humanize value)))
