@@ -7,7 +7,7 @@
             [clojure.srand-int :refer [srand-int]]
             [clojure.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
             [moon.position :as position]
-            [clojure.m.assoc-ks :refer [assoc-ks]]
+            [moon.m :as m]
             [clojure.sshuffle :refer [sshuffle]]))
 
 ; gute ergebnisse: :wide / 500-4000 max-cells / turn-ratio 0.5
@@ -48,7 +48,7 @@
           (if (not-empty new-pos-seq)
             (recur new-pos-seq
                    (if (seq carve-posis)
-                     (assoc-ks grid carve-posis :ground)
+                     (m/assoc-ks grid carve-posis :ground)
                      grid)
                    (+ cell-cnt (count carve-posis))
                    current-order)
