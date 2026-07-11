@@ -20,7 +20,6 @@
             [clojure.menus.v :as menus]
             [clojure.minimum-size :refer [minimum-size]]
             [moon.faction :as faction]
-            [clojure.moon-target-all :as target-all]
             [clojure.moon.after-create-component :refer [after-create-component]]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.moon.create-component :refer [create-component]]
@@ -175,6 +174,13 @@
 (def spiderweb-modifiers {:modifier/movement-speed {:op/mult -50}})
 (def spiderweb-duration 5)
 
+(defn affected-targets
+  [active-entities raycaster entity]
+  (->> active-entities
+       (filter #(:entity/species @%))
+       (filter #(raycaster/line-of-sight? raycaster entity @%))
+       (remove #(:entity/player? @%))))
+
 (defmulti handle-effect
   (fn [[k _v] _effect-ctx _ctx]
     k))
@@ -211,7 +217,7 @@
            ctx/raycaster]}]
   (let [source* @source]
     (apply concat
-           (for [target (target-all/affected-targets active-entities raycaster source*)]
+           (for [target (affected-targets active-entities raycaster source*)]
              [[:tx/spawn-line
                {:start (:body/position (:entity/body source*)) #_(start-point source* target*)
                 :end (:body/position (:entity/body @target))
@@ -941,7 +947,7 @@
            ctx/colors
            ctx/raycaster]}]
   (let [source* @source]
-    (for [target* (map deref (target-all/affected-targets active-entities raycaster source*))]
+    (for [target* (map deref (affected-targets active-entities raycaster source*))]
       [:draw/line
        (:body/position (:entity/body source*))
        (:body/position (:entity/body target*))
