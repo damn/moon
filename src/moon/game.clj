@@ -9,7 +9,6 @@
             [clojure.inc-zoom :refer [inc-zoom!]]
             [clojure.java.io :as io]
             [clojure.levels.tmx :as tmx]
-            [clojure.line-of-sight :as line-of-sight?]
             [moon.body :as body]
             [clojure.grid.cells-entities :as cells->entities]
             [clojure.grid.circle-entities :refer [circle->entities]]
@@ -1006,7 +1005,7 @@
                     (->> render-z-order
                          (sort-by-order/f hits #(:body/z-order (:entity/body @%)))
                          reverse
-                         (filter #(line-of-sight?/f raycaster player @%))
+                         (filter #(raycaster/line-of-sight? raycaster player @%))
                          first)))]
     (when mouseover-eid
       (swap! mouseover-eid dissoc :entity/mouseover?))
@@ -1139,7 +1138,7 @@
         player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
-                           (line-of-sight?/f raycaster player entity)))]
+                           (raycaster/line-of-sight? raycaster player entity)))]
     (doseq [[z-order entities] (sort-by-order/f (group-by (comp :body/z-order :entity/body) entities)
                                                 first
                                                 render-z-order)

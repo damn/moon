@@ -1,8 +1,8 @@
 (ns clojure.moon-target-all
-  (:require [clojure.line-of-sight :as line-of-sight?]))
+  (:require [moon.raycaster :as raycaster]))
 
 (defn affected-targets [active-entities raycaster entity]
   (->> active-entities
        (filter #(:entity/species @%))
-       (filter #(line-of-sight?/f raycaster entity @%))
+       (filter #(raycaster/line-of-sight? raycaster entity @%))
        (remove #(:entity/player? @%))))

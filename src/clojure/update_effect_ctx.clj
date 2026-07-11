@@ -1,10 +1,10 @@
 (ns clojure.update-effect-ctx
-  (:require [clojure.line-of-sight :as line-of-sight?]))
+  (:require [moon.raycaster :as raycaster]))
 
 (defn f
   [raycaster {:keys [effect/source effect/target] :as effect-ctx}]
   (if (and target
            (not (:entity/destroyed? @target))
-           (line-of-sight?/f raycaster @source @target))
+           (raycaster/line-of-sight? raycaster @source @target))
     effect-ctx
     (dissoc effect-ctx :effect/target)))

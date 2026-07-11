@@ -1,7 +1,7 @@
 (ns clojure.moon.npc-effect-ctx
   (:require [moon.body :as body]
             [clojure.nearest-enemy :refer [nearest-enemy]]
-            [clojure.line-of-sight :as line-of-sight?]))
+            [moon.raycaster :as raycaster]))
 
 (defn f
   [{:keys [ctx/grid
@@ -10,7 +10,7 @@
   (let [entity @eid
         target (nearest-enemy grid entity)
         target (when (and target
-                          (line-of-sight?/f raycaster entity @target))
+                          (raycaster/line-of-sight? raycaster entity @target))
                  target)]
     {:effect/source eid
      :effect/target target
