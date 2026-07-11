@@ -798,7 +798,7 @@
                                                       (pixmap/getFormat pixmap)
                                                       false
                                                       false))]
-    (disposable/dispose pixmap)
+    (disposable/dispose! pixmap)
     (assoc ctx :ctx/shape-drawer-texture texture)))
 
 (defn create-shape-drawer [ctx]
@@ -833,7 +833,7 @@
                                         (let [path (format path-format path-segment)
                                               pixmap* (pixmap/new (files/internal (:ctx/files ctx) path))
                                               cursor (graphics/newCursor (:ctx/graphics ctx) pixmap* hotspot-x hotspot-y)]
-                                          (disposable/dispose pixmap*)
+                                          (disposable/dispose! pixmap*)
                                           cursor))))))
 
 (defn create-textures [{:keys [ctx/files] :as ctx}]
@@ -866,7 +866,7 @@
                                             }
                                  font (free-type-font-generator/generate-font generator parameter)
                                  font-data (bitmap-font/getData font)]
-                             (disposable/dispose generator)
+                             (disposable/dispose! generator)
                              (bitmap-font-data/setScale font-data (/ quality-scaling))
                              (bitmap-font-data/set-markupEnabled font-data true)
                              (bitmap-font/setUseIntegerPositions font use-integer-positions?)
@@ -1480,14 +1480,14 @@
            ctx/skin
            ctx/textures
            ctx/tiled-map]}]
-  (run! disposable/dispose (vals audio))
-  (disposable/dispose batch)
-  (run! disposable/dispose (vals cursors))
-  (disposable/dispose default-font)
-  (disposable/dispose shape-drawer-texture)
-  (disposable/dispose skin)
-  (run! disposable/dispose (vals textures))
-  (disposable/dispose tiled-map))
+  (run! disposable/dispose! (vals audio))
+  (disposable/dispose! batch)
+  (run! disposable/dispose! (vals cursors))
+  (disposable/dispose! default-font)
+  (disposable/dispose! shape-drawer-texture)
+  (disposable/dispose! skin)
+  (run! disposable/dispose! (vals textures))
+  (disposable/dispose! tiled-map))
 
 (defn render [ctx]
   (-> ctx

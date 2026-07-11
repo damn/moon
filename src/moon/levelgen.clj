@@ -118,7 +118,7 @@
                                                  :skin skin
                                                  :table/rows (for [[label level-fn] (:level-fns config)
                                                                    :let [on-click #(do
-                                                                                     (disposable/dispose (:ctx/tiled-map %))
+                                                                                     (disposable/dispose! (:ctx/tiled-map %))
                                                                                      (generate-level % level-fn))]]
                                                                [{:actor (doto (text-button/new (str "Generate " label) skin)
                                                                               (actor/addListener
@@ -132,10 +132,10 @@
            ctx/sprite-batch
            ctx/textures
            ctx/tiled-map]}]
-  (disposable/dispose sprite-batch)
-  (disposable/dispose skin)
-  (run! disposable/dispose (vals textures))
-  (disposable/dispose tiled-map))
+  (disposable/dispose! sprite-batch)
+  (disposable/dispose! skin)
+  (run! disposable/dispose! (vals textures))
+  (disposable/dispose! tiled-map))
 
 (defn render
   [{:keys [ctx/input

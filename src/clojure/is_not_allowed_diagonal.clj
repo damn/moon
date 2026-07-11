@@ -1,9 +1,9 @@
 (ns clojure.is-not-allowed-diagonal
   (:require [clojure.positions :refer [positions]]
             [clojure.position.diagonal-direction :as diagonal-direction?]
-            [clojure.position.neighbours-8 :refer [get-8-neighbours]]))
+            [moon.position :as position]))
 
-(let [order (get-8-neighbours [0 0])]
+(let [order (position/get-8-neighbours [0 0])]
   (def diagonal-check-indizes
     (into {} (for [[x y] (filter diagonal-direction?/f order)]
                [(first (positions #(= % [x y]) order))
