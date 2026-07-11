@@ -67,7 +67,7 @@
             [clojure.orthographic-camera-set-position :as camera-set-position]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
             [clojure.point-to-entities :refer [point->entities]]
-            [clojure.raycaster :as raycaster]
+            [moon.raycaster :as raycaster]
             [clojure.scene2d-stage :as scene2d-stage]
             [clojure.scene2d.actor.mouseover-info :refer [mouseover-actor-info]]
             [clojure.set-ctx :as set-ctx]

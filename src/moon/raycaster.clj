@@ -1,4 +1,4 @@
-(ns clojure.raycaster
+(ns moon.raycaster
   (:import (clojure RayCaster)))
 
 (defn blocked?

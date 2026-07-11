@@ -1,7 +1,7 @@
 (ns clojure.is-useful
   (:require [moon.v2 :as v2]
             [moon.body :as body]
-            [clojure.raycaster :as raycaster]))
+            [moon.raycaster :as raycaster]))
 
 (defmulti f
   (fn [[k _v] _effect-ctx _ctx]

@@ -1,5 +1,5 @@
 (ns clojure.line-of-sight
-  (:require [clojure.raycaster :as raycaster]))
+  (:require [moon.raycaster :as raycaster]))
 
 (defn f [raycaster source target]
   (not (raycaster/blocked? raycaster
