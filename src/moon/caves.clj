@@ -5,7 +5,7 @@
   http://forums.tigsource.com/index.php?topic=5174.0"
   (:require [clojure.srand :refer [srand]]
             [clojure.srand-int :refer [srand-int]]
-            [clojure.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
+            [moon.g2d :as g2d]
             [moon.position :as position]
             [moon.m :as m]
             [clojure.sshuffle :refer [sshuffle]]))
@@ -24,7 +24,7 @@
                    ; TODO already called there down ... make mincells check there
                    (if (< cell-cnt min-cells)
                      (generate random min-cells max-cells get-adj-num-fn) ; recur?
-                     (let [[grid convert] (mapgrid->vectorgrid/f grid #(if (nil? %) :wall :ground))]
+                     (let [[grid convert] (g2d/from-mapgrid grid #(if (nil? %) :wall :ground))]
                        {:grid  grid
                         :start (convert start)
                         :end   (convert end)})))]
