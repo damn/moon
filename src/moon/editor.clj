@@ -7,7 +7,6 @@
             [moon.textures :as textures]
             [moon.audio :as audio]
             [moon.schemas.optional :refer [optional?]]
-            [clojure.property-types :refer [property-types]]
             [moon.stage :as moon-stage]
             [moon.actor :refer [find-ancestor]]
             [moon.schemas :refer [default-value map-keys optional-keyset]]
@@ -633,7 +632,7 @@
   (doto (window/new "Edit" skin)
     (table-set-opts/set-opts! {:title "Edit"
                                :skin skin
-                               :table/rows (for [property-type (sort (property-types db))]
+                               :table/rows (for [property-type (sort (db/property-types db))]
                                              [{:actor (doto (text-button/new (str/capitalize (name property-type)) skin)
                                                             (actor/addListener (change-listener/create
                                                                                 (fn [event _actor]

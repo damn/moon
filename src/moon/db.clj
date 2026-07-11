@@ -100,3 +100,6 @@
 (defn build-all [{:keys [db/schemas] :as this} property-type]
   (map #(build-values schemas % this)
        (all-raw this property-type)))
+
+(defn property-types [{:keys [db/schemas]}]
+  (filter #(= "properties" (namespace %)) (keys schemas)))
