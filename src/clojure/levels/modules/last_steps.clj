@@ -7,7 +7,6 @@
             [clojure.g2d.flood-fill :as flood-fill]
             [clojure.movement-property :as movement-property]
             [clojure.tiled-map.add-creatures-layer :as add-creatures-layer]
-            [clojure.g2d.area-level-grid :as area-level-grid]
             [com.badlogic.gdx.maps.map-layers :as map-layers]))
 
 (defn step
@@ -26,7 +25,7 @@
         ;_ (println "scaled grid with filled nil: '?' \n")
         ;_ (printgrid/f (reduce #(assoc %1 %2 nil) scaled-grid spawn-positions))
         ;_ (println "\n")
-        {:keys [_steps area-level-grid]} (area-level-grid/create
+        {:keys [_steps area-level-grid]} (g2d/area-level-grid
                                           :grid grid
                                           :start start
                                           :max-level max-area-level
