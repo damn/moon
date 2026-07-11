@@ -1,6 +1,6 @@
-(ns clojure.skill-is-valid)
+(ns moon.skill)
 
-(defn f [skill]
+(defn valid? [skill]
   (= #{:property/id
        :property/pretty-name
        :entity/image
