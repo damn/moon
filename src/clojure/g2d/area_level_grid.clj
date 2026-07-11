@@ -1,6 +1,6 @@
 (ns clojure.g2d.area-level-grid
   (:require [moon.g2d :as g2d]
-            [clojure.position.neighbours-4 :refer [get-4-neighbours]]))
+            [moon.position :as position]))
 
 ; can adjust:
 ; * split percentage , for higher level areas may scale faster (need to be more careful)
@@ -30,7 +30,7 @@
         step->level #(int (Math/ceil (/ % level-step)))
         walkable-neighbours (fn [grid position]
                               (filter #(walk-on (get grid %))
-                                      (get-4-neighbours position)))]
+                                      (position/get-4-neighbours position)))]
     (loop [next-positions #{start}
            steps          [[0 start]]
            grid           (assoc grid start 0)]

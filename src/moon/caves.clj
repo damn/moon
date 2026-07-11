@@ -6,7 +6,7 @@
   (:require [clojure.srand :refer [srand]]
             [clojure.srand-int :refer [srand-int]]
             [clojure.mapgrid-to-vectorgrid :as mapgrid->vectorgrid]
-            [clojure.position.neighbours-4 :refer [get-4-neighbours]]
+            [moon.position :as position]
             [clojure.m.assoc-ks :refer [assoc-ks]]
             [clojure.sshuffle :refer [sshuffle]]))
 
@@ -40,7 +40,7 @@
         (let [current-order (if (< (srand random) turn-ratio)
                               (create-order)
                               current-order)
-              neighbours (get-4-neighbours (last posi-seq))
+              neighbours (position/get-4-neighbours (last posi-seq))
               try-carve-posis (take (get-adj-num-fn (count posi-seq) random)
                                     (map #(get neighbours %) current-order))
               carve-posis (filter #(nil? (get grid %)) try-carve-posis)
