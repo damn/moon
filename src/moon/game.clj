@@ -20,11 +20,11 @@
             [clojure.menus.v :as menus]
             [clojure.minimum-size :refer [minimum-size]]
             [moon.faction :as faction]
-            [clojure.moon.after-create-component :refer [after-create-component]]
             [clojure.moon.choose-skill :as choose-skill]
             [clojure.moon.create-component :refer [create-component]]
             [clojure.moon.create-entity-state :as create-entity-state]
             [clojure.moon.draw :refer [draw!]]
+            [clojure.moon.fsms :refer [fsms]]
             [clojure.moon.entity-state-draw-ui-view :as entity-state-draw-ui-view]
             [clojure.moon.handle-clicked-inventory-cell :as handle-clicked-inventory-cell]
             [clojure.moon.k-handle-input.player-idle :as player-idle]
@@ -413,6 +413,56 @@
                         (str "\n" (info-text v ctx))))))
          (str/join "\n")
          remove-newlines)))
+
+(defn- create-fsm
+  [fsm initial-state]
+  (assoc ((case fsm
+            :fsms/player (:player fsms)
+            :fsms/npc (:npc fsms))
+          initial-state
+          nil)
+         :state initial-state))
+
+(defn- after-create-fsm
+  [{:keys [fsm initial-state]} eid ctx]
+  [[:tx/assoc eid :entity/fsm (create-fsm fsm initial-state)]
+   [:tx/assoc eid initial-state (create-entity-state/f [initial-state nil] eid ctx)]])
+
+(defn- after-create-skills
+  [skills eid _ctx]
+  (cons [:tx/assoc eid :entity/skills nil]
+        (for [skill skills]
+          [:tx/add-skill eid skill])))
+
+(defn- after-create-inventory
+  [items eid _ctx]
+  (cons [:tx/assoc eid :entity/inventory (->> #:inventory.slot{:bag      [6 4]
+                                                               :weapon   [1 1]
+                                                               :shield   [1 1]
+                                                               :helm     [1 1]
+                                                               :chest    [1 1]
+                                                               :leg      [1 1]
+                                                               :glove    [1 1]
+                                                               :boot     [1 1]
+                                                               :cloak    [1 1]
+                                                               :necklace [1 1]
+                                                               :rings    [2 1]}
+                                              (map (fn [[slot [width height]]]
+                                                     [slot (moon-g2d/create width height (constantly nil))]))
+                                              (into {}))]
+        (for [item items]
+          [:tx/pickup-item eid item])))
+
+(def k->after-create
+  {:entity/fsm after-create-fsm
+   :entity/inventory after-create-inventory
+   :entity/skills after-create-skills})
+
+(defn after-create-component
+  [ctx eid [k v]]
+  (if-let [f (k->after-create k)]
+    (f v eid ctx)
+    nil))
 
 (def tx-fn-map
   {:tx/add-skill
