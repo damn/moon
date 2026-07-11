@@ -1,7 +1,7 @@
 (ns moon.schema.val-max
   (:require [moon.schema :as moon-schema]
-            [clojure.schema :as schema]))
+            [moon.val-max :as val-max]))
 
 (defmethod moon-schema/malli-form :s/val-max
   [_ _]
-  schema/v)
+  val-max/schema)

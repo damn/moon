@@ -1,10 +1,18 @@
 (ns moon.val-max
-  (:require [clojure.schema :as schema]
-            [moon.malli :as malli-schema]
+  (:require [moon.malli :as malli-schema]
             [moon.mods :as mods]))
 
+(def schema
+  (malli-schema/create
+   [:and
+    [:vector {:min 2 :max 2} [:int {:min 0}]]
+    [:fn {:error/fn (fn [{[^int v ^int mx] :value} _]
+                      (when (< mx v)
+                        (format "Expected max (%d) to be smaller than val (%d)" v mx)))}
+     (fn [[^int a ^int b]] (<= a b))]]))
+
 (defn- valid? [val-max]
-  (malli-schema/validate schema/v val-max))
+  (malli-schema/validate schema val-max))
 
 (defn to-pos-int [val-max]
   (mapv #(-> % int (max 0)) val-max))
