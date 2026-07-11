@@ -1,4 +1,7 @@
 (ns gdl.backends.lwjgl3.lwjgl3-application
+  ; This is an application (gdl.application) type (there are also ios, etc.)
+  ; and do we write desktop or lwjgl ?
+  ; it is an abstraction over lwjgl so we can call it gdl.applicatio.desktop
   (:require [com.badlogic.gdx.application-listener :as listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as app]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]

@@ -32,6 +32,10 @@
                (- (position 1) (/ height 2))]]
     (gdx-rectangle/new x y width height)))
 
+(defn overlaps? [body other-body]
+  (gdx-rectangle/overlaps (rectangle body)
+                          (rectangle other-body)))
+
 (defn touched-tiles
   [{:keys [body/position
            body/width

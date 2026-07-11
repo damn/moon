@@ -32,8 +32,6 @@
             [clojure.orthographic-camera-set-position :as camera-set-position]
             [clojure.orthographic-camera-frustum :refer [frustum]]
             [clojure.orthographic-camera.visible-tiles :refer [visible-tiles]]
-            [clojure.grid.valid-position :refer [valid-position?]]
-            [clojure.overlaps :refer [overlaps?]]
             [clojure.point-to-entities :refer [point->entities]]
             [clojure.projectile-start-point :as projectile-start-point]
             [clojure.ratio :as timer-ratio]
@@ -759,7 +757,7 @@
 
   (assert (:entity/body @eid))
   (when (:body/collides? (:entity/body @eid))
-    (assert (valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
+    (assert (grid/valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
   (set-touched-cells! (:ctx/grid ctx) eid)
   (when (:body/collides? (:entity/body @eid))
     (set-occupied-cells! (:ctx/grid ctx) eid))
@@ -2103,7 +2101,7 @@
                                            (not= (:entity/faction entity)
                                                  (:entity/faction @%))
                                            (:body/collides? (:entity/body @%))
-                                           (overlaps? (:entity/body entity)
+                                           (body/overlaps? (:entity/body entity)
                                                       (:entity/body @%)))
                                      (grid/entities cells*)))
            destroy? (or (and hit-entity (not piercing?))
