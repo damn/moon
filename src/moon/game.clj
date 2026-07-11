@@ -3,7 +3,6 @@
             [moon.db :as db]
             [clojure.edn :as edn]
             [moon.g2d :as moon-g2d]
-            [clojure.g2d.width :refer [->width]]
             [moon.cell :as cell]
             [clojure.grid-update-potential-fields :as update-potential-fields]
             [clojure.grid-cell :as grid-cell]
@@ -933,7 +932,7 @@
 
 (defn create-raycaster [ctx]
   (let [grid (:ctx/grid ctx)
-        width (->width grid)
+        width (moon-g2d/width grid)
         height (moon-g2d/height grid)
         cells (for [cell (map deref (moon-g2d/cells grid))]
                 [(:position cell)
