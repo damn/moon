@@ -1,6 +1,6 @@
 (ns moon.level.modules
   (:require [moon.rand :as rand]
-            [moon.tmx-map-loader :as tmx-map-loader]
+            [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [moon.tiled-map :as moon-tiled-map]
             [moon.tiled-map-tile-layer :refer [property-value]]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
