@@ -17,7 +17,7 @@
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
@@ -712,9 +712,9 @@
     (stage/hit stage x y true)))
 
 (defn- mouseover-actor-info [actor]
-  (let [inventory-slot (and (actor/getParent actor)
-                            (= "inventory-cell" (actor/getName (actor/getParent actor)))
-                            (actor/getUserObject (actor/getParent actor)))]
+  (let [inventory-slot (and (actor/get-parent actor)
+                            (= "inventory-cell" (actor/get-name (actor/get-parent actor)))
+                            (actor/get-user-object (actor/get-parent actor)))]
     (cond
       inventory-slot
       [:mouseover-actor/inventory-cell inventory-slot]
@@ -959,7 +959,7 @@
      (-> stage
          :stage/root
          (#(group/findActor % "player-message"))
-         (actor/setUserObject (atom {:text message :counter 0})))
+         (actor/set-user-object! (atom {:text message :counter 0})))
      nil)
 
    :tx/show-modal
@@ -972,16 +972,16 @@
                                :skin skin
                                :table/rows [[{:actor (label/new text skin)}]
                                             [{:actor (doto (text-button/new button-text skin)
-                                                        (actor/addListener
+                                                        (actor/add-listener!
                                                          (change-listener/create
                                                           (fn [_event _actor]
-                                                            (actor/remove
+                                                            (actor/remove!
                                                              (group/findActor (:stage/root stage)
                                                                                "moon.ui.modal-window"))
                                                             (on-click)))))}]]}))
                          (window/setModal true)
-                         (actor/setName "moon.ui.modal-window")
-                         (actor/setPosition (/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
+                         (actor/set-name! "moon.ui.modal-window")
+                         (actor/set-position! (/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
                                          (* (viewport/getWorldHeight (:stage/viewport stage)) (/ 3 4)) align/center)))
      nil)
 
@@ -1092,7 +1092,7 @@
    :tx/toggle-inventory-visible
    (fn [{:keys [ctx/stage]}]
      (let [inventory (group/findActor (:stage/root stage) "moon.ui.windows.inventory")]
-       (actor/setVisible inventory (not (actor/isVisible inventory)))
+       (actor/set-visible! inventory (not (actor/visible? inventory)))
        nil))
 
    :tx/ui-remove-item
@@ -1692,7 +1692,7 @@
     (actor/new
      (fn [_actor _delta])
      (fn [this _batch _parent-alpha]
-       (when-let [stage (actor/getStage this)]
+       (when-let [stage (actor/get-stage this)]
          (draw! (:stage/ctx stage)
                 (create-draws (:stage/ctx stage))))))))
 
@@ -1788,7 +1788,7 @@
   (let [group* (group/new)]
     (run! #(group/addActor group* %) (for [f actor-fns] (f ctx)))
     (doto group*
-      (actor/setName "moon.ui.windows"))))
+      (actor/set-name! "moon.ui.windows"))))
 
 (defn stage-info-window-create
   [{:keys [ctx/skin
@@ -1830,7 +1830,7 @@
   (actor/new
    (fn [_actor _delta])
    (fn [this _batch _parent-alpha]
-     (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/getStage this))
+     (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/get-stage this))
            entity @player-eid
            state-k (:state (:entity/fsm entity))]
        (draw! ctx (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx))))))
@@ -1839,15 +1839,15 @@
   (let [message-duration-seconds 0.5]
     (doto (actor/new
            (fn [this delta]
-             (let [state (actor/getUserObject this)]
+             (let [state (actor/get-user-object this)]
                (when (:text @state)
                  (swap! state update :counter + delta)
                  (when (>= (:counter @state) message-duration-seconds)
                    (reset! state nil)))))
            (fn [this _batch _parent-alpha]
-             (when-let [stage (actor/getStage this)]
+             (when-let [stage (actor/get-stage this)]
                (draw! (:stage/ctx stage)
-                      [(let [state (actor/getUserObject this)
+                      [(let [state (actor/get-user-object this)
                              vp-width (viewport/getWorldWidth (:stage/viewport stage))
                              vp-height (viewport/getWorldHeight (:stage/viewport stage))]
                          (when-let [text (:text @state)]
@@ -1856,8 +1856,8 @@
                                         :text text
                                         :scale 2.5
                                         :up? true}]))]))))
-      (actor/setName "player-message")
-      (actor/setUserObject (atom nil)))))
+      (actor/set-name! "player-message")
+      (actor/set-user-object! (atom nil)))))
 
 (defn- player-movement-vector [{:keys [ctx/input]}]
   (let [r (when (input/key-pressed? input :input.keys/d) [1  0])
@@ -1887,7 +1887,7 @@
              (-> stage
                  :stage/root
                  (#(group/findActor % "moon.ui.windows.inventory"))
-                 actor/isVisible)
+                 actor/visible?)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
               [:tx/event player-eid :pickup-item item]]
@@ -2889,15 +2889,15 @@
   (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (group/findActor (:stage/root stage) "moon.ui.windows")
          group/getChildren
-         (run! #(actor/setVisible % false))))
+         (run! #(actor/set-visible! % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory controls))
     (let [inventory (group/findActor (:stage/root stage) "moon.ui.windows.inventory")]
-      (actor/setVisible inventory (not (actor/isVisible inventory)))))
+      (actor/set-visible! inventory (not (actor/visible? inventory)))))
 
   (when (input/key-just-pressed? input (:toggle-entity-info controls))
     (let [entity-info (group/findActor (:stage/root stage) "moon.ui.windows.entity-info")]
-      (actor/setVisible entity-info (not (actor/isVisible entity-info)))))
+      (actor/set-visible! entity-info (not (actor/visible? entity-info)))))
   ctx)
 
 (defn update-draw-stage

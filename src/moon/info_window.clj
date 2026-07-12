@@ -1,6 +1,6 @@
 (ns moon.info-window
   (:require [moon.table :as moon-table]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as gdx-label]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
@@ -18,13 +18,13 @@
         window (doto (doto (window/new title skin)
                       (moon-table/set-opts!
                        {:table/rows [[{:actor label :expand? true}]]}))
-                 (actor/setName actor-name)
-                 (actor/setVisible visible?))]
+                 (actor/set-name! actor-name)
+                 (actor/set-visible! visible?))]
     (let [[x y] position]
-      (actor/setPosition window x y))
+      (actor/set-position! window x y))
     (group/addActor window (actor/new
                             (fn [this _delta]
-                              (when-let [stage (actor/getStage this)]
+                              (when-let [stage (actor/get-stage this)]
                                 (gdx-label/setText label (set-label-text! (:stage/ctx stage))))
                               (layout/pack window))
                             (fn [_actor _batch _parent-alpha])))

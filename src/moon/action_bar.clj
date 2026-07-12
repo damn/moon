@@ -1,7 +1,7 @@
 (ns moon.action-bar
   (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.button :as button]
             [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
@@ -19,14 +19,14 @@
                            :table/rows [[{:actor (doto (horizontal-group/new)
                                                    (horizontal-group/space 2)
                                                    (horizontal-group/pad 2)
-                                                   (actor/setName "moon.ui.action-bar.horizontal-group")
-                                                   (actor/setUserObject (doto (button-group/new)
+                                                   (actor/set-name! "moon.ui.action-bar.horizontal-group")
+                                                   (actor/set-user-object! (doto (button-group/new)
                                                                           (button-group/setMaxCheckCount 1)
                                                                           (button-group/setMinCheckCount 0))))
                                           :expand? true
                                           :bottom? true}]]})
     (layout/setFillParent true)
-    (actor/setName "moon.ui.action-bar")))
+    (actor/set-name! "moon.ui.action-bar")))
 
 (defn- get-data
   [action-bar]
@@ -34,7 +34,7 @@
           (:button-group %)]}
   (let [group (group/findActor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
-     :button-group (actor/getUserObject group)}))
+     :button-group (actor/get-user-object group)}))
 
 (defn add-skill!
   [action-bar
@@ -48,8 +48,8 @@
                       (doto (texture-region-drawable/new texture-region)
                         (texture-region-drawable/setMinSize (* scale (texture-region/getRegionWidth texture-region))
                                         (* scale (texture-region/getRegionHeight texture-region)))))
-                 (actor/addListener (text-tooltip/new tooltip-text skin))
-                 (actor/setUserObject skill-id))]
+                 (actor/add-listener! (text-tooltip/new tooltip-text skin))
+                 (actor/set-user-object! skill-id))]
     (group/addActor horizontal-group button)
     (button-group/add button-group button)
     nil))
@@ -58,10 +58,10 @@
   [action-bar skill-id]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
         button (get horizontal-group skill-id)]
-    (actor/remove button)
+    (actor/remove! button)
     (button-group/remove button-group button)
     nil))
 
 (defn selected-skill [action-bar]
   (when-let [skill-button (button-group/getChecked (:button-group (get-data action-bar)))]
-    (actor/getUserObject skill-button)))
+    (actor/get-user-object skill-button)))

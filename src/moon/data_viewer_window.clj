@@ -1,7 +1,7 @@
 (ns moon.data-viewer-window
   (:require [moon.table :as moon-table]
             [moon.window :refer [add-close-button!]]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
@@ -27,9 +27,9 @@
   (let [v->actor (fn [v skin]
                    (if (map? v)
                      (doto (text-button/new "Map" skin)
-                       (actor/addListener (change-listener/create
+                       (actor/add-listener! (change-listener/create
                                             (fn [_event actor]
-                                              (stage/addActor (actor/getStage actor)
+                                              (stage/addActor (actor/get-stage actor)
                                                               (create
                                                                {:title "title"
                                                                 :data v

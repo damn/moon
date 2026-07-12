@@ -2,7 +2,7 @@
   (:require [moon.table :as moon-table :refer [add-cell!]]
             [moon.stage :as moon-stage]
             [moon.window :refer [add-close-button!]]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
@@ -18,7 +18,7 @@
 (defn- set-label-text-actor [label-widget text-fn]
   (actor/new
    (fn [this _delta]
-     (when-let [stage (actor/getStage this)]
+     (when-let [stage (actor/get-stage this)]
        (label/setText label-widget (text-fn (:stage/ctx stage)))))
    (fn [_actor _batch _parent-alpha])))
 
@@ -44,7 +44,7 @@
                 (moon-table/set-opts! {:table/rows [(for [{:keys [label items]} menus]
                                                            {:actor
                                                             (doto (text-button/new label skin)
-                                                              (actor/addListener (change-listener/create
+                                                              (actor/add-listener! (change-listener/create
                                                                                   (fn [event actor]
                                                                                     (stage/addActor (event/getStage event)
                                                                                                     (doto (doto (window/new label skin)
@@ -53,7 +53,7 @@
                                                                                                                                            :table/rows [(for [{:keys [label on-click]} items]
                                                                                                                                                          {:actor
                                                                                                                                                           (doto (text-button/new label skin)
-                                                                                                                                                            (actor/addListener (change-listener/create
+                                                                                                                                                            (actor/add-listener! (change-listener/create
                                                                                                                                                                                 (fn [event actor]
                                                                                                                                                                                   (let [stage (event/getStage event)]
                                                                                                                                                                                     (moon-stage/set-ctx! stage
@@ -74,7 +74,7 @@
                                                            :fill-x? true
                                                            :colspan 1}]
                                                          [{:actor (doto (label/new "" skin)
-                                                                        (actor/setTouchable touchable/disabled))
+                                                                        (actor/set-touchable! touchable/disabled))
                                                            :expand? true
                                                            :fill-x? true
                                                            :fill-y? true}]]}))

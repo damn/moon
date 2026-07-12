@@ -19,7 +19,7 @@
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [com.badlogic.gdx.scenes.scene2d.actor :as actor]
+            [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
@@ -116,7 +116,7 @@
                                                                                      (disposable/dispose! (:ctx/tiled-map %))
                                                                                      (generate-level % level-fn))]]
                                                                [{:actor (doto (text-button/new (str "Generate " label) skin)
-                                                                              (actor/addListener
+                                                                              (actor/add-listener!
                                                                                (change-listener/create
                                                                                 (fn [_event _actor]
                                                                                   (swap! state on-click)))))}])})))
