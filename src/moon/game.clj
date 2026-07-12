@@ -30,7 +30,9 @@
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [moon.action-bar :as action-bar]
-            [clojure.gdx.backends.lwjgl3.lwjgl3-application :as application]
+            [clojure.gdx.application :as application]
+            [clojure.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
+            [clojure.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
             [moon.audio :as audio]
             [moon.body :as body]
             [moon.button :refer [is?]]
@@ -2984,18 +2986,19 @@
   (viewport/update world-viewport width height false))
 
 (defn -main []
-  (application/create
-   {:create! (fn []
-               (reset! state (create (gdx/app))))
-    :dispose! (fn []
-                (dispose @state))
-    :render! (fn []
-               (swap! state render))
-    :resize! (fn [width height]
-               (resize @state width height))
-    :pause! (fn [])
-    :resume! (fn [])}
-   {:config/set-title "Moon"
-    :config/set-windowed-mode {:width 1440
-                               :height 900}
-    :config/set-foreground-fps 60}))
+  (config/use-glfw-async!)
+  (lwjgl3-application/create
+   {:application/listener {:create! (fn [application]
+                                      (reset! state (create application)))
+                           :dispose! (fn []
+                                       (dispose @state))
+                           :render! (fn []
+                                      (swap! state render))
+                           :resize! (fn [width height]
+                                      (resize @state width height))
+                           :pause! (fn [])
+                           :resume! (fn [])}
+    :application/config {:config/set-title "Moon"
+                         :config/set-windowed-mode {:width 1440
+                                                    :height 900}
+                         :config/set-foreground-fps 60}}))
