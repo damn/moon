@@ -2910,8 +2910,6 @@
   (stage/draw stage)
   (:stage/ctx stage))
 
-(def state (atom nil))
-
 (defn create [application]
   (-> application
       create-bootstrap
@@ -2987,6 +2985,8 @@
    width height]
   (viewport/update (:stage/viewport stage) width height true)
   (viewport/update world-viewport width height false))
+
+(def state (atom nil))
 
 (defn -main []
   (config/use-glfw-async!)
