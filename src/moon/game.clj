@@ -30,7 +30,7 @@
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [moon.action-bar :as action-bar]
-            [moon.application :as application]
+            [clojure.gdx.backends.lwjgl3.application :as application]
             [moon.audio :as audio]
             [moon.body :as body]
             [moon.button :refer [is?]]

@@ -51,7 +51,7 @@
 
   ;; Game scratch
   (require '[moon.db :as db]
-           '[moon.application :as application]
+           '[clojure.gdx.application :as application]
            '[clojure.gdx :as gdx])
   (application/post-runnable! (gdx/app)
                                 (fn []
