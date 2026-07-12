@@ -2308,15 +2308,17 @@
 (defn create-db [ctx]
   (assoc ctx :ctx/db (db/create)))
 
-(defn create-stage-actors [ctx]
-  (doseq [[actor-fn & params] [[action-bar-create]
-                                [stage-dev-menu-create]
-                                [hp-mana-bar-create]
-                                [windows-create [stage-info-window-create
-                                                 inventory-window-create]]
-                                [player-state-draw-create]
-                                [player-message-actor-create]]]
-    (stage/addActor (:ctx/stage ctx) (apply actor-fn ctx params)))
+(defn create-stage-actors
+  [{:keys [ctx/stage]
+    :as ctx}]
+  (doseq [actor [(action-bar-create ctx)
+                 (stage-dev-menu-create ctx)
+                 (hp-mana-bar-create ctx)
+                 (windows-create ctx [stage-info-window-create
+                                      inventory-window-create])
+                 (player-state-draw-create ctx)
+                 (player-message-actor-create ctx)]]
+    (stage/addActor stage actor))
   ctx)
 
 (defn create-tiled-map [ctx]
