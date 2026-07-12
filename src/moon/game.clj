@@ -1,5 +1,6 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
+            [clojure.gdx :as gdx]
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
@@ -2984,8 +2985,8 @@
 
 (defn -main []
   (application/create
-   {:create! (fn [app]
-               (reset! state (create app)))
+   {:create! (fn []
+               (reset! state (create (gdx/app))))
     :dispose! (fn []
                 (dispose @state))
     :render! (fn []

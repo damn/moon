@@ -1,5 +1,6 @@
 (ns moon.editor
-  (:require [moon.db :as db]
+  (:require [clojure.gdx :as gdx]
+            [moon.db :as db]
             [moon.property :as property]
             [clojure.edn :as edn]
             [moon.coll :as coll]
@@ -750,8 +751,8 @@
   (viewport/update (:stage/viewport stage) width height true))
 
 (defn -main []
-  (application/create {:create! (fn [app]
-                                         (reset! state (create app)))
+  (application/create {:create! (fn []
+                                         (reset! state (create (gdx/app))))
                               :dispose! (fn []
                                           (dispose @state))
                               :render! (fn []

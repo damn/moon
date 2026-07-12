@@ -1,5 +1,6 @@
 (ns moon.levelgen
-  (:require [moon.db :as db]
+  (:require [clojure.gdx :as gdx]
+            [moon.db :as db]
             [moon.orthographic-camera :as orthographic-camera]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
@@ -178,8 +179,8 @@
 
 (defn -main []
   (application/create
-   {:create! (fn [app]
-               (reset! state (create state config app)))
+   {:create! (fn []
+               (reset! state (create state config (gdx/app))))
     :dispose! (fn []
                 (dispose @state))
     :render! (fn []
