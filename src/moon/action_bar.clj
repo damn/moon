@@ -5,9 +5,28 @@
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.button :as button]
             [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]
+            [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
+            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
+            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [moon.table :as moon-table]))
+
+(defn create []
+  (doto (table/new)
+    (moon-table/set-opts! {:table/cell-defaults {:pad 2}
+                           :table/rows [[{:actor (doto (horizontal-group/new)
+                                                   (horizontal-group/space 2)
+                                                   (horizontal-group/pad 2)
+                                                   (actor/setName "moon.ui.action-bar.horizontal-group")
+                                                   (actor/setUserObject (doto (button-group/new)
+                                                                          (button-group/setMaxCheckCount 1)
+                                                                          (button-group/setMinCheckCount 0))))
+                                          :expand? true
+                                          :bottom? true}]]})
+    (layout/setFillParent true)
+    (actor/setName "moon.ui.action-bar")))
 
 (defn- get-data
   [action-bar]
