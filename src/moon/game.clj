@@ -1787,17 +1787,6 @@
     (doto group*
       (actor/setName "moon.ui.windows"))))
 
-(defn stage-dev-menu-create
-  [{:keys [ctx/skin
-           ctx/textures]}]
-  (dev-menu/create
-   {:menus dev-menus
-    :update-labels (for [item dev-update-labels]
-                     (if (:icon item)
-                       (update item :icon #(get textures %))
-                       item))
-    :skin skin}))
-
 (defn stage-info-window-create
   [{:keys [ctx/skin
            ctx/stage]}]
@@ -2290,10 +2279,18 @@
   (assoc ctx :ctx/db (db/create)))
 
 (defn create-stage-actors
-  [{:keys [ctx/stage]
+  [{:keys [ctx/stage
+           ctx/skin
+           ctx/textures]
     :as ctx}]
   (doseq [actor [(action-bar/create)
-                 (stage-dev-menu-create ctx)
+                 (dev-menu/create
+                  {:menus dev-menus
+                   :update-labels (for [item dev-update-labels]
+                                    (if (:icon item)
+                                      (update item :icon #(get textures %))
+                                      item))
+                   :skin skin})
                  (hp-mana-bar-create ctx)
                  (windows-create ctx [stage-info-window-create
                                       inventory-window-create])
