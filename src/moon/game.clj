@@ -1651,7 +1651,7 @@
   [ctx entity k v]
   ((k->render k) v entity ctx))
 
-(defn action-bar-create [_ctx]
+(defn action-bar-create []
   (doto (doto (table/new)
               (moon-table/set-opts! {:table/cell-defaults {:pad 2}
                                          :table/rows [[{:actor (doto (horizontal-group/new)
@@ -1853,7 +1853,7 @@
       ui-mouse-position
       {:center? true}]]))
 
-(defn player-state-draw-create [_ctx]
+(defn player-state-draw-create []
   (actor/new
    (fn [_actor _delta])
    (fn [this _batch _parent-alpha]
@@ -1862,7 +1862,7 @@
            state-k (:state (:entity/fsm entity))]
        (draw! ctx (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx))))))
 
-(defn player-message-actor-create [_ctx]
+(defn player-message-actor-create []
   (let [message-duration-seconds 0.5]
     (doto (actor/new
            (fn [this delta]
@@ -2311,13 +2311,13 @@
 (defn create-stage-actors
   [{:keys [ctx/stage]
     :as ctx}]
-  (doseq [actor [(action-bar-create ctx)
+  (doseq [actor [(action-bar-create)
                  (stage-dev-menu-create ctx)
                  (hp-mana-bar-create ctx)
                  (windows-create ctx [stage-info-window-create
                                       inventory-window-create])
-                 (player-state-draw-create ctx)
-                 (player-message-actor-create ctx)]]
+                 (player-state-draw-create)
+                 (player-message-actor-create)]]
     (stage/addActor stage actor))
   ctx)
 
