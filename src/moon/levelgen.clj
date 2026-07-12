@@ -28,7 +28,7 @@
             [moon.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [clojure.gdx.backends.lwjgl3.application :as application]))
+            [clojure.gdx.backends.lwjgl3.lwjgl3-application :as application]))
 
 (def state (atom nil))
 

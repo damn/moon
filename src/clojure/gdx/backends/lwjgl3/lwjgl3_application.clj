@@ -1,4 +1,4 @@
-(ns clojure.gdx.backends.lwjgl3.application
+(ns clojure.gdx.backends.lwjgl3.lwjgl3-application
   (:require [com.badlogic.gdx.application :as application]
             [com.badlogic.gdx.application-listener :as application-listener]
             [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3]
