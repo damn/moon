@@ -1,6 +1,6 @@
 (ns moon.viewport
   (:require [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [gdx.math.vector2 :as vector2]))
+            [clojure.gdx.math.vector2 :as vector2]))
 
 (defn unproject [viewport v2]
   (-> viewport

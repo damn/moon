@@ -1,4 +1,4 @@
-(ns gdx.math.vector2
+(ns clojure.gdx.math.vector2
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.math.vector2 :as vector2]))
 

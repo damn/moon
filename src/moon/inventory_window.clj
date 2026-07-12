@@ -12,7 +12,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [moon.table :as moon-table]
-            [gdx.math.vector2 :as vector2]
+            [clojure.gdx.math.vector2 :as vector2]
             [moon.inventory.cell :as inventory-cell]))
 
 (defn- get-cell [inventory-window cell]

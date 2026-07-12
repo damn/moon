@@ -1,4 +1,4 @@
-(ns gdx.math.vector3
+(ns clojure.gdx.math.vector3
   (:require [com.badlogic.gdx.math.vector3 :as vector3]))
 
 (defn x [v3]

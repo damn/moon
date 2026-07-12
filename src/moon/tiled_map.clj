@@ -7,7 +7,7 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdx.math.vector3 :as vector3]
+            [clojure.gdx.math.vector3 :as vector3]
             [moon.map-properties :as map-properties]
             [moon.orthographic-camera :as orthographic-camera]
             [moon.tiled-map-tile-layer :as moon-tile-layer]))
