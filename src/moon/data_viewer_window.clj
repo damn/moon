@@ -1,6 +1,6 @@
 (ns moon.data-viewer-window
-  (:require [moon.table :as moon-table]
-            [moon.window :refer [add-close-button!]]
+  (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
+            [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]

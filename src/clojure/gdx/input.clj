@@ -1,4 +1,4 @@
-(ns moon.input
+(ns clojure.gdx.input
   (:require [com.badlogic.gdx.input :as input]
             [com.badlogic.gdx.input$buttons :as buttons]
             [com.badlogic.gdx.input$keys :as keys]))

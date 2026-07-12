@@ -1,4 +1,4 @@
-(ns moon.orthographic-camera
+(ns clojure.gdx.graphics.orthographic-camera
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.math.frustum :as frustum]

@@ -1,4 +1,4 @@
-(ns moon.viewport
+(ns clojure.gdx.utils.viewport.viewport
   (:require [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [clojure.gdx.math.vector2 :as vector2]))
 

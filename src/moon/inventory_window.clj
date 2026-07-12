@@ -11,7 +11,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [moon.table :as moon-table]
+            [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
             [clojure.gdx.math.vector2 :as vector2]
             [moon.inventory.cell :as inventory-cell]))
 

@@ -1,4 +1,4 @@
-(ns moon.table
+(ns clojure.gdx.scenes.scene2d.ui.table
   (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))

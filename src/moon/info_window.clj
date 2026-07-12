@@ -1,5 +1,5 @@
 (ns moon.info-window
-  (:require [moon.table :as moon-table]
+  (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as gdx-label]

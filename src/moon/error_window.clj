@@ -1,7 +1,7 @@
 (ns moon.error-window
   (:require [clojure.repl :as repl]
-            [moon.table :as moon-table]
-            [moon.window :refer [add-close-button!]]
+            [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
+            [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]))

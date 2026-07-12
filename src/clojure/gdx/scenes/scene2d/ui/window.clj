@@ -1,10 +1,10 @@
-(ns moon.window
+(ns clojure.gdx.scenes.scene2d.ui.window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [moon.table :refer [add-cell!]]))
+            [clojure.gdx.scenes.scene2d.ui.table :refer [add-cell!]]))
 
 (defn title-bar? [actor]
   (when (instance? label/class actor)

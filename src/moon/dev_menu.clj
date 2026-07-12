@@ -1,7 +1,7 @@
 (ns moon.dev-menu
-  (:require [moon.table :as moon-table :refer [add-cell!]]
-            [moon.stage :as moon-stage]
-            [moon.window :refer [add-close-button!]]
+  (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table :refer [add-cell!]]
+            [clojure.gdx.scenes.scene2d.stage :as moon-stage]
+            [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.group :as group]

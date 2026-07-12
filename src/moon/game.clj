@@ -35,25 +35,25 @@
             [clojure.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
             [moon.audio :as audio]
             [moon.body :as body]
-            [moon.button :refer [is?]]
+            [clojure.gdx.scenes.scene2d.ui.button :refer [is?]]
             [moon.cell :as cell]
             [moon.coll :as coll]
             [moon.content-grid :as content-grid]
             [moon.data-viewer-window :as data-viewer-window]
             [moon.db :as db]
             [moon.dev-menu :as dev-menu]
-            [moon.disposable :as disposable]
+            [clojure.gdx.utils.disposable :as disposable]
             [moon.error-window :as error-window]
             [moon.faction :as faction]
-            [moon.files :as files]
-            [moon.font-generator :as font-generator]
+            [clojure.gdx.files :as files]
+            [clojure.gdx.graphics.g2d.freetype.free-type-font-generator :as font-generator]
             [moon.g2d :as moon-g2d]
             [moon.grid :as grid :refer [remove-from-occupied-cells!
                                         remove-from-touched-cells!
                                         set-occupied-cells!
                                         set-touched-cells!]]
             [moon.info-window :as info-window]
-            [moon.input :as input]
+            [clojure.gdx.input :as input]
             [moon.inventory :as inventory]
             [moon.inventory-window :as inventory-window :refer [inventory-window-build]]
             [moon.inventory.cell :as inventory-cell]
@@ -64,27 +64,27 @@
             [moon.level.uf-caves :as uf-caves]
             [moon.m :refer [safe-merge]]
             [moon.malli :as malli-schema]
-            [moon.map-properties :as map-properties]
+            [clojure.gdx.maps.map-properties :as map-properties]
             [moon.mods :as mods]
             [moon.number :as number]
-            [moon.orthographic-camera :as orthographic-camera]
-            [moon.pixmap :as pixmap]
+            [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [clojure.gdx.graphics.pixmap :as pixmap]
             [moon.rand :as rand]
             [moon.raycaster :as raycaster]
             [moon.schema.register-methods]
-            [moon.stage :as moon-stage]
+            [clojure.gdx.scenes.scene2d.stage :as moon-stage]
             [moon.stats :as stats]
             [moon.string :as string]
-            [moon.table :as moon-table]
+            [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
             [moon.textures :as textures]
             [moon.throwable :as throwable]
-            [moon.tiled-map :as moon-tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [moon.timer :as timer]
             [moon.txs-fn-map :refer [actions!]]
             [moon.v2 :as v2]
             [moon.val-max :refer [ratio]]
-            [moon.viewport :refer [unproject]]
-            [moon.window :refer [title-bar?]]
+            [clojure.gdx.utils.viewport.viewport :refer [unproject]]
+            [clojure.gdx.scenes.scene2d.ui.window :refer [title-bar?]]
             [qrecord.core :as q]
             [reduce-fsm :as fsm]
             [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer])
@@ -1220,6 +1220,10 @@
    :items [{:label "Show data"
             :on-click (fn [{:keys [ctx/skin
                                    ctx/stage] :as ctx}]
+
+                        ; skin & stage
+                        ; :moon.game/ui
+                        ; moon.game.ui/data-viweer-window?
                         (stage/addActor stage
                                         (data-viewer-window/create
                                          {:title "Data View"

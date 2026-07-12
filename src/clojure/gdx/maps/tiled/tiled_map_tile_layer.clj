@@ -1,9 +1,9 @@
-(ns moon.tiled-map-tile-layer
+(ns clojure.gdx.maps.tiled.tiled-map-tile-layer
   (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [moon.map-properties :as map-properties]))
+            [clojure.gdx.maps.map-properties :as map-properties]))
 
 (defn property-value [layer [x y] property-key]
   (if-let [cell (tiled-map-tile-layer/getCell layer x y)]

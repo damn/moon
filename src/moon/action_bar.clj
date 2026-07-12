@@ -11,7 +11,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [moon.table :as moon-table]))
+            [clojure.gdx.scenes.scene2d.ui.table :as moon-table]))
 
 (defn create []
   (doto (table/new)

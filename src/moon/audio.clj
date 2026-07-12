@@ -3,8 +3,8 @@
             [clojure.java.io :as io]
             [com.badlogic.gdx.audio :as gdx-audio]
             [com.badlogic.gdx.audio.sound :as sound]
-            [moon.files :as files]
-            [moon.disposable :as disposable]))
+            [clojure.gdx.files :as files]
+            [clojure.gdx.utils.disposable :as disposable]))
 
 (defn create
   [audio files]

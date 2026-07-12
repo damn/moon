@@ -1,4 +1,4 @@
-(ns moon.pixmap
+(ns clojure.gdx.graphics.pixmap
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.pixmap :as pixmap]
             [com.badlogic.gdx.graphics.pixmap$format :as format]))

@@ -1,4 +1,4 @@
-(ns moon.tiled-map
+(ns clojure.gdx.maps.tiled.tiled-map
   (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
@@ -8,9 +8,9 @@
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.gdx.math.vector3 :as vector3]
-            [moon.map-properties :as map-properties]
-            [moon.orthographic-camera :as orthographic-camera]
-            [moon.tiled-map-tile-layer :as moon-tile-layer]))
+            [clojure.gdx.maps.map-properties :as map-properties]
+            [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as moon-tile-layer]))
 
 (defn get-property [tiled-map k]
   (-> tiled-map

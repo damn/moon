@@ -1,9 +1,9 @@
 (ns moon.level.uf-caves
-  (:require [moon.tiled-map :as moon-tiled-map]
+  (:require [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [moon.rand :as rand]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [moon.map-properties :as map-properties]
+            [clojure.gdx.maps.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]))
 

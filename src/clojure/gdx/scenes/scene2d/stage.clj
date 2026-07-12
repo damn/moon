@@ -1,4 +1,4 @@
-(ns moon.stage
+(ns clojure.gdx.scenes.scene2d.stage
   (:import (clojure.lang ILookup)
            (clojure Stage)))
 

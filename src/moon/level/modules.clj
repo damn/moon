@@ -1,15 +1,15 @@
 (ns moon.level.modules
   (:require [moon.rand :as rand]
             [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
-            [moon.tiled-map :as moon-tiled-map]
-            [moon.tiled-map-tile-layer :refer [property-value]]
+            [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :refer [property-value]]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [moon.map-properties :as map-properties]
+            [clojure.gdx.maps.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
             [moon.position :as position]))
