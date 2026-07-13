@@ -79,6 +79,9 @@
             [reduce-fsm :as fsm])
   (:gen-class))
 
+; TODO first step - law of demeter
+; go through all ctx/ keys
+; and see if we dont go sub-level (stage get actor get actor get actor ....)
 (def schema
   (malli-schema/create
    [:map {:closed true}
@@ -94,10 +97,10 @@
     [:ctx/cursors :some]
     [:ctx/default-font :some]
     [:ctx/unit-scale :some]
-    [:ctx/world-viewport :some]
+    [:ctx/world-viewport :some] ; we are accessing camerea thorugh it although it holds the camera
     [:ctx/shape-drawer :some]
     [:ctx/shape-drawer-texture :some]
-    [:ctx/textures :some]
+    [:ctx/textures :some] ; run! dispose / opaque ?
     [:ctx/skin :some]
     [:ctx/stage :some] ; I access too much internals (stage get actor)
 
@@ -109,7 +112,7 @@
     [:ctx/world-mouse-position :any]
 
 
-    ; constants?
+    ; constants? (both at the moment FIXME)
     [:ctx/colors :some]
     [:ctx/controls :some]
     [:ctx/controls-info :some]
@@ -918,6 +921,7 @@
              (filter #(effect-applicable? % effect-ctx) effects)))
 
    :tx/event
+   ; FIXME duplicated
    (fn ([ctx eid event]
          (let [fsm (:entity/fsm @eid)
                _ (assert fsm)
