@@ -210,21 +210,22 @@
   (fn [[k _v] _effect-ctx _ctx]
     k))
 
-(declare handle-fsm-event! do! spawn-creature! audiovisual!)
+(declare handle-fsm-event! do! spawn-creature! audiovisual!
+         spawn-alert! spawn-item! spawn-line! spawn-projectile!)
 
 (defmethod handle-effect :effects/audiovisual
   [[_ audiovisual] {:keys [effect/target-position]} ctx]
   (audiovisual! ctx target-position audiovisual))
 
 (defmethod handle-effect :effects/projectile
-  [[_ projectile] {:keys [effect/source effect/target-direction]} _ctx]
-  [[:tx/spawn-projectile
-    {:position (projectile-start-point (:entity/body @source)
-                                         target-direction
-                                         (:projectile/size projectile))
-     :direction target-direction
-     :faction (:entity/faction @source)}
-    projectile]])
+  [[_ projectile] {:keys [effect/source effect/target-direction]} ctx]
+  (spawn-projectile! ctx
+                     {:position (projectile-start-point (:entity/body @source)
+                                                        target-direction
+                                                        (:projectile/size projectile))
+                      :direction target-direction
+                      :faction (:entity/faction @source)}
+                     projectile))
 
 (defmethod handle-effect :effects/spawn
   [[_ {:keys [property/id] :as property}]
@@ -241,20 +242,21 @@
    {:keys [effect/source]}
    {:keys [ctx/active-entities
            ctx/colors
-           ctx/raycaster]}]
+           ctx/raycaster]
+    :as ctx}]
   (let [source* @source]
     (apply concat
            (for [target (affected-targets active-entities raycaster source*)]
-             [[:tx/spawn-line
-               {:start (:body/position (:entity/body source*)) #_(start-point source* target*)
-                :end (:body/position (:entity/body @target))
-                :duration 0.05
-                :color (:colors/target-all-line colors)
-                :thick? true}]
-              [:tx/effect
-               {:effect/source source
-                :effect/target target}
-               entity-effects]]))))
+             (do (spawn-line! ctx
+                              {:start (:body/position (:entity/body source*))
+                               :end (:body/position (:entity/body @target))
+                               :duration 0.05
+                               :color (:colors/target-all-line colors)
+                               :thick? true})
+                 [[:tx/effect
+                   {:effect/source source
+                    :effect/target target}
+                   entity-effects]])))))
 
 (defmethod handle-effect :effects/target-entity
   [[_ {:keys [maxrange entity-effects]}]
@@ -263,12 +265,13 @@
   (let [body        (:entity/body @source)
         target-body (:entity/body @target)]
     (if (body/in-range? body target-body maxrange)
-      [[:tx/spawn-line {:start (body/start-point body target-body)
+      (do (spawn-line! ctx
+                       {:start (body/start-point body target-body)
                         :end (:body/position target-body)
                         :duration 0.05
                         :color (:colors/target-entity-line colors)
-                        :thick? true}]
-       [:tx/effect effect-ctx entity-effects]]
+                        :thick? true})
+          [[:tx/effect effect-ctx entity-effects]])
       (audiovisual! ctx
                     (body/end-point body target-body maxrange)
                     :audiovisuals/hit-ground))))
@@ -910,6 +913,51 @@
                                       :z-order :z-order/effect
                                       :position position})))
 
+(defn- spawn-alert! [{:keys [ctx/elapsed-time] :as ctx} position faction duration]
+  (spawn-effect! ctx position
+                 {:entity/alert-friendlies-after-duration
+                  {:counter (timer/create elapsed-time duration)
+                   :faction faction}}))
+
+(defn- spawn-item! [ctx position item]
+  (spawn-entity! ctx
+                 {:entity/body {:position position
+                                :width 0.75
+                                :height 0.75
+                                :z-order :z-order/on-ground}
+                  :entity/image (:entity/image item)
+                  :entity/item item
+                  :entity/clickable {:type :clickable/item
+                                     :text (:property/pretty-name item)}}))
+
+(defn- spawn-line! [ctx {:keys [start end duration color thick?]}]
+  (spawn-effect! ctx start
+                 {:entity/line-render {:thick? thick? :end end :color color}
+                  :entity/delete-after-duration duration}))
+
+(defn- spawn-projectile!
+  [ctx
+   {:keys [position direction faction]}
+   {:keys [entity/image
+           projectile/max-range
+           projectile/speed
+           entity-effects
+           projectile/size
+           projectile/piercing?]}]
+  (spawn-entity! ctx
+                 {:entity/body {:position position
+                                :width size
+                                :height size
+                                :z-order :z-order/flying
+                                :rotation-angle (v2/angle-from-vector direction)}
+                  :entity/movement {:direction direction :speed speed}
+                  :entity/image image
+                  :entity/faction faction
+                  :entity/delete-after-duration (/ max-range speed)
+                  :entity/destroy-audiovisual :audiovisuals/hit-wall
+                  :entity/projectile-collision {:entity-effects entity-effects
+                                               :piercing? piercing?}}))
+
 (defn- show-modal! [ctx {:keys [title text button-text on-click]}]
   (let [{:keys [ctx/skin ctx/stage]} ctx]
     (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
@@ -1003,9 +1051,7 @@
     (when item
       (swap! eid dissoc :entity/item-on-cursor)
       (play-sound! ctx "bfxr_itemputground")
-      (do! ctx [[:tx/spawn-item
-                 (item-place-position ctx entity)
-                 item]]))))
+      (spawn-item! ctx (item-place-position ctx entity) item))))
 
 (defn- state-exit-player-moving
   [_ eid _ctx]
@@ -1016,7 +1062,7 @@
   [_ eid {:keys [ctx/elapsed-time]
           :as ctx}]
   (swap! eid add-text-effect elapsed-time "[WHITE]!" 1)
-  (do! ctx [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]]))
+  (spawn-alert! ctx (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2))
 
 (defn- state-exit-npc-moving
   [_ eid _ctx]
@@ -1067,57 +1113,8 @@
   (mapcat #(handle-effect % effect-ctx ctx)
           (filter #(effect-applicable? % effect-ctx) effects)))
 
-(defn- tx-spawn-alert [{:keys [ctx/elapsed-time] :as ctx} position faction duration]
-  (spawn-effect! ctx position
-                 {:entity/alert-friendlies-after-duration
-                  {:counter (timer/create elapsed-time duration)
-                   :faction faction}}))
-
-(defn- tx-spawn-item [ctx position item]
-  (spawn-entity! ctx
-                 {:entity/body {:position position
-                                :width 0.75
-                                :height 0.75
-                                :z-order :z-order/on-ground}
-                  :entity/image (:entity/image item)
-                  :entity/item item
-                  :entity/clickable {:type :clickable/item
-                                     :text (:property/pretty-name item)}}))
-
-(defn- tx-spawn-line [ctx {:keys [start end duration color thick?]}]
-  (spawn-effect! ctx start
-                 {:entity/line-render {:thick? thick? :end end :color color}
-                  :entity/delete-after-duration duration}))
-
-(defn- tx-spawn-projectile
-  [ctx
-   {:keys [position direction faction]}
-   {:keys [entity/image
-           projectile/max-range
-           projectile/speed
-           entity-effects
-           projectile/size
-           projectile/piercing?]}]
-  (spawn-entity! ctx
-                 {:entity/body {:position position
-                                :width size
-                                :height size
-                                :z-order :z-order/flying
-                                :rotation-angle (v2/angle-from-vector direction)}
-                  :entity/movement {:direction direction :speed speed}
-                  :entity/image image
-                  :entity/faction faction
-                  :entity/delete-after-duration (/ max-range speed)
-                  :entity/destroy-audiovisual :audiovisuals/hit-wall
-                  :entity/projectile-collision {:entity-effects entity-effects
-                                               :piercing? piercing?}}))
-
 (def tx-fn-map
-  {:tx/effect tx-effect
-   :tx/spawn-alert tx-spawn-alert
-   :tx/spawn-item tx-spawn-item
-   :tx/spawn-line tx-spawn-line
-   :tx/spawn-projectile tx-spawn-projectile})
+  {:tx/effect tx-effect})
 
 (defn do!
   [ctx txs]
