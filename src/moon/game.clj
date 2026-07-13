@@ -948,6 +948,16 @@
       (#(group/find-actor % "moon.ui.windows.inventory"))
       (inventory-window/remove-item! cell)))
 
+(defn- remove-item! [ctx eid cell]
+  (let [entity @eid
+        item (get-in (:entity/inventory entity) cell)]
+    (assert item)
+    (swap! eid assoc-in (cons :entity/inventory cell) nil)
+    (when (inventory-cell/applies-modifiers? cell)
+      (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
+    (when (:entity/player? @eid)
+      (ui-remove-item! ctx cell))))
+
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (:ctx/stage ctx)
                       :stage/root
@@ -1020,18 +1030,6 @@
        (if (item/stackable? item cell-item)
          (do #_(tx/stack-item ctx eid cell item))
          [[:tx/set-item eid cell item]])))
-
-   :tx/remove-item
-   (fn [ctx eid cell]
-     (let [entity @eid
-           item (get-in (:entity/inventory entity) cell)]
-       (assert item)
-       (swap! eid assoc-in (cons :entity/inventory cell) nil)
-       (when (inventory-cell/applies-modifiers? cell)
-         (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
-       (when (:entity/player? @eid)
-         (ui-remove-item! ctx cell))
-       nil))
 
    :tx/set-item
    (fn [ctx eid cell item]
@@ -1708,8 +1706,8 @@
   [ctx eid cell]
   (when-let [item (get-in (:entity/inventory @eid) cell)]
     (play-sound! ctx "bfxr_takeit")
-    [[:tx/event eid :pickup-item item]
-     [:tx/remove-item eid cell]]))
+    (remove-item! ctx eid cell)
+    [[:tx/event eid :pickup-item item]]))
 
 (defn- clicked-inventory-cell-player-item-on-cursor
   [ctx eid cell]
@@ -1736,8 +1734,8 @@
           (inventory-cell/valid-slot? cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
-         [[:tx/remove-item eid cell]
-          [:tx/set-item eid cell item-on-cursor]
+         (remove-item! ctx eid cell)
+         [[:tx/set-item eid cell item-on-cursor]
           [:tx/event eid :dropped-item]
           [:tx/event eid :pickup-item item-in-cell]]))))
 
