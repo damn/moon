@@ -25,7 +25,7 @@
             [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
+            [clojure.gdx.graphics.g2d.bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.graphics.gl20 :as gl20]
@@ -1623,12 +1623,12 @@
                        unit-scale @unit-scale
                        scale (or scale 1)
                        font-data (bitmap-font/get-data font)
-                       old-scale (bitmap-font-data/scaleX font-data)
+                       old-scale (bitmap-font-data/scale-x font-data)
                        target-width 0
                        wrap? false
                        scale (* (float unit-scale)
                                 (float scale))]
-                   (bitmap-font-data/setScale font-data (* old-scale scale))
+                   (bitmap-font-data/set-scale! font-data (* old-scale scale))
                    (bitmap-font/draw! font
                                       batch
                                       text
@@ -1642,7 +1642,7 @@
                                       target-width
                                       align/center
                                       wrap?)
-                   (bitmap-font-data/setScale font-data old-scale)))
+                   (bitmap-font-data/set-scale! font-data old-scale)))
    :draw/texture-region (fn [{:keys [ctx/batch
                                       ctx/unit-scale]}
                                texture-region
@@ -2256,7 +2256,7 @@
     (-> skin
         (skin/getFont "default-font")
         bitmap-font/get-data
-        (bitmap-font-data/set-markupEnabled true))
+        (bitmap-font-data/set-markup-enabled! true))
     (assoc ctx :ctx/skin skin)))
 
 (defn create-stage [{:keys [ctx/input
@@ -2312,8 +2312,8 @@
                                  font (font-generator/generate-font generator parameter)
                                  font-data (bitmap-font/get-data font)]
                              (disposable/dispose! generator)
-                             (bitmap-font-data/setScale font-data (/ quality-scaling))
-                             (bitmap-font-data/set-markupEnabled font-data true)
+                             (bitmap-font-data/set-scale! font-data (/ quality-scaling))
+                             (bitmap-font-data/set-markup-enabled! font-data true)
                              (bitmap-font/set-use-integer-positions! font use-integer-positions?)
                              font)))
 

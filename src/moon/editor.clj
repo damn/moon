@@ -21,7 +21,7 @@
             [clojure.gdx.graphics :as graphics]
             [clojure.gdx.graphics.gl20 :as gl20]
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
+            [clojure.gdx.graphics.g2d.bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.input :as input]
@@ -675,7 +675,7 @@
     (-> skin
         (ui-skin/getFont "default-font")
         bitmap-font/get-data
-        (bitmap-font-data/set-markupEnabled true))
+        (bitmap-font-data/set-markup-enabled! true))
     (assoc ctx :ctx/skin skin)))
 
 (defn- db-f [ctx]
