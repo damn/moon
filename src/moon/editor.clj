@@ -26,7 +26,7 @@
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.input :as input]
             [clojure.gdx.scenes.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
@@ -93,7 +93,7 @@
 
 (defn- map-widget-table-get-value [table schemas]
   (into {}
-        (for [widget (filter (comp vector? actor/get-user-object) (group/getChildren table))
+        (for [widget (filter (comp vector? actor/get-user-object) (group/get-children table))
               :let [[k _] (actor/get-user-object widget)]]
           [k (widget-value (get schemas k) widget schemas)])))
 
@@ -119,13 +119,13 @@
 
 (defmethod widget-value :s/one-to-many
   [_ widget _schemas]
-  (->> (group/getChildren widget)
+  (->> (group/get-children widget)
        (keep actor/get-user-object)
        set))
 
 (defmethod widget-value :s/one-to-one
   [_ widget _schemas]
-  (->> (group/getChildren widget)
+  (->> (group/get-children widget)
        (keep actor/get-user-object)
        first))
 
@@ -173,7 +173,7 @@
 
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]
-    (group/clearChildren table)
+    (group/clear-children! table)
     (add-rows! table [(->sound-columns skin table sound-name)])
     (actor/remove! (find-ancestor actor (partial instance? window/class)))
     (layout/pack (find-ancestor table (partial instance? window/class)))
@@ -215,7 +215,7 @@
                   tooltip
                   extra-info-text]} row]
       {:actor (let [stack (stack/new)]
-                (run! #(group/addActor stack %)
+                (run! #(group/add-actor! stack %)
                       [(doto (image-button/new
                               (doto (texture-region-drawable/new texture-region)
                                 (texture-region-drawable/setMinSize (* image-scale (texture-region/getRegionWidth texture-region))
@@ -311,7 +311,7 @@
                                           (actor/get-height table))})]]}))
       (add-close-button! skin)
       (window/setModal true)
-      (group/addActor (actor/new
+      (group/add-actor! (actor/new
                        (fn [this _delta]
                          (when-let [stage (actor/get-stage this)]
                            (let [ctx (:stage/ctx stage)]
@@ -329,7 +329,7 @@
    property-type
    property-ids]
   (let [redo-rows (fn [ctx property-ids]
-                    (group/clearChildren table)
+                    (group/clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
                     (layout/pack (find-ancestor table (partial instance? window/class))))]
     (add-rows!
@@ -372,7 +372,7 @@
    property-type
    property-id]
   (let [redo-rows (fn [ctx id]
-                    (group/clearChildren table)
+                    (group/clear-children! table)
                     (add-one-to-one-rows ctx table property-type id)
                     (layout/pack (find-ancestor table (partial instance? window/class))))]
     (add-rows!
@@ -414,8 +414,8 @@
     :as ctx}]
   (let [window (-> stage
                    :stage/root
-                   (group/findActor "moon.ui.clojure.editor-window"))
-        map-widget-table (group/findActor window "moon.db.schema.map.ui.widget")
+                   (group/find-actor "moon.ui.clojure.editor-window"))
+        map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
         property (map-widget-table-get-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
     (stage/addActor stage
@@ -438,7 +438,7 @@
                                                                   (actor/remove! (first (filter (fn [actor]
                                                                                                           (and (actor/get-user-object actor)
                                                                                                                (= k ((actor/get-user-object actor) 0))))
-                                                                                                        (group/getChildren table))))
+                                                                                                        (group/get-children table))))
                                                                   (let [ctx (:stage/ctx (event/get-stage event))]
                                                                     (rebuild-editor-window! ctx)))))))
                             :left? true}

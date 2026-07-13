@@ -33,7 +33,7 @@
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
@@ -1006,14 +1006,14 @@
    (fn [{:keys [ctx/stage] :as _ctx} message]
      (-> stage
          :stage/root
-         (#(group/findActor % "player-message"))
+         (#(group/find-actor % "player-message"))
          (actor/set-user-object! (atom {:text message :counter 0})))
      nil)
 
    :tx/show-modal
    (fn [{:keys [ctx/skin ctx/stage] :as _ctx}
         {:keys [title text button-text on-click]}]
-     (assert (not (group/findActor (:stage/root stage) "moon.ui.modal-window")))
+     (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
      (stage/addActor stage
                        (doto (doto (window/new title skin)
     (moon-table/set-opts! {:title title
@@ -1024,7 +1024,7 @@
                                                          (change-listener/create
                                                           (fn [_event _actor]
                                                             (actor/remove!
-                                                             (group/findActor (:stage/root stage)
+                                                             (group/find-actor (:stage/root stage)
                                                                                "moon.ui.modal-window"))
                                                             (on-click)))))}]]}))
                          (window/setModal true)
@@ -1139,7 +1139,7 @@
 
    :tx/toggle-inventory-visible
    (fn [{:keys [ctx/stage]}]
-     (let [inventory (group/findActor (:stage/root stage) "moon.ui.windows.inventory")]
+     (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
        (actor/set-visible! inventory (not (actor/visible? inventory)))
        nil))
 
@@ -1147,7 +1147,7 @@
    (fn [{:keys [ctx/stage]} _eid cell]
      (-> stage
          :stage/root
-         (#(group/findActor % "moon.ui.windows.inventory"))
+         (#(group/find-actor % "moon.ui.windows.inventory"))
          (inventory-window/remove-item! cell))
      nil)
 
@@ -1155,7 +1155,7 @@
    (fn [{:keys [ctx/skin ctx/stage ctx/textures] :as ctx} _eid cell item]
      (-> stage
          :stage/root
-         (#(group/findActor % "moon.ui.windows.inventory"))
+         (#(group/find-actor % "moon.ui.windows.inventory"))
          (inventory-window/set-item! cell
                         {:texture-region (textures/texture-region textures (:entity/image item))
                          :tooltip-text (item/info-text item)}
@@ -1166,7 +1166,7 @@
    (fn [{:keys [ctx/skin ctx/stage ctx/textures] :as ctx} _eid skill]
      (-> stage
          :stage/root
-         (#(group/findActor % "moon.ui.action-bar"))
+         (#(group/find-actor % "moon.ui.action-bar"))
          (action-bar/add-skill! {:skill-id (:property/id skill)
                           :texture-region (textures/texture-region textures (:entity/image skill))
                           :tooltip-text (info-text skill ctx)}
@@ -1837,8 +1837,8 @@
       :cell-size 48})))
 
 (defn windows-create [ctx actor-fns]
-  (let [group* (group/new)]
-    (run! #(group/addActor group* %) (for [f actor-fns] (f ctx)))
+  (let [group* (group/create)]
+    (run! #(group/add-actor! group* %) (for [f actor-fns] (f ctx)))
     (doto group*
       (actor/set-name! "moon.ui.windows"))))
 
@@ -1938,7 +1938,7 @@
             (cond
              (-> stage
                  :stage/root
-                 (#(group/findActor % "moon.ui.windows.inventory"))
+                 (#(group/find-actor % "moon.ui.windows.inventory"))
                  actor/visible?)
              [[:tx/sound "bfxr_takeit"]
               [:tx/mark-destroyed clicked-eid]
@@ -2698,7 +2698,7 @@
       :else
       (if-let [skill-id (-> stage
                             :stage/root
-                            (#(group/findActor % "moon.ui.action-bar"))
+                            (#(group/find-actor % "moon.ui.action-bar"))
                             action-bar/selected-skill)]
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))
@@ -2894,16 +2894,16 @@
     (orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key controls))
-    (->> (group/findActor (:stage/root stage) "moon.ui.windows")
-         group/getChildren
+    (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
+         group/get-children
          (run! #(actor/set-visible! % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory controls))
-    (let [inventory (group/findActor (:stage/root stage) "moon.ui.windows.inventory")]
+    (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
       (actor/set-visible! inventory (not (actor/visible? inventory)))))
 
   (when (input/key-just-pressed? input (:toggle-entity-info controls))
-    (let [entity-info (group/findActor (:stage/root stage) "moon.ui.windows.entity-info")]
+    (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
       (actor/set-visible! entity-info (not (actor/visible? entity-info)))))
   ctx)
 

@@ -1,7 +1,7 @@
 (ns moon.info-window
   (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as gdx-label]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
@@ -22,7 +22,7 @@
                  (actor/set-visible! visible?))]
     (let [[x y] position]
       (actor/set-position! window x y))
-    (group/addActor window (actor/new
+    (group/add-actor! window (actor/new
                             (fn [this _delta]
                               (when-let [stage (actor/get-stage this)]
                                 (gdx-label/setText label (set-label-text! (:stage/ctx stage))))

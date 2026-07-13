@@ -2,7 +2,7 @@
   (:require [com.badlogic.gdx.graphics.color :as color]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
-            [com.badlogic.gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
@@ -17,14 +17,14 @@
 
 (defn- get-cell [inventory-window cell]
   (->> "inventory-cell-table"
-       (#(group/findActor inventory-window %))
-       group/getChildren
+       (#(group/find-actor inventory-window %))
+       group/get-children
        (filter #(= (actor/get-user-object %) cell))
        first))
 
 (defn remove-item! [inventory-window cell]
   (let [cell-widget (get-cell inventory-window cell)
-        image-widget (group/findActor cell-widget "image-widget")]
+        image-widget (group/find-actor cell-widget "image-widget")]
     (image/setDrawable image-widget (:background-drawable (actor/get-user-object image-widget)))
     ; !! TODO FIXME FIXME FIXME !!!
     ;(.removeListener actor (.getListeners actor))
@@ -34,7 +34,7 @@
 
 (defn set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
   (let [cell-widget (get-cell inventory-window cell)
-        image-widget (group/findActor cell-widget "image-widget")
+        image-widget (group/find-actor cell-widget "image-widget")
         cell-size (:cell-size (actor/get-user-object image-widget))]
     (image/setDrawable image-widget (doto (texture-region-drawable/new texture-region)
                                         (texture-region-drawable/setMinSize cell-size cell-size)))
@@ -46,7 +46,7 @@
         background-drawable (slot->drawable slot)]
     {:actor
      (let [stack (stack/new)]
-       (run! #(group/addActor stack %)
+       (run! #(group/add-actor! stack %)
              [(widget/new
                (fn [this _batch _parent-alpha]
                  (when-let [stage (actor/get-stage this)]
