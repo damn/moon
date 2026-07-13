@@ -848,17 +848,19 @@
 
 (defn- state-exit-player-item-on-cursor
   [_ eid ctx]
-  (let [entity @eid]
-    (when (:entity/item-on-cursor entity)
+  (let [entity @eid
+        item (:entity/item-on-cursor entity)]
+    (when item
+      (swap! eid dissoc :entity/item-on-cursor)
       [[:tx/sound "bfxr_itemputground"]
-       [:tx/dissoc eid :entity/item-on-cursor]
        [:tx/spawn-item
         (item-place-position ctx entity)
-        (:entity/item-on-cursor entity)]])))
+        item]])))
 
 (defn- state-exit-player-moving
   [_ eid _ctx]
-  [[:tx/dissoc eid :entity/movement]])
+  (swap! eid dissoc :entity/movement)
+  nil)
 
 (defn- state-exit-npc-sleeping
   [_ eid _ctx]
@@ -867,7 +869,8 @@
 
 (defn- state-exit-npc-moving
   [_ eid _ctx]
-  [[:tx/dissoc eid :entity/movement]])
+  (swap! eid dissoc :entity/movement)
+  nil)
 
 (def k->state-exit
   {:player-item-on-cursor state-exit-player-item-on-cursor
@@ -904,11 +907,6 @@
          position
          {:entity/animation (assoc animation :delete-after-stopped? true)}]]))
 
-   :tx/dissoc
-   (fn [_ctx eid k]
-     (swap! eid dissoc k)
-     nil)
-
    :tx/effect
    (fn [ctx effect-ctx effects]
      (mapcat #(handle-effect % effect-ctx ctx)
@@ -928,8 +926,8 @@
                    new-state-obj [new-state-k (create-entity-state [new-state-k nil] eid ctx)]]
                (swap! eid assoc :entity/fsm new-fsm)
                (swap! eid assoc new-state-k (new-state-obj 1))
-               [[:tx/dissoc eid old-state-k]
-                [:tx/state-exit eid old-state-obj]
+               (swap! eid dissoc old-state-k)
+               [[:tx/state-exit eid old-state-obj]
                 [:tx/state-enter eid new-state-obj]]))))
        ([ctx eid event params]
          (let [fsm (:entity/fsm @eid)
@@ -943,8 +941,8 @@
                    new-state-obj [new-state-k (create-entity-state [new-state-k params] eid ctx)]]
                (swap! eid assoc :entity/fsm new-fsm)
                (swap! eid assoc new-state-k (new-state-obj 1))
-               [[:tx/dissoc eid old-state-k]
-                [:tx/state-exit eid old-state-obj]
+               (swap! eid dissoc old-state-k)
+               [[:tx/state-exit eid old-state-obj]
                 [:tx/state-enter eid new-state-obj]])))))
 
    :tx/mark-destroyed
@@ -1763,26 +1761,26 @@
     (cond
      (and (not item-in-cell)
           (inventory-cell/valid-slot? cell item-on-cursor))
-     [[:tx/sound "bfxr_itemput"]
-      [:tx/dissoc eid :entity/item-on-cursor]
-      [:tx/set-item eid cell item-on-cursor]
-      [:tx/event eid :dropped-item]]
+     (do (swap! eid dissoc :entity/item-on-cursor)
+         [[:tx/sound "bfxr_itemput"]
+          [:tx/set-item eid cell item-on-cursor]
+          [:tx/event eid :dropped-item]])
 
      (and item-in-cell
           (item/stackable? item-in-cell item-on-cursor))
-     [[:tx/sound "bfxr_itemput"]
-      [:tx/dissoc eid :entity/item-on-cursor]
-      [:tx/stack-item eid cell item-on-cursor]
-      [:tx/event eid :dropped-item]]
+     (do (swap! eid dissoc :entity/item-on-cursor)
+         [[:tx/sound "bfxr_itemput"]
+          [:tx/stack-item eid cell item-on-cursor]
+          [:tx/event eid :dropped-item]])
 
      (and item-in-cell
           (inventory-cell/valid-slot? cell item-on-cursor))
-     [[:tx/sound "bfxr_itemput"]
-      [:tx/dissoc eid :entity/item-on-cursor]
-      [:tx/remove-item eid cell]
-      [:tx/set-item eid cell item-on-cursor]
-      [:tx/event eid :dropped-item]
-      [:tx/event eid :pickup-item item-in-cell]])))
+     (do (swap! eid dissoc :entity/item-on-cursor)
+         [[:tx/sound "bfxr_itemput"]
+          [:tx/remove-item eid cell]
+          [:tx/set-item eid cell item-on-cursor]
+          [:tx/event eid :dropped-item]
+          [:tx/event eid :pickup-item item-in-cell]]))))
 
 (def k->clicked-inventory-cell
   {:player-item-on-cursor clicked-inventory-cell-player-item-on-cursor
@@ -2083,7 +2081,8 @@
         eid
         {:keys [ctx/elapsed-time]}]
      (when (timer/stopped? elapsed-time counter)
-       [[:tx/dissoc eid :entity/string-effect]]))
+       (swap! eid dissoc :entity/string-effect)
+       nil))
 
    :entity/skills
    (fn [skills eid {:keys [ctx/elapsed-time]}]
@@ -2098,8 +2097,8 @@
         eid
         {:keys [ctx/elapsed-time]}]
      (when (timer/stopped? elapsed-time counter)
-       [[:tx/dissoc eid :entity/temp-modifier]
-        [:tx/update eid :entity/stats stats/remove-mods modifiers]]))
+       (swap! eid dissoc :entity/temp-modifier)
+       [[:tx/update eid :entity/stats stats/remove-mods modifiers]]))
 
    :entity/projectile-collision
    (fn [{:keys [entity-effects already-hit-bodies piercing?]}
