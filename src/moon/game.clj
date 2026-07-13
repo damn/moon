@@ -708,8 +708,29 @@
                      (min maxrange
                           (v2/distance player-position world-mouse-position))))))
 
-(defn- mouse-position [{:keys [ctx/input]}]
-  (input/position input))
+(defn- key-pressed? [ctx key]
+  (input/key-pressed? (:ctx/input ctx) key))
+
+(defn- key-just-pressed? [ctx key]
+  (input/key-just-pressed? (:ctx/input ctx) key))
+
+(defn- button-just-pressed? [ctx button]
+  (input/button-just-pressed? (:ctx/input ctx) button))
+
+(defn- mouse-position [ctx]
+  (input/position (:ctx/input ctx)))
+
+(defn- control-key-pressed? [ctx control-id]
+  (key-pressed? ctx (control-id (:ctx/controls ctx))))
+
+(defn- control-key-just-pressed? [ctx control-id]
+  (key-just-pressed? ctx (control-id (:ctx/controls ctx))))
+
+(defn- control-button-just-pressed? [ctx control-id]
+  (button-just-pressed? ctx (control-id (:ctx/controls ctx))))
+
+(defn- set-input-processor! [ctx processor]
+  (input/set-processor! (:ctx/input ctx) processor))
 
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
   (let [[x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
@@ -1813,11 +1834,11 @@
       (actor/set-name! "player-message")
       (actor/set-user-object! (atom nil)))))
 
-(defn- player-movement-vector [{:keys [ctx/input]}]
-  (let [r (when (input/key-pressed? input :input.keys/d) [1  0])
-        l (when (input/key-pressed? input :input.keys/a) [-1 0])
-        u (when (input/key-pressed? input :input.keys/w) [0  1])
-        d (when (input/key-pressed? input :input.keys/s) [0 -1])]
+(defn- player-movement-vector [ctx]
+  (let [r (when (key-pressed? ctx :input.keys/d) [1  0])
+        l (when (key-pressed? ctx :input.keys/a) [-1 0])
+        u (when (key-pressed? ctx :input.keys/w) [0  1])
+        d (when (key-pressed? ctx :input.keys/s) [0 -1])]
     (when (or r l u d)
       (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
         (when (pos? (v2/length v))
@@ -1881,12 +1902,10 @@
           nil))))
 
 (defn- handle-input-player-idle
-  [player-eid {:keys [ctx/input
-                      ctx/interaction-state]
-               :as ctx}]
+  [player-eid {:keys [ctx/interaction-state] :as ctx}]
   (if-let [movement-vector (player-movement-vector ctx)]
     (handle-fsm-event! ctx player-eid :movement-input movement-vector)
-    (when (input/button-just-pressed? input :input.buttons/left)
+    (when (button-just-pressed? ctx :input.buttons/left)
       (interaction-state->txs interaction-state
                               ctx
                               player-eid))))
@@ -1902,7 +1921,7 @@
 
 (defn- handle-input-player-item-on-cursor
   [eid ctx]
-  (when (and (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
+  (when (and (button-just-pressed? ctx :input.buttons/left)
              (not (mouseover-actor ctx)))
     (handle-fsm-event! ctx eid :drop-item)))
 
@@ -2199,10 +2218,9 @@
         (bitmap-font-data/set-markup-enabled! true))
     (assoc ctx :ctx/skin skin)))
 
-(defn create-stage [{:keys [ctx/input
-                            ctx/batch] :as ctx}]
-  (let [stage* (stage/create (fit-viewport/create 1440 900) batch)]
-    (input/set-processor! input stage*)
+(defn create-stage [ctx]
+  (let [stage* (stage/create (fit-viewport/create 1440 900) (:ctx/batch ctx))]
+    (set-input-processor! ctx stage*)
     (assoc ctx :ctx/stage stage*)))
 
 (defn create-init-tooltip [ctx]
@@ -2415,15 +2433,13 @@
     (assoc ctx :ctx/mouseover-eid new-eid)))
 
 (defn check-debug-viewer
-  [{:keys [ctx/input
-           ctx/controls
-           ctx/mouseover-eid
+  [{:keys [ctx/mouseover-eid
            ctx/skin
            ctx/stage
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
-  (when (input/button-just-pressed? input (:open-debug-button controls))
+  (when (control-button-just-pressed? ctx :open-debug-button)
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
       (stage/add-actor! stage
@@ -2723,16 +2739,14 @@
   (dissoc ctx :ctx/interaction-state))
 
 (defn assoc-paused
-  [{:keys [ctx/input
-           ctx/controls
-           ctx/player-eid]
+  [{:keys [ctx/player-eid]
     :as ctx}]
   (assoc ctx :ctx/paused?
          (or #_error
              (and pausing?
                   (state->pause-game? (:state (:entity/fsm @player-eid)))
-                  (not (or (input/key-just-pressed? input (:unpause-once controls))
-                           (input/key-pressed? input (:unpause-continously controls))))))))
+                  (not (or (control-key-just-pressed? ctx :unpause-once)
+                           (control-key-pressed? ctx :unpause-continously)))))))
 
 (defn- update-time
   [{:keys [ctx/graphics]
@@ -2807,26 +2821,24 @@
 (def zoom-speed 0.025)
 
 (defn window-camera-controls
-  [{:keys [ctx/input
-           ctx/controls
-           ctx/stage
+  [{:keys [ctx/stage
            ctx/world-viewport]
     :as ctx}]
-  (when (input/key-pressed? input (:zoom-in controls))
+  (when (control-key-pressed? ctx :zoom-in)
     (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
 
-  (when (input/key-pressed? input (:zoom-out controls))
+  (when (control-key-pressed? ctx :zoom-out)
     (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
 
-  (when (input/key-just-pressed? input (:close-windows-key controls))
+  (when (control-key-just-pressed? ctx :close-windows-key)
     (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
          group/get-children
          (run! #(actor/set-visible! % false))))
 
-  (when (input/key-just-pressed? input (:toggle-inventory controls))
+  (when (control-key-just-pressed? ctx :toggle-inventory)
     (toggle-inventory-visible! ctx))
 
-  (when (input/key-just-pressed? input (:toggle-entity-info controls))
+  (when (control-key-just-pressed? ctx :toggle-entity-info)
     (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
       (actor/set-visible! entity-info (not (actor/visible? entity-info)))))
   ctx)
