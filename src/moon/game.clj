@@ -27,7 +27,7 @@
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clojure.gdx.graphics.g2d.bitmap-font-data :as bitmap-font-data]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [clojure.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]
             [com.badlogic.gdx.graphics.texture :as texture]
@@ -1648,8 +1648,8 @@
                                texture-region
                                [x y]
                                & {:keys [center? rotation]}]
-                           (let [[w h] (let [dimensions [(texture-region/getRegionWidth texture-region)
-                                                         (texture-region/getRegionHeight texture-region)]]
+                           (let [[w h] (let [dimensions [(texture-region/get-region-width texture-region)
+                                                         (texture-region/get-region-height texture-region)]]
                                           (if (= @unit-scale 1)
                                             dimensions
                                             (mapv (comp float (partial * world-unit-scale))
@@ -2249,7 +2249,7 @@
 (defn create-shape-drawer [ctx]
   (assoc ctx
          :ctx/shape-drawer (shape-drawer/new (:ctx/batch ctx)
-                                             (texture-region/new (:ctx/shape-drawer-texture ctx) 1 0 1 1))))
+                                             (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1))))
 
 (defn create-skin [{:keys [ctx/files] :as ctx}]
   (let [skin (skin/new (files/internal files "skin/uiskin.json"))]

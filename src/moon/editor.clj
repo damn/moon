@@ -23,7 +23,7 @@
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clojure.gdx.graphics.g2d.bitmap-font-data :as bitmap-font-data]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [clojure.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.input :as input]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
@@ -213,8 +213,8 @@
                 (run! #(group/add-actor! stack %)
                       [(doto (image-button/new
                               (doto (texture-region-drawable/new texture-region)
-                                (texture-region-drawable/setMinSize (* image-scale (texture-region/getRegionWidth texture-region))
-                                                (* image-scale (texture-region/getRegionHeight texture-region)))))
+                                (texture-region-drawable/setMinSize (* image-scale (texture-region/get-region-width texture-region))
+                                                (* image-scale (texture-region/get-region-height texture-region)))))
                         (actor/add-listener! (change-listener/create
                                            (fn [event actor]
                                              (on-clicked actor (:stage/ctx (event/get-stage event))))))
@@ -544,8 +544,8 @@
                                       texture-region (textures/texture-region textures image)]
                                   (image-button/new
                                    (doto (texture-region-drawable/new texture-region)
-                                     (texture-region-drawable/setMinSize (* scale (texture-region/getRegionWidth texture-region))
-                                                                       (* scale (texture-region/getRegionHeight texture-region))))))})]}))
+                                     (texture-region-drawable/setMinSize (* scale (texture-region/get-region-width texture-region))
+                                                                       (* scale (texture-region/get-region-height texture-region))))))})]}))
 
 (defmethod create-widget :s/boolean
   [_ checked? {:keys [ctx/skin]}]
@@ -564,8 +564,8 @@
         scale 2]
     (image-button/new
      (doto (texture-region-drawable/new texture-region)
-       (texture-region-drawable/setMinSize (* scale (texture-region/getRegionWidth texture-region))
-                                              (* scale (texture-region/getRegionHeight texture-region)))))))
+       (texture-region-drawable/setMinSize (* scale (texture-region/get-region-width texture-region))
+                                              (* scale (texture-region/get-region-height texture-region)))))))
 
 (defmethod create-widget :s/map
   [schema

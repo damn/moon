@@ -25,5 +25,5 @@
   (assert (contains? textures file))
   (let [texture (get textures file)]
     (if-let [[x y w h] bounds]
-      (texture-region/new texture x y w h)
-      (texture-region/new texture))))
+      (texture-region/create texture x y w h)
+      (texture-region/create texture))))

@@ -1,7 +1,7 @@
 (ns moon.level.uf-caves
   (:require [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [moon.rand :as rand]
-            [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
+            [clojure.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.gdx.maps.map-properties :as map-properties]
             [moon.caves :as caves]
@@ -132,7 +132,7 @@
                                   (memoize
                                    (fn [& {:keys [sprite-idx movement]}]
                                      {:pre [#{"all" "air" "none"} movement]}
-                                     (let [texture-region (texture-region/new texture
+                                     (let [texture-region (texture-region/create texture
                                                                               (* (sprite-idx 0) tile-size)
                                                                               (* (sprite-idx 1) tile-size)
                                                                               tile-size
