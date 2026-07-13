@@ -814,7 +814,8 @@
 
 (defn- state-enter-npc-dead
   [_ eid]
-  [[:tx/mark-destroyed eid]])
+  (swap! eid assoc :entity/destroyed? true)
+  nil)
 
 (defn- state-enter-player-moving
   [{:keys [movement-vector]} eid]
@@ -944,11 +945,6 @@
                (swap! eid dissoc old-state-k)
                [[:tx/state-exit eid old-state-obj]
                 [:tx/state-enter eid new-state-obj]])))))
-
-   :tx/mark-destroyed
-   (fn [_ctx eid]
-     (swap! eid assoc :entity/destroyed? true)
-     nil)
 
    :tx/move-entity
    (fn [{:keys [ctx/content-grid ctx/grid]} eid]
@@ -1937,14 +1933,14 @@
                  :stage/root
                  (#(group/find-actor % "moon.ui.windows.inventory"))
                  actor/visible?)
-             [[:tx/sound "bfxr_takeit"]
-              [:tx/mark-destroyed clicked-eid]
-              [:tx/event player-eid :pickup-item item]]
+             (do (swap! clicked-eid assoc :entity/destroyed? true)
+                 [[:tx/sound "bfxr_takeit"]
+                  [:tx/event player-eid :pickup-item item]])
 
              (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
-             [[:tx/sound "bfxr_pickup"]
-              [:tx/mark-destroyed clicked-eid]
-              [:tx/pickup-item player-eid item]]
+             (do (swap! clicked-eid assoc :entity/destroyed? true)
+                 [[:tx/sound "bfxr_pickup"]
+                  [:tx/pickup-item player-eid item]])
 
              :else
              [[:tx/sound "bfxr_denied"]
@@ -2059,9 +2055,10 @@
                                           (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
                                                                     looping? (min maxcnt (- newcnt maxcnt))
                                                                     :else maxcnt))))
-     [(when (and delete-after-stopped?
-                 (and (not looping?) (>= cnt maxcnt)))
-        [:tx/mark-destroyed eid])])
+     (when (and delete-after-stopped?
+                (and (not looping?) (>= cnt maxcnt)))
+       (swap! eid assoc :entity/destroyed? true))
+     nil)
 
    :entity/alert-friendlies-after-duration
    (fn [{:keys [counter faction]}
@@ -2069,12 +2066,12 @@
         {:keys [ctx/elapsed-time
                 ctx/grid]}]
      (when (timer/stopped? elapsed-time counter)
-       (cons [:tx/mark-destroyed eid]
-             (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
-                                      :radius 4}
-                                     (grid/circle->entities grid)
-                                     (filter #(= (:entity/faction @%) faction)))]
-               [:tx/event friendly-eid :alert]))))
+       (swap! eid assoc :entity/destroyed? true)
+       (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
+                                :radius 4}
+                               (grid/circle->entities grid)
+                               (filter #(= (:entity/faction @%) faction)))]
+         [:tx/event friendly-eid :alert])))
 
    :entity/string-effect
    (fn [{:keys [counter]}
@@ -2118,9 +2115,9 @@
        (when hit-entity
          (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
                 (conj already-hit-bodies hit-entity)))
-       [(when destroy?
-          [:tx/mark-destroyed eid])
-        (when hit-entity
+       (when destroy?
+         (swap! eid assoc :entity/destroyed? true))
+       [(when hit-entity
           [:tx/effect
            {:effect/source eid
             :effect/target hit-entity}
@@ -2144,7 +2141,8 @@
    :entity/delete-after-duration
    (fn [counter eid {:keys [ctx/elapsed-time]}]
      (when (timer/stopped? elapsed-time counter)
-       [[:tx/mark-destroyed eid]]))
+       (swap! eid assoc :entity/destroyed? true)
+       nil))
 
    :stunned
    (fn [{:keys [counter]} eid {:keys [ctx/elapsed-time]}]
