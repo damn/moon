@@ -78,9 +78,8 @@
     ctx))
 
 (defn create
-  [state config]
-  (let [app (gdx/app)
-        files (application/get-files app)
+  [state config app]
+  (let [files (application/get-files app)
         input (application/get-input app)
         graphics (application/get-graphics app)
         sprite-batch (sprite-batch/create)
@@ -183,18 +182,23 @@
 
 (defn -main []
   (config/use-glfw-async!)
-  (let [        listener-spec {:create! (fn []
-                                  (reset! state (create state config)))
-                       :dispose! (fn []
-                                   (dispose @state))
-                       :render! (fn []
-                                 (swap! state render))
-                       :resize! (fn [width height]
-                                  (resize @state width height))
-                       :pause! (fn [])
-                       :resume! (fn [])}
-        configuration (doto (config/create)
-                      (config/set-title! "Levelgen Test")
-                      (config/set-windowed-mode! 1440 900)
-                      (config/set-foreground-fps! 60))]
-    (lwjgl3-application/create listener-spec configuration)))
+  (lwjgl3-application/create
+    {:create! (fn [app]
+                (reset! state (create state config app)))
+
+     :dispose! (fn []
+                 (dispose @state))
+
+     :render! (fn []
+                (swap! state render))
+
+     :resize! (fn [width height]
+                (resize @state width height))
+
+     :pause! (fn [])
+
+     :resume! (fn [])
+
+     :title "Levelgen Test"
+     :windowed-mode [1440 900]
+     :foreground-fps 60}))

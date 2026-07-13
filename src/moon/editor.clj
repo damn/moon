@@ -736,18 +736,23 @@
 
 (defn -main []
   (config/use-glfw-async!)
-  (let [        listener-spec {:create! (fn []
-                                  (reset! state (create)))
-                       :dispose! (fn []
-                                   (dispose @state))
-                       :render! (fn []
-                                 (swap! state render))
-                       :resize! (fn [width height]
-                                  (resize @state width height))
-                       :pause! (fn [])
-                       :resume! (fn [])}
-        configuration (doto (config/create)
-                      (config/set-title! "!Editor!")
-                      (config/set-windowed-mode! 1440 900)
-                      (config/set-foreground-fps! 60))]
-    (lwjgl3-application/create listener-spec configuration)))
+  (lwjgl3-application/create
+    {:create! (fn [_app]
+                (reset! state (create)))
+
+     :dispose! (fn []
+                 (dispose @state))
+
+     :render! (fn []
+                (swap! state render))
+
+     :resize! (fn [width height]
+                (resize @state width height))
+
+     :pause! (fn [])
+
+     :resume! (fn [])
+
+     :title "!Editor!"
+     :windowed-mode [1440 900]
+     :foreground-fps 60}))

@@ -3062,8 +3062,8 @@
     (stage/draw! stage)
     (:stage/ctx stage)))
 
-(defn create []
-  (-> (create-bootstrap)
+(defn create [app]
+  (-> (create-bootstrap app)
       create-batch
       create-audio
       create-shape-drawer-texture
@@ -3138,34 +3138,25 @@
 
 (def state (atom nil))
 
-(defn create! []
-  (reset! state (create (gdx/app))))
-
-(defn dispose! []
-  (dispose @state))
-
-(defn render! []
-  (swap! state render))
-
-(defn resize! [width height]
-  (resize @state width height))
-
-(defn pause! [])
-
-(defn resume! [])
-
-(def listener-spec
-  {:create! create!
-   :dispose! dispose!
-   :render! render!
-   :resize! resize!
-   :pause! pause!
-   :resume! resume!})
-
 (defn -main []
   (config/use-glfw-async!)
-  (let [configuration (doto (config/create)
-                     (config/set-title! "Moon")
-                     (config/set-windowed-mode! 1440 900)
-                     (config/set-foreground-fps! 60))]
-    (lwjgl3-application/create listener-spec configuration)))
+  (lwjgl3-application/create
+    {:create! (fn [application]
+                (reset! state (create application)))
+
+     :dispose! (fn []
+                 (dispose @state))
+
+     :render! (fn []
+                (swap! state render))
+
+     :resize! (fn [width height]
+                (resize @state width height))
+
+     :pause! (fn [])
+
+     :resume! (fn [])
+
+     :title "Moon"
+     :windowed-mode [1440 900]
+     :foreground-fps 60}))
