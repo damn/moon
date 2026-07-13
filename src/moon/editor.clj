@@ -53,6 +53,9 @@
 
 (def state (atom nil))
 
+(defn- get-stage [ctx]
+  (:ctx/stage ctx))
+
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
                              :image-scale 2
@@ -176,10 +179,10 @@
       (actor/set-user-object! table [k sound-name]))))
 
 (defn- open-select-sounds-handler [table ->sound-columns]
-  (fn [{:keys [ctx/skin
-               ctx/stage]
+  (fn [{:keys [ctx/skin]
         :as ctx}]
-    (stage/add-actor! stage
+    (let [stage (get-stage ctx)]
+      (stage/add-actor! stage
                       (doto (window/create {:title "Choose"
                                             :skin skin
                                             :table/rows
@@ -199,7 +202,7 @@
                                                 :height (min (- (viewport/get-world-height (:stage/viewport stage)) 50)
                                                              (actor/get-height table))})]]
                                             :window/add-close-button? true})
-                            (window/set-modal! true)))))
+                            (window/set-modal! true))))))
 
 (defn- overview-table-rows* [skin image-scale rows]
   (for [row rows]
@@ -247,17 +250,16 @@
     (window/set-modal! true)))
 
 (defn- with-window-close [f]
-  (fn [actor {:keys [ctx/skin
-                     ctx/stage]
+  (fn [actor {:keys [ctx/skin]
               :as ctx}]
     (try
      (let [new-ctx (update ctx :ctx/db f)
-           stage (actor/get-stage actor)]
-       (stage/set-ctx! stage new-ctx))
+           gdx-stage (actor/get-stage actor)]
+       (stage/set-ctx! gdx-stage new-ctx))
      (actor/remove! (find-ancestor actor (partial instance? window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
-       (stage/add-actor! stage
+       (stage/add-actor! (get-stage ctx)
                          (error-window/create
                           {:type :ui/error-window
                            :skin skin
@@ -267,8 +269,8 @@
   [{:keys [ctx
            property]}]
   (let [{:keys [ctx/db
-                ctx/skin
-                ctx/stage]} ctx
+                ctx/skin]} ctx
+        stage (get-stage ctx)
         schemas (:db/schemas db)
         schema (get schemas (property/type property))
         widget (create-widget schema property ctx)
@@ -329,11 +331,10 @@
                                           (fn [event _actor]
                                             (let [{:keys [ctx/db
                                                           ctx/skin
-                                                          ctx/stage
                                                           ctx/textures]
                                                    :as ctx} (:stage/ctx (event/get-stage event))]
                                               (stage/add-actor!
-                                               stage
+                                               (get-stage ctx)
                                                (property-overview-window
                                                 {:db db
                                                  :textures textures
@@ -373,11 +374,10 @@
                                             (fn [event _actor]
                                               (let [{:keys [ctx/db
                                                             ctx/skin
-                                                            ctx/stage
                                                             ctx/textures]
                                                      :as ctx} (:stage/ctx (event/get-stage event))]
                                                 (stage/add-actor!
-                                                 stage
+                                                 (get-stage ctx)
                                                  (property-overview-window
                                                   {:db db
                                                    :textures textures
@@ -399,10 +399,10 @@
                                                          nil)))))})]])))
 
 (defn- rebuild-editor-window!
-  [{:keys [ctx/db
-           ctx/stage]
+  [{:keys [ctx/db]
     :as ctx}]
-  (let [window (-> stage
+  (let [stage (get-stage ctx)
+        window (-> stage
                    :stage/root
                    (group/find-actor "moon.ui.clojure.editor-window"))
         map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
@@ -506,10 +506,10 @@
                            (actor/add-listener! (change-listener/create
                                                     (fn [event actor]
                                                       (let [{:keys [ctx/db
-                                                                    ctx/stage
-                                                                    ctx/skin]} (:stage/ctx (event/get-stage event))]
+                                                                    ctx/skin]
+                                                             :as ctx} (:stage/ctx (event/get-stage event))]
                                                         (stage/add-actor!
-                                                         stage
+                                                         (get-stage ctx)
                                                          (add-component-window
                                                           {:skin skin
                                                            :schemas (:db/schemas db)
@@ -638,17 +638,16 @@
                                                                            (fn [event _actor]
                                                                              (let [{:keys [ctx/db
                                                                                            ctx/skin
-                                                                                           ctx/stage
                                                                                            ctx/textures]
                                                                                     :as ctx} (:stage/ctx (event/get-stage event))]
-                                                                               (stage/add-actor! stage
+                                                                               (stage/add-actor! (get-stage ctx)
                                                                                                  (property-overview-window
                                                                                                   {:db db
                                                                                                    :textures textures
                                                                                                    :skin skin
                                                                                                    :property-type property-type
-                                                                                                   :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                                                                    (stage/add-actor! stage
+                                                                                                   :clicked-id-fn (fn [_actor id ctx]
+                                                                                                                    (stage/add-actor! (get-stage ctx)
                                                                                                                                         (property-editor-window
                                                                                                                                          {:ctx ctx
                                                                                                                                           :property (db/get-raw db id)})))})))))))}])})))
@@ -684,7 +683,7 @@
   (let [stage* (stage/create (fit-viewport/create 1440 900) batch)]
     (input/set-processor! input stage*)
     (let [ctx (assoc ctx :ctx/stage stage*)]
-      (stage/add-actor! (:ctx/stage ctx) (main-window-f ctx))
+      (stage/add-actor! (get-stage ctx) (main-window-f ctx))
       ctx)))
 
 (defn- textures-f [{:keys [ctx/files] :as ctx}]
@@ -719,9 +718,9 @@
     (gl20/gl-clear! gl gl20/gl-color-buffer-bit))
   ctx)
 
-(defn render [{:keys [ctx/stage]
-               :as ctx}]
-  (let [ctx (clear-screen ctx)
+(defn render [ctx]
+  (let [stage (get-stage ctx)
+        ctx (clear-screen ctx)
         ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
@@ -730,8 +729,8 @@
     (stage/draw! stage)
     (:stage/ctx stage)))
 
-(defn resize [{:keys [ctx/stage]} width height]
-  (viewport/update! (:stage/viewport stage) width height true))
+(defn resize [ctx width height]
+  (viewport/update! (:stage/viewport (get-stage ctx)) width height true))
 
 (defn -main []
   (lwjgl-application/use-glfw-async!)

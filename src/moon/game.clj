@@ -599,7 +599,7 @@
          :state initial-state))
 
 ;; ctx accessors — enables us to change data layout without changing behaviour contract
-;; docs/ctx-accessors.md
+;; docs/ctx-accessors.md  docs/destructuring-at-the-boundary.md
 (defn- get-input [ctx]
   (:ctx/input ctx))
 
@@ -730,7 +730,9 @@
   (:ctx/files ctx))
 
 (defn- ui-update-skill! [ctx skill]
-  (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
+  (let [skin (get-skin ctx)
+        stage (get-stage ctx)
+        textures (get-textures ctx)]
     (-> stage
         :stage/root
         (#(group/find-actor % "moon.ui.action-bar"))
@@ -740,7 +742,9 @@
                                skin))))
 
 (defn- ui-set-item! [ctx cell item]
-  (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
+  (let [skin (get-skin ctx)
+        stage (get-stage ctx)
+        textures (get-textures ctx)]
     (-> stage
         :stage/root
         (#(group/find-actor % "moon.ui.windows.inventory"))
@@ -938,8 +942,9 @@
   (disposable/dispose! (get-tiled-map ctx)))
 
 
-(defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
-  (let [[x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
+(defn- mouseover-actor [ctx]
+  (let [stage (get-stage ctx)
+        [x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
     (stage/hit stage x y true)))
 
 (defn- mouseover-actor-info [actor]
@@ -1056,7 +1061,8 @@
                                                :piercing? piercing?}}))
 
 (defn- show-modal! [ctx {:keys [title text button-text on-click]}]
-  (let [{:keys [ctx/skin ctx/stage]} ctx]
+  (let [skin (get-skin ctx)
+        stage (get-stage ctx)]
     (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
     (stage/add-actor! stage
                       (doto (window/create {:title title
@@ -1405,9 +1411,9 @@
 (def ctx-data-menu-item
   {:label "Ctx Data"
    :items [{:label "Show data"
-            :on-click (fn [{:keys [ctx/skin
-                                   ctx/stage] :as ctx}]
-
+            :on-click (fn [ctx]
+                        (let [skin (get-skin ctx)
+                              stage (get-stage ctx)]
                         ; skin & stage
                         ; :moon.game/ui
                         ; moon.game.ui/data-viweer-window?
@@ -1418,7 +1424,7 @@
                                           :width 1000
                                           :height 1000
                                           :skin skin}))
-                        ctx)}]})
+                        ctx))}]})
 
 (def debug-flags-menu-item
   {:label "Debug"
@@ -1828,9 +1834,10 @@
   ((k->render k) v entity ctx))
 
 (defn hp-mana-bar-create
-  [{:keys [ctx/textures
-           ctx/stage]}]
-  (let [{:keys [rahmen-file
+  [ctx]
+  (let [stage (get-stage ctx)
+        textures (get-textures ctx)
+        {:keys [rahmen-file
                 rahmenw
                 rahmenh
                 hpcontent-file
@@ -1918,11 +1925,12 @@
       (handler ctx player-eid cell))))
 
 (defn inventory-window-create
-  [{:keys [ctx/colors
-           ctx/skin
-           ctx/stage
-           ctx/textures]}]
-  (let [slot->y-sprite-idx #:inventory.slot {:weapon 0
+  [ctx]
+  (let [colors (get-colors ctx)
+        skin (get-skin ctx)
+        stage (get-stage ctx)
+        textures (get-textures ctx)
+        slot->y-sprite-idx #:inventory.slot {:weapon 0
                                              :shield 1
                                              :rings 2
                                              :necklace 3
@@ -1970,22 +1978,23 @@
       (actor/set-name! "moon.ui.windows"))))
 
 (defn stage-info-window-create
-  [{:keys [ctx/skin
-           ctx/stage]}]
-  (info-window/create
-   {:title "Entity Info"
-    :actor-name "moon.ui.windows.entity-info"
-    :visible? false
-    :position [(viewport/get-world-width (:stage/viewport stage)) 0]
-    :set-label-text! (fn [{:keys [ctx/mouseover-eid]
-                           :as ctx}]
-                       (if-let [eid mouseover-eid]
-                         (info-text (apply dissoc @eid [:entity/skills
-                                                        :entity/faction
-                                                        :active-skill])
-                                    ctx)
-                         ""))
-    :skin skin}))
+  [ctx]
+  (let [skin (get-skin ctx)
+        stage (get-stage ctx)]
+    (info-window/create
+     {:title "Entity Info"
+      :actor-name "moon.ui.windows.entity-info"
+      :visible? false
+      :position [(viewport/get-world-width (:stage/viewport stage)) 0]
+      :set-label-text! (fn [{:keys [ctx/mouseover-eid]
+                             :as ctx}]
+                         (if-let [eid mouseover-eid]
+                           (info-text (apply dissoc @eid [:entity/skills
+                                                          :entity/faction
+                                                          :active-skill])
+                                      ctx)
+                           ""))
+      :skin skin})))
 
 (defmulti entity-state-draw-ui-view
   (fn [[k _v] _eid _ctx]
@@ -2494,25 +2503,25 @@
   (assoc ctx :ctx/db (db/create)))
 
 (defn create-stage-actors
-  [{:keys [ctx/stage
-           ctx/skin
-           ctx/textures]
-    :as ctx}]
-  (doseq [actor [(action-bar/create)
-                 (dev-menu/create
-                  {:menus dev-menus
-                   :update-labels (for [item dev-update-labels]
-                                    (if (:icon item)
-                                      (update item :icon #(get textures %))
-                                      item))
-                   :skin skin})
-                 (hp-mana-bar-create ctx)
-                 (windows-create ctx [stage-info-window-create
-                                      inventory-window-create])
-                 (player-state-draw-create)
-                 (player-message-actor-create)]]
-    (stage/add-actor! stage actor))
-  ctx)
+  [ctx]
+  (let [stage (get-stage ctx)
+        skin (get-skin ctx)
+        textures (get-textures ctx)]
+    (doseq [actor [(action-bar/create)
+                   (dev-menu/create
+                    {:menus dev-menus
+                     :update-labels (for [item dev-update-labels]
+                                      (if (:icon item)
+                                        (update item :icon #(get textures %))
+                                        item))
+                     :skin skin})
+                   (hp-mana-bar-create ctx)
+                   (windows-create ctx [stage-info-window-create
+                                        inventory-window-create])
+                   (player-state-draw-create)
+                   (player-message-actor-create)]]
+      (stage/add-actor! stage actor))
+    ctx))
 
 (defn create-tiled-map [ctx]
   (let [{:keys [tiled-map
@@ -2595,19 +2604,19 @@
   (dissoc ctx :ctx/files))
 
 (defn stage-ctx
-  [{:keys [ctx/stage] :as ctx}]
-  (or (:stage/ctx stage) ctx))
+  [ctx]
+  (or (:stage/ctx (get-stage ctx)) ctx))
 
 (defn render-validate [ctx]
   (malli-schema/validate-humanize schema ctx)
   ctx)
 
 (defn update-mouse-positions
-  [{:keys [ctx/stage
-           ctx/world-viewport]
-    :as ctx}]
-  (let [mp (mouse-position ctx)]
-    (-> ctx
+  [ctx]
+  (let [stage (get-stage ctx)
+        world-viewport (get-world-viewport ctx)
+        mp (mouse-position ctx)]
+  (-> ctx
         (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
         (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
 
@@ -2638,21 +2647,19 @@
 
 (defn check-debug-viewer
   [{:keys [ctx/mouseover-eid
-           ctx/skin
-           ctx/stage
            ctx/grid
            ctx/world-mouse-position]
     :as ctx}]
   (when (control-button-just-pressed? ctx :open-debug-button)
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
-      (stage/add-actor! stage
+      (stage/add-actor! (get-stage ctx)
                         (data-viewer-window/create
                          {:title "Data View"
                           :data data
                           :width 500
                           :height 500
-                          :skin skin}))))
+                          :skin (get-skin ctx)}))))
   ctx)
 
 (defn set-active-entities
@@ -2826,11 +2833,11 @@
 
 (defn- make-interaction-state
   [{:keys [ctx/mouseover-eid
-           ctx/stage
            ctx/player-eid
            ctx/world-mouse-position]
     :as ctx}]
-  (let [mouseover-actor* (mouseover-actor ctx)]
+  (let [stage (get-stage ctx)
+        mouseover-actor* (mouseover-actor ctx)]
     (cond
       mouseover-actor*
       [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor*)]
@@ -2963,9 +2970,7 @@
   ctx)
 
 (defn- tick-entities
-  [{:keys [ctx/active-entities
-           ctx/skin
-           ctx/stage]
+  [{:keys [ctx/active-entities]
     :as ctx}]
   (try
     (doseq [eid active-entities
@@ -2975,9 +2980,9 @@
              (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
     (catch Throwable t
       (throwable/pretty-pst t)
-      (stage/add-actor! stage
+      (stage/add-actor! (get-stage ctx)
                         (error-window/create
-                         {:skin skin
+                         {:skin (get-skin ctx)
                           :throwable t}))))
   ctx)
 
@@ -3014,34 +3019,35 @@
 (def zoom-speed 0.025)
 
 (defn window-camera-controls
-  [{:keys [ctx/stage
-           ctx/world-viewport]
-    :as ctx}]
-  (when (control-key-pressed? ctx :zoom-in)
-    (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
+  [ctx]
+  (let [stage (get-stage ctx)
+        world-viewport (get-world-viewport ctx)]
+    (when (control-key-pressed? ctx :zoom-in)
+      (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
 
-  (when (control-key-pressed? ctx :zoom-out)
-    (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
+    (when (control-key-pressed? ctx :zoom-out)
+      (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
 
-  (when (control-key-just-pressed? ctx :close-windows-key)
-    (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
-         group/get-children
-         (run! #(actor/set-visible! % false))))
+    (when (control-key-just-pressed? ctx :close-windows-key)
+      (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
+           group/get-children
+           (run! #(actor/set-visible! % false))))
 
-  (when (control-key-just-pressed? ctx :toggle-inventory)
-    (toggle-inventory-visible! ctx))
+    (when (control-key-just-pressed? ctx :toggle-inventory)
+      (toggle-inventory-visible! ctx))
 
-  (when (control-key-just-pressed? ctx :toggle-entity-info)
-    (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
-      (actor/set-visible! entity-info (not (actor/visible? entity-info)))))
-  ctx)
+    (when (control-key-just-pressed? ctx :toggle-entity-info)
+      (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
+        (actor/set-visible! entity-info (not (actor/visible? entity-info)))))
+    ctx))
 
 (defn update-draw-stage
-  [{:keys [ctx/stage] :as ctx}]
-  (stage/set-ctx! stage ctx)
-  (stage/act! stage)
-  (stage/draw! stage)
-  (:stage/ctx stage))
+  [ctx]
+  (let [stage (get-stage ctx)]
+    (stage/set-ctx! stage ctx)
+    (stage/act! stage)
+    (stage/draw! stage)
+    (:stage/ctx stage)))
 
 (defn create [application]
   (-> application
@@ -3105,11 +3111,11 @@
       render-validate))
 
 (defn resize
-  [{:keys [ctx/stage
-           ctx/world-viewport]}
-   width height]
-  (viewport/update! (:stage/viewport stage) width height true)
-  (viewport/update! world-viewport width height false))
+  [ctx width height]
+  (let [stage (get-stage ctx)
+        world-viewport (get-world-viewport ctx)]
+    (viewport/update! (:stage/viewport stage) width height true)
+    (viewport/update! world-viewport width height false)))
 
 (def state (atom nil))
 

@@ -30,6 +30,9 @@
 
 (def state (atom nil))
 
+(defn- get-stage [ctx]
+  (:ctx/stage ctx))
+
 (def ^:private config
   {:initial-level-fn uf-caves/create
    :level-fns [["Vampire" tmx/vampire]
@@ -103,7 +106,7 @@
              :ctx/camera (viewport/get-camera world-viewport)}
         ctx (generate-level ctx (:initial-level-fn config))]
     (input/set-processor! input stage)
-    (stage/add-actor! (:ctx/stage ctx)
+    (stage/add-actor! (get-stage ctx)
                     (window/create {:title "Edit"
                                     :skin skin
                                     :table/rows (for [[label level-fn] (:level-fns config)
@@ -136,43 +139,44 @@
            ctx/tiled-map
            ctx/world-viewport
            ctx/world-unit-scale
-           ctx/graphics
-           ctx/stage] :as ctx}]
-  (let [gl (graphics/get-gl20 graphics)]
+           ctx/graphics]
+    :as ctx}]
+  (let [stage (get-stage ctx)
+        gl (graphics/get-gl20 graphics)]
     (gl20/gl-clear-color! gl 0 0 0 0)
-    (gl20/gl-clear! gl gl20/gl-color-buffer-bit))
-  (moon-tiled-map/draw! tiled-map
-                        sprite-batch
-                        world-unit-scale
-                        (viewport/get-camera world-viewport)
-                        (constantly (color/to-float-bits [1 1 1 1])))
-  (when (input/key-pressed? input :input.keys/minus)
-    (orthographic-camera/inc-zoom! camera zoom-speed))
-  (when (input/key-pressed? input :input.keys/equals)
-    (orthographic-camera/inc-zoom! camera (- zoom-speed)))
-  (let [apply-position (fn [idx f]
-                         (orthographic-camera/set-position! camera
-                                        (update (orthographic-camera/position camera)
-                                                idx
-                                                #(f % camera-movement-speed))))]
-    (when (input/key-pressed? input :input.keys/left)
-      (apply-position 0 -))
-    (when (input/key-pressed? input :input.keys/right)
-      (apply-position 0 +))
-    (when (input/key-pressed? input :input.keys/up)
-      (apply-position 1 +))
-    (when (input/key-pressed? input :input.keys/down)
-      (apply-position 1 -)))
-  (stage/act! stage)
-  (stage/draw! stage)
-  ctx)
+    (gl20/gl-clear! gl gl20/gl-color-buffer-bit)
+    (moon-tiled-map/draw! tiled-map
+                          sprite-batch
+                          world-unit-scale
+                          (viewport/get-camera world-viewport)
+                          (constantly (color/to-float-bits [1 1 1 1])))
+    (when (input/key-pressed? input :input.keys/minus)
+      (orthographic-camera/inc-zoom! camera zoom-speed))
+    (when (input/key-pressed? input :input.keys/equals)
+      (orthographic-camera/inc-zoom! camera (- zoom-speed)))
+    (let [apply-position (fn [idx f]
+                           (orthographic-camera/set-position! camera
+                                              (update (orthographic-camera/position camera)
+                                                      idx
+                                                      #(f % camera-movement-speed))))]
+      (when (input/key-pressed? input :input.keys/left)
+        (apply-position 0 -))
+      (when (input/key-pressed? input :input.keys/right)
+        (apply-position 0 +))
+      (when (input/key-pressed? input :input.keys/up)
+        (apply-position 1 +))
+      (when (input/key-pressed? input :input.keys/down)
+        (apply-position 1 -)))
+    (stage/act! stage)
+    (stage/draw! stage)
+    ctx))
 
 (defn resize
-  [{:keys [ctx/stage
-           ctx/world-viewport]}
-   width height]
-  (viewport/update! (:stage/viewport stage) width height true)
-  (viewport/update! world-viewport width height false))
+  [ctx width height]
+  (let [stage (get-stage ctx)
+        world-viewport (:ctx/world-viewport ctx)]
+    (viewport/update! (:stage/viewport stage) width height true)
+    (viewport/update! world-viewport width height false)))
 
 (defn -main []
   (lwjgl-application/use-glfw-async!)
