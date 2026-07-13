@@ -877,6 +877,17 @@
     (grid/set-occupied-cells! (:ctx/grid ctx) eid))
   nil)
 
+(defn- spawn-entity! [ctx entity]
+  (let [entity (reduce (fn [m [k v]]
+                         (assoc m k (create-component ctx k v)))
+                       {}
+                       entity)
+        entity (merge (map->EntityRecord {}) entity)
+        eid (atom entity)]
+    (register-eid! ctx eid)
+    (doseq [component @eid]
+      (after-create-component ctx eid component))))
+
 (defn- show-modal! [ctx {:keys [title text button-text on-click]}]
   (let [{:keys [ctx/skin ctx/stage]} ctx]
     (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
@@ -1042,50 +1053,38 @@
      {:counter (timer/create elapsed-time duration)
       :faction faction}}]])
 
-(defn- tx-spawn-creature [_ctx {:keys [position creature-property components]}]
+(defn- tx-spawn-creature [ctx {:keys [position creature-property components]}]
   (assert creature-property)
-  [[:tx/spawn-entity
-    (-> creature-property
-        (assoc :entity/body
-               (let [{:keys [body/width body/height]} (:entity/body creature-property)]
-                 {:position position
-                  :width width
-                  :height height
-                  :collides? true
-                  :z-order :z-order/ground}))
-        (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-        (m/safe-merge components))]])
+  (spawn-entity! ctx
+                 (-> creature-property
+                     (assoc :entity/body
+                            (let [{:keys [body/width body/height]} (:entity/body creature-property)]
+                              {:position position
+                               :width width
+                               :height height
+                               :collides? true
+                               :z-order :z-order/ground}))
+                     (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
+                     (m/safe-merge components))))
 
-(defn- tx-spawn-effect [_ctx position components]
-  [[:tx/spawn-entity
-    (assoc components
-           :entity/body {:width 0.5
-                         :height 0.5
-                         :z-order :z-order/effect
-                         :position position})]])
+(defn- tx-spawn-effect [ctx position components]
+  (spawn-entity! ctx
+                 (assoc components
+                        :entity/body {:width 0.5
+                                      :height 0.5
+                                      :z-order :z-order/effect
+                                      :position position})))
 
-(defn- tx-spawn-entity [ctx entity]
-  (let [entity (reduce (fn [m [k v]]
-                         (assoc m k (create-component ctx k v)))
-                       {}
-                       entity)
-        entity (merge (map->EntityRecord {}) entity)
-        eid (atom entity)]
-    (register-eid! ctx eid)
-    (doseq [component @eid]
-      (after-create-component ctx eid component))
-    nil))
-
-(defn- tx-spawn-item [_ctx position item]
-  [[:tx/spawn-entity
-    {:entity/body {:position position
-                   :width 0.75
-                   :height 0.75
-                   :z-order :z-order/on-ground}
-     :entity/image (:entity/image item)
-     :entity/item item
-     :entity/clickable {:type :clickable/item
-                        :text (:property/pretty-name item)}}]])
+(defn- tx-spawn-item [ctx position item]
+  (spawn-entity! ctx
+                 {:entity/body {:position position
+                                :width 0.75
+                                :height 0.75
+                                :z-order :z-order/on-ground}
+                  :entity/image (:entity/image item)
+                  :entity/item item
+                  :entity/clickable {:type :clickable/item
+                                     :text (:property/pretty-name item)}}))
 
 (defn- tx-spawn-line [_ctx {:keys [start end duration color thick?]}]
   [[:tx/spawn-effect
@@ -1094,7 +1093,7 @@
      :entity/delete-after-duration duration}]])
 
 (defn- tx-spawn-projectile
-  [_ctx
+  [ctx
    {:keys [position direction faction]}
    {:keys [entity/image
            projectile/max-range
@@ -1102,19 +1101,19 @@
            entity-effects
            projectile/size
            projectile/piercing?]}]
-  [[:tx/spawn-entity
-    {:entity/body {:position position
-                   :width size
-                   :height size
-                   :z-order :z-order/flying
-                   :rotation-angle (v2/angle-from-vector direction)}
-     :entity/movement {:direction direction :speed speed}
-     :entity/image image
-     :entity/faction faction
-     :entity/delete-after-duration (/ max-range speed)
-     :entity/destroy-audiovisual :audiovisuals/hit-wall
-     :entity/projectile-collision {:entity-effects entity-effects
-                                   :piercing? piercing?}}]])
+  (spawn-entity! ctx
+                 {:entity/body {:position position
+                                :width size
+                                :height size
+                                :z-order :z-order/flying
+                                :rotation-angle (v2/angle-from-vector direction)}
+                  :entity/movement {:direction direction :speed speed}
+                  :entity/image image
+                  :entity/faction faction
+                  :entity/delete-after-duration (/ max-range speed)
+                  :entity/destroy-audiovisual :audiovisuals/hit-wall
+                  :entity/projectile-collision {:entity-effects entity-effects
+                                               :piercing? piercing?}}))
 
 (def tx-fn-map
   {:tx/audiovisual tx-audiovisual
@@ -1122,7 +1121,6 @@
    :tx/spawn-alert tx-spawn-alert
    :tx/spawn-creature tx-spawn-creature
    :tx/spawn-effect tx-spawn-effect
-   :tx/spawn-entity tx-spawn-entity
    :tx/spawn-item tx-spawn-item
    :tx/spawn-line tx-spawn-line
    :tx/spawn-projectile tx-spawn-projectile})
