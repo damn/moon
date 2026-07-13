@@ -14,7 +14,7 @@
             [clojure.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
-            [com.badlogic.gdx.graphics.gl20 :as gl20]
+            [clojure.gdx.graphics.gl20 :as gl20]
             [clojure.gdx.input :as input]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
@@ -142,8 +142,8 @@
            ctx/graphics
            ctx/stage] :as ctx}]
   (let [gl (graphics/get-gl20 graphics)]
-    (gl20/glClearColor gl 0 0 0 0)
-    (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
+    (gl20/gl-clear-color! gl 0 0 0 0)
+    (gl20/gl-clear! gl gl20/gl-color-buffer-bit))
   (moon-tiled-map/draw! tiled-map
                         sprite-batch
                         world-unit-scale

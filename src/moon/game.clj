@@ -28,7 +28,7 @@
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.graphics.gl20 :as gl20]
+            [clojure.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]
             [com.badlogic.gdx.graphics.texture :as texture]
             [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
@@ -2515,8 +2515,8 @@
 (defn clear-screen
   [{:keys [ctx/graphics] :as ctx}]
   (let [gl (graphics/get-gl20 graphics)]
-    (gl20/glClearColor gl 0 0 0 0)
-    (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
+    (gl20/gl-clear-color! gl 0 0 0 0)
+    (gl20/gl-clear! gl gl20/gl-color-buffer-bit))
   ctx)
 
 (defn render-draw-tiled-map
