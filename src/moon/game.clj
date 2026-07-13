@@ -209,141 +209,6 @@
   (fn [[k _v] _effect-ctx _ctx]
     k))
 
-(declare handle-fsm-event! spawn-creature! audiovisual!
-         spawn-alert! spawn-item! spawn-line! spawn-projectile! apply-effects!
-         draw-fn-circle draw-fn-ellipse draw-fn-filled-circle draw-fn-filled-rectangle
-         draw-fn-line draw-fn-sector draw-fn-text draw-fn-texture-region
-         draw-with-line-width!)
-
-(defmethod handle-effect :effects/audiovisual
-  [[_ audiovisual] {:keys [effect/target-position]} ctx]
-  (audiovisual! ctx target-position audiovisual))
-
-(defmethod handle-effect :effects/projectile
-  [[_ projectile] {:keys [effect/source effect/target-direction]} ctx]
-  (spawn-projectile! ctx
-                     {:position (projectile-start-point (:entity/body @source)
-                                                        target-direction
-                                                        (:projectile/size projectile))
-                      :direction target-direction
-                      :faction (:entity/faction @source)}
-                     projectile))
-
-(defmethod handle-effect :effects/spawn
-  [[_ {:keys [property/id] :as property}]
-   {:keys [effect/source effect/target-position]}
-   ctx]
-  (spawn-creature! ctx {:position target-position
-                        :creature-property property
-                        :components {:entity/fsm {:fsm :fsms/npc
-                                                  :initial-state :npc-idle}
-                                     :entity/faction (:entity/faction @source)}}))
-
-(defmethod handle-effect :effects/target-all
-  [[_ {:keys [entity-effects]}]
-   {:keys [effect/source]}
-   {:keys [ctx/active-entities
-           ctx/colors
-           ctx/raycaster]
-    :as ctx}]
-  (let [source* @source]
-    (doseq [target (affected-targets active-entities raycaster source*)]
-      (spawn-line! ctx
-                   {:start (:body/position (:entity/body source*))
-                    :end (:body/position (:entity/body @target))
-                    :duration 0.05
-                    :color (:colors/target-all-line colors)
-                    :thick? true})
-      (apply-effects! ctx
-                      {:effect/source source
-                       :effect/target target}
-                      entity-effects))))
-
-(defmethod handle-effect :effects/target-entity
-  [[_ {:keys [maxrange entity-effects]}]
-   {:keys [effect/source effect/target] :as effect-ctx}
-   {:keys [ctx/colors] :as ctx}]
-  (let [body        (:entity/body @source)
-        target-body (:entity/body @target)]
-    (if (body/in-range? body target-body maxrange)
-      (do (spawn-line! ctx
-                       {:start (body/start-point body target-body)
-                        :end (:body/position target-body)
-                        :duration 0.05
-                        :color (:colors/target-entity-line colors)
-                        :thick? true})
-          (apply-effects! ctx effect-ctx entity-effects))
-      (audiovisual! ctx
-                    (body/end-point body target-body maxrange)
-                    :audiovisuals/hit-ground))))
-
-(defmethod handle-effect :effects.target/audiovisual
-  [[_ audiovisual] {:keys [effect/target]} ctx]
-  (audiovisual! ctx (:body/position (:entity/body @target)) audiovisual))
-
-(defmethod handle-effect :effects.target/convert
-  [_ {:keys [effect/source effect/target]} _ctx]
-  (swap! target assoc :entity/faction (:entity/faction @source))
-  nil)
-
-(defmethod handle-effect :effects.target/damage
-  [[_ damage] {:keys [effect/source effect/target]} {:keys [ctx/elapsed-time] :as ctx}]
-  (let [source* @source
-        target* @target
-        hp (stats/get-hitpoints (:entity/stats target*))]
-    (cond
-     (zero? (hp 0))
-     nil
-
-     ; TODO find a better way
-     (not (:entity/stats target*))
-     nil
-
-     (and (:entity/stats source*)
-          (:entity/stats target*)
-          (< (rand) (stats/effective-armor-save (:entity/stats source*)
-                                            (:entity/stats target*))))
-     (do (swap! target add-text-effect elapsed-time "[WHITE]ARMOR" 0.3)
-         nil)
-
-     :else
-     (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
-                     (:damage/min-max (stats/calc-damage (:entity/stats source*)
-                                                     (:entity/stats target*)
-                                                     damage))
-                     (:damage/min-max damage))
-           dmg-amount (rand/int-between min-max)
-           new-hp-val (max (- (hp 0) dmg-amount)
-                           0)
-           dmg-text (str "[RED]" dmg-amount "[]")]
-       (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
-       (swap! target add-text-effect elapsed-time dmg-text 0.3)
-       (handle-fsm-event! ctx target (if (zero? new-hp-val) :kill :alert))
-       (audiovisual! ctx (:body/position (:entity/body target*)) :audiovisuals/damage)))))
-
-(defmethod handle-effect :effects.target/kill
-  [_ {:keys [effect/target]} ctx]
-  (handle-fsm-event! ctx target :kill))
-
-(defmethod handle-effect :effects.target/melee-damage
-  [_ {:keys [effect/source] :as effect-ctx} ctx]
-  ; TODO AT EFFECT CREATION MAKE
-  ; same @ applicable
-  (handle-effect [:effects.target/damage (stats/melee-damage @source)] effect-ctx ctx))
-
-(defmethod handle-effect :effects.target/spiderweb
-  [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]
-  ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
-  (when-not (:entity/temp-modifier @target)
-    (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                               :counter (timer/create elapsed-time spiderweb-duration)})
-    (swap! target update :entity/stats stats/add-mods spiderweb-modifiers)
-    nil))
-
-(defmethod handle-effect :effects.target/stun
-  [[_ duration] {:keys [effect/target]} ctx]
-  (handle-fsm-event! ctx target :stun duration))
-
 (defmulti effect-applicable?
   (fn [[k _v] _effect-ctx]
     k))
@@ -1102,6 +967,135 @@
         (state-enter! ctx eid new-state-obj)
         nil))))
 
+(defmethod handle-effect :effects/audiovisual
+  [[_ audiovisual] {:keys [effect/target-position]} ctx]
+  (audiovisual! ctx target-position audiovisual))
+
+(defmethod handle-effect :effects/projectile
+  [[_ projectile] {:keys [effect/source effect/target-direction]} ctx]
+  (spawn-projectile! ctx
+                     {:position (projectile-start-point (:entity/body @source)
+                                                        target-direction
+                                                        (:projectile/size projectile))
+                      :direction target-direction
+                      :faction (:entity/faction @source)}
+                     projectile))
+
+(defmethod handle-effect :effects/spawn
+  [[_ {:keys [property/id] :as property}]
+   {:keys [effect/source effect/target-position]}
+   ctx]
+  (spawn-creature! ctx {:position target-position
+                        :creature-property property
+                        :components {:entity/fsm {:fsm :fsms/npc
+                                                  :initial-state :npc-idle}
+                                     :entity/faction (:entity/faction @source)}}))
+
+(defmethod handle-effect :effects/target-all
+  [[_ {:keys [entity-effects]}]
+   {:keys [effect/source]}
+   {:keys [ctx/active-entities
+           ctx/colors
+           ctx/raycaster]
+    :as ctx}]
+  (let [source* @source]
+    (doseq [target (affected-targets active-entities raycaster source*)]
+      (spawn-line! ctx
+                   {:start (:body/position (:entity/body source*))
+                    :end (:body/position (:entity/body @target))
+                    :duration 0.05
+                    :color (:colors/target-all-line colors)
+                    :thick? true})
+      (apply-effects! ctx
+                      {:effect/source source
+                       :effect/target target}
+                      entity-effects))))
+
+(defmethod handle-effect :effects/target-entity
+  [[_ {:keys [maxrange entity-effects]}]
+   {:keys [effect/source effect/target] :as effect-ctx}
+   {:keys [ctx/colors] :as ctx}]
+  (let [body        (:entity/body @source)
+        target-body (:entity/body @target)]
+    (if (body/in-range? body target-body maxrange)
+      (do (spawn-line! ctx
+                       {:start (body/start-point body target-body)
+                        :end (:body/position target-body)
+                        :duration 0.05
+                        :color (:colors/target-entity-line colors)
+                        :thick? true})
+          (apply-effects! ctx effect-ctx entity-effects))
+      (audiovisual! ctx
+                    (body/end-point body target-body maxrange)
+                    :audiovisuals/hit-ground))))
+
+(defmethod handle-effect :effects.target/audiovisual
+  [[_ audiovisual] {:keys [effect/target]} ctx]
+  (audiovisual! ctx (:body/position (:entity/body @target)) audiovisual))
+
+(defmethod handle-effect :effects.target/convert
+  [_ {:keys [effect/source effect/target]} _ctx]
+  (swap! target assoc :entity/faction (:entity/faction @source))
+  nil)
+
+(defmethod handle-effect :effects.target/damage
+  [[_ damage] {:keys [effect/source effect/target]} {:keys [ctx/elapsed-time] :as ctx}]
+  (let [source* @source
+        target* @target
+        hp (stats/get-hitpoints (:entity/stats target*))]
+    (cond
+     (zero? (hp 0))
+     nil
+
+     ; TODO find a better way
+     (not (:entity/stats target*))
+     nil
+
+     (and (:entity/stats source*)
+          (:entity/stats target*)
+          (< (rand) (stats/effective-armor-save (:entity/stats source*)
+                                            (:entity/stats target*))))
+     (do (swap! target add-text-effect elapsed-time "[WHITE]ARMOR" 0.3)
+         nil)
+
+     :else
+     (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
+                     (:damage/min-max (stats/calc-damage (:entity/stats source*)
+                                                     (:entity/stats target*)
+                                                     damage))
+                     (:damage/min-max damage))
+           dmg-amount (rand/int-between min-max)
+           new-hp-val (max (- (hp 0) dmg-amount)
+                           0)
+           dmg-text (str "[RED]" dmg-amount "[]")]
+       (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
+       (swap! target add-text-effect elapsed-time dmg-text 0.3)
+       (handle-fsm-event! ctx target (if (zero? new-hp-val) :kill :alert))
+       (audiovisual! ctx (:body/position (:entity/body target*)) :audiovisuals/damage)))))
+
+(defmethod handle-effect :effects.target/kill
+  [_ {:keys [effect/target]} ctx]
+  (handle-fsm-event! ctx target :kill))
+
+(defmethod handle-effect :effects.target/melee-damage
+  [_ {:keys [effect/source] :as effect-ctx} ctx]
+  ; TODO AT EFFECT CREATION MAKE
+  ; same @ applicable
+  (handle-effect [:effects.target/damage (stats/melee-damage @source)] effect-ctx ctx))
+
+(defmethod handle-effect :effects.target/spiderweb
+  [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]
+  ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
+  (when-not (:entity/temp-modifier @target)
+    (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
+                                               :counter (timer/create elapsed-time spiderweb-duration)})
+    (swap! target update :entity/stats stats/add-mods spiderweb-modifiers)
+    nil))
+
+(defmethod handle-effect :effects.target/stun
+  [[_ duration] {:keys [effect/target]} ctx]
+  (handle-fsm-event! ctx target :stun duration))
+
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (:ctx/stage ctx)
                       :stage/root
@@ -1279,6 +1273,107 @@
   (let [tile-size 48
         image-width 32]
     (/ (/ image-width tile-size) 2)))
+
+(defn- draw-fn-circle [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/circle shape-drawer x y radius))
+
+(defn- draw-fn-ellipse [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/ellipse shape-drawer x y radius-x radius-y))
+
+(defn- draw-fn-filled-circle [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/filled-circle! shape-drawer x y radius))
+
+(defn- draw-fn-filled-rectangle [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/filled-rectangle! shape-drawer x y w h))
+
+(defn- draw-fn-line [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/line shape-drawer sx sy ex ey))
+
+(defn- draw-fn-grid [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
+  (let [w (* (float gridw) (float cellw))
+        h (* (float gridh) (float cellh))
+        topy (+ (float bottomy) (float h))
+        rightx (+ (float leftx) (float w))]
+    (doseq [idx (range (inc (float gridw)))
+            :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
+      (draw-fn-line ctx [linex topy] [linex bottomy] color-float-bits))
+    (doseq [idx (range (inc (float gridh)))
+            :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
+      (draw-fn-line ctx [leftx liney] [rightx liney] color-float-bits))))
+
+(defn- draw-fn-rectangle [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/rectangle shape-drawer x y w h))
+
+(defn- draw-fn-sector [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
+  (shape-drawer/set-color! shape-drawer color-float-bits)
+  (shape-drawer/sector shape-drawer center-x center-y radius start-radians radians))
+
+(defn- draw-fn-text [{:keys [ctx/batch
+                             ctx/unit-scale
+                             ctx/default-font]}
+                      {:keys [font scale x y text up?]}]
+  (let [font (or font default-font)
+        unit-scale @unit-scale
+        scale (or scale 1)
+        font-data (bitmap-font/get-data font)
+        old-scale (bitmap-font-data/scale-x font-data)
+        target-width 0
+        wrap? false
+        scale (* (float unit-scale)
+                 (float scale))]
+    (bitmap-font-data/set-scale! font-data (* old-scale scale))
+    (bitmap-font/draw! font
+                       batch
+                       text
+                       x
+                       (+ y (if up?
+                              (-> text
+                                  (str/split #"\n")
+                                  count
+                                  (* (bitmap-font/get-line-height font)))
+                              0))
+                       target-width
+                       align/center
+                       wrap?)
+    (bitmap-font-data/set-scale! font-data old-scale)))
+
+(defn- draw-fn-texture-region [{:keys [ctx/batch
+                                       ctx/unit-scale]}
+                               texture-region
+                               [x y]
+                               & {:keys [center? rotation]}]
+  (let [[w h] (let [dimensions [(texture-region/get-region-width texture-region)
+                                (texture-region/get-region-height texture-region)]]
+                  (if (= @unit-scale 1)
+                    dimensions
+                    (mapv (comp float (partial * world-unit-scale))
+                          dimensions)))]
+    (if center?
+      (batch/draw! batch
+                   texture-region
+                   (- (float x) (/ (float w) 2))
+                   (- (float y) (/ (float h) 2))
+                   (/ (float w) 2)
+                   (/ (float h) 2)
+                   w
+                   h
+                   1
+                   1
+                   (or rotation 0))
+      (batch/draw! batch texture-region x y w h))))
+
+(defn- draw-with-line-width! [ctx width draw-body]
+  (let [shape-drawer (:ctx/shape-drawer ctx)
+        old-line-width (shape-drawer/get-default-line-width shape-drawer)]
+    (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
+    (draw-body ctx)
+    (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
 
 (defn- draw-entity-image!
   [image entity ctx]
@@ -1488,107 +1583,6 @@
           (do (when-not explored?
                 (swap! explored-tile-corners assoc (mapv int position) true))
               visible-tile-color))))))
-
-(defn- draw-fn-circle [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/circle shape-drawer x y radius))
-
-(defn- draw-fn-ellipse [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/ellipse shape-drawer x y radius-x radius-y))
-
-(defn- draw-fn-filled-circle [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/filled-circle! shape-drawer x y radius))
-
-(defn- draw-fn-filled-rectangle [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/filled-rectangle! shape-drawer x y w h))
-
-(defn- draw-fn-grid [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
-  (let [w (* (float gridw) (float cellw))
-        h (* (float gridh) (float cellh))
-        topy (+ (float bottomy) (float h))
-        rightx (+ (float leftx) (float w))]
-    (doseq [idx (range (inc (float gridw)))
-            :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-      (draw-fn-line ctx [linex topy] [linex bottomy] color-float-bits))
-    (doseq [idx (range (inc (float gridh)))
-            :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-      (draw-fn-line ctx [leftx liney] [rightx liney] color-float-bits))))
-
-(defn- draw-fn-line [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/line shape-drawer sx sy ex ey))
-
-(defn- draw-fn-rectangle [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/rectangle shape-drawer x y w h))
-
-(defn- draw-fn-sector [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/sector shape-drawer center-x center-y radius start-radians radians))
-
-(defn- draw-fn-text [{:keys [ctx/batch
-                             ctx/unit-scale
-                             ctx/default-font]}
-                      {:keys [font scale x y text up?]}]
-  (let [font (or font default-font)
-        unit-scale @unit-scale
-        scale (or scale 1)
-        font-data (bitmap-font/get-data font)
-        old-scale (bitmap-font-data/scale-x font-data)
-        target-width 0
-        wrap? false
-        scale (* (float unit-scale)
-                 (float scale))]
-    (bitmap-font-data/set-scale! font-data (* old-scale scale))
-    (bitmap-font/draw! font
-                       batch
-                       text
-                       x
-                       (+ y (if up?
-                              (-> text
-                                  (str/split #"\n")
-                                  count
-                                  (* (bitmap-font/get-line-height font)))
-                              0))
-                       target-width
-                       align/center
-                       wrap?)
-    (bitmap-font-data/set-scale! font-data old-scale)))
-
-(defn- draw-fn-texture-region [{:keys [ctx/batch
-                                       ctx/unit-scale]}
-                               texture-region
-                               [x y]
-                               & {:keys [center? rotation]}]
-  (let [[w h] (let [dimensions [(texture-region/get-region-width texture-region)
-                                (texture-region/get-region-height texture-region)]]
-                  (if (= @unit-scale 1)
-                    dimensions
-                    (mapv (comp float (partial * world-unit-scale))
-                          dimensions)))]
-    (if center?
-      (batch/draw! batch
-                   texture-region
-                   (- (float x) (/ (float w) 2))
-                   (- (float y) (/ (float h) 2))
-                   (/ (float w) 2)
-                   (/ (float h) 2)
-                   w
-                   h
-                   1
-                   1
-                   (or rotation 0))
-      (batch/draw! batch texture-region x y w h))))
-
-(defn- draw-with-line-width! [ctx width draw-body]
-  (let [shape-drawer (:ctx/shape-drawer ctx)
-        old-line-width (shape-drawer/get-default-line-width shape-drawer)]
-    (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
-    (draw-body ctx)
-    (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
 
 (def k->render
   {:entity/clickable render-clickable
