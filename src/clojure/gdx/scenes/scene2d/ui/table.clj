@@ -38,12 +38,17 @@
     (table/row table))
   table)
 
+(def ^:private set-opt-fns
+  {:table/rows (fn [table rows]
+                 (add-rows! table rows)
+                 (layout/pack table))
+   :table/cell-defaults (fn [table defaults]
+                          (apply-cell-opts! (table/defaults table) defaults))})
+
 (defn set-opts! [table opts]
-  (when-let [rows (:table/rows opts)]
-    (add-rows! table rows)
-    (layout/pack table))
-  (when-let [defaults-opts (:table/cell-defaults opts)]
-    (apply-cell-opts! (table/defaults table) defaults-opts)))
+  (doseq [[k v] opts :when (set-opt-fns k)]
+    ((set-opt-fns k) table v))
+  table)
 
 (defn create [opts]
   (doto (table/new)

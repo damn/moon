@@ -1,14 +1,12 @@
 (ns moon.data-viewer-window
-  (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
-            [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
+  (:require [clojure.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.stage :as stage]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
+            [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -26,7 +24,7 @@
   {:pre [(map? data)]}
   (let [v->actor (fn [v skin]
                    (if (map? v)
-                     (doto (text-button/new "Map" skin)
+                     (doto (text-button/create "Map" skin)
                        (actor/add-listener! (change-listener/create
                                             (fn [_event actor]
                                               (stage/add-actor! (actor/get-stage actor)
@@ -36,7 +34,7 @@
                                                                   :width 500
                                                                   :height 500
                                                                   :skin skin}))))))
-                     (label/new (cond
+                     (label/create (cond
                                   (or (keyword? v)
                                       (number? v)
                                       (boolean? v)
@@ -49,18 +47,17 @@
         rows (for [[k v] (sort-by key data)]
                {:label (label-str k)
                 :actor (v->actor v skin)})
-        scroll-pane-table (doto (table/new)
-                            (moon-table/set-opts! {:table/rows (for [{:keys [label actor]} rows]
-                                                                    [{:actor (label/new label skin)}
-                                                                     {:actor actor}])}))
-        scroll-pane-cell (let [table (doto (table/new)
-                                         (moon-table/set-opts! {:table/cell-defaults {:pad 1}
-                                                                    :table/rows [[scroll-pane-table]]}))]
-                           {:actor (scroll-pane/new table skin)
-                            :width width
-                            :height 800})]
-    (doto (doto (window/new title skin)
-                (moon-table/set-opts! {:title title
-                                           :skin skin
-                                           :table/rows [[scroll-pane-cell]]}))
-          (add-close-button! skin))))
+        scroll-pane-table (table/create
+                           {:table/rows (for [{:keys [label actor]} rows]
+                                           [{:actor (label/create label skin)}
+                                            {:actor actor}])})
+        scroll-pane-cell {:actor (scroll-pane/create
+                                  (table/create {:table/cell-defaults {:pad 1}
+                                                 :table/rows [[scroll-pane-table]]})
+                                  skin)
+                          :width width
+                          :height 800}]
+    (window/create {:title title
+                    :skin skin
+                    :table/rows [[scroll-pane-cell]]
+                    :window/add-close-button? true})))

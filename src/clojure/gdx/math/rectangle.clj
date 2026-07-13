@@ -3,3 +3,6 @@
 
 (defn create [x y width height]
   (rectangle/new x y width height))
+
+(defn overlaps [a b]
+  (rectangle/overlaps a b))

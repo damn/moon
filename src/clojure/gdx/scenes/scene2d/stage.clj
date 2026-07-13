@@ -1,6 +1,7 @@
 (ns clojure.gdx.scenes.scene2d.stage
   (:import (clojure.lang ILookup)
-           (clojure Stage)))
+           (clojure Stage))
+  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
 
 (defn set-ctx! [^Stage stage ctx]
   (set! (.ctx stage) ctx))
