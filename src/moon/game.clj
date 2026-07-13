@@ -946,6 +946,12 @@
                       (group/find-actor "moon.ui.windows.inventory"))]
     (actor/set-visible! inventory (not (actor/visible? inventory)))))
 
+(defn- show-message! [ctx message]
+  (-> (:ctx/stage ctx)
+      :stage/root
+      (#(group/find-actor % "player-message"))
+      (actor/set-user-object! (atom {:text message :counter 0}))))
+
 (def tx-fn-map
   {   :tx/add-skill
    (fn [ctx eid {:keys [property/id] :as skill}]
@@ -1038,14 +1044,6 @@
        (when (:entity/player? @eid)
          (ui-set-item! ctx cell item))
        nil))
-
-   :tx/show-message
-   (fn [{:keys [ctx/stage] :as _ctx} message]
-     (-> stage
-         :stage/root
-         (#(group/find-actor % "player-message"))
-         (actor/set-user-object! (atom {:text message :counter 0})))
-     nil)
 
    :tx/sound
    (fn [{:keys [ctx/audio]} sound-name]
@@ -1886,11 +1884,11 @@
 (defn- interaction-state->txs [[k params] ctx player-eid]
   (let [stage (:ctx/stage ctx)]
     (case k
-      :interaction-state/mouseover-actor nil
+      :interaction-state/mouseover-actor
+      nil
 
       :interaction-state/clickable-mouseover-eid
-      (let [{:keys [clicked-eid
-                    in-click-range?]} params]
+      (let [{:keys [clicked-eid in-click-range?]} params]
         (if in-click-range?
           (case (:type (:entity/clickable @clicked-eid))
             :clickable/player
@@ -1898,42 +1896,46 @@
                 nil)
 
             :clickable/item
-          (let [item (:entity/item @clicked-eid)]
-            (cond
-             (-> stage
-                 :stage/root
-                 (#(group/find-actor % "moon.ui.windows.inventory"))
-                 actor/visible?)
-             (do (swap! clicked-eid assoc :entity/destroyed? true)
-                 [[:tx/sound "bfxr_takeit"]
-                  [:tx/event player-eid :pickup-item item]])
+            (let [item (:entity/item @clicked-eid)]
+              (cond
+                (-> stage
+                    :stage/root
+                    (#(group/find-actor % "moon.ui.windows.inventory"))
+                    actor/visible?)
+                (do (swap! clicked-eid assoc :entity/destroyed? true)
+                    [[:tx/sound "bfxr_takeit"]
+                     [:tx/event player-eid :pickup-item item]])
 
-             (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
-             (do (swap! clicked-eid assoc :entity/destroyed? true)
-                 [[:tx/sound "bfxr_pickup"]
-                  [:tx/pickup-item player-eid item]])
+                (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
+                (do (swap! clicked-eid assoc :entity/destroyed? true)
+                    [[:tx/sound "bfxr_pickup"]
+                     [:tx/pickup-item player-eid item]])
 
-             :else
-             [[:tx/sound "bfxr_denied"]
-              [:tx/show-message "Your Inventory is full"]])))
-        [[:tx/sound "bfxr_denied"]
-         [:tx/show-message "Too far away"]]))
+                :else
+                (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
+                    (show-message! ctx "Your Inventory is full")
+                    nil))))
+          (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
+              (show-message! ctx "Too far away")
+              nil)))
 
-    :interaction-state.skill/usable
-    (let [[skill effect-ctx] params]
-      [[:tx/event player-eid :start-action [skill effect-ctx]]])
+      :interaction-state.skill/usable
+      (let [[skill effect-ctx] params]
+        [[:tx/event player-eid :start-action [skill effect-ctx]]])
 
-    :interaction-state.skill/not-usable
-    (let [state params]
-      [[:tx/sound "bfxr_denied"]
-       [:tx/show-message (case state
-                           :cooldown "Skill is still on cooldown"
-                           :not-enough-mana "Not enough mana"
-                           :invalid-params "Cannot use this here")]])
+      :interaction-state.skill/not-usable
+      (let [state params]
+        (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
+            (show-message! ctx (case state
+                                 :cooldown "Skill is still on cooldown"
+                                 :not-enough-mana "Not enough mana"
+                                 :invalid-params "Cannot use this here"))
+            nil))
 
-    :interaction-state/no-skill-selected
-    [[:tx/sound "bfxr_denied"]
-     [:tx/show-message "No selected skill"]])))
+      :interaction-state/no-skill-selected
+      (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
+          (show-message! ctx "No selected skill")
+          nil))))
 
 (defn- handle-input-player-idle
   [player-eid {:keys [ctx/input
