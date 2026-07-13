@@ -275,7 +275,7 @@
   (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
     (handle-effect effect effect-ctx ctx)))
 
-(declare get-raycaster get-elapsed-time)
+(declare get-raycaster get-elapsed-time get-mouseover-eid get-ui-mouse-position get-world-mouse-position get-db get-textures get-delta-time get-max-speed get-files get-tiled-map get-explored-tile-corners)
 
 (defmulti effect-useful?
   (fn [[k _v] _effect-ctx _ctx]
@@ -840,14 +840,15 @@
     (f v eid ctx)
     nil))
 
-(defn- item-place-position [{:keys [ctx/world-mouse-position]} player-entity]
-  (assert world-mouse-position)
-  (let [player-position (:body/position (:entity/body player-entity))
-        maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
-    (v2/add player-position
-           (v2/scale (v2/direction player-position world-mouse-position)
-                     (min maxrange
-                          (v2/distance player-position world-mouse-position))))))
+(defn- item-place-position [ctx player-entity]
+  (let [world-mouse-position (get-world-mouse-position ctx)]
+    (assert world-mouse-position)
+    (let [player-position (:body/position (:entity/body player-entity))
+          maxrange (- (:entity/click-distance-tiles player-entity) 0.1)]
+      (v2/add player-position
+              (v2/scale (v2/direction player-position world-mouse-position)
+                        (min maxrange
+                             (v2/distance player-position world-mouse-position)))))))
 
 (defn- key-pressed? [ctx key]
   (input/key-pressed? (get-input ctx) key))
@@ -1089,7 +1090,7 @@
   (audio/play! (get-audio ctx) sound-name))
 
 (defn- audiovisual! [ctx position audiovisual]
-  (let [{:keys [ctx/db]} ctx
+  (let [db (get-db ctx)
         {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                              (db/build db audiovisual)
                                              audiovisual)]
@@ -1482,18 +1483,18 @@
     :update-fn frames-per-second
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
-    :update-fn (fn [{:keys [ctx/mouseover-eid]}]
-                 (when-let [entity (and mouseover-eid @mouseover-eid)]
+    :update-fn (fn [ctx]
+                 (when-let [entity (and (get-mouseover-eid ctx) @(get-mouseover-eid ctx))]
                    (:entity/id entity)))
     :icon "images/mouseover.png"}
    {:label "paused?"
     :update-fn :ctx/paused?}
    {:label "GUI"
-    :update-fn (fn [{:keys [ctx/ui-mouse-position]}]
-                 (mapv int ui-mouse-position))}
+    :update-fn (fn [ctx]
+                 (mapv int (get-ui-mouse-position ctx)))}
    {:label "World"
-    :update-fn (fn [{:keys [ctx/world-mouse-position]}]
-                 (mapv int world-mouse-position))}
+    :update-fn (fn [ctx]
+                 (mapv int (get-world-mouse-position ctx)))}
    {:label "Zoom"
     :update-fn (fn [ctx]
                  (orthographic-camera/zoom (viewport/get-camera (get-world-viewport ctx))))
@@ -1683,11 +1684,10 @@
 (defn- render-player-item-on-cursor
   [{:keys [item]}
    entity
-   {:keys [ctx/textures]
-    :as ctx}]
+   ctx]
   (when-not (mouseover-actor ctx)
     (draw-fn-texture-region ctx
-                            (textures/texture-region textures (:entity/image item))
+                            (textures/texture-region (get-textures ctx) (:entity/image item))
                             (item-place-position ctx entity)
                             {:center? true})))
 
@@ -1769,9 +1769,9 @@
 (defn- render-active-skill
   [{:keys [skill effect-ctx counter]}
    entity
-   {:keys [ctx/textures]
-    :as ctx}]
+   ctx]
   (let [colors (get-colors ctx)
+        textures (get-textures ctx)
         elapsed-time (get-elapsed-time ctx)
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
@@ -1993,9 +1993,8 @@
       :actor-name "moon.ui.windows.entity-info"
       :visible? false
       :position [(viewport/get-world-width (:stage/viewport stage)) 0]
-      :set-label-text! (fn [{:keys [ctx/mouseover-eid]
-                             :as ctx}]
-                         (if-let [eid mouseover-eid]
+      :set-label-text! (fn [ctx]
+                         (if-let [eid (get-mouseover-eid ctx)]
                            (info-text (apply dissoc @eid [:entity/skills
                                                           :entity/faction
                                                           :active-skill])
@@ -2012,13 +2011,11 @@
   nil)
 
 (defmethod entity-state-draw-ui-view :player-item-on-cursor
-  [_ eid {:keys [ctx/textures
-                 ctx/ui-mouse-position]
-          :as ctx}]
+  [_ eid ctx]
   (when (mouseover-actor ctx)
     (draw-fn-texture-region ctx
-                            (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
-                            ui-mouse-position
+                            (textures/texture-region (get-textures ctx) (:entity/image (:entity/item-on-cursor @eid)))
+                            (get-ui-mouse-position ctx)
                             {:center? true})))
 
 (defn player-state-draw-create []
@@ -2203,9 +2200,9 @@
            maxcnt]
     :as animation}
    eid
-   {:keys [ctx/delta-time]}]
+   ctx]
   (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
-                                           newcnt (+ (float cnt) (float delta-time))]
+                                           newcnt (+ (float cnt) (float (get-delta-time ctx)))]
                                        (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
                                                                    looping? (min maxcnt (- newcnt maxcnt))
                                                                    :else maxcnt))))
@@ -2333,10 +2330,8 @@
            rotate-in-movement-direction?]
     :as movement}
    eid
-   {:keys [ctx/delta-time
-           ctx/max-speed]
-    :as ctx}]
-  (assert (<= 0 speed max-speed)
+   ctx]
+  (assert (<= 0 speed (get-max-speed ctx))
           (pr-str speed))
   (assert (vector? direction))
   (assert (or (zero? (v2/length direction))
@@ -2347,7 +2342,7 @@
                 (zero? speed))
     (let [grid (get-grid ctx)
           content-grid (get-content-grid ctx)
-          movement (assoc movement :delta-time delta-time)
+          movement (assoc movement :delta-time (get-delta-time ctx))
           body (:entity/body @eid)]
       (when-let [body (if (:body/collides? body)
                          (grid/try-move-solid-body grid body (:entity/id @eid) movement)
@@ -2430,8 +2425,9 @@
          :ctx/shape-drawer (shape-drawer/new (get-batch ctx)
                                              (texture-region/create (get-shape-drawer-texture ctx) 1 0 1 1))))
 
-(defn create-skin [{:keys [ctx/files] :as ctx}]
-  (let [skin (skin/create (files/internal files "skin/uiskin.json"))]
+(defn create-skin [ctx]
+  (let [files (get-files ctx)
+        skin (skin/create (files/internal files "skin/uiskin.json"))]
     (-> skin
         (skin/get-font "default-font")
         bitmap-font/get-data
@@ -2459,9 +2455,10 @@
                                           (disposable/dispose! pixmap*)
                                           cursor))))))
 
-(defn create-textures [{:keys [ctx/files] :as ctx}]
-  (assoc ctx :ctx/textures (textures/create files {:folder "resources/"
-                                                   :extensions #{"png" "bmp"}})))
+(defn create-textures [ctx]
+  (let [files (get-files ctx)]
+    (assoc ctx :ctx/textures (textures/create files {:folder "resources/"
+                                                     :extensions #{"png" "bmp"}}))))
 
 (defn create-world-viewport [ctx]
   (assoc ctx
@@ -2628,13 +2625,12 @@
         (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
 
 (defn update-mouseover-eid
-  [{:keys [ctx/mouseover-eid
-           ctx/world-mouse-position]
-    :as ctx}]
+  [ctx]
   (let [player-eid (get-player-eid ctx)
         raycaster (get-raycaster ctx)
         render-z-order (get-render-z-order ctx)
-        position world-mouse-position
+        mouseover-eid (get-mouseover-eid ctx)
+        position (get-world-mouse-position ctx)
         new-eid (if (mouseover-actor ctx)
                   nil
                   (let [player @player-eid
@@ -2652,11 +2648,11 @@
     (assoc ctx :ctx/mouseover-eid new-eid)))
 
 (defn check-debug-viewer
-  [{:keys [ctx/mouseover-eid
-           ctx/world-mouse-position]
-    :as ctx}]
+  [ctx]
   (when (control-button-just-pressed? ctx :open-debug-button)
     (let [world-grid (get-grid ctx)
+          mouseover-eid (get-mouseover-eid ctx)
+          world-mouse-position (get-world-mouse-position ctx)
           data (or (and mouseover-eid @mouseover-eid)
                    @(world-grid (mapv int world-mouse-position)))]
       (stage/add-actor! (get-stage ctx)
@@ -2686,12 +2682,12 @@
   ctx)
 
 (defn render-draw-tiled-map
-  [{:keys [ctx/explored-tile-corners
-           ctx/tiled-map]
-    :as ctx}]
+  [ctx]
   (let [raycaster (get-raycaster ctx)
         world-viewport (get-world-viewport ctx)
-        colors (get-colors ctx)]
+        colors (get-colors ctx)
+        explored-tile-corners (get-explored-tile-corners ctx)
+        tiled-map (get-tiled-map ctx)]
     (draw-tiled-map! ctx
                      tiled-map
                      (viewport/get-camera world-viewport)
@@ -2829,10 +2825,10 @@
     ctx))
 
 (defn- make-interaction-state
-  [{:keys [ctx/mouseover-eid
-           ctx/world-mouse-position]
-    :as ctx}]
+  [ctx]
   (let [player-eid (get-player-eid ctx)
+        mouseover-eid (get-mouseover-eid ctx)
+        world-mouse-position (get-world-mouse-position ctx)
         stage (get-stage ctx)
         mouseover-actor* (mouseover-actor ctx)]
     (cond
