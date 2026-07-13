@@ -97,6 +97,7 @@
     [:ctx/batch :some]
     [:ctx/cursors :some]
     [:ctx/default-font :some]
+
     [:ctx/unit-scale :some]
     [:ctx/world-viewport :some] ; we are accessing camerea thorugh it although it holds the camera
     [:ctx/shape-drawer :some]
@@ -793,6 +794,12 @@
 (defn- dispose-cursors! [ctx]
   (run! disposable/dispose! (vals (cursors ctx))))
 
+(defn- default-font [ctx]
+  (:ctx/default-font ctx))
+
+(defn- dispose-default-font! [ctx]
+  (disposable/dispose! (default-font ctx)))
+
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
   (let [[x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
     (stage/hit stage x y true)))
@@ -1395,11 +1402,10 @@
   (shape-drawer/set-color! shape-drawer color-float-bits)
   (shape-drawer/sector shape-drawer center-x center-y radius start-radians radians))
 
-(defn- draw-fn-text [{:keys [ctx/unit-scale
-                             ctx/default-font]
+(defn- draw-fn-text [{:keys [ctx/unit-scale]
                       :as ctx}
                       {:keys [font scale x y text up?]}]
-  (let [font (or font default-font)
+  (let [font (or font (default-font ctx))
         unit-scale @unit-scale
         scale (or scale 1)
         font-data (bitmap-font/get-data font)
@@ -2929,7 +2935,6 @@
 
 (defn dispose
   [{:keys [ctx/audio
-           ctx/default-font
            ctx/shape-drawer-texture
            ctx/skin
            ctx/textures
@@ -2938,7 +2943,7 @@
   (audio/dispose! audio)
   (dispose-batch! ctx)
   (dispose-cursors! ctx)
-  (disposable/dispose! default-font)
+  (dispose-default-font! ctx)
   (disposable/dispose! shape-drawer-texture)
   (disposable/dispose! skin)
   (run! disposable/dispose! (vals textures))
