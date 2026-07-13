@@ -1,4 +1,4 @@
-(ns gdx.actor.group.widget-group.table
+(ns gdx.actor.group.widget.table
   (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [gdx.layout :as layout]))

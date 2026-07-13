@@ -1,7 +1,7 @@
 (ns moon.error-window
   (:require [clojure.repl :as repl]
             [gdx.actor.widget.label :as label]
-            [gdx.actor.group.widget-group.table.window :as window]))
+            [gdx.actor.group.widget.table.window :as window]))
 
 (defmacro with-err-str [& body]
   `(let [s# (java.io.StringWriter.)]

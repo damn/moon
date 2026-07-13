@@ -1,4 +1,4 @@
-(ns gdx.actor.group.widget-group.table.button
+(ns gdx.actor.group.widget.table.button
   (:require [gdx.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.ui.button :as button]))
 

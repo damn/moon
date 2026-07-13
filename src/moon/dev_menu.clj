@@ -1,14 +1,14 @@
 (ns moon.dev-menu
-  (:require [gdx.actor.group.widget-group.table :as table]
+  (:require [gdx.actor.group.widget.table :as table]
             [gdx.stage :as stage]
-            [gdx.actor.group.widget-group.table.window :as window]
+            [gdx.actor.group.widget.table.window :as window]
             [gdx.actor :as actor]
             [gdx.event :as event]
             [gdx.actor.group :as group]
             [gdx.touchable :as touchable]
             [gdx.actor.widget.image :as image]
             [gdx.actor.widget.label :as label]
-            [gdx.actor.group.widget-group.table.button.text-button :as text-button]
+            [gdx.actor.group.widget.table.button.text-button :as text-button]
             [gdx.change-listener :as change-listener]
             [gdx.layout :as layout]))
 

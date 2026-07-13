@@ -4,13 +4,13 @@
             [gdx.event :as event]
             [gdx.actor.group :as group]
             [gdx.actor.widget.image :as image]
-            [gdx.actor.group.widget-group.stack :as stack]
+            [gdx.actor.group.widget.stack :as stack]
             [gdx.tooltip.text-tooltip :as text-tooltip]
             [gdx.actor.widget :as widget]
-            [gdx.actor.group.widget-group.table.window :as window]
+            [gdx.actor.group.widget.table.window :as window]
             [gdx.click-listener :as click-listener]
-            [gdx.base-drawable.texture-region :as texture-region-drawable]
-            [gdx.actor.group.widget-group.table :as table]
+            [gdx.drawable.texture-region :as texture-region-drawable]
+            [gdx.actor.group.widget.table :as table]
             [gdx.vector2 :as vector2]
             [moon.inventory.cell :as inventory-cell]))
 

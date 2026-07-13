@@ -1,4 +1,4 @@
-(ns gdx.base-drawable.texture-region
+(ns gdx.drawable.texture-region
   (:require [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn create [texture-region]

@@ -3,12 +3,12 @@
             [gdx.actor :as actor]
             [gdx.actor.group :as group]
             [gdx.button-group :as button-group]
-            [gdx.actor.group.widget-group.horizontal-group :as horizontal-group]
-            [gdx.actor.group.widget-group.table.button.image-button :as image-button]
-            [gdx.actor.group.widget-group.table :as table]
+            [gdx.actor.group.widget.horizontal-group :as horizontal-group]
+            [gdx.actor.group.widget.table.button.image-button :as image-button]
+            [gdx.actor.group.widget.table :as table]
             [gdx.tooltip.text-tooltip :as text-tooltip]
             [gdx.layout :as layout]
-            [gdx.base-drawable.texture-region :as texture-region-drawable]))
+            [gdx.drawable.texture-region :as texture-region-drawable]))
 
 (defn create []
   (doto (table/create

@@ -1,9 +1,9 @@
 (ns moon.data-viewer-window
   (:require [gdx.actor.widget.label :as label]
-            [gdx.actor.group.widget-group.scroll-pane :as scroll-pane]
-            [gdx.actor.group.widget-group.table :as table]
-            [gdx.actor.group.widget-group.table.button.text-button :as text-button]
-            [gdx.actor.group.widget-group.table.window :as window]
+            [gdx.actor.group.widget.scroll-pane :as scroll-pane]
+            [gdx.actor.group.widget.table :as table]
+            [gdx.actor.group.widget.table.button.text-button :as text-button]
+            [gdx.actor.group.widget.table.window :as window]
             [gdx.actor :as actor]
             [gdx.stage :as stage]
             [gdx.change-listener :as change-listener]))

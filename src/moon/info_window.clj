@@ -1,9 +1,9 @@
 (ns moon.info-window
-  (:require [gdx.actor.group.widget-group.table :as table]
+  (:require [gdx.actor.group.widget.table :as table]
             [gdx.actor :as actor]
             [gdx.actor.group :as group]
             [gdx.actor.widget.label :as label]
-            [gdx.actor.group.widget-group.table.window :as window]
+            [gdx.actor.group.widget.table.window :as window]
             [gdx.layout :as layout]))
 
 (defn create
