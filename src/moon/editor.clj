@@ -44,7 +44,7 @@
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [com.badlogic.gdx.utils.viewport.viewport :as viewport]
+            [clojure.gdx.utils.viewport.viewport :as viewport]
             [clojure.gdx.application :as application]
             [clojure.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [clojure.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]))
@@ -198,7 +198,7 @@
                                                                                                                                           sound-name)))))}])})]
                                                {:actor (scroll-pane/new table skin)
                                                 :width  (+ (actor/get-width table) 50)
-                                                :height (min (- (viewport/getWorldHeight (:stage/viewport stage)) 50)
+                                                :height (min (- (viewport/get-world-height (:stage/viewport stage)) 50)
                                                              (actor/get-height table))})]]
                                             :window/add-close-button? true})
                             (window/set-modal! true)))))
@@ -274,7 +274,7 @@
         schemas (:db/schemas db)
         schema (get schemas (property/type property))
         widget (create-widget schema property ctx)
-        scroll-pane-height (viewport/getWorldHeight (:stage/viewport stage))
+        scroll-pane-height (viewport/get-world-height (:stage/viewport stage))
         get-widget-value #(widget-value schema widget schemas)
         property-id (:property/id property)
         clicked-delete-fn (with-window-close (fn [db]
@@ -733,7 +733,7 @@
     (:stage/ctx stage)))
 
 (defn resize [{:keys [ctx/stage]} width height]
-  (viewport/update (:stage/viewport stage) width height true))
+  (viewport/update! (:stage/viewport stage) width height true))
 
 (defn -main []
   (config/use-glfw-async!)

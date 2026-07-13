@@ -42,7 +42,7 @@
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [com.badlogic.gdx.utils.viewport.viewport :as viewport]
+            [clojure.gdx.utils.viewport.viewport :as viewport]
             [moon.action-bar :as action-bar]
             [moon.audio :as audio]
             [moon.body :as body]
@@ -1027,8 +1027,8 @@
                                                                               (on-click)))))}]]})
                              (window/set-modal! true)
                          (actor/set-name! "moon.ui.modal-window")
-                         (actor/set-position! (/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
-                                         (* (viewport/getWorldHeight (:stage/viewport stage)) (/ 3 4)) align/center)))
+                         (actor/set-position! (/ (viewport/get-world-width (:stage/viewport stage)) 2)
+                                         (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4)) align/center)))
      nil)
 
    :tx/sound
@@ -1346,7 +1346,7 @@
                  (mapv int world-mouse-position))}
    {:label "Zoom"
     :update-fn (fn [{:keys [ctx/world-viewport]}]
-                 (orthographic-camera/zoom (viewport/getCamera world-viewport)))
+                 (orthographic-camera/zoom (viewport/get-camera world-viewport)))
     :icon "images/zoom.png"}])
 
 (def max-speed
@@ -1714,7 +1714,7 @@
                           :hpcontent-file "images/hp.png"
                           :manacontent-file "images/mana.png"
                           :y-mana 80}
-        [x y-mana] [(/ (viewport/getWorldWidth (:stage/viewport stage)) 2)
+        [x y-mana] [(/ (viewport/get-world-width (:stage/viewport stage)) 2)
                     y-mana]
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
@@ -1829,8 +1829,8 @@
       :droppable-item-color (:colors/droppable-item colors)
       :not-allowed-drop-item-color (:colors/not-allowed-drop-item colors)
       :skin skin
-      :position [(viewport/getWorldWidth (:stage/viewport stage))
-                 (viewport/getWorldHeight (:stage/viewport stage))]
+      :position [(viewport/get-world-width (:stage/viewport stage))
+                 (viewport/get-world-height (:stage/viewport stage))]
       :slot->texture-region slot->texture-region
       :cell-size 48})))
 
@@ -1847,7 +1847,7 @@
    {:title "Entity Info"
     :actor-name "moon.ui.windows.entity-info"
     :visible? false
-    :position [(viewport/getWorldWidth (:stage/viewport stage)) 0]
+    :position [(viewport/get-world-width (:stage/viewport stage)) 0]
     :set-label-text! (fn [{:keys [ctx/mouseover-eid]
                            :as ctx}]
                        (if-let [eid mouseover-eid]
@@ -1898,8 +1898,8 @@
              (when-let [stage (actor/get-stage this)]
                (draw! (:stage/ctx stage)
                       [(let [state (actor/get-user-object this)
-                             vp-width (viewport/getWorldWidth (:stage/viewport stage))
-                             vp-height (viewport/getWorldHeight (:stage/viewport stage))]
+                             vp-width (viewport/get-world-width (:stage/viewport stage))
+                             vp-height (viewport/get-world-height (:stage/viewport stage))]
                          (when-let [text (:text @state)]
                            [:draw/text {:x (/ vp-width 2)
                                         :y (+ (/ vp-height 2) 200)
@@ -2508,7 +2508,7 @@
   [{:keys [ctx/player-eid
            ctx/world-viewport]
     :as ctx}]
-  (orthographic-camera/set-position! (viewport/getCamera world-viewport)
+  (orthographic-camera/set-position! (viewport/get-camera world-viewport)
                                      (:body/position (:entity/body @player-eid)))
   ctx)
 
@@ -2530,11 +2530,11 @@
   (moon-tiled-map/draw! tiled-map
                      batch
                      world-unit-scale
-                     (viewport/getCamera world-viewport)
+                     (viewport/get-camera world-viewport)
                      (tile-color-setter*
                       {:ray-blocked? (partial raycaster/blocked? raycaster)
                        :explored-tile-corners explored-tile-corners
-                       :light-position (orthographic-camera/position (viewport/getCamera world-viewport))
+                       :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
                        :see-all-tiles? false
                        :explored-tile-color (:colors/explored-tile colors)
                        :visible-tile-color (:colors/visible-tile colors)
@@ -2559,12 +2559,12 @@
   [{:keys [ctx/world-viewport
            ctx/show-tile-grid?]}]
   (if show-tile-grid?
-    (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/getCamera world-viewport))]
+    (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/get-camera world-viewport))]
       [[:draw/grid
         (int left-x)
         (int bottom-y)
-        (inc (int (viewport/getWorldWidth world-viewport)))
-        (+ 2 (int (viewport/getWorldHeight world-viewport)))
+        (inc (int (viewport/get-world-width world-viewport)))
+        (+ 2 (int (viewport/get-world-height world-viewport)))
         1
         1
         (color/toFloatBits [1 1 1 0.8])]])
@@ -2578,7 +2578,7 @@
            ctx/show-cell-entities?
            ctx/show-cell-occupied?]}]
   (apply concat
-         (for [[x y] (orthographic-camera/visible-tiles (viewport/getCamera world-viewport))
+         (for [[x y] (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))
                :let [cell (grid [x y])]
                :when cell
                :let [cell* @cell]]
@@ -2659,7 +2659,7 @@
            ctx/world-viewport]
     :as ctx}]
   (batch/setColor batch 1 1 1 1)
-  (batch/setProjectionMatrix batch (orthographic-camera/combined (viewport/getCamera world-viewport)))
+  (batch/setProjectionMatrix batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
   (batch/begin batch)
   (let [old-line-width (shape-drawer/getDefaultLineWidth shape-drawer)]
     (shape-drawer/setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
@@ -2886,10 +2886,10 @@
            ctx/world-viewport]
     :as ctx}]
   (when (input/key-pressed? input (:zoom-in controls))
-    (orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) zoom-speed))
+    (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
 
   (when (input/key-pressed? input (:zoom-out controls))
-    (orthographic-camera/inc-zoom! (viewport/getCamera world-viewport) (- zoom-speed)))
+    (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
 
   (when (input/key-just-pressed? input (:close-windows-key controls))
     (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
@@ -2985,8 +2985,8 @@
   [{:keys [ctx/stage
            ctx/world-viewport]}
    width height]
-  (viewport/update (:stage/viewport stage) width height true)
-  (viewport/update world-viewport width height false))
+  (viewport/update! (:stage/viewport stage) width height true)
+  (viewport/update! world-viewport width height false))
 
 (def state (atom nil))
 

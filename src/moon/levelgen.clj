@@ -26,7 +26,7 @@
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [com.badlogic.gdx.utils.viewport.viewport :as viewport]
+            [clojure.gdx.utils.viewport.viewport :as viewport]
             [clojure.gdx.application :as application]
             [clojure.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
             [clojure.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]))
@@ -103,7 +103,7 @@
              :ctx/sprite-batch sprite-batch
              :ctx/skin skin
              :ctx/world-viewport world-viewport
-             :ctx/camera (viewport/getCamera world-viewport)}
+             :ctx/camera (viewport/get-camera world-viewport)}
         ctx (generate-level ctx (:initial-level-fn config))]
     (input/set-processor! input stage)
     (stage/add-actor! (:ctx/stage ctx)
@@ -147,7 +147,7 @@
   (moon-tiled-map/draw! tiled-map
                         sprite-batch
                         world-unit-scale
-                        (viewport/getCamera world-viewport)
+                        (viewport/get-camera world-viewport)
                         (constantly (color/toFloatBits [1 1 1 1])))
   (when (input/key-pressed? input :input.keys/minus)
     (orthographic-camera/inc-zoom! camera zoom-speed))
@@ -174,8 +174,8 @@
   [{:keys [ctx/stage
            ctx/world-viewport]}
    width height]
-  (viewport/update (:stage/viewport stage) width height true)
-  (viewport/update world-viewport width height false))
+  (viewport/update! (:stage/viewport stage) width height true)
+  (viewport/update! world-viewport width height false))
 
 (defn -main []
   (config/use-glfw-async!)
