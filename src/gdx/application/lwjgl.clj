@@ -8,10 +8,10 @@
 
 (let [k->opts
       {
-       :config/set-title          config/setTitle
-       :config/set-windowed-mode  (fn [config {:keys [width height]}]
+       :title          config/setTitle
+       :windowed-mode  (fn [config {:keys [width height]}]
                                     (config/setWindowedMode config width height))
-       :config/set-foreground-fps config/setForegroundFPS
+       :foreground-fps config/setForegroundFPS
        }]
   (defn- create-config [config-opts]
     (let [config (config/new)]
@@ -22,7 +22,6 @@
       config)))
 
 (defn create
-  [{:keys [application/config
-           application/listener]}]
+  [{:keys [config listener]}]
   (lwjgl3-application/new (application-listener/create listener)
                           (create-config config)))

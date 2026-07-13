@@ -3140,13 +3140,13 @@
    :resume! (fn [])})
 
 (def application-config
-  {:config/set-title "Moon"
-   :config/set-windowed-mode {:width 1440
+  {:title "Moon"
+   :windowed-mode {:width 1440
                               :height 900}
-   :config/set-foreground-fps 60} )
+   :foreground-fps 60} )
 
 (defn -main []
   (lwjgl-application/use-glfw-async!)
   (lwjgl-application/create
-   {:application/listener application-listener
-    :application/config application-config}))
+   {:listener application-listener
+    :config application-config}))

@@ -181,17 +181,17 @@
 (defn -main []
   (lwjgl-application/use-glfw-async!)
   (lwjgl-application/create
-   {:application/listener {:create! (fn [application]
-                                      (reset! state (create state config application)))
-                           :dispose! (fn []
-                                       (dispose @state))
-                           :render! (fn []
-                                      (swap! state render))
-                           :resize! (fn [width height]
-                                      (resize @state width height))
-                           :pause! (fn [])
-                           :resume! (fn [])}
-    :application/config {:config/set-title "Levelgen Test"
-                         :config/set-windowed-mode {:width 1440
-                                                    :height 900}
-                         :config/set-foreground-fps 60}}))
+   {:listener {:create! (fn [application]
+                          (reset! state (create state config application)))
+               :dispose! (fn []
+                           (dispose @state))
+               :render! (fn []
+                          (swap! state render))
+               :resize! (fn [width height]
+                          (resize @state width height))
+               :pause! (fn [])
+               :resume! (fn [])}
+    :config {:title "Levelgen Test"
+             :windowed-mode {:width 1440
+                                        :height 900}
+             :foreground-fps 60}}))
