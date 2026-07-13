@@ -948,6 +948,11 @@
    :player-dead state-enter-player-dead
    :npc-moving state-enter-npc-moving})
 
+(defn- state-enter! [ctx eid [state-k state-v]]
+  (if-let [f (k->state-enter state-k)]
+    (f state-v eid ctx)
+    nil))
+
 (defn- state-exit-player-item-on-cursor
   [_ eid ctx]
   (let [entity @eid
@@ -980,6 +985,13 @@
    :npc-sleeping state-exit-npc-sleeping
    :npc-moving state-exit-npc-moving})
 
+(defn- fsm-transition! [ctx eid old-state-obj new-state-obj]
+  (concat
+   (or (when-let [f (k->state-exit (first old-state-obj))]
+         (f (second old-state-obj) eid ctx))
+       [])
+   (or (state-enter! ctx eid new-state-obj) [])))
+
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (:ctx/stage ctx)
                       :stage/root
@@ -1011,36 +1023,35 @@
 
    :tx/event
    ; FIXME duplicated
-   (fn ([ctx eid event]
-         (let [fsm (:entity/fsm @eid)
-               _ (assert fsm)
-               old-state-k (:state fsm)
-               new-fsm (fsm/fsm-event fsm event)
-               new-state-k (:state new-fsm)]
-           (when-not (= old-state-k new-state-k)
-             (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
-                                   [k (k @eid)])
-                   new-state-obj [new-state-k (create-entity-state [new-state-k nil] eid ctx)]]
-               (swap! eid assoc :entity/fsm new-fsm)
-               (swap! eid assoc new-state-k (new-state-obj 1))
-               (swap! eid dissoc old-state-k)
-               [[:tx/state-exit eid old-state-obj]
-                [:tx/state-enter eid new-state-obj]]))))
-       ([ctx eid event params]
-         (let [fsm (:entity/fsm @eid)
-               _ (assert fsm)
-               old-state-k (:state fsm)
-               new-fsm (fsm/fsm-event fsm event)
-               new-state-k (:state new-fsm)]
-           (when-not (= old-state-k new-state-k)
-             (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
-                                   [k (k @eid)])
-                   new-state-obj [new-state-k (create-entity-state [new-state-k params] eid ctx)]]
-               (swap! eid assoc :entity/fsm new-fsm)
-               (swap! eid assoc new-state-k (new-state-obj 1))
-               (swap! eid dissoc old-state-k)
-               [[:tx/state-exit eid old-state-obj]
-                [:tx/state-enter eid new-state-obj]])))))
+   (fn
+     ([ctx eid event]
+      (let [fsm (:entity/fsm @eid)
+            _ (assert fsm)
+            old-state-k (:state fsm)
+            new-fsm (fsm/fsm-event fsm event)
+            new-state-k (:state new-fsm)]
+        (when-not (= old-state-k new-state-k)
+          (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
+                                 [k (k @eid)])
+                new-state-obj [new-state-k (create-entity-state [new-state-k nil] eid ctx)]]
+            (swap! eid assoc :entity/fsm new-fsm)
+            (swap! eid assoc new-state-k (new-state-obj 1))
+            (swap! eid dissoc old-state-k)
+            (fsm-transition! ctx eid old-state-obj new-state-obj)))))
+     ([ctx eid event params]
+      (let [fsm (:entity/fsm @eid)
+            _ (assert fsm)
+            old-state-k (:state fsm)
+            new-fsm (fsm/fsm-event fsm event)
+            new-state-k (:state new-fsm)]
+        (when-not (= old-state-k new-state-k)
+          (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
+                                 [k (k @eid)])
+                new-state-obj [new-state-k (create-entity-state [new-state-k params] eid ctx)]]
+            (swap! eid assoc :entity/fsm new-fsm)
+            (swap! eid assoc new-state-k (new-state-obj 1))
+            (swap! eid dissoc old-state-k)
+            (fsm-transition! ctx eid old-state-obj new-state-obj))))))
 
    :tx/spawn-alert
    (fn [{:keys [ctx/elapsed-time]} position faction duration]
@@ -1129,17 +1140,12 @@
         :entity/projectile-collision {:entity-effects entity-effects
                                       :piercing? piercing?}}]])
 
-   :tx/state-enter
-   (fn [ctx eid [state-k state-v]]
-     (if-let [f (k->state-enter state-k)]
-       (f state-v eid ctx)
-       nil))
-
    :tx/state-exit
    (fn [ctx eid [state-k state-v]]
      (if-let [f (k->state-exit state-k)]
        (f state-v eid ctx)
-       nil))} )
+       nil))
+   })
 
 (defn do!
   [ctx txs]
