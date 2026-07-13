@@ -210,7 +210,7 @@
   (fn [[k _v] _effect-ctx _ctx]
     k))
 
-(declare handle-fsm-event! do!)
+(declare handle-fsm-event! do! spawn-creature!)
 
 (defmethod handle-effect :effects/audiovisual
   [[_ audiovisual] {:keys [effect/target-position]} _ctx]
@@ -229,12 +229,12 @@
 (defmethod handle-effect :effects/spawn
   [[_ {:keys [property/id] :as property}]
    {:keys [effect/source effect/target-position]}
-   _ctx]
-  [[:tx/spawn-creature {:position target-position
+   ctx]
+  (spawn-creature! ctx {:position target-position
                         :creature-property property
                         :components {:entity/fsm {:fsm :fsms/npc
                                                   :initial-state :npc-idle}
-                                     :entity/faction (:entity/faction @source)}}]])
+                                     :entity/faction (:entity/faction @source)}}))
 
 (defmethod handle-effect :effects/target-all
   [[_ {:keys [entity-effects]}]
@@ -888,6 +888,20 @@
     (doseq [component @eid]
       (after-create-component ctx eid component))))
 
+(defn- spawn-creature! [ctx {:keys [position creature-property components]}]
+  (assert creature-property)
+  (spawn-entity! ctx
+                 (-> creature-property
+                     (assoc :entity/body
+                            (let [{:keys [body/width body/height]} (:entity/body creature-property)]
+                              {:position position
+                               :width width
+                               :height height
+                               :collides? true
+                               :z-order :z-order/ground}))
+                     (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
+                     (m/safe-merge components))))
+
 (defn- show-modal! [ctx {:keys [title text button-text on-click]}]
   (let [{:keys [ctx/skin ctx/stage]} ctx]
     (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
@@ -1053,20 +1067,6 @@
      {:counter (timer/create elapsed-time duration)
       :faction faction}}]])
 
-(defn- tx-spawn-creature [ctx {:keys [position creature-property components]}]
-  (assert creature-property)
-  (spawn-entity! ctx
-                 (-> creature-property
-                     (assoc :entity/body
-                            (let [{:keys [body/width body/height]} (:entity/body creature-property)]
-                              {:position position
-                               :width width
-                               :height height
-                               :collides? true
-                               :z-order :z-order/ground}))
-                     (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-                     (m/safe-merge components))))
-
 (defn- tx-spawn-effect [ctx position components]
   (spawn-entity! ctx
                  (assoc components
@@ -1119,7 +1119,6 @@
   {:tx/audiovisual tx-audiovisual
    :tx/effect tx-effect
    :tx/spawn-alert tx-spawn-alert
-   :tx/spawn-creature tx-spawn-creature
    :tx/spawn-effect tx-spawn-effect
    :tx/spawn-item tx-spawn-item
    :tx/spawn-line tx-spawn-line
@@ -2363,16 +2362,15 @@
     (assoc ctx :ctx/raycaster [arr width height])))
 
 (defn create-spawn-player [ctx]
-  (do! ctx
-       [[:tx/spawn-creature {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
-                             :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
-                             :components {:entity/fsm {:fsm :fsms/player
-                                                       :initial-state :player-idle}
-                                          :entity/faction :good
-                                          :entity/player? true
-                                          :entity/free-skill-points 3
-                                          :entity/clickable {:type :clickable/player}
-                                          :entity/click-distance-tiles 1.5}}]])
+  (spawn-creature! ctx {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
+                        :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
+                        :components {:entity/fsm {:fsm :fsms/player
+                                                  :initial-state :player-idle}
+                                     :entity/faction :good
+                                     :entity/player? true
+                                     :entity/free-skill-points 3
+                                     :entity/clickable {:type :clickable/player}
+                                     :entity/click-distance-tiles 1.5}})
   ctx)
 
 (defn create-player-eid [ctx]
@@ -2381,13 +2379,12 @@
     (assoc ctx :ctx/player-eid eid)))
 
 (defn create-spawn-creatures [ctx]
-  (do! ctx
-       (for [[position creature-id] (moon-tiled-map/spawn-positions (:ctx/tiled-map ctx))]
-         [:tx/spawn-creature {:position (mapv (partial + 0.5) position)
-                              :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
-                              :components {:entity/fsm {:fsm :fsms/npc
-                                                        :initial-state :npc-sleeping}
-                                           :entity/faction :evil}}]))
+  (doseq [[position creature-id] (moon-tiled-map/spawn-positions (:ctx/tiled-map ctx))]
+    (spawn-creature! ctx {:position (mapv (partial + 0.5) position)
+                          :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
+                          :components {:entity/fsm {:fsm :fsms/npc
+                                                    :initial-state :npc-sleeping}
+                                       :entity/faction :evil}}))
   ctx)
 
 (defn create-dissoc-files [ctx]
