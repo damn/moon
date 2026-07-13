@@ -1723,11 +1723,11 @@
 
 (defn- render-stunned
   [_ {:keys [entity/body]} ctx]
-  (draw-fn-circle ctx (:body/position body) 0.5 (:colors/stunned (get-colors ctx)))
+  (draw-fn-circle ctx (:body/position body) 0.5 (:colors/stunned (get-colors ctx))))
 
 (defn- render-temp-modifier
   [_ entity ctx]
-  (draw-fn-filled-circle ctx (:body/position (:entity/body entity)) 0.5 (:colors/temp-modifier (get-colors ctx)))
+  (draw-fn-filled-circle ctx (:body/position (:entity/body entity)) 0.5 (:colors/temp-modifier (get-colors ctx))))
 
 (defmulti effect-render
   (fn [[k _v] _effect-ctx _ctx]
@@ -2732,7 +2732,7 @@
                      (+ 2 (int (viewport/get-world-height world-viewport)))
                      1
                      1
-                     (color/to-float-bits [1 1 1 0.8]))))))
+                     (color/to-float-bits [1 1 1 0.8])))))
 
 (defn- draw-cell-debug
   [ctx]
@@ -2751,7 +2751,7 @@
         (let [{:keys [distance]} (faction cell*)]
           (when distance
             (let [ratio (/ distance (factions-iterations faction))]
-              (draw-fn-filled-rectangle ctx x y 1 1 ((:colors/debug-potential-field colors) ratio))))))))))
+              (draw-fn-filled-rectangle ctx x y 1 1 ((:colors/debug-potential-field colors) ratio)))))))))
 
 (defn draw-entity-rectangle!
   [ctx entity color-float-bits]
