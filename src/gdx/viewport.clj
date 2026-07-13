@@ -1,4 +1,4 @@
-(ns gdx.utils.viewport.viewport
+(ns gdx.viewport
   (:require [com.badlogic.gdx.utils.viewport.viewport :as viewport]
             [gdx.vector2 :as vector2]))
 

@@ -22,9 +22,9 @@
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
             [gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [gdx.utils.disposable :as disposable]
-            [gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [gdx.utils.viewport.viewport :as viewport]
+            [gdx.disposable :as disposable]
+            [gdx.viewport.fit :as fit-viewport]
+            [gdx.viewport :as viewport]
             [gdx.application :as application]
             [gdx.application.lwjgl :as lwjgl-application]))
 

@@ -3,7 +3,7 @@
             [gdx.audio :as audio]
             [gdx.sound :as sound]
             [gdx.files :as files]
-            [gdx.utils.disposable :as disposable]
+            [gdx.disposable :as disposable]
             [clojure.java.io :as io]))
 
 (defn create

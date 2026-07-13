@@ -1,4 +1,4 @@
-(ns gdx.utils.viewport.fit-viewport
+(ns gdx.viewport.fit
   (:require [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]))
 
 (defn create

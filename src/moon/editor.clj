@@ -41,9 +41,9 @@
             [gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [gdx.scenes.scene2d.utils.layout :as layout]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
-            [gdx.utils.disposable :as disposable]
-            [gdx.utils.viewport.fit-viewport :as fit-viewport]
-            [gdx.utils.viewport.viewport :as viewport]
+            [gdx.disposable :as disposable]
+            [gdx.viewport.fit :as fit-viewport]
+            [gdx.viewport :as viewport]
             [gdx.application :as application]
             [gdx.application.lwjgl :as lwjgl-application]))
 

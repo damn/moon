@@ -1,5 +1,5 @@
 (ns gdx.vector3
-  (:require [com.badlogic.gdx.vector3 :as vector3]))
+  (:require [com.badlogic.gdx.math.vector3 :as vector3]))
 
 (defn x [v3]
   (vector3/x v3))

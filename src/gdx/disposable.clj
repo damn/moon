@@ -1,4 +1,4 @@
-(ns gdx.utils.disposable
+(ns gdx.disposable
   (:require [com.badlogic.gdx.utils.disposable :as disposable]))
 
 (defn dispose! [resource]
