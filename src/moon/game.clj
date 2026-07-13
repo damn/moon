@@ -1150,17 +1150,6 @@
                           :texture-region (textures/texture-region textures (:entity/image skill))
                           :tooltip-text (info-text skill ctx)}
                          skin))
-     nil)
-
-   :tx/unregister-eid
-   (fn [{:keys [ctx/content-grid ctx/entity-ids ctx/grid]} eid]
-     (let [id (:entity/id @eid)]
-       (assert (contains? @entity-ids id))
-       (swap! entity-ids dissoc id))
-     (content-grid/remove-entity! content-grid eid)
-     (grid/remove-from-touched-cells! grid eid)
-     (when (:body/collides? (:entity/body @eid))
-       (grid/remove-from-occupied-cells! grid eid))
      nil)})
 
 (defn do!
@@ -2849,19 +2838,25 @@
      [[:tx/audiovisual (:body/position (:entity/body @eid)) audiovisuals-id]])
    })
 
-(defn remove-destroyed-entities [ctx]
+(defn remove-destroyed-entities
+  [{:keys [ctx/content-grid ctx/entity-ids ctx/grid] :as ctx}]
   (do! ctx
        (mapcat
         (fn [eid]
-          (cons
-           [:tx/unregister-eid eid]
-           (mapcat (fn [[k v]]
-                     (if-let [destroy-fn (k->destroy k)]
-                       (destroy-fn v eid)
-                       nil))
-                   @eid)))
+          (let [id (:entity/id @eid)]
+            (assert (contains? @entity-ids id))
+            (swap! entity-ids dissoc id)
+            (content-grid/remove-entity! content-grid eid)
+            (grid/remove-from-touched-cells! grid eid)
+            (when (:body/collides? (:entity/body @eid))
+              (grid/remove-from-occupied-cells! grid eid)))
+          (mapcat (fn [[k v]]
+                    (if-let [destroy-fn (k->destroy k)]
+                      (destroy-fn v eid)
+                      nil))
+                  @eid))
         (filter (comp :entity/destroyed? deref)
-                (vals @(:ctx/entity-ids ctx)))))
+                (vals @entity-ids))))
   ctx)
 
 (def zoom-speed 0.025)
