@@ -949,9 +949,10 @@
    :npc-moving state-enter-npc-moving})
 
 (defn- state-enter! [ctx eid [state-k state-v]]
-  (if-let [f (k->state-enter state-k)]
-    (f state-v eid ctx)
-    nil))
+  (when-let [f (k->state-enter state-k)]
+    (f state-v eid ctx)))
+
+(declare do! )
 
 (defn- state-exit-player-item-on-cursor
   [_ eid ctx]
@@ -960,9 +961,9 @@
     (when item
       (swap! eid dissoc :entity/item-on-cursor)
       (play-sound! ctx "bfxr_itemputground")
-      [[:tx/spawn-item
-        (item-place-position ctx entity)
-        item]])))
+      (do! ctx [[:tx/spawn-item
+                 (item-place-position ctx entity)
+                 item]]))))
 
 (defn- state-exit-player-moving
   [_ eid _ctx]
@@ -970,9 +971,10 @@
   nil)
 
 (defn- state-exit-npc-sleeping
-  [_ eid {:keys [ctx/elapsed-time]}]
+  [_ eid {:keys [ctx/elapsed-time]
+          :as ctx}]
   (swap! eid add-text-effect elapsed-time "[WHITE]!" 1)
-  [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]])
+  (do! ctx [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]]))
 
 (defn- state-exit-npc-moving
   [_ eid _ctx]
@@ -985,12 +987,27 @@
    :npc-sleeping state-exit-npc-sleeping
    :npc-moving state-exit-npc-moving})
 
-(defn- fsm-transition! [ctx eid old-state-obj new-state-obj]
-  (concat
-   (or (when-let [f (k->state-exit (first old-state-obj))]
-         (f (second old-state-obj) eid ctx))
-       [])
-   (or (state-enter! ctx eid new-state-obj) [])))
+(defn- state-exit! [ctx eid [state-k state-v]]
+  (when-let [f (k->state-exit state-k)]
+    (f state-v eid ctx)))
+
+(defn- handle-fsm-event! [ctx eid event & [params]]
+  (let [fsm (:entity/fsm @eid)
+        _ (assert fsm)
+        old-state-k (:state fsm)
+        new-fsm (fsm/fsm-event fsm event)
+        new-state-k (:state new-fsm)]
+    (when-not (= old-state-k new-state-k)
+      (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
+                             [k (k @eid)])
+            state-args (if params [new-state-k params] [new-state-k nil])
+            new-state-obj [new-state-k (create-entity-state state-args eid ctx)]]
+        (swap! eid assoc :entity/fsm new-fsm)
+        (swap! eid assoc new-state-k (new-state-obj 1))
+        (swap! eid dissoc old-state-k)
+        (state-exit! ctx eid old-state-obj)
+        (state-enter! ctx eid new-state-obj)
+        nil))))
 
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (:ctx/stage ctx)
@@ -1022,36 +1039,11 @@
              (filter #(effect-applicable? % effect-ctx) effects)))
 
    :tx/event
-   ; FIXME duplicated
    (fn
      ([ctx eid event]
-      (let [fsm (:entity/fsm @eid)
-            _ (assert fsm)
-            old-state-k (:state fsm)
-            new-fsm (fsm/fsm-event fsm event)
-            new-state-k (:state new-fsm)]
-        (when-not (= old-state-k new-state-k)
-          (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
-                                 [k (k @eid)])
-                new-state-obj [new-state-k (create-entity-state [new-state-k nil] eid ctx)]]
-            (swap! eid assoc :entity/fsm new-fsm)
-            (swap! eid assoc new-state-k (new-state-obj 1))
-            (swap! eid dissoc old-state-k)
-            (fsm-transition! ctx eid old-state-obj new-state-obj)))))
+      (handle-fsm-event! ctx eid event))
      ([ctx eid event params]
-      (let [fsm (:entity/fsm @eid)
-            _ (assert fsm)
-            old-state-k (:state fsm)
-            new-fsm (fsm/fsm-event fsm event)
-            new-state-k (:state new-fsm)]
-        (when-not (= old-state-k new-state-k)
-          (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
-                                 [k (k @eid)])
-                new-state-obj [new-state-k (create-entity-state [new-state-k params] eid ctx)]]
-            (swap! eid assoc :entity/fsm new-fsm)
-            (swap! eid assoc new-state-k (new-state-obj 1))
-            (swap! eid dissoc old-state-k)
-            (fsm-transition! ctx eid old-state-obj new-state-obj))))))
+      (handle-fsm-event! ctx eid event params)))
 
    :tx/spawn-alert
    (fn [{:keys [ctx/elapsed-time]} position faction duration]
@@ -1140,12 +1132,7 @@
         :entity/projectile-collision {:entity-effects entity-effects
                                       :piercing? piercing?}}]])
 
-   :tx/state-exit
-   (fn [ctx eid [state-k state-v]]
-     (if-let [f (k->state-exit state-k)]
-       (f state-v eid ctx)
-       nil))
-   })
+})
 
 (defn do!
   [ctx txs]
