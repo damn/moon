@@ -1,4 +1,5 @@
 ; (CTX) _DESTRUCTURING_ CONSIDERED HARMFUL ?
+; I make functions instead of keywords ... can change keyword of structure .. o.o
 (ns moon.game
   (:require [clojure.edn :as edn] ; ✅
             [clojure.java.io :as io] ; ✅
@@ -775,6 +776,22 @@
 
 (defn- dispose-batch! [ctx]
   (disposable/dispose! (batch ctx)))
+
+(defn- cursors [ctx]
+  (:ctx/cursors ctx))
+
+(defn- cursor [ctx cursor-key]
+  (get (cursors ctx) cursor-key))
+
+(defn- has-cursor? [ctx cursor-key]
+  (contains? (cursors ctx) cursor-key))
+
+(defn- set-cursor-by-key! [ctx cursor-key]
+  (assert (has-cursor? ctx cursor-key))
+  (set-system-cursor! ctx (cursor ctx cursor-key)))
+
+(defn- dispose-cursors! [ctx]
+  (run! disposable/dispose! (vals (cursors ctx))))
 
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
   (let [[x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
@@ -2748,19 +2765,15 @@
                       :interaction-state/no-skill-selected
                       :cursors/no-skill-selected)))})
 
-(defn set-cursor
-  [{:keys [ctx/cursors
-           ctx/player-eid]
-    :as ctx}]
-  (let [eid player-eid
+(defn set-cursor [ctx]
+  (let [eid (:ctx/player-eid ctx)
         entity @eid
         state-k (:state (:entity/fsm entity))
         cursor-fn (k->cursor state-k)
         cursor-key (if (keyword? cursor-fn)
                      cursor-fn
                      (cursor-fn eid ctx))]
-    (assert (contains? cursors cursor-key))
-    (set-system-cursor! ctx (get cursors cursor-key)))
+    (set-cursor-by-key! ctx cursor-key))
   ctx)
 
 (defn handle-player-input
@@ -2916,7 +2929,6 @@
 
 (defn dispose
   [{:keys [ctx/audio
-           ctx/cursors
            ctx/default-font
            ctx/shape-drawer-texture
            ctx/skin
@@ -2925,7 +2937,7 @@
     :as ctx}]
   (audio/dispose! audio)
   (dispose-batch! ctx)
-  (run! disposable/dispose! (vals cursors))
+  (dispose-cursors! ctx)
   (disposable/dispose! default-font)
   (disposable/dispose! shape-drawer-texture)
   (disposable/dispose! skin)
