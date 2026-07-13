@@ -94,6 +94,10 @@
 (def schema
   (malli-schema/create
    [:map {:closed true}
+    ;[:ctx/application :some]
+    ; TODO this is in global state why hold it here (already there!)
+    ; that means everything depending on 'gdx' global state should go to
+    ; clojure.gdx ?
     [:ctx/input :some]
     [:ctx/graphics :some]
     [:ctx/audio :some]
