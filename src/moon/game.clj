@@ -1021,118 +1021,118 @@
       (#(group/find-actor % "player-message"))
       (actor/set-user-object! (atom {:text message :counter 0}))))
 
+(defn- tx-audiovisual [ctx position audiovisual]
+  (let [{:keys [ctx/db]} ctx
+        {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
+                                               (db/build db audiovisual)
+                                               audiovisual)]
+    (play-sound! ctx sound)
+    [[:tx/spawn-effect
+      position
+      {:entity/animation (assoc animation :delete-after-stopped? true)}]]))
+
+(defn- tx-effect [ctx effect-ctx effects]
+  (mapcat #(handle-effect % effect-ctx ctx)
+          (filter #(effect-applicable? % effect-ctx) effects)))
+
+(defn- tx-event
+  ([ctx eid event]
+   (handle-fsm-event! ctx eid event))
+  ([ctx eid event params]
+   (handle-fsm-event! ctx eid event params)))
+
+(defn- tx-spawn-alert [{:keys [ctx/elapsed-time]} position faction duration]
+  [[:tx/spawn-effect
+    position
+    {:entity/alert-friendlies-after-duration
+     {:counter (timer/create elapsed-time duration)
+      :faction faction}}]])
+
+(defn- tx-spawn-creature [_ctx {:keys [position creature-property components]}]
+  (assert creature-property)
+  [[:tx/spawn-entity
+    (-> creature-property
+        (assoc :entity/body
+               (let [{:keys [body/width body/height]} (:entity/body creature-property)]
+                 {:position position
+                  :width width
+                  :height height
+                  :collides? true
+                  :z-order :z-order/ground}))
+        (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
+        (m/safe-merge components))]])
+
+(defn- tx-spawn-effect [_ctx position components]
+  [[:tx/spawn-entity
+    (assoc components
+           :entity/body {:width 0.5
+                         :height 0.5
+                         :z-order :z-order/effect
+                         :position position})]])
+
+(defn- tx-spawn-entity [ctx entity]
+  (let [entity (reduce (fn [m [k v]]
+                         (assoc m k (create-component ctx k v)))
+                       {}
+                       entity)
+        entity (merge (map->EntityRecord {}) entity)
+        eid (atom entity)]
+    (register-eid! ctx eid)
+    (mapcat (fn [component]
+              (after-create-component ctx eid component))
+            @eid)))
+
+(defn- tx-spawn-item [_ctx position item]
+  [[:tx/spawn-entity
+    {:entity/body {:position position
+                   :width 0.75
+                   :height 0.75
+                   :z-order :z-order/on-ground}
+     :entity/image (:entity/image item)
+     :entity/item item
+     :entity/clickable {:type :clickable/item
+                        :text (:property/pretty-name item)}}]])
+
+(defn- tx-spawn-line [_ctx {:keys [start end duration color thick?]}]
+  [[:tx/spawn-effect
+    start
+    {:entity/line-render {:thick? thick? :end end :color color}
+     :entity/delete-after-duration duration}]])
+
+(defn- tx-spawn-projectile
+  [_ctx
+   {:keys [position direction faction]}
+   {:keys [entity/image
+           projectile/max-range
+           projectile/speed
+           entity-effects
+           projectile/size
+           projectile/piercing?]}]
+  [[:tx/spawn-entity
+    {:entity/body {:position position
+                   :width size
+                   :height size
+                   :z-order :z-order/flying
+                   :rotation-angle (v2/angle-from-vector direction)}
+     :entity/movement {:direction direction :speed speed}
+     :entity/image image
+     :entity/faction faction
+     :entity/delete-after-duration (/ max-range speed)
+     :entity/destroy-audiovisual :audiovisuals/hit-wall
+     :entity/projectile-collision {:entity-effects entity-effects
+                                   :piercing? piercing?}}]])
+
 (def tx-fn-map
-  {   :tx/audiovisual
-   (fn [ctx position audiovisual]
-     (let [{:keys [ctx/db]} ctx
-           {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
-                                                  (db/build db audiovisual)
-                                                  audiovisual)]
-       (play-sound! ctx sound)
-       [[:tx/spawn-effect
-         position
-         {:entity/animation (assoc animation :delete-after-stopped? true)}]]))
-
-   :tx/effect
-   (fn [ctx effect-ctx effects]
-     (mapcat #(handle-effect % effect-ctx ctx)
-             (filter #(effect-applicable? % effect-ctx) effects)))
-
-   :tx/event
-   (fn
-     ([ctx eid event]
-      (handle-fsm-event! ctx eid event))
-     ([ctx eid event params]
-      (handle-fsm-event! ctx eid event params)))
-
-   :tx/spawn-alert
-   (fn [{:keys [ctx/elapsed-time]} position faction duration]
-     [[:tx/spawn-effect
-       position
-       {:entity/alert-friendlies-after-duration
-        {:counter (timer/create elapsed-time duration)
-         :faction faction}}]])
-
-   :tx/spawn-creature
-   (fn [_ctx {:keys [position creature-property components]}]
-     (assert creature-property)
-     [[:tx/spawn-entity
-       (-> creature-property
-           (assoc :entity/body
-                  (let [{:keys [body/width body/height]} (:entity/body creature-property)]
-                    {:position position
-                     :width width
-                     :height height
-                     :collides? true
-                     :z-order :z-order/ground}))
-           (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-           (m/safe-merge components))]])
-
-   :tx/spawn-effect
-   (fn [_ctx position components]
-     [[:tx/spawn-entity
-       (assoc components
-              :entity/body {:width 0.5
-                            :height 0.5
-                            :z-order :z-order/effect
-                            :position position})]])
-
-   :tx/spawn-entity
-   (fn [ctx entity]
-     (let [entity (reduce (fn [m [k v]]
-                            (assoc m k (create-component ctx k v)))
-                          {}
-                          entity)
-           entity (merge (map->EntityRecord {}) entity)
-           eid (atom entity)]
-       (register-eid! ctx eid)
-       (mapcat (fn [component]
-                 (after-create-component ctx eid component))
-               @eid)))
-
-   :tx/spawn-item
-   (fn [_ctx position item]
-     [[:tx/spawn-entity
-       {:entity/body {:position position
-                       :width 0.75
-                       :height 0.75
-                       :z-order :z-order/on-ground}
-        :entity/image (:entity/image item)
-        :entity/item item
-        :entity/clickable {:type :clickable/item
-                           :text (:property/pretty-name item)}}]])
-
-   :tx/spawn-line
-   (fn [_ctx {:keys [start end duration color thick?]}]
-     [[:tx/spawn-effect
-       start
-       {:entity/line-render {:thick? thick? :end end :color color}
-        :entity/delete-after-duration duration}]])
-
-   :tx/spawn-projectile
-   (fn [_ctx
-        {:keys [position direction faction]}
-        {:keys [entity/image
-                projectile/max-range
-                projectile/speed
-                entity-effects
-                projectile/size
-                projectile/piercing?]}]
-     [[:tx/spawn-entity
-       {:entity/body {:position position
-                      :width size
-                      :height size
-                      :z-order :z-order/flying
-                      :rotation-angle (v2/angle-from-vector direction)}
-        :entity/movement {:direction direction :speed speed}
-        :entity/image image
-        :entity/faction faction
-        :entity/delete-after-duration (/ max-range speed)
-        :entity/destroy-audiovisual :audiovisuals/hit-wall
-        :entity/projectile-collision {:entity-effects entity-effects
-                                      :piercing? piercing?}}]])
-
-})
+  {:tx/audiovisual tx-audiovisual
+   :tx/effect tx-effect
+   :tx/event tx-event
+   :tx/spawn-alert tx-spawn-alert
+   :tx/spawn-creature tx-spawn-creature
+   :tx/spawn-effect tx-spawn-effect
+   :tx/spawn-entity tx-spawn-entity
+   :tx/spawn-item tx-spawn-item
+   :tx/spawn-line tx-spawn-line
+   :tx/spawn-projectile tx-spawn-projectile})
 
 (defn do!
   [ctx txs]
