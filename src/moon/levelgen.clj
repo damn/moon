@@ -11,7 +11,7 @@
             [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [clojure.gdx.files :as files]
-            [com.badlogic.gdx.graphics :as graphics]
+            [clojure.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
@@ -141,7 +141,7 @@
            ctx/world-unit-scale
            ctx/graphics
            ctx/stage] :as ctx}]
-  (let [gl (graphics/getGL20 graphics)]
+  (let [gl (graphics/get-gl20 graphics)]
     (gl20/glClearColor gl 0 0 0 0)
     (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
   (moon-tiled-map/draw! tiled-map

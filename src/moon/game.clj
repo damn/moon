@@ -20,7 +20,7 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [com.badlogic.gdx.graphics :as graphics]
+            [clojure.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
@@ -1329,7 +1329,7 @@
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn (fn [{:keys [ctx/graphics]}]
-                 (graphics/getFramesPerSecond graphics))
+                 (graphics/get-frames-per-second graphics))
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
     :update-fn (fn [{:keys [ctx/mouseover-eid]}]
@@ -2277,7 +2277,7 @@
                                       (fn [[path-segment [hotspot-x hotspot-y]]]
                                         (let [path (format path-format path-segment)
                                               pixmap* (pixmap/new (files/internal (:ctx/files ctx) path))
-                                              cursor (graphics/newCursor (:ctx/graphics ctx) pixmap* hotspot-x hotspot-y)]
+                                              cursor (graphics/create-cursor (:ctx/graphics ctx) pixmap* hotspot-x hotspot-y)]
                                           (disposable/dispose! pixmap*)
                                           cursor))))))
 
@@ -2514,7 +2514,7 @@
 
 (defn clear-screen
   [{:keys [ctx/graphics] :as ctx}]
-  (let [gl (graphics/getGL20 graphics)]
+  (let [gl (graphics/get-gl20 graphics)]
     (gl20/glClearColor gl 0 0 0 0)
     (gl20/glClear gl gl20/GL_COLOR_BUFFER_BIT))
   ctx)
@@ -2772,7 +2772,7 @@
                      cursor-fn
                      (cursor-fn eid ctx))]
     (assert (contains? cursors cursor-key))
-    (graphics/setCursor graphics (get cursors cursor-key)))
+    (graphics/set-cursor! graphics (get cursors cursor-key)))
   ctx)
 
 (defn handle-player-input
@@ -2805,7 +2805,7 @@
 (defn- update-time
   [{:keys [ctx/graphics]
     :as ctx}]
-  (let [delta-ms (min (graphics/getDeltaTime graphics) max-delta)]
+  (let [delta-ms (min (graphics/get-delta-time graphics) max-delta)]
     (-> ctx
         (assoc :ctx/delta-time delta-ms)
         (update :ctx/elapsed-time + delta-ms))))
