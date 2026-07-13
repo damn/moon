@@ -1,5 +1,5 @@
 (ns clojure.gdx.maps.tiled.tiled-map
-  (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]
+  (:require [clojure.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.graphics.g2d.texture-region :as texture-region]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
@@ -12,9 +12,15 @@
             [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as moon-tile-layer]))
 
+(defn get-properties [tiled-map]
+  (tiled-map/getProperties tiled-map))
+
+(defn get-layers [tiled-map]
+  (tiled-map/getLayers tiled-map))
+
 (defn get-property [tiled-map k]
   (-> tiled-map
-      tiled-map/getProperties
+      get-properties
       (map-properties/get k)))
 
 (defn create-layer
@@ -23,7 +29,7 @@
            visible?
            properties
            tiles]}]
-  (let [props (tiled-map/getProperties tiled-map)]
+  (let [props (get-properties tiled-map)]
     (moon-tile-layer/create
      {:width      (map-properties/get props "width")
       :height     (map-properties/get props "height")
@@ -35,7 +41,7 @@
       :tiles tiles})))
 
 (defn add-layer! [tiled-map layer]
-  (map-layers/add (tiled-map/getLayers tiled-map)
+  (map-layers/add (get-layers tiled-map)
                   (create-layer tiled-map layer)))
 
 (defn create
@@ -43,7 +49,7 @@
   (let [tiled-map (tiled-map/new)]
     (doseq [[k v] properties]
       (assert (string? k))
-      (map-properties/put! (tiled-map/getProperties tiled-map) k v))
+      (map-properties/put! (get-properties tiled-map) k v))
     (doseq [layer layers]
       (add-layer! tiled-map layer))
     tiled-map))
@@ -51,7 +57,7 @@
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (map-layers/get (tiled-map/getLayers tiled-map) layer-name)]
+        layer (map-layers/get (get-layers tiled-map) layer-name)]
     (for [x (range (tiled-map-tile-layer/getWidth layer))
           y (range (tiled-map-tile-layer/getHeight layer))
           :let [position [x y]
@@ -71,14 +77,14 @@
         (assert value
                 (str "Value for :movement at position "
                      position " / mapeditor inverted position: " [(position 0)
-                                                                 (- (dec (map-properties/get (tiled-map/getProperties tiled-map) "height"))
+                                                                 (- (dec (map-properties/get (get-properties tiled-map) "height"))
                                                                     (position 1))]
                      " and layer " (tiled-map-tile-layer/getName layer) " is undefined."))
         value))))
 
 (defn movement-property-layers [tiled-map]
   (->> tiled-map
-       tiled-map/getLayers
+       get-layers
        reverse
        (filter #(map-properties/get (tiled-map-tile-layer/getProperties %) "movement-properties"))))
 
@@ -141,27 +147,27 @@
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
         color21 (float (color-setter batch-color x2 y1))]
-    (aset-float verts batch/X1 x1)
-    (aset-float verts batch/Y1 y1)
-    (aset-float verts batch/C1 color11)
-    (aset-float verts batch/U1 u1)
-    (aset-float verts batch/V1 v1)
-    (aset-float verts batch/X2 x1)
-    (aset-float verts batch/Y2 y2)
-    (aset-float verts batch/C2 color12)
-    (aset-float verts batch/U2 u1)
-    (aset-float verts batch/V2 v2)
-    (aset-float verts batch/X3 x2)
-    (aset-float verts batch/Y3 y2)
-    (aset-float verts batch/C3 color22)
-    (aset-float verts batch/U3 u2)
-    (aset-float verts batch/V3 v2)
-    (aset-float verts batch/X4 x2)
-    (aset-float verts batch/Y4 y1)
-    (aset-float verts batch/C4 color21)
-    (aset-float verts batch/U4 u2)
-    (aset-float verts batch/V4 v1)
-    (batch/draw batch
+    (aset-float verts batch/x1 x1)
+    (aset-float verts batch/y1 y1)
+    (aset-float verts batch/c1 color11)
+    (aset-float verts batch/u1 u1)
+    (aset-float verts batch/v1 v1)
+    (aset-float verts batch/x2 x1)
+    (aset-float verts batch/y2 y2)
+    (aset-float verts batch/c2 color12)
+    (aset-float verts batch/u2 u1)
+    (aset-float verts batch/v2 v2)
+    (aset-float verts batch/x3 x2)
+    (aset-float verts batch/y3 y2)
+    (aset-float verts batch/c3 color22)
+    (aset-float verts batch/u3 u2)
+    (aset-float verts batch/v3 v2)
+    (aset-float verts batch/x4 x2)
+    (aset-float verts batch/y4 y1)
+    (aset-float verts batch/c4 color21)
+    (aset-float verts batch/u4 u2)
+    (aset-float verts batch/v4 v1)
+    (batch/draw! batch
                 (texture-region/get-texture region)
                 verts
                 0
@@ -175,7 +181,7 @@
    color-setter]
   (let [num-vertices 20
         vertices (float-array num-vertices)
-        batch-color (batch/getColor batch)
+        batch-color (batch/get-color batch)
         layer-width (tiled-map-tile-layer/getWidth layer)
         layer-height (tiled-map-tile-layer/getHeight layer)
         layer-tile-width (* (tiled-map-tile-layer/getTileWidth layer) unit-scale)
@@ -232,8 +238,8 @@
    world-unit-scale
    camera
    color-setter]
-  (batch/setProjectionMatrix batch (orthographic-camera/combined camera))
-  (batch/begin batch)
+  (batch/set-projection-matrix! batch (orthographic-camera/combined camera))
+  (batch/begin! batch)
   (let [width  (* (orthographic-camera/viewport-width camera) (orthographic-camera/zoom camera))
         height (* (orthographic-camera/viewport-height camera) (orthographic-camera/zoom camera))
         up (orthographic-camera/up camera)
@@ -246,10 +252,10 @@
                      :y (- (vector3/y pos) (/ h 2))
                      :width w
                      :height h}]
-    (doseq [layer (filter tiled-map-tile-layer/isVisible (tiled-map/getLayers tiled-map))]
+    (doseq [layer (filter tiled-map-tile-layer/isVisible (get-layers tiled-map))]
       (draw-tile-layer! layer
                         batch
                         world-unit-scale
                         view-bounds
                         color-setter)))
-  (batch/end batch))
+  (batch/end! batch))

@@ -1,15 +1,15 @@
 (ns moon.inventory-window
-  (:require [com.badlogic.gdx.graphics.color :as color]
+  (:require [clojure.gdx.graphics.color :as color]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
-            [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.gdx.scenes.scene2d.ui.stack :as stack]
+            [clojure.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.math.vector2 :as vector2]
             [moon.inventory.cell :as inventory-cell]))
@@ -35,16 +35,16 @@
   (let [cell-widget (get-cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")
         cell-size (:cell-size (actor/get-user-object image-widget))]
-    (image/set-drawable! image-widget (doto (texture-region-drawable/new texture-region)
-                                        (texture-region-drawable/setMinSize cell-size cell-size)))
-    (actor/add-listener! cell-widget (text-tooltip/new tooltip-text skin))
+    (image/set-drawable! image-widget (doto (texture-region-drawable/create texture-region)
+                                        (texture-region-drawable/set-min-size! cell-size cell-size)))
+    (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
 (defn- ->cell [do! draw! on-click-cell slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
-     (let [stack (stack/new)]
+     (let [stack (stack/create)]
        (run! #(group/add-actor! stack %)
              [(widget/new
                (fn [this _batch _parent-alpha]
@@ -86,9 +86,9 @@
            slot->texture-region
            cell-size]}]
   (let [slot->drawable (fn [slot]
-                         (doto (texture-region-drawable/new (slot->texture-region slot))
-                           (texture-region-drawable/setMinSize cell-size cell-size)
-                           (texture-region-drawable/tint (color/new [1 1 1 0.4]))))
+                         (doto (texture-region-drawable/create (slot->texture-region slot))
+                           (texture-region-drawable/set-min-size! cell-size cell-size)
+                           (texture-region-drawable/tint! (color/create [1 1 1 0.4]))))
         draw-cell-rect (fn [player-entity x y mouseover? cell]
                          [[:draw/rectangle x y cell-size cell-size item-rect-color]
                           (when (and mouseover?

@@ -4,7 +4,6 @@
             [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :refer [property-value]]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as gdx-tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
@@ -121,9 +120,9 @@
         number-modules-x 8
         number-modules-y 4
         [modules-width modules-height] modules-scale
-        _ (assert (and (= (map-properties/get (gdx-tiled-map/getProperties modules-tiled-map) "width")
+        _ (assert (and (= (moon-tiled-map/get-property modules-tiled-map "width")
                           (* number-modules-x (+ modules-width module-offset-tiles)))
-                       (= (map-properties/get (gdx-tiled-map/getProperties modules-tiled-map) "height")
+                       (= (moon-tiled-map/get-property modules-tiled-map "height")
                           (* number-modules-y (+ modules-height module-offset-tiles)))))
         scaled-grid (reduce (fn [scaled-grid unscaled-position]
                               (place-module* module-offset-tiles
@@ -164,10 +163,10 @@
                    (fn [tile]
                      (assert tile)
                      (static-tiled-map-tile/new tile)))]
-    {:properties (merge (map-properties/clojurize (gdx-tiled-map/getProperties schema-tiled-map))
+    {:properties (merge (map-properties/clojurize (moon-tiled-map/get-properties schema-tiled-map))
                         {"width" (g2d/width grid)
                          "height" (g2d/height grid)})
-     :layers (for [layer (gdx-tiled-map/getLayers schema-tiled-map)]
+     :layers (for [layer (moon-tiled-map/get-layers schema-tiled-map)]
                {:name (tiled-map-tile-layer/getName layer)
                 :visible? (tiled-map-tile-layer/isVisible layer)
                 :properties (map-properties/clojurize (tiled-map-tile-layer/getProperties layer))
@@ -217,7 +216,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (map-layers/get (gdx-tiled-map/getLayers tiled-map) "creatures")
+                                                    (property-value (map-layers/get (moon-tiled-map/get-layers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

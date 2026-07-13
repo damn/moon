@@ -32,18 +32,18 @@
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
-            [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
-            [com.badlogic.gdx.scenes.scene2d.ui.skin :as ui-skin]
+            [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [clojure.gdx.scenes.scene2d.ui.select-box :as select-box]
+            [clojure.gdx.scenes.scene2d.ui.stack :as stack]
+            [clojure.gdx.scenes.scene2d.ui.skin :as ui-skin]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [clojure.gdx.scenes.scene2d.ui.text-field :as text-field]
+            [clojure.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scenes.scene2d.utils.layout :as layout]
-            [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
+            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.gdx.utils.disposable :as disposable]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.gdx.utils.viewport.viewport :as viewport]
             [clojure.gdx.application :as application]
             [clojure.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
@@ -104,7 +104,7 @@
 
 (defmethod widget-value :s/enum
   [_ widget _schemas]
-  (edn/read-string (select-box/getSelected widget)))
+  (edn/read-string (select-box/get-selected widget)))
 
 (defmethod widget-value :s/map
   [_ table schemas]
@@ -112,7 +112,7 @@
 
 (defmethod widget-value :s/number
   [_ widget _schemas]
-  (edn/read-string (text-field/getText widget)))
+  (edn/read-string (text-field/get-text widget)))
 
 (defmethod widget-value :s/one-to-many
   [_ widget _schemas]
@@ -128,11 +128,11 @@
 
 (defmethod widget-value :s/string
   [_ widget _schemas]
-  (text-field/getText widget))
+  (text-field/get-text widget))
 
 (defmethod widget-value :s/val-max
   [_ widget _schemas]
-  (edn/read-string (text-field/getText widget)))
+  (edn/read-string (text-field/get-text widget)))
 
 (def ^:private property-k-sort-order
   [:property/id
@@ -196,7 +196,7 @@
                                                                                                                            (fn [event _actor]
                                                                                                                              (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
                                                                                                                                           sound-name)))))}])})]
-                                               {:actor (scroll-pane/new table skin)
+                                               {:actor (scroll-pane/create table skin)
                                                 :width  (+ (actor/get-width table) 50)
                                                 :height (min (- (viewport/get-world-height (:stage/viewport stage)) 50)
                                                              (actor/get-height table))})]]
@@ -209,16 +209,16 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (let [stack (stack/new)]
+      {:actor (let [stack (stack/create)]
                 (run! #(group/add-actor! stack %)
                       [(doto (image-button/create
-                              (doto (texture-region-drawable/new texture-region)
-                                (texture-region-drawable/setMinSize (* image-scale (texture-region/get-region-width texture-region))
+                              (doto (texture-region-drawable/create texture-region)
+                                (texture-region-drawable/set-min-size! (* image-scale (texture-region/get-region-width texture-region))
                                                 (* image-scale (texture-region/get-region-height texture-region)))))
                         (actor/add-listener! (change-listener/create
                                            (fn [event actor]
                                              (on-clicked actor (:stage/ctx (event/get-stage event))))))
-                        (actor/add-listener! (text-tooltip/new tooltip skin)))
+                        (actor/add-listener! (text-tooltip/create tooltip skin)))
                        (doto (label/create extra-info-text skin)
                          (actor/set-touchable! touchable/disabled))])
                 stack)})))
@@ -297,7 +297,7 @@
                           :table/cell-defaults {:pad 5}
                           :table/rows [[(let [table (table/create {:table/cell-defaults {:pad 5}
                                                                   :table/rows scroll-pane-rows})]
-                                          {:actor (scroll-pane/new table skin)
+                                          {:actor (scroll-pane/create table skin)
                                            :width (+ (actor/get-width table) 50)
                                            :height (min (- scroll-pane-height 50)
                                                         (actor/get-height table))})]]
@@ -347,7 +347,7 @@
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
           {:actor (doto (image/create (textures/texture-region textures (property/image property)))
-                    (actor/add-listener! (text-tooltip/new (property/tooltip property) skin))
+                    (actor/add-listener! (text-tooltip/create (property/tooltip property) skin))
                     (actor/set-user-object! property-id))}))
       (for [id property-ids]
         {:actor (doto (text-button/create "-" skin)
@@ -391,7 +391,7 @@
       [(when property-id
          (let [property (db/get-raw db property-id)]
            {:actor (doto (image/create (textures/texture-region textures (property/image property)))
-                     (actor/add-listener! (text-tooltip/new (property/tooltip property) skin))
+                     (actor/add-listener! (text-tooltip/create (property/tooltip property) skin))
                      (actor/set-user-object! property-id))}))]
       [(when property-id
          {:actor (doto (text-button/create "-" skin)
@@ -543,8 +543,8 @@
                                 (let [scale 2
                                       texture-region (textures/texture-region textures image)]
                                   (image-button/create
-                                   (doto (texture-region-drawable/new texture-region)
-                                     (texture-region-drawable/setMinSize (* scale (texture-region/get-region-width texture-region))
+                                   (doto (texture-region-drawable/create texture-region)
+                                     (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
                                                                        (* scale (texture-region/get-region-height texture-region))))))})]}))
 
 (defmethod create-widget :s/boolean
@@ -554,17 +554,17 @@
 
 (defmethod create-widget :s/enum
   [schema v {:keys [ctx/skin]}]
-  (doto (select-box/new skin)
-    (select-box/setItems (map pr-str (rest schema)))
-    (select-box/setSelected (pr-str v))))
+  (doto (select-box/create skin)
+    (select-box/set-items! (map pr-str (rest schema)))
+    (select-box/set-selected! (pr-str v))))
 
 (defmethod create-widget :s/image
   [_ image {:keys [ctx/textures]}]
   (let [texture-region (textures/texture-region textures image)
         scale 2]
     (image-button/create
-     (doto (texture-region-drawable/new texture-region)
-       (texture-region-drawable/setMinSize (* scale (texture-region/get-region-width texture-region))
+     (doto (texture-region-drawable/create texture-region)
+       (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
                                               (* scale (texture-region/get-region-height texture-region)))))))
 
 (defmethod create-widget :s/map
@@ -587,8 +587,8 @@
 
 (defmethod create-widget :s/number
   [schema v {:keys [ctx/skin]}]
-  (doto (text-field/new (pr-str v) skin)
-    (actor/add-listener! (text-tooltip/new (str schema) skin))))
+  (doto (text-field/create (pr-str v) skin)
+    (actor/add-listener! (text-tooltip/create (str schema) skin))))
 
 (defmethod create-widget :s/one-to-many
   [[_ property-type] property-ids ctx]
@@ -621,13 +621,13 @@
 
 (defmethod create-widget :s/string
   [schema v {:keys [ctx/skin]}]
-  (doto (text-field/new (str v) skin)
-    (actor/add-listener! (text-tooltip/new (str schema) skin))))
+  (doto (text-field/create (str v) skin)
+    (actor/add-listener! (text-tooltip/create (str schema) skin))))
 
 (defmethod create-widget :s/val-max
   [schema v {:keys [ctx/skin]}]
-  (doto (text-field/new (pr-str v) skin)
-    (actor/add-listener! (text-tooltip/new (str schema) skin))))
+  (doto (text-field/create (pr-str v) skin)
+    (actor/add-listener! (text-tooltip/create (str schema) skin))))
 
 (defn- main-window-f
   [{:keys [ctx/db
@@ -671,9 +671,9 @@
   (assoc ctx :ctx/batch (sprite-batch/create)))
 
 (defn- skin-f [{:keys [ctx/files] :as ctx}]
-  (let [skin (ui-skin/new (files/internal files "skin/uiskin.json"))]
+  (let [skin (ui-skin/create (files/internal files "skin/uiskin.json"))]
     (-> skin
-        (ui-skin/getFont "default-font")
+        (ui-skin/get-font "default-font")
         bitmap-font/get-data
         (bitmap-font-data/set-markup-enabled! true))
     (assoc ctx :ctx/skin skin)))
@@ -683,7 +683,7 @@
 
 (defn- stage-f [{:keys [ctx/input
                         ctx/batch] :as ctx}]
-  (let [stage* (stage/create (fit-viewport/new 1440 900) batch)]
+  (let [stage* (stage/create (fit-viewport/create 1440 900) batch)]
     (input/set-processor! input stage*)
     (let [ctx (assoc ctx :ctx/stage stage*)]
       (stage/add-actor! (:ctx/stage ctx) (main-window-f ctx))

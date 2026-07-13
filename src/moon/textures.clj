@@ -14,7 +14,7 @@
                            (file-handle/recursively-search (files/internal files folder) extensions))
                  :let [file (files/internal files path)
                        pixmap (pixmap/new file)]]
-             [path (texture/new (file-texture-data/new file
+             [path (texture/create (file-texture-data/new file
                                                        pixmap
                                                        (pixmap/get-format pixmap)
                                                        false))])))

@@ -8,3 +8,6 @@
   (texture-region-drawable/setMinSize texture-region-drawable
                                       min-w
                                       min-h))
+
+(defn tint! [texture-region-drawable color]
+  (texture-region-drawable/tint texture-region-drawable color))

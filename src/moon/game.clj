@@ -21,27 +21,26 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [clojure.gdx.graphics :as graphics]
-            [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.graphics.colors :as colors]
-            [com.badlogic.gdx.graphics.g2d.batch :as batch]
+            [clojure.gdx.graphics.color :as color]
+            [clojure.gdx.graphics.colors :as colors]
+            [clojure.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clojure.gdx.graphics.g2d.bitmap-font-data :as bitmap-font-data]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.graphics.gl20 :as gl20]
-            [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]
-            [com.badlogic.gdx.graphics.texture :as texture]
-            [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
+            [clojure.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]
+            [clojure.gdx.graphics.texture :as texture]
+            [clojure.gdx.graphics.texture.texture-filter :as texture-filter]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+            [clojure.gdx.scenes.scene2d.ui.skin :as skin]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.utils.align :as align]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.gdx.utils.viewport.viewport :as viewport]
             [moon.action-bar :as action-bar]
             [moon.audio :as audio]
@@ -1196,23 +1195,23 @@
 
 (def colors
   (let [outline-alpha 0.4]
-    {:colors/mouseover-tile-air (color/toFloatBits [1 1 0 0.5])
-     :colors/mouseover-tile-none (color/toFloatBits [1 0 0 0.5])
-     :colors/debug-body-outline-collides (color/toFloatBits [1 1 1 1])
-     :colors/debug-body-outline (color/toFloatBits [0.5 0.5 0.5 1])
-     :colors/debug-body-outline-render-error (color/toFloatBits [1 0 0 1])
-     :colors/debug-cell-entities (color/toFloatBits [1 0 0 0.6])
-     :colors/debug-cell-occupied (color/toFloatBits [0 0 1 0.6])
+    {:colors/mouseover-tile-air (color/to-float-bits [1 1 0 0.5])
+     :colors/mouseover-tile-none (color/to-float-bits [1 0 0 0.5])
+     :colors/debug-body-outline-collides (color/to-float-bits [1 1 1 1])
+     :colors/debug-body-outline (color/to-float-bits [0.5 0.5 0.5 1])
+     :colors/debug-body-outline-render-error (color/to-float-bits [1 0 0 1])
+     :colors/debug-cell-entities (color/to-float-bits [1 0 0 0.6])
+     :colors/debug-cell-occupied (color/to-float-bits [0 0 1 0.6])
      :colors/debug-potential-field (fn [ratio]
-                                     (color/toFloatBits [ratio (- 1 ratio) ratio 0.6]))
-     :colors/target-all-line (color/toFloatBits [1 0 0 0.75])
-     :colors/target-all-render (color/toFloatBits [1 0 0 0.5])
-     :colors/target-entity-line (color/toFloatBits [1 0 0 0.75])
-     :colors/target-entity-in-range (color/toFloatBits [1 0 0 0.5])
-     :colors/target-entity-not-in-range (color/toFloatBits [1 1 0 0.5])
-     :colors/enemy-color (color/toFloatBits [1 0 0 outline-alpha])
-     :colors/friendly-color (color/toFloatBits [0 1 0 outline-alpha])
-     :colors/neutral-color (color/toFloatBits [1 1 1 outline-alpha])
+                                     (color/to-float-bits [ratio (- 1 ratio) ratio 0.6]))
+     :colors/target-all-line (color/to-float-bits [1 0 0 0.75])
+     :colors/target-all-render (color/to-float-bits [1 0 0 0.5])
+     :colors/target-entity-line (color/to-float-bits [1 0 0 0.75])
+     :colors/target-entity-in-range (color/to-float-bits [1 0 0 0.5])
+     :colors/target-entity-not-in-range (color/to-float-bits [1 1 0 0.5])
+     :colors/enemy-color (color/to-float-bits [1 0 0 outline-alpha])
+     :colors/friendly-color (color/to-float-bits [0 1 0 outline-alpha])
+     :colors/neutral-color (color/to-float-bits [1 1 1 outline-alpha])
      :colors/hp-bar (fn [ratio]
                       (let [ratio (float ratio)
                             color (cond
@@ -1220,21 +1219,21 @@
                                     (> ratio 0.5) :darkgreen
                                     (> ratio 0.25) :yellow
                                     :else :red)]
-                        (color {:green (color/toFloatBits [0 0.8 0 1])
-                                :darkgreen (color/toFloatBits [0 0.5 0 1])
-                                :yellow (color/toFloatBits [0.5 0.5 0 1])
-                                :red (color/toFloatBits [0.5 0 0 1])})))
-     :colors/hp-bar-rect (color/toFloatBits [0 0 0 1])
-     :colors/temp-modifier (color/toFloatBits [0.5 0.5 0.5 0.4])
-     :colors/active-skill-circle (color/toFloatBits [1 1 1 0.125])
-     :colors/active-skill-sector (color/toFloatBits [1 1 1 0.5])
-     :colors/stunned (color/toFloatBits [1 1 1 0.6])
-     :colors/explored-tile (color/toFloatBits [0.5 0.5 0.5 1])
-     :colors/visible-tile (color/toFloatBits [1 1 1 1])
-     :colors/invisible-tile (color/toFloatBits [0 0 0 1])
-     :colors/droppable-item (color/toFloatBits [0 0.6 0 0.8 1])
-     :colors/not-allowed-drop-item (color/toFloatBits [0.6 0 0 0.8 1])
-     :colors/item-rect (color/toFloatBits [0.5 0.5 0.5 1])}))
+                        (color {:green (color/to-float-bits [0 0.8 0 1])
+                                :darkgreen (color/to-float-bits [0 0.5 0 1])
+                                :yellow (color/to-float-bits [0.5 0.5 0 1])
+                                :red (color/to-float-bits [0.5 0 0 1])})))
+     :colors/hp-bar-rect (color/to-float-bits [0 0 0 1])
+     :colors/temp-modifier (color/to-float-bits [0.5 0.5 0.5 0.4])
+     :colors/active-skill-circle (color/to-float-bits [1 1 1 0.125])
+     :colors/active-skill-sector (color/to-float-bits [1 1 1 0.5])
+     :colors/stunned (color/to-float-bits [1 1 1 0.6])
+     :colors/explored-tile (color/to-float-bits [0.5 0.5 0.5 1])
+     :colors/visible-tile (color/to-float-bits [1 1 1 1])
+     :colors/invisible-tile (color/to-float-bits [0 0 0 1])
+     :colors/droppable-item (color/to-float-bits [0 0.6 0 0.8 1])
+     :colors/not-allowed-drop-item (color/to-float-bits [0.6 0 0 0.8 1])
+     :colors/item-rect (color/to-float-bits [0.5 0.5 0.5 1])}))
 
 (def controls
   {:zoom-in :input.keys/minus
@@ -1655,7 +1654,7 @@
                                             (mapv (comp float (partial * world-unit-scale))
                                                   dimensions)))]
                              (if center?
-                               (batch/draw batch
+                               (batch/draw! batch
                                            texture-region
                                            (- (float x) (/ (float w) 2))
                                            (- (float y) (/ (float h) 2))
@@ -1666,7 +1665,7 @@
                                            1
                                            1
                                            (or rotation 0))
-                               (batch/draw batch texture-region x y w h))))
+                               (batch/draw! batch texture-region x y w h))))
    :draw/with-line-width (fn [{:keys [ctx/shape-drawer]
                                 :as ctx}
                                width
@@ -2239,10 +2238,10 @@
   (let [pixmap (doto (pixmap/new 1 1 pixmap/rgba8888)
                  (pixmap/set-color! 1 1 1 1)
                  (pixmap/draw-pixel! 0 0))
-        texture (texture/new (pixmap-texture-data/new pixmap
-                                                      (pixmap/get-format pixmap)
-                                                      false
-                                                      false))]
+        texture (texture/create (pixmap-texture-data/create pixmap
+                                                         (pixmap/get-format pixmap)
+                                                         false
+                                                         false))]
     (disposable/dispose! pixmap)
     (assoc ctx :ctx/shape-drawer-texture texture)))
 
@@ -2252,22 +2251,22 @@
                                              (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1))))
 
 (defn create-skin [{:keys [ctx/files] :as ctx}]
-  (let [skin (skin/new (files/internal files "skin/uiskin.json"))]
+  (let [skin (skin/create (files/internal files "skin/uiskin.json"))]
     (-> skin
-        (skin/getFont "default-font")
+        (skin/get-font "default-font")
         bitmap-font/get-data
         (bitmap-font-data/set-markup-enabled! true))
     (assoc ctx :ctx/skin skin)))
 
 (defn create-stage [{:keys [ctx/input
                             ctx/batch] :as ctx}]
-  (let [stage* (stage/create (fit-viewport/new 1440 900) batch)]
+  (let [stage* (stage/create (fit-viewport/create 1440 900) batch)]
     (input/set-processor! input stage*)
     (assoc ctx :ctx/stage stage*)))
 
 (defn create-init-tooltip [ctx]
   (tooltip-manager/setInitialTime (tooltip-manager/getInstance) 0)
-  (colors/put "PRETTY_NAME" (color/new [0.84 0.8 0.52 1]))
+  (colors/put! "PRETTY_NAME" (color/create [0.84 0.8 0.52 1]))
   ctx)
 
 (defn create-cursors [ctx]
@@ -2289,7 +2288,7 @@
   (assoc ctx
          :ctx/world-viewport (let [world-width (* 1440 world-unit-scale)
                                    world-height (* 900 world-unit-scale)]
-                               (fit-viewport/new world-width
+                               (fit-viewport/create world-width
                                                     world-height
                                                     (doto (orthographic-camera/new)
                                                       (orthographic-camera/set-to-ortho! false world-width world-height))))))
@@ -2306,8 +2305,8 @@
                                  generator (font-generator/new (files/internal (:ctx/files ctx) path))
                                  parameter {
                                             :set-size (* size quality-scaling)
-                                            :set-min-filter texture-filter/Linear
-                                            :set-mag-filter texture-filter/Linear
+                                            :set-min-filter texture-filter/linear
+                                            :set-mag-filter texture-filter/linear
                                             }
                                  font (font-generator/generate-font generator parameter)
                                  font-data (bitmap-font/get-data font)]
@@ -2365,8 +2364,8 @@
 
 (defn create-grid [ctx]
   (assoc ctx
-         :ctx/grid (moon-g2d/create (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "width")
-                                    (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "height")
+         :ctx/grid (moon-g2d/create (moon-tiled-map/get-property (:ctx/tiled-map ctx) "width")
+                                    (moon-tiled-map/get-property (:ctx/tiled-map ctx) "height")
                                     (fn [position]
                                       (atom
                                        (cell/map->R
@@ -2380,15 +2379,15 @@
                                          :occupied #{}}))))))
 
 (defn create-content-grid [ctx]
-  (let [width (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "width")
-        height (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "height")
+  (let [width (moon-tiled-map/get-property (:ctx/tiled-map ctx) "width")
+        height (moon-tiled-map/get-property (:ctx/tiled-map ctx) "height")
         cell-size 16]
     (assoc ctx :ctx/content-grid (content-grid/create width height cell-size))))
 
 (defn create-explored-tile-corners [ctx]
   (assoc ctx
-         :ctx/explored-tile-corners (atom (moon-g2d/create (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "width")
-                                                            (map-properties/get (tiled-map/getProperties (:ctx/tiled-map ctx)) "height")
+         :ctx/explored-tile-corners (atom (moon-g2d/create (moon-tiled-map/get-property (:ctx/tiled-map ctx) "width")
+                                                            (moon-tiled-map/get-property (:ctx/tiled-map ctx) "height")
                                                             (constantly false)))))
 
 (defn create-raycaster [ctx]
@@ -2567,7 +2566,7 @@
         (+ 2 (int (viewport/get-world-height world-viewport)))
         1
         1
-        (color/toFloatBits [1 1 1 0.8])]])
+        (color/to-float-bits [1 1 1 0.8])]])
     []))
 
 (defn- draw-cell-debug
@@ -2658,9 +2657,9 @@
            ctx/unit-scale
            ctx/world-viewport]
     :as ctx}]
-  (batch/setColor batch 1 1 1 1)
-  (batch/setProjectionMatrix batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
-  (batch/begin batch)
+  (batch/set-color! batch 1 1 1 1)
+  (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
+  (batch/begin! batch)
   (let [old-line-width (shape-drawer/getDefaultLineWidth shape-drawer)]
     (shape-drawer/setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
@@ -2671,7 +2670,7 @@
       (draw! ctx (draw-fn ctx)))
     (reset! unit-scale 1)
     (shape-drawer/setDefaultLineWidth shape-drawer old-line-width))
-  (batch/end batch)
+  (batch/end! batch)
   ctx)
 
 (defn- make-interaction-state

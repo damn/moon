@@ -12,20 +12,19 @@
             [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [clojure.gdx.files :as files]
             [clojure.gdx.graphics :as graphics]
-            [com.badlogic.gdx.graphics.color :as color]
+            [clojure.gdx.graphics.color :as color]
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.graphics.gl20 :as gl20]
             [clojure.gdx.input :as input]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
+            [clojure.gdx.scenes.scene2d.ui.skin :as skin]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.utils.disposable :as disposable]
-            [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
+            [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.gdx.utils.viewport.viewport :as viewport]
             [clojure.gdx.application :as application]
             [clojure.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
@@ -64,9 +63,9 @@
         ctx (assoc ctx :ctx/tiled-map tiled-map)]
     (assert tiled-map)
     (-> tiled-map
-        tiled-map/getLayers
+        moon-tiled-map/get-layers
         (map-layers/get "creatures")
-        (tiled-map-tile-layer/setVisible true))
+        (tiled-map-tile-layer/set-visible! true))
     (orthographic-camera/set-position! camera [(/ (moon-tiled-map/get-property tiled-map "width") 2)
                            (/ (moon-tiled-map/get-property tiled-map "height") 2)])
     (orthographic-camera/zoom-to-rect camera {:left [0 0]
@@ -81,14 +80,14 @@
         input (application/get-input application)
         graphics (application/get-graphics application)
         sprite-batch (sprite-batch/create)
-        ui-viewport (fit-viewport/new (:ui-viewport-width config)
+        ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                       (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
         stage (stage/create ui-viewport sprite-batch)
-        skin (skin/new (files/internal files (:ui-skin-path config)))
+        skin (skin/create (files/internal files (:ui-skin-path config)))
         world-viewport (let [world-width (* (:world-viewport-width config) world-unit-scale)
                              world-height (* (:world-viewport-height config) world-unit-scale)]
-                         (fit-viewport/new world-width
+                         (fit-viewport/create world-width
                                            world-height
                                            (doto (orthographic-camera/new)
                                              (orthographic-camera/set-to-ortho! false world-width world-height))))
@@ -148,7 +147,7 @@
                         sprite-batch
                         world-unit-scale
                         (viewport/get-camera world-viewport)
-                        (constantly (color/toFloatBits [1 1 1 1])))
+                        (constantly (color/to-float-bits [1 1 1 1])))
   (when (input/key-pressed? input :input.keys/minus)
     (orthographic-camera/inc-zoom! camera zoom-speed))
   (when (input/key-pressed? input :input.keys/equals)

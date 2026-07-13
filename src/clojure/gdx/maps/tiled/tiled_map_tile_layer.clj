@@ -5,6 +5,9 @@
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.maps.map-properties :as map-properties]))
 
+(defn set-visible! [layer visible?]
+  (tiled-map-tile-layer/setVisible layer visible?))
+
 (defn property-value [layer [x y] property-key]
   (if-let [cell (tiled-map-tile-layer/getCell layer x y)]
     (if-let [value (map-properties/get (tiled-map-tile/getProperties (tiled-map-tile-layer-cell/getTile cell)) property-key)]
