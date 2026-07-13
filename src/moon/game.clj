@@ -268,7 +268,8 @@
 
 (defmethod handle-effect :effects.target/convert
   [_ {:keys [effect/source effect/target]} _ctx]
-  [[:tx/assoc target :entity/faction (:entity/faction @source)]])
+  (swap! target assoc :entity/faction (:entity/faction @source))
+  nil)
 
 (defmethod handle-effect :effects.target/damage
   [[_ damage] {:keys [effect/source effect/target]} _ctx]
@@ -317,9 +318,9 @@
   [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]
   ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
   (when-not (:entity/temp-modifier @target)
-    [[:tx/assoc target :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                              :counter (timer/create elapsed-time spiderweb-duration)}]
-     [:tx/update target :entity/stats stats/add-mods spiderweb-modifiers]]))
+    (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
+                                               :counter (timer/create elapsed-time spiderweb-duration)})
+    [[:tx/update target :entity/stats stats/add-mods spiderweb-modifiers]]))
 
 (defmethod handle-effect :effects.target/stun
   [[_ duration] {:keys [effect/target]} _ctx]
@@ -709,33 +710,34 @@
 
 (defn- after-create-fsm
   [{:keys [fsm initial-state]} eid ctx]
-  [[:tx/assoc eid :entity/fsm (create-fsm fsm initial-state)]
-   [:tx/assoc eid initial-state (create-entity-state [initial-state nil] eid ctx)]])
+  (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
+  (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid ctx))
+  nil)
 
 (defn- after-create-skills
   [skills eid _ctx]
-  (cons [:tx/assoc eid :entity/skills nil]
-        (for [skill skills]
-          [:tx/add-skill eid skill])))
+  (swap! eid assoc :entity/skills nil)
+  (for [skill skills]
+    [:tx/add-skill eid skill]))
 
 (defn- after-create-inventory
   [items eid _ctx]
-  (cons [:tx/assoc eid :entity/inventory (->> #:inventory.slot{:bag      [6 4]
-                                                               :weapon   [1 1]
-                                                               :shield   [1 1]
-                                                               :helm     [1 1]
-                                                               :chest    [1 1]
-                                                               :leg      [1 1]
-                                                               :glove    [1 1]
-                                                               :boot     [1 1]
-                                                               :cloak    [1 1]
-                                                               :necklace [1 1]
-                                                               :rings    [2 1]}
-                                              (map (fn [[slot [width height]]]
-                                                     [slot (moon-g2d/create width height (constantly nil))]))
-                                              (into {}))]
-        (for [item items]
-          [:tx/pickup-item eid item])))
+  (swap! eid assoc :entity/inventory (->> #:inventory.slot{:bag      [6 4]
+                                                          :weapon   [1 1]
+                                                          :shield   [1 1]
+                                                          :helm     [1 1]
+                                                          :chest    [1 1]
+                                                          :leg      [1 1]
+                                                          :glove    [1 1]
+                                                          :boot     [1 1]
+                                                          :cloak    [1 1]
+                                                          :necklace [1 1]
+                                                          :rings    [2 1]}
+                                             (map (fn [[slot [width height]]]
+                                                    [slot (moon-g2d/create width height (constantly nil))]))
+                                             (into {})))
+  (for [item items]
+    [:tx/pickup-item eid item]))
 
 (def k->after-create
   {:entity/fsm after-create-fsm
@@ -801,7 +803,8 @@
 
 (defn- state-enter-player-item-on-cursor
   [{:keys [item]} eid]
-  [[:tx/assoc eid :entity/item-on-cursor item]])
+  (swap! eid assoc :entity/item-on-cursor item)
+  nil)
 
 (defn- state-enter-active-skill
   [{:keys [skill]} eid]
@@ -815,9 +818,10 @@
 
 (defn- state-enter-player-moving
   [{:keys [movement-vector]} eid]
-  [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                    :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
-                                               0)}]])
+  (swap! eid assoc :entity/movement {:direction movement-vector
+                                     :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                0)})
+  nil)
 
 (defn- state-enter-player-dead
   [_ _eid]
@@ -829,9 +833,10 @@
 
 (defn- state-enter-npc-moving
   [{:keys [movement-vector]} eid]
-  [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                    :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
-                                               0)}]])
+  (swap! eid assoc :entity/movement {:direction movement-vector
+                                     :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                0)})
+  nil)
 
 (def k->state-enter
   {:player-item-on-cursor state-enter-player-item-on-cursor
@@ -880,19 +885,13 @@
 
    :tx/add-text-effect
    (fn [{:keys [ctx/elapsed-time]} eid text duration]
-     [[:tx/assoc
-       eid
-       :entity/string-effect
-       (if-let [existing (:entity/string-effect @eid)]
-         (-> existing
-             (update :text str "\n" text)
-             (update :counter timer/increment duration))
-         {:text text
-          :counter (timer/create elapsed-time duration)})]])
-
-   :tx/assoc
-   (fn [_ctx eid k value]
-     (swap! eid assoc k value)
+     (swap! eid assoc :entity/string-effect
+            (if-let [existing (:entity/string-effect @eid)]
+              (-> existing
+                  (update :text str "\n" text)
+                  (update :counter timer/increment duration))
+              {:text text
+               :counter (timer/create elapsed-time duration)}))
      nil)
 
    :tx/audiovisual
@@ -927,9 +926,9 @@
              (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
                                    [k (k @eid)])
                    new-state-obj [new-state-k (create-entity-state [new-state-k nil] eid ctx)]]
-               [[:tx/assoc eid :entity/fsm new-fsm]
-                [:tx/assoc eid new-state-k (new-state-obj 1)]
-                [:tx/dissoc eid old-state-k]
+               (swap! eid assoc :entity/fsm new-fsm)
+               (swap! eid assoc new-state-k (new-state-obj 1))
+               [[:tx/dissoc eid old-state-k]
                 [:tx/state-exit eid old-state-obj]
                 [:tx/state-enter eid new-state-obj]]))))
        ([ctx eid event params]
@@ -942,9 +941,9 @@
              (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
                                    [k (k @eid)])
                    new-state-obj [new-state-k (create-entity-state [new-state-k params] eid ctx)]]
-               [[:tx/assoc eid :entity/fsm new-fsm]
-                [:tx/assoc eid new-state-k (new-state-obj 1)]
-                [:tx/dissoc eid old-state-k]
+               (swap! eid assoc :entity/fsm new-fsm)
+               (swap! eid assoc new-state-k (new-state-obj 1))
+               [[:tx/dissoc eid old-state-k]
                 [:tx/state-exit eid old-state-obj]
                 [:tx/state-enter eid new-state-obj]])))))
 
@@ -1986,9 +1985,10 @@
 (defn- handle-input-player-moving
   [eid ctx]
   (if-let [movement-vector (player-movement-vector ctx)]
-    [[:tx/assoc eid :entity/movement {:direction movement-vector
-                                      :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
-                                                 0)}]]
+    (do (swap! eid assoc :entity/movement {:direction movement-vector
+                                           :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                      0)})
+        nil)
     [[:tx/event eid :no-movement-input]]))
 
 (defn- handle-input-player-item-on-cursor
@@ -2056,12 +2056,12 @@
          :as animation}
         eid
         {:keys [ctx/delta-time]}]
-     [[:tx/assoc eid :entity/animation (let [maxcnt (float maxcnt)
-                                               newcnt (+ (float cnt) (float delta-time))]
-                                         (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
-                                                                     looping? (min maxcnt (- newcnt maxcnt))
-                                                                     :else maxcnt)))]
-      (when (and delete-after-stopped?
+     (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
+                                              newcnt (+ (float cnt) (float delta-time))]
+                                          (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
+                                                                    looping? (min maxcnt (- newcnt maxcnt))
+                                                                    :else maxcnt))))
+     [(when (and delete-after-stopped?
                  (and (not looping?) (>= cnt maxcnt)))
         [:tx/mark-destroyed eid])])
 
