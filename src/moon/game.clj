@@ -892,13 +892,24 @@
    :npc-sleeping state-exit-npc-sleeping
    :npc-moving state-exit-npc-moving})
 
+(defn- ui-update-skill! [ctx skill]
+  (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
+    (-> stage
+        :stage/root
+        (#(group/find-actor % "moon.ui.action-bar"))
+        (action-bar/add-skill! {:skill-id (:property/id skill)
+                                :texture-region (textures/texture-region textures (:entity/image skill))
+                                :tooltip-text (info-text skill ctx)}
+                               skin))))
+
 (def tx-fn-map
-  {:tx/add-skill
+  {   :tx/add-skill
    (fn [ctx eid {:keys [property/id] :as skill}]
      {:pre [(not (contains? (:entity/skills @eid) id))]}
      (swap! eid update :entity/skills assoc id skill)
-     [(when (:entity/player? @eid)
-        [:tx/ui-update-skill eid skill])])
+     (when (:entity/player? @eid)
+       (ui-update-skill! ctx skill))
+     nil)
 
    :tx/audiovisual
    (fn [{:keys [ctx/db]} position audiovisual]
@@ -1139,17 +1150,6 @@
                         {:texture-region (textures/texture-region textures (:entity/image item))
                          :tooltip-text (item/info-text item)}
                         skin))
-     nil)
-
-   :tx/ui-update-skill
-   (fn [{:keys [ctx/skin ctx/stage ctx/textures] :as ctx} _eid skill]
-     (-> stage
-         :stage/root
-         (#(group/find-actor % "moon.ui.action-bar"))
-         (action-bar/add-skill! {:skill-id (:property/id skill)
-                          :texture-region (textures/texture-region textures (:entity/image skill))
-                          :tooltip-text (info-text skill ctx)}
-                         skin))
      nil)})
 
 (defn do!
