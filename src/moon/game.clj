@@ -813,6 +813,27 @@
     (grid/set-occupied-cells! (:ctx/grid ctx) eid))
   nil)
 
+(defn- show-modal! [ctx {:keys [title text button-text on-click]}]
+  (let [{:keys [ctx/skin ctx/stage]} ctx]
+    (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
+    (stage/add-actor! stage
+                      (doto (window/create {:title title
+                                            :skin skin
+                                            :table/rows [[{:actor (label/create text skin)}]
+                                                         [{:actor (doto (text-button/create button-text skin)
+                                                                         (actor/add-listener!
+                                                                          (change-listener/create
+                                                                           (fn [_event _actor]
+                                                                             (actor/remove!
+                                                                              (group/find-actor (:stage/root stage)
+                                                                                                "moon.ui.modal-window"))
+                                                                             (on-click)))))}]]})
+                        (window/set-modal! true)
+                        (actor/set-name! "moon.ui.modal-window")
+                        (actor/set-position! (/ (viewport/get-world-width (:stage/viewport stage)) 2)
+                                             (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))
+                                             align/center)))))
+
 (defn- state-enter-player-item-on-cursor
   [{:keys [item]} eid _ctx]
   (swap! eid assoc :entity/item-on-cursor item)
@@ -838,12 +859,13 @@
   nil)
 
 (defn- state-enter-player-dead
-  [_ _eid _ctx]
-  [[:tx/sound "bfxr_playerdeath"]
-   [:tx/show-modal {:title "YOU DIED - again!"
+  [_ _eid {:keys [ctx/audio] :as ctx}]
+  (audio/play! audio "bfxr_playerdeath")
+  (show-modal! ctx {:title "YOU DIED - again!"
                     :text "Good luck next time!"
                     :button-text "OK"
-                    :on-click (fn [])}]])
+                    :on-click (fn [])})
+  nil)
 
 (defn- state-enter-npc-moving
   [{:keys [movement-vector]} eid _ctx]
@@ -1017,28 +1039,6 @@
          :stage/root
          (#(group/find-actor % "player-message"))
          (actor/set-user-object! (atom {:text message :counter 0})))
-     nil)
-
-   :tx/show-modal
-   (fn [{:keys [ctx/skin ctx/stage] :as _ctx}
-        {:keys [title text button-text on-click]}]
-     (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
-     (stage/add-actor! stage
-                       (doto (window/create {:title title
-                                             :skin skin
-                                             :table/rows [[{:actor (label/create text skin)}]
-                                                          [{:actor (doto (text-button/create button-text skin)
-                                                                          (actor/add-listener!
-                                                                           (change-listener/create
-                                                                            (fn [_event _actor]
-                                                                              (actor/remove!
-                                                                               (group/find-actor (:stage/root stage)
-                                                                                                 "moon.ui.modal-window"))
-                                                                              (on-click)))))}]]})
-                             (window/set-modal! true)
-                         (actor/set-name! "moon.ui.modal-window")
-                         (actor/set-position! (/ (viewport/get-world-width (:stage/viewport stage)) 2)
-                                         (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4)) align/center)))
      nil)
 
    :tx/sound
