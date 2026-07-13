@@ -8,11 +8,6 @@
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.2" :classifier "natives-desktop"]
                  [com.github.damn/space.earlygrey.shapedrawer "1184b47b65"] ; => clojure.gdx.graphics.g2d.shape-drawer
 
-                 ; maybe law of demeter -
-                 ; add-actor! from group move to all sub-inheritors
-                 ; so don't need to work with group shape if dealing with window
-                 ; directoy window/add-actor! ???
-                 [com.github.damn/space.earlygrey.shapedrawer "1184b47b65"]
                  ;
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]
                  [fr.reuz/qrecord "0.1.0"]
