@@ -4,9 +4,9 @@
             [gdx.actor.group :as group]
             [gdx.button-group :as button-group]
             [gdx.actor.group.widget.horizontal-group :as horizontal-group]
-            [gdx.actor.group.widget.table.button.image-button :as image-button]
+            [gdx.actor.group.widget.table.button.image :as image-button]
             [gdx.actor.group.widget.table :as table]
-            [gdx.tooltip.text-tooltip :as text-tooltip]
+            [gdx.tooltip.text :as text-tooltip]
             [gdx.layout :as layout]
             [gdx.drawable.texture-region :as texture-region-drawable]))
 

@@ -34,7 +34,7 @@
             [gdx.actor.group :as group]
             [gdx.actor.widget.label :as label]
             [gdx.skin :as skin]
-            [gdx.actor.group.widget.table.button.text-button :as text-button]
+            [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.tooltip-manager :as tooltip-manager]
             [gdx.actor.group.widget.table.window :as window]
             [gdx.change-listener :as change-listener]

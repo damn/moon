@@ -5,7 +5,7 @@
             [gdx.actor.group :as group]
             [gdx.actor.widget.image :as image]
             [gdx.actor.group.widget.stack :as stack]
-            [gdx.tooltip.text-tooltip :as text-tooltip]
+            [gdx.tooltip.text :as text-tooltip]
             [gdx.actor.widget :as widget]
             [gdx.actor.group.widget.table.window :as window]
             [gdx.click-listener :as click-listener]

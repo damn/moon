@@ -8,7 +8,7 @@
             [gdx.touchable :as touchable]
             [gdx.actor.widget.image :as image]
             [gdx.actor.widget.label :as label]
-            [gdx.actor.group.widget.table.button.text-button :as text-button]
+            [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.change-listener :as change-listener]
             [gdx.layout :as layout]))
 
