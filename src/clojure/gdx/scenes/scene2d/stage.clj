@@ -15,3 +15,6 @@
 
 (defn apply-ctx! [stage f]
   (set-ctx! stage (f (:stage/ctx stage))))
+
+(defn add-actor! [stage actor]
+  (stage/addActor stage actor))

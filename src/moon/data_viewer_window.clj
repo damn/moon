@@ -2,7 +2,7 @@
   (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
             [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
@@ -29,13 +29,13 @@
                      (doto (text-button/new "Map" skin)
                        (actor/add-listener! (change-listener/create
                                             (fn [_event actor]
-                                              (stage/addActor (actor/get-stage actor)
-                                                              (create
-                                                               {:title "title"
-                                                                :data v
-                                                                :width 500
-                                                                :height 500
-                                                                :skin skin}))))))
+                                              (stage/add-actor! (actor/get-stage actor)
+                                                                (create
+                                                                 {:title "title"
+                                                                  :data v
+                                                                  :width 500
+                                                                  :height 500
+                                                                  :skin skin}))))))
                      (label/new (cond
                                   (or (keyword? v)
                                       (number? v)

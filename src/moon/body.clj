@@ -1,7 +1,7 @@
 (ns moon.body
-  (:require [moon.v2 :as v2]
-            [moon.rectangle :as moon-rectangle]
-            [com.badlogic.gdx.math.rectangle :as gdx-rectangle]))
+  (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
+            [moon.v2 :as v2]
+            [moon.rectangle :as moon-rectangle]))
 
 (defn direction [body other-body]
   (v2/direction (:body/position body)
@@ -30,7 +30,7 @@
            body/height]}]
   (let [[x y] [(- (position 0) (/ width  2))
                (- (position 1) (/ height 2))]]
-    (gdx-rectangle/new x y width height)))
+    (gdx-rectangle/create x y width height)))
 
 (defn overlaps? [body other-body]
   (gdx-rectangle/overlaps (rectangle body)
