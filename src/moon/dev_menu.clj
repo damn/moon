@@ -1,7 +1,7 @@
 (ns moon.dev-menu
   (:require [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.stage :as stage]
-            [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
@@ -9,7 +9,6 @@
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
 
@@ -43,18 +42,17 @@
                                                               (actor/add-listener! (change-listener/create
                                                                                   (fn [event actor]
                                                                                     (stage/add-actor! (event/get-stage event)
-                                                                                                    (doto (doto (window/new label skin)
-                                                                                                                (table/set-opts! {:title label
-                                                                                                                                           :skin skin
-                                                                                                                                           :table/rows [(for [{:keys [label on-click]} items]
-                                                                                                                                                         {:actor
-                                                                                                                                                          (doto (text-button/create label skin)
-                                                                                                                                                            (actor/add-listener! (change-listener/create
-                                                                                                                                                                                (fn [event actor]
-                                                                                                                                                                                  (let [stage (event/get-stage event)]
-                                                                                                                                                                                    (stage/set-ctx! stage
-                                                                                                                                                                                                         (on-click (:stage/ctx stage))))))))})]}))
-                                                                                                              (add-close-button! skin)))))))})]})]
+                                                                                                    (window/create {:title label
+                                                                                                                    :skin skin
+                                                                                                                    :table/rows [(for [{:keys [label on-click]} items]
+                                                                                                                                  {:actor
+                                                                                                                                   (doto (text-button/create label skin)
+                                                                                                                                     (actor/add-listener! (change-listener/create
+                                                                                                                                                           (fn [event actor]
+                                                                                                                                                             (let [stage (event/get-stage event)]
+                                                                                                                                                               (stage/set-ctx! stage
+                                                                                                                                                                               (on-click (:stage/ctx stage))))))))})]
+                                                                                                                    :window/add-close-button? true}))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon

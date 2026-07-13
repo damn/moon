@@ -22,7 +22,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
@@ -107,18 +107,17 @@
         ctx (generate-level ctx (:initial-level-fn config))]
     (input/set-processor! input stage)
     (stage/add-actor! (:ctx/stage ctx)
-                    (doto (window/new "Edit" skin)
-                      (table/set-opts! {:title "Edit"
-                                                 :skin skin
-                                                 :table/rows (for [[label level-fn] (:level-fns config)
-                                                                   :let [on-click #(do
-                                                                                     (disposable/dispose! (:ctx/tiled-map %))
-                                                                                     (generate-level % level-fn))]]
-                                                               [{:actor (doto (text-button/create (str "Generate " label) skin)
-                                                                              (actor/add-listener!
-                                                                               (change-listener/create
-                                                                                (fn [_event _actor]
-                                                                                  (swap! state on-click)))))}])})))
+                    (window/create {:title "Edit"
+                                    :skin skin
+                                    :table/rows (for [[label level-fn] (:level-fns config)
+                                                      :let [on-click #(do
+                                                                        (disposable/dispose! (:ctx/tiled-map %))
+                                                                        (generate-level % level-fn))]]
+                                                   [{:actor (doto (text-button/create (str "Generate " label) skin)
+                                                                  (actor/add-listener!
+                                                                   (change-listener/create
+                                                                    (fn [_event _actor]
+                                                                      (swap! state on-click)))))}])}))
     ctx))
 
 (defn dispose

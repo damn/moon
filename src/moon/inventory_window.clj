@@ -7,7 +7,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [com.badlogic.gdx.scenes.scene2d.ui.widget :as widget]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
@@ -99,29 +99,29 @@
                                           not-allowed-drop-item-color)]
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
         ->cell (partial ->cell do! draw! on-click-cell slot->drawable draw-cell-rect cell-size)
-        window (doto (doto (window/new "Inventory" skin)
-                           (table/set-opts!
-                            {:table/rows [[{:actor (doto (table/create
-                                                         {:table/rows (concat [[nil nil
-                                                                                (->cell :inventory.slot/helm)
-                                                                                (->cell :inventory.slot/necklace)]
-                                                                               [nil
-                                                                                (->cell :inventory.slot/weapon)
-                                                                                (->cell :inventory.slot/chest)
-                                                                                (->cell :inventory.slot/cloak)
-                                                                                (->cell :inventory.slot/shield)]
-                                                                               [nil nil
-                                                                                (->cell :inventory.slot/leg)]
-                                                                               [nil
-                                                                                (->cell :inventory.slot/glove)
-                                                                                (->cell :inventory.slot/rings :position [0 0])
-                                                                                (->cell :inventory.slot/rings :position [1 0])
-                                                                                (->cell :inventory.slot/boot)]]
-                                                                              (for [y (range 4)]
-                                                                                (for [x (range 6)]
-                                                                                  (->cell :inventory.slot/bag :position [x y]))))})
-                                                          (actor/set-name! "inventory-cell-table"))
-                                           :pad 4}]]}))
+        window (doto (window/create {:title "Inventory"
+                                     :skin skin
+                                     :table/rows [[{:actor (doto (table/create
+                                                                  {:table/rows (concat [[nil nil
+                                                                                        (->cell :inventory.slot/helm)
+                                                                                        (->cell :inventory.slot/necklace)]
+                                                                                       [nil
+                                                                                        (->cell :inventory.slot/weapon)
+                                                                                        (->cell :inventory.slot/chest)
+                                                                                        (->cell :inventory.slot/cloak)
+                                                                                        (->cell :inventory.slot/shield)]
+                                                                                       [nil nil
+                                                                                        (->cell :inventory.slot/leg)]
+                                                                                       [nil
+                                                                                        (->cell :inventory.slot/glove)
+                                                                                        (->cell :inventory.slot/rings :position [0 0])
+                                                                                        (->cell :inventory.slot/rings :position [1 0])
+                                                                                        (->cell :inventory.slot/boot)]]
+                                                                                      (for [y (range 4)]
+                                                                                        (for [x (range 6)]
+                                                                                          (->cell :inventory.slot/bag :position [x y]))))})
+                                                                  (actor/set-name! "inventory-cell-table"))
+                                                    :pad 4}]]})
                      (actor/set-name! "moon.ui.windows.inventory")
                      (actor/set-visible! false))]
     (let [[x y] position]

@@ -3,7 +3,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
 
 (defn create
@@ -14,9 +14,9 @@
            set-label-text!
            skin]}]
   (let [label (label/create "MY LABEL TEXT" skin)
-        window (doto (doto (window/new title skin)
-                      (table/set-opts!
-                       {:table/rows [[{:actor label :expand? true}]]}))
+        window (doto (window/create {:title title
+                                     :skin skin
+                                     :table/rows [[{:actor label :expand? true}]]})
                  (actor/set-name! actor-name)
                  (actor/set-visible! visible?))]
     (let [[x y] position]

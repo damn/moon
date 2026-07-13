@@ -16,7 +16,7 @@
             [moon.string :as string]
             [moon.error-window :as error-window]
             [clojure.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
+            [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.gl20 :as gl20]
@@ -27,6 +27,7 @@
             [clojure.gdx.input :as input]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
+            [clojure.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
@@ -38,8 +39,6 @@
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [clojure.gdx.scenes.scene2d.touchable :as touchable]
-            [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
@@ -183,27 +182,26 @@
                ctx/stage]
         :as ctx}]
     (stage/add-actor! stage
-                      (doto (doto (window/new "Choose" skin)
-    (table/set-opts! {:title "Choose"
-                              :skin skin
-                              :table/rows
-                              [[(let [table (table/create {:table/cell-defaults {:pad 5}
-                                                            :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
-                                                                          [{:actor (doto (text-button/create sound-name skin)
-                                                                                         (actor/add-listener! (change-listener/create
-                                                                                                              (fn [event actor]
-                                                                                                                ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
-                                                                           {:actor (doto (text-button/create "play!" skin)
-                                                                                         (actor/add-listener! (change-listener/create
-                                                                                                              (fn [event _actor]
-                                                                                                                (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
-                                                                                                                             sound-name)))))}])})]
-                                {:actor (scroll-pane/new table skin)
-                                 :width  (+ (actor/get-width table) 50)
-                                 :height (min (- (viewport/getWorldHeight (:stage/viewport stage)) 50)
-                                              (actor/get-height table))})]]}))
-                            (add-close-button! skin)
-                            (window/setModal true)))))
+                      (doto (window/create {:title "Choose"
+                                            :skin skin
+                                            :table/rows
+                                            [[(let [table (table/create {:table/cell-defaults {:pad 5}
+                                                                         :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
+                                                                                       [{:actor (doto (text-button/create sound-name skin)
+                                                                                                      (actor/add-listener! (change-listener/create
+                                                                                                                           (fn [event actor]
+                                                                                                                             ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
+                                                                                        {:actor (doto (text-button/create "play!" skin)
+                                                                                                      (actor/add-listener! (change-listener/create
+                                                                                                                           (fn [event _actor]
+                                                                                                                             (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
+                                                                                                                                          sound-name)))))}])})]
+                                               {:actor (scroll-pane/new table skin)
+                                                :width  (+ (actor/get-width table) 50)
+                                                :height (min (- (viewport/getWorldHeight (:stage/viewport stage)) 50)
+                                                             (actor/get-height table))})]]
+                                            :window/add-close-button? true})
+                            (window/set-modal! true)))))
 
 (defn- overview-table-rows* [skin image-scale rows]
   (for [row rows]
@@ -231,25 +229,24 @@
            skin
            property-type
            clicked-id-fn]}]
-  (doto (doto (window/new "Edit" skin)
-    (table/set-opts! {:title "Edit"
-          :skin skin
-          :table/rows (let [{:keys [sort-by-fn
-                                    extra-info-text
-                                    columns
-                                    image-scale]} (get property-type->overview-table-props property-type)]
-                        (->> (db/all-raw db property-type)
-                             (sort-by sort-by-fn)
-                             (map (fn [property]
-                                    {:texture-region (textures/texture-region textures (property/image property))
-                                     :on-clicked (fn [actor ctx]
-                                                   (clicked-id-fn actor (:property/id property) ctx))
-                                     :tooltip (property/tooltip property)
-                                     :extra-info-text (extra-info-text property)}))
-                             (partition-all columns)
-                             (overview-table-rows* skin image-scale)))}))
-    (add-close-button! skin)
-    (window/setModal true)))
+  (doto (window/create {:title "Edit"
+                        :skin skin
+                        :table/rows (let [{:keys [sort-by-fn
+                                                  extra-info-text
+                                                  columns
+                                                  image-scale]} (get property-type->overview-table-props property-type)]
+                                      (->> (db/all-raw db property-type)
+                                           (sort-by sort-by-fn)
+                                           (map (fn [property]
+                                                  {:texture-region (textures/texture-region textures (property/image property))
+                                                   :on-clicked (fn [actor ctx]
+                                                                 (clicked-id-fn actor (:property/id property) ctx))
+                                                   :tooltip (property/tooltip property)
+                                                   :extra-info-text (extra-info-text property)}))
+                                           (partition-all columns)
+                                           (overview-table-rows* skin image-scale)))
+                        :window/add-close-button? true})
+    (window/set-modal! true)))
 
 (defn- with-window-close [f]
   (fn [actor {:keys [ctx/skin
@@ -295,18 +292,17 @@
                                                               (fn [event actor]
                                                                 (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
-    (doto (doto (window/new "[SKY]Property[]" skin)
-    (table/set-opts! {:title "[SKY]Property[]"
-            :skin skin
-            :table/cell-defaults {:pad 5}
-            :table/rows [[(let [table (table/create {:table/cell-defaults {:pad 5}
-                                                   :table/rows scroll-pane-rows})]
-                            {:actor (scroll-pane/new table skin)
-                             :width (+ (actor/get-width table) 50)
-                             :height (min (- scroll-pane-height 50)
-                                          (actor/get-height table))})]]}))
-      (add-close-button! skin)
-      (window/setModal true)
+    (doto (window/create {:title "[SKY]Property[]"
+                          :skin skin
+                          :table/cell-defaults {:pad 5}
+                          :table/rows [[(let [table (table/create {:table/cell-defaults {:pad 5}
+                                                                  :table/rows scroll-pane-rows})]
+                                          {:actor (scroll-pane/new table skin)
+                                           :width (+ (actor/get-width table) 50)
+                                           :height (min (- scroll-pane-height 50)
+                                                        (actor/get-height table))})]]
+                          :window/add-close-button? true})
+      (window/set-modal! true)
       (group/add-actor! (actor/new
                        (fn [this _delta]
                          (when-let [stage (actor/get-stage this)]
@@ -449,12 +445,11 @@
 
 (defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
-  (let [window (doto (doto (window/new "Choose" skin)
-    (table/set-opts! {:title "Choose"
-                       :skin skin
-                       :table/cell-defaults {:pad 5}}))
-                 (add-close-button! skin)
-                 (window/setModal true))
+  (let [window (doto (window/create {:title "Choose"
+                                     :skin skin
+                                     :table/cell-defaults {:pad 5}
+                                     :window/add-close-button? true})
+                     (window/set-modal! true))
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
     (table/add-rows!
@@ -637,29 +632,28 @@
 (defn- main-window-f
   [{:keys [ctx/db
            ctx/skin]}]
-  (doto (window/new "Edit" skin)
-    (table/set-opts! {:title "Edit"
-                               :skin skin
-                               :table/rows (for [property-type (sort (db/property-types db))]
-                                             [{:actor (doto (text-button/create (str/capitalize (name property-type)) skin)
-                                                            (actor/add-listener! (change-listener/create
-                                                                                (fn [event _actor]
-                                                                                  (let [{:keys [ctx/db
-                                                                                                ctx/skin
-                                                                                                ctx/stage
-                                                                                                ctx/textures]
-                                                                                         :as ctx} (:stage/ctx (event/get-stage event))]
-                                                                                    (stage/add-actor! stage
-                                                                                                    (property-overview-window
-                                                                                                     {:db db
-                                                                                                      :textures textures
-                                                                                                      :skin skin
-                                                                                                      :property-type property-type
-                                                                                                      :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                                                                       (stage/add-actor! stage
-                                                                                                                                       (property-editor-window
-                                                                                                                                        {:ctx ctx
-                                                                                                                                         :property (db/get-raw db id)})))})))))))}])})))
+  (doto (window/create {:title "Edit"
+                        :skin skin
+                        :table/rows (for [property-type (sort (db/property-types db))]
+                                      [{:actor (doto (text-button/create (str/capitalize (name property-type)) skin)
+                                                     (actor/add-listener! (change-listener/create
+                                                                           (fn [event _actor]
+                                                                             (let [{:keys [ctx/db
+                                                                                           ctx/skin
+                                                                                           ctx/stage
+                                                                                           ctx/textures]
+                                                                                    :as ctx} (:stage/ctx (event/get-stage event))]
+                                                                               (stage/add-actor! stage
+                                                                                                 (property-overview-window
+                                                                                                  {:db db
+                                                                                                   :textures textures
+                                                                                                   :skin skin
+                                                                                                   :property-type property-type
+                                                                                                   :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
+                                                                                                                    (stage/add-actor! stage
+                                                                                                                                        (property-editor-window
+                                                                                                                                         {:ctx ctx
+                                                                                                                                          :property (db/get-raw db id)})))})))))))}])})))
 
 (defn- input-f [{:keys [ctx/app] :as ctx}]
   (assoc ctx :ctx/input (application/get-input app)))
