@@ -1,7 +1,7 @@
 (ns moon.inventory-window
   (:require [com.badlogic.gdx.graphics.color :as color]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clojure.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
@@ -70,7 +70,7 @@
          (actor/add-listener! (click-listener/create
                              (fn [event _x _y]
                                (let [{:keys [ctx/player-eid]
-                                      :as ctx} (:stage/ctx (event/getStage event))]
+                                      :as ctx} (:stage/ctx (event/get-stage event))]
                                  (do! ctx (on-click-cell player-eid cell))))))
          (actor/set-name! "inventory-cell")
          (actor/set-user-object! cell)))}))

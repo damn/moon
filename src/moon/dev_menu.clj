@@ -3,7 +3,7 @@
             [clojure.gdx.scenes.scene2d.stage :as moon-stage]
             [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.event :as event]
+            [clojure.gdx.scenes.scene2d.event :as event]
             [com.badlogic.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
@@ -46,7 +46,7 @@
                                                             (doto (text-button/new label skin)
                                                               (actor/add-listener! (change-listener/create
                                                                                   (fn [event actor]
-                                                                                    (stage/addActor (event/getStage event)
+                                                                                    (stage/addActor (event/get-stage event)
                                                                                                     (doto (doto (window/new label skin)
                                                                                                                 (moon-table/set-opts! {:title label
                                                                                                                                            :skin skin
@@ -55,7 +55,7 @@
                                                                                                                                                           (doto (text-button/new label skin)
                                                                                                                                                             (actor/add-listener! (change-listener/create
                                                                                                                                                                                 (fn [event actor]
-                                                                                                                                                                                  (let [stage (event/getStage event)]
+                                                                                                                                                                                  (let [stage (event/get-stage event)]
                                                                                                                                                                                     (moon-stage/set-ctx! stage
                                                                                                                                                                                                          (on-click (:stage/ctx stage))))))))})]}))
                                                                                                               (add-close-button! skin)))))))})]}))]
