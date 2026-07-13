@@ -5,9 +5,8 @@
             [clojure.string :as str]
             [gdx.actor :as actor]
             [gdx.actor.group :as group]
-            [gdx.actor.group.widget.table.button :refer [is?]]
+            [gdx.actor.group.widget.table.button :as button]
             [gdx.actor.group.widget.table.button.text :as text-button]
-            [gdx.actor.group.widget.table.window :refer [title-bar?]]
             [gdx.actor.group.widget.table.window :as window]
             [gdx.actor.widget.label :as label]
             [gdx.align :as align]
@@ -37,7 +36,6 @@
             [gdx.texture-region :as texture-region]
             [gdx.tiled-map :as moon-tiled-map]
             [gdx.tooltip-manager :as tooltip-manager]
-            [gdx.viewport :refer [unproject]]
             [gdx.viewport :as viewport]
             [gdx.viewport.fit :as fit-viewport]
             [moon.action-bar :as action-bar]
@@ -52,20 +50,17 @@
             [moon.error-window :as error-window]
             [moon.faction :as faction]
             [moon.g2d :as moon-g2d]
-            [moon.grid :as grid :refer [remove-from-occupied-cells!
-                                        remove-from-touched-cells!
-                                        set-occupied-cells!
-                                        set-touched-cells!]]
+            [moon.grid :as grid]
             [moon.info-window :as info-window]
             [moon.inventory :as inventory]
-            [moon.inventory-window :as inventory-window :refer [inventory-window-build]]
+            [moon.inventory-window :as inventory-window]
             [moon.inventory.cell :as inventory-cell]
             [moon.item :as item]
             [moon.item :as item]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
-            [moon.m :refer [safe-merge]]
+            [moon.m :as m]
             [moon.malli :as malli-schema]
             [moon.mods :as mods]
             [moon.number :as number]
@@ -77,9 +72,9 @@
             [moon.textures :as textures]
             [moon.throwable :as throwable]
             [moon.timer :as timer]
-            [moon.txs-fn-map :refer [actions!]]
+            [moon.txs-fn-map :as txs-fn-map]
             [moon.v2 :as v2]
-            [moon.val-max :refer [ratio]]
+            [moon.val-max :as val-max]
             [qrecord.core :as q]
             [reduce-fsm :as fsm])
   (:gen-class))
@@ -751,7 +746,7 @@
   (input/position input))
 
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
-  (let [[x y] (unproject (:stage/viewport stage) (mouse-position ctx))]
+  (let [[x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
     (stage/hit stage x y true)))
 
 (defn- mouseover-actor-info [actor]
@@ -762,10 +757,10 @@
       inventory-slot
       [:mouseover-actor/inventory-cell inventory-slot]
 
-      (title-bar? actor)
+      (window/title-bar? actor)
       [:mouseover-actor/window-title-bar]
 
-      (is? actor)
+      (button/is? actor)
       [:mouseover-actor/button]
 
       :else
@@ -784,9 +779,9 @@
   (assert (:entity/body @eid))
   (when (:body/collides? (:entity/body @eid))
     (assert (grid/valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
-  (set-touched-cells! (:ctx/grid ctx) eid)
+  (grid/set-touched-cells! (:ctx/grid ctx) eid)
   (when (:body/collides? (:entity/body @eid))
-    (set-occupied-cells! (:ctx/grid ctx) eid))
+    (grid/set-occupied-cells! (:ctx/grid ctx) eid))
   nil)
 
 (defn- state-enter-player-item-on-cursor
@@ -950,11 +945,11 @@
    :tx/move-entity
    (fn [{:keys [ctx/content-grid ctx/grid]} eid]
      (content-grid/update-entity! content-grid eid)
-     (remove-from-touched-cells! grid eid)
-     (set-touched-cells! grid eid)
+     (grid/remove-from-touched-cells! grid eid)
+     (grid/set-touched-cells! grid eid)
      (when (:body/collides? (:entity/body @eid))
-       (remove-from-occupied-cells! grid eid)
-       (set-occupied-cells! grid eid))
+       (grid/remove-from-occupied-cells! grid eid)
+       (grid/set-occupied-cells! grid eid))
      nil)
 
    :tx/pickup-item
@@ -1053,7 +1048,7 @@
                      :collides? true
                      :z-order :z-order/ground}))
            (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-           (safe-merge components))]])
+           (m/safe-merge components))]])
 
    :tx/spawn-effect
    (fn [_ctx position components]
@@ -1173,9 +1168,9 @@
        (assert (contains? @entity-ids id))
        (swap! entity-ids dissoc id))
      (content-grid/remove-entity! content-grid eid)
-     (remove-from-touched-cells! grid eid)
+     (grid/remove-from-touched-cells! grid eid)
      (when (:body/collides? (:entity/body @eid))
-       (remove-from-occupied-cells! grid eid))
+       (grid/remove-from-occupied-cells! grid eid))
      nil)
 
    :tx/update
@@ -1185,7 +1180,7 @@
 
 (defn do!
   [ctx txs]
-  (try (actions! tx-fn-map ctx txs)
+  (try (txs-fn-map/actions! tx-fn-map ctx txs)
        (catch Throwable t
          (throw (ex-info "Error handling txs"
                          {:txs txs} t)))))
@@ -1439,7 +1434,7 @@
 
 (defn- render-stats
   [_ entity {:keys [ctx/colors]}]
-  (let [ratio (ratio (stats/get-hitpoints (:entity/stats entity)))]
+  (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [body/position body/width body/height]} (:entity/body entity)
             [x y] position
@@ -1719,7 +1714,7 @@
                              [:draw/texture-region
                               (textures/texture-region textures
                                                        {:image/file content-file
-                                                        :image/bounds [0 0 (* rahmenw (ratio minmaxval)) rahmenh]})
+                                                        :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
                               [x y]]
                              [:draw/text {:text (str (number/readable (minmaxval 0))
                                                      "/"
@@ -1817,7 +1812,7 @@
                                  (textures/texture-region textures
                                                           {:image/file "images/items.png"
                                                            :image/bounds bounds})))]
-    (inventory-window-build
+    (inventory-window/inventory-window-build
      {:do! do!
       :draw! draw!
       :on-click-cell handle-clicked-inventory-cell
@@ -2444,8 +2439,8 @@
     :as ctx}]
   (let [mp (mouse-position ctx)]
     (-> ctx
-        (assoc :ctx/world-mouse-position (unproject world-viewport mp))
-        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (unproject mp))))))
+        (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
+        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
 
 (defn update-mouseover-eid
   [{:keys [ctx/mouseover-eid
