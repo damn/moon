@@ -1,16 +1,12 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 ; => clojure.gdx ?
-                 ;
+                 ; FFI jars (vendor namespaces) — game code uses src/clojure/gdx wrappers
                  [com.github.damn/com.badlogic.gdx "361519e8e3"]
                  [com.github.damn/com.badlogic.gdx.backends.lwjgl3 "5042308fb0"]
                  [com.github.damn/com.badlogic.gdx.graphics.g2d.freetype "38124e642d"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.2" :classifier "natives-desktop"]
-
-                 ; Where does shape-drawer go? also clojure.gdx.graphics.g2d.shape-drawer?
-
-                 ; or just 'gdx.shape-drawer' => its the gdx-universe...
+                 [com.github.damn/space.earlygrey.shapedrawer "1184b47b65"] ; => clojure.gdx.graphics.g2d.shape-drawer
 
                  ; maybe law of demeter -
                  ; add-actor! from group move to all sub-inheritors

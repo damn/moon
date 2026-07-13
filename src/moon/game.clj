@@ -84,7 +84,7 @@
             [moon.val-max :refer [ratio]]
             [qrecord.core :as q]
             [reduce-fsm :as fsm]
-            [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer])
+            [clojure.gdx.graphics.g2d.shape-drawer :as shape-drawer])
   (:gen-class))
 
 (q/defrecord R [])
@@ -1581,17 +1581,17 @@
 
 (def ^:private draw-fns
   {:draw/circle (fn [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-                  (shape-drawer/setColor shape-drawer color-float-bits)
+                  (shape-drawer/set-color! shape-drawer color-float-bits)
                   (shape-drawer/circle shape-drawer x y radius))
    :draw/ellipse (fn [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
-                   (shape-drawer/setColor shape-drawer color-float-bits)
+                   (shape-drawer/set-color! shape-drawer color-float-bits)
                    (shape-drawer/ellipse shape-drawer x y radius-x radius-y))
    :draw/filled-circle (fn [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-                          (shape-drawer/setColor shape-drawer color-float-bits)
-                          (shape-drawer/filledCircle shape-drawer x y radius))
+                          (shape-drawer/set-color! shape-drawer color-float-bits)
+                          (shape-drawer/filled-circle! shape-drawer x y radius))
    :draw/filled-rectangle (fn [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-                             (shape-drawer/setColor shape-drawer color-float-bits)
-                             (shape-drawer/filledRectangle shape-drawer x y w h))
+                             (shape-drawer/set-color! shape-drawer color-float-bits)
+                             (shape-drawer/filled-rectangle! shape-drawer x y w h))
    :draw/grid (fn [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
                 (let [w (* (float gridw) (float cellw))
                       h (* (float gridh) (float cellh))
@@ -1606,13 +1606,13 @@
                     (draw! ctx
                            [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))
    :draw/line (fn [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
-                 (shape-drawer/setColor shape-drawer color-float-bits)
+                 (shape-drawer/set-color! shape-drawer color-float-bits)
                  (shape-drawer/line shape-drawer sx sy ex ey))
    :draw/rectangle (fn [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-                      (shape-drawer/setColor shape-drawer color-float-bits)
+                      (shape-drawer/set-color! shape-drawer color-float-bits)
                       (shape-drawer/rectangle shape-drawer x y w h))
    :draw/sector (fn [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
-                   (shape-drawer/setColor shape-drawer color-float-bits)
+                   (shape-drawer/set-color! shape-drawer color-float-bits)
                    (shape-drawer/sector shape-drawer center-x center-y radius start-radians radians))
    :draw/text (fn [{:keys [ctx/batch
                             ctx/unit-scale
@@ -1670,10 +1670,10 @@
                                 :as ctx}
                                width
                                draws]
-                           (let [old-line-width (shape-drawer/getDefaultLineWidth shape-drawer)]
-                             (shape-drawer/setDefaultLineWidth shape-drawer (* width old-line-width))
+                           (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
+                             (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
                              (draw! ctx draws)
-                             (shape-drawer/setDefaultLineWidth shape-drawer old-line-width)))})
+                             (shape-drawer/set-default-line-width! shape-drawer old-line-width)))})
 
 (defn draw!
   [ctx draws]
@@ -2660,8 +2660,8 @@
   (batch/set-color! batch 1 1 1 1)
   (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
   (batch/begin! batch)
-  (let [old-line-width (shape-drawer/getDefaultLineWidth shape-drawer)]
-    (shape-drawer/setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
+  (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
+    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
     (doseq [draw-fn [draw-tile-grid
                      draw-cell-debug
@@ -2669,7 +2669,7 @@
                      highlight-mouseover-tile]]
       (draw! ctx (draw-fn ctx)))
     (reset! unit-scale 1)
-    (shape-drawer/setDefaultLineWidth shape-drawer old-line-width))
+    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
   (batch/end! batch)
   ctx)
 
