@@ -7,7 +7,7 @@
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.touchable :as touchable]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
@@ -18,12 +18,12 @@
   (actor/new
    (fn [this _delta]
      (when-let [stage (actor/get-stage this)]
-       (label/setText label-widget (text-fn (:stage/ctx stage)))))
+       (label/set-text! label-widget (text-fn (:stage/ctx stage)))))
    (fn [_actor _batch _parent-alpha])))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
-   (let [label (label/new "" skin)
+   (let [label (label/create "" skin)
          sub-table (doto (table/new)
                      (moon-table/set-opts! {:table/rows [[{:actor (image/create-from-texture icon)}
                                                               label]]}))]
@@ -32,7 +32,7 @@
                        :right? true
                        :expand-x? true})))
   ([skin table text-fn]
-   (let [label (label/new "" skin)]
+   (let [label (label/create "" skin)]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (add-cell! table {:actor label
                        :right? true
@@ -72,7 +72,7 @@
                                                            :expand-x? true
                                                            :fill-x? true
                                                            :colspan 1}]
-                                                         [{:actor (doto (label/new "" skin)
+                                                         [{:actor (doto (label/create "" skin)
                                                                         (actor/set-touchable! touchable/disabled))
                                                            :expand? true
                                                            :fill-x? true

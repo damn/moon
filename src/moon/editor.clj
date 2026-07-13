@@ -30,7 +30,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
             [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
@@ -223,7 +223,7 @@
                                            (fn [event actor]
                                              (on-clicked actor (:stage/ctx (event/get-stage event))))))
                         (actor/add-listener! (text-tooltip/new tooltip skin)))
-                       (doto (label/new extra-info-text skin)
+                       (doto (label/create extra-info-text skin)
                          (actor/set-touchable! touchable/disabled))])
                 stack)})))
 
@@ -441,7 +441,7 @@
                                                                   (let [ctx (:stage/ctx (event/get-stage event))]
                                                                     (rebuild-editor-window! ctx)))))))
                             :left? true}
-                           {:actor (label/new (k-label-text k) skin)}]]}))
+                           {:actor (label/create (k-label-text k) skin)}]]}))
     :right? true}
    {:actor nil
     :pad-top 2
@@ -540,7 +540,7 @@
 
 (defmethod create-widget :default
   [_ v {:keys [ctx/skin]}]
-  (label/new (string/truncate (binding [*print-level* nil]
+  (label/create (string/truncate (binding [*print-level* nil]
                          (pr-str v))
                        60)
              skin))

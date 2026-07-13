@@ -34,7 +34,7 @@
             [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
@@ -1017,7 +1017,7 @@
                        (doto (doto (window/new title skin)
     (moon-table/set-opts! {:title title
                                :skin skin
-                               :table/rows [[{:actor (label/new text skin)}]
+                               :table/rows [[{:actor (label/create text skin)}]
                                             [{:actor (doto (text-button/new button-text skin)
                                                         (actor/add-listener!
                                                          (change-listener/create

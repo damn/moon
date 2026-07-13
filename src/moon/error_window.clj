@@ -2,7 +2,7 @@
   (:require [clojure.repl :as repl]
             [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
             [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
-            [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
+            [clojure.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]))
 
@@ -19,6 +19,6 @@
     (doto (doto (window/new "Error" skin)
                 (moon-table/set-opts! {:title "Error"
                                            :skin skin
-                                           :table/rows [[{:actor (label/new label-text skin)}]]}))
+                                           :table/rows [[{:actor (label/create label-text skin)}]]}))
           (add-close-button! skin)
           (gdx-window/setModal true))))
