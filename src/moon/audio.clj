@@ -1,7 +1,7 @@
 (ns moon.audio
   (:require [clojure.edn :as edn]
             [gdx.audio :as audio]
-            [gdx.audio.sound :as sound]
+            [gdx.sound :as sound]
             [gdx.files :as files]
             [gdx.utils.disposable :as disposable]
             [clojure.java.io :as io]))

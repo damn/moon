@@ -1,5 +1,7 @@
-(ns gdx.backends.lwjgl3.lwjgl3-application-configuration
-  (:require [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]))
+(ns gdx.application.lwjgl
+  (:require [gdx.application-listener :as application-listener]
+            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
+            [com.badlogic.gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]))
 
 (defn use-glfw-async! []
   (config/useGlfwAsync))
@@ -11,10 +13,16 @@
                                     (config/setWindowedMode config width height))
        :config/set-foreground-fps config/setForegroundFPS
        }]
-  (defn create [config-opts]
+  (defn- create-config [config-opts]
     (let [config (config/new)]
       (doseq [[k v] config-opts]
         (let [apply! (k->opts k)]
           (assert apply! (str "Unknown lwjgl3 config option: " k))
           (apply! config v)))
       config)))
+
+(defn create
+  [{:keys [application/config
+           application/listener]}]
+  (lwjgl3-application/new (application-listener/create listener)
+                          (create-config config)))

@@ -1,8 +1,7 @@
 (ns moon.game
   (:require [clojure.edn :as edn]
             [gdx.application :as application]
-            [gdx.backends.lwjgl3.lwjgl3-application :as lwjgl3-application]
-            [gdx.backends.lwjgl3.lwjgl3-application-configuration :as config]
+            [gdx.application.lwjgl :as lwjgl-application]
             [gdx.files :as files]
             [gdx.graphics.g2d.freetype.free-type-font-generator :as font-generator]
             [gdx.graphics.orthographic-camera :as orthographic-camera]
@@ -2990,8 +2989,8 @@
 (def state (atom nil))
 
 (defn -main []
-  (config/use-glfw-async!)
-  (lwjgl3-application/create
+  (lwjgl-application/use-glfw-async!)
+  (lwjgl-application/create
    {:application/listener {:create! (fn [application]
                                       (reset! state (create application)))
                            :dispose! (fn []
