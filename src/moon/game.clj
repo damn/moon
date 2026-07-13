@@ -814,30 +814,31 @@
   nil)
 
 (defn- state-enter-player-item-on-cursor
-  [{:keys [item]} eid]
+  [{:keys [item]} eid _ctx]
   (swap! eid assoc :entity/item-on-cursor item)
   nil)
 
 (defn- state-enter-active-skill
-  [{:keys [skill]} eid]
+  [{:keys [skill]} eid {:keys [ctx/elapsed-time]}]
   (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
-  [[:tx/sound (:skill/start-action-sound skill)]
-   [:tx/set-cooldown eid skill]])
+  (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
+         (timer/create elapsed-time (:skill/cooldown skill)))
+  [[:tx/sound (:skill/start-action-sound skill)]])
 
 (defn- state-enter-npc-dead
-  [_ eid]
+  [_ eid _ctx]
   (swap! eid assoc :entity/destroyed? true)
   nil)
 
 (defn- state-enter-player-moving
-  [{:keys [movement-vector]} eid]
+  [{:keys [movement-vector]} eid _ctx]
   (swap! eid assoc :entity/movement {:direction movement-vector
                                      :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                 0)})
   nil)
 
 (defn- state-enter-player-dead
-  [_ _eid]
+  [_ _eid _ctx]
   [[:tx/sound "bfxr_playerdeath"]
    [:tx/show-modal {:title "YOU DIED - again!"
                     :text "Good luck next time!"
@@ -845,7 +846,7 @@
                     :on-click (fn [])}]])
 
 (defn- state-enter-npc-moving
-  [{:keys [movement-vector]} eid]
+  [{:keys [movement-vector]} eid _ctx]
   (swap! eid assoc :entity/movement {:direction movement-vector
                                      :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                 0)})
@@ -968,12 +969,6 @@
          (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
        [(when (:entity/player? @eid)
           [:tx/ui-remove-item eid cell])]))
-
-   :tx/set-cooldown
-   (fn [{:keys [ctx/elapsed-time]} eid skill]
-     (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
-            (timer/create elapsed-time (:skill/cooldown skill)))
-     nil)
 
    :tx/set-item
    (fn [ctx eid cell item]
@@ -1112,7 +1107,7 @@
    :tx/state-enter
    (fn [ctx eid [state-k state-v]]
      (if-let [f (k->state-enter state-k)]
-       (f state-v eid)
+       (f state-v eid ctx)
        nil))
 
    :tx/state-exit
