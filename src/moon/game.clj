@@ -91,6 +91,51 @@
 
 (q/defrecord R [])
 
+(def schema
+  (malli-schema/create
+   [:map {:closed true}
+    [:ctx/input :some]
+    [:ctx/graphics :some]
+    [:ctx/audio :some]
+    [:ctx/batch :some]
+    [:ctx/cursors :some]
+    [:ctx/default-font :some]
+    [:ctx/unit-scale :some]
+    [:ctx/world-viewport :some]
+    [:ctx/shape-drawer :some]
+    [:ctx/shape-drawer-texture :some]
+    [:ctx/textures :some]
+    [:ctx/skin :some]
+    [:ctx/stage :some]
+    [:ctx/active-entities :any]
+    [:ctx/delta-time :any]
+    [:ctx/mouseover-eid :any]
+    [:ctx/ui-mouse-position :any]
+    [:ctx/world-mouse-position :any]
+    [:ctx/colors :some]
+    [:ctx/controls :some]
+    [:ctx/controls-info :some]
+    [:ctx/max-speed :some]
+    [:ctx/render-z-order :some]
+    [:ctx/content-grid :some]
+    [:ctx/entity-ids :some]
+    [:ctx/explored-tile-corners :some]
+    [:ctx/grid :some]
+    [:ctx/id-counter :some]
+    [:ctx/potential-field-cache :some]
+    [:ctx/raycaster :some]
+    [:ctx/start-position :some]
+    [:ctx/tiled-map :some]
+    [:ctx/db :some]
+    [:ctx/elapsed-time :some]
+    [:ctx/paused? :some]
+    [:ctx/player-eid :some]
+    [:ctx/show-potential-field-colors? :any]
+    [:ctx/show-cell-entities? :boolean]
+    [:ctx/show-cell-occupied? :boolean]
+    [:ctx/show-body-bounds? :boolean]
+    [:ctx/show-tile-grid? :boolean]]))
+
 (q/defrecord EntityRecord [entity/body])
 
 (q/defrecord BodyRecord [body/position
@@ -2390,51 +2435,6 @@
 (defn stage-ctx
   [{:keys [ctx/stage] :as ctx}]
   (or (:stage/ctx stage) ctx))
-
-(def schema
-  (malli-schema/create
-   [:map {:closed true}
-    [:ctx/input :some]
-    [:ctx/graphics :some]
-    [:ctx/audio :some]
-    [:ctx/batch :some]
-    [:ctx/cursors :some]
-    [:ctx/default-font :some]
-    [:ctx/unit-scale :some]
-    [:ctx/world-viewport :some]
-    [:ctx/shape-drawer :some]
-    [:ctx/shape-drawer-texture :some]
-    [:ctx/textures :some]
-    [:ctx/skin :some]
-    [:ctx/stage :some]
-    [:ctx/active-entities :any]
-    [:ctx/delta-time :any]
-    [:ctx/mouseover-eid :any]
-    [:ctx/ui-mouse-position :any]
-    [:ctx/world-mouse-position :any]
-    [:ctx/colors :some]
-    [:ctx/controls :some]
-    [:ctx/controls-info :some]
-    [:ctx/max-speed :some]
-    [:ctx/render-z-order :some]
-    [:ctx/content-grid :some]
-    [:ctx/entity-ids :some]
-    [:ctx/explored-tile-corners :some]
-    [:ctx/grid :some]
-    [:ctx/id-counter :some]
-    [:ctx/potential-field-cache :some]
-    [:ctx/raycaster :some]
-    [:ctx/start-position :some]
-    [:ctx/tiled-map :some]
-    [:ctx/db :some]
-    [:ctx/elapsed-time :some]
-    [:ctx/paused? :some]
-    [:ctx/player-eid :some]
-    [:ctx/show-potential-field-colors? :any]
-    [:ctx/show-cell-entities? :boolean]
-    [:ctx/show-cell-occupied? :boolean]
-    [:ctx/show-body-bounds? :boolean]
-    [:ctx/show-tile-grid? :boolean]]))
 
 (defn render-validate [ctx]
   (malli-schema/validate-humanize schema ctx)
