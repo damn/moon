@@ -912,6 +912,12 @@
                                    :tooltip-text (item/info-text item)}
                                   skin))))
 
+(defn- ui-remove-item! [ctx cell]
+  (-> (:ctx/stage ctx)
+      :stage/root
+      (#(group/find-actor % "moon.ui.windows.inventory"))
+      (inventory-window/remove-item! cell)))
+
 (def tx-fn-map
   {   :tx/add-skill
    (fn [ctx eid {:keys [property/id] :as skill}]
@@ -988,8 +994,9 @@
        (swap! eid assoc-in (cons :entity/inventory cell) nil)
        (when (inventory-cell/applies-modifiers? cell)
          (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
-       [(when (:entity/player? @eid)
-          [:tx/ui-remove-item eid cell])]))
+       (when (:entity/player? @eid)
+         (ui-remove-item! ctx cell))
+       nil))
 
    :tx/set-item
    (fn [ctx eid cell item]
@@ -1142,15 +1149,7 @@
    (fn [{:keys [ctx/stage]}]
      (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
        (actor/set-visible! inventory (not (actor/visible? inventory)))
-       nil))
-
-   :tx/ui-remove-item
-   (fn [{:keys [ctx/stage]} _eid cell]
-     (-> stage
-         :stage/root
-         (#(group/find-actor % "moon.ui.windows.inventory"))
-         (inventory-window/remove-item! cell))
-     nil)})
+       nil)) } )
 
 (defn do!
   [ctx txs]
