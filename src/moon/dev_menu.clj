@@ -1,11 +1,10 @@
 (ns moon.dev-menu
   (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table :refer [add-cell!]]
-            [clojure.gdx.scenes.scene2d.stage :as moon-stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
@@ -46,7 +45,7 @@
                                                             (doto (text-button/new label skin)
                                                               (actor/add-listener! (change-listener/create
                                                                                   (fn [event actor]
-                                                                                    (stage/addActor (event/get-stage event)
+                                                                                    (stage/add-actor! (event/get-stage event)
                                                                                                     (doto (doto (window/new label skin)
                                                                                                                 (moon-table/set-opts! {:title label
                                                                                                                                            :skin skin
@@ -56,7 +55,7 @@
                                                                                                                                                             (actor/add-listener! (change-listener/create
                                                                                                                                                                                 (fn [event actor]
                                                                                                                                                                                   (let [stage (event/get-stage event)]
-                                                                                                                                                                                    (moon-stage/set-ctx! stage
+                                                                                                                                                                                    (stage/set-ctx! stage
                                                                                                                                                                                                          (on-click (:stage/ctx stage))))))))})]}))
                                                                                                               (add-close-button! skin)))))))})]}))]
     (doseq [{:keys [label update-fn icon]} update-labels]

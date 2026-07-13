@@ -7,7 +7,7 @@
             [moon.schema.register-methods]
             [moon.textures :as textures]
             [moon.audio :as audio]
-            [clojure.gdx.scenes.scene2d.stage :as moon-stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.actor :as actor :refer [find-ancestor]]
             [moon.schemas :refer [default-value map-keys optional-keyset optional?]]
             [clojure.set :as set]
@@ -27,7 +27,6 @@
             [clojure.gdx.input :as input]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
@@ -184,7 +183,7 @@
   (fn [{:keys [ctx/skin
                ctx/stage]
         :as ctx}]
-    (stage/addActor stage
+    (stage/add-actor! stage
                       (doto (doto (window/new "Choose" skin)
     (moon-table/set-opts! {:title "Choose"
                               :skin skin
@@ -261,11 +260,11 @@
     (try
      (let [new-ctx (update ctx :ctx/db f)
            stage (actor/get-stage actor)]
-       (moon-stage/set-ctx! stage new-ctx))
+       (stage/set-ctx! stage new-ctx))
      (actor/remove! (find-ancestor actor (partial instance? window/class)))
      (catch Throwable t
        (throwable/pretty-pst t)
-       (stage/addActor stage
+       (stage/add-actor! stage
                          (error-window/create
                           {:type :ui/error-window
                            :skin skin
@@ -342,7 +341,7 @@
                                                           ctx/stage
                                                           ctx/textures]
                                                    :as ctx} (:stage/ctx (event/get-stage event))]
-                                              (stage/addActor
+                                              (stage/add-actor!
                                                stage
                                                (property-overview-window
                                                 {:db db
@@ -386,7 +385,7 @@
                                                             ctx/stage
                                                             ctx/textures]
                                                      :as ctx} (:stage/ctx (event/get-stage event))]
-                                                (stage/addActor
+                                                (stage/add-actor!
                                                  stage
                                                  (property-overview-window
                                                   {:db db
@@ -418,7 +417,7 @@
         map-widget-table (group/find-actor window "moon.db.schema.map.ui.widget")
         property (map-widget-table-get-value map-widget-table (:db/schemas db))]
     (actor/remove! window)
-    (stage/addActor stage
+    (stage/add-actor! stage
                       (property-editor-window
                        {:ctx ctx
                         :property property}))))
@@ -521,7 +520,7 @@
                                                       (let [{:keys [ctx/db
                                                                     ctx/stage
                                                                     ctx/skin]} (:stage/ctx (event/get-stage event))]
-                                                        (stage/addActor
+                                                        (stage/add-actor!
                                                          stage
                                                          (add-component-window
                                                           {:skin skin
@@ -659,14 +658,14 @@
                                                                                                 ctx/stage
                                                                                                 ctx/textures]
                                                                                          :as ctx} (:stage/ctx (event/get-stage event))]
-                                                                                    (stage/addActor stage
+                                                                                    (stage/add-actor! stage
                                                                                                     (property-overview-window
                                                                                                      {:db db
                                                                                                       :textures textures
                                                                                                       :skin skin
                                                                                                       :property-type property-type
                                                                                                       :clicked-id-fn (fn [_actor id {:keys [ctx/stage] :as ctx}]
-                                                                                                                       (stage/addActor stage
+                                                                                                                       (stage/add-actor! stage
                                                                                                                                        (property-editor-window
                                                                                                                                         {:ctx ctx
                                                                                                                                          :property (db/get-raw db id)})))})))))))}])})))
@@ -699,10 +698,10 @@
 
 (defn- stage-f [{:keys [ctx/input
                         ctx/batch] :as ctx}]
-  (let [stage* (moon-stage/create (fit-viewport/new 1440 900) batch)]
+  (let [stage* (stage/create (fit-viewport/new 1440 900) batch)]
     (input/set-processor! input stage*)
     (let [ctx (assoc ctx :ctx/stage stage*)]
-      (stage/addActor (:ctx/stage ctx) (main-window-f ctx))
+      (stage/add-actor! (:ctx/stage ctx) (main-window-f ctx))
       ctx)))
 
 (defn- textures-f [{:keys [ctx/files] :as ctx}]
@@ -743,9 +742,9 @@
         ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
-    (moon-stage/set-ctx! stage ctx)
-    (stage/act stage)
-    (stage/draw stage)
+    (stage/set-ctx! stage ctx)
+    (stage/act! stage)
+    (stage/draw! stage)
     (:stage/ctx stage)))
 
 (defn resize [{:keys [ctx/stage]} width height]

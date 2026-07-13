@@ -7,7 +7,7 @@
             [moon.level.uf-caves :as uf-caves]
             [moon.schema.register-methods]
             [moon.textures :as textures]
-            [clojure.gdx.scenes.scene2d.stage :as moon-stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
             [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [clojure.gdx.files :as files]
@@ -20,7 +20,6 @@
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
@@ -85,7 +84,7 @@
         ui-viewport (fit-viewport/new (:ui-viewport-width config)
                                       (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))
-        stage (moon-stage/create ui-viewport sprite-batch)
+        stage (stage/create ui-viewport sprite-batch)
         skin (skin/new (files/internal files (:ui-skin-path config)))
         world-viewport (let [world-width (* (:world-viewport-width config) world-unit-scale)
                              world-height (* (:world-viewport-height config) world-unit-scale)]
@@ -107,7 +106,7 @@
              :ctx/camera (viewport/getCamera world-viewport)}
         ctx (generate-level ctx (:initial-level-fn config))]
     (input/set-processor! input stage)
-    (stage/addActor (:ctx/stage ctx)
+    (stage/add-actor! (:ctx/stage ctx)
                     (doto (window/new "Edit" skin)
                       (moon-table/set-opts! {:title "Edit"
                                                  :skin skin
@@ -168,8 +167,8 @@
       (apply-position 1 +))
     (when (input/key-pressed? input :input.keys/down)
       (apply-position 1 -)))
-  (stage/act stage)
-  (stage/draw stage)
+  (stage/act! stage)
+  (stage/draw! stage)
   ctx)
 
 (defn resize

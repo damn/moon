@@ -19,3 +19,12 @@
 
 (defn add-actor! [stage actor]
   (stage/addActor stage actor))
+
+(defn hit [stage x y touchable?]
+  (stage/hit stage x y touchable?))
+
+(defn act! [stage]
+  (stage/act stage))
+
+(defn draw! [stage]
+  (stage/draw stage))

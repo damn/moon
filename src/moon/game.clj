@@ -11,7 +11,7 @@
             [clojure.gdx.maps.map-properties :as map-properties]
             [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.stage :as moon-stage]
+            [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.button :refer [is?]]
             [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
             [clojure.gdx.scenes.scene2d.ui.window :refer [title-bar?]]
@@ -34,7 +34,6 @@
             [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]
             [clojure.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.stage :as stage]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
@@ -1014,7 +1013,7 @@
    (fn [{:keys [ctx/skin ctx/stage] :as _ctx}
         {:keys [title text button-text on-click]}]
      (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
-     (stage/addActor stage
+     (stage/add-actor! stage
                        (doto (doto (window/new title skin)
     (moon-table/set-opts! {:title title
                                :skin skin
@@ -1272,7 +1271,7 @@
                         ; skin & stage
                         ; :moon.game/ui
                         ; moon.game.ui/data-viweer-window?
-                        (stage/addActor stage
+                        (stage/add-actor! stage
                                         (data-viewer-window/create
                                          {:title "Data View"
                                           :data ctx
@@ -2263,7 +2262,7 @@
 
 (defn create-stage [{:keys [ctx/input
                             ctx/batch] :as ctx}]
-  (let [stage* (moon-stage/create (fit-viewport/new 1440 900) batch)]
+  (let [stage* (stage/create (fit-viewport/new 1440 900) batch)]
     (input/set-processor! input stage*)
     (assoc ctx :ctx/stage stage*)))
 
@@ -2351,7 +2350,7 @@
                                       inventory-window-create])
                  (player-state-draw-create)
                  (player-message-actor-create)]]
-    (stage/addActor stage actor))
+    (stage/add-actor! stage actor))
   ctx)
 
 (defn create-tiled-map [ctx]
@@ -2490,7 +2489,7 @@
   (when (input/button-just-pressed? input (:open-debug-button controls))
     (let [data (or (and mouseover-eid @mouseover-eid)
                    @(grid (mapv int world-mouse-position)))]
-      (stage/addActor stage
+      (stage/add-actor! stage
                         (data-viewer-window/create
                          {:title "Data View"
                           :data data
@@ -2841,7 +2840,7 @@
                  active-entities))
     (catch Throwable t
       (throwable/pretty-pst t)
-      (stage/addActor stage
+      (stage/add-actor! stage
                         (error-window/create
                          {:skin skin
                           :throwable t}))))
@@ -2909,9 +2908,9 @@
 
 (defn update-draw-stage
   [{:keys [ctx/stage] :as ctx}]
-  (moon-stage/set-ctx! stage ctx)
-  (stage/act stage)
-  (stage/draw stage)
+  (stage/set-ctx! stage ctx)
+  (stage/act! stage)
+  (stage/draw! stage)
   (:stage/ctx stage))
 
 (defn create [application]
