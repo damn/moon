@@ -40,7 +40,7 @@
     (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
-(defn- ->cell [draw! on-click-cell slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
+(defn- ->cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
@@ -52,15 +52,15 @@
                    (let [{:keys [ctx/player-eid
                                  ctx/ui-mouse-position]
                           :as ctx} (:stage/ctx stage)]
-                     (draw! ctx
-                            (draw-cell-rect @player-eid
-                                            (actor/get-x this)
-                                            (actor/get-y this)
-                                            (let [[x y] (vector2/clojurize
-                                                         (actor/stage-to-local-coordinates this
-                                                                                          (vector2/new ui-mouse-position)))]
-                                              (actor/hit this x y true))
-                                            (actor/get-user-object (actor/get-parent this))))))))
+                     (draw-cell-rect! ctx
+                                      @player-eid
+                                      (actor/get-x this)
+                                      (actor/get-y this)
+                                      (let [[x y] (vector2/clojurize
+                                                   (actor/stage-to-local-coordinates this
+                                                                                    (vector2/new ui-mouse-position)))]
+                                        (actor/hit this x y true))
+                                      (actor/get-user-object (actor/get-parent this)))))))
               (doto (image/create-drawable background-drawable)
                 (actor/set-name! "image-widget")
                 (actor/set-user-object! {:background-drawable background-drawable
@@ -75,11 +75,8 @@
          (actor/set-user-object! cell)))}))
 
 (defn inventory-window-build
-  [{:keys [draw!
-           on-click-cell
-           item-rect-color
-           droppable-item-color
-           not-allowed-drop-item-color
+  [{:keys [on-click-cell
+           draw-cell-rect!
            skin
            position
            slot->texture-region
@@ -88,16 +85,7 @@
                          (doto (texture-region-drawable/create (slot->texture-region slot))
                            (texture-region-drawable/set-min-size! cell-size cell-size)
                            (texture-region-drawable/tint! (color/create [1 1 1 0.4]))))
-        draw-cell-rect (fn [player-entity x y mouseover? cell]
-                         [[:draw/rectangle x y cell-size cell-size item-rect-color]
-                          (when (and mouseover?
-                                     (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                            (let [item (:entity/item-on-cursor player-entity)
-                                  color (if (inventory-cell/valid-slot? cell item)
-                                          droppable-item-color
-                                          not-allowed-drop-item-color)]
-                              [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
-        ->cell (partial ->cell draw! on-click-cell slot->drawable draw-cell-rect cell-size)
+        ->cell (partial ->cell on-click-cell slot->drawable draw-cell-rect! cell-size)
         window (doto (window/create {:title "Inventory"
                                      :skin skin
                                      :table/rows [[{:actor (doto (table/create

@@ -210,7 +210,10 @@
     k))
 
 (declare handle-fsm-event! spawn-creature! audiovisual!
-         spawn-alert! spawn-item! spawn-line! spawn-projectile! apply-effects!)
+         spawn-alert! spawn-item! spawn-line! spawn-projectile! apply-effects!
+         draw-fn-circle draw-fn-ellipse draw-fn-filled-circle draw-fn-filled-rectangle
+         draw-fn-line draw-fn-sector draw-fn-text draw-fn-texture-region
+         draw-with-line-width!)
 
 (defmethod handle-effect :effects/audiovisual
   [[_ audiovisual] {:keys [effect/target-position]} ctx]
@@ -1277,14 +1280,14 @@
         image-width 32]
     (/ (/ image-width tile-size) 2)))
 
-(defn- render-image
-  [image {:keys [entity/body]} {:keys [ctx/textures]}]
-  [[:draw/texture-region
-    (textures/texture-region textures image)
-    (:body/position body)
-    {:center? true
-     :rotation (or (:body/rotation-angle body)
-                   0)}]])
+(defn- draw-entity-image!
+  [image entity ctx]
+  (draw-fn-texture-region ctx
+                          (textures/texture-region (:ctx/textures ctx) image)
+                          (:body/position (:entity/body entity))
+                          {:center? true
+                           :rotation (or (:body/rotation-angle (:entity/body entity))
+                                         0)}))
 
 (defn- render-clickable
   [{:keys [text]}
@@ -1293,10 +1296,10 @@
    _ctx]
   (when (and mouseover? text)
     (let [[x y] (:body/position body)]
-      [[:draw/text {:text text
-                    :x x
-                    :y (+ y (/ (:body/height body) 2))
-                    :up? true}]])))
+      (draw-fn-text _ctx {:text text
+                          :x x
+                          :y (+ y (/ (:body/height body) 2))
+                          :up? true}))))
 
 (defn- render-animation
   [{:keys [frames
@@ -1304,48 +1307,47 @@
            frame-duration]}
    entity
    ctx]
-  (render-image (frames (min (int (/ (float cnt) (float frame-duration)))
-                               (dec (count frames))))
-                entity
-                ctx))
+  (draw-entity-image! (frames (min (int (/ (float cnt) (float frame-duration)))
+                                    (dec (count frames))))
+                      entity
+                      ctx))
 
 (defn- render-line-render
   [{:keys [thick? end color]}
    {:keys [entity/body]}
-   _ctx]
+   ctx]
   (let [position (:body/position body)]
     (if thick?
-      [[:draw/with-line-width
-        4
-        [[:draw/line position end color]]]]
-      [[:draw/line position end color]])))
+      (draw-with-line-width! ctx 4 #(draw-fn-line % position end color))
+      (draw-fn-line ctx position end color))))
 
 (defn- render-mouseover
   [_
    {:keys [entity/body
            entity/faction]}
    {:keys [ctx/colors
-           ctx/player-eid]}]
-  (let [player @player-eid]
-    [[:draw/with-line-width 5
-      [[:draw/ellipse
-        (:body/position body)
-        (/ (:body/width  body) 2)
-        (/ (:body/height body) 2)
-        (cond (= faction (faction/enemy (:entity/faction player)))
-              (:colors/enemy-color colors)
-              (= faction (:entity/faction player))
-              (:colors/friendly-color colors)
-              :else
-              (:colors/neutral-color colors))]]]]))
+           ctx/player-eid]
+    :as ctx}]
+  (let [player @player-eid
+        color (cond (= faction (faction/enemy (:entity/faction player)))
+                    (:colors/enemy-color colors)
+                    (= faction (:entity/faction player))
+                    (:colors/friendly-color colors)
+                    :else
+                    (:colors/neutral-color colors))]
+    (draw-with-line-width! ctx 5
+                           #(draw-fn-ellipse % (:body/position body)
+                                              (/ (:body/width body) 2)
+                                              (/ (:body/height body) 2)
+                                              color))))
 
 (defn- render-npc-sleeping
-  [_ {:keys [entity/body]} _ctx]
+  [_ {:keys [entity/body]} ctx]
   (let [[x y] (:body/position body)]
-    [[:draw/text {:text "zzz"
-                  :x x
-                  :y (+ y (/ (:body/height body) 2))
-                  :up? true}]]))
+    (draw-fn-text ctx {:text "zzz"
+                       :x x
+                       :y (+ y (/ (:body/height body) 2))
+                       :up? true})))
 
 (defn- render-player-item-on-cursor
   [{:keys [item]}
@@ -1353,13 +1355,13 @@
    {:keys [ctx/textures]
     :as ctx}]
   (when-not (mouseover-actor ctx)
-    [[:draw/texture-region
-      (textures/texture-region textures (:entity/image item))
-      (item-place-position ctx entity)
-      {:center? true}]]))
+    (draw-fn-texture-region ctx
+                            (textures/texture-region textures (:entity/image item))
+                            (item-place-position ctx entity)
+                            {:center? true})))
 
 (defn- render-stats
-  [_ entity {:keys [ctx/colors]}]
+  [_ entity {:keys [ctx/colors] :as ctx}]
   (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [body/position body/width body/height]} (:entity/body entity)
@@ -1368,38 +1370,32 @@
             y (+ y (/ height 2))
             height (* 5 world-unit-scale)
             border (* 1 world-unit-scale)]
-        [[:draw/filled-rectangle x y width height (:colors/hp-bar-rect colors)]
-         [:draw/filled-rectangle
-          (+ x border)
-          (+ y border)
-          (- (* width ratio) (* 2 border))
-          (- height          (* 2 border))
-          ((:colors/hp-bar colors) ratio)]]))))
+        (draw-fn-filled-rectangle ctx x y width height (:colors/hp-bar-rect colors))
+        (draw-fn-filled-rectangle ctx
+                                  (+ x border)
+                                  (+ y border)
+                                  (- (* width ratio) (* 2 border))
+                                  (- height (* 2 border))
+                                  ((:colors/hp-bar colors) ratio))))))
 
 (defn- render-string-effect
-  [{:keys [text]} entity _ctx]
+  [{:keys [text]} entity ctx]
   (let [[x y] (:body/position (:entity/body entity))]
-    [[:draw/text {:text text
-                  :x x
-                  :y (+ y
-                        (/ (:body/height (:entity/body entity)) 2)
-                        (* 5 world-unit-scale))
-                  :scale 2
-                  :up? true}]]))
+    (draw-fn-text ctx {:text text
+                       :x x
+                       :y (+ y
+                             (/ (:body/height (:entity/body entity)) 2)
+                             (* 5 world-unit-scale))
+                       :scale 2
+                       :up? true})))
 
 (defn- render-stunned
-  [_ {:keys [entity/body]} {:keys [ctx/colors]}]
-  [[:draw/circle
-    (:body/position body)
-    0.5
-    (:colors/stunned colors)]])
+  [_ {:keys [entity/body]} {:keys [ctx/colors] :as ctx}]
+  (draw-fn-circle ctx (:body/position body) 0.5 (:colors/stunned colors)))
 
 (defn- render-temp-modifier
-  [_ entity {:keys [ctx/colors]}]
-  [[:draw/filled-circle
-    (:body/position (:entity/body entity))
-    0.5
-    (:colors/temp-modifier colors)]])
+  [_ entity {:keys [ctx/colors] :as ctx}]
+  (draw-fn-filled-circle ctx (:body/position (:entity/body entity)) 0.5 (:colors/temp-modifier colors)))
 
 (defmulti effect-render
   (fn [[k _v] _effect-ctx _ctx]
@@ -1414,27 +1410,28 @@
    {:keys [effect/source]}
    {:keys [ctx/active-entities
            ctx/colors
-           ctx/raycaster]}]
+           ctx/raycaster]
+    :as ctx}]
   (let [source* @source]
-    (for [target* (map deref (affected-targets active-entities raycaster source*))]
-      [:draw/line
-       (:body/position (:entity/body source*))
-       (:body/position (:entity/body target*))
-       (:colors/target-all-render colors)])))
+    (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
+      (draw-fn-line ctx
+                    (:body/position (:entity/body source*))
+                    (:body/position (:entity/body target*))
+                    (:colors/target-all-render colors)))))
 
 (defmethod effect-render :effects/target-entity
   [[_ {:keys [maxrange]}]
    {:keys [effect/source effect/target]}
-   {:keys [ctx/colors]}]
+   {:keys [ctx/colors] :as ctx}]
   (when target
     (let [body        (:entity/body @source)
           target-body (:entity/body @target)]
-      [[:draw/line
-        (body/start-point body target-body)
-        (body/end-point body target-body maxrange)
-        (if (body/in-range? body target-body maxrange)
-          (:colors/target-entity-in-range colors)
-          (:colors/target-entity-not-in-range colors))]])))
+      (draw-fn-line ctx
+                    (body/start-point body target-body)
+                    (body/end-point body target-body maxrange)
+                    (if (body/in-range? body target-body maxrange)
+                      (:colors/target-entity-in-range colors)
+                      (:colors/target-entity-not-in-range colors))))))
 
 (defn- render-active-skill
   [{:keys [skill effect-ctx counter]}
@@ -1444,24 +1441,21 @@
            ctx/textures]
     :as ctx}]
   (let [{:keys [entity/image skill/effects]} skill
-        radius active-skill-radius]
-    (concat (let [action-counter-ratio (timer/ratio elapsed-time counter)
-                  texture-region (textures/texture-region textures image)
-                  [x y] (:body/position (:entity/body entity))
-                  y (+ (float y)
-                       (float (/ (:body/height (:entity/body entity)) 2))
-                       (float 0.15))
-                  center [x (+ y radius)]]
-              [[:draw/filled-circle center radius (:colors/active-skill-circle colors)]
-               [:draw/sector
-                center
-                radius
-                (math/to-radians 90)
-                (math/to-radians (* (float action-counter-ratio) 360))
-                (:colors/active-skill-sector colors)]
-               [:draw/texture-region texture-region [(- (float x) radius) y]]])
-            (mapcat #(effect-render % effect-ctx ctx)
-                    effects))))
+        radius active-skill-radius
+        action-counter-ratio (timer/ratio elapsed-time counter)
+        texture-region (textures/texture-region textures image)
+        [x y] (:body/position (:entity/body entity))
+        y (+ (float y)
+             (float (/ (:body/height (:entity/body entity)) 2))
+             (float 0.15))
+        center [x (+ y radius)]]
+    (draw-fn-filled-circle ctx center radius (:colors/active-skill-circle colors))
+    (draw-fn-sector ctx center radius (math/to-radians 90)
+                    (math/to-radians (* (float action-counter-ratio) 360))
+                    (:colors/active-skill-sector colors))
+    (draw-fn-texture-region ctx texture-region [(- (float x) radius) y])
+    (doseq [effect effects]
+      (effect-render effect effect-ctx ctx))))
 
 (defn tile-color-setter*
   [{:keys [ray-blocked?
@@ -1495,8 +1489,6 @@
                 (swap! explored-tile-corners assoc (mapv int position) true))
               visible-tile-color))))))
 
-(declare draw!)
-
 (defn- draw-fn-circle [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
   (shape-drawer/set-color! shape-drawer color-float-bits)
   (shape-drawer/circle shape-drawer x y radius))
@@ -1520,12 +1512,10 @@
         rightx (+ (float leftx) (float w))]
     (doseq [idx (range (inc (float gridw)))
             :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-      (draw! ctx
-             [[:draw/line [linex topy] [linex bottomy] color-float-bits]]))
+      (draw-fn-line ctx [linex topy] [linex bottomy] color-float-bits))
     (doseq [idx (range (inc (float gridh)))
             :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-      (draw! ctx
-             [[:draw/line [leftx liney] [rightx liney] color-float-bits]]))))
+      (draw-fn-line ctx [leftx liney] [rightx liney] color-float-bits))))
 
 (defn- draw-fn-line [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
   (shape-drawer/set-color! shape-drawer color-float-bits)
@@ -1593,39 +1583,18 @@
                    (or rotation 0))
       (batch/draw! batch texture-region x y w h))))
 
-(defn- draw-fn-with-line-width [{:keys [ctx/shape-drawer]
-                                  :as ctx}
-                                 width
-                                 draws]
-  (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
+(defn- draw-with-line-width! [ctx width draw-body]
+  (let [shape-drawer (:ctx/shape-drawer ctx)
+        old-line-width (shape-drawer/get-default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
-    (draw! ctx draws)
+    (draw-body ctx)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
-
-(def ^:private draw-fns
-  {:draw/circle draw-fn-circle
-   :draw/ellipse draw-fn-ellipse
-   :draw/filled-circle draw-fn-filled-circle
-   :draw/filled-rectangle draw-fn-filled-rectangle
-   :draw/grid draw-fn-grid
-   :draw/line draw-fn-line
-   :draw/rectangle draw-fn-rectangle
-   :draw/sector draw-fn-sector
-   :draw/text draw-fn-text
-   :draw/texture-region draw-fn-texture-region
-   :draw/with-line-width draw-fn-with-line-width})
-
-(defn draw!
-  [ctx draws]
-  (doseq [{k 0 :as component} draws
-          :when component]
-    (apply (get draw-fns k) ctx (rest component))))
 
 (def k->render
   {:entity/clickable render-clickable
    :player-item-on-cursor render-player-item-on-cursor
    :entity/animation render-animation
-   :entity/image render-image
+   :entity/image draw-entity-image!
    :entity/line-render render-line-render
    :entity/mouseover? render-mouseover
    :entity/stats render-stats
@@ -1657,33 +1626,30 @@
                     y-mana]
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
-        render-hpmana-bar (fn [x y content-file minmaxval name]
-                            [[:draw/texture-region rahmen-tex-reg [x y]]
-                             [:draw/texture-region
-                              (textures/texture-region textures
-                                                       {:image/file content-file
-                                                        :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
-                              [x y]]
-                             [:draw/text {:text (str (number/readable (minmaxval 0))
-                                                     "/"
-                                                     (minmaxval 1)
-                                                     " "
-                                                     name)
-                                          :x (+ x 75)
-                                          :y (+ y 2)
-                                          :up? true}]])
-        create-draws (fn [{:keys [ctx/player-eid]}]
-                       (let [stats (:entity/stats @player-eid)
-                             x (- x (/ rahmenw 2))]
-                         (concat
-                          (render-hpmana-bar x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
-                          (render-hpmana-bar x y-mana manacontent-file (stats/get-mana stats) "MP"))))]
+        draw-hpmana-bar! (fn [ctx x y content-file minmaxval name]
+                           (draw-fn-texture-region ctx rahmen-tex-reg [x y])
+                           (draw-fn-texture-region ctx
+                                                   (textures/texture-region textures
+                                                                            {:image/file content-file
+                                                                             :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
+                                                   [x y])
+                           (draw-fn-text ctx {:text (str (number/readable (minmaxval 0))
+                                                         "/"
+                                                         (minmaxval 1)
+                                                         " "
+                                                         name)
+                                              :x (+ x 75)
+                                              :y (+ y 2)
+                                              :up? true}))]
     (actor/new
      (fn [_actor _delta])
      (fn [this _batch _parent-alpha]
        (when-let [stage (actor/get-stage this)]
-         (draw! (:stage/ctx stage)
-                (create-draws (:stage/ctx stage))))))))
+         (let [ctx (:stage/ctx stage)
+               stats (:entity/stats @(:ctx/player-eid ctx))
+               bar-x (- x (/ rahmenw 2))]
+           (draw-hpmana-bar! ctx bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
+           (draw-hpmana-bar! ctx bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
 
 (defn- clicked-inventory-cell-player-idle
   [ctx eid cell]
@@ -1759,13 +1725,19 @@
                                              height]]
                                  (textures/texture-region textures
                                                           {:image/file "images/items.png"
-                                                           :image/bounds bounds})))]
+                                                           :image/bounds bounds})))
+        cell-size 48]
     (inventory-window/inventory-window-build
-     {:draw! draw!
-      :on-click-cell handle-clicked-inventory-cell
-      :item-rect-color (:colors/item-rect colors)
-      :droppable-item-color (:colors/droppable-item colors)
-      :not-allowed-drop-item-color (:colors/not-allowed-drop-item colors)
+     {:on-click-cell handle-clicked-inventory-cell
+      :draw-cell-rect! (fn [ctx player-entity x y mouseover? cell]
+                         (draw-fn-rectangle ctx x y cell-size cell-size (:colors/item-rect colors))
+                         (when (and mouseover?
+                                    (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                           (let [item (:entity/item-on-cursor player-entity)
+                                 color (if (inventory-cell/valid-slot? cell item)
+                                         (:colors/droppable-item colors)
+                                         (:colors/not-allowed-drop-item colors))]
+                             (draw-fn-filled-rectangle ctx (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
       :skin skin
       :position [(viewport/get-world-width (:stage/viewport stage))
                  (viewport/get-world-height (:stage/viewport stage))]
@@ -1809,10 +1781,10 @@
                  ctx/ui-mouse-position]
           :as ctx}]
   (when (mouseover-actor ctx)
-    [[:draw/texture-region
-      (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
-      ui-mouse-position
-      {:center? true}]]))
+    (draw-fn-texture-region ctx
+                            (textures/texture-region textures (:entity/image (:entity/item-on-cursor @eid)))
+                            ui-mouse-position
+                            {:center? true})))
 
 (defn player-state-draw-create []
   (actor/new
@@ -1821,7 +1793,7 @@
      (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/get-stage this))
            entity @player-eid
            state-k (:state (:entity/fsm entity))]
-       (draw! ctx (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx))))))
+       (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx)))))
 
 (defn player-message-actor-create []
   (let [message-duration-seconds 0.5]
@@ -1834,16 +1806,16 @@
                    (reset! state nil)))))
            (fn [this _batch _parent-alpha]
              (when-let [stage (actor/get-stage this)]
-               (draw! (:stage/ctx stage)
-                      [(let [state (actor/get-user-object this)
-                             vp-width (viewport/get-world-width (:stage/viewport stage))
-                             vp-height (viewport/get-world-height (:stage/viewport stage))]
-                         (when-let [text (:text @state)]
-                           [:draw/text {:x (/ vp-width 2)
-                                        :y (+ (/ vp-height 2) 200)
-                                        :text text
-                                        :scale 2.5
-                                        :up? true}]))]))))
+               (let [ctx (:stage/ctx stage)
+                     state (actor/get-user-object this)
+                     vp-width (viewport/get-world-width (:stage/viewport stage))
+                     vp-height (viewport/get-world-height (:stage/viewport stage))]
+                 (when-let [text (:text @state)]
+                   (draw-fn-text ctx {:x (/ vp-width 2)
+                                      :y (+ (/ vp-height 2) 200)
+                                      :text text
+                                      :scale 2.5
+                                      :up? true}))))))
       (actor/set-name! "player-message")
       (actor/set-user-object! (atom nil)))))
 
@@ -2529,18 +2501,18 @@
 
 (defn- draw-tile-grid
   [{:keys [ctx/world-viewport
-           ctx/show-tile-grid?]}]
-  (if show-tile-grid?
+           ctx/show-tile-grid?]
+    :as ctx}]
+  (when show-tile-grid?
     (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/get-camera world-viewport))]
-      [[:draw/grid
-        (int left-x)
-        (int bottom-y)
-        (inc (int (viewport/get-world-width world-viewport)))
-        (+ 2 (int (viewport/get-world-height world-viewport)))
-        1
-        1
-        (color/to-float-bits [1 1 1 0.8])]])
-    []))
+      (draw-fn-grid ctx
+                     (int left-x)
+                     (int bottom-y)
+                     (inc (int (viewport/get-world-width world-viewport)))
+                     (+ 2 (int (viewport/get-world-height world-viewport)))
+                     1
+                     1
+                     (color/to-float-bits [1 1 1 0.8])))))
 
 (defn- draw-cell-debug
   [{:keys [ctx/colors
@@ -2548,33 +2520,28 @@
            ctx/world-viewport
            ctx/show-potential-field-colors?
            ctx/show-cell-entities?
-           ctx/show-cell-occupied?]}]
-  (apply concat
-         (for [[x y] (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))
-               :let [cell (grid [x y])]
-               :when cell
-               :let [cell* @cell]]
-           [(when (and show-cell-entities? (seq (:entities cell*)))
-              [:draw/filled-rectangle x y 1 1 (:colors/debug-cell-entities colors)])
-            (when (and show-cell-occupied? (seq (:occupied cell*)))
-              [:draw/filled-rectangle x y 1 1 (:colors/debug-cell-occupied colors)])
-            (when-let [faction show-potential-field-colors?]
-              (let [{:keys [distance]} (faction cell*)]
-                (when distance
-                  (let [ratio (/ distance (factions-iterations faction))]
-                    [:draw/filled-rectangle x y 1 1 ((:colors/debug-potential-field colors) ratio)]))))])))
+           ctx/show-cell-occupied?]
+    :as ctx}]
+  (doseq [[x y] (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))
+          :let [cell (grid [x y])]
+          :when cell
+          :let [cell* @cell]]
+    (when (and show-cell-entities? (seq (:entities cell*)))
+      (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-entities colors)))
+    (when (and show-cell-occupied? (seq (:occupied cell*)))
+      (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-occupied colors)))
+    (when-let [faction show-potential-field-colors?]
+      (let [{:keys [distance]} (faction cell*)]
+        (when distance
+          (let [ratio (/ distance (factions-iterations faction))]
+            (draw-fn-filled-rectangle ctx x y 1 1 ((:colors/debug-potential-field colors) ratio))))))))
 
 (defn draw-entity-rectangle!
-  [ctx
-   entity
-   color-float-bits]
-  (draw! ctx
-         (let [{:keys [body/position
-                       body/width
-                       body/height]} (:entity/body entity)
-               [x y] [(- (position 0) (/ width  2))
-                      (- (position 1) (/ height 2))]]
-           [[:draw/rectangle x y width height color-float-bits]])))
+  [ctx entity color-float-bits]
+  (let [{:keys [body/position body/width body/height]} (:entity/body entity)
+        [x y] [(- (position 0) (/ width 2))
+               (- (position 1) (/ height 2))]]
+    (draw-fn-rectangle ctx x y width height color-float-bits)))
 
 (defn- draw-entities!
   [{:keys [ctx/active-entities
@@ -2605,7 +2572,7 @@
                                       (:colors/debug-body-outline colors))))
           (doseq [[k v] entity
                   :when (get render-layer k)]
-            (draw! ctx (draw-component ctx entity k v))))
+            (draw-component ctx entity k v)))
         (catch Throwable t
           (draw-entity-rectangle! ctx
                                   entity
@@ -2615,14 +2582,15 @@
 (defn- highlight-mouseover-tile
   [{:keys [ctx/colors
            ctx/grid
-           ctx/world-mouse-position]}]
+           ctx/world-mouse-position]
+    :as ctx}]
   (let [[x y] (mapv int world-mouse-position)
         cell (grid [x y])]
     (when (and cell (#{:air :none} (:movement @cell)))
-      [[:draw/rectangle x y 1 1
-        (case (:movement @cell)
-          :air (:colors/mouseover-tile-air colors)
-          :none (:colors/mouseover-tile-none colors))]])))
+      (draw-fn-rectangle ctx x y 1 1
+                         (case (:movement @cell)
+                           :air (:colors/mouseover-tile-air colors)
+                           :none (:colors/mouseover-tile-none colors))))))
 
 (defn draw-on-world-viewport
   [{:keys [ctx/batch
@@ -2640,7 +2608,7 @@
                      draw-cell-debug
                      draw-entities!
                      highlight-mouseover-tile]]
-      (draw! ctx (draw-fn ctx)))
+      (draw-fn ctx))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
   (batch/end! batch)
