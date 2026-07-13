@@ -25,9 +25,10 @@
             [gdx.disposable :as disposable]
             [gdx.viewport.fit :as fit-viewport]
             [gdx.viewport :as viewport]
+            [gdx.gdx :as gdx]
             [gdx.application :as application]
-            [gdx.application.lwjgl :as lwjgl-application]
-            [gdx.config :as config]))
+            [gdx.lwjgl3-application :as lwjgl3-application]
+            [gdx.lwjgl3-application-configuration :as config]))
 
 (def state (atom nil))
 
@@ -77,10 +78,11 @@
     ctx))
 
 (defn create
-  [state config application]
-  (let [files (application/get-files application)
-        input (application/get-input application)
-        graphics (application/get-graphics application)
+  [state config]
+  (let [app (gdx/app)
+        files (application/get-files app)
+        input (application/get-input app)
+        graphics (application/get-graphics app)
         sprite-batch (sprite-batch/create)
         ui-viewport (fit-viewport/create (:ui-viewport-width config)
                                       (:ui-viewport-height config))
@@ -181,18 +183,18 @@
 
 (defn -main []
   (config/use-glfw-async!)
-  (lwjgl-application/create
-   {:listener {:create! (fn [application]
-                          (reset! state (create state config application)))
-               :dispose! (fn []
-                           (dispose @state))
-               :render! (fn []
-                          (swap! state render))
-               :resize! (fn [width height]
-                          (resize @state width height))
-               :pause! (fn [])
-               :resume! (fn [])}
-    :config {:title "Levelgen Test"
-             :windowed-mode {:width 1440
-                                        :height 900}
-             :foreground-fps 60}}))
+  (let [        listener-spec {:create! (fn []
+                                  (reset! state (create state config)))
+                       :dispose! (fn []
+                                   (dispose @state))
+                       :render! (fn []
+                                 (swap! state render))
+                       :resize! (fn [width height]
+                                  (resize @state width height))
+                       :pause! (fn [])
+                       :resume! (fn [])}
+        configuration (doto (config/create)
+                      (config/set-title! "Levelgen Test")
+                      (config/set-windowed-mode! 1440 900)
+                      (config/set-foreground-fps! 60))]
+    (lwjgl3-application/create listener-spec configuration)))

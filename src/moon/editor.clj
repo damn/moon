@@ -44,9 +44,10 @@
             [gdx.disposable :as disposable]
             [gdx.viewport.fit :as fit-viewport]
             [gdx.viewport :as viewport]
+            [gdx.gdx :as gdx]
             [gdx.application :as application]
-            [gdx.application.lwjgl :as lwjgl-application]
-            [gdx.config :as config]))
+            [gdx.lwjgl3-application :as lwjgl3-application]
+            [gdx.lwjgl3-application-configuration :as config]))
 
 (defn k-label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
@@ -653,17 +654,17 @@
                                                                                                                                          {:ctx ctx
                                                                                                                                           :property (db/get-raw db id)})))})))))))}])})))
 
-(defn- input-f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/input (application/get-input app)))
+(defn- input-f [ctx]
+  (assoc ctx :ctx/input (application/get-input (gdx/app))))
 
-(defn- audio-f [{:keys [ctx/app ctx/files] :as ctx}]
-  (assoc ctx :ctx/audio (audio/create (application/get-audio app) files)))
+(defn- audio-f [{:keys [ctx/files] :as ctx}]
+  (assoc ctx :ctx/audio (audio/create (application/get-audio (gdx/app)) files)))
 
-(defn- files-f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/files (application/get-files app)))
+(defn- files-f [ctx]
+  (assoc ctx :ctx/files (application/get-files (gdx/app))))
 
-(defn- graphics-f [{:keys [ctx/app] :as ctx}]
-  (assoc ctx :ctx/graphics (application/get-graphics app)))
+(defn- graphics-f [ctx]
+  (assoc ctx :ctx/graphics (application/get-graphics (gdx/app))))
 
 (defn- batch-f [ctx]
   (assoc ctx :ctx/batch (sprite-batch/create)))
@@ -691,8 +692,8 @@
   (assoc ctx :ctx/textures (textures/create files {:folder "resources/"
                                                    :extensions #{"png" "bmp"}})))
 
-(defn create [application]
-  (-> {:ctx/app application}
+(defn create []
+  (-> {}
       input-f
       files-f
       audio-f
@@ -735,18 +736,18 @@
 
 (defn -main []
   (config/use-glfw-async!)
-  (lwjgl-application/create
-   {:listener {:create! (fn [application]
-                          (reset! state (create application)))
-               :dispose! (fn []
-                           (dispose @state))
-               :render! (fn []
-                          (swap! state render))
-               :resize! (fn [width height]
-                          (resize @state width height))
-               :pause! (fn [])
-               :resume! (fn [])}
-    :config {:title "!Editor!"
-             :windowed-mode {:width 1440
-                                        :height 900}
-             :foreground-fps 60}}))
+  (let [        listener-spec {:create! (fn []
+                                  (reset! state (create)))
+                       :dispose! (fn []
+                                   (dispose @state))
+                       :render! (fn []
+                                 (swap! state render))
+                       :resize! (fn [width height]
+                                  (resize @state width height))
+                       :pause! (fn [])
+                       :resume! (fn [])}
+        configuration (doto (config/create)
+                      (config/set-title! "!Editor!")
+                      (config/set-windowed-mode! 1440 900)
+                      (config/set-foreground-fps! 60))]
+    (lwjgl3-application/create listener-spec configuration)))

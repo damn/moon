@@ -12,8 +12,10 @@
             [gdx.actor.group.widget.table.window :as window]
             [gdx.actor.widget.label :as label]
             [gdx.align :as align]
+            [gdx.gdx :as gdx]
             [gdx.application :as application]
-            [gdx.application.lwjgl :as lwjgl-application]
+            [gdx.lwjgl3-application :as lwjgl3-application]
+            [gdx.lwjgl3-application-configuration :as config]
             [gdx.batch :as batch]
             [gdx.bitmap-font :as bitmap-font]
             [gdx.bitmap-font-data :as bitmap-font-data]
@@ -21,7 +23,6 @@
             [gdx.change-listener :as change-listener]
             [gdx.color :as color]
             [gdx.colors :as colors]
-            [gdx.config :as config]
             [gdx.disposable :as disposable]
             [gdx.files :as files]
             [gdx.free-type-font-generator :as font-generator]
@@ -1800,7 +1801,10 @@
              (float 0.15))
         center [x (+ y radius)]]
     (draw-fn-filled-circle ctx center radius (:colors/active-skill-circle colors))
-    (draw-fn-sector ctx center radius (math/to-radians 90)
+    (draw-fn-sector ctx
+                    center
+                    radius
+                    (math/to-radians 90)
                     (math/to-radians (* (float action-counter-ratio) 360))
                     (:colors/active-skill-sector colors))
     (draw-fn-texture-region ctx texture-region [(- (float x) radius) y])
@@ -2399,11 +2403,12 @@
     (f v eid ctx)
     nil))
 
-(defn create-bootstrap [application]
-  {:ctx/audio    (application/get-audio    application)
-   :ctx/files    (application/get-files    application)
-   :ctx/graphics (application/get-graphics application)
-   :ctx/input    (application/get-input    application)
+(defn create-bootstrap []
+  (let [app (gdx/app)]
+    {:ctx/audio    (application/get-audio    app)
+     :ctx/files    (application/get-files    app)
+     :ctx/graphics (application/get-graphics app)
+     :ctx/input    (application/get-input    app)
    :ctx/unit-scale (atom 1)
    :ctx/active-entities nil
    :ctx/delta-time nil
@@ -2419,7 +2424,7 @@
    :ctx/show-cell-entities? false
    :ctx/show-cell-occupied? false
    :ctx/show-body-bounds? false
-   :ctx/show-tile-grid? false})
+   :ctx/show-tile-grid? false}))
 
 (defn create-batch [ctx]
   (assoc ctx :ctx/batch (sprite-batch/create)))
@@ -3058,9 +3063,8 @@
     (stage/draw! stage)
     (:stage/ctx stage)))
 
-(defn create [application]
-  (-> application
-      create-bootstrap
+(defn create []
+  (-> (create-bootstrap)
       create-batch
       create-audio
       create-shape-drawer-texture
@@ -3128,9 +3132,9 @@
 
 (def state (atom nil))
 
-(def application-listener
-  {:create! (fn [application]
-              (reset! state (create application)))
+(def listener-spec
+  {:create! (fn []
+              (reset! state (create)))
    :dispose! (fn []
                (dispose @state))
    :render! (fn []
@@ -3140,14 +3144,10 @@
    :pause! (fn [])
    :resume! (fn [])})
 
-(def application-config
-  {:title "Moon"
-   :windowed-mode {:width 1440
-                              :height 900}
-   :foreground-fps 60} )
-
 (defn -main []
   (config/use-glfw-async!)
-  (lwjgl-application/create
-   {:listener application-listener
-    :config application-config}))
+  (let [configuration (doto (config/create)
+                     (config/set-title! "Moon")
+                     (config/set-windowed-mode! 1440 900)
+                     (config/set-foreground-fps! 60))]
+    (lwjgl3-application/create listener-spec configuration)))

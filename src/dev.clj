@@ -53,7 +53,7 @@
   (require '[moon.db :as db]
            '[moon.game :as game]
            '[gdx.application :as application]
-           '[gdx :as gdx])
+           '[gdx.gdx :as gdx])
   (application/post-runnable! (gdx/app)
                               (fn []
                                 (let [{:keys [ctx/db]
