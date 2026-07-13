@@ -8,7 +8,7 @@
             [clojure.gdx.scenes.scene2d.touchable :as touchable]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
@@ -39,7 +39,7 @@
 (defn- main-table [skin menus update-labels]
   (let [table (table/create {:table/rows [(for [{:keys [label items]} menus]
                                                            {:actor
-                                                            (doto (text-button/new label skin)
+                                                            (doto (text-button/create label skin)
                                                               (actor/add-listener! (change-listener/create
                                                                                   (fn [event actor]
                                                                                     (stage/add-actor! (event/get-stage event)
@@ -48,7 +48,7 @@
                                                                                                                                            :skin skin
                                                                                                                                            :table/rows [(for [{:keys [label on-click]} items]
                                                                                                                                                          {:actor
-                                                                                                                                                          (doto (text-button/new label skin)
+                                                                                                                                                          (doto (text-button/create label skin)
                                                                                                                                                             (actor/add-listener! (change-listener/create
                                                                                                                                                                                 (fn [event actor]
                                                                                                                                                                                   (let [stage (event/get-stage event)]

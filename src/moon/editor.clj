@@ -35,7 +35,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
             [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as ui-skin]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scenes.scene2d.touchable :as touchable]
@@ -158,12 +158,12 @@
     widget))
 
 (defn- sound-columns [skin table sound-name open-select-sounds-handler]
-  [{:actor (doto (text-button/new sound-name skin)
+  [{:actor (doto (text-button/create sound-name skin)
              (actor/add-listener! (change-listener/create
                                       (fn [event _actor]
                                         ((open-select-sounds-handler table)
                                          (:stage/ctx (event/get-stage event)))))))}
-   {:actor (doto (text-button/new "play!" skin)
+   {:actor (doto (text-button/create "play!" skin)
              (actor/add-listener! (change-listener/create
                                       (fn [event _actor]
                                         (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
@@ -189,11 +189,11 @@
                               :table/rows
                               [[(let [table (table/create {:table/cell-defaults {:pad 5}
                                                             :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
-                                                                          [{:actor (doto (text-button/new sound-name skin)
+                                                                          [{:actor (doto (text-button/create sound-name skin)
                                                                                          (actor/add-listener! (change-listener/create
                                                                                                               (fn [event actor]
                                                                                                                 ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
-                                                                           {:actor (doto (text-button/new "play!" skin)
+                                                                           {:actor (doto (text-button/create "play!" skin)
                                                                                          (actor/add-listener! (change-listener/create
                                                                                                               (fn [event _actor]
                                                                                                                 (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
@@ -285,12 +285,12 @@
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor (doto (text-button/new "Save [LIGHT_GRAY](ENTER)[]" skin)
+                          [{:actor (doto (text-button/create "Save [LIGHT_GRAY](ENTER)[]" skin)
                                      (actor/add-listener! (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
-                           {:actor (doto (text-button/new "Delete" skin)
+                           {:actor (doto (text-button/create "Delete" skin)
                                      (actor/add-listener! (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
@@ -330,7 +330,7 @@
                     (layout/pack (find-ancestor table (partial instance? window/class))))]
     (table/add-rows!
      table
-     [[{:actor (doto (text-button/new "+" skin)
+     [[{:actor (doto (text-button/create "+" skin)
                  (actor/add-listener! (change-listener/create
                                           (fn [event _actor]
                                             (let [{:keys [ctx/db
@@ -354,7 +354,7 @@
                     (actor/add-listener! (text-tooltip/new (property/tooltip property) skin))
                     (actor/set-user-object! property-id))}))
       (for [id property-ids]
-        {:actor (doto (text-button/new "-" skin)
+        {:actor (doto (text-button/create "-" skin)
                   (actor/add-listener! (change-listener/create
                                            (fn [event _actor]
                                              (redo-rows (:stage/ctx (event/get-stage event))
@@ -374,7 +374,7 @@
     (table/add-rows!
      table
      [[(when-not property-id
-         {:actor (doto (text-button/new "+" skin)
+         {:actor (doto (text-button/create "+" skin)
                    (actor/add-listener! (change-listener/create
                                             (fn [event _actor]
                                               (let [{:keys [ctx/db
@@ -398,7 +398,7 @@
                      (actor/add-listener! (text-tooltip/new (property/tooltip property) skin))
                      (actor/set-user-object! property-id))}))]
       [(when property-id
-         {:actor (doto (text-button/new "-" skin)
+         {:actor (doto (text-button/create "-" skin)
                    (actor/add-listener! (change-listener/create
                                             (fn [event _actor]
                                               (redo-rows (:stage/ctx (event/get-stage event))
@@ -427,7 +427,7 @@
            table]}]
   [{:actor (table/create {:table/cell-defaults {:pad 2}
                           :table/rows [[{:actor (when display-remove-component-button?
-                                     (doto (text-button/new "-" skin)
+                                     (doto (text-button/create "-" skin)
                                        (actor/add-listener! (change-listener/create
                                                                 (fn [event _actor]
                                                                   (actor/remove! (first (filter (fn [actor]
@@ -460,7 +460,7 @@
     (table/add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (doto (text-button/new (name k) skin)
+       [{:actor (doto (text-button/create (name k) skin)
                   (actor/add-listener! (change-listener/create
                                            (fn [event _actor]
                                              (actor/remove! window)
@@ -509,7 +509,7 @@
     (table/add-rows!
      table
      (concat [(when opt?
-                [{:actor (doto (text-button/new "Add component" skin)
+                [{:actor (doto (text-button/create "Add component" skin)
                            (actor/add-listener! (change-listener/create
                                                     (fn [event actor]
                                                       (let [{:keys [ctx/db
@@ -617,7 +617,7 @@
       (table/add-rows! table [(if sound-name
                            (sound-columns-fn skin table sound-name)
                            [{:actor
-                             (doto (text-button/new "No sound" skin)
+                             (doto (text-button/create "No sound" skin)
                                (actor/add-listener! (change-listener/create
                                                    (fn [event _actor]
                                                      ((open-select-fn table)
@@ -641,7 +641,7 @@
     (table/set-opts! {:title "Edit"
                                :skin skin
                                :table/rows (for [property-type (sort (db/property-types db))]
-                                             [{:actor (doto (text-button/new (str/capitalize (name property-type)) skin)
+                                             [{:actor (doto (text-button/create (str/capitalize (name property-type)) skin)
                                                             (actor/add-listener! (change-listener/create
                                                                                 (fn [event _actor]
                                                                                   (let [{:keys [ctx/db

@@ -36,7 +36,7 @@
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
@@ -1018,7 +1018,7 @@
     (table/set-opts! {:title title
                                :skin skin
                                :table/rows [[{:actor (label/create text skin)}]
-                                            [{:actor (doto (text-button/new button-text skin)
+                                            [{:actor (doto (text-button/create button-text skin)
                                                         (actor/add-listener!
                                                          (change-listener/create
                                                           (fn [_event _actor]

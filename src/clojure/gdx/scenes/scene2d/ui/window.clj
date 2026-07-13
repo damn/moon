@@ -1,14 +1,14 @@
 (ns clojure.gdx.scenes.scene2d.ui.window
   (:require [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
+            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [clojure.gdx.scenes.scene2d.ui.table :as table]))
 
 (defn add-close-button! [window skin]
   (table/add-cell! (window/getTitleTable window)
-             {:actor (doto (text-button/new "X" skin)
+             {:actor (doto (text-button/create "X" skin)
                        (actor/add-listener! (change-listener/create
                                            (fn [_event _actor]
                                              (actor/remove! window)))))}))
