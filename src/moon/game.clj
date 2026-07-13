@@ -940,6 +940,12 @@
       (#(group/find-actor % "moon.ui.windows.inventory"))
       (inventory-window/remove-item! cell)))
 
+(defn- toggle-inventory-visible! [ctx]
+  (let [inventory (-> (:ctx/stage ctx)
+                      :stage/root
+                      (group/find-actor "moon.ui.windows.inventory"))]
+    (actor/set-visible! inventory (not (actor/visible? inventory)))))
+
 (def tx-fn-map
   {   :tx/add-skill
    (fn [ctx eid {:keys [property/id] :as skill}]
@@ -1143,13 +1149,7 @@
    (fn [ctx eid [state-k state-v]]
      (if-let [f (k->state-exit state-k)]
        (f state-v eid ctx)
-       nil))
-
-   :tx/toggle-inventory-visible
-   (fn [{:keys [ctx/stage]}]
-     (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-       (actor/set-visible! inventory (not (actor/visible? inventory)))
-       nil)) } )
+       nil))} )
 
 (defn do!
   [ctx txs]
@@ -1883,19 +1883,21 @@
         (when (pos? (v2/length v))
           v)))))
 
-(defn- interaction-state->txs [[k params] stage player-eid]
-  (case k
-    :interaction-state/mouseover-actor nil
+(defn- interaction-state->txs [[k params] ctx player-eid]
+  (let [stage (:ctx/stage ctx)]
+    (case k
+      :interaction-state/mouseover-actor nil
 
-    :interaction-state/clickable-mouseover-eid
-    (let [{:keys [clicked-eid
-                  in-click-range?]} params]
-      (if in-click-range?
-        (case (:type (:entity/clickable @clicked-eid))
-          :clickable/player
-          [[:tx/toggle-inventory-visible]]
+      :interaction-state/clickable-mouseover-eid
+      (let [{:keys [clicked-eid
+                    in-click-range?]} params]
+        (if in-click-range?
+          (case (:type (:entity/clickable @clicked-eid))
+            :clickable/player
+            (do (toggle-inventory-visible! ctx)
+                nil)
 
-          :clickable/item
+            :clickable/item
           (let [item (:entity/item @clicked-eid)]
             (cond
              (-> stage
@@ -1931,18 +1933,17 @@
 
     :interaction-state/no-skill-selected
     [[:tx/sound "bfxr_denied"]
-     [:tx/show-message "No selected skill"]]))
+     [:tx/show-message "No selected skill"]])))
 
 (defn- handle-input-player-idle
   [player-eid {:keys [ctx/input
-                      ctx/interaction-state
-                      ctx/stage]
+                      ctx/interaction-state]
                :as ctx}]
   (if-let [movement-vector (player-movement-vector ctx)]
     [[:tx/event player-eid :movement-input movement-vector]]
     (when (input/button-just-pressed? input :input.buttons/left)
       (interaction-state->txs interaction-state
-                              stage
+                              ctx
                               player-eid))))
 
 (defn- handle-input-player-moving
@@ -2878,8 +2879,7 @@
          (run! #(actor/set-visible! % false))))
 
   (when (input/key-just-pressed? input (:toggle-inventory controls))
-    (let [inventory (group/find-actor (:stage/root stage) "moon.ui.windows.inventory")]
-      (actor/set-visible! inventory (not (actor/visible? inventory)))))
+    (toggle-inventory-visible! ctx))
 
   (when (input/key-just-pressed? input (:toggle-entity-info controls))
     (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
