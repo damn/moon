@@ -79,7 +79,7 @@
             [reduce-fsm :as fsm])
   (:gen-class))
 
-(q/defrecord R [])
+(q/defrecord Record [])
 
 (def schema
   (malli-schema/create
@@ -2305,7 +2305,7 @@
                              font)))
 
 (defn create-context [ctx]
-  (merge (map->R {}) ctx))
+  (merge (map->Record {}) ctx))
 
 (defn create-game-config [ctx]
   (-> ctx
