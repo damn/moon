@@ -1,4 +1,4 @@
-(ns gdx.files.file-handle
+(ns gdx.file-handle
   (:require [com.badlogic.gdx.files.file-handle :as file-handle]))
 
 (defn recursively-search [handle extensions]
