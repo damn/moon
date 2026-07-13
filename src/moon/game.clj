@@ -730,6 +730,53 @@
                                 :tooltip-text (info-text skill ctx)}
                                skin))))
 
+(defn- ui-set-item! [ctx cell item]
+  (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
+    (-> stage
+        :stage/root
+        (#(group/find-actor % "moon.ui.windows.inventory"))
+        (inventory-window/set-item! cell
+                                  {:texture-region (textures/texture-region textures (:entity/image item))
+                                   :tooltip-text (item/info-text item)}
+                                  skin))))
+
+(defn- set-item! [ctx eid cell item]
+  (let [entity @eid
+        inventory (:entity/inventory entity)]
+    (assert (and (nil? (get-in inventory cell))
+                 (inventory-cell/valid-slot? cell item)))
+    (swap! eid assoc-in (cons :entity/inventory cell) item)
+    (when (inventory-cell/applies-modifiers? cell)
+      (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
+    (when (:entity/player? @eid)
+      (ui-set-item! ctx cell item))))
+
+(defn- pickup-item! [ctx eid item]
+  (assert (item/valid? item))
+  (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
+    (assert cell)
+    (assert (or (item/stackable? item cell-item)
+                (nil? cell-item)))
+    (if (item/stackable? item cell-item)
+      (do #_(stack-item ctx eid cell item))
+      (set-item! ctx eid cell item))))
+
+(defn- ui-remove-item! [ctx cell]
+  (-> (:ctx/stage ctx)
+      :stage/root
+      (#(group/find-actor % "moon.ui.windows.inventory"))
+      (inventory-window/remove-item! cell)))
+
+(defn- remove-item! [ctx eid cell]
+  (let [entity @eid
+        item (get-in (:entity/inventory entity) cell)]
+    (assert item)
+    (swap! eid assoc-in (cons :entity/inventory cell) nil)
+    (when (inventory-cell/applies-modifiers? cell)
+      (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
+    (when (:entity/player? @eid)
+      (ui-remove-item! ctx cell))))
+
 (defn- after-create-fsm
   [{:keys [fsm initial-state]} eid ctx]
   (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
@@ -747,7 +794,7 @@
   nil)
 
 (defn- after-create-inventory
-  [items eid _ctx]
+  [items eid ctx]
   (swap! eid assoc :entity/inventory (->> #:inventory.slot{:bag      [6 4]
                                                           :weapon   [1 1]
                                                           :shield   [1 1]
@@ -762,8 +809,9 @@
                                              (map (fn [[slot [width height]]]
                                                     [slot (moon-g2d/create width height (constantly nil))]))
                                              (into {})))
-  (for [item items]
-    [:tx/pickup-item eid item]))
+  (doseq [item items]
+    (pickup-item! ctx eid item))
+  nil)
 
 (def k->after-create
   {:entity/fsm after-create-fsm
@@ -932,43 +980,6 @@
    :npc-sleeping state-exit-npc-sleeping
    :npc-moving state-exit-npc-moving})
 
-(defn- ui-set-item! [ctx cell item]
-  (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
-    (-> stage
-        :stage/root
-        (#(group/find-actor % "moon.ui.windows.inventory"))
-        (inventory-window/set-item! cell
-                                  {:texture-region (textures/texture-region textures (:entity/image item))
-                                   :tooltip-text (item/info-text item)}
-                                  skin))))
-
-(defn- set-item! [ctx eid cell item]
-  (let [entity @eid
-        inventory (:entity/inventory entity)]
-    (assert (and (nil? (get-in inventory cell))
-                 (inventory-cell/valid-slot? cell item)))
-    (swap! eid assoc-in (cons :entity/inventory cell) item)
-    (when (inventory-cell/applies-modifiers? cell)
-      (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
-    (when (:entity/player? @eid)
-      (ui-set-item! ctx cell item))))
-
-(defn- ui-remove-item! [ctx cell]
-  (-> (:ctx/stage ctx)
-      :stage/root
-      (#(group/find-actor % "moon.ui.windows.inventory"))
-      (inventory-window/remove-item! cell)))
-
-(defn- remove-item! [ctx eid cell]
-  (let [entity @eid
-        item (get-in (:entity/inventory entity) cell)]
-    (assert item)
-    (swap! eid assoc-in (cons :entity/inventory cell) nil)
-    (when (inventory-cell/applies-modifiers? cell)
-      (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
-    (when (:entity/player? @eid)
-      (ui-remove-item! ctx cell))))
-
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (:ctx/stage ctx)
                       :stage/root
@@ -1030,18 +1041,6 @@
                (swap! eid dissoc old-state-k)
                [[:tx/state-exit eid old-state-obj]
                 [:tx/state-enter eid new-state-obj]])))))
-
-   :tx/pickup-item
-   (fn [ctx eid item]
-     (assert (item/valid? item))
-     (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
-       (assert cell)
-       (assert (or (item/stackable? item cell-item)
-                   (nil? cell-item)))
-       (if (item/stackable? item cell-item)
-         (do #_(tx/stack-item ctx eid cell item))
-         (do (set-item! ctx eid cell item)
-             nil))))
 
    :tx/spawn-alert
    (fn [{:keys [ctx/elapsed-time]} position faction duration]
@@ -1902,7 +1901,8 @@
                 (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
                     (play-sound! ctx "bfxr_pickup")
-                    [[:tx/pickup-item player-eid item]])
+                    (pickup-item! ctx player-eid item)
+                    nil)
 
                 :else
                 (do (play-sound! ctx "bfxr_denied")
