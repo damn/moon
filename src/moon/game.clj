@@ -902,6 +902,16 @@
                                 :tooltip-text (info-text skill ctx)}
                                skin))))
 
+(defn- ui-set-item! [ctx cell item]
+  (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
+    (-> stage
+        :stage/root
+        (#(group/find-actor % "moon.ui.windows.inventory"))
+        (inventory-window/set-item! cell
+                                  {:texture-region (textures/texture-region textures (:entity/image item))
+                                   :tooltip-text (item/info-text item)}
+                                  skin))))
+
 (def tx-fn-map
   {   :tx/add-skill
    (fn [ctx eid {:keys [property/id] :as skill}]
@@ -990,8 +1000,9 @@
        (swap! eid assoc-in (cons :entity/inventory cell) item)
        (when (inventory-cell/applies-modifiers? cell)
          (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
-       [(when (:entity/player? @eid)
-          [:tx/ui-set-item eid cell item])]))
+       (when (:entity/player? @eid)
+         (ui-set-item! ctx cell item))
+       nil))
 
    :tx/show-message
    (fn [{:keys [ctx/stage] :as _ctx} message]
@@ -1139,17 +1150,6 @@
          :stage/root
          (#(group/find-actor % "moon.ui.windows.inventory"))
          (inventory-window/remove-item! cell))
-     nil)
-
-   :tx/ui-set-item
-   (fn [{:keys [ctx/skin ctx/stage ctx/textures] :as ctx} _eid cell item]
-     (-> stage
-         :stage/root
-         (#(group/find-actor % "moon.ui.windows.inventory"))
-         (inventory-window/set-item! cell
-                        {:texture-region (textures/texture-region textures (:entity/image item))
-                         :tooltip-text (item/info-text item)}
-                        skin))
      nil)})
 
 (defn do!
