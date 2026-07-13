@@ -1,30 +1,11 @@
 (ns gdx.actor.group.widget.table
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
-            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
+            [gdx.cell :as cell]
             [gdx.layout :as layout]))
-
-(defn- apply-cell-opts! [cell opts]
-  (doseq [[option arg] opts]
-    (case option
-      :fill-x?    (cell/fillX cell)
-      :fill-y?    (cell/fillY cell)
-      :expand?    (cell/expand cell)
-      :expand-x?  (cell/expandX cell)
-      :expand-y?  (cell/expandY cell)
-      :bottom?    (cell/bottom cell)
-      :colspan    (cell/colspan cell arg)
-      :pad        (cell/pad cell arg)
-      :pad-top    (cell/padTop cell arg)
-      :pad-bottom (cell/padBottom cell arg)
-      :width      (cell/width cell arg)
-      :height     (cell/height cell arg)
-      :center?    (cell/center cell)
-      :right?     (cell/right cell)
-      :left?      (cell/left cell))))
 
 (defn add-cell! [table cell-declaration]
   (-> (table/add table (:actor cell-declaration))
-      (apply-cell-opts! (dissoc cell-declaration :actor))))
+      (cell/set-opts! (dissoc cell-declaration :actor))))
 
 (defn add-rows! [table rows]
   (doseq [row rows]
@@ -43,7 +24,7 @@
                  (add-rows! table rows)
                  (layout/pack table))
    :table/cell-defaults (fn [table defaults]
-                          (apply-cell-opts! (table/defaults table) defaults))})
+                          (cell/set-opts! (table/defaults table) defaults))})
 
 (defn set-opts! [table opts]
   (doseq [[k v] opts :when (set-opt-fns k)]
