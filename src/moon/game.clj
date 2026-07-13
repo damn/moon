@@ -68,6 +68,7 @@
             [moon.m :as m]
             [moon.malli :as malli-schema]
             [moon.mods :as mods]
+            [moon.world :as world]
             [moon.number :as number]
             [moon.rand :as rand]
             [moon.raycaster :as raycaster]
@@ -125,11 +126,8 @@
     [:ctx/render-z-order :some]
 
     ; simulation / model / world (contains db?)
-    [:ctx/content-grid :some]
-    [:ctx/entity-ids :some]
+    [:ctx/world :some]
     [:ctx/explored-tile-corners :some]
-    [:ctx/grid :some]
-    [:ctx/id-counter :some]
     [:ctx/potential-field-cache :some]
     [:ctx/raycaster :some]
     [:ctx/start-position :some]
@@ -609,6 +607,10 @@
 
 ;; ctx accessors — enables us to change data layout without changing behaviour contract
 ;; docs/ctx-accessors.md  docs/destructuring-at-the-boundary.md
+
+(defn- get-world [ctx]
+  (:ctx/world ctx))
+
 (defn- get-input [ctx]
   (:ctx/input ctx))
 
@@ -679,19 +681,16 @@
   (:ctx/render-z-order ctx))
 
 (defn- get-content-grid [ctx]
-  (:ctx/content-grid ctx))
+  (world/get-content-grid (get-world ctx)))
 
 (defn- get-entity-ids [ctx]
-  (:ctx/entity-ids ctx))
+  (world/get-entity-ids (get-world ctx)))
 
 (defn- get-explored-tile-corners [ctx]
   (:ctx/explored-tile-corners ctx))
 
 (defn- get-grid [ctx]
-  (:ctx/grid ctx))
-
-(defn- get-id-counter [ctx]
-  (:ctx/id-counter ctx))
+  (world/get-grid (get-world ctx)))
 
 (defn- get-potential-field-cache [ctx]
   (:ctx/potential-field-cache ctx))
@@ -975,22 +974,7 @@
       [:mouseover-actor/unspecified])))
 
 (defn- register-eid! [ctx eid]
-  (assert (and (not (contains? @eid :entity/id))))
-  (let [id (swap! (get-id-counter ctx) inc)]
-    (assert (number? id))
-    (swap! eid assoc :entity/id id)
-    (swap! (get-entity-ids ctx) assoc id eid))
-
-  (assert (:entity/body @eid))
-  (content-grid/update-entity! (get-content-grid ctx) eid)
-
-  (assert (:entity/body @eid))
-  (when (:body/collides? (:entity/body @eid))
-    (assert (grid/valid-position? (get-grid ctx) (:entity/body @eid) (:entity/id @eid))))
-  (grid/set-touched-cells! (get-grid ctx) eid)
-  (when (:body/collides? (:entity/body @eid))
-    (grid/set-occupied-cells! (get-grid ctx) eid))
-  nil)
+  (world/register-eid! (get-world ctx) eid))
 
 (defn- spawn-entity! [ctx entity]
   (let [entity (reduce (fn [m [k v]]
@@ -2417,8 +2401,6 @@
    :ctx/paused? false
    :ctx/elapsed-time 0
    :ctx/potential-field-cache (atom nil)
-   :ctx/id-counter (atom 0)
-   :ctx/entity-ids (atom {})
    :ctx/show-potential-field-colors? nil
    :ctx/show-cell-entities? false
    :ctx/show-cell-occupied? false
@@ -2561,27 +2543,8 @@
            :ctx/tiled-map tiled-map
            :ctx/start-position start-position)))
 
-(defn create-grid [ctx]
-  (assoc ctx
-         :ctx/grid (moon-g2d/create (moon-tiled-map/get-property (get-tiled-map ctx) "width")
-                                    (moon-tiled-map/get-property (get-tiled-map ctx) "height")
-                                    (fn [position]
-                                      (atom
-                                       (cell/map->R
-                                        {:position position
-                                         :middle (mapv (partial + 0.5) position)
-                                         :movement (case (moon-tiled-map/movement-property (get-tiled-map ctx) position)
-                                                      "none" :none
-                                                      "air" :air
-                                                      "all" :all)
-                                         :entities #{}
-                                         :occupied #{}}))))))
-
-(defn create-content-grid [ctx]
-  (let [width (moon-tiled-map/get-property (get-tiled-map ctx) "width")
-        height (moon-tiled-map/get-property (get-tiled-map ctx) "height")
-        cell-size 16]
-    (assoc ctx :ctx/content-grid (content-grid/create width height cell-size))))
+(defn create-world [ctx]
+  (assoc ctx :ctx/world (world/create (get-tiled-map ctx))))
 
 (defn create-explored-tile-corners [ctx]
   (assoc ctx
@@ -3080,8 +3043,7 @@
       create-db
       create-stage-actors
       create-tiled-map
-      create-grid
-      create-content-grid
+      create-world
       create-explored-tile-corners
       create-raycaster
       create-spawn-player
