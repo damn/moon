@@ -598,6 +598,137 @@
           nil)
          :state initial-state))
 
+;; ctx accessors — enables us to change data layout without changing behaviour contract
+;; docs/ctx-accessors.md
+(defn- get-input [ctx]
+  (:ctx/input ctx))
+
+(defn- get-graphics [ctx]
+  (:ctx/graphics ctx))
+
+(defn- get-audio [ctx]
+  (:ctx/audio ctx))
+
+(defn- get-batch [ctx]
+  (:ctx/batch ctx))
+
+(defn- get-cursors [ctx]
+  (:ctx/cursors ctx))
+
+(defn- get-default-font [ctx]
+  (:ctx/default-font ctx))
+
+(defn- get-unit-scale [ctx]
+  (:ctx/unit-scale ctx))
+
+(defn- get-world-viewport [ctx]
+  (:ctx/world-viewport ctx))
+
+(defn- get-shape-drawer [ctx]
+  (:ctx/shape-drawer ctx))
+
+(defn- get-shape-drawer-texture [ctx]
+  (:ctx/shape-drawer-texture ctx))
+
+(defn- get-textures [ctx]
+  (:ctx/textures ctx))
+
+(defn- get-skin [ctx]
+  (:ctx/skin ctx))
+
+(defn- get-stage [ctx]
+  (:ctx/stage ctx))
+
+(defn- get-active-entities [ctx]
+  (:ctx/active-entities ctx))
+
+(defn- get-delta-time [ctx]
+  (:ctx/delta-time ctx))
+
+(defn- get-mouseover-eid [ctx]
+  (:ctx/mouseover-eid ctx))
+
+(defn- get-ui-mouse-position [ctx]
+  (:ctx/ui-mouse-position ctx))
+
+(defn- get-world-mouse-position [ctx]
+  (:ctx/world-mouse-position ctx))
+
+(defn- get-colors [ctx]
+  (:ctx/colors ctx))
+
+(defn- get-controls [ctx]
+  (:ctx/controls ctx))
+
+(defn- get-controls-info [ctx]
+  (:ctx/controls-info ctx))
+
+(defn- get-max-speed [ctx]
+  (:ctx/max-speed ctx))
+
+(defn- get-render-z-order [ctx]
+  (:ctx/render-z-order ctx))
+
+(defn- get-content-grid [ctx]
+  (:ctx/content-grid ctx))
+
+(defn- get-entity-ids [ctx]
+  (:ctx/entity-ids ctx))
+
+(defn- get-explored-tile-corners [ctx]
+  (:ctx/explored-tile-corners ctx))
+
+(defn- get-grid [ctx]
+  (:ctx/grid ctx))
+
+(defn- get-id-counter [ctx]
+  (:ctx/id-counter ctx))
+
+(defn- get-potential-field-cache [ctx]
+  (:ctx/potential-field-cache ctx))
+
+(defn- get-raycaster [ctx]
+  (:ctx/raycaster ctx))
+
+(defn- get-start-position [ctx]
+  (:ctx/start-position ctx))
+
+(defn- get-tiled-map [ctx]
+  (:ctx/tiled-map ctx))
+
+(defn- get-db [ctx]
+  (:ctx/db ctx))
+
+(defn- get-elapsed-time [ctx]
+  (:ctx/elapsed-time ctx))
+
+(defn- get-player-eid [ctx]
+  (:ctx/player-eid ctx))
+
+(defn- get-paused? [ctx]
+  (:ctx/paused? ctx))
+
+(defn- get-show-potential-field-colors? [ctx]
+  (:ctx/show-potential-field-colors? ctx))
+
+(defn- get-show-cell-entities? [ctx]
+  (:ctx/show-cell-entities? ctx))
+
+(defn- get-show-cell-occupied? [ctx]
+  (:ctx/show-cell-occupied? ctx))
+
+(defn- get-show-body-bounds? [ctx]
+  (:ctx/show-body-bounds? ctx))
+
+(defn- get-show-tile-grid? [ctx]
+  (:ctx/show-tile-grid? ctx))
+
+(defn- get-interaction-state [ctx]
+  (:ctx/interaction-state ctx))
+
+(defn- get-files [ctx]
+  (:ctx/files ctx))
+
 (defn- ui-update-skill! [ctx skill]
   (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
     (-> stage
@@ -640,7 +771,7 @@
       (set-item! ctx eid cell item))))
 
 (defn- ui-remove-item! [ctx cell]
-  (-> (:ctx/stage ctx)
+  (-> (get-stage ctx)
       :stage/root
       (#(group/find-actor % "moon.ui.windows.inventory"))
       (inventory-window/remove-item! cell)))
@@ -712,93 +843,100 @@
                           (v2/distance player-position world-mouse-position))))))
 
 (defn- key-pressed? [ctx key]
-  (input/key-pressed? (:ctx/input ctx) key))
+  (input/key-pressed? (get-input ctx) key))
 
 (defn- key-just-pressed? [ctx key]
-  (input/key-just-pressed? (:ctx/input ctx) key))
+  (input/key-just-pressed? (get-input ctx) key))
 
 (defn- button-just-pressed? [ctx button]
-  (input/button-just-pressed? (:ctx/input ctx) button))
+  (input/button-just-pressed? (get-input ctx) button))
 
 (defn- mouse-position [ctx]
-  (input/position (:ctx/input ctx)))
+  (input/position (get-input ctx)))
 
 (defn- control-key-pressed? [ctx control-id]
-  (key-pressed? ctx (control-id (:ctx/controls ctx))))
+  (key-pressed? ctx (control-id (get-controls ctx))))
 
 (defn- control-key-just-pressed? [ctx control-id]
-  (key-just-pressed? ctx (control-id (:ctx/controls ctx))))
+  (key-just-pressed? ctx (control-id (get-controls ctx))))
 
 (defn- control-button-just-pressed? [ctx control-id]
-  (button-just-pressed? ctx (control-id (:ctx/controls ctx))))
+  (button-just-pressed? ctx (control-id (get-controls ctx))))
 
 (defn- set-input-processor! [ctx processor]
-  (input/set-processor! (:ctx/input ctx) processor))
+  (input/set-processor! (get-input ctx) processor))
 
 (defn- frame-delta-time [ctx]
-  (graphics/get-delta-time (:ctx/graphics ctx)))
+  (graphics/get-delta-time (get-graphics ctx)))
 
 (defn- frames-per-second [ctx]
-  (graphics/get-frames-per-second (:ctx/graphics ctx)))
+  (graphics/get-frames-per-second (get-graphics ctx)))
 
 (defn- gl20 [ctx]
-  (graphics/get-gl20 (:ctx/graphics ctx)))
+  (graphics/get-gl20 (get-graphics ctx)))
 
 (defn- create-cursor [ctx pixmap hotspot-x hotspot-y]
-  (graphics/create-cursor (:ctx/graphics ctx) pixmap hotspot-x hotspot-y))
+  (graphics/create-cursor (get-graphics ctx) pixmap hotspot-x hotspot-y))
 
 (defn- set-system-cursor! [ctx cursor]
-  (graphics/set-cursor! (:ctx/graphics ctx) cursor))
-
-(defn- batch [ctx]
-  (:ctx/batch ctx))
+  (graphics/set-cursor! (get-graphics ctx) cursor))
 
 (defn- set-batch-color! [ctx r g b a]
-  (batch/set-color! (batch ctx) r g b a))
+  (batch/set-color! (get-batch ctx) r g b a))
 
 (defn- set-batch-projection-matrix! [ctx matrix]
-  (batch/set-projection-matrix! (batch ctx) matrix))
+  (batch/set-projection-matrix! (get-batch ctx) matrix))
 
 (defn- begin-batch! [ctx]
-  (batch/begin! (batch ctx)))
+  (batch/begin! (get-batch ctx)))
 
 (defn- end-batch! [ctx]
-  (batch/end! (batch ctx)))
+  (batch/end! (get-batch ctx)))
 
 (defn- batch-draw! [ctx & args]
-  (apply batch/draw! (batch ctx) args))
+  (apply batch/draw! (get-batch ctx) args))
 
 (defn- draw-tiled-map! [ctx tiled-map camera tile-color-setter]
   (moon-tiled-map/draw! tiled-map
-                        (batch ctx)
+                        (get-batch ctx)
                         world-unit-scale
                         camera
                         tile-color-setter))
 
 (defn- dispose-batch! [ctx]
-  (disposable/dispose! (batch ctx)))
-
-(defn- cursors [ctx]
-  (:ctx/cursors ctx))
+  (disposable/dispose! (get-batch ctx)))
 
 (defn- cursor [ctx cursor-key]
-  (get (cursors ctx) cursor-key))
+  (get (get-cursors ctx) cursor-key))
 
 (defn- has-cursor? [ctx cursor-key]
-  (contains? (cursors ctx) cursor-key))
+  (contains? (get-cursors ctx) cursor-key))
 
 (defn- set-cursor-by-key! [ctx cursor-key]
   (assert (has-cursor? ctx cursor-key))
   (set-system-cursor! ctx (cursor ctx cursor-key)))
 
 (defn- dispose-cursors! [ctx]
-  (run! disposable/dispose! (vals (cursors ctx))))
-
-(defn- default-font [ctx]
-  (:ctx/default-font ctx))
+  (run! disposable/dispose! (vals (get-cursors ctx))))
 
 (defn- dispose-default-font! [ctx]
-  (disposable/dispose! (default-font ctx)))
+  (disposable/dispose! (get-default-font ctx)))
+
+(defn- dispose-audio! [ctx]
+  (audio/dispose! (get-audio ctx)))
+
+(defn- dispose-shape-drawer-texture! [ctx]
+  (disposable/dispose! (get-shape-drawer-texture ctx)))
+
+(defn- dispose-skin! [ctx]
+  (disposable/dispose! (get-skin ctx)))
+
+(defn- dispose-textures! [ctx]
+  (run! disposable/dispose! (vals (get-textures ctx))))
+
+(defn- dispose-tiled-map! [ctx]
+  (disposable/dispose! (get-tiled-map ctx)))
+
 
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
   (let [[x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
@@ -823,20 +961,20 @@
 
 (defn- register-eid! [ctx eid]
   (assert (and (not (contains? @eid :entity/id))))
-  (let [id (swap! (:ctx/id-counter ctx) inc)]
+  (let [id (swap! (get-id-counter ctx) inc)]
     (assert (number? id))
     (swap! eid assoc :entity/id id)
-    (swap! (:ctx/entity-ids ctx) assoc id eid))
+    (swap! (get-entity-ids ctx) assoc id eid))
 
   (assert (:entity/body @eid))
-  (content-grid/update-entity! (:ctx/content-grid ctx) eid)
+  (content-grid/update-entity! (get-content-grid ctx) eid)
 
   (assert (:entity/body @eid))
   (when (:body/collides? (:entity/body @eid))
-    (assert (grid/valid-position? (:ctx/grid ctx) (:entity/body @eid) (:entity/id @eid))))
-  (grid/set-touched-cells! (:ctx/grid ctx) eid)
+    (assert (grid/valid-position? (get-grid ctx) (:entity/body @eid) (:entity/id @eid))))
+  (grid/set-touched-cells! (get-grid ctx) eid)
   (when (:body/collides? (:entity/body @eid))
-    (grid/set-occupied-cells! (:ctx/grid ctx) eid))
+    (grid/set-occupied-cells! (get-grid ctx) eid))
   nil)
 
 (defn- spawn-entity! [ctx entity]
@@ -939,7 +1077,7 @@
                                              align/center)))))
 
 (defn- play-sound! [ctx sound-name]
-  (audio/play! (:ctx/audio ctx) sound-name))
+  (audio/play! (get-audio ctx) sound-name))
 
 (defn- audiovisual! [ctx position audiovisual]
   (let [{:keys [ctx/db]} ctx
@@ -959,7 +1097,7 @@
   [{:keys [skill]} eid ctx]
   (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
   (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
-         (timer/create (:ctx/elapsed-time ctx) (:skill/cooldown skill)))
+         (timer/create (get-elapsed-time ctx) (:skill/cooldown skill)))
   (play-sound! ctx (:skill/start-action-sound skill))
   nil)
 
@@ -1186,13 +1324,13 @@
   (handle-fsm-event! ctx target :stun duration))
 
 (defn- toggle-inventory-visible! [ctx]
-  (let [inventory (-> (:ctx/stage ctx)
+  (let [inventory (-> (get-stage ctx)
                       :stage/root
                       (group/find-actor "moon.ui.windows.inventory"))]
     (actor/set-visible! inventory (not (actor/visible? inventory)))))
 
 (defn- show-message! [ctx message]
-  (-> (:ctx/stage ctx)
+  (-> (get-stage ctx)
       :stage/root
       (#(group/find-actor % "player-message"))
       (actor/set-user-object! (atom {:text message :counter 0}))))
@@ -1315,7 +1453,7 @@
                                  ui stage
                                  stage (get-stage actor)]
                              (rebuild-actors! ui ctx)
-                             #_(disposable/dispose! (:ctx/tiled-map ctx))
+                             #_(disposable/dispose! (get-tiled-map ctx))
                              (set! (.ctx ^Stage stage) (create-world ctx world-fn)))
                          ctx)})})
 
@@ -1405,7 +1543,7 @@
 (defn- draw-fn-text [{:keys [ctx/unit-scale]
                       :as ctx}
                       {:keys [font scale x y text up?]}]
-  (let [font (or font (default-font ctx))
+  (let [font (or font (get-default-font ctx))
         unit-scale @unit-scale
         scale (or scale 1)
         font-data (bitmap-font/get-data font)
@@ -1416,7 +1554,7 @@
                  (float scale))]
     (bitmap-font-data/set-scale! font-data (* old-scale scale))
     (bitmap-font/draw! font
-                       (batch ctx)
+                       (get-batch ctx)
                        text
                        x
                        (+ y (if up?
@@ -1456,7 +1594,7 @@
       (batch-draw! ctx texture-region x y w h))))
 
 (defn- draw-with-line-width! [ctx width draw-body]
-  (let [shape-drawer (:ctx/shape-drawer ctx)
+  (let [shape-drawer (get-shape-drawer ctx)
         old-line-width (shape-drawer/get-default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
     (draw-body ctx)
@@ -1465,7 +1603,7 @@
 (defn- draw-entity-image!
   [image entity ctx]
   (draw-fn-texture-region ctx
-                          (textures/texture-region (:ctx/textures ctx) image)
+                          (textures/texture-region (get-textures ctx) image)
                           (:body/position (:entity/body entity))
                           {:center? true
                            :rotation (or (:body/rotation-angle (:entity/body entity))
@@ -1727,7 +1865,7 @@
      (fn [this _batch _parent-alpha]
        (when-let [stage (actor/get-stage this)]
          (let [ctx (:stage/ctx stage)
-               stats (:entity/stats @(:ctx/player-eid ctx))
+               stats (:entity/stats @(get-player-eid ctx))
                bar-x (- x (/ rahmenw 2))]
            (draw-hpmana-bar! ctx bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
            (draw-hpmana-bar! ctx bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
@@ -1911,7 +2049,7 @@
           v)))))
 
 (defn- interaction-state->txs [[k params] ctx player-eid]
-  (let [stage (:ctx/stage ctx)]
+  (let [stage (get-stage ctx)]
     (case k
       :interaction-state/mouseover-actor
       nil
@@ -2171,7 +2309,7 @@
   (let [effect-ctx (create-effect-ctx ctx eid)]
     (if-let [skill (choose-skill ctx @eid effect-ctx)]
       (handle-fsm-event! ctx eid :start-action [skill effect-ctx])
-      (handle-fsm-event! ctx eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
+      (handle-fsm-event! ctx eid :movement-direction (or (grid/find-direction (get-grid ctx) eid)
                                                          [0 0])))))
 
 (defn- tick-entity-movement
@@ -2258,7 +2396,7 @@
 
 (defn create-audio [ctx]
   (assoc ctx
-         :ctx/audio (audio/create (:ctx/audio ctx) (:ctx/files ctx))))
+         :ctx/audio (audio/create (get-audio ctx) (get-files ctx))))
 
 (defn create-shape-drawer-texture [ctx]
   (let [pixmap (doto (pixmap/new 1 1 pixmap/rgba8888)
@@ -2273,8 +2411,8 @@
 
 (defn create-shape-drawer [ctx]
   (assoc ctx
-         :ctx/shape-drawer (shape-drawer/new (batch ctx)
-                                             (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1))))
+         :ctx/shape-drawer (shape-drawer/new (get-batch ctx)
+                                             (texture-region/create (get-shape-drawer-texture ctx) 1 0 1 1))))
 
 (defn create-skin [{:keys [ctx/files] :as ctx}]
   (let [skin (skin/create (files/internal files "skin/uiskin.json"))]
@@ -2285,7 +2423,7 @@
     (assoc ctx :ctx/skin skin)))
 
 (defn create-stage [ctx]
-  (let [stage* (stage/create (fit-viewport/create 1440 900) (batch ctx))]
+  (let [stage* (stage/create (fit-viewport/create 1440 900) (get-batch ctx))]
     (set-input-processor! ctx stage*)
     (assoc ctx :ctx/stage stage*)))
 
@@ -2300,7 +2438,7 @@
                          (update-vals data
                                       (fn [[path-segment [hotspot-x hotspot-y]]]
                                         (let [path (format path-format path-segment)
-                                              pixmap* (pixmap/new (files/internal (:ctx/files ctx) path))
+                                              pixmap* (pixmap/new (files/internal (get-files ctx) path))
                                               cursor (create-cursor ctx pixmap* hotspot-x hotspot-y)]
                                           (disposable/dispose! pixmap*)
                                           cursor))))))
@@ -2327,7 +2465,7 @@
                                                                    :size 16
                                                                    :quality-scaling 2
                                                                    :use-integer-positions? false}
-                                 generator (font-generator/new (files/internal (:ctx/files ctx) path))
+                                 generator (font-generator/new (files/internal (get-files ctx) path))
                                  parameter {
                                             :set-size (* size quality-scaling)
                                             :set-min-filter texture-filter/linear
@@ -2380,23 +2518,23 @@
   (let [{:keys [tiled-map
                 start-position]} (level-fn
                                    {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
-                                                                 (db/all-raw (:ctx/db ctx) :properties/creatures)
-                                                                 #(textures/texture-region (:ctx/textures ctx) %))
-                                    :textures (:ctx/textures ctx)})]
+                                                                 (db/all-raw (get-db ctx) :properties/creatures)
+                                                                 #(textures/texture-region (get-textures ctx) %))
+                                    :textures (get-textures ctx)})]
     (assoc ctx
            :ctx/tiled-map tiled-map
            :ctx/start-position start-position)))
 
 (defn create-grid [ctx]
   (assoc ctx
-         :ctx/grid (moon-g2d/create (moon-tiled-map/get-property (:ctx/tiled-map ctx) "width")
-                                    (moon-tiled-map/get-property (:ctx/tiled-map ctx) "height")
+         :ctx/grid (moon-g2d/create (moon-tiled-map/get-property (get-tiled-map ctx) "width")
+                                    (moon-tiled-map/get-property (get-tiled-map ctx) "height")
                                     (fn [position]
                                       (atom
                                        (cell/map->R
                                         {:position position
                                          :middle (mapv (partial + 0.5) position)
-                                         :movement (case (moon-tiled-map/movement-property (:ctx/tiled-map ctx) position)
+                                         :movement (case (moon-tiled-map/movement-property (get-tiled-map ctx) position)
                                                       "none" :none
                                                       "air" :air
                                                       "all" :all)
@@ -2404,19 +2542,19 @@
                                          :occupied #{}}))))))
 
 (defn create-content-grid [ctx]
-  (let [width (moon-tiled-map/get-property (:ctx/tiled-map ctx) "width")
-        height (moon-tiled-map/get-property (:ctx/tiled-map ctx) "height")
+  (let [width (moon-tiled-map/get-property (get-tiled-map ctx) "width")
+        height (moon-tiled-map/get-property (get-tiled-map ctx) "height")
         cell-size 16]
     (assoc ctx :ctx/content-grid (content-grid/create width height cell-size))))
 
 (defn create-explored-tile-corners [ctx]
   (assoc ctx
-         :ctx/explored-tile-corners (atom (moon-g2d/create (moon-tiled-map/get-property (:ctx/tiled-map ctx) "width")
-                                                            (moon-tiled-map/get-property (:ctx/tiled-map ctx) "height")
+         :ctx/explored-tile-corners (atom (moon-g2d/create (moon-tiled-map/get-property (get-tiled-map ctx) "width")
+                                                            (moon-tiled-map/get-property (get-tiled-map ctx) "height")
                                                             (constantly false)))))
 
 (defn create-raycaster [ctx]
-  (let [grid (:ctx/grid ctx)
+  (let [grid (get-grid ctx)
         width (moon-g2d/width grid)
         height (moon-g2d/height grid)
         cells (for [cell (map deref (moon-g2d/cells grid))]
@@ -2428,8 +2566,8 @@
     (assoc ctx :ctx/raycaster [arr width height])))
 
 (defn create-spawn-player [ctx]
-  (spawn-creature! ctx {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
-                        :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
+  (spawn-creature! ctx {:position (mapv (partial + 0.5) (get-start-position ctx))
+                        :creature-property (db/build (get-db ctx) :creatures/vampire)
                         :components {:entity/fsm {:fsm :fsms/player
                                                   :initial-state :player-idle}
                                      :entity/faction :good
@@ -2440,14 +2578,14 @@
   ctx)
 
 (defn create-player-eid [ctx]
-  (let [eid (get @(:ctx/entity-ids ctx) 1)]
+  (let [eid (get @(get-entity-ids ctx) 1)]
     (assert (:entity/player? @eid))
     (assoc ctx :ctx/player-eid eid)))
 
 (defn create-spawn-creatures [ctx]
-  (doseq [[position creature-id] (moon-tiled-map/spawn-positions (:ctx/tiled-map ctx))]
+  (doseq [[position creature-id] (moon-tiled-map/spawn-positions (get-tiled-map ctx))]
     (spawn-creature! ctx {:position (mapv (partial + 0.5) position)
-                          :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
+                          :creature-property (db/build (get-db ctx) (keyword creature-id))
                           :components {:entity/fsm {:fsm :fsms/npc
                                                     :initial-state :npc-sleeping}
                                        :entity/faction :evil}}))
@@ -2772,7 +2910,7 @@
                       :cursors/no-skill-selected)))})
 
 (defn set-cursor [ctx]
-  (let [eid (:ctx/player-eid ctx)
+  (let [eid (get-player-eid ctx)
         entity @eid
         state-k (:state (:entity/fsm entity))
         cursor-fn (k->cursor state-k)
@@ -2844,7 +2982,7 @@
   ctx)
 
 (defn when-not-paused [ctx]
-  (if (:ctx/paused? ctx)
+  (if (get-paused? ctx)
     ctx
     (reduce (fn [ctx step] (step ctx))
             ctx
@@ -2933,21 +3071,15 @@
       create-spawn-creatures
       create-dissoc-files))
 
-(defn dispose
-  [{:keys [ctx/audio
-           ctx/shape-drawer-texture
-           ctx/skin
-           ctx/textures
-           ctx/tiled-map]
-    :as ctx}]
-  (audio/dispose! audio)
+(defn dispose [ctx]
+  (audio/dispose! (get-audio ctx))
   (dispose-batch! ctx)
   (dispose-cursors! ctx)
   (dispose-default-font! ctx)
-  (disposable/dispose! shape-drawer-texture)
-  (disposable/dispose! skin)
-  (run! disposable/dispose! (vals textures))
-  (disposable/dispose! tiled-map))
+  (dispose-shape-drawer-texture! ctx)
+  (dispose-skin! ctx)
+  (dispose-textures! ctx)
+  (dispose-tiled-map! ctx))
 
 (defn render [ctx]
   (-> ctx
