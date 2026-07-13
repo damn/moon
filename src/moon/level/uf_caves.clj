@@ -2,7 +2,7 @@
   (:require [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [moon.rand :as rand]
             [clojure.gdx.graphics.g2d.texture-region :as texture-region]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.gdx.maps.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]))
@@ -137,8 +137,8 @@
                                                                               (* (sprite-idx 1) tile-size)
                                                                               tile-size
                                                                               tile-size)
-                                           tile (static-tiled-map-tile/new texture-region)]
-                                       (map-properties/put! (static-tiled-map-tile/getProperties tile)
+                                           tile (static-tiled-map-tile/create texture-region)]
+                                       (map-properties/put! (static-tiled-map-tile/get-properties tile)
                                                             "movement" movement)
                                        tile))))
              :level/spawn-rate spawn-rate

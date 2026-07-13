@@ -36,7 +36,7 @@
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.skin :as skin]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
+            [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.utils.align :as align]
@@ -2265,7 +2265,7 @@
     (assoc ctx :ctx/stage stage*)))
 
 (defn create-init-tooltip [ctx]
-  (tooltip-manager/setInitialTime (tooltip-manager/getInstance) 0)
+  (tooltip-manager/set-initial-time! (tooltip-manager/get-instance) 0)
   (colors/put! "PRETTY_NAME" (color/create [0.84 0.8 0.52 1]))
   ctx)
 

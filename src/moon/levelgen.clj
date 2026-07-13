@@ -16,7 +16,7 @@
             [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.graphics.gl20 :as gl20]
             [clojure.gdx.input :as input]
-            [com.badlogic.gdx.maps.map-layers :as map-layers]
+            [clojure.gdx.maps.map-layers :as map-layers]
             [clojure.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.ui.skin :as skin]

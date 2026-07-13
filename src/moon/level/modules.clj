@@ -2,12 +2,10 @@
   (:require [moon.rand :as rand]
             [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]
             [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
-            [clojure.gdx.maps.tiled.tiled-map-tile-layer :refer [property-value]]
-            [com.badlogic.gdx.maps.map-layers :as map-layers]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as tiled-map-tile-layer-cell]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [clojure.gdx.maps.map-layers :as map-layers]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer :refer [property-value]]
+            [clojure.gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+            [clojure.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
             [clojure.gdx.maps.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
@@ -162,20 +160,20 @@
   (let [copy-tile (memoize
                    (fn [tile]
                      (assert tile)
-                     (static-tiled-map-tile/new tile)))]
+                     (static-tiled-map-tile/create tile)))]
     {:properties (merge (map-properties/clojurize (moon-tiled-map/get-properties schema-tiled-map))
                         {"width" (g2d/width grid)
                          "height" (g2d/height grid)})
      :layers (for [layer (moon-tiled-map/get-layers schema-tiled-map)]
-               {:name (tiled-map-tile-layer/getName layer)
-                :visible? (tiled-map-tile-layer/isVisible layer)
-                :properties (map-properties/clojurize (tiled-map-tile-layer/getProperties layer))
+               {:name (tiled-map-tile-layer/get-name layer)
+                :visible? (tiled-map-tile-layer/visible? layer)
+                :properties (map-properties/clojurize (tiled-map-tile-layer/get-properties layer))
                 :tiles (for [position (g2d/posis grid)
                              :let [local-position (get grid position)]
                              :when local-position]
                          (when (vector? local-position)
-                           (when-let [cell (tiled-map-tile-layer/getCell layer (local-position 0) (local-position 1))]
-                             [position (copy-tile (tiled-map-tile-layer-cell/getTile cell))])))})}))
+                           (when-let [cell (tiled-map-tile-layer/get-cell layer (local-position 0) (local-position 1))]
+                             [position (copy-tile (cell/get-tile cell))])))})}))
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid
