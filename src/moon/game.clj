@@ -1,3 +1,4 @@
+; (CTX) _DESTRUCTURING_ CONSIDERED HARMFUL ?
 (ns moon.game
   (:require [clojure.edn :as edn] ; ✅
             [clojure.java.io :as io] ; ✅
@@ -747,6 +748,34 @@
 (defn- set-system-cursor! [ctx cursor]
   (graphics/set-cursor! (:ctx/graphics ctx) cursor))
 
+(defn- batch [ctx]
+  (:ctx/batch ctx))
+
+(defn- set-batch-color! [ctx r g b a]
+  (batch/set-color! (batch ctx) r g b a))
+
+(defn- set-batch-projection-matrix! [ctx matrix]
+  (batch/set-projection-matrix! (batch ctx) matrix))
+
+(defn- begin-batch! [ctx]
+  (batch/begin! (batch ctx)))
+
+(defn- end-batch! [ctx]
+  (batch/end! (batch ctx)))
+
+(defn- batch-draw! [ctx & args]
+  (apply batch/draw! (batch ctx) args))
+
+(defn- draw-tiled-map! [ctx tiled-map camera tile-color-setter]
+  (moon-tiled-map/draw! tiled-map
+                        (batch ctx)
+                        world-unit-scale
+                        camera
+                        tile-color-setter))
+
+(defn- dispose-batch! [ctx]
+  (disposable/dispose! (batch ctx)))
+
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
   (let [[x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
     (stage/hit stage x y true)))
@@ -1349,9 +1378,9 @@
   (shape-drawer/set-color! shape-drawer color-float-bits)
   (shape-drawer/sector shape-drawer center-x center-y radius start-radians radians))
 
-(defn- draw-fn-text [{:keys [ctx/batch
-                             ctx/unit-scale
-                             ctx/default-font]}
+(defn- draw-fn-text [{:keys [ctx/unit-scale
+                             ctx/default-font]
+                      :as ctx}
                       {:keys [font scale x y text up?]}]
   (let [font (or font default-font)
         unit-scale @unit-scale
@@ -1364,7 +1393,7 @@
                  (float scale))]
     (bitmap-font-data/set-scale! font-data (* old-scale scale))
     (bitmap-font/draw! font
-                       batch
+                       (batch ctx)
                        text
                        x
                        (+ y (if up?
@@ -1378,8 +1407,8 @@
                        wrap?)
     (bitmap-font-data/set-scale! font-data old-scale)))
 
-(defn- draw-fn-texture-region [{:keys [ctx/batch
-                                       ctx/unit-scale]}
+(defn- draw-fn-texture-region [{:keys [ctx/unit-scale]
+                                :as ctx}
                                texture-region
                                [x y]
                                & {:keys [center? rotation]}]
@@ -1390,7 +1419,7 @@
                     (mapv (comp float (partial * world-unit-scale))
                           dimensions)))]
     (if center?
-      (batch/draw! batch
+      (batch-draw! ctx
                    texture-region
                    (- (float x) (/ (float w) 2))
                    (- (float y) (/ (float h) 2))
@@ -1401,7 +1430,7 @@
                    1
                    1
                    (or rotation 0))
-      (batch/draw! batch texture-region x y w h))))
+      (batch-draw! ctx texture-region x y w h))))
 
 (defn- draw-with-line-width! [ctx width draw-body]
   (let [shape-drawer (:ctx/shape-drawer ctx)
@@ -2221,7 +2250,7 @@
 
 (defn create-shape-drawer [ctx]
   (assoc ctx
-         :ctx/shape-drawer (shape-drawer/new (:ctx/batch ctx)
+         :ctx/shape-drawer (shape-drawer/new (batch ctx)
                                              (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1))))
 
 (defn create-skin [{:keys [ctx/files] :as ctx}]
@@ -2233,7 +2262,7 @@
     (assoc ctx :ctx/skin skin)))
 
 (defn create-stage [ctx]
-  (let [stage* (stage/create (fit-viewport/create 1440 900) (:ctx/batch ctx))]
+  (let [stage* (stage/create (fit-viewport/create 1440 900) (batch ctx))]
     (set-input-processor! ctx stage*)
     (assoc ctx :ctx/stage stage*)))
 
@@ -2487,25 +2516,23 @@
   ctx)
 
 (defn render-draw-tiled-map
-  [{:keys [ctx/batch
-           ctx/colors
+  [{:keys [ctx/colors
            ctx/explored-tile-corners
            ctx/raycaster
            ctx/tiled-map
            ctx/world-viewport]
     :as ctx}]
-  (moon-tiled-map/draw! tiled-map
-                     batch
-                     world-unit-scale
-                     (viewport/get-camera world-viewport)
-                     (tile-color-setter*
-                      {:ray-blocked? (partial raycaster/blocked? raycaster)
-                       :explored-tile-corners explored-tile-corners
-                       :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
-                       :see-all-tiles? false
-                       :explored-tile-color (:colors/explored-tile colors)
-                       :visible-tile-color (:colors/visible-tile colors)
-                       :invisible-tile-color (:colors/invisible-tile colors)}))
+  (draw-tiled-map! ctx
+                   tiled-map
+                   (viewport/get-camera world-viewport)
+                   (tile-color-setter*
+                    {:ray-blocked? (partial raycaster/blocked? raycaster)
+                     :explored-tile-corners explored-tile-corners
+                     :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
+                     :see-all-tiles? false
+                     :explored-tile-color (:colors/explored-tile colors)
+                     :visible-tile-color (:colors/visible-tile colors)
+                     :invisible-tile-color (:colors/invisible-tile colors)}))
   ctx)
 
 (def ^:private render-layers
@@ -2616,14 +2643,13 @@
                            :none (:colors/mouseover-tile-none colors))))))
 
 (defn draw-on-world-viewport
-  [{:keys [ctx/batch
-           ctx/shape-drawer
+  [{:keys [ctx/shape-drawer
            ctx/unit-scale
            ctx/world-viewport]
     :as ctx}]
-  (batch/set-color! batch 1 1 1 1)
-  (batch/set-projection-matrix! batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
-  (batch/begin! batch)
+  (set-batch-color! ctx 1 1 1 1)
+  (set-batch-projection-matrix! ctx (orthographic-camera/combined (viewport/get-camera world-viewport)))
+  (begin-batch! ctx)
   (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
     (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
     (reset! unit-scale world-unit-scale)
@@ -2634,7 +2660,7 @@
       (draw-fn ctx))
     (reset! unit-scale 1)
     (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (batch/end! batch)
+  (end-batch! ctx)
   ctx)
 
 (defn- make-interaction-state
@@ -2890,15 +2916,15 @@
 
 (defn dispose
   [{:keys [ctx/audio
-           ctx/batch
            ctx/cursors
            ctx/default-font
            ctx/shape-drawer-texture
            ctx/skin
            ctx/textures
-           ctx/tiled-map]}]
+           ctx/tiled-map]
+    :as ctx}]
   (audio/dispose! audio)
-  (disposable/dispose! batch)
+  (dispose-batch! ctx)
   (run! disposable/dispose! (vals cursors))
   (disposable/dispose! default-font)
   (disposable/dispose! shape-drawer-texture)
