@@ -20,7 +20,7 @@
             [clojure.gdx.files :as files]
             [clojure.gdx.graphics :as graphics]
             [clojure.gdx.graphics.gl20 :as gl20]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+            [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
@@ -674,7 +674,7 @@
   (let [skin (ui-skin/new (files/internal files "skin/uiskin.json"))]
     (-> skin
         (ui-skin/getFont "default-font")
-        bitmap-font/getData
+        bitmap-font/get-data
         (bitmap-font-data/set-markupEnabled true))
     (assoc ctx :ctx/skin skin)))
 

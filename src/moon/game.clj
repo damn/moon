@@ -24,7 +24,7 @@
             [com.badlogic.gdx.graphics.color :as color]
             [com.badlogic.gdx.graphics.colors :as colors]
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
-            [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]
+            [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]
             [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
@@ -1622,14 +1622,14 @@
                  (let [font (or font default-font)
                        unit-scale @unit-scale
                        scale (or scale 1)
-                       font-data (bitmap-font/getData font)
+                       font-data (bitmap-font/get-data font)
                        old-scale (bitmap-font-data/scaleX font-data)
                        target-width 0
                        wrap? false
                        scale (* (float unit-scale)
                                 (float scale))]
                    (bitmap-font-data/setScale font-data (* old-scale scale))
-                   (bitmap-font/draw font
+                   (bitmap-font/draw! font
                                       batch
                                       text
                                       x
@@ -1637,7 +1637,7 @@
                                              (-> text
                                                  (str/split #"\n")
                                                  count
-                                                 (* (bitmap-font/getLineHeight font)))
+                                                 (* (bitmap-font/get-line-height font)))
                                              0))
                                       target-width
                                       align/center
@@ -2255,7 +2255,7 @@
   (let [skin (skin/new (files/internal files "skin/uiskin.json"))]
     (-> skin
         (skin/getFont "default-font")
-        bitmap-font/getData
+        bitmap-font/get-data
         (bitmap-font-data/set-markupEnabled true))
     (assoc ctx :ctx/skin skin)))
 
@@ -2310,11 +2310,11 @@
                                             :set-mag-filter texture-filter/Linear
                                             }
                                  font (font-generator/generate-font generator parameter)
-                                 font-data (bitmap-font/getData font)]
+                                 font-data (bitmap-font/get-data font)]
                              (disposable/dispose! generator)
                              (bitmap-font-data/setScale font-data (/ quality-scaling))
                              (bitmap-font-data/set-markupEnabled font-data true)
-                             (bitmap-font/setUseIntegerPositions font use-integer-positions?)
+                             (bitmap-font/set-use-integer-positions! font use-integer-positions?)
                              font)))
 
 (defn create-context [ctx]
