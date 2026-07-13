@@ -79,8 +79,6 @@
             [reduce-fsm :as fsm])
   (:gen-class))
 
-(q/defrecord Record [])
-
 (def schema
   (malli-schema/create
    [:map {:closed true}
@@ -125,6 +123,8 @@
     [:ctx/show-cell-occupied? :boolean]
     [:ctx/show-body-bounds? :boolean]
     [:ctx/show-tile-grid? :boolean]]))
+
+(q/defrecord Record [])
 
 (q/defrecord EntityRecord [entity/body])
 
