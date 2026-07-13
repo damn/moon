@@ -210,11 +210,11 @@
   (fn [[k _v] _effect-ctx _ctx]
     k))
 
-(declare handle-fsm-event! do! spawn-creature!)
+(declare handle-fsm-event! do! spawn-creature! audiovisual!)
 
 (defmethod handle-effect :effects/audiovisual
-  [[_ audiovisual] {:keys [effect/target-position]} _ctx]
-  [[:tx/audiovisual target-position audiovisual]])
+  [[_ audiovisual] {:keys [effect/target-position]} ctx]
+  (audiovisual! ctx target-position audiovisual))
 
 (defmethod handle-effect :effects/projectile
   [[_ projectile] {:keys [effect/source effect/target-direction]} _ctx]
@@ -259,7 +259,7 @@
 (defmethod handle-effect :effects/target-entity
   [[_ {:keys [maxrange entity-effects]}]
    {:keys [effect/source effect/target] :as effect-ctx}
-   {:keys [ctx/colors]}]
+   {:keys [ctx/colors] :as ctx}]
   (let [body        (:entity/body @source)
         target-body (:entity/body @target)]
     (if (body/in-range? body target-body maxrange)
@@ -269,13 +269,13 @@
                         :color (:colors/target-entity-line colors)
                         :thick? true}]
        [:tx/effect effect-ctx entity-effects]]
-      [[:tx/audiovisual
-        (body/end-point body target-body maxrange)
-        :audiovisuals/hit-ground]])))
+      (audiovisual! ctx
+                    (body/end-point body target-body maxrange)
+                    :audiovisuals/hit-ground))))
 
 (defmethod handle-effect :effects.target/audiovisual
-  [[_ audiovisual] {:keys [effect/target]} _ctx]
-  [[:tx/audiovisual (:body/position (:entity/body @target)) audiovisual]])
+  [[_ audiovisual] {:keys [effect/target]} ctx]
+  (audiovisual! ctx (:body/position (:entity/body @target)) audiovisual))
 
 (defmethod handle-effect :effects.target/convert
   [_ {:keys [effect/source effect/target]} _ctx]
@@ -315,7 +315,7 @@
        (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
        (swap! target add-text-effect elapsed-time dmg-text 0.3)
        (handle-fsm-event! ctx target (if (zero? new-hp-val) :kill :alert))
-       [[:tx/audiovisual (:body/position (:entity/body target*)) :audiovisuals/damage]]))))
+       (audiovisual! ctx (:body/position (:entity/body target*)) :audiovisuals/damage)))))
 
 (defmethod handle-effect :effects.target/kill
   [_ {:keys [effect/target]} ctx]
@@ -934,6 +934,15 @@
 (defn- play-sound! [ctx sound-name]
   (audio/play! (:ctx/audio ctx) sound-name))
 
+(defn- audiovisual! [ctx position audiovisual]
+  (let [{:keys [ctx/db]} ctx
+        {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
+                                             (db/build db audiovisual)
+                                             audiovisual)]
+    (play-sound! ctx sound)
+    (spawn-effect! ctx position
+                   {:entity/animation (assoc animation :delete-after-stopped? true)})))
+
 (defn- state-enter-player-item-on-cursor
   [{:keys [item]} eid _ctx]
   (swap! eid assoc :entity/item-on-cursor item)
@@ -1054,15 +1063,6 @@
       (#(group/find-actor % "player-message"))
       (actor/set-user-object! (atom {:text message :counter 0}))))
 
-(defn- tx-audiovisual [ctx position audiovisual]
-  (let [{:keys [ctx/db]} ctx
-        {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
-                                               (db/build db audiovisual)
-                                               audiovisual)]
-    (play-sound! ctx sound)
-    (spawn-effect! ctx position
-                   {:entity/animation (assoc animation :delete-after-stopped? true)})))
-
 (defn- tx-effect [ctx effect-ctx effects]
   (mapcat #(handle-effect % effect-ctx ctx)
           (filter #(effect-applicable? % effect-ctx) effects)))
@@ -1113,8 +1113,7 @@
                                                :piercing? piercing?}}))
 
 (def tx-fn-map
-  {:tx/audiovisual tx-audiovisual
-   :tx/effect tx-effect
+  {:tx/effect tx-effect
    :tx/spawn-alert tx-spawn-alert
    :tx/spawn-item tx-spawn-item
    :tx/spawn-line tx-spawn-line
@@ -2807,32 +2806,24 @@
              tick-entities])))
 
 (def k->destroy
-  {
-   :entity/destroy-audiovisual
-   (fn
-     [audiovisuals-id eid]
-     [[:tx/audiovisual (:body/position (:entity/body @eid)) audiovisuals-id]])
-   })
+  {:entity/destroy-audiovisual
+   (fn [audiovisuals-id eid ctx]
+     (audiovisual! ctx (:body/position (:entity/body @eid)) audiovisuals-id))})
 
 (defn remove-destroyed-entities
   [{:keys [ctx/content-grid ctx/entity-ids ctx/grid] :as ctx}]
-  (do! ctx
-       (mapcat
-        (fn [eid]
-          (let [id (:entity/id @eid)]
-            (assert (contains? @entity-ids id))
-            (swap! entity-ids dissoc id)
-            (content-grid/remove-entity! content-grid eid)
-            (grid/remove-from-touched-cells! grid eid)
-            (when (:body/collides? (:entity/body @eid))
-              (grid/remove-from-occupied-cells! grid eid)))
-          (mapcat (fn [[k v]]
-                    (if-let [destroy-fn (k->destroy k)]
-                      (destroy-fn v eid)
-                      nil))
-                  @eid))
-        (filter (comp :entity/destroyed? deref)
-                (vals @entity-ids))))
+  (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
+    (let [id (:entity/id @eid)]
+      (assert (contains? @entity-ids id))
+      (swap! entity-ids dissoc id)
+      (content-grid/remove-entity! content-grid eid)
+      (grid/remove-from-touched-cells! grid eid)
+      (when (:body/collides? (:entity/body @eid))
+        (grid/remove-from-occupied-cells! grid eid))
+      (doseq [[k v] @eid
+              :let [destroy-fn (k->destroy k)]
+              :when destroy-fn]
+        (destroy-fn v eid ctx))))
   ctx)
 
 (def zoom-speed 0.025)
