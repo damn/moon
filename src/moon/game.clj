@@ -210,6 +210,8 @@
   (fn [[k _v] _effect-ctx _ctx]
     k))
 
+(declare handle-fsm-event! do!)
+
 (defmethod handle-effect :effects/audiovisual
   [[_ audiovisual] {:keys [effect/target-position]} _ctx]
   [[:tx/audiovisual target-position audiovisual]])
@@ -281,7 +283,7 @@
   nil)
 
 (defmethod handle-effect :effects.target/damage
-  [[_ damage] {:keys [effect/source effect/target]} {:keys [ctx/elapsed-time]}]
+  [[_ damage] {:keys [effect/source effect/target]} {:keys [ctx/elapsed-time] :as ctx}]
   (let [source* @source
         target* @target
         hp (stats/get-hitpoints (:entity/stats target*))]
@@ -312,12 +314,12 @@
            dmg-text (str "[RED]" dmg-amount "[]")]
        (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
        (swap! target add-text-effect elapsed-time dmg-text 0.3)
-       [[:tx/event    target (if (zero? new-hp-val) :kill :alert)]
-        [:tx/audiovisual (:body/position (:entity/body target*)) :audiovisuals/damage]]))))
+       (handle-fsm-event! ctx target (if (zero? new-hp-val) :kill :alert))
+       [[:tx/audiovisual (:body/position (:entity/body target*)) :audiovisuals/damage]]))))
 
 (defmethod handle-effect :effects.target/kill
-  [_ {:keys [effect/target]} _ctx]
-  [[:tx/event target :kill]])
+  [_ {:keys [effect/target]} ctx]
+  (handle-fsm-event! ctx target :kill))
 
 (defmethod handle-effect :effects.target/melee-damage
   [_ {:keys [effect/source] :as effect-ctx} ctx]
@@ -335,8 +337,8 @@
     nil))
 
 (defmethod handle-effect :effects.target/stun
-  [[_ duration] {:keys [effect/target]} _ctx]
-  [[:tx/event target :stun duration]])
+  [[_ duration] {:keys [effect/target]} ctx]
+  (handle-fsm-event! ctx target :stun duration))
 
 (defmulti effect-applicable?
   (fn [[k _v] _effect-ctx]
@@ -952,8 +954,6 @@
   (when-let [f (k->state-enter state-k)]
     (f state-v eid ctx)))
 
-(declare do! )
-
 (defn- state-exit-player-item-on-cursor
   [_ eid ctx]
   (let [entity @eid
@@ -1034,12 +1034,6 @@
 (defn- tx-effect [ctx effect-ctx effects]
   (mapcat #(handle-effect % effect-ctx ctx)
           (filter #(effect-applicable? % effect-ctx) effects)))
-
-(defn- tx-event
-  ([ctx eid event]
-   (handle-fsm-event! ctx eid event))
-  ([ctx eid event params]
-   (handle-fsm-event! ctx eid event params)))
 
 (defn- tx-spawn-alert [{:keys [ctx/elapsed-time]} position faction duration]
   [[:tx/spawn-effect
@@ -1125,7 +1119,6 @@
 (def tx-fn-map
   {:tx/audiovisual tx-audiovisual
    :tx/effect tx-effect
-   :tx/event tx-event
    :tx/spawn-alert tx-spawn-alert
    :tx/spawn-creature tx-spawn-creature
    :tx/spawn-effect tx-spawn-effect
@@ -1698,7 +1691,7 @@
   (when-let [item (get-in (:entity/inventory @eid) cell)]
     (play-sound! ctx "bfxr_takeit")
     (remove-item! ctx eid cell)
-    [[:tx/event eid :pickup-item item]]))
+    (handle-fsm-event! ctx eid :pickup-item item)))
 
 (defn- clicked-inventory-cell-player-item-on-cursor
   [ctx eid cell]
@@ -1712,14 +1705,14 @@
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
          (set-item! ctx eid cell item-on-cursor)
-         [[:tx/event eid :dropped-item]])
+         (handle-fsm-event! ctx eid :dropped-item))
 
      (and item-in-cell
           (item/stackable? item-in-cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
-         [[:tx/stack-item eid cell item-on-cursor]
-          [:tx/event eid :dropped-item]])
+         (do! ctx [[:tx/stack-item eid cell item-on-cursor]])
+         (handle-fsm-event! ctx eid :dropped-item))
 
      (and item-in-cell
           (inventory-cell/valid-slot? cell item-on-cursor))
@@ -1727,8 +1720,8 @@
          (play-sound! ctx "bfxr_itemput")
          (remove-item! ctx eid cell)
          (set-item! ctx eid cell item-on-cursor)
-         [[:tx/event eid :dropped-item]
-          [:tx/event eid :pickup-item item-in-cell]]))))
+         (handle-fsm-event! ctx eid :dropped-item)
+         (handle-fsm-event! ctx eid :pickup-item item-in-cell)))))
 
 (def k->clicked-inventory-cell
   {:player-item-on-cursor clicked-inventory-cell-player-item-on-cursor
@@ -1889,7 +1882,7 @@
                     actor/visible?)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
                     (play-sound! ctx "bfxr_takeit")
-                    [[:tx/event player-eid :pickup-item item]])
+                    (handle-fsm-event! ctx player-eid :pickup-item item))
 
                 (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -1907,7 +1900,7 @@
 
       :interaction-state.skill/usable
       (let [[skill effect-ctx] params]
-        [[:tx/event player-eid :start-action [skill effect-ctx]]])
+        (handle-fsm-event! ctx player-eid :start-action [skill effect-ctx]))
 
       :interaction-state.skill/not-usable
       (let [state params]
@@ -1928,7 +1921,7 @@
                       ctx/interaction-state]
                :as ctx}]
   (if-let [movement-vector (player-movement-vector ctx)]
-    [[:tx/event player-eid :movement-input movement-vector]]
+    (handle-fsm-event! ctx player-eid :movement-input movement-vector)
     (when (input/button-just-pressed? input :input.buttons/left)
       (interaction-state->txs interaction-state
                               ctx
@@ -1941,13 +1934,13 @@
                                            :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                       0)})
         nil)
-    [[:tx/event eid :no-movement-input]]))
+    (handle-fsm-event! ctx eid :no-movement-input)))
 
 (defn- handle-input-player-item-on-cursor
   [eid ctx]
   (when (and (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
              (not (mouseover-actor ctx)))
-    [[:tx/event eid :drop-item]]))
+    (handle-fsm-event! ctx eid :drop-item)))
 
 (def k->handle-input
   {:player-idle handle-input-player-idle
@@ -2022,14 +2015,16 @@
    (fn [{:keys [counter faction]}
         eid
         {:keys [ctx/elapsed-time
-                ctx/grid]}]
+                ctx/grid]
+         :as ctx}]
      (when (timer/stopped? elapsed-time counter)
        (swap! eid assoc :entity/destroyed? true)
-       (for [friendly-eid (->> {:position (:body/position (:entity/body @eid))
-                                :radius 4}
-                               (grid/circle->entities grid)
-                               (filter #(= (:entity/faction @%) faction)))]
-         [:tx/event friendly-eid :alert])))
+       (doseq [friendly-eid (->> {:position (:body/position (:entity/body @eid))
+                                  :radius 4}
+                                 (grid/circle->entities grid)
+                                 (filter #(= (:entity/faction @%) faction)))]
+         (handle-fsm-event! ctx friendly-eid :alert))
+       nil))
 
    :entity/string-effect
    (fn [{:keys [counter]}
@@ -2086,16 +2081,18 @@
    (fn [{:keys [skill effect-ctx counter]}
         eid
         {:keys [ctx/elapsed-time
-                ctx/raycaster]}]
+                ctx/raycaster]
+         :as ctx}]
      (let [effect-ctx (update-effect-ctx raycaster effect-ctx)]
        (cond
         (not (seq (filter #(effect-applicable? % effect-ctx)
                           (:skill/effects skill))))
-        [[:tx/event eid :action-done]]
+        (handle-fsm-event! ctx eid :action-done)
 
         (timer/stopped? elapsed-time counter)
-        [[:tx/effect effect-ctx (:skill/effects skill)]
-         [:tx/event eid :action-done]])))
+        (do (do! ctx [[:tx/effect effect-ctx (:skill/effects skill)]])
+            (handle-fsm-event! ctx eid :action-done)
+            nil))))
 
    :entity/delete-after-duration
    (fn [counter eid {:keys [ctx/elapsed-time]}]
@@ -2104,29 +2101,29 @@
        nil))
 
    :stunned
-   (fn [{:keys [counter]} eid {:keys [ctx/elapsed-time]}]
+   (fn [{:keys [counter]} eid {:keys [ctx/elapsed-time] :as ctx}]
      (when (timer/stopped? elapsed-time counter)
-       [[:tx/event eid :effect-wears-off]]))
+       (handle-fsm-event! ctx eid :effect-wears-off)))
 
    :npc-moving
-   (fn [{:keys [timer]} eid {:keys [ctx/elapsed-time]}]
+   (fn [{:keys [timer]} eid {:keys [ctx/elapsed-time] :as ctx}]
      (when (timer/stopped? elapsed-time timer)
-       [[:tx/event eid :timer-finished]]))
+       (handle-fsm-event! ctx eid :timer-finished)))
 
    :npc-sleeping
-   (fn [_ eid {:keys [ctx/grid]}]
+   (fn [_ eid {:keys [ctx/grid] :as ctx}]
      (let [entity @eid]
        (when-let [distance (grid/nearest-enemy-distance grid entity)]
          (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
-           [[:tx/event eid :alert]]))))
+           (handle-fsm-event! ctx eid :alert)))))
 
    :npc-idle
    (fn [_ eid ctx]
      (let [effect-ctx (create-effect-ctx ctx eid)]
        (if-let [skill (choose-skill ctx @eid effect-ctx)]
-         [[:tx/event eid :start-action [skill effect-ctx]]]
-         [[:tx/event eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
-                                                 [0 0])]])))
+         (handle-fsm-event! ctx eid :start-action [skill effect-ctx])
+         (handle-fsm-event! ctx eid :movement-direction (or (grid/find-direction (:ctx/grid ctx) eid)
+                                                            [0 0])))))
 
    :entity/movement
    (fn [{:keys [direction
