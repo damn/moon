@@ -1,4 +1,4 @@
-(ns gdx.maps.tiled.tiled-map-tile
+(ns gdx.tiled-map-tile
   (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]))
 
 (defn get-properties [tile]

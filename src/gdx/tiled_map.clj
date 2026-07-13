@@ -1,13 +1,13 @@
-(ns gdx.maps.tiled.tiled-map
+(ns gdx.tiled-map
   (:require [gdx.batch :as batch]
             [gdx.texture-region :as texture-region]
             [gdx.camera.orthographic :as orthographic-camera]
-            [gdx.maps.map-layers :as map-layers]
-            [gdx.maps.map-properties :as map-properties]
-            [gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
-            [gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
+            [gdx.map-layers :as map-layers]
+            [gdx.map-properties :as map-properties]
+            [gdx.tiled-map-tile :as tiled-map-tile]
+            [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
+            [gdx.tiled-map-tile-layer-cell :as cell]
+            [gdx.static-tiled-map-tile :as static-tiled-map-tile]
             [gdx.vector3 :as vector3]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]))
 

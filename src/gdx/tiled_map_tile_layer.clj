@@ -1,7 +1,7 @@
-(ns gdx.maps.tiled.tiled-map-tile-layer
-  (:require [gdx.maps.map-properties :as map-properties]
-            [gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]
-            [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
+(ns gdx.tiled-map-tile-layer
+  (:require [gdx.map-properties :as map-properties]
+            [gdx.tiled-map-tile :as tiled-map-tile]
+            [gdx.tiled-map-tile-layer-cell :as cell]
             [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]))
 
 (defn create-layer [width height tilewidth tileheight]

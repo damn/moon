@@ -1,9 +1,9 @@
 (ns moon.level.uf-caves
-  (:require [gdx.maps.tiled.tiled-map :as moon-tiled-map]
+  (:require [gdx.tiled-map :as moon-tiled-map]
             [moon.rand :as rand]
             [gdx.texture-region :as texture-region]
-            [gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdx.maps.map-properties :as map-properties]
+            [gdx.static-tiled-map-tile :as static-tiled-map-tile]
+            [gdx.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]))
 

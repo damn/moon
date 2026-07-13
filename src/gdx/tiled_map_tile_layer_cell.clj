@@ -1,4 +1,4 @@
-(ns gdx.maps.tiled.tiled-map-tile-layer.cell
+(ns gdx.tiled-map-tile-layer-cell
   (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]))
 
 (defn create []

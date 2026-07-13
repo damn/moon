@@ -1,4 +1,4 @@
-(ns gdx.maps.map-properties
+(ns gdx.map-properties
   (:refer-clojure :exclude [get])
   (:require [com.badlogic.gdx.maps.map-properties :as map-properties]))
 

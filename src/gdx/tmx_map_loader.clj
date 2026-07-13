@@ -1,4 +1,4 @@
-(ns gdx.maps.tiled.tmx-map-loader
+(ns gdx.tmx-map-loader
   (:require [com.badlogic.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]))
 
 (defn load-tiled-map [path]
