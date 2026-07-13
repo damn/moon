@@ -732,6 +732,21 @@
 (defn- set-input-processor! [ctx processor]
   (input/set-processor! (:ctx/input ctx) processor))
 
+(defn- frame-delta-time [ctx]
+  (graphics/get-delta-time (:ctx/graphics ctx)))
+
+(defn- frames-per-second [ctx]
+  (graphics/get-frames-per-second (:ctx/graphics ctx)))
+
+(defn- gl20 [ctx]
+  (graphics/get-gl20 (:ctx/graphics ctx)))
+
+(defn- create-cursor [ctx pixmap hotspot-x hotspot-y]
+  (graphics/create-cursor (:ctx/graphics ctx) pixmap hotspot-x hotspot-y))
+
+(defn- set-system-cursor! [ctx cursor]
+  (graphics/set-cursor! (:ctx/graphics ctx) cursor))
+
 (defn- mouseover-actor [{:keys [ctx/stage] :as ctx}]
   (let [[x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
     (stage/hit stage x y true)))
@@ -1263,8 +1278,7 @@
                  (str (number/readable elapsed-time) " seconds"))
     :icon "images/clock.png"}
    {:label "FPS"
-    :update-fn (fn [{:keys [ctx/graphics]}]
-                 (graphics/get-frames-per-second graphics))
+    :update-fn frames-per-second
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
     :update-fn (fn [{:keys [ctx/mouseover-eid]}]
@@ -2235,7 +2249,7 @@
                                       (fn [[path-segment [hotspot-x hotspot-y]]]
                                         (let [path (format path-format path-segment)
                                               pixmap* (pixmap/new (files/internal (:ctx/files ctx) path))
-                                              cursor (graphics/create-cursor (:ctx/graphics ctx) pixmap* hotspot-x hotspot-y)]
+                                              cursor (create-cursor ctx pixmap* hotspot-x hotspot-y)]
                                           (disposable/dispose! pixmap*)
                                           cursor))))))
 
@@ -2466,9 +2480,8 @@
                                      (:body/position (:entity/body @player-eid)))
   ctx)
 
-(defn clear-screen
-  [{:keys [ctx/graphics] :as ctx}]
-  (let [gl (graphics/get-gl20 graphics)]
+(defn clear-screen [ctx]
+  (let [gl (gl20 ctx)]
     (gl20/gl-clear-color! gl 0 0 0 0)
     (gl20/gl-clear! gl gl20/gl-color-buffer-bit))
   ctx)
@@ -2710,8 +2723,7 @@
                       :cursors/no-skill-selected)))})
 
 (defn set-cursor
-  [{:keys [ctx/graphics
-           ctx/cursors
+  [{:keys [ctx/cursors
            ctx/player-eid]
     :as ctx}]
   (let [eid player-eid
@@ -2722,7 +2734,7 @@
                      cursor-fn
                      (cursor-fn eid ctx))]
     (assert (contains? cursors cursor-key))
-    (graphics/set-cursor! graphics (get cursors cursor-key)))
+    (set-system-cursor! ctx (get cursors cursor-key)))
   ctx)
 
 (defn handle-player-input
@@ -2748,10 +2760,8 @@
                   (not (or (control-key-just-pressed? ctx :unpause-once)
                            (control-key-pressed? ctx :unpause-continously)))))))
 
-(defn- update-time
-  [{:keys [ctx/graphics]
-    :as ctx}]
-  (let [delta-ms (min (graphics/get-delta-time graphics) max-delta)]
+(defn- update-time [ctx]
+  (let [delta-ms (min (frame-delta-time ctx) max-delta)]
     (-> ctx
         (assoc :ctx/delta-time delta-ms)
         (update :ctx/elapsed-time + delta-ms))))
