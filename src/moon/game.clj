@@ -1,7 +1,7 @@
 (ns moon.game
-  (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [clojure.math :as math]
+  (:require [clojure.edn :as edn] ; ✅
+            [clojure.java.io :as io] ; ✅
+            [clojure.math :as math] ; 🚩
             [clojure.string :as str]
             [gdx.actor :as actor]
             [gdx.actor.group :as group]
@@ -84,10 +84,6 @@
 (def schema
   (malli-schema/create
    [:map {:closed true}
-    ;[:ctx/application :some]
-    ; TODO this is in global state why hold it here (already there!)
-    ; that means everything depending on 'gdx' global state should go to
-    ; gdx ?
     [:ctx/input :some]
     [:ctx/graphics :some]
     [:ctx/audio :some]
