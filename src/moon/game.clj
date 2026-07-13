@@ -28,7 +28,7 @@
             [gdx.sprite-batch :as sprite-batch]
             [gdx.texture-region :as texture-region]
             [gdx.gl20 :as gl20]
-            [gdx.texture-data.pixmap :as pixmap-texture-data]
+            [gdx.pixmap-texture-data :as pixmap-texture-data]
             [gdx.texture :as texture]
             [gdx.texture-filter :as texture-filter]
             [gdx.actor.group :as group]

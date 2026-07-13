@@ -2,7 +2,7 @@
   (:require [gdx.files :as files]
             [gdx.file-handle :as file-handle]
             [gdx.texture-region :as texture-region]
-            [gdx.texture-data.file :as file-texture-data]
+            [gdx.file-texture-data :as file-texture-data]
             [gdx.pixmap :as pixmap]
             [gdx.texture :as texture]
             [clojure.string :as str]))
