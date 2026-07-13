@@ -39,7 +39,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+            [clojure.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]

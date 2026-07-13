@@ -5,7 +5,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.touchable :as touchable]
+            [clojure.gdx.scenes.scene2d.touchable :as touchable]
             [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
