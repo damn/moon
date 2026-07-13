@@ -9,7 +9,7 @@
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
 
 (defn- set-label-text-actor [label-widget text-fn]

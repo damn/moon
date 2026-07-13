@@ -39,7 +39,7 @@
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
             [com.badlogic.gdx.utils.align :as align]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [com.badlogic.gdx.utils.viewport.viewport :as viewport]
