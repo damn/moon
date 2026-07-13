@@ -947,16 +947,6 @@
                [[:tx/state-exit eid old-state-obj]
                 [:tx/state-enter eid new-state-obj]])))))
 
-   :tx/move-entity
-   (fn [{:keys [ctx/content-grid ctx/grid]} eid]
-     (content-grid/update-entity! content-grid eid)
-     (grid/remove-from-touched-cells! grid eid)
-     (grid/set-touched-cells! grid eid)
-     (when (:body/collides? (:entity/body @eid))
-       (grid/remove-from-occupied-cells! grid eid)
-       (grid/set-occupied-cells! grid eid))
-     nil)
-
    :tx/pickup-item
    (fn [_ctx eid item]
      (assert (item/valid? item))
@@ -2174,6 +2164,7 @@
         eid
         {:keys [ctx/delta-time
                 ctx/grid
+                ctx/content-grid
                 ctx/max-speed]}]
      (assert (<= 0 speed max-speed)
              (pr-str speed))
@@ -2193,7 +2184,13 @@
            (when rotate-in-movement-direction?
              (swap! eid assoc-in [:entity/body :body/rotation-angle]
                     (v2/angle-from-vector direction)))
-           [[:tx/move-entity eid]]))))})
+           (content-grid/update-entity! content-grid eid)
+           (grid/remove-from-touched-cells! grid eid)
+           (grid/set-touched-cells! grid eid)
+           (when (:body/collides? (:entity/body @eid))
+             (grid/remove-from-occupied-cells! grid eid)
+             (grid/set-occupied-cells! grid eid))
+           nil))))})
 
 (defn tick-component
   [ctx eid [k v]]
