@@ -3,9 +3,6 @@
             [gdx.application-listener :as application-listener]
             [gdx.config :as app-config]))
 
-(defn use-glfw-async! []
-  (app-config/use-glfw-async!))
-
 (defn create
   [{:keys [config listener]}]
   (lwjgl3-application/new (application-listener/create listener)

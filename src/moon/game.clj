@@ -21,6 +21,7 @@
             [gdx.change-listener :as change-listener]
             [gdx.color :as color]
             [gdx.colors :as colors]
+            [gdx.config :as config]
             [gdx.disposable :as disposable]
             [gdx.files :as files]
             [gdx.free-type-font-generator :as font-generator]
@@ -3146,7 +3147,7 @@
    :foreground-fps 60} )
 
 (defn -main []
-  (lwjgl-application/use-glfw-async!)
+  (config/use-glfw-async!)
   (lwjgl-application/create
    {:listener application-listener
     :config application-config}))

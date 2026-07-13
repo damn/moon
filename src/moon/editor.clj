@@ -45,7 +45,8 @@
             [gdx.viewport.fit :as fit-viewport]
             [gdx.viewport :as viewport]
             [gdx.application :as application]
-            [gdx.application.lwjgl :as lwjgl-application]))
+            [gdx.application.lwjgl :as lwjgl-application]
+            [gdx.config :as config]))
 
 (defn k-label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
@@ -733,7 +734,7 @@
   (viewport/update! (:stage/viewport (get-stage ctx)) width height true))
 
 (defn -main []
-  (lwjgl-application/use-glfw-async!)
+  (config/use-glfw-async!)
   (lwjgl-application/create
    {:listener {:create! (fn [application]
                           (reset! state (create application)))

@@ -26,7 +26,8 @@
             [gdx.viewport.fit :as fit-viewport]
             [gdx.viewport :as viewport]
             [gdx.application :as application]
-            [gdx.application.lwjgl :as lwjgl-application]))
+            [gdx.application.lwjgl :as lwjgl-application]
+            [gdx.config :as config]))
 
 (def state (atom nil))
 
@@ -179,7 +180,7 @@
     (viewport/update! world-viewport width height false)))
 
 (defn -main []
-  (lwjgl-application/use-glfw-async!)
+  (config/use-glfw-async!)
   (lwjgl-application/create
    {:listener {:create! (fn [application]
                           (reset! state (create state config application)))
