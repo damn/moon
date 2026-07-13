@@ -197,6 +197,15 @@
           (v2/scale direction
                     (+ (/ (:body/width body) 2) size 0.1))))
 
+(defn- add-text-effect [entity elapsed-time text duration]
+  (assoc entity :entity/string-effect
+         (if-let [existing (:entity/string-effect entity)]
+           (-> existing
+               (update :text str "\n" text)
+               (update :counter timer/increment duration))
+           {:text text
+            :counter (timer/create elapsed-time duration)})))
+
 (defmulti handle-effect
   (fn [[k _v] _effect-ctx _ctx]
     k))
@@ -272,7 +281,7 @@
   nil)
 
 (defmethod handle-effect :effects.target/damage
-  [[_ damage] {:keys [effect/source effect/target]} _ctx]
+  [[_ damage] {:keys [effect/source effect/target]} {:keys [ctx/elapsed-time]}]
   (let [source* @source
         target* @target
         hp (stats/get-hitpoints (:entity/stats target*))]
@@ -288,7 +297,8 @@
           (:entity/stats target*)
           (< (rand) (stats/effective-armor-save (:entity/stats source*)
                                             (:entity/stats target*))))
-     [[:tx/add-text-effect target "[WHITE]ARMOR" 0.3]]
+     (do (swap! target add-text-effect elapsed-time "[WHITE]ARMOR" 0.3)
+         nil)
 
      :else
      (let [min-max (if (:entity/stats source*)  ; projectiles dont have ....
@@ -298,11 +308,12 @@
                      (:damage/min-max damage))
            dmg-amount (rand/int-between min-max)
            new-hp-val (max (- (hp 0) dmg-amount)
-                           0)]
+                           0)
+           dmg-text (str "[RED]" dmg-amount "[]")]
        (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
+       (swap! target add-text-effect elapsed-time dmg-text 0.3)
        [[:tx/event    target (if (zero? new-hp-val) :kill :alert)]
-        [:tx/audiovisual (:body/position (:entity/body target*)) :audiovisuals/damage]
-        [:tx/add-text-effect target (str "[RED]" dmg-amount "[]") 0.3]]))))
+        [:tx/audiovisual (:body/position (:entity/body target*)) :audiovisuals/damage]]))))
 
 (defmethod handle-effect :effects.target/kill
   [_ {:keys [effect/target]} _ctx]
@@ -865,9 +876,9 @@
   nil)
 
 (defn- state-exit-npc-sleeping
-  [_ eid _ctx]
-  [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]
-   [:tx/add-text-effect eid "[WHITE]!" 1]])
+  [_ eid {:keys [ctx/elapsed-time]}]
+  (swap! eid add-text-effect elapsed-time "[WHITE]!" 1)
+  [[:tx/spawn-alert (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2]])
 
 (defn- state-exit-npc-moving
   [_ eid _ctx]
@@ -887,17 +898,6 @@
      (swap! eid update :entity/skills assoc id skill)
      [(when (:entity/player? @eid)
         [:tx/ui-update-skill eid skill])])
-
-   :tx/add-text-effect
-   (fn [{:keys [ctx/elapsed-time]} eid text duration]
-     (swap! eid assoc :entity/string-effect
-            (if-let [existing (:entity/string-effect @eid)]
-              (-> existing
-                  (update :text str "\n" text)
-                  (update :counter timer/increment duration))
-              {:text text
-               :counter (timer/create elapsed-time duration)}))
-     nil)
 
    :tx/audiovisual
    (fn [{:keys [ctx/db]} position audiovisual]
