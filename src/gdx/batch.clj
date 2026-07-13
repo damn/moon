@@ -1,4 +1,4 @@
-(ns gdx.graphics.g2d.batch
+(ns gdx.batch
   (:require [com.badlogic.gdx.graphics.g2d.batch :as batch]))
 
 (def x1 batch/X1)

@@ -1,4 +1,4 @@
-(ns gdx.graphics.g2d.sprite-batch
+(ns gdx.sprite-batch
   (:require [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]))
 
 (defn create []

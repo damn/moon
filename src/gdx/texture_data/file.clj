@@ -1,4 +1,4 @@
-(ns gdx.graphics.glutils.file-texture-data
+(ns gdx.texture-data.file
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.glutils.file-texture-data :as file-texture-data]))
 

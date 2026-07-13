@@ -1,4 +1,4 @@
-(ns gdx.graphics.g2d.texture-region
+(ns gdx.texture-region
   (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
 
 (defn create

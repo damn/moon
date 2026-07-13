@@ -1,4 +1,4 @@
-(ns gdx.graphics.glutils.pixmap-texture-data
+(ns gdx.texture-data.pixmap
   (:require [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]))
 
 (defn create [pixmap format dispose-pixmap? use-mip-maps?]

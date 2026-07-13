@@ -1,4 +1,4 @@
-(ns gdx.graphics.g2d.bitmap-font-data
+(ns gdx.bitmap-font-data
   (:require [com.badlogic.gdx.graphics.g2d.bitmap-font$bitmap-font-data :as bitmap-font-data]))
 
 (defn scale-x [font-data]

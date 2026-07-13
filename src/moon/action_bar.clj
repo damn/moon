@@ -1,5 +1,5 @@
 (ns moon.action-bar
-  (:require [gdx.graphics.g2d.texture-region :as texture-region]
+  (:require [gdx.texture-region :as texture-region]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.group :as group]
             [gdx.scenes.scene2d.ui.button-group :as button-group]

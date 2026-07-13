@@ -1,4 +1,4 @@
-(ns gdx.graphics.texture
+(ns gdx.texture
   (:require [com.badlogic.gdx.graphics.texture :as texture]))
 
 (defn create [texture-data]

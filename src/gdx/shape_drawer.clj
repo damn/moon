@@ -1,4 +1,4 @@
-(ns gdx.graphics.g2d.shape-drawer
+(ns gdx.shape-drawer
   (:refer-clojure :exclude [new rectangle])
   (:require [space.earlygrey.shapedrawer.shape-drawer :as shape-drawer]))
 

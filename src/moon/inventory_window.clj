@@ -1,5 +1,5 @@
 (ns moon.inventory-window
-  (:require [gdx.graphics.color :as color]
+  (:require [gdx.color :as color]
             [gdx.scenes.scene2d.actor :as actor]
             [gdx.scenes.scene2d.event :as event]
             [gdx.scenes.scene2d.group :as group]

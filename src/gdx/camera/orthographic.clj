@@ -1,4 +1,4 @@
-(ns gdx.graphics.orthographic-camera
+(ns gdx.camera.orthographic
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.math.frustum :as frustum]

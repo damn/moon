@@ -1,4 +1,4 @@
-(ns gdx.graphics.colors
+(ns gdx.colors
   (:require [com.badlogic.gdx.graphics.colors :as colors]))
 
 (defn put! [name color]

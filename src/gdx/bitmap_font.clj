@@ -1,4 +1,4 @@
-(ns gdx.graphics.g2d.bitmap-font
+(ns gdx.bitmap-font
   (:require [com.badlogic.gdx.graphics.g2d.bitmap-font :as bitmap-font]))
 
 (defn get-data [font]

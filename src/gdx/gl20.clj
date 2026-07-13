@@ -1,4 +1,4 @@
-(ns gdx.graphics.gl20
+(ns gdx.gl20
   (:require [com.badlogic.gdx.graphics.gl20 :as gl20]))
 
 (defn gl-clear-color! [gl r g b a]

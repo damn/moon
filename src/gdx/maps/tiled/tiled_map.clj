@@ -1,7 +1,7 @@
 (ns gdx.maps.tiled.tiled-map
-  (:require [gdx.graphics.g2d.batch :as batch]
-            [gdx.graphics.g2d.texture-region :as texture-region]
-            [gdx.graphics.orthographic-camera :as orthographic-camera]
+  (:require [gdx.batch :as batch]
+            [gdx.texture-region :as texture-region]
+            [gdx.camera.orthographic :as orthographic-camera]
             [gdx.maps.map-layers :as map-layers]
             [gdx.maps.map-properties :as map-properties]
             [gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]

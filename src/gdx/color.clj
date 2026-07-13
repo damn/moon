@@ -1,4 +1,4 @@
-(ns gdx.graphics.color
+(ns gdx.color
   (:require [com.badlogic.gdx.graphics.color :as color]))
 
 (defn create [rgba]
