@@ -11,7 +11,7 @@
             [gdx.scenes.scene2d.utils.click-listener :as click-listener]
             [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.math.vector2 :as vector2]
+            [gdx.vector2 :as vector2]
             [moon.inventory.cell :as inventory-cell]))
 
 (defn- get-cell [inventory-window cell]

@@ -1,5 +1,5 @@
 (ns moon.body
-  (:require [gdx.math.rectangle :as gdx-rectangle]
+  (:require [gdx.rectangle :as gdx-rectangle]
             [moon.v2 :as v2]
             [moon.rectangle :as moon-rectangle]))
 

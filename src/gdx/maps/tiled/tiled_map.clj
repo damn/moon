@@ -8,7 +8,7 @@
             [gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]
             [gdx.maps.tiled.tiled-map-tile-layer.cell :as cell]
             [gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdx.math.vector3 :as vector3]
+            [gdx.vector3 :as vector3]
             [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]))
 
 (defn get-properties [tiled-map]

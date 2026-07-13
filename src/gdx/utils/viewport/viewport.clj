@@ -1,6 +1,6 @@
 (ns gdx.utils.viewport.viewport
   (:require [com.badlogic.gdx.utils.viewport.viewport :as viewport]
-            [gdx.math.vector2 :as vector2]))
+            [gdx.vector2 :as vector2]))
 
 (defn get-world-width [viewport]
   (viewport/getWorldWidth viewport))

@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [new])
   (:require [com.badlogic.gdx.graphics.orthographic-camera :as camera]
             [com.badlogic.gdx.math.frustum :as frustum]
-            [gdx.math.vector3 :as vector3]))
+            [gdx.vector3 :as vector3]))
 
 (defn new []
   (camera/new))
