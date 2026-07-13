@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.horizontal-group
+(ns gdx.actor.group.widget-group.horizontal-group
   (:require [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]))
 
 (defn create

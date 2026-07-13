@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.skin
+(ns gdx.skin
   (:require [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
 
 (defn create [file-handle]

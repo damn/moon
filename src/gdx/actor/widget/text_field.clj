@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.text-field
+(ns gdx.actor.widget.text-field
   (:require [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]))
 
 (defn create [text skin]

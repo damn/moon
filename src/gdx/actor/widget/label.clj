@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.label
+(ns gdx.actor.widget.label
   (:refer-clojure :exclude [class])
   (:require [com.badlogic.gdx.scenes.scene2d.ui.label :as label]))
 

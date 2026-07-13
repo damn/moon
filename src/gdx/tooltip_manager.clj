@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.tooltip-manager
+(ns gdx.tooltip-manager
   (:require [com.badlogic.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]))
 
 (defn get-instance []

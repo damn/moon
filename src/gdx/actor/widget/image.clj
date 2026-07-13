@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.image
+(ns gdx.actor.widget.image
   (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]))
 
 (defn create [drawable]

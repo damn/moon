@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.button-group
+(ns gdx.button-group
   (:require [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))
 
 (defn create

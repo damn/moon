@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.select-box
+(ns gdx.actor.widget.select-box
   (:require [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]))
 
 (defn create [skin]

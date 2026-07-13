@@ -2,13 +2,13 @@
   (:require [gdx.texture-region :as texture-region]
             [gdx.actor :as actor]
             [gdx.actor.group :as group]
-            [gdx.scenes.scene2d.ui.button-group :as button-group]
-            [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
-            [gdx.scenes.scene2d.ui.image-button :as image-button]
-            [gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [gdx.button-group :as button-group]
+            [gdx.actor.group.widget-group.horizontal-group :as horizontal-group]
+            [gdx.actor.group.widget-group.table.button.image-button :as image-button]
+            [gdx.actor.group.widget-group.table :as table]
+            [gdx.tooltip.text-tooltip :as text-tooltip]
             [gdx.layout :as layout]
-            [gdx.drawable.texture-region :as texture-region-drawable]))
+            [gdx.base-drawable.texture-region :as texture-region-drawable]))
 
 (defn create []
   (doto (table/create

@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.image-button
+(ns gdx.actor.group.widget-group.table.button.image-button
   (:require [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]))
 
 (defn create

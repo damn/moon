@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.ui.check-box
+(ns gdx.actor.group.widget-group.table.button.text-button.check-box
   (:require [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]))
 
 (defn create [text skin]
