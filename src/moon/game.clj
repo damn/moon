@@ -2403,12 +2403,11 @@
     (f v eid ctx)
     nil))
 
-(defn create-bootstrap []
-  (let [app (gdx/app)]
-    {:ctx/audio    (application/get-audio    app)
-     :ctx/files    (application/get-files    app)
-     :ctx/graphics (application/get-graphics app)
-     :ctx/input    (application/get-input    app)
+(defn create-bootstrap [app]
+  {:ctx/audio    (application/get-audio    app)
+   :ctx/files    (application/get-files    app)
+   :ctx/graphics (application/get-graphics app)
+   :ctx/input    (application/get-input    app)
    :ctx/unit-scale (atom 1)
    :ctx/active-entities nil
    :ctx/delta-time nil
@@ -2424,7 +2423,7 @@
    :ctx/show-cell-entities? false
    :ctx/show-cell-occupied? false
    :ctx/show-body-bounds? false
-   :ctx/show-tile-grid? false}))
+   :ctx/show-tile-grid? false})
 
 (defn create-batch [ctx]
   (assoc ctx :ctx/batch (sprite-batch/create)))
@@ -3090,8 +3089,11 @@
       create-spawn-creatures
       create-dissoc-files))
 
+(defn dispose-audio! [ctx]
+  (audio/dispose! (get-audio ctx)))
+
 (defn dispose [ctx]
-  (audio/dispose! (get-audio ctx))
+  (dispose-audio! ctx)
   (dispose-batch! ctx)
   (dispose-cursors! ctx)
   (dispose-default-font! ctx)
@@ -3123,26 +3125,42 @@
       update-draw-stage
       render-validate))
 
+(defn resize-stage-viewport! [ctx width height]
+  (viewport/update! (:stage/viewport (get-stage ctx)) width height true))
+
+(defn resize-world-viewport! [ctx width height]
+  (viewport/update! (get-world-viewport ctx) width height false))
+
 (defn resize
   [ctx width height]
-  (let [stage (get-stage ctx)
-        world-viewport (get-world-viewport ctx)]
-    (viewport/update! (:stage/viewport stage) width height true)
-    (viewport/update! world-viewport width height false)))
+  (resize-stage-viewport! ctx width height)
+  (resize-world-viewport! ctx width height))
 
 (def state (atom nil))
 
+(defn create! []
+  (reset! state (create (gdx/app))))
+
+(defn dispose! []
+  (dispose @state))
+
+(defn render! []
+  (swap! state render))
+
+(defn resize! [width height]
+  (resize @state width height))
+
+(defn pause! [])
+
+(defn resume! [])
+
 (def listener-spec
-  {:create! (fn []
-              (reset! state (create)))
-   :dispose! (fn []
-               (dispose @state))
-   :render! (fn []
-              (swap! state render))
-   :resize! (fn [width height]
-              (resize @state width height))
-   :pause! (fn [])
-   :resume! (fn [])})
+  {:create! create!
+   :dispose! dispose!
+   :render! render!
+   :resize! resize!
+   :pause! pause!
+   :resume! resume!})
 
 (defn -main []
   (config/use-glfw-async!)
