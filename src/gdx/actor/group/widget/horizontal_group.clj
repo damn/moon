@@ -4,5 +4,5 @@
 (defn create
   [{:keys [space pad]}]
   (doto (horizontal-group/new)
-    (horizontal-group/space 2)
-    (horizontal-group/pad 2)))
+    (horizontal-group/space space)
+    (horizontal-group/pad pad)))
