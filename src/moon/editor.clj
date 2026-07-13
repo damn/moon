@@ -30,7 +30,7 @@
             [clojure.gdx.scenes.scene2d.touchable :as touchable]
             [clojure.gdx.scenes.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
-            [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
+            [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
             [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
@@ -211,7 +211,7 @@
                   extra-info-text]} row]
       {:actor (let [stack (stack/new)]
                 (run! #(group/add-actor! stack %)
-                      [(doto (image-button/new
+                      [(doto (image-button/create
                               (doto (texture-region-drawable/new texture-region)
                                 (texture-region-drawable/setMinSize (* image-scale (texture-region/get-region-width texture-region))
                                                 (* image-scale (texture-region/get-region-height texture-region)))))
@@ -542,7 +542,7 @@
                                {:actor
                                 (let [scale 2
                                       texture-region (textures/texture-region textures image)]
-                                  (image-button/new
+                                  (image-button/create
                                    (doto (texture-region-drawable/new texture-region)
                                      (texture-region-drawable/setMinSize (* scale (texture-region/get-region-width texture-region))
                                                                        (* scale (texture-region/get-region-height texture-region))))))})]}))
@@ -562,7 +562,7 @@
   [_ image {:keys [ctx/textures]}]
   (let [texture-region (textures/texture-region textures image)
         scale 2]
-    (image-button/new
+    (image-button/create
      (doto (texture-region-drawable/new texture-region)
        (texture-region-drawable/setMinSize (* scale (texture-region/get-region-width texture-region))
                                               (* scale (texture-region/get-region-height texture-region)))))))
