@@ -47,7 +47,6 @@
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.coll :as coll]
-            [moon.content-grid :as content-grid]
             [moon.data-viewer-window :as data-viewer-window]
             [moon.db :as db]
             [moon.dev-menu :as dev-menu]
@@ -55,7 +54,6 @@
             [moon.error-window :as error-window]
             [moon.faction :as faction]
             [moon.g2d :as moon-g2d]
-            [moon.grid :as grid]
             [moon.info-window :as info-window]
             [moon.inventory :as inventory]
             [moon.inventory-window :as inventory-window]
@@ -680,17 +678,8 @@
 (defn- get-render-z-order [ctx]
   (:ctx/render-z-order ctx))
 
-(defn- get-content-grid [ctx]
-  (world/get-content-grid (get-world ctx)))
-
-(defn- get-entity-ids [ctx]
-  (world/get-entity-ids (get-world ctx)))
-
 (defn- get-explored-tile-corners [ctx]
   (:ctx/explored-tile-corners ctx))
-
-(defn- get-grid [ctx]
-  (world/get-grid (get-world ctx)))
 
 (defn- get-potential-field-cache [ctx]
   (:ctx/potential-field-cache ctx))
@@ -975,6 +964,12 @@
 
 (defn- register-eid! [ctx eid]
   (world/register-eid! (get-world ctx) eid))
+
+(defn- unregister-eid! [ctx eid]
+  (world/unregister-eid! (get-world ctx) eid))
+
+(defn- relocate-eid! [ctx eid]
+  (world/relocate-eid! (get-world ctx) eid))
 
 (defn- spawn-entity! [ctx entity]
   (let [entity (reduce (fn [m [k v]]
@@ -2177,10 +2172,10 @@
 
 (defn- create-effect-ctx
   [ctx eid]
-  (let [grid (get-grid ctx)
+  (let [world (get-world ctx)
         raycaster (get-raycaster ctx)
         entity @eid
-        target (grid/nearest-enemy grid entity)
+        target (world/nearest-enemy world entity)
         target (when (and target
                           (raycaster/line-of-sight? raycaster entity @target))
                  target)]
@@ -2226,7 +2221,7 @@
     (swap! eid assoc :entity/destroyed? true)
     (doseq [friendly-eid (->> {:position (:body/position (:entity/body @eid))
                                :radius 4}
-                              (grid/circle->entities (get-grid ctx))
+                              (world/circle->entities (get-world ctx))
                               (filter #(= (:entity/faction @%) faction)))]
       (handle-fsm-event! ctx friendly-eid :alert)))
   nil)
@@ -2260,18 +2255,17 @@
   [{:keys [entity-effects already-hit-bodies piercing?]}
    eid
    ctx]
-  (let [grid (get-grid ctx)
+  (let [world (get-world ctx)
         entity @eid
-        cells* (map deref (moon-g2d/get-cells grid (body/touched-tiles (:entity/body entity))))
         hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                         (not= (:entity/faction entity)
                                               (:entity/faction @%))
                                         (:body/collides? (:entity/body @%))
                                         (body/overlaps? (:entity/body entity)
                                                         (:entity/body @%)))
-                                  (grid/entities cells*)))
+                                  (world/entities-at-touched-tiles world entity)))
         destroy? (or (and hit-entity (not piercing?))
-                     (some #(cell/blocked? % (:body/z-order (:entity/body entity))) cells*))]
+                     (world/blocked-at-touched-tiles? world entity (:body/z-order (:entity/body entity))))]
     (when hit-entity
       (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
              (conj already-hit-bodies hit-entity)))
@@ -2319,7 +2313,7 @@
 (defn- tick-npc-sleeping
   [_ eid ctx]
   (let [entity @eid]
-    (when-let [distance (grid/nearest-enemy-distance (get-grid ctx) entity)]
+    (when-let [distance (world/nearest-enemy-distance (get-world ctx) entity)]
       (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
         (handle-fsm-event! ctx eid :alert)))))
 
@@ -2328,7 +2322,7 @@
   (let [effect-ctx (create-effect-ctx ctx eid)]
     (if-let [skill (choose-skill ctx @eid effect-ctx)]
       (handle-fsm-event! ctx eid :start-action [skill effect-ctx])
-      (handle-fsm-event! ctx eid :movement-direction (or (grid/find-direction (get-grid ctx) eid)
+      (handle-fsm-event! ctx eid :movement-direction (or (world/find-direction (get-world ctx) eid)
                                                          [0 0])))))
 
 (defn- tick-entity-movement
@@ -2347,23 +2341,17 @@
   (when-not (or (zero? (v2/length direction))
                 (nil? speed)
                 (zero? speed))
-    (let [grid (get-grid ctx)
-          content-grid (get-content-grid ctx)
+    (let [world (get-world ctx)
           movement (assoc movement :delta-time (get-delta-time ctx))
           body (:entity/body @eid)]
       (when-let [body (if (:body/collides? body)
-                         (grid/try-move-solid-body grid body (:entity/id @eid) movement)
+                         (world/try-move-solid-body world body (:entity/id @eid) movement)
                          (update body :body/position v2/move movement))]
         (swap! eid assoc-in [:entity/body :body/position] (:body/position body))
         (when rotate-in-movement-direction?
           (swap! eid assoc-in [:entity/body :body/rotation-angle]
                  (v2/angle-from-vector direction)))
-        (content-grid/update-entity! content-grid eid)
-        (grid/remove-from-touched-cells! grid eid)
-        (grid/set-touched-cells! grid eid)
-        (when (:body/collides? (:entity/body @eid))
-          (grid/remove-from-occupied-cells! grid eid)
-          (grid/set-occupied-cells! grid eid))
+        (relocate-eid! ctx eid)
         nil))))
 
 (def k->tick
@@ -2553,12 +2541,7 @@
                                                             (constantly false)))))
 
 (defn create-raycaster [ctx]
-  (let [grid (get-grid ctx)
-        width (moon-g2d/width grid)
-        height (moon-g2d/height grid)
-        cells (for [cell (map deref (moon-g2d/cells grid))]
-                [(:position cell)
-                 (boolean (cell/blocks-vision? cell))])
+  (let [{:keys [width height cells]} (world/raycaster-data (get-world ctx))
         arr (make-array Boolean/TYPE width height)]
     (doseq [[[x y] blocked?] cells]
       (aset arr x y (boolean blocked?)))
@@ -2577,7 +2560,7 @@
   ctx)
 
 (defn create-player-eid [ctx]
-  (let [eid (get @(get-entity-ids ctx) 1)]
+  (let [eid (world/entity-by-id (get-world ctx) 1)]
     (assert (:entity/player? @eid))
     (assoc ctx :ctx/player-eid eid)))
 
@@ -2621,7 +2604,7 @@
                   nil
                   (let [player @player-eid
                         hits (remove #(= (:body/z-order (:entity/body @%)) :z-order/effect)
-                                     (grid/point->entities (get-grid ctx) position))]
+                                     (world/point->entities (get-world ctx) position))]
                     (->> render-z-order
                          (coll/sort-by-order hits #(:body/z-order (:entity/body @%)))
                          reverse
@@ -2636,11 +2619,11 @@
 (defn check-debug-viewer
   [ctx]
   (when (control-button-just-pressed? ctx :open-debug-button)
-    (let [world-grid (get-grid ctx)
+    (let [world (get-world ctx)
           mouseover-eid (get-mouseover-eid ctx)
           world-mouse-position (get-world-mouse-position ctx)
           data (or (and mouseover-eid @mouseover-eid)
-                   @(world-grid (mapv int world-mouse-position)))]
+                   (world/cell-at world (mapv int world-mouse-position)))]
       (stage/add-actor! (get-stage ctx)
                         (data-viewer-window/create
                          {:title "Data View"
@@ -2653,7 +2636,7 @@
 (defn set-active-entities
   [ctx]
   (assoc ctx :ctx/active-entities
-         (content-grid/active-entities (get-content-grid ctx) @(get-player-eid ctx))))
+         (world/active-entities (get-world ctx) @(get-player-eid ctx))))
 
 (defn set-camera-position
   [ctx]
@@ -2717,13 +2700,11 @@
 
 (defn- draw-cell-debug
   [ctx]
-  (let [world-grid (get-grid ctx)
+  (let [world (get-world ctx)
         colors (get-colors ctx)
-        world-viewport (get-world-viewport ctx)]
-    (doseq [[x y] (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))
-            :let [cell (world-grid [x y])]
-            :when cell
-            :let [cell* @cell]]
+        world-viewport (get-world-viewport ctx)
+        tile-positions (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))]
+    (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
       (when (and (get-show-cell-entities? ctx) (seq (:entities cell*)))
         (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-entities colors)))
       (when (and (get-show-cell-occupied? ctx) (seq (:occupied cell*)))
@@ -2780,12 +2761,12 @@
 (defn- highlight-mouseover-tile
   [ctx]
   (let [colors (get-colors ctx)
-        world-grid (get-grid ctx)
+        world (get-world ctx)
         [x y] (mapv int (get-world-mouse-position ctx))
-        cell (world-grid [x y])]
-    (when (and cell (#{:air :none} (:movement @cell)))
+        cell (world/cell-at world [x y])]
+    (when (and cell (#{:air :none} (:movement cell)))
       (draw-fn-rectangle ctx x y 1 1
-                         (case (:movement @cell)
+                         (case (:movement cell)
                            :air (:colors/mouseover-tile-air colors)
                            :none (:colors/mouseover-tile-none colors))))))
 
@@ -2936,7 +2917,7 @@
 (defn- update-potential-fields
   [ctx]
   (doseq [[faction max-iterations] factions-iterations]
-    (grid/update! (get-grid ctx)
+    (world/update-potential-fields! (get-world ctx)
                   (get-potential-field-cache ctx)
                   faction
                   (get-active-entities ctx)
@@ -2975,22 +2956,13 @@
 
 (defn remove-destroyed-entities
   [ctx]
-  (let [world-grid (get-grid ctx)
-        entity-ids (get-entity-ids ctx)
-        content-grid (get-content-grid ctx)]
-    (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
-      (let [id (:entity/id @eid)]
-        (assert (contains? @entity-ids id))
-        (swap! entity-ids dissoc id)
-        (content-grid/remove-entity! content-grid eid)
-        (grid/remove-from-touched-cells! world-grid eid)
-        (when (:body/collides? (:entity/body @eid))
-          (grid/remove-from-occupied-cells! world-grid eid))
-        (doseq [[k v] @eid
-                :let [destroy-fn (k->destroy k)]
-                :when destroy-fn]
-          (destroy-fn v eid ctx))))
-    ctx))
+  (doseq [eid (world/destroyed-eids (get-world ctx))]
+    (unregister-eid! ctx eid)
+    (doseq [[k v] @eid
+            :let [destroy-fn (k->destroy k)]
+            :when destroy-fn]
+      (destroy-fn v eid ctx)))
+  ctx)
 
 (def zoom-speed 0.025)
 
