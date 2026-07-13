@@ -1072,9 +1072,9 @@
         entity (merge (map->EntityRecord {}) entity)
         eid (atom entity)]
     (register-eid! ctx eid)
-    (mapcat (fn [component]
-              (after-create-component ctx eid component))
-            @eid)))
+    (doseq [component @eid]
+      (after-create-component ctx eid component))
+    nil))
 
 (defn- tx-spawn-item [_ctx position item]
   [[:tx/spawn-entity
