@@ -14,6 +14,12 @@
             [gdx.vector2 :as vector2]
             [moon.inventory.cell :as inventory-cell]))
 
+(defn- get-player-eid [ctx]
+  (:ctx/player-eid ctx))
+
+(defn- get-ui-mouse-position [ctx]
+  (:ctx/ui-mouse-position ctx))
+
 (defn- get-cell [inventory-window cell]
   (->> "inventory-cell-table"
        (#(group/find-actor inventory-window %))
@@ -49,16 +55,14 @@
              [(widget/new
                (fn [this _batch _parent-alpha]
                  (when-let [stage (actor/get-stage this)]
-                   (let [{:keys [ctx/player-eid
-                                 ctx/ui-mouse-position]
-                          :as ctx} (:stage/ctx stage)]
+                   (let [ctx (:stage/ctx stage)]
                      (draw-cell-rect! ctx
-                                      @player-eid
+                                      @(get-player-eid ctx)
                                       (actor/get-x this)
                                       (actor/get-y this)
                                       (let [[x y] (vector2/clojurize
                                                    (actor/stage-to-local-coordinates this
-                                                                                    (vector2/new ui-mouse-position)))]
+                                                                                    (vector2/new (get-ui-mouse-position ctx))))]
                                         (actor/hit this x y true))
                                       (actor/get-user-object (actor/get-parent this)))))))
               (doto (image/create-drawable background-drawable)
@@ -68,9 +72,8 @@
        (doto stack
          (actor/add-listener! (click-listener/create
                              (fn [event _x _y]
-                               (let [{:keys [ctx/player-eid]
-                                      :as ctx} (:stage/ctx (event/get-stage event))]
-                                 (on-click-cell ctx player-eid cell)))))
+                               (let [ctx (:stage/ctx (event/get-stage event))]
+                                 (on-click-cell ctx (get-player-eid ctx) cell)))))
          (actor/set-name! "inventory-cell")
          (actor/set-user-object! cell)))}))
 

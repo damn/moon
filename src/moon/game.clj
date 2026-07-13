@@ -275,6 +275,8 @@
   (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
     (handle-effect effect effect-ctx ctx)))
 
+(declare get-raycaster)
+
 (defmulti effect-useful?
   (fn [[k _v] _effect-ctx _ctx]
     k))
@@ -290,8 +292,9 @@
 (defmethod effect-useful? :effects/projectile
   [[_ {:keys [projectile/max-range] :as projectile}]
    {:keys [effect/source effect/target]}
-   {:keys [ctx/raycaster]}]
-  (let [source-p (:body/position (:entity/body @source))
+   ctx]
+  (let [raycaster (get-raycaster ctx)
+        source-p (:body/position (:entity/body @source))
         target-p (:body/position (:entity/body @target))]
     (and (not (let [[start1,target1,start2,target2] (v2/double-ray-endpositions source-p
                                                                                target-p
@@ -1227,11 +1230,11 @@
 (defmethod handle-effect :effects/target-all
   [[_ {:keys [entity-effects]}]
    {:keys [effect/source]}
-   {:keys [ctx/active-entities
-           ctx/colors
-           ctx/raycaster]
-    :as ctx}]
-  (let [source* @source]
+   ctx]
+  (let [active-entities (get-active-entities ctx)
+        colors (get-colors ctx)
+        raycaster (get-raycaster ctx)
+        source* @source]
     (doseq [target (affected-targets active-entities raycaster source*)]
       (spawn-line! ctx
                    {:start (:body/position (:entity/body source*))
@@ -1247,8 +1250,9 @@
 (defmethod handle-effect :effects/target-entity
   [[_ {:keys [maxrange entity-effects]}]
    {:keys [effect/source effect/target] :as effect-ctx}
-   {:keys [ctx/colors] :as ctx}]
-  (let [body        (:entity/body @source)
+   ctx]
+  (let [colors (get-colors ctx)
+        body        (:entity/body @source)
         target-body (:entity/body @target)]
     (if (body/in-range? body target-body maxrange)
       (do (spawn-line! ctx
@@ -1491,8 +1495,8 @@
     :update-fn (fn [{:keys [ctx/world-mouse-position]}]
                  (mapv int world-mouse-position))}
    {:label "Zoom"
-    :update-fn (fn [{:keys [ctx/world-viewport]}]
-                 (orthographic-camera/zoom (viewport/get-camera world-viewport)))
+    :update-fn (fn [ctx]
+                 (orthographic-camera/zoom (viewport/get-camera (get-world-viewport ctx))))
     :icon "images/zoom.png"}])
 
 (def max-speed
@@ -1506,25 +1510,30 @@
         image-width 32]
     (/ (/ image-width tile-size) 2)))
 
-(defn- draw-fn-circle [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/circle shape-drawer x y radius))
+(defn- draw-fn-circle [ctx [x y] radius color-float-bits]
+  (let [shape-drawer (get-shape-drawer ctx)]
+    (shape-drawer/set-color! shape-drawer color-float-bits)
+    (shape-drawer/circle shape-drawer x y radius)))
 
-(defn- draw-fn-ellipse [{:keys [ctx/shape-drawer]} [x y] radius-x radius-y color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/ellipse shape-drawer x y radius-x radius-y))
+(defn- draw-fn-ellipse [ctx [x y] radius-x radius-y color-float-bits]
+  (let [shape-drawer (get-shape-drawer ctx)]
+    (shape-drawer/set-color! shape-drawer color-float-bits)
+    (shape-drawer/ellipse shape-drawer x y radius-x radius-y)))
 
-(defn- draw-fn-filled-circle [{:keys [ctx/shape-drawer]} [x y] radius color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/filled-circle! shape-drawer x y radius))
+(defn- draw-fn-filled-circle [ctx [x y] radius color-float-bits]
+  (let [shape-drawer (get-shape-drawer ctx)]
+    (shape-drawer/set-color! shape-drawer color-float-bits)
+    (shape-drawer/filled-circle! shape-drawer x y radius)))
 
-(defn- draw-fn-filled-rectangle [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/filled-rectangle! shape-drawer x y w h))
+(defn- draw-fn-filled-rectangle [ctx x y w h color-float-bits]
+  (let [shape-drawer (get-shape-drawer ctx)]
+    (shape-drawer/set-color! shape-drawer color-float-bits)
+    (shape-drawer/filled-rectangle! shape-drawer x y w h)))
 
-(defn- draw-fn-line [{:keys [ctx/shape-drawer]} [sx sy] [ex ey] color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/line shape-drawer sx sy ex ey))
+(defn- draw-fn-line [ctx [sx sy] [ex ey] color-float-bits]
+  (let [shape-drawer (get-shape-drawer ctx)]
+    (shape-drawer/set-color! shape-drawer color-float-bits)
+    (shape-drawer/line shape-drawer sx sy ex ey)))
 
 (defn- draw-fn-grid [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
   (let [w (* (float gridw) (float cellw))
@@ -1538,25 +1547,25 @@
             :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
       (draw-fn-line ctx [leftx liney] [rightx liney] color-float-bits))))
 
-(defn- draw-fn-rectangle [{:keys [ctx/shape-drawer]} x y w h color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/rectangle shape-drawer x y w h))
+(defn- draw-fn-rectangle [ctx x y w h color-float-bits]
+  (let [shape-drawer (get-shape-drawer ctx)]
+    (shape-drawer/set-color! shape-drawer color-float-bits)
+    (shape-drawer/rectangle shape-drawer x y w h)))
 
-(defn- draw-fn-sector [{:keys [ctx/shape-drawer]} [center-x center-y] radius start-radians radians color-float-bits]
-  (shape-drawer/set-color! shape-drawer color-float-bits)
-  (shape-drawer/sector shape-drawer center-x center-y radius start-radians radians))
+(defn- draw-fn-sector [ctx [center-x center-y] radius start-radians radians color-float-bits]
+  (let [shape-drawer (get-shape-drawer ctx)]
+    (shape-drawer/set-color! shape-drawer color-float-bits)
+    (shape-drawer/sector shape-drawer center-x center-y radius start-radians radians)))
 
-(defn- draw-fn-text [{:keys [ctx/unit-scale]
-                      :as ctx}
-                      {:keys [font scale x y text up?]}]
+(defn- draw-fn-text [ctx {:keys [font scale x y text up?]}]
   (let [font (or font (get-default-font ctx))
-        unit-scale @unit-scale
+        unit-scale (get-unit-scale ctx)
         scale (or scale 1)
         font-data (bitmap-font/get-data font)
         old-scale (bitmap-font-data/scale-x font-data)
         target-width 0
         wrap? false
-        scale (* (float unit-scale)
+        scale (* (float @unit-scale)
                  (float scale))]
     (bitmap-font-data/set-scale! font-data (* old-scale scale))
     (bitmap-font/draw! font
@@ -1574,12 +1583,9 @@
                        wrap?)
     (bitmap-font-data/set-scale! font-data old-scale)))
 
-(defn- draw-fn-texture-region [{:keys [ctx/unit-scale]
-                                :as ctx}
-                               texture-region
-                               [x y]
-                               & {:keys [center? rotation]}]
-  (let [[w h] (let [dimensions [(texture-region/get-region-width texture-region)
+(defn- draw-fn-texture-region [ctx texture-region [x y] & {:keys [center? rotation]}]
+  (let [unit-scale (get-unit-scale ctx)
+        [w h] (let [dimensions [(texture-region/get-region-width texture-region)
                                 (texture-region/get-region-height texture-region)]]
                   (if (= @unit-scale 1)
                     dimensions
@@ -1651,10 +1657,9 @@
   [_
    {:keys [entity/body
            entity/faction]}
-   {:keys [ctx/colors
-           ctx/player-eid]
-    :as ctx}]
-  (let [player @player-eid
+   ctx]
+  (let [colors (get-colors ctx)
+        player @(get-player-eid ctx)
         color (cond (= faction (faction/enemy (:entity/faction player)))
                     (:colors/enemy-color colors)
                     (= faction (:entity/faction player))
@@ -1687,8 +1692,9 @@
                             {:center? true})))
 
 (defn- render-stats
-  [_ entity {:keys [ctx/colors] :as ctx}]
-  (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
+  [_ entity ctx]
+  (let [colors (get-colors ctx)
+        ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
     (when (or (< ratio 1) (:entity/mouseover? entity))
       (let [{:keys [body/position body/width body/height]} (:entity/body entity)
             [x y] position
@@ -1716,12 +1722,12 @@
                        :up? true})))
 
 (defn- render-stunned
-  [_ {:keys [entity/body]} {:keys [ctx/colors] :as ctx}]
-  (draw-fn-circle ctx (:body/position body) 0.5 (:colors/stunned colors)))
+  [_ {:keys [entity/body]} ctx]
+  (draw-fn-circle ctx (:body/position body) 0.5 (:colors/stunned (get-colors ctx)))
 
 (defn- render-temp-modifier
-  [_ entity {:keys [ctx/colors] :as ctx}]
-  (draw-fn-filled-circle ctx (:body/position (:entity/body entity)) 0.5 (:colors/temp-modifier colors)))
+  [_ entity ctx]
+  (draw-fn-filled-circle ctx (:body/position (:entity/body entity)) 0.5 (:colors/temp-modifier (get-colors ctx)))
 
 (defmulti effect-render
   (fn [[k _v] _effect-ctx _ctx]
@@ -1734,11 +1740,11 @@
 (defmethod effect-render :effects/target-all
   [_
    {:keys [effect/source]}
-   {:keys [ctx/active-entities
-           ctx/colors
-           ctx/raycaster]
-    :as ctx}]
-  (let [source* @source]
+   ctx]
+  (let [active-entities (get-active-entities ctx)
+        colors (get-colors ctx)
+        raycaster (get-raycaster ctx)
+        source* @source]
     (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
       (draw-fn-line ctx
                     (:body/position (:entity/body source*))
@@ -1748,9 +1754,10 @@
 (defmethod effect-render :effects/target-entity
   [[_ {:keys [maxrange]}]
    {:keys [effect/source effect/target]}
-   {:keys [ctx/colors] :as ctx}]
+   ctx]
   (when target
-    (let [body        (:entity/body @source)
+    (let [colors (get-colors ctx)
+          body        (:entity/body @source)
           target-body (:entity/body @target)]
       (draw-fn-line ctx
                     (body/start-point body target-body)
@@ -1762,11 +1769,11 @@
 (defn- render-active-skill
   [{:keys [skill effect-ctx counter]}
    entity
-   {:keys [ctx/colors
-           ctx/elapsed-time
+   {:keys [ctx/elapsed-time
            ctx/textures]
     :as ctx}]
-  (let [{:keys [entity/image skill/effects]} skill
+  (let [colors (get-colors ctx)
+        {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
         action-counter-ratio (timer/ratio elapsed-time counter)
         texture-region (textures/texture-region textures image)
@@ -2018,7 +2025,8 @@
   (actor/new
    (fn [_actor _delta])
    (fn [this _batch _parent-alpha]
-     (let [{:keys [ctx/player-eid] :as ctx} (:stage/ctx (actor/get-stage this))
+     (let [ctx (:stage/ctx (actor/get-stage this))
+           player-eid (get-player-eid ctx)
            entity @player-eid
            state-k (:state (:entity/fsm entity))]
        (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx)))))
@@ -2115,11 +2123,11 @@
           nil))))
 
 (defn- handle-input-player-idle
-  [player-eid {:keys [ctx/interaction-state] :as ctx}]
+  [player-eid ctx]
   (if-let [movement-vector (player-movement-vector ctx)]
     (handle-fsm-event! ctx player-eid :movement-input movement-vector)
     (when (button-just-pressed? ctx :input.buttons/left)
-      (interaction-state->txs interaction-state
+      (interaction-state->txs (get-interaction-state ctx)
                               ctx
                               player-eid))))
 
@@ -2276,10 +2284,9 @@
 (defn- tick-active-skill
   [{:keys [skill effect-ctx counter]}
    eid
-   {:keys [ctx/elapsed-time
-           ctx/raycaster]
+   {:keys [ctx/elapsed-time]
     :as ctx}]
-  (let [effect-ctx (update-effect-ctx raycaster effect-ctx)]
+  (let [effect-ctx (update-effect-ctx (get-raycaster ctx) effect-ctx)]
     (cond
      (not (seq (filter #(effect-applicable? % effect-ctx)
                        (:skill/effects skill))))
@@ -2328,7 +2335,6 @@
     :as movement}
    eid
    {:keys [ctx/delta-time
-           ctx/content-grid
            ctx/max-speed]
     :as ctx}]
   (assert (<= 0 speed max-speed)
@@ -2341,6 +2347,7 @@
                 (nil? speed)
                 (zero? speed))
     (let [grid (get-grid ctx)
+          content-grid (get-content-grid ctx)
           movement (assoc movement :delta-time delta-time)
           body (:entity/body @eid)]
       (when-let [body (if (:body/collides? body)
@@ -2623,12 +2630,12 @@
 
 (defn update-mouseover-eid
   [{:keys [ctx/mouseover-eid
-           ctx/player-eid
-           ctx/raycaster
-           ctx/render-z-order
            ctx/world-mouse-position]
     :as ctx}]
-  (let [position world-mouse-position
+  (let [player-eid (get-player-eid ctx)
+        raycaster (get-raycaster ctx)
+        render-z-order (get-render-z-order ctx)
+        position world-mouse-position
         new-eid (if (mouseover-actor ctx)
                   nil
                   (let [player @player-eid
@@ -2663,18 +2670,14 @@
   ctx)
 
 (defn set-active-entities
-  [{:keys [ctx/player-eid
-           ctx/content-grid]
-    :as ctx}]
+  [ctx]
   (assoc ctx :ctx/active-entities
-         (content-grid/active-entities content-grid @player-eid)))
+         (content-grid/active-entities (get-content-grid ctx) @(get-player-eid ctx))))
 
 (defn set-camera-position
-  [{:keys [ctx/player-eid
-           ctx/world-viewport]
-    :as ctx}]
-  (orthographic-camera/set-position! (viewport/get-camera world-viewport)
-                                     (:body/position (:entity/body @player-eid)))
+  [ctx]
+  (orthographic-camera/set-position! (viewport/get-camera (get-world-viewport ctx))
+                                     (:body/position (:entity/body @(get-player-eid ctx))))
   ctx)
 
 (defn clear-screen [ctx]
@@ -2684,23 +2687,23 @@
   ctx)
 
 (defn render-draw-tiled-map
-  [{:keys [ctx/colors
-           ctx/explored-tile-corners
-           ctx/raycaster
-           ctx/tiled-map
-           ctx/world-viewport]
+  [{:keys [ctx/explored-tile-corners
+           ctx/tiled-map]
     :as ctx}]
-  (draw-tiled-map! ctx
-                   tiled-map
-                   (viewport/get-camera world-viewport)
-                   (tile-color-setter*
-                    {:ray-blocked? (partial raycaster/blocked? raycaster)
-                     :explored-tile-corners explored-tile-corners
-                     :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
-                     :see-all-tiles? false
-                     :explored-tile-color (:colors/explored-tile colors)
-                     :visible-tile-color (:colors/visible-tile colors)
-                     :invisible-tile-color (:colors/invisible-tile colors)}))
+  (let [raycaster (get-raycaster ctx)
+        world-viewport (get-world-viewport ctx)
+        colors (get-colors ctx)]
+    (draw-tiled-map! ctx
+                     tiled-map
+                     (viewport/get-camera world-viewport)
+                     (tile-color-setter*
+                      {:ray-blocked? (partial raycaster/blocked? raycaster)
+                       :explored-tile-corners explored-tile-corners
+                       :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
+                       :see-all-tiles? false
+                       :explored-tile-color (:colors/explored-tile colors)
+                       :visible-tile-color (:colors/visible-tile colors)
+                       :invisible-tile-color (:colors/invisible-tile colors)})))
   ctx)
 
 (def ^:private render-layers
@@ -2718,11 +2721,10 @@
      :active-skill}])
 
 (defn- draw-tile-grid
-  [{:keys [ctx/world-viewport
-           ctx/show-tile-grid?]
-    :as ctx}]
-  (when show-tile-grid?
-    (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/get-camera world-viewport))]
+  [ctx]
+  (when (get-show-tile-grid? ctx)
+    (let [world-viewport (get-world-viewport ctx)
+          [left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/get-camera world-viewport))]
       (draw-fn-grid ctx
                      (int left-x)
                      (int bottom-y)
@@ -2730,29 +2732,26 @@
                      (+ 2 (int (viewport/get-world-height world-viewport)))
                      1
                      1
-                     (color/to-float-bits [1 1 1 0.8])))))
+                     (color/to-float-bits [1 1 1 0.8]))))))
 
 (defn- draw-cell-debug
-  [{:keys [ctx/colors
-           ctx/world-viewport
-           ctx/show-potential-field-colors?
-           ctx/show-cell-entities?
-           ctx/show-cell-occupied?]
-    :as ctx}]
-  (let [world-grid (get-grid ctx)]
+  [ctx]
+  (let [world-grid (get-grid ctx)
+        colors (get-colors ctx)
+        world-viewport (get-world-viewport ctx)]
     (doseq [[x y] (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))
             :let [cell (world-grid [x y])]
-          :when cell
-          :let [cell* @cell]]
-    (when (and show-cell-entities? (seq (:entities cell*)))
-      (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-entities colors)))
-    (when (and show-cell-occupied? (seq (:occupied cell*)))
-      (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-occupied colors)))
-    (when-let [faction show-potential-field-colors?]
-      (let [{:keys [distance]} (faction cell*)]
-        (when distance
-          (let [ratio (/ distance (factions-iterations faction))]
-            (draw-fn-filled-rectangle ctx x y 1 1 ((:colors/debug-potential-field colors) ratio)))))))))
+            :when cell
+            :let [cell* @cell]]
+      (when (and (get-show-cell-entities? ctx) (seq (:entities cell*)))
+        (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-entities colors)))
+      (when (and (get-show-cell-occupied? ctx) (seq (:occupied cell*)))
+        (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-occupied colors)))
+      (when-let [faction (get-show-potential-field-colors? ctx)]
+        (let [{:keys [distance]} (faction cell*)]
+          (when distance
+            (let [ratio (/ distance (factions-iterations faction))]
+              (draw-fn-filled-rectangle ctx x y 1 1 ((:colors/debug-potential-field colors) ratio))))))))))
 
 (defn draw-entity-rectangle!
   [ctx entity color-float-bits]
@@ -2762,14 +2761,14 @@
     (draw-fn-rectangle ctx x y width height color-float-bits)))
 
 (defn- draw-entities!
-  [{:keys [ctx/active-entities
-           ctx/colors
-           ctx/player-eid
-           ctx/raycaster
-           ctx/render-z-order
-           ctx/show-body-bounds?]
-    :as ctx}]
-  (let [entities (map deref active-entities)
+  [ctx]
+  (let [player-eid (get-player-eid ctx)
+        raycaster (get-raycaster ctx)
+        colors (get-colors ctx)
+        render-z-order (get-render-z-order ctx)
+        show-body-bounds? (get-show-body-bounds? ctx)
+        active-entities (get-active-entities ctx)
+        entities (map deref active-entities)
         player @player-eid
         should-draw? (fn [entity z-order]
                        (or (= z-order :z-order/effect)
@@ -2798,11 +2797,10 @@
           (throwable/pretty-pst t))))))
 
 (defn- highlight-mouseover-tile
-  [{:keys [ctx/colors
-           ctx/world-mouse-position]
-    :as ctx}]
-  (let [world-grid (get-grid ctx)
-        [x y] (mapv int world-mouse-position)
+  [ctx]
+  (let [colors (get-colors ctx)
+        world-grid (get-grid ctx)
+        [x y] (mapv int (get-world-mouse-position ctx))
         cell (world-grid [x y])]
     (when (and cell (#{:air :none} (:movement @cell)))
       (draw-fn-rectangle ctx x y 1 1
@@ -2811,32 +2809,32 @@
                            :none (:colors/mouseover-tile-none colors))))))
 
 (defn draw-on-world-viewport
-  [{:keys [ctx/shape-drawer
-           ctx/unit-scale
-           ctx/world-viewport]
-    :as ctx}]
-  (set-batch-color! ctx 1 1 1 1)
-  (set-batch-projection-matrix! ctx (orthographic-camera/combined (viewport/get-camera world-viewport)))
-  (begin-batch! ctx)
-  (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
-    (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
-    (reset! unit-scale world-unit-scale)
-    (doseq [draw-fn [draw-tile-grid
-                     draw-cell-debug
-                     draw-entities!
-                     highlight-mouseover-tile]]
-      (draw-fn ctx))
-    (reset! unit-scale 1)
-    (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-  (end-batch! ctx)
-  ctx)
+  [ctx]
+  (let [world-viewport (get-world-viewport ctx)
+        shape-drawer (get-shape-drawer ctx)
+        unit-scale (get-unit-scale ctx)]
+    (set-batch-color! ctx 1 1 1 1)
+    (set-batch-projection-matrix! ctx (orthographic-camera/combined (viewport/get-camera world-viewport)))
+    (begin-batch! ctx)
+    (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
+      (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
+      (reset! unit-scale world-unit-scale)
+      (doseq [draw-fn [draw-tile-grid
+                       draw-cell-debug
+                       draw-entities!
+                       highlight-mouseover-tile]]
+        (draw-fn ctx))
+      (reset! unit-scale 1)
+      (shape-drawer/set-default-line-width! shape-drawer old-line-width))
+    (end-batch! ctx)
+    ctx))
 
 (defn- make-interaction-state
   [{:keys [ctx/mouseover-eid
-           ctx/player-eid
            ctx/world-mouse-position]
     :as ctx}]
-  (let [stage (get-stage ctx)
+  (let [player-eid (get-player-eid ctx)
+        stage (get-stage ctx)
         mouseover-actor* (mouseover-actor ctx)]
     (cond
       mouseover-actor*
@@ -2874,8 +2872,8 @@
    :stunned :cursors/denied
    :player-moving :cursors/walking
    :player-idle (fn
-                  [eid {:keys [ctx/interaction-state]}]
-                  (let [[k params] interaction-state]
+                  [eid ctx]
+                  (let [[k params] (get-interaction-state ctx)]
                     (case k
                       :interaction-state/mouseover-actor
                       (let [[actor-type params] params
@@ -2928,9 +2926,8 @@
   ctx)
 
 (defn handle-player-input
-  [{:keys [ctx/player-eid]
-    :as ctx}]
-  (let [eid player-eid
+  [ctx]
+  (let [eid (get-player-eid ctx)
         entity @eid
         state-k (:state (:entity/fsm entity))]
     (when-let [input-fn (k->handle-input state-k)]
@@ -2941,12 +2938,11 @@
   (dissoc ctx :ctx/interaction-state))
 
 (defn assoc-paused
-  [{:keys [ctx/player-eid]
-    :as ctx}]
+  [ctx]
   (assoc ctx :ctx/paused?
          (or #_error
              (and pausing?
-                  (state->pause-game? (:state (:entity/fsm @player-eid)))
+                  (state->pause-game? (:state (:entity/fsm @(get-player-eid ctx))))
                   (not (or (control-key-just-pressed? ctx :unpause-once)
                            (control-key-pressed? ctx :unpause-continously)))))))
 
@@ -2957,22 +2953,19 @@
         (update :ctx/elapsed-time + delta-ms))))
 
 (defn- update-potential-fields
-  [{:keys [ctx/active-entities
-           ctx/potential-field-cache]
-    :as ctx}]
+  [ctx]
   (doseq [[faction max-iterations] factions-iterations]
     (grid/update! (get-grid ctx)
-                  potential-field-cache
+                  (get-potential-field-cache ctx)
                   faction
-                  active-entities
+                  (get-active-entities ctx)
                   max-iterations))
   ctx)
 
 (defn- tick-entities
-  [{:keys [ctx/active-entities]
-    :as ctx}]
+  [ctx]
   (try
-    (doseq [eid active-entities
+    (doseq [eid (get-active-entities ctx)
             component @eid]
       (try (tick-component ctx eid component)
            (catch Throwable t
@@ -3000,8 +2993,10 @@
      (audiovisual! ctx (:body/position (:entity/body @eid)) audiovisuals-id))})
 
 (defn remove-destroyed-entities
-  [{:keys [ctx/content-grid ctx/entity-ids] :as ctx}]
-  (let [world-grid (get-grid ctx)]
+  [ctx]
+  (let [world-grid (get-grid ctx)
+        entity-ids (get-entity-ids ctx)
+        content-grid (get-content-grid ctx)]
     (doseq [eid (filter (comp :entity/destroyed? deref) (vals @entity-ids))]
       (let [id (:entity/id @eid)]
         (assert (contains? @entity-ids id))
