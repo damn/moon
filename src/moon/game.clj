@@ -720,6 +720,16 @@
           nil)
          :state initial-state))
 
+(defn- ui-update-skill! [ctx skill]
+  (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
+    (-> stage
+        :stage/root
+        (#(group/find-actor % "moon.ui.action-bar"))
+        (action-bar/add-skill! {:skill-id (:property/id skill)
+                                :texture-region (textures/texture-region textures (:entity/image skill))
+                                :tooltip-text (info-text skill ctx)}
+                               skin))))
+
 (defn- after-create-fsm
   [{:keys [fsm initial-state]} eid ctx]
   (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
@@ -727,10 +737,14 @@
   nil)
 
 (defn- after-create-skills
-  [skills eid _ctx]
+  [skills eid ctx]
   (swap! eid assoc :entity/skills nil)
-  (for [skill skills]
-    [:tx/add-skill eid skill]))
+  (doseq [{:keys [property/id] :as skill} skills]
+    (assert (not (contains? (:entity/skills @eid) id)))
+    (swap! eid update :entity/skills assoc id skill)
+    (when (:entity/player? @eid)
+      (ui-update-skill! ctx skill)))
+  nil)
 
 (defn- after-create-inventory
   [items eid _ctx]
@@ -918,16 +932,6 @@
    :npc-sleeping state-exit-npc-sleeping
    :npc-moving state-exit-npc-moving})
 
-(defn- ui-update-skill! [ctx skill]
-  (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
-    (-> stage
-        :stage/root
-        (#(group/find-actor % "moon.ui.action-bar"))
-        (action-bar/add-skill! {:skill-id (:property/id skill)
-                                :texture-region (textures/texture-region textures (:entity/image skill))
-                                :tooltip-text (info-text skill ctx)}
-                               skin))))
-
 (defn- ui-set-item! [ctx cell item]
   (let [{:keys [ctx/skin ctx/stage ctx/textures]} ctx]
     (-> stage
@@ -957,15 +961,7 @@
       (actor/set-user-object! (atom {:text message :counter 0}))))
 
 (def tx-fn-map
-  {   :tx/add-skill
-   (fn [ctx eid {:keys [property/id] :as skill}]
-     {:pre [(not (contains? (:entity/skills @eid) id))]}
-     (swap! eid update :entity/skills assoc id skill)
-     (when (:entity/player? @eid)
-       (ui-update-skill! ctx skill))
-     nil)
-
-   :tx/audiovisual
+  {   :tx/audiovisual
    (fn [ctx position audiovisual]
      (let [{:keys [ctx/db]} ctx
            {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
