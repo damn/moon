@@ -320,7 +320,8 @@
   (when-not (:entity/temp-modifier @target)
     (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
                                                :counter (timer/create elapsed-time spiderweb-duration)})
-    [[:tx/update target :entity/stats stats/add-mods spiderweb-modifiers]]))
+    (swap! target update :entity/stats stats/add-mods spiderweb-modifiers)
+    nil))
 
 (defmethod handle-effect :effects.target/stun
   [[_ duration] {:keys [effect/target]} _ctx]
@@ -808,9 +809,9 @@
 
 (defn- state-enter-active-skill
   [{:keys [skill]} eid]
+  (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
   [[:tx/sound (:skill/start-action-sound skill)]
-   [:tx/set-cooldown eid skill]
-   [:tx/update eid :entity/stats stats/pay-mana-cost (:skill/cost skill)]])
+   [:tx/set-cooldown eid skill]])
 
 (defn- state-enter-npc-dead
   [_ eid]
@@ -883,8 +884,8 @@
   {:tx/add-skill
    (fn [ctx eid {:keys [property/id] :as skill}]
      {:pre [(not (contains? (:entity/skills @eid) id))]}
-     [[:tx/update eid :entity/skills assoc id skill]
-      (when (:entity/player? @eid)
+     (swap! eid update :entity/skills assoc id skill)
+     [(when (:entity/player? @eid)
         [:tx/ui-update-skill eid skill])])
 
    :tx/add-text-effect
@@ -973,9 +974,9 @@
            item (get-in (:entity/inventory entity) cell)]
        (assert item)
        (swap! eid assoc-in (cons :entity/inventory cell) nil)
-       [(when (inventory-cell/applies-modifiers? cell)
-          [:tx/update eid :entity/stats stats/remove-mods (:stats/modifiers item)])
-        (when (:entity/player? @eid)
+       (when (inventory-cell/applies-modifiers? cell)
+         (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
+       [(when (:entity/player? @eid)
           [:tx/ui-remove-item eid cell])]))
 
    :tx/set-cooldown
@@ -991,9 +992,9 @@
        (assert (and (nil? (get-in inventory cell))
                     (inventory-cell/valid-slot? cell item)))
        (swap! eid assoc-in (cons :entity/inventory cell) item)
-       [(when (inventory-cell/applies-modifiers? cell)
-          [:tx/update eid :entity/stats stats/add-mods (:stats/modifiers item)])
-        (when (:entity/player? @eid)
+       (when (inventory-cell/applies-modifiers? cell)
+         (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
+       [(when (:entity/player? @eid)
           [:tx/ui-set-item eid cell item])]))
 
    :tx/show-message
@@ -1175,11 +1176,6 @@
      (grid/remove-from-touched-cells! grid eid)
      (when (:body/collides? (:entity/body @eid))
        (grid/remove-from-occupied-cells! grid eid))
-     nil)
-
-   :tx/update
-   (fn [_ctx eid & params]
-     (apply swap! eid update params)
      nil)})
 
 (defn do!
@@ -2095,7 +2091,8 @@
         {:keys [ctx/elapsed-time]}]
      (when (timer/stopped? elapsed-time counter)
        (swap! eid dissoc :entity/temp-modifier)
-       [[:tx/update eid :entity/stats stats/remove-mods modifiers]]))
+       (swap! eid update :entity/stats stats/remove-mods modifiers)
+       nil))
 
    :entity/projectile-collision
    (fn [{:keys [entity-effects already-hit-bodies piercing?]}
