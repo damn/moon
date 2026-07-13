@@ -1,6 +1,6 @@
 (ns clojure.gdx.application-listener
-  (:require [clojure.gdx :as gdx]
-            [com.badlogic.gdx.application-listener :as application-listener]))
+  (:require [com.badlogic.gdx.application-listener :as application-listener]
+            [com.badlogic.gdx.gdx :as gdx]))
 
 (defn create
   [{:keys [create!

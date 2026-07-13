@@ -1,6 +1,5 @@
 (ns moon.levelgen
-  (:require [clojure.gdx :as gdx]
-            [moon.db :as db]
+  (:require [moon.db :as db]
             [clojure.gdx.graphics.orthographic-camera :as orthographic-camera]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]

@@ -1,6 +1,5 @@
 (ns moon.editor
-  (:require [clojure.gdx :as gdx]
-            [moon.db :as db]
+  (:require [moon.db :as db]
             [moon.property :as property]
             [clojure.edn :as edn]
             [moon.coll :as coll]
