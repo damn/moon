@@ -834,17 +834,21 @@
                                              (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))
                                              align/center)))))
 
+(defn- play-sound! [ctx sound-name]
+  (audio/play! (:ctx/audio ctx) sound-name))
+
 (defn- state-enter-player-item-on-cursor
   [{:keys [item]} eid _ctx]
   (swap! eid assoc :entity/item-on-cursor item)
   nil)
 
 (defn- state-enter-active-skill
-  [{:keys [skill]} eid {:keys [ctx/elapsed-time]}]
+  [{:keys [skill]} eid ctx]
   (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
   (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
-         (timer/create elapsed-time (:skill/cooldown skill)))
-  [[:tx/sound (:skill/start-action-sound skill)]])
+         (timer/create (:ctx/elapsed-time ctx) (:skill/cooldown skill)))
+  (play-sound! ctx (:skill/start-action-sound skill))
+  nil)
 
 (defn- state-enter-npc-dead
   [_ eid _ctx]
@@ -859,8 +863,8 @@
   nil)
 
 (defn- state-enter-player-dead
-  [_ _eid {:keys [ctx/audio] :as ctx}]
-  (audio/play! audio "bfxr_playerdeath")
+  [_ _eid ctx]
+  (play-sound! ctx "bfxr_playerdeath")
   (show-modal! ctx {:title "YOU DIED - again!"
                     :text "Good luck next time!"
                     :button-text "OK"
@@ -888,8 +892,8 @@
         item (:entity/item-on-cursor entity)]
     (when item
       (swap! eid dissoc :entity/item-on-cursor)
-      [[:tx/sound "bfxr_itemputground"]
-       [:tx/spawn-item
+      (play-sound! ctx "bfxr_itemputground")
+      [[:tx/spawn-item
         (item-place-position ctx entity)
         item]])))
 
@@ -962,12 +966,13 @@
      nil)
 
    :tx/audiovisual
-   (fn [{:keys [ctx/db]} position audiovisual]
-     (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
+   (fn [ctx position audiovisual]
+     (let [{:keys [ctx/db]} ctx
+           {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                                   (db/build db audiovisual)
                                                   audiovisual)]
-       [[:tx/sound sound]
-        [:tx/spawn-effect
+       (play-sound! ctx sound)
+       [[:tx/spawn-effect
          position
          {:entity/animation (assoc animation :delete-after-stopped? true)}]]))
 
@@ -1044,11 +1049,6 @@
        (when (:entity/player? @eid)
          (ui-set-item! ctx cell item))
        nil))
-
-   :tx/sound
-   (fn [{:keys [ctx/audio]} sound-name]
-     (audio/play! audio sound-name)
-     nil)
 
    :tx/spawn-alert
    (fn [{:keys [ctx/elapsed-time]} position faction duration]
@@ -1709,14 +1709,14 @@
                 (create-draws (:stage/ctx stage))))))))
 
 (defn- clicked-inventory-cell-player-idle
-  [eid cell]
+  [ctx eid cell]
   (when-let [item (get-in (:entity/inventory @eid) cell)]
-    [[:tx/sound "bfxr_takeit"]
-     [:tx/event eid :pickup-item item]
+    (play-sound! ctx "bfxr_takeit")
+    [[:tx/event eid :pickup-item item]
      [:tx/remove-item eid cell]]))
 
 (defn- clicked-inventory-cell-player-item-on-cursor
-  [eid cell]
+  [ctx eid cell]
   (let [entity @eid
         inventory (:entity/inventory entity)
         item-in-cell (get-in inventory cell)
@@ -1725,22 +1725,22 @@
      (and (not item-in-cell)
           (inventory-cell/valid-slot? cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
-         [[:tx/sound "bfxr_itemput"]
-          [:tx/set-item eid cell item-on-cursor]
+         (play-sound! ctx "bfxr_itemput")
+         [[:tx/set-item eid cell item-on-cursor]
           [:tx/event eid :dropped-item]])
 
      (and item-in-cell
           (item/stackable? item-in-cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
-         [[:tx/sound "bfxr_itemput"]
-          [:tx/stack-item eid cell item-on-cursor]
+         (play-sound! ctx "bfxr_itemput")
+         [[:tx/stack-item eid cell item-on-cursor]
           [:tx/event eid :dropped-item]])
 
      (and item-in-cell
           (inventory-cell/valid-slot? cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
-         [[:tx/sound "bfxr_itemput"]
-          [:tx/remove-item eid cell]
+         (play-sound! ctx "bfxr_itemput")
+         [[:tx/remove-item eid cell]
           [:tx/set-item eid cell item-on-cursor]
           [:tx/event eid :dropped-item]
           [:tx/event eid :pickup-item item-in-cell]]))))
@@ -1750,10 +1750,10 @@
    :player-idle clicked-inventory-cell-player-idle})
 
 (defn handle-clicked-inventory-cell
-  [player-eid cell]
+  [ctx player-eid cell]
   (let [state-k (:state (:entity/fsm @player-eid))]
     (when-let [handler (k->clicked-inventory-cell state-k)]
-      (handler player-eid cell))))
+      (handler ctx player-eid cell))))
 
 (defn inventory-window-create
   [{:keys [ctx/colors
@@ -1903,19 +1903,19 @@
                     (#(group/find-actor % "moon.ui.windows.inventory"))
                     actor/visible?)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
-                    [[:tx/sound "bfxr_takeit"]
-                     [:tx/event player-eid :pickup-item item]])
+                    (play-sound! ctx "bfxr_takeit")
+                    [[:tx/event player-eid :pickup-item item]])
 
                 (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
-                    [[:tx/sound "bfxr_pickup"]
-                     [:tx/pickup-item player-eid item]])
+                    (play-sound! ctx "bfxr_pickup")
+                    [[:tx/pickup-item player-eid item]])
 
                 :else
-                (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
+                (do (play-sound! ctx "bfxr_denied")
                     (show-message! ctx "Your Inventory is full")
                     nil))))
-          (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
+          (do (play-sound! ctx "bfxr_denied")
               (show-message! ctx "Too far away")
               nil)))
 
@@ -1925,7 +1925,7 @@
 
       :interaction-state.skill/not-usable
       (let [state params]
-        (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
+        (do (play-sound! ctx "bfxr_denied")
             (show-message! ctx (case state
                                  :cooldown "Skill is still on cooldown"
                                  :not-enough-mana "Not enough mana"
@@ -1933,7 +1933,7 @@
             nil))
 
       :interaction-state/no-skill-selected
-      (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
+      (do (play-sound! ctx "bfxr_denied")
           (show-message! ctx "No selected skill")
           nil))))
 

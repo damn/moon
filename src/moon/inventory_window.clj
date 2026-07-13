@@ -70,7 +70,7 @@
                              (fn [event _x _y]
                                (let [{:keys [ctx/player-eid]
                                       :as ctx} (:stage/ctx (event/get-stage event))]
-                                 (do! ctx (on-click-cell player-eid cell))))))
+                                 (do! ctx (on-click-cell ctx player-eid cell))))))
          (actor/set-name! "inventory-cell")
          (actor/set-user-object! cell)))}))
 
