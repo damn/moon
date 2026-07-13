@@ -13,7 +13,7 @@
             [clojure.gdx.files :as files]
             [clojure.gdx.graphics :as graphics]
             [com.badlogic.gdx.graphics.color :as color]
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [clojure.gdx.graphics.gl20 :as gl20]
             [clojure.gdx.input :as input]
             [com.badlogic.gdx.maps.map-layers :as map-layers]
@@ -80,7 +80,7 @@
   (let [files (application/get-files application)
         input (application/get-input application)
         graphics (application/get-graphics application)
-        sprite-batch (sprite-batch/new)
+        sprite-batch (sprite-batch/create)
         ui-viewport (fit-viewport/new (:ui-viewport-width config)
                                       (:ui-viewport-height config))
         world-unit-scale (float (/ (:tile-size config)))

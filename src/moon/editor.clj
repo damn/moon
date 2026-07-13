@@ -22,7 +22,7 @@
             [clojure.gdx.graphics.gl20 :as gl20]
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clojure.gdx.graphics.g2d.bitmap-font-data :as bitmap-font-data]
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.input :as input]
             [clojure.gdx.scenes.scene2d.event :as event]
@@ -668,7 +668,7 @@
   (assoc ctx :ctx/graphics (application/get-graphics app)))
 
 (defn- batch-f [ctx]
-  (assoc ctx :ctx/batch (sprite-batch/new)))
+  (assoc ctx :ctx/batch (sprite-batch/create)))
 
 (defn- skin-f [{:keys [ctx/files] :as ctx}]
   (let [skin (ui-skin/new (files/internal files "skin/uiskin.json"))]

@@ -26,7 +26,7 @@
             [com.badlogic.gdx.graphics.g2d.batch :as batch]
             [clojure.gdx.graphics.g2d.bitmap-font :as bitmap-font]
             [clojure.gdx.graphics.g2d.bitmap-font-data :as bitmap-font-data]
-            [com.badlogic.gdx.graphics.g2d.sprite-batch :as sprite-batch]
+            [clojure.gdx.graphics.g2d.sprite-batch :as sprite-batch]
             [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]
             [clojure.gdx.graphics.gl20 :as gl20]
             [com.badlogic.gdx.graphics.glutils.pixmap-texture-data :as pixmap-texture-data]
@@ -2229,7 +2229,7 @@
    :ctx/show-tile-grid? false})
 
 (defn create-batch [ctx]
-  (assoc ctx :ctx/batch (sprite-batch/new)))
+  (assoc ctx :ctx/batch (sprite-batch/create)))
 
 (defn create-audio [ctx]
   (assoc ctx
