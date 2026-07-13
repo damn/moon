@@ -6,3 +6,6 @@
 
 (defn overlaps [a b]
   (rectangle/overlaps a b))
+
+(defn contains [rectangle x y]
+  (rectangle/contains rectangle x y))

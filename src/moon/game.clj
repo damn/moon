@@ -39,7 +39,7 @@
             [clojure.gdx.scenes.scene2d.ui.tooltip-manager :as tooltip-manager]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.utils.align :as align]
+            [clojure.gdx.utils.align :as align]
             [clojure.gdx.utils.viewport.fit-viewport :as fit-viewport]
             [clojure.gdx.utils.viewport.viewport :as viewport]
             [moon.action-bar :as action-bar]
