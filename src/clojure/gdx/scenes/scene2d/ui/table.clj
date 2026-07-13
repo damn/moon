@@ -44,3 +44,7 @@
     (layout/pack table))
   (when-let [defaults-opts (:table/cell-defaults opts)]
     (apply-cell-opts! (table/defaults table) defaults-opts)))
+
+(defn create [opts]
+  (doto (table/new)
+    (set-opts! opts)))

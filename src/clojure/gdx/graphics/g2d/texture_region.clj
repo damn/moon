@@ -7,3 +7,9 @@
    (texture-region/new texture))
   ([texture x y w h]
    (texture-region/new texture x y w h)))
+
+(defn get-region-width [texture-region]
+  (texture-region/getRegionWidth texture-region))
+
+(defn get-region-height [texture-region]
+  (texture-region/getRegionHeight texture-region))
