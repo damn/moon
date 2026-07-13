@@ -3,7 +3,6 @@
             [clojure.math :as math]
             [moon.cell :as cell]
             [clojure.gdx.math.circle :as circle]
-            [clojure.gdx.math.intersector :as intersector]
             [clojure.gdx.math.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.circle :as moon-circle]
@@ -229,7 +228,7 @@
          (g2d/get-cells g2d)
          (map deref)
          entities
-         (filter #(intersector/overlaps gdx-circle
+         (filter #(circle/overlaps gdx-circle
                                         (body/rectangle (:entity/body @%)))))))
 
 (defn inside-cell? [grid entity cell]
