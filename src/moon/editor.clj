@@ -28,7 +28,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.touchable :as touchable]
-            [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
+            [clojure.gdx.scenes.scene2d.ui.check-box :as check-box]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
@@ -100,7 +100,7 @@
 
 (defmethod widget-value :s/boolean
   [_ widget _schemas]
-  (check-box/isChecked widget))
+  (check-box/checked? widget))
 
 (defmethod widget-value :s/enum
   [_ widget _schemas]
@@ -549,8 +549,8 @@
 
 (defmethod create-widget :s/boolean
   [_ checked? {:keys [ctx/skin]}]
-  (doto (check-box/new "" skin)
-    (check-box/setChecked checked?)))
+  (doto (check-box/create "" skin)
+    (check-box/set-checked! checked?)))
 
 (defmethod create-widget :s/enum
   [schema v {:keys [ctx/skin]}]
