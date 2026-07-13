@@ -4,9 +4,9 @@
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scenes.scene2d.actor :as actor]
-            [gdx.scenes.scene2d.stage :as stage]
-            [gdx.scenes.scene2d.utils.change-listener :as change-listener]))
+            [gdx.actor :as actor]
+            [gdx.stage :as stage]
+            [gdx.change-listener :as change-listener]))
 
 (defn label-str [k]
   (str "[LIGHT_GRAY]:"

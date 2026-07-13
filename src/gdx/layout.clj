@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.utils.layout
+(ns gdx.layout
   (:require [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
 
 (defn set-fill-parent! [layout fill-parent?]

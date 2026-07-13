@@ -1,10 +1,10 @@
 (ns gdx.scenes.scene2d.ui.window
   (:refer-clojure :exclude [class])
-  (:require [gdx.scenes.scene2d.actor :as actor]
+  (:require [gdx.actor :as actor]
             [gdx.scenes.scene2d.ui.label :as label]
             [gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
-            [gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [gdx.change-listener :as change-listener]
             [gdx.scenes.scene2d.ui.table :as table]))
 
 (def class window/class)

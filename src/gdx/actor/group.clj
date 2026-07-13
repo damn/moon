@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.group
+(ns gdx.actor.group
   (:require [com.badlogic.gdx.scenes.scene2d.group :as group]))
 
 (defn create []

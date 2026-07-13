@@ -1,14 +1,14 @@
 (ns moon.action-bar
   (:require [gdx.texture-region :as texture-region]
-            [gdx.scenes.scene2d.actor :as actor]
-            [gdx.scenes.scene2d.group :as group]
+            [gdx.actor :as actor]
+            [gdx.actor.group :as group]
             [gdx.scenes.scene2d.ui.button-group :as button-group]
             [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
             [gdx.scenes.scene2d.ui.image-button :as image-button]
             [gdx.scenes.scene2d.ui.table :as table]
             [gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [gdx.scenes.scene2d.utils.layout :as layout]
-            [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
+            [gdx.layout :as layout]
+            [gdx.drawable.texture-region :as texture-region-drawable]))
 
 (defn create []
   (doto (table/create

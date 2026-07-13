@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.utils.click-listener
+(ns gdx.click-listener
   (:require [com.badlogic.gdx.scenes.scene2d.utils.click-listener :as click-listener]))
 
 (defn create [clicked-fn]

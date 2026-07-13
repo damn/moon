@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.stage
+(ns gdx.stage
   (:import (clojure.lang ILookup)
            (clojure Stage))
   (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]))

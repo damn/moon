@@ -1,4 +1,4 @@
-(ns gdx.scenes.scene2d.actor
+(ns gdx.actor
   (:refer-clojure :exclude [new remove])
   (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
 

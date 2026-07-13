@@ -1,7 +1,7 @@
 (ns gdx.scenes.scene2d.ui.table
   (:require [com.badlogic.gdx.scenes.scene2d.ui.cell :as cell]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [gdx.scenes.scene2d.utils.layout :as layout]))
+            [gdx.layout :as layout]))
 
 (defn- apply-cell-opts! [cell opts]
   (doseq [[option arg] opts]
