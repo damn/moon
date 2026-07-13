@@ -942,6 +942,17 @@
                                    :tooltip-text (item/info-text item)}
                                   skin))))
 
+(defn- set-item! [ctx eid cell item]
+  (let [entity @eid
+        inventory (:entity/inventory entity)]
+    (assert (and (nil? (get-in inventory cell))
+                 (inventory-cell/valid-slot? cell item)))
+    (swap! eid assoc-in (cons :entity/inventory cell) item)
+    (when (inventory-cell/applies-modifiers? cell)
+      (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
+    (when (:entity/player? @eid)
+      (ui-set-item! ctx cell item))))
+
 (defn- ui-remove-item! [ctx cell]
   (-> (:ctx/stage ctx)
       :stage/root
@@ -1021,7 +1032,7 @@
                 [:tx/state-enter eid new-state-obj]])))))
 
    :tx/pickup-item
-   (fn [_ctx eid item]
+   (fn [ctx eid item]
      (assert (item/valid? item))
      (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
        (assert cell)
@@ -1029,20 +1040,8 @@
                    (nil? cell-item)))
        (if (item/stackable? item cell-item)
          (do #_(tx/stack-item ctx eid cell item))
-         [[:tx/set-item eid cell item]])))
-
-   :tx/set-item
-   (fn [ctx eid cell item]
-     (let [entity @eid
-           inventory (:entity/inventory entity)]
-       (assert (and (nil? (get-in inventory cell))
-                    (inventory-cell/valid-slot? cell item)))
-       (swap! eid assoc-in (cons :entity/inventory cell) item)
-       (when (inventory-cell/applies-modifiers? cell)
-         (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
-       (when (:entity/player? @eid)
-         (ui-set-item! ctx cell item))
-       nil))
+         (do (set-item! ctx eid cell item)
+             nil))))
 
    :tx/spawn-alert
    (fn [{:keys [ctx/elapsed-time]} position faction duration]
@@ -1720,8 +1719,8 @@
           (inventory-cell/valid-slot? cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
-         [[:tx/set-item eid cell item-on-cursor]
-          [:tx/event eid :dropped-item]])
+         (set-item! ctx eid cell item-on-cursor)
+         [[:tx/event eid :dropped-item]])
 
      (and item-in-cell
           (item/stackable? item-in-cell item-on-cursor))
@@ -1735,8 +1734,8 @@
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
          (remove-item! ctx eid cell)
-         [[:tx/set-item eid cell item-on-cursor]
-          [:tx/event eid :dropped-item]
+         (set-item! ctx eid cell item-on-cursor)
+         [[:tx/event eid :dropped-item]
           [:tx/event eid :pickup-item item-in-cell]]))))
 
 (def k->clicked-inventory-cell
