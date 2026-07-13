@@ -72,7 +72,6 @@
             [moon.textures :as textures]
             [moon.throwable :as throwable]
             [moon.timer :as timer]
-            [moon.txs-fn-map :as txs-fn-map]
             [moon.v2 :as v2]
             [moon.val-max :as val-max]
             [qrecord.core :as q]
@@ -210,8 +209,8 @@
   (fn [[k _v] _effect-ctx _ctx]
     k))
 
-(declare handle-fsm-event! do! spawn-creature! audiovisual!
-         spawn-alert! spawn-item! spawn-line! spawn-projectile!)
+(declare handle-fsm-event! spawn-creature! audiovisual!
+         spawn-alert! spawn-item! spawn-line! spawn-projectile! apply-effects!)
 
 (defmethod handle-effect :effects/audiovisual
   [[_ audiovisual] {:keys [effect/target-position]} ctx]
@@ -245,18 +244,17 @@
            ctx/raycaster]
     :as ctx}]
   (let [source* @source]
-    (apply concat
-           (for [target (affected-targets active-entities raycaster source*)]
-             (do (spawn-line! ctx
-                              {:start (:body/position (:entity/body source*))
-                               :end (:body/position (:entity/body @target))
-                               :duration 0.05
-                               :color (:colors/target-all-line colors)
-                               :thick? true})
-                 [[:tx/effect
-                   {:effect/source source
-                    :effect/target target}
-                   entity-effects]])))))
+    (doseq [target (affected-targets active-entities raycaster source*)]
+      (spawn-line! ctx
+                   {:start (:body/position (:entity/body source*))
+                    :end (:body/position (:entity/body @target))
+                    :duration 0.05
+                    :color (:colors/target-all-line colors)
+                    :thick? true})
+      (apply-effects! ctx
+                      {:effect/source source
+                       :effect/target target}
+                      entity-effects))))
 
 (defmethod handle-effect :effects/target-entity
   [[_ {:keys [maxrange entity-effects]}]
@@ -271,7 +269,7 @@
                         :duration 0.05
                         :color (:colors/target-entity-line colors)
                         :thick? true})
-          [[:tx/effect effect-ctx entity-effects]])
+          (apply-effects! ctx effect-ctx entity-effects))
       (audiovisual! ctx
                     (body/end-point body target-body maxrange)
                     :audiovisuals/hit-ground))))
@@ -401,6 +399,10 @@
   [_ {:keys [effect/target]}]
   (and target
        (:entity/fsm @target)))
+
+(defn- apply-effects! [ctx effect-ctx effects]
+  (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
+    (handle-effect effect effect-ctx ctx)))
 
 (defmulti effect-useful?
   (fn [[k _v] _effect-ctx _ctx]
@@ -1109,20 +1111,6 @@
       (#(group/find-actor % "player-message"))
       (actor/set-user-object! (atom {:text message :counter 0}))))
 
-(defn- tx-effect [ctx effect-ctx effects]
-  (mapcat #(handle-effect % effect-ctx ctx)
-          (filter #(effect-applicable? % effect-ctx) effects)))
-
-(def tx-fn-map
-  {:tx/effect tx-effect})
-
-(defn do!
-  [ctx txs]
-  (try (txs-fn-map/actions! tx-fn-map ctx txs)
-       (catch Throwable t
-         (throw (ex-info "Error handling txs"
-                         {:txs txs} t)))))
-
 (def colors
   (let [outline-alpha 0.4]
     {:colors/mouseover-tile-air (color/to-float-bits [1 1 0 0.5])
@@ -1700,7 +1688,7 @@
           (item/stackable? item-in-cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
-         (do! ctx [[:tx/stack-item eid cell item-on-cursor]])
+         ; TODO :tx/stack-item not implemented
          (handle-fsm-event! ctx eid :dropped-item))
 
      (and item-in-cell
@@ -1751,8 +1739,7 @@
                                                           {:image/file "images/items.png"
                                                            :image/bounds bounds})))]
     (inventory-window/inventory-window-build
-     {:do! do!
-      :draw! draw!
+     {:draw! draw!
       :on-click-cell handle-clicked-inventory-cell
       :item-rect-color (:colors/item-rect colors)
       :droppable-item-color (:colors/droppable-item colors)
@@ -2043,7 +2030,7 @@
    :entity/projectile-collision
    (fn [{:keys [entity-effects already-hit-bodies piercing?]}
         eid
-        {:keys [ctx/grid]}]
+        {:keys [ctx/grid] :as ctx}]
      (let [entity @eid
            cells* (map deref (moon-g2d/get-cells grid (body/touched-tiles (:entity/body entity))))
            hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
@@ -2060,11 +2047,12 @@
                 (conj already-hit-bodies hit-entity)))
        (when destroy?
          (swap! eid assoc :entity/destroyed? true))
-       [(when hit-entity
-          [:tx/effect
-           {:effect/source eid
-            :effect/target hit-entity}
-           entity-effects])]))
+       (when hit-entity
+         (apply-effects! ctx
+                         {:effect/source eid
+                          :effect/target hit-entity}
+                         entity-effects))
+       nil))
 
    :active-skill
    (fn [{:keys [skill effect-ctx counter]}
@@ -2079,7 +2067,7 @@
         (handle-fsm-event! ctx eid :action-done)
 
         (timer/stopped? elapsed-time counter)
-        (do (do! ctx [[:tx/effect effect-ctx (:skill/effects skill)]])
+        (do (apply-effects! ctx effect-ctx (:skill/effects skill))
             (handle-fsm-event! ctx eid :action-done)
             nil))))
 
@@ -2728,11 +2716,9 @@
     :as ctx}]
   (let [eid player-eid
         entity @eid
-        state-k (:state (:entity/fsm entity))
-        txs (if-let [input-fn (k->handle-input state-k)]
-              (input-fn eid ctx)
-              nil)]
-    (do! ctx txs))
+        state-k (:state (:entity/fsm entity))]
+    (when-let [input-fn (k->handle-input state-k)]
+      (input-fn eid ctx)))
   ctx)
 
 (defn dissoc-interaction-state [ctx]
@@ -2777,14 +2763,11 @@
            ctx/stage]
     :as ctx}]
   (try
-    (do! ctx
-         (mapcat (fn [eid]
-                   (mapcat (fn [component]
-                             (try (tick-component ctx eid component)
-                                  (catch Throwable t
-                                    (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
-                           @eid))
-                 active-entities))
+    (doseq [eid active-entities
+            component @eid]
+      (try (tick-component ctx eid component)
+           (catch Throwable t
+             (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
     (catch Throwable t
       (throwable/pretty-pst t)
       (stage/add-actor! stage

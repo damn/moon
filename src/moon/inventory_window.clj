@@ -40,7 +40,7 @@
     (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
-(defn- ->cell [do! draw! on-click-cell slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
+(defn- ->cell [draw! on-click-cell slot->drawable draw-cell-rect cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
@@ -70,13 +70,12 @@
                              (fn [event _x _y]
                                (let [{:keys [ctx/player-eid]
                                       :as ctx} (:stage/ctx (event/get-stage event))]
-                                 (do! ctx (on-click-cell ctx player-eid cell))))))
+                                 (on-click-cell ctx player-eid cell)))))
          (actor/set-name! "inventory-cell")
          (actor/set-user-object! cell)))}))
 
 (defn inventory-window-build
-  [{:keys [do!
-           draw!
+  [{:keys [draw!
            on-click-cell
            item-rect-color
            droppable-item-color
@@ -98,7 +97,7 @@
                                           droppable-item-color
                                           not-allowed-drop-item-color)]
                               [:draw/filled-rectangle (inc x) (inc y) (- cell-size 2) (- cell-size 2) color]))])
-        ->cell (partial ->cell do! draw! on-click-cell slot->drawable draw-cell-rect cell-size)
+        ->cell (partial ->cell draw! on-click-cell slot->drawable draw-cell-rect cell-size)
         window (doto (window/create {:title "Inventory"
                                      :skin skin
                                      :table/rows [[{:actor (doto (table/create
