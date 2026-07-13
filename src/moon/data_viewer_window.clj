@@ -1,12 +1,12 @@
 (ns moon.data-viewer-window
-  (:require [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [clojure.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
-            [clojure.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.scenes.scene2d.ui.window :as window]
-            [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.stage :as stage]
-            [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]))
+  (:require [gdx.scenes.scene2d.ui.label :as label]
+            [gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.scenes.scene2d.utils.change-listener :as change-listener]))
 
 (defn label-str [k]
   (str "[LIGHT_GRAY]:"

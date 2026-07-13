@@ -1,9 +1,9 @@
 (ns moon.audio
   (:require [clojure.edn :as edn]
-            [clojure.gdx.audio :as audio]
-            [clojure.gdx.audio.sound :as sound]
-            [clojure.gdx.files :as files]
-            [clojure.gdx.utils.disposable :as disposable]
+            [gdx.audio :as audio]
+            [gdx.audio.sound :as sound]
+            [gdx.files :as files]
+            [gdx.utils.disposable :as disposable]
             [clojure.java.io :as io]))
 
 (defn create

@@ -1,14 +1,14 @@
 (ns moon.action-bar
-  (:require [clojure.gdx.graphics.g2d.texture-region :as texture-region]
-            [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.group :as group]
-            [clojure.gdx.scenes.scene2d.ui.button-group :as button-group]
-            [clojure.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
-            [clojure.gdx.scenes.scene2d.ui.image-button :as image-button]
-            [clojure.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
-            [clojure.gdx.scenes.scene2d.utils.layout :as layout]
-            [clojure.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
+  (:require [gdx.graphics.g2d.texture-region :as texture-region]
+            [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.group :as group]
+            [gdx.scenes.scene2d.ui.button-group :as button-group]
+            [gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]
+            [gdx.scenes.scene2d.ui.image-button :as image-button]
+            [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
+            [gdx.scenes.scene2d.utils.layout :as layout]
+            [gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]))
 
 (defn create []
   (doto (table/create

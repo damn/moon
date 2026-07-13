@@ -1,16 +1,16 @@
 (ns moon.dev-menu
-  (:require [clojure.gdx.scenes.scene2d.ui.table :as table]
-            [clojure.gdx.scenes.scene2d.stage :as stage]
-            [clojure.gdx.scenes.scene2d.ui.window :as window]
-            [clojure.gdx.scenes.scene2d.actor :as actor]
-            [clojure.gdx.scenes.scene2d.event :as event]
-            [clojure.gdx.scenes.scene2d.group :as group]
-            [clojure.gdx.scenes.scene2d.touchable :as touchable]
-            [clojure.gdx.scenes.scene2d.ui.image :as image]
-            [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
-            [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [clojure.gdx.scenes.scene2d.utils.layout :as layout]))
+  (:require [gdx.scenes.scene2d.ui.table :as table]
+            [gdx.scenes.scene2d.stage :as stage]
+            [gdx.scenes.scene2d.ui.window :as window]
+            [gdx.scenes.scene2d.actor :as actor]
+            [gdx.scenes.scene2d.event :as event]
+            [gdx.scenes.scene2d.group :as group]
+            [gdx.scenes.scene2d.touchable :as touchable]
+            [gdx.scenes.scene2d.ui.image :as image]
+            [gdx.scenes.scene2d.ui.label :as label]
+            [gdx.scenes.scene2d.ui.text-button :as text-button]
+            [gdx.scenes.scene2d.utils.change-listener :as change-listener]
+            [gdx.scenes.scene2d.utils.layout :as layout]))
 
 (defn- set-label-text-actor [label-widget text-fn]
   (actor/new

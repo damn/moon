@@ -1,5 +1,5 @@
 (ns moon.body
-  (:require [clojure.gdx.math.rectangle :as gdx-rectangle]
+  (:require [gdx.math.rectangle :as gdx-rectangle]
             [moon.v2 :as v2]
             [moon.rectangle :as moon-rectangle]))
 

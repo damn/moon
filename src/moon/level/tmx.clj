@@ -1,5 +1,5 @@
 (ns moon.level.tmx
-  (:require [clojure.gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]))
+  (:require [gdx.maps.tiled.tmx-map-loader :as tmx-map-loader]))
 
 (defn create
   [{:keys [tmx-file

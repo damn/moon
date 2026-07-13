@@ -1,10 +1,10 @@
 (ns moon.textures
-  (:require [clojure.gdx.files :as files]
-            [clojure.gdx.files.file-handle :as file-handle]
-            [clojure.gdx.graphics.g2d.texture-region :as texture-region]
-            [clojure.gdx.graphics.glutils.file-texture-data :as file-texture-data]
-            [clojure.gdx.graphics.pixmap :as pixmap]
-            [clojure.gdx.graphics.texture :as texture]
+  (:require [gdx.files :as files]
+            [gdx.files.file-handle :as file-handle]
+            [gdx.graphics.g2d.texture-region :as texture-region]
+            [gdx.graphics.glutils.file-texture-data :as file-texture-data]
+            [gdx.graphics.pixmap :as pixmap]
+            [gdx.graphics.texture :as texture]
             [clojure.string :as str]))
 
 (defn create
