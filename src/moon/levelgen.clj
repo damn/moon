@@ -8,7 +8,7 @@
             [moon.schema.register-methods]
             [moon.textures :as textures]
             [clojure.gdx.scenes.scene2d.stage :as stage]
-            [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.maps.tiled.tiled-map :as moon-tiled-map]
             [clojure.gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
@@ -108,7 +108,7 @@
     (input/set-processor! input stage)
     (stage/add-actor! (:ctx/stage ctx)
                     (doto (window/new "Edit" skin)
-                      (moon-table/set-opts! {:title "Edit"
+                      (table/set-opts! {:title "Edit"
                                                  :skin skin
                                                  :table/rows (for [[label level-fn] (:level-fns config)
                                                                    :let [on-click #(do

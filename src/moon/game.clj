@@ -13,7 +13,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.button :refer [is?]]
-            [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.window :refer [title-bar?]]
             [clojure.gdx.utils.disposable :as disposable]
             [clojure.gdx.utils.viewport.viewport :refer [unproject]]
@@ -1015,7 +1015,7 @@
      (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
      (stage/add-actor! stage
                        (doto (doto (window/new title skin)
-    (moon-table/set-opts! {:title title
+    (table/set-opts! {:title title
                                :skin skin
                                :table/rows [[{:actor (label/create text skin)}]
                                             [{:actor (doto (text-button/new button-text skin)

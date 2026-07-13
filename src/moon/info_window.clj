@@ -1,5 +1,5 @@
 (ns moon.info-window
-  (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
+  (:require [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
@@ -15,7 +15,7 @@
            skin]}]
   (let [label (label/create "MY LABEL TEXT" skin)
         window (doto (doto (window/new title skin)
-                      (moon-table/set-opts!
+                      (table/set-opts!
                        {:table/rows [[{:actor label :expand? true}]]}))
                  (actor/set-name! actor-name)
                  (actor/set-visible! visible?))]

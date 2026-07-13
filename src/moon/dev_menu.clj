@@ -1,5 +1,5 @@
 (ns moon.dev-menu
-  (:require [clojure.gdx.scenes.scene2d.ui.table :as moon-table :refer [add-cell!]]
+  (:require [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.stage :as stage]
             [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [clojure.gdx.scenes.scene2d.actor :as actor]
@@ -8,7 +8,6 @@
             [clojure.gdx.scenes.scene2d.touchable :as touchable]
             [clojure.gdx.scenes.scene2d.ui.image :as image]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
-            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
             [com.badlogic.gdx.scenes.scene2d.utils.change-listener :as change-listener]
@@ -24,30 +23,28 @@
 (defn- add-upd-label!
   ([skin table text-fn icon]
    (let [label (label/create "" skin)
-         sub-table (doto (table/new)
-                     (moon-table/set-opts! {:table/rows [[{:actor (image/create-from-texture icon)}
-                                                              label]]}))]
+         sub-table (table/create {:table/rows [[{:actor (image/create-from-texture icon)}
+                                                              label]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
-     (add-cell! table {:actor sub-table
+     (table/add-cell! table {:actor sub-table
                        :right? true
                        :expand-x? true})))
   ([skin table text-fn]
    (let [label (label/create "" skin)]
      (group/add-actor! table (set-label-text-actor label text-fn))
-     (add-cell! table {:actor label
+     (table/add-cell! table {:actor label
                        :right? true
                        :expand-x? true}))))
 
 (defn- main-table [skin menus update-labels]
-  (let [table (doto (table/new)
-                (moon-table/set-opts! {:table/rows [(for [{:keys [label items]} menus]
+  (let [table (table/create {:table/rows [(for [{:keys [label items]} menus]
                                                            {:actor
                                                             (doto (text-button/new label skin)
                                                               (actor/add-listener! (change-listener/create
                                                                                   (fn [event actor]
                                                                                     (stage/add-actor! (event/get-stage event)
                                                                                                     (doto (doto (window/new label skin)
-                                                                                                                (moon-table/set-opts! {:title label
+                                                                                                                (table/set-opts! {:title label
                                                                                                                                            :skin skin
                                                                                                                                            :table/rows [(for [{:keys [label on-click]} items]
                                                                                                                                                          {:actor
@@ -57,7 +54,7 @@
                                                                                                                                                                                   (let [stage (event/get-stage event)]
                                                                                                                                                                                     (stage/set-ctx! stage
                                                                                                                                                                                                          (on-click (:stage/ctx stage))))))))})]}))
-                                                                                                              (add-close-button! skin)))))))})]}))]
+                                                                                                              (add-close-button! skin)))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
@@ -67,8 +64,7 @@
 
 (defn create
   [{:keys [menus update-labels skin]}]
-  (doto (doto (table/new)
-               (moon-table/set-opts! {:table/rows [[{:actor (main-table skin menus update-labels)
+  (doto (table/create {:table/rows [[{:actor (main-table skin menus update-labels)
                                                            :expand-x? true
                                                            :fill-x? true
                                                            :colspan 1}]
@@ -76,5 +72,5 @@
                                                                         (actor/set-touchable! touchable/disabled))
                                                            :expand? true
                                                            :fill-x? true
-                                                           :fill-y? true}]]}))
+                                                           :fill-y? true}]]})
         (layout/setFillParent true)))

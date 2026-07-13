@@ -15,7 +15,7 @@
             [moon.throwable :as throwable]
             [moon.string :as string]
             [moon.error-window :as error-window]
-            [clojure.gdx.scenes.scene2d.ui.table :as moon-table :refer [add-rows!]]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [clojure.gdx.files :as files]
             [com.badlogic.gdx.graphics :as graphics]
@@ -35,7 +35,6 @@
             [com.badlogic.gdx.scenes.scene2d.ui.select-box :as select-box]
             [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [com.badlogic.gdx.scenes.scene2d.ui.skin :as ui-skin]
-            [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
@@ -173,7 +172,7 @@
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
   (fn [actor {:keys [ctx/skin]}]
     (group/clear-children! table)
-    (add-rows! table [(->sound-columns skin table sound-name)])
+    (table/add-rows! table [(->sound-columns skin table sound-name)])
     (actor/remove! (find-ancestor actor (partial instance? window/class)))
     (layout/pack (find-ancestor table (partial instance? window/class)))
     (let [[k _] (actor/get-user-object table)]
@@ -185,21 +184,20 @@
         :as ctx}]
     (stage/add-actor! stage
                       (doto (doto (window/new "Choose" skin)
-    (moon-table/set-opts! {:title "Choose"
+    (table/set-opts! {:title "Choose"
                               :skin skin
                               :table/rows
-                              [[(let [table (doto (table/new)
-    (moon-table/set-opts! {:table/cell-defaults {:pad 5}
-                                              :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
-                                                            [{:actor (doto (text-button/new sound-name skin)
-                                                                           (actor/add-listener! (change-listener/create
-                                                                                                    (fn [event actor]
-                                                                                                      ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
-                                                             {:actor (doto (text-button/new "play!" skin)
-                                                                           (actor/add-listener! (change-listener/create
-                                                                                                    (fn [event _actor]
-                                                                                                      (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
-                                                                                                                   sound-name)))))}])}))]
+                              [[(let [table (table/create {:table/cell-defaults {:pad 5}
+                                                            :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
+                                                                          [{:actor (doto (text-button/new sound-name skin)
+                                                                                         (actor/add-listener! (change-listener/create
+                                                                                                              (fn [event actor]
+                                                                                                                ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
+                                                                           {:actor (doto (text-button/new "play!" skin)
+                                                                                         (actor/add-listener! (change-listener/create
+                                                                                                              (fn [event _actor]
+                                                                                                                (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
+                                                                                                                             sound-name)))))}])})]
                                 {:actor (scroll-pane/new table skin)
                                  :width  (+ (actor/get-width table) 50)
                                  :height (min (- (viewport/getWorldHeight (:stage/viewport stage)) 50)
@@ -234,7 +232,7 @@
            property-type
            clicked-id-fn]}]
   (doto (doto (window/new "Edit" skin)
-    (moon-table/set-opts! {:title "Edit"
+    (table/set-opts! {:title "Edit"
           :skin skin
           :table/rows (let [{:keys [sort-by-fn
                                     extra-info-text
@@ -298,12 +296,11 @@
                                                                 (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}]]]
     (doto (doto (window/new "[SKY]Property[]" skin)
-    (moon-table/set-opts! {:title "[SKY]Property[]"
+    (table/set-opts! {:title "[SKY]Property[]"
             :skin skin
             :table/cell-defaults {:pad 5}
-            :table/rows [[(let [table (doto (table/new)
-                                         (moon-table/set-opts! {:table/cell-defaults {:pad 5}
-                                                                     :table/rows scroll-pane-rows}))]
+            :table/rows [[(let [table (table/create {:table/cell-defaults {:pad 5}
+                                                   :table/rows scroll-pane-rows})]
                             {:actor (scroll-pane/new table skin)
                              :width (+ (actor/get-width table) 50)
                              :height (min (- scroll-pane-height 50)
@@ -331,7 +328,7 @@
                     (group/clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
                     (layout/pack (find-ancestor table (partial instance? window/class))))]
-    (add-rows!
+    (table/add-rows!
      table
      [[{:actor (doto (text-button/new "+" skin)
                  (actor/add-listener! (change-listener/create
@@ -374,7 +371,7 @@
                     (group/clear-children! table)
                     (add-one-to-one-rows ctx table property-type id)
                     (layout/pack (find-ancestor table (partial instance? window/class))))]
-    (add-rows!
+    (table/add-rows!
      table
      [[(when-not property-id
          {:actor (doto (text-button/new "+" skin)
@@ -428,9 +425,8 @@
            display-remove-component-button?
            k
            table]}]
-  [{:actor (doto (table/new)
-    (moon-table/set-opts! {:table/cell-defaults {:pad 2}
-             :table/rows [[{:actor (when display-remove-component-button?
+  [{:actor (table/create {:table/cell-defaults {:pad 2}
+                          :table/rows [[{:actor (when display-remove-component-button?
                                      (doto (text-button/new "-" skin)
                                        (actor/add-listener! (change-listener/create
                                                                 (fn [event _actor]
@@ -441,7 +437,7 @@
                                                                   (let [ctx (:stage/ctx (event/get-stage event))]
                                                                     (rebuild-editor-window! ctx)))))))
                             :left? true}
-                           {:actor (label/create (k-label-text k) skin)}]]}))
+                           {:actor (label/create (k-label-text k) skin)}]]})
     :right? true}
    {:actor nil
     :pad-top 2
@@ -454,14 +450,14 @@
 (defn- add-component-window
   [{:keys [schemas schema map-widget-table skin]}]
   (let [window (doto (doto (window/new "Choose" skin)
-    (moon-table/set-opts! {:title "Choose"
+    (table/set-opts! {:title "Choose"
                        :skin skin
                        :table/cell-defaults {:pad 5}}))
                  (add-close-button! skin)
                  (window/setModal true))
         remaining-ks (sort (remove (set (keys (widget-value schema map-widget-table schemas)))
                                    (map-keys schemas schema)))]
-    (add-rows!
+    (table/add-rows!
      window
      (for [k remaining-ks]
        [{:actor (doto (text-button/new (name k) skin)
@@ -469,7 +465,7 @@
                                            (fn [event _actor]
                                              (actor/remove! window)
                                              (let [ctx (:stage/ctx (event/get-stage event))]
-                                               (add-rows! map-widget-table [(create-component-row
+                                               (table/add-rows! map-widget-table [(create-component-row
                                                                             {:skin skin
                                                                              :editor-widget (build-widget ctx
                                                                                                           (get schemas k)
@@ -498,8 +494,7 @@
            k->optional?
            ks-sorted
            opt?]}]
-  (let [table (doto (doto (table/new)
-    (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))
+  (let [table (doto (table/create {:table/cell-defaults {:pad 5}})
                 (actor/set-name! "moon.db.schema.map.ui.widget"))
         colspan 3
         component-rows (coll/interpose-f (horiz-sep colspan)
@@ -511,7 +506,7 @@
                                              :display-remove-component-button? (k->optional? k)
                                              :table table}))
                                          ks-sorted))]
-    (add-rows!
+    (table/add-rows!
      table
      (concat [(when opt?
                 [{:actor (doto (text-button/new "Add component" skin)
@@ -547,16 +542,15 @@
 
 (defmethod create-widget :s/animation
   [_ animation {:keys [ctx/textures]}]
-  (doto (table/new)
-    (moon-table/set-opts! {:table/cell-defaults {:pad 1}
-                               :table/rows [(for [image (:animation/frames animation)]
-                                              {:actor
-                                               (let [scale 2
-                                                     texture-region (textures/texture-region textures image)]
-                                                 (image-button/new
-                                                  (doto (texture-region-drawable/new texture-region)
-                                                    (texture-region-drawable/setMinSize (* scale (texture-region/getRegionWidth texture-region))
-                                                                                       (* scale (texture-region/getRegionHeight texture-region))))))})]})))
+  (table/create {:table/cell-defaults {:pad 1}
+                :table/rows [(for [image (:animation/frames animation)]
+                               {:actor
+                                (let [scale 2
+                                      texture-region (textures/texture-region textures image)]
+                                  (image-button/new
+                                   (doto (texture-region-drawable/new texture-region)
+                                     (texture-region-drawable/setMinSize (* scale (texture-region/getRegionWidth texture-region))
+                                                                       (* scale (texture-region/getRegionHeight texture-region))))))})]}))
 
 (defmethod create-widget :s/boolean
   [_ checked? {:keys [ctx/skin]}]
@@ -603,27 +597,24 @@
 
 (defmethod create-widget :s/one-to-many
   [[_ property-type] property-ids ctx]
-  (let [table (doto (table/new)
-                (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))]
+  (let [table (table/create {:table/cell-defaults {:pad 5}})]
     (add-one-to-many-rows ctx table property-type property-ids)
     table))
 
 (defmethod create-widget :s/one-to-one
   [[_ property-type] property-id ctx]
-  (let [table (doto (table/new)
-                (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))]
+  (let [table (table/create {:table/cell-defaults {:pad 5}})]
     (add-one-to-one-rows ctx table property-type property-id)
     table))
 
 (defmethod create-widget :s/sound
   [_ sound-name {:keys [ctx/skin]}]
-  (let [table (doto (table/new)
-                (moon-table/set-opts! {:table/cell-defaults {:pad 5}}))]
+  (let [table (table/create {:table/cell-defaults {:pad 5}})]
     (letfn [(sound-columns-fn [skin table sound-name]
               (sound-columns skin table sound-name open-select-fn))
             (open-select-fn [table]
               (open-select-sounds-handler table sound-columns-fn))]
-      (add-rows! table [(if sound-name
+      (table/add-rows! table [(if sound-name
                            (sound-columns-fn skin table sound-name)
                            [{:actor
                              (doto (text-button/new "No sound" skin)
@@ -647,7 +638,7 @@
   [{:keys [ctx/db
            ctx/skin]}]
   (doto (window/new "Edit" skin)
-    (moon-table/set-opts! {:title "Edit"
+    (table/set-opts! {:title "Edit"
                                :skin skin
                                :table/rows (for [property-type (sort (db/property-types db))]
                                              [{:actor (doto (text-button/new (str/capitalize (name property-type)) skin)

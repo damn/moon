@@ -1,6 +1,6 @@
 (ns moon.error-window
   (:require [clojure.repl :as repl]
-            [clojure.gdx.scenes.scene2d.ui.table :as moon-table]
+            [clojure.gdx.scenes.scene2d.ui.table :as table]
             [clojure.gdx.scenes.scene2d.ui.window :refer [add-close-button!]]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as gdx-window]
@@ -17,7 +17,7 @@
   (let [label-text (binding [*print-level* 3]
                      (with-err-str (repl/pst throwable)))]
     (doto (doto (window/new "Error" skin)
-                (moon-table/set-opts! {:title "Error"
+                (table/set-opts! {:title "Error"
                                            :skin skin
                                            :table/rows [[{:actor (label/create label-text skin)}]]}))
           (add-close-button! skin)
