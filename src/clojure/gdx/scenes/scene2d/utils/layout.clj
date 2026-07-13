@@ -3,3 +3,6 @@
 
 (defn set-fill-parent! [layout fill-parent?]
   (layout/setFillParent layout fill-parent?))
+
+(defn pack [layout]
+  (layout/pack layout))

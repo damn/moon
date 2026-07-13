@@ -40,7 +40,7 @@
             [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]
+            [clojure.gdx.scenes.scene2d.utils.layout :as layout]
             [com.badlogic.gdx.scenes.scene2d.utils.texture-region-drawable :as texture-region-drawable]
             [clojure.gdx.utils.disposable :as disposable]
             [com.badlogic.gdx.utils.viewport.fit-viewport :as fit-viewport]

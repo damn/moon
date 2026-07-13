@@ -10,7 +10,7 @@
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.text-button :as text-button]
             [clojure.gdx.scenes.scene2d.utils.change-listener :as change-listener]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
+            [clojure.gdx.scenes.scene2d.utils.layout :as layout]))
 
 (defn- set-label-text-actor [label-widget text-fn]
   (actor/new
@@ -71,4 +71,4 @@
                                                            :expand? true
                                                            :fill-x? true
                                                            :fill-y? true}]]})
-        (layout/setFillParent true)))
+        (layout/set-fill-parent! true)))

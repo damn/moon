@@ -4,7 +4,7 @@
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.ui.label :as label]
             [clojure.gdx.scenes.scene2d.ui.window :as window]
-            [com.badlogic.gdx.scenes.scene2d.utils.layout :as layout]))
+            [clojure.gdx.scenes.scene2d.utils.layout :as layout]))
 
 (defn create
   [{:keys [title
