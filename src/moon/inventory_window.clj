@@ -3,7 +3,7 @@
             [clojure.gdx.scenes.scene2d.actor :as actor]
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
-            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+            [clojure.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-tooltip :as text-tooltip]
@@ -25,7 +25,7 @@
 (defn remove-item! [inventory-window cell]
   (let [cell-widget (get-cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")]
-    (image/setDrawable image-widget (:background-drawable (actor/get-user-object image-widget)))
+    (image/set-drawable! image-widget (:background-drawable (actor/get-user-object image-widget)))
     ; !! TODO FIXME FIXME FIXME !!!
     ;(.removeListener actor (.getListeners actor))
     ; ... first find the listener
@@ -36,7 +36,7 @@
   (let [cell-widget (get-cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")
         cell-size (:cell-size (actor/get-user-object image-widget))]
-    (image/setDrawable image-widget (doto (texture-region-drawable/new texture-region)
+    (image/set-drawable! image-widget (doto (texture-region-drawable/new texture-region)
                                         (texture-region-drawable/setMinSize cell-size cell-size)))
     (actor/add-listener! cell-widget (text-tooltip/new tooltip-text skin))
     nil))
@@ -62,7 +62,7 @@
                                                                                           (vector2/new ui-mouse-position)))]
                                               (actor/hit this x y true))
                                             (actor/get-user-object (actor/get-parent this))))))))
-              (doto (image/newDrawable background-drawable)
+              (doto (image/create-drawable background-drawable)
                 (actor/set-name! "image-widget")
                 (actor/set-user-object! {:background-drawable background-drawable
                                       :cell-size cell-size}))])

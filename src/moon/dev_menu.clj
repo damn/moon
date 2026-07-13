@@ -6,7 +6,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [clojure.gdx.scenes.scene2d.touchable :as touchable]
-            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+            [clojure.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
             [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]
@@ -25,7 +25,7 @@
   ([skin table text-fn icon]
    (let [label (label/new "" skin)
          sub-table (doto (table/new)
-                     (moon-table/set-opts! {:table/rows [[{:actor (image/newTexture icon)}
+                     (moon-table/set-opts! {:table/rows [[{:actor (image/create-from-texture icon)}
                                                               label]]}))]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (add-cell! table {:actor sub-table

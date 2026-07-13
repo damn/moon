@@ -28,7 +28,7 @@
             [clojure.gdx.scenes.scene2d.event :as event]
             [clojure.gdx.scenes.scene2d.group :as group]
             [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]
-            [com.badlogic.gdx.scenes.scene2d.ui.image :as image]
+            [clojure.gdx.scenes.scene2d.ui.image :as image]
             [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]
             [com.badlogic.gdx.scenes.scene2d.ui.label :as label]
             [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]
@@ -353,7 +353,7 @@
                                                                   (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
-          {:actor (doto (image/new (textures/texture-region textures (property/image property)))
+          {:actor (doto (image/create (textures/texture-region textures (property/image property)))
                     (actor/add-listener! (text-tooltip/new (property/tooltip property) skin))
                     (actor/set-user-object! property-id))}))
       (for [id property-ids]
@@ -397,7 +397,7 @@
                                                                     (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
-           {:actor (doto (image/new (textures/texture-region textures (property/image property)))
+           {:actor (doto (image/create (textures/texture-region textures (property/image property)))
                      (actor/add-listener! (text-tooltip/new (property/tooltip property) skin))
                      (actor/set-user-object! property-id))}))]
       [(when property-id
