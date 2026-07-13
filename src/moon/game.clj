@@ -82,9 +82,14 @@
 (def schema
   (malli-schema/create
    [:map {:closed true}
+
+    ; = application ?
     [:ctx/input :some]
     [:ctx/graphics :some]
     [:ctx/audio :some]
+    ;
+
+    ; == also applciation now !? no ?
     [:ctx/batch :some]
     [:ctx/cursors :some]
     [:ctx/default-font :some]
@@ -94,17 +99,24 @@
     [:ctx/shape-drawer-texture :some]
     [:ctx/textures :some]
     [:ctx/skin :some]
-    [:ctx/stage :some]
+    [:ctx/stage :some] ; I access too much internals (stage get actor)
+
+    ; derived keys - calculated at start of 'frame' -> ctx/frame?
     [:ctx/active-entities :any]
     [:ctx/delta-time :any]
     [:ctx/mouseover-eid :any]
     [:ctx/ui-mouse-position :any]
     [:ctx/world-mouse-position :any]
+
+
+    ; constants?
     [:ctx/colors :some]
     [:ctx/controls :some]
     [:ctx/controls-info :some]
     [:ctx/max-speed :some]
     [:ctx/render-z-order :some]
+
+    ; simulation / model / world (contains db?)
     [:ctx/content-grid :some]
     [:ctx/entity-ids :some]
     [:ctx/explored-tile-corners :some]
@@ -116,8 +128,12 @@
     [:ctx/tiled-map :some]
     [:ctx/db :some]
     [:ctx/elapsed-time :some]
-    [:ctx/paused? :some]
     [:ctx/player-eid :some]
+
+    ; application
+    [:ctx/paused? :some]
+
+    ; debug flags
     [:ctx/show-potential-field-colors? :any]
     [:ctx/show-cell-entities? :boolean]
     [:ctx/show-cell-occupied? :boolean]
