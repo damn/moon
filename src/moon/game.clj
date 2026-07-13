@@ -275,7 +275,7 @@
   (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
     (handle-effect effect effect-ctx ctx)))
 
-(declare get-raycaster)
+(declare get-raycaster get-elapsed-time)
 
 (defmulti effect-useful?
   (fn [[k _v] _effect-ctx _ctx]
@@ -357,8 +357,8 @@
                             (str "Spawns a " pretty-name))
            :effects/target-all (fn [_ _ctx]
                                  "All visible targets")
-           :entity/delete-after-duration (fn [counter {:keys [ctx/elapsed-time]}]
-                                             (str "Remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+           :entity/delete-after-duration (fn [counter ctx]
+                                             (str "Remaining: " (number/readable (timer/ratio (get-elapsed-time ctx) counter)) "/1"))
            :entity/faction (fn [faction _ctx]
                              (str "Faction: " (name faction)))
            :entity/fsm (fn [fsm _ctx]
@@ -370,14 +370,14 @@
                               (str "Skills: " (str/join "," (map name (keys skills))))))
            :entity/species (fn [species _ctx]
                              (str "Creature - " (str/capitalize (name species))))
-           :entity/temp-modifier (fn [{:keys [counter]} {:keys [ctx/elapsed-time]}]
-                                    (str "Spiderweb - remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+           :entity/temp-modifier (fn [{:keys [counter]} ctx]
+                                    (str "Spiderweb - remaining: " (number/readable (timer/ratio (get-elapsed-time ctx) counter)) "/1"))
            :projectile/piercing? (fn [_ _ctx]
                                    "Piercing")
            :property/pretty-name (fn [v _ctx]
                                     v)
-           :skill/cooling-down? (fn [counter {:keys [ctx/elapsed-time]}]
-                                   (str "Cooldown: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+           :skill/cooling-down? (fn [counter ctx]
+                                   (str "Cooldown: " (number/readable (timer/ratio (get-elapsed-time ctx) counter)) "/1"))
            :skill/action-time (fn [v _ctx]
                                  (str "Action-Time: " (number/readable v) " seconds"))
            :skill/action-time-modifier-key (fn [v _ctx]
@@ -482,8 +482,8 @@
     :rotation-angle (or rotation-angle 0)}))
 
 (defn- create-component-delete-after-duration
-  [duration {:keys [ctx/elapsed-time]}]
-  (timer/create elapsed-time duration))
+  [duration ctx]
+  (timer/create (get-elapsed-time ctx) duration))
 
 (defn- create-component-projectile-collision
   [v _ctx]
@@ -517,26 +517,26 @@
   v)
 
 (defmethod create-entity-state :active-skill
-  [[_k [skill effect-ctx]] eid {:keys [ctx/elapsed-time]}]
+  [[_k [skill effect-ctx]] eid ctx]
   {:skill skill
    :effect-ctx effect-ctx
    :counter (->> skill
                  :skill/action-time
                  (stats/apply-action-speed-modifier (:entity/stats @eid) skill)
-                 (timer/create elapsed-time))})
+                 (timer/create (get-elapsed-time ctx)))})
 
 (defmethod create-entity-state :stunned
-  [[_k duration] _eid {:keys [ctx/elapsed-time]}]
-  {:counter (timer/create elapsed-time duration)})
+  [[_k duration] _eid ctx]
+  {:counter (timer/create (get-elapsed-time ctx) duration)})
 
 (defmethod create-entity-state :player-moving
   [[_k movement-vector] _eid _ctx]
   {:movement-vector movement-vector})
 
 (defmethod create-entity-state :npc-moving
-  [[_k movement-vector] eid {:keys [ctx/elapsed-time]}]
+  [[_k movement-vector] eid ctx]
   {:movement-vector movement-vector
-   :timer (timer/create elapsed-time
+   :timer (timer/create (get-elapsed-time ctx)
                         (* (stats/get-value (:entity/stats @eid) :stats/reaction-time)
                            0.016))})
 
@@ -1018,10 +1018,10 @@
                                       :z-order :z-order/effect
                                       :position position})))
 
-(defn- spawn-alert! [{:keys [ctx/elapsed-time] :as ctx} position faction duration]
+(defn- spawn-alert! [ctx position faction duration]
   (spawn-effect! ctx position
                  {:entity/alert-friendlies-after-duration
-                  {:counter (timer/create elapsed-time duration)
+                  {:counter (timer/create (get-elapsed-time ctx) duration)
                    :faction faction}}))
 
 (defn- spawn-item! [ctx position item]
@@ -1165,9 +1165,8 @@
   nil)
 
 (defn- state-exit-npc-sleeping
-  [_ eid {:keys [ctx/elapsed-time]
-          :as ctx}]
-  (swap! eid add-text-effect elapsed-time "[WHITE]!" 1)
+  [_ eid ctx]
+  (swap! eid add-text-effect (get-elapsed-time ctx) "[WHITE]!" 1)
   (spawn-alert! ctx (:body/position (:entity/body @eid)) (:entity/faction @eid) 0.2))
 
 (defn- state-exit-npc-moving
@@ -1276,8 +1275,9 @@
   nil)
 
 (defmethod handle-effect :effects.target/damage
-  [[_ damage] {:keys [effect/source effect/target]} {:keys [ctx/elapsed-time] :as ctx}]
-  (let [source* @source
+  [[_ damage] {:keys [effect/source effect/target]} ctx]
+  (let [elapsed-time (get-elapsed-time ctx)
+        source* @source
         target* @target
         hp (stats/get-hitpoints (:entity/stats target*))]
     (cond
@@ -1321,11 +1321,11 @@
   (handle-effect [:effects.target/damage (stats/melee-damage @source)] effect-ctx ctx))
 
 (defmethod handle-effect :effects.target/spiderweb
-  [_ {:keys [effect/target]} {:keys [ctx/elapsed-time]}]
+  [_ {:keys [effect/target]} ctx]
   ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
   (when-not (:entity/temp-modifier @target)
     (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                               :counter (timer/create elapsed-time spiderweb-duration)})
+                                               :counter (timer/create (get-elapsed-time ctx) spiderweb-duration)})
     (swap! target update :entity/stats stats/add-mods spiderweb-modifiers)
     nil))
 
@@ -1474,9 +1474,9 @@
    select-world-menu-item])
 
 (def dev-update-labels
-  [{:label "elapsed-time"
-    :update-fn (fn [{:keys [ctx/elapsed-time]}]
-                 (str (number/readable elapsed-time) " seconds"))
+  [   {:label "elapsed-time"
+    :update-fn (fn [ctx]
+                 (str (number/readable (get-elapsed-time ctx)) " seconds"))
     :icon "images/clock.png"}
    {:label "FPS"
     :update-fn frames-per-second
@@ -1769,10 +1769,10 @@
 (defn- render-active-skill
   [{:keys [skill effect-ctx counter]}
    entity
-   {:keys [ctx/elapsed-time
-           ctx/textures]
+   {:keys [ctx/textures]
     :as ctx}]
   (let [colors (get-colors ctx)
+        elapsed-time (get-elapsed-time ctx)
         {:keys [entity/image skill/effects]} skill
         radius active-skill-radius
         action-counter-ratio (timer/ratio elapsed-time counter)
@@ -2217,9 +2217,8 @@
 (defn- tick-entity-alert-friendlies-after-duration
   [{:keys [counter faction]}
    eid
-   {:keys [ctx/elapsed-time]
-    :as ctx}]
-  (when (timer/stopped? elapsed-time counter)
+   ctx]
+  (when (timer/stopped? (get-elapsed-time ctx) counter)
     (swap! eid assoc :entity/destroyed? true)
     (doseq [friendly-eid (->> {:position (:body/position (:entity/body @eid))
                                :radius 4}
@@ -2231,24 +2230,24 @@
 (defn- tick-entity-string-effect
   [{:keys [counter]}
    eid
-   {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
+   ctx]
+  (when (timer/stopped? (get-elapsed-time ctx) counter)
     (swap! eid dissoc :entity/string-effect))
   nil)
 
 (defn- tick-entity-skills
-  [skills eid {:keys [ctx/elapsed-time]}]
+  [skills eid ctx]
   (doseq [{:keys [skill/cooling-down?] :as skill} (vals skills)
           :when (and cooling-down?
-                     (timer/stopped? elapsed-time cooling-down?))]
+                     (timer/stopped? (get-elapsed-time ctx) cooling-down?))]
     (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
   nil)
 
 (defn- tick-entity-temp-modifier
   [{:keys [modifiers counter]}
    eid
-   {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
+   ctx]
+  (when (timer/stopped? (get-elapsed-time ctx) counter)
     (swap! eid dissoc :entity/temp-modifier)
     (swap! eid update :entity/stats stats/remove-mods modifiers))
   nil)
@@ -2284,9 +2283,9 @@
 (defn- tick-active-skill
   [{:keys [skill effect-ctx counter]}
    eid
-   {:keys [ctx/elapsed-time]
-    :as ctx}]
-  (let [effect-ctx (update-effect-ctx (get-raycaster ctx) effect-ctx)]
+   ctx]
+  (let [elapsed-time (get-elapsed-time ctx)
+        effect-ctx (update-effect-ctx (get-raycaster ctx) effect-ctx)]
     (cond
      (not (seq (filter #(effect-applicable? % effect-ctx)
                        (:skill/effects skill))))
@@ -2298,19 +2297,19 @@
          nil))))
 
 (defn- tick-entity-delete-after-duration
-  [counter eid {:keys [ctx/elapsed-time]}]
-  (when (timer/stopped? elapsed-time counter)
+  [counter eid ctx]
+  (when (timer/stopped? (get-elapsed-time ctx) counter)
     (swap! eid assoc :entity/destroyed? true))
   nil)
 
 (defn- tick-stunned
-  [{:keys [counter]} eid {:keys [ctx/elapsed-time] :as ctx}]
-  (when (timer/stopped? elapsed-time counter)
+  [{:keys [counter]} eid ctx]
+  (when (timer/stopped? (get-elapsed-time ctx) counter)
     (handle-fsm-event! ctx eid :effect-wears-off)))
 
 (defn- tick-npc-moving
-  [{:keys [timer]} eid {:keys [ctx/elapsed-time] :as ctx}]
-  (when (timer/stopped? elapsed-time timer)
+  [{:keys [timer]} eid ctx]
+  (when (timer/stopped? (get-elapsed-time ctx) timer)
     (handle-fsm-event! ctx eid :timer-finished)))
 
 (defn- tick-npc-sleeping
