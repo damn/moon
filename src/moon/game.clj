@@ -298,8 +298,8 @@
            dmg-amount (rand/int-between min-max)
            new-hp-val (max (- (hp 0) dmg-amount)
                            0)]
-       [[:tx/assoc-in target [:entity/stats :stats/hp 0] new-hp-val]
-        [:tx/event    target (if (zero? new-hp-val) :kill :alert)]
+       (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
+       [[:tx/event    target (if (zero? new-hp-val) :kill :alert)]
         [:tx/audiovisual (:body/position (:entity/body target*)) :audiovisuals/damage]
         [:tx/add-text-effect target (str "[RED]" dmg-amount "[]") 0.3]]))))
 
@@ -895,11 +895,6 @@
      (swap! eid assoc k value)
      nil)
 
-   :tx/assoc-in
-   (fn [_ctx eid ks value]
-     (swap! eid assoc-in ks value)
-     nil)
-
    :tx/audiovisual
    (fn [{:keys [ctx/db]} position audiovisual]
      (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
@@ -984,8 +979,8 @@
      (let [entity @eid
            item (get-in (:entity/inventory entity) cell)]
        (assert item)
-       [[:tx/assoc-in eid (cons :entity/inventory cell) nil]
-        (when (inventory-cell/applies-modifiers? cell)
+       (swap! eid assoc-in (cons :entity/inventory cell) nil)
+       [(when (inventory-cell/applies-modifiers? cell)
           [:tx/update eid :entity/stats stats/remove-mods (:stats/modifiers item)])
         (when (:entity/player? @eid)
           [:tx/ui-remove-item eid cell])]))
@@ -1002,8 +997,8 @@
            inventory (:entity/inventory entity)]
        (assert (and (nil? (get-in inventory cell))
                     (inventory-cell/valid-slot? cell item)))
-       [[:tx/assoc-in eid (cons :entity/inventory cell) item]
-        (when (inventory-cell/applies-modifiers? cell)
+       (swap! eid assoc-in (cons :entity/inventory cell) item)
+       [(when (inventory-cell/applies-modifiers? cell)
           [:tx/update eid :entity/stats stats/add-mods (:stats/modifiers item)])
         (when (:entity/player? @eid)
           [:tx/ui-set-item eid cell item])]))
@@ -2092,10 +2087,11 @@
 
    :entity/skills
    (fn [skills eid {:keys [ctx/elapsed-time]}]
-     (for [{:keys [skill/cooling-down?] :as skill} (vals skills)
-           :when (and cooling-down?
-                      (timer/stopped? elapsed-time cooling-down?))]
-       [:tx/assoc-in eid [:entity/skills (:property/id skill) :skill/cooling-down?] false]))
+     (doseq [{:keys [skill/cooling-down?] :as skill} (vals skills)
+             :when (and cooling-down?
+                        (timer/stopped? elapsed-time cooling-down?))]
+       (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
+     nil)
 
    :entity/temp-modifier
    (fn [{:keys [modifiers counter]}
@@ -2120,14 +2116,11 @@
                                      (grid/entities cells*)))
            destroy? (or (and hit-entity (not piercing?))
                         (some #(cell/blocked? % (:body/z-order (:entity/body entity))) cells*))]
+       (when hit-entity
+         (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
+                (conj already-hit-bodies hit-entity)))
        [(when destroy?
           [:tx/mark-destroyed eid])
-        (when hit-entity
-          [:tx/assoc-in
-           eid
-           [:entity/projectile-collision
-            :already-hit-bodies]
-           (conj already-hit-bodies hit-entity)])
         (when hit-entity
           [:tx/effect
            {:effect/source eid
@@ -2202,10 +2195,11 @@
          (when-let [body (if (:body/collides? body)
                             (grid/try-move-solid-body grid body (:entity/id @eid) movement)
                             (update body :body/position v2/move movement))]
-           [[:tx/assoc-in eid [:entity/body :body/position] (:body/position body)]
-            (when rotate-in-movement-direction?
-              [:tx/assoc-in eid [:entity/body :body/rotation-angle] (v2/angle-from-vector direction)])
-            [:tx/move-entity eid]]))))})
+           (swap! eid assoc-in [:entity/body :body/position] (:body/position body))
+           (when rotate-in-movement-direction?
+             (swap! eid assoc-in [:entity/body :body/rotation-angle]
+                    (v2/angle-from-vector direction)))
+           [[:tx/move-entity eid]]))))})
 
 (defn tick-component
   [ctx eid [k v]]
