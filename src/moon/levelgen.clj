@@ -30,8 +30,6 @@
             [gdx.lwjgl3-application :as lwjgl3-application]
             [gdx.lwjgl3-application-configuration :as config]))
 
-(def state (atom nil))
-
 (defn- get-stage [ctx]
   (:ctx/stage ctx))
 
@@ -179,6 +177,8 @@
         world-viewport (:ctx/world-viewport ctx)]
     (viewport/update! (:stage/viewport stage) width height true)
     (viewport/update! world-viewport width height false)))
+
+(def state (atom nil))
 
 (defn -main []
   (config/use-glfw-async!)
