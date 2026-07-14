@@ -1,8 +1,0 @@
-For example 'NAME' of first argument => folder name???
-
-
-  => would arrange verything nicely
-  => arrange code according to mechanical rules
-    => applied to whole code-base ????
-      => figure out names....!
-      => quite cool actually
