@@ -1,12 +1,13 @@
 (defproject moon "-SNAPSHOT"
   :repositories [["jitpack" "https://jitpack.io"]]
   :dependencies [
-                 ; FFI jars (vendor namespaces) — game code uses src/clojure/gdx wrappers
-                 [com.github.damn/com.badlogic.gdx "361519e8e3"]
-                 [com.github.damn/com.badlogic.gdx.backends.lwjgl3 "5042308fb0"]
-                 [com.github.damn/com.badlogic.gdx.graphics.g2d.freetype "38124e642d"]
+                 ; libGDX + ShapeDrawer (Clojure FFI facades live under src/)
+                 [com.badlogicgames.gdx/gdx "1.14.2"]
+                 [com.badlogicgames.gdx/gdx-backend-lwjgl3 "1.14.2"]
+                 [com.badlogicgames.gdx/gdx-platform "1.14.2" :classifier "natives-desktop"]
+                 [com.badlogicgames.gdx/gdx-freetype "1.14.2"]
                  [com.badlogicgames.gdx/gdx-freetype-platform "1.14.2" :classifier "natives-desktop"]
-                 [com.github.damn/space.earlygrey.shapedrawer "1184b47b65"] ; => clojure.gdx.graphics.g2d.shape-drawer
+                 [space.earlygrey/shapedrawer "2.6.0"]
 
                  ;
                  [com.github.cdorrat/reduce-fsm "fe1c914d68"]

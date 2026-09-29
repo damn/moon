@@ -1,10 +1,11 @@
 (ns gdx.circle
   (:refer-clojure :exclude [new])
-  (:require [com.badlogic.gdx.math.circle :as circle]
-            [com.badlogic.gdx.math.intersector :as intersector]))
+  (:import (com.badlogic.gdx.math Circle
+                                  Intersector
+                                  Rectangle)))
 
 (defn new [x y radius]
-  (circle/new x y radius))
+  (Circle. (float x) (float y) (float radius)))
 
 (defn overlaps [circle rectangle]
-  (intersector/overlaps circle rectangle))
+  (Intersector/overlaps ^Circle circle ^Rectangle rectangle))

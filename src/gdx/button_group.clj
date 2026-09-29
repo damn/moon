@@ -1,18 +1,18 @@
 (ns gdx.button-group
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.button-group :as button-group]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup)))
 
 (defn create
   [{:keys [max-check-count
            min-check-count]}]
-  (doto (button-group/new)
-    (button-group/setMaxCheckCount max-check-count)
-    (button-group/setMinCheckCount min-check-count)))
+  (doto (ButtonGroup.)
+    (.setMaxCheckCount (int max-check-count))
+    (.setMinCheckCount (int min-check-count))))
 
 (defn add! [button-group button]
-  (button-group/add button-group button))
+  (.add ^ButtonGroup button-group ^Button button))
 
 (defn remove! [button-group button]
-  (button-group/remove button-group button))
+  (.remove ^ButtonGroup button-group ^Button button))
 
 (defn get-checked [button-group]
-  (button-group/getChecked button-group))
+  (.getChecked ^ButtonGroup button-group))

@@ -1,66 +1,73 @@
 (ns gdx.actor
   (:refer-clojure :exclude [new remove])
-  (:require [com.badlogic.gdx.scenes.scene2d.actor :as actor]))
+  (:import (com.badlogic.gdx.math Vector2)
+           (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn new [act! draw!]
-  (actor/new act! draw!))
+  (proxy [Actor] []
+    (act [delta]
+      (act! this delta)
+      (let [^Actor this this]
+        (proxy-super act delta)))
+    (draw [batch parent-alpha]
+      (draw! this batch parent-alpha))))
 
 (defn add-listener! [a listener]
-  (actor/addListener a listener))
+  (.addListener ^Actor a listener))
 
 (defn get-height [a]
-  (actor/getHeight a))
+  (.getHeight ^Actor a))
 
 (defn get-name [a]
-  (actor/getName a))
+  (.getName ^Actor a))
 
 (defn get-parent [a]
-  (actor/getParent a))
+  (.getParent ^Actor a))
 
 (defn get-stage [a]
-  (actor/getStage a))
+  (.getStage ^Actor a))
 
 (defn get-user-object [a]
-  (actor/getUserObject a))
+  (.getUserObject ^Actor a))
 
 (defn get-width [a]
-  (actor/getWidth a))
+  (.getWidth ^Actor a))
 
 (defn get-x [a]
-  (actor/getX a))
+  (.getX ^Actor a))
 
 (defn get-y [a]
-  (actor/getY a))
+  (.getY ^Actor a))
 
 (defn hit [a x y touchable?]
-  (actor/hit a x y touchable?))
+  (.hit ^Actor a (float x) (float y) touchable?))
 
 (defn remove! [a]
-  (actor/remove a))
+  (.remove ^Actor a))
 
 (defn set-name! [a name]
-  (actor/setName a name))
+  (.setName ^Actor a name))
 
 (defn set-position!
   ([a x y]
-   (actor/setPosition a x y))
+   (.setPosition ^Actor a (float x) (float y)))
   ([a x y align]
-   (actor/setPosition a x y align)))
+   (.setPosition ^Actor a (float x) (float y) align)))
 
 (defn set-touchable! [a touchable]
-  (actor/setTouchable a touchable))
+  (.setTouchable ^Actor a touchable))
 
 (defn set-user-object! [a user-object]
-  (actor/setUserObject a user-object))
+  (.setUserObject ^Actor a user-object))
 
 (defn set-visible! [a visible?]
-  (actor/setVisible a visible?))
+  (.setVisible ^Actor a visible?))
 
 (defn stage-to-local-coordinates [a screen-coords]
-  (actor/stageToLocalCoordinates a screen-coords))
+  (.stageToLocalCoordinates ^Actor a ^Vector2 screen-coords))
 
 (defn visible? [a]
-  (actor/isVisible a))
+  (.isVisible ^Actor a))
 
 (defn find-ancestor [a pred?]
   (loop [actor a]

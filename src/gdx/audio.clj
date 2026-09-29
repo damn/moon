@@ -1,5 +1,5 @@
 (ns gdx.audio
-  (:require [com.badlogic.gdx.audio :as audio]))
+  (:import (com.badlogic.gdx Audio)))
 
 (defn new-sound [audio file-handle]
-  (audio/newSound audio file-handle))
+  (.newSound ^Audio audio file-handle))
