@@ -594,15 +594,6 @@
                                      :tooltip-text (item/info-text item)}
                                     skin))))
 
-(defn- pickup-item! [ctx eid item]
-  (assert (item/valid? item))
-  (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
-    (assert cell)
-    (assert (nil? cell-item))
-    (swap! eid set-item cell item)
-    (when (:entity/player? @eid)
-      (ui-set-item! ctx cell item))))
-
 (defn- remove-item! [ctx eid cell]
   (let [entity @eid
         item (get-in (:entity/inventory entity) cell)]
@@ -659,7 +650,13 @@
                                                         [slot (moon-g2d/create width height (constantly nil))]))
                                                  (into {})))
       (doseq [item v]
-        (pickup-item! ctx eid item))
+        (assert (item/valid? item))
+        (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
+          (assert cell)
+          (assert (nil? cell-item))
+          (swap! eid set-item cell item)
+          (when (:entity/player? @eid)
+            (ui-set-item! ctx cell item))))
       nil)
 
     nil))
@@ -1847,7 +1844,12 @@
                 (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
                     (audio/play! audio "bfxr_pickup")
-                    (pickup-item! ctx player-eid item)
+                    (assert (item/valid? item))
+                    (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @player-eid) item)]
+                      (assert cell)
+                      (assert (nil? cell-item))
+                      (swap! player-eid set-item cell item)
+                      (ui-set-item! ctx cell item))
                     nil)
 
                 :else
