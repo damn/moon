@@ -714,70 +714,65 @@
                               eid
                               component))))
 
-(defn- spawn-creature! [ctx {:keys [position creature-property components]}]
+(defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
-  (spawn-entity! ctx
-                 (-> creature-property
-                     (assoc :entity/position position
-                            :entity/collides? true
-                            :entity/z-order (if (:entity/flying? creature-property)
-                                              :z-order/flying
-                                              :z-order/ground))
-                     (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
-                     (m/safe-merge components))))
+  (-> creature-property
+      (assoc :entity/position position
+             :entity/collides? true
+             :entity/z-order (if (:entity/flying? creature-property)
+                               :z-order/flying
+                               :z-order/ground))
+      (assoc :entity/destroy-audiovisual :audiovisuals/creature-die)
+      (m/safe-merge components)))
 
-(defn- spawn-effect! [ctx position components]
-  (spawn-entity! ctx
-                 (assoc components
-                        :entity/width 0.5
-                        :entity/height 0.5
-                        :entity/z-order :z-order/effect
-                        :entity/position position)))
+(defn- spawn-effect [position components]
+  (assoc components
+         :entity/width 0.5
+         :entity/height 0.5
+         :entity/z-order :z-order/effect
+         :entity/position position))
 
-(defn- spawn-alert! [ctx position faction duration]
-  (spawn-effect! ctx position
-                 {:entity/alert-friendlies-after-duration
-                  {:counter (timer/create (:ctx/elapsed-time ctx) duration)
-                   :faction faction}}))
+(defn- spawn-alert [position faction duration elapsed-time]
+  (spawn-effect position
+                {:entity/alert-friendlies-after-duration
+                 {:counter (timer/create elapsed-time duration)
+                  :faction faction}}))
 
-(defn- spawn-item! [ctx position item]
-  (spawn-entity! ctx
-                 {:entity/position position
-                  :entity/width 0.75
-                  :entity/height 0.75
-                  :entity/z-order :z-order/on-ground
-                  :entity/image (:entity/image item)
-                  :entity/item item
-                  :entity/clickable {:type :clickable/item
-                                     :text (:property/pretty-name item)}}))
+(defn- spawn-item [position item]
+  {:entity/position position
+   :entity/width 0.75
+   :entity/height 0.75
+   :entity/z-order :z-order/on-ground
+   :entity/image (:entity/image item)
+   :entity/item item
+   :entity/clickable {:type :clickable/item
+                      :text (:property/pretty-name item)}})
 
-(defn- spawn-line! [ctx {:keys [start end duration color thick?]}]
-  (spawn-effect! ctx start
-                 {:entity/line-render {:thick? thick? :end end :color color}
-                  :entity/delete-after-duration duration}))
+(defn- spawn-line [{:keys [start end duration color thick?]}]
+  (spawn-effect start
+                {:entity/line-render {:thick? thick? :end end :color color}
+                 :entity/delete-after-duration duration}))
 
-(defn- spawn-projectile!
-  [ctx
-   {:keys [position direction faction]}
+(defn- spawn-projectile
+  [{:keys [position direction faction]}
    {:keys [entity/image
            projectile/max-range
            projectile/speed
            entity-effects
            projectile/size
            projectile/piercing?]}]
-  (spawn-entity! ctx
-                 {:entity/position position
-                  :entity/width size
-                  :entity/height size
-                  :entity/z-order :z-order/flying
-                  :entity/rotation-angle (v2/angle-from-vector direction)
-                  :entity/movement {:direction direction :speed speed}
-                  :entity/image image
-                  :entity/faction faction
-                  :entity/delete-after-duration (/ max-range speed)
-                  :entity/destroy-audiovisual :audiovisuals/hit-wall
-                  :entity/projectile-collision {:entity-effects entity-effects
-                                               :piercing? piercing?}}))
+  {:entity/position position
+   :entity/width size
+   :entity/height size
+   :entity/z-order :z-order/flying
+   :entity/rotation-angle (v2/angle-from-vector direction)
+   :entity/movement {:direction direction :speed speed}
+   :entity/image image
+   :entity/faction faction
+   :entity/delete-after-duration (/ max-range speed)
+   :entity/destroy-audiovisual :audiovisuals/hit-wall
+   :entity/projectile-collision {:entity-effects entity-effects
+                                :piercing? piercing?}})
 
 (defn- show-modal! [ctx {:keys [title text button-text on-click]}]
   (let [skin (:ctx/skin ctx)
@@ -803,8 +798,8 @@
                                              (db/build db audiovisual)
                                              audiovisual)]
     (audio/play! audio sound)
-    (spawn-effect! ctx position
-                   {:entity/animation (assoc animation :delete-after-stopped? true)})))
+    (spawn-entity! ctx (spawn-effect position
+                                     {:entity/animation (assoc animation :delete-after-stopped? true)})))
 
 (defn- handle-fsm-event! [ctx audio eid world-mouse-position event & [params]]
   (let [fsm (:entity/fsm @eid)
@@ -828,10 +823,10 @@
               (when item
                 (swap! eid dissoc :entity/item-on-cursor)
                 (audio/play! audio "bfxr_itemputground")
-                (spawn-item! ctx (item-place-position (:entity/position entity)
-                                                      world-mouse-position
-                                                      (- (:entity/click-distance-tiles entity) 0.1))
-                             item)))
+                (spawn-entity! ctx (spawn-item (item-place-position (:entity/position entity)
+                                                                    world-mouse-position
+                                                                    (- (:entity/click-distance-tiles entity) 0.1))
+                                               item)))
 
             :player-moving
             (do (swap! eid dissoc :entity/movement)
@@ -839,7 +834,7 @@
 
             :npc-sleeping
             (do (swap! eid add-text-effect (:ctx/elapsed-time ctx) "[WHITE]!" 1)
-                (spawn-alert! ctx (:entity/position @eid) (:entity/faction @eid) 0.2))
+                (spawn-entity! ctx (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 (:ctx/elapsed-time ctx))))
 
             :npc-moving
             (do (swap! eid dissoc :entity/movement)
@@ -900,21 +895,21 @@
 
     :effects/projectile
     (let [source (effect-ctx/get-source effect-ctx)]
-      (spawn-projectile! ctx
-                         {:position (projectile-start-point @source
-                                                            (effect-ctx/get-target-direction effect-ctx)
-                                                            (:projectile/size v))
-                          :direction (effect-ctx/get-target-direction effect-ctx)
-                          :faction (:entity/faction @source)}
-                         v))
+      (spawn-entity! ctx (spawn-projectile
+                          {:position (projectile-start-point @source
+                                                             (effect-ctx/get-target-direction effect-ctx)
+                                                             (:projectile/size v))
+                           :direction (effect-ctx/get-target-direction effect-ctx)
+                           :faction (:entity/faction @source)}
+                          v)))
 
     :effects/spawn
     (let [source (effect-ctx/get-source effect-ctx)]
-      (spawn-creature! ctx {:position (effect-ctx/get-target-position effect-ctx)
-                            :creature-property v
-                            :components {:entity/fsm {:fsm :fsms/npc
-                                                      :initial-state :npc-idle}
-                                         :entity/faction (:entity/faction @source)}}))
+      (spawn-entity! ctx (spawn-creature {:position (effect-ctx/get-target-position effect-ctx)
+                                          :creature-property v
+                                          :components {:entity/fsm {:fsm :fsms/npc
+                                                                    :initial-state :npc-idle}
+                                                       :entity/faction (:entity/faction @source)}})))
 
     :effects/target-all
     (let [source (effect-ctx/get-source effect-ctx)
@@ -923,12 +918,12 @@
           raycaster (:ctx/raycaster ctx)
           source* @source]
       (doseq [target (affected-targets active-entities raycaster source*)]
-        (spawn-line! ctx
-                     {:start (:entity/position source*)
-                      :end (:entity/position @target)
-                      :duration 0.05
-                      :color (:colors/target-all-line colors)
-                      :thick? true})
+        (spawn-entity! ctx (spawn-line
+                            {:start (:entity/position source*)
+                             :end (:entity/position @target)
+                             :duration 0.05
+                             :color (:colors/target-all-line colors)
+                             :thick? true}))
         (apply-effects! ctx audio world-mouse-position
                         {:effect/source source
                          :effect/target target}
@@ -942,12 +937,12 @@
           target-body @target
           {:keys [maxrange entity-effects]} v]
       (if (body/in-range? body target-body maxrange)
-        (do (spawn-line! ctx
-                         {:start (body/start-point body target-body)
-                          :end (:entity/position target-body)
-                          :duration 0.05
-                          :color (:colors/target-entity-line colors)
-                          :thick? true})
+        (do (spawn-entity! ctx (spawn-line
+                                {:start (body/start-point body target-body)
+                                 :end (:entity/position target-body)
+                                 :duration 0.05
+                                 :color (:colors/target-entity-line colors)
+                                 :thick? true}))
             (apply-effects! ctx audio world-mouse-position effect-ctx entity-effects))
         (audiovisual! ctx audio
                       (body/end-point body target-body maxrange)
@@ -2573,15 +2568,15 @@
                 (aset arr x y (boolean blocked?)))
               (assoc ctx :ctx/raycaster [arr width height]))
             (do
-             (spawn-creature! ctx {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
-                                   :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
-                                   :components {:entity/fsm {:fsm :fsms/player
-                                                             :initial-state :player-idle}
-                                                :entity/faction :good
-                                                :entity/player? true
-                                                :entity/free-skill-points 3
-                                                :entity/clickable {:type :clickable/player}
-                                                :entity/click-distance-tiles 1.5}})
+             (spawn-entity! ctx (spawn-creature {:position (mapv (partial + 0.5) (:ctx/start-position ctx))
+                                                 :creature-property (db/build (:ctx/db ctx) :creatures/vampire)
+                                                 :components {:entity/fsm {:fsm :fsms/player
+                                                                           :initial-state :player-idle}
+                                                              :entity/faction :good
+                                                              :entity/player? true
+                                                              :entity/free-skill-points 3
+                                                              :entity/clickable {:type :clickable/player}
+                                                              :entity/click-distance-tiles 1.5}}))
              ctx)
             (let [eid (world/entity-by-id (:ctx/world ctx) 1)]
               (assert (:entity/player? @eid))
@@ -2590,11 +2585,11 @@
              (let [start-position (:ctx/start-position ctx)]
                (doseq [[position creature-id] (moon-tiled-map/spawn-positions (:ctx/tiled-map ctx))
                        :when (not= position start-position)]
-                 (spawn-creature! ctx {:position (mapv (partial + 0.5) position)
-                                       :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
-                                       :components {:entity/fsm {:fsm :fsms/npc
-                                                                 :initial-state :npc-sleeping}
-                                                    :entity/faction :evil}})))
+                 (spawn-entity! ctx (spawn-creature {:position (mapv (partial + 0.5) position)
+                                                     :creature-property (db/build (:ctx/db ctx) (keyword creature-id))
+                                                     :components {:entity/fsm {:fsm :fsms/npc
+                                                                               :initial-state :npc-sleeping}
+                                                                  :entity/faction :evil}}))))
              ctx))))
 
 (defn dispose! []
