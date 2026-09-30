@@ -60,107 +60,93 @@
     tiled-map))
 
 (defn listener []
-  (let [state (atom nil)]
+  (let [zoom-speed (:zoom-speed config)
+        camera-movement-speed (:camera-movement-speed config)
+        world-unit-scale (float (/ (:tile-size config)))
+        input (atom nil)
+        batch (atom nil)
+        skin (atom nil)
+        ui-stage (atom nil)
+        world-viewport (atom nil)
+        camera (atom nil)
+        db (atom nil)
+        textures (atom nil)
+        tiled-map (atom nil)]
     (reify ApplicationListener
       (create [_]
-        (reset! state
-                (let [input (.getInput ^Application Gdx/app)
-                      files (.getFiles ^Application Gdx/app)
-                      batch (SpriteBatch.)
-                      skin (Skin. ^FileHandle (.internal ^Files files (:ui-skin-path config)))
-                      world-unit-scale (float (/ (:tile-size config)))
-                      world-width (* (:world-viewport-width config) world-unit-scale)
-                      world-height (* (:world-viewport-height config) world-unit-scale)
-                      world-viewport (FitViewport. (float world-width)
-                                                   (float world-height)
-                                                   (doto (orthographic-camera/new)
-                                                     (orthographic-camera/set-to-ortho! false
-                                                                                        world-width
-                                                                                        world-height)))
-                      stage* (stage/create (FitViewport. (float (:ui-viewport-width config))
-                                                         (float (:ui-viewport-height config)))
-                                           batch)
-                      camera (viewport/get-camera world-viewport)
-                      db (db/create)
-                      textures (textures/create files (:textures-config config))
-                      _ (input/set-processor! input stage*)
-                      ctx {:ctx/input input
-                           :ctx/zoom-speed (:zoom-speed config)
-                           :ctx/camera-movement-speed (:camera-movement-speed config)
-                           :ctx/world-unit-scale world-unit-scale
-                           :ctx/sprite-batch batch
-                           :ctx/stage stage*
-                           :ctx/skin skin
-                           :ctx/world-viewport world-viewport
-                           :ctx/camera camera
-                           :ctx/db db
-                           :ctx/textures textures
-                           :ctx/tiled-map (generate-level db textures camera (:initial-level-fn config))}]
-                  (stage/add-actor!
-                   stage*
-                   (window/create
-                    {:title "Edit"
-                     :skin skin
-                     :table/rows
-                     (for [[label level-fn] (:level-fns config)]
-                       [{:actor
-                         (doto (TextButton. (str "Generate " label) skin)
-                           (.addListener (proxy [ChangeListener] []
-                                           (changed [_event _actor]
-                                             (swap! state (fn [{:keys [ctx/db ctx/textures ctx/camera] :as ctx}]
-                                                            (Disposable/.dispose (:ctx/tiled-map ctx))
-                                                            (assoc ctx :ctx/tiled-map
-                                                                   (generate-level db textures camera level-fn))))))))}])}))
-                  ctx)))
+        (let [files (.getFiles ^Application Gdx/app)
+              world-width (* (:world-viewport-width config) world-unit-scale)
+              world-height (* (:world-viewport-height config) world-unit-scale)]
+          (reset! input (.getInput ^Application Gdx/app))
+          (reset! batch (SpriteBatch.))
+          (reset! skin (Skin. ^FileHandle (.internal ^Files files (:ui-skin-path config))))
+          (reset! world-viewport
+                  (FitViewport. (float world-width)
+                                (float world-height)
+                                (doto (orthographic-camera/new)
+                                  (orthographic-camera/set-to-ortho! false
+                                                                     world-width
+                                                                     world-height))))
+          (reset! ui-stage (stage/create (FitViewport. (float (:ui-viewport-width config))
+                                                       (float (:ui-viewport-height config)))
+                                         @batch))
+          (reset! camera (viewport/get-camera @world-viewport))
+          (reset! db (db/create))
+          (reset! textures (textures/create files (:textures-config config)))
+          (input/set-processor! @input @ui-stage)
+          (reset! tiled-map (generate-level @db @textures @camera (:initial-level-fn config)))
+          (stage/add-actor!
+           @ui-stage
+           (window/create
+            {:title "Edit"
+             :skin @skin
+             :table/rows
+             (for [[label level-fn] (:level-fns config)]
+               [{:actor
+                 (doto (TextButton. (str "Generate " label) @skin)
+                   (.addListener (proxy [ChangeListener] []
+                                   (changed [_event _actor]
+                                     (Disposable/.dispose @tiled-map)
+                                     (reset! tiled-map
+                                             (generate-level @db @textures @camera level-fn))))))}])}))))
       (dispose [_]
-        (let [{:keys [ctx/sprite-batch
-                      ctx/skin
-                      ctx/textures
-                      ctx/tiled-map]} @state]
-          (Disposable/.dispose sprite-batch)
-          (Disposable/.dispose skin)
-          (run! Disposable/.dispose (vals textures))
-          (Disposable/.dispose tiled-map)))
+        (Disposable/.dispose @batch)
+        (Disposable/.dispose @skin)
+        (run! Disposable/.dispose (vals @textures))
+        (Disposable/.dispose @tiled-map))
       (render [_]
-        (swap! state
-               (fn [ctx]
-                 (let [gl (.getGL20 ^Graphics Gdx/graphics)
-                       stage (:ctx/stage ctx)
-                       input (:ctx/input ctx)
-                       zoom-speed (:ctx/zoom-speed ctx)
-                       camera (:ctx/camera ctx)
-                       speed (:ctx/camera-movement-speed ctx)
-                       move (fn [idx f]
-                              (orthographic-camera/set-position! camera
-                                                                 (update (orthographic-camera/position camera)
-                                                                         idx
-                                                                         #(f % speed))))]
-                   (.glClearColor ^GL20 gl 0 0 0 0)
-                   (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
-                   (moon-tiled-map/draw! (:ctx/tiled-map ctx)
-                                         (:ctx/sprite-batch ctx)
-                                         (:ctx/world-unit-scale ctx)
-                                         (viewport/get-camera (:ctx/world-viewport ctx))
-                                         (constantly (color/to-float-bits [1 1 1 1])))
-                   (when (input/key-pressed? input :input.keys/minus)
-                     (orthographic-camera/inc-zoom! camera zoom-speed))
-                   (when (input/key-pressed? input :input.keys/equals)
-                     (orthographic-camera/inc-zoom! camera (- zoom-speed)))
-                   (when (input/key-pressed? input :input.keys/left)
-                     (move 0 -))
-                   (when (input/key-pressed? input :input.keys/right)
-                     (move 0 +))
-                   (when (input/key-pressed? input :input.keys/up)
-                     (move 1 +))
-                   (when (input/key-pressed? input :input.keys/down)
-                     (move 1 -))
-                   (stage/act! stage)
-                   (stage/draw! stage)
-                   ctx))))
+        (let [gl (.getGL20 ^Graphics Gdx/graphics)
+              input* @input
+              camera* @camera
+              move (fn [idx f]
+                     (orthographic-camera/set-position! camera*
+                                                        (update (orthographic-camera/position camera*)
+                                                                idx
+                                                                #(f % camera-movement-speed))))]
+          (.glClearColor ^GL20 gl 0 0 0 0)
+          (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
+          (moon-tiled-map/draw! @tiled-map
+                                @batch
+                                world-unit-scale
+                                (viewport/get-camera @world-viewport)
+                                (constantly (color/to-float-bits [1 1 1 1])))
+          (when (input/key-pressed? input* :input.keys/minus)
+            (orthographic-camera/inc-zoom! camera* zoom-speed))
+          (when (input/key-pressed? input* :input.keys/equals)
+            (orthographic-camera/inc-zoom! camera* (- zoom-speed)))
+          (when (input/key-pressed? input* :input.keys/left)
+            (move 0 -))
+          (when (input/key-pressed? input* :input.keys/right)
+            (move 0 +))
+          (when (input/key-pressed? input* :input.keys/up)
+            (move 1 +))
+          (when (input/key-pressed? input* :input.keys/down)
+            (move 1 -))
+          (stage/act! @ui-stage)
+          (stage/draw! @ui-stage)))
       (resize [_ width height]
-        (let [ctx @state]
-          (viewport/update! (:stage/viewport (:ctx/stage ctx)) width height true)
-          (viewport/update! (:ctx/world-viewport ctx) width height false)))
+        (viewport/update! (:stage/viewport @ui-stage) width height true)
+        (viewport/update! @world-viewport width height false))
       (pause [_])
       (resume [_]))))
 
