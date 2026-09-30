@@ -888,7 +888,7 @@
 (declare apply-effects!)
 
 (defn handle-effect
-  [[k v] effect-ctx ctx audio]
+  [[k v] effect-ctx ctx audio world-mouse-position]
   (case k
     :effects/audiovisual
     (audiovisual! ctx audio (effect-ctx/get-target-position effect-ctx) v)
@@ -924,7 +924,7 @@
                       :duration 0.05
                       :color (:colors/target-all-line colors)
                       :thick? true})
-        (apply-effects! ctx audio
+        (apply-effects! ctx audio world-mouse-position
                         {:effect/source source
                          :effect/target target}
                         (:entity-effects v))))
@@ -943,7 +943,7 @@
                           :duration 0.05
                           :color (:colors/target-entity-line colors)
                           :thick? true})
-            (apply-effects! ctx audio effect-ctx entity-effects))
+            (apply-effects! ctx audio world-mouse-position effect-ctx entity-effects))
         (audiovisual! ctx audio
                       (body/end-point body target-body maxrange)
                       :audiovisuals/hit-ground)))
@@ -991,11 +991,11 @@
              dmg-text (str "[RED]" dmg-amount "[]")]
          (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
          (swap! target add-text-effect elapsed-time dmg-text 0.3)
-         (handle-fsm-event! ctx audio target (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) (if (zero? new-hp-val) :kill :alert))
+         (handle-fsm-event! ctx audio target world-mouse-position (if (zero? new-hp-val) :kill :alert))
          (audiovisual! ctx audio (:entity/position target*) :audiovisuals/damage))))
 
     :effects.target/kill
-    (handle-fsm-event! ctx audio (effect-ctx/get-target effect-ctx) (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :kill)
+    (handle-fsm-event! ctx audio (effect-ctx/get-target effect-ctx) world-mouse-position :kill)
 
     :effects.target/melee-damage
     ; TODO AT EFFECT CREATION MAKE
@@ -1003,7 +1003,8 @@
     (handle-effect [:effects.target/damage (stats/melee-damage @(effect-ctx/get-source effect-ctx))]
                    effect-ctx
                    ctx
-                   audio)
+                   audio
+                   world-mouse-position)
 
     :effects.target/spiderweb
     (let [target (effect-ctx/get-target effect-ctx)]
@@ -1015,11 +1016,11 @@
         nil))
 
     :effects.target/stun
-    (handle-fsm-event! ctx audio (effect-ctx/get-target effect-ctx) (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :stun v)))
+    (handle-fsm-event! ctx audio (effect-ctx/get-target effect-ctx) world-mouse-position :stun v)))
 
-(defn- apply-effects! [ctx audio effect-ctx effects]
+(defn- apply-effects! [ctx audio world-mouse-position effect-ctx effects]
   (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-    (handle-effect effect effect-ctx ctx audio)))
+    (handle-effect effect effect-ctx ctx audio world-mouse-position)))
 
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (.getRoot ^Stage (:ctx/stage ctx))
@@ -1271,9 +1272,8 @@
     (.setColor shape-drawer (float color-float-bits))
     (.sector shape-drawer center-x center-y radius start-radians radians)))
 
-(defn- draw-fn-text [ctx {:keys [font scale x y text up?]}]
-  (let [font (or font (:ctx/default-font ctx))
-        unit-scale (:ctx/unit-scale ctx)
+(defn- draw-fn-text [ctx batch default-font unit-scale {:keys [font scale x y text up?]}]
+  (let [font (or font default-font)
         scale (or scale 1)
         font-data (.getData ^BitmapFont font)
         old-scale (.scaleX ^BitmapFont$BitmapFontData font-data)
@@ -1283,7 +1283,7 @@
                  (float scale))]
     (.setScale ^BitmapFont$BitmapFontData font-data (* old-scale scale))
     (.draw ^BitmapFont font
-           ^Batch (:ctx/batch ctx)
+           ^Batch batch
            text
            (float x)
            (float (+ y (if up?
@@ -1297,16 +1297,15 @@
            wrap?)
     (.setScale ^BitmapFont$BitmapFontData font-data old-scale)))
 
-(defn- draw-fn-texture-region [ctx texture-region [x y] & {:keys [center? rotation]}]
-  (let [unit-scale (:ctx/unit-scale ctx)
-        [w h] (let [dimensions [(.getRegionWidth ^TextureRegion texture-region)
+(defn- draw-fn-texture-region [ctx batch unit-scale texture-region [x y] & {:keys [center? rotation]}]
+  (let [[w h] (let [dimensions [(.getRegionWidth ^TextureRegion texture-region)
                                 (.getRegionHeight ^TextureRegion texture-region)]]
                   (if (= @unit-scale 1)
                     dimensions
                     (mapv (comp float (partial * world-unit-scale))
                           dimensions)))]
     (if center?
-      (Batch/.draw ^Batch (:ctx/batch ctx)
+      (Batch/.draw ^Batch batch
                    ^TextureRegion texture-region
                    (float (- (float x) (/ (float w) 2)))
                    (float (- (float y) (/ (float h) 2)))
@@ -1317,7 +1316,7 @@
                    (float 1)
                    (float 1)
                    (float (or rotation 0)))
-      (.draw ^Batch (:ctx/batch ctx)
+      (.draw ^Batch batch
              ^TextureRegion texture-region
              (float x)
              (float y)
@@ -1395,14 +1394,14 @@
               visible-tile-color))))))
 
 (defn draw-component
-  [ctx mouseover-actor world-mouse-position entity k v]
+  [ctx batch default-font unit-scale mouseover-actor world-mouse-position entity k v]
   (case k
     :entity/clickable
     (let [{:keys [text]} v
           {:keys [entity/position entity/height entity/mouseover?]} entity]
       (when (and mouseover? text)
         (let [[x y] position]
-          (draw-fn-text ctx {:text text
+          (draw-fn-text ctx batch default-font unit-scale {:text text
                              :x x
                              :y (+ y (/ height 2))
                              :up? true}))))
@@ -1410,7 +1409,7 @@
     :player-item-on-cursor
     (let [{:keys [item]} v]
       (when-not mouseover-actor
-        (draw-fn-texture-region ctx
+        (draw-fn-texture-region ctx batch unit-scale
                                 (textures/texture-region (:ctx/textures ctx) (:entity/image item))
                                 (item-place-position (:entity/position entity)
                                                      world-mouse-position
@@ -1421,14 +1420,14 @@
     (let [{:keys [frames cnt frame-duration]} v
           image (frames (min (int (/ (float cnt) (float frame-duration)))
                              (dec (count frames))))]
-      (draw-fn-texture-region ctx
+      (draw-fn-texture-region ctx batch unit-scale
                               (textures/texture-region (:ctx/textures ctx) image)
                               (:entity/position entity)
                               {:center? true
                                :rotation (or (:entity/rotation-angle entity) 0)}))
 
     :entity/image
-    (draw-fn-texture-region ctx
+    (draw-fn-texture-region ctx batch unit-scale
                             (textures/texture-region (:ctx/textures ctx) v)
                             (:entity/position entity)
                             {:center? true
@@ -1478,7 +1477,7 @@
     :entity/string-effect
     (let [{:keys [text]} v
           [x y] (:entity/position entity)]
-      (draw-fn-text ctx {:text text
+      (draw-fn-text ctx batch default-font unit-scale {:text text
                          :x x
                          :y (+ y
                                (/ (:entity/height entity) 2)
@@ -1510,14 +1509,14 @@
                       (math/to-radians 90)
                       (math/to-radians (* (float action-counter-ratio) 360))
                       (:colors/active-skill-sector colors))
-      (draw-fn-texture-region ctx texture-region [(- (float x) radius) y])
+      (draw-fn-texture-region ctx batch unit-scale texture-region [(- (float x) radius) y])
       (doseq [effect effects]
         (effect-render effect effect-ctx ctx)))
 
     :npc-sleeping
     (let [{:keys [entity/position entity/height]} entity
           [x y] position]
-      (draw-fn-text ctx {:text "zzz"
+      (draw-fn-text ctx batch default-font unit-scale {:text "zzz"
                          :x x
                          :y (+ y (/ height 2))
                          :up? true}))
@@ -1527,7 +1526,9 @@
 
 (defn hp-mana-bar-create
   [ctx]
-  (let [stage (:ctx/stage ctx)
+  (let [default-font (:ctx/default-font ctx)
+        unit-scale (:ctx/unit-scale ctx)
+        stage (:ctx/stage ctx)
         textures (:ctx/textures ctx)
         {:keys [rahmen-file
                 rahmenw
@@ -1544,14 +1545,14 @@
                     y-mana]
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
-        draw-hpmana-bar! (fn [ctx x y content-file minmaxval name]
-                           (draw-fn-texture-region ctx rahmen-tex-reg [x y])
-                           (draw-fn-texture-region ctx
+        draw-hpmana-bar! (fn [ctx batch x y content-file minmaxval name]
+                           (draw-fn-texture-region ctx batch unit-scale rahmen-tex-reg [x y])
+                           (draw-fn-texture-region ctx batch unit-scale
                                                    (textures/texture-region textures
                                                                             {:image/file content-file
                                                                              :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
                                                    [x y])
-                           (draw-fn-text ctx {:text (str (number/readable (minmaxval 0))
+                           (draw-fn-text ctx batch default-font unit-scale {:text (str (number/readable (minmaxval 0))
                                                          "/"
                                                          (minmaxval 1)
                                                          " "
@@ -1568,8 +1569,8 @@
           (let [ctx (.ctx ^Stage stage)
                 stats (:entity/stats @(:ctx/player-eid ctx))
                 bar-x (- x (/ rahmenw 2))]
-            (draw-hpmana-bar! ctx bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
-            (draw-hpmana-bar! ctx bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
+            (draw-hpmana-bar! ctx batch bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
+            (draw-hpmana-bar! ctx batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
 
 (defn- clicked-inventory-cell-player-idle
   [ctx audio eid cell]
@@ -1784,18 +1785,18 @@
       :skin skin})))
 
 (defn entity-state-draw-ui-view
-  [[k _v] eid ctx mouseover-actor ui-mouse-position]
+  [[k _v] eid ctx batch unit-scale mouseover-actor ui-mouse-position]
   (case k
     :player-item-on-cursor
     (when mouseover-actor
-      (draw-fn-texture-region ctx
+      (draw-fn-texture-region ctx batch unit-scale
                               (textures/texture-region (:ctx/textures ctx) (:entity/image (:entity/item-on-cursor @eid)))
                               ui-mouse-position
                               {:center? true}))
 
     nil))
 
-(defn player-state-draw-create []
+(defn player-state-draw-create [unit-scale]
   (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
     (act [delta]
       (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
@@ -1812,10 +1813,12 @@
         (entity-state-draw-ui-view [state-k (state-k entity)]
                                    player-eid
                                    ctx
+                                   batch
+                                   unit-scale
                                    (mouseover-actor (:ctx/stage ctx) x y)
                                    ui-mouse-position)))))
 
-(defn player-message-actor-create []
+(defn player-message-actor-create [default-font unit-scale]
   (let [message-duration-seconds 0.5]
     (doto (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
             (act [delta]
@@ -1833,7 +1836,7 @@
                       vp-width (viewport/get-world-width (.getViewport ^Stage stage))
                       vp-height (viewport/get-world-height (.getViewport ^Stage stage))]
                   (when-let [text (:text @state)]
-                    (draw-fn-text ctx {:x (/ vp-width 2)
+                    (draw-fn-text ctx batch default-font unit-scale {:x (/ vp-width 2)
                                        :y (+ (/ vp-height 2) 200)
                                        :text text
                                        :scale 2.5
@@ -2039,6 +2042,8 @@
    audio]
   (let [world (:ctx/world ctx)
         entity @eid
+        world-mouse-position (viewport/unproject (:ctx/world-viewport ctx)
+                                                 [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
         hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
                                         (not= (:entity/faction entity)
                                               (:entity/faction @%))
@@ -2054,7 +2059,7 @@
     (when destroy?
       (swap! eid assoc :entity/destroyed? true))
     (when hit-entity
-      (apply-effects! ctx audio
+      (apply-effects! ctx audio world-mouse-position
                       {:effect/source eid
                        :effect/target hit-entity}
                       entity-effects)))
@@ -2066,15 +2071,17 @@
    ctx
    audio]
   (let [elapsed-time (:ctx/elapsed-time ctx)
-        effect-ctx (update-effect-ctx (:ctx/raycaster ctx) effect-ctx)]
+        effect-ctx (update-effect-ctx (:ctx/raycaster ctx) effect-ctx)
+        world-mouse-position (viewport/unproject (:ctx/world-viewport ctx)
+                                                 [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])]
     (cond
      (not (seq (filter #(effect-applicable? % effect-ctx)
                        (:skill/effects skill))))
-     (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :action-done)
+     (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
 
      (timer/stopped? elapsed-time counter)
-     (do (apply-effects! ctx audio effect-ctx (:skill/effects skill))
-         (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :action-done)
+     (do (apply-effects! ctx audio world-mouse-position effect-ctx (:skill/effects skill))
+         (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
          nil))))
 
 (defn- tick-entity-delete-after-duration
@@ -2274,7 +2281,7 @@
     (draw-fn-rectangle ctx x y width height color-float-bits)))
 
 (defn- draw-entities!
-  [ctx mouseover-actor world-mouse-position]
+  [ctx batch default-font unit-scale mouseover-actor world-mouse-position]
   (let [player-eid (:ctx/player-eid ctx)
         raycaster (:ctx/raycaster ctx)
         colors (:ctx/colors ctx)
@@ -2302,7 +2309,7 @@
                                       (:colors/debug-body-outline colors))))
           (doseq [[k v] entity
                   :when (get render-layer k)]
-            (draw-component ctx mouseover-actor world-mouse-position entity k v)))
+            (draw-component ctx batch default-font unit-scale mouseover-actor world-mouse-position entity k v)))
         (catch Throwable t
           (draw-entity-rectangle! ctx
                                   entity
@@ -2580,8 +2587,8 @@
                              (hp-mana-bar-create ctx)
                              (windows-create ctx [stage-info-window-create
                                                   #(inventory-window-create % (:ctx/audio %))])
-                             (player-state-draw-create)
-                             (player-message-actor-create)]]
+                             (player-state-draw-create (:ctx/unit-scale ctx))
+                             (player-message-actor-create (:ctx/default-font ctx) (:ctx/unit-scale ctx))]]
                 (.addActor ^Stage stage actor))
               ctx)
             (let [{:keys [tiled-map start-position]}
@@ -2644,6 +2651,8 @@
   (swap! state #(or (.ctx ^Stage (:ctx/stage %)) %))
   (malli-schema/validate-humanize schema @state)
   (let [audio (:ctx/audio @state)
+        batch (:ctx/batch @state)
+        default-font (:ctx/default-font @state)
         ui-mouse-position (viewport/unproject (.getViewport ^Stage (:ctx/stage @state)) mouse-position)
         world-mouse-position (viewport/unproject (:ctx/world-viewport @state) mouse-position)]
     (swap! state (fn [ctx]
@@ -2691,7 +2700,7 @@
           explored-tile-corners (:ctx/explored-tile-corners ctx)
           tiled-map (:ctx/tiled-map ctx)]
       (moon-tiled-map/draw! tiled-map
-                            (:ctx/batch ctx)
+                            batch
                             world-unit-scale
                             (viewport/get-camera world-viewport)
                             (tile-color-setter*
@@ -2707,21 +2716,21 @@
           unit-scale (:ctx/unit-scale ctx)
           [x y] ui-mouse-position
           mouseover-actor* (mouseover-actor (:ctx/stage ctx) x y)]
-      (.setColor ^Batch (:ctx/batch ctx) (float 1) (float 1) (float 1) (float 1))
-      (.setProjectionMatrix ^Batch (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
-      (.begin ^Batch (:ctx/batch ctx))
+      (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
+      (.setProjectionMatrix ^Batch batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
+      (.begin ^Batch batch)
       (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)
             old-line-width (.getDefaultLineWidth shape-drawer)]
         (.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
         (reset! unit-scale world-unit-scale)
         (doseq [draw-fn [draw-tile-grid
                          draw-cell-debug
-                         #(draw-entities! % mouseover-actor* world-mouse-position)
+                         #(draw-entities! % batch default-font unit-scale mouseover-actor* world-mouse-position)
                          #(highlight-mouseover-tile % world-mouse-position)]]
           (draw-fn ctx))
         (reset! unit-scale 1)
         (.setDefaultLineWidth shape-drawer old-line-width))
-      (.end ^Batch (:ctx/batch ctx))
+      (.end ^Batch batch)
       (swap! state assoc-interaction-state mouseover-actor* world-mouse-position)
       (let [ctx @state
             eid (:ctx/player-eid ctx)
