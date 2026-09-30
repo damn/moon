@@ -1912,16 +1912,6 @@
       (.setName "player-message")
       (.setUserObject (atom nil)))))
 
-(defn- player-movement-vector [ctx]
-  (let [r (when (input/key-pressed? (:ctx/input ctx) :input.keys/d) [1  0])
-        l (when (input/key-pressed? (:ctx/input ctx) :input.keys/a) [-1 0])
-        u (when (input/key-pressed? (:ctx/input ctx) :input.keys/w) [0  1])
-        d (when (input/key-pressed? (:ctx/input ctx) :input.keys/s) [0 -1])]
-    (when (or r l u d)
-      (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
-        (when (pos? (v2/length v))
-          v)))))
-
 (defn- interaction-state->txs [[k params] ctx player-eid]
   (let [stage (:ctx/stage ctx)]
     (case k
@@ -1980,18 +1970,18 @@
           nil))))
 
 (defn- handle-input
-  [state-k eid ctx mouseover-actor]
+  [state-k eid ctx left-button-pressed? movement-vector mouseover-actor]
   (case state-k
     :player-idle
-    (if-let [movement-vector (player-movement-vector ctx)]
+    (if movement-vector
       (handle-fsm-event! ctx eid :movement-input movement-vector)
-      (when (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
+      (when left-button-pressed?
         (interaction-state->txs (:ctx/interaction-state ctx)
                                 ctx
                                 eid)))
 
     :player-moving
-    (if-let [movement-vector (player-movement-vector ctx)]
+    (if movement-vector
       (do (swap! eid assoc :entity/movement {:direction movement-vector
                                              :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                         0)})
@@ -1999,7 +1989,7 @@
       (handle-fsm-event! ctx eid :no-movement-input))
 
     :player-item-on-cursor
-    (when (and (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
+    (when (and left-button-pressed?
                (not mouseover-actor))
       (handle-fsm-event! ctx eid :drop-item))
 
@@ -2795,8 +2785,19 @@
     (let [ctx @state
           eid (:ctx/player-eid ctx)
           entity @eid
-          state-k (:state (:entity/fsm entity))]
-      (handle-input state-k eid ctx mouseover-actor*)))
+          state-k (:state (:entity/fsm entity))
+          movement-vector (let [r (when (input/key-pressed? (:ctx/input ctx) :input.keys/d) [1  0])
+                                l (when (input/key-pressed? (:ctx/input ctx) :input.keys/a) [-1 0])
+                                u (when (input/key-pressed? (:ctx/input ctx) :input.keys/w) [0  1])
+                                d (when (input/key-pressed? (:ctx/input ctx) :input.keys/s) [0 -1])]
+                            (when (or r l u d)
+                              (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
+                                (when (pos? (v2/length v))
+                                  v))))]
+      (handle-input state-k eid ctx
+                    (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
+                    movement-vector
+                    mouseover-actor*)))
   (swap! state dissoc :ctx/interaction-state)
   (swap! state (fn [ctx]
                  (assoc ctx :ctx/paused?
