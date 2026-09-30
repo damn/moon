@@ -1469,42 +1469,41 @@
       (inventory-window-remove-item! cell)))
 
 (defn handle-clicked-inventory-cell
-  [ctx audio handle-fsm-event! cell world-mouse-position]
-  (let [player-eid (:ctx/player-eid ctx)]
-    (case (:state (:entity/fsm @player-eid))
-      :player-idle
-      (when-let [item (get-in (:entity/inventory @player-eid) cell)]
-        (audio/play! audio "bfxr_takeit")
-        (swap! player-eid remove-item cell)
-        (ui-remove-item! ctx cell)
-        (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
+  [player-eid audio handle-fsm-event! ui-set-item! ui-remove-item! cell world-mouse-position]
+  (case (:state (:entity/fsm @player-eid))
+    :player-idle
+    (when-let [item (get-in (:entity/inventory @player-eid) cell)]
+      (audio/play! audio "bfxr_takeit")
+      (swap! player-eid remove-item cell)
+      (ui-remove-item! cell)
+      (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
 
-      :player-item-on-cursor
-      (let [entity @player-eid
-            inventory (:entity/inventory entity)
-            item-in-cell (get-in inventory cell)
-            item-on-cursor (:entity/item-on-cursor entity)]
-        (cond
-         (and (not item-in-cell)
-              (inventory/valid-slot? cell item-on-cursor))
-         (do (swap! player-eid dissoc :entity/item-on-cursor)
-             (audio/play! audio "bfxr_itemput")
-             (swap! player-eid set-item cell item-on-cursor)
-             (ui-set-item! ctx cell item-on-cursor)
-             (handle-fsm-event! player-eid world-mouse-position :dropped-item))
+    :player-item-on-cursor
+    (let [entity @player-eid
+          inventory (:entity/inventory entity)
+          item-in-cell (get-in inventory cell)
+          item-on-cursor (:entity/item-on-cursor entity)]
+      (cond
+       (and (not item-in-cell)
+            (inventory/valid-slot? cell item-on-cursor))
+       (do (swap! player-eid dissoc :entity/item-on-cursor)
+           (audio/play! audio "bfxr_itemput")
+           (swap! player-eid set-item cell item-on-cursor)
+           (ui-set-item! cell item-on-cursor)
+           (handle-fsm-event! player-eid world-mouse-position :dropped-item))
 
-         (and item-in-cell
-              (inventory/valid-slot? cell item-on-cursor))
-         (do (swap! player-eid dissoc :entity/item-on-cursor)
-             (audio/play! audio "bfxr_itemput")
-             (swap! player-eid remove-item cell)
-             (ui-remove-item! ctx cell)
-             (swap! player-eid set-item cell item-on-cursor)
-             (ui-set-item! ctx cell item-on-cursor)
-             (handle-fsm-event! player-eid world-mouse-position :dropped-item)
-             (handle-fsm-event! player-eid world-mouse-position :pickup-item item-in-cell))))
+       (and item-in-cell
+            (inventory/valid-slot? cell item-on-cursor))
+       (do (swap! player-eid dissoc :entity/item-on-cursor)
+           (audio/play! audio "bfxr_itemput")
+           (swap! player-eid remove-item cell)
+           (ui-remove-item! cell)
+           (swap! player-eid set-item cell item-on-cursor)
+           (ui-set-item! cell item-on-cursor)
+           (handle-fsm-event! player-eid world-mouse-position :dropped-item)
+           (handle-fsm-event! player-eid world-mouse-position :pickup-item item-in-cell))))
 
-      nil)))
+    nil))
 
 (defn- inventory-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -1727,66 +1726,65 @@
       (.setName "player-message")
       (.setUserObject (atom nil)))))
 
-(defn- interaction-state->txs [[k params] ctx audio handle-fsm-event! player-eid world-mouse-position]
-  (let [stage (:ctx/stage ctx)]
-    (case k
-      :interaction-state/mouseover-actor
-      nil
+(defn- interaction-state->txs [[k params] stage audio handle-fsm-event! ui-set-item! player-eid world-mouse-position]
+  (case k
+    :interaction-state/mouseover-actor
+    nil
 
-      :interaction-state/clickable-mouseover-eid
-      (let [{:keys [clicked-eid in-click-range?]} params]
-        (if in-click-range?
-          (case (:type (:entity/clickable @clicked-eid))
-            :clickable/player
-            (do (toggle-inventory-visible! stage)
-                nil)
+    :interaction-state/clickable-mouseover-eid
+    (let [{:keys [clicked-eid in-click-range?]} params]
+      (if in-click-range?
+        (case (:type (:entity/clickable @clicked-eid))
+          :clickable/player
+          (do (toggle-inventory-visible! stage)
+              nil)
 
-            :clickable/item
-            (let [item (:entity/item @clicked-eid)]
-              (cond
-                (-> (.getRoot ^Stage stage)
-                    (group/find-actor "moon.ui.windows.inventory")
-                    .isVisible)
-                (do (swap! clicked-eid assoc :entity/destroyed? true)
-                    (audio/play! audio "bfxr_takeit")
-                    (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
+          :clickable/item
+          (let [item (:entity/item @clicked-eid)]
+            (cond
+              (-> (.getRoot ^Stage stage)
+                  (group/find-actor "moon.ui.windows.inventory")
+                  .isVisible)
+              (do (swap! clicked-eid assoc :entity/destroyed? true)
+                  (audio/play! audio "bfxr_takeit")
+                  (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
 
-                (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
-                (do (swap! clicked-eid assoc :entity/destroyed? true)
-                    (audio/play! audio "bfxr_pickup")
-                    (assert (item/valid? item))
-                    (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @player-eid) item)]
-                      (assert cell)
-                      (assert (nil? cell-item))
-                      (swap! player-eid set-item cell item)
-                      (ui-set-item! ctx cell item))
-                    nil)
+              (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
+              (do (swap! clicked-eid assoc :entity/destroyed? true)
+                  (audio/play! audio "bfxr_pickup")
+                  (assert (item/valid? item))
+                  (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @player-eid) item)]
+                    (assert cell)
+                    (assert (nil? cell-item))
+                    (swap! player-eid set-item cell item)
+                    (ui-set-item! cell item))
+                  nil)
 
-                :else
-                (do (audio/play! audio "bfxr_denied")
-                    (show-message! ctx "Your Inventory is full")
-                    nil))))
-          (do (audio/play! audio "bfxr_denied")
-              (show-message! ctx "Too far away")
-              nil)))
-
-      :interaction-state.skill/usable
-      (let [[skill effect-ctx] params]
-        (handle-fsm-event! player-eid world-mouse-position :start-action [skill effect-ctx]))
-
-      :interaction-state.skill/not-usable
-      (let [state params]
+              :else
+              (do (audio/play! audio "bfxr_denied")
+                  (show-message! stage "Your Inventory is full")
+                  nil))))
         (do (audio/play! audio "bfxr_denied")
-            (show-message! ctx (case state
+            (show-message! stage "Too far away")
+            nil)))
+
+    :interaction-state.skill/usable
+    (let [[skill effect-ctx] params]
+      (handle-fsm-event! player-eid world-mouse-position :start-action [skill effect-ctx]))
+
+    :interaction-state.skill/not-usable
+    (let [state params]
+      (do (audio/play! audio "bfxr_denied")
+          (show-message! stage (case state
                                  :cooldown "Skill is still on cooldown"
                                  :not-enough-mana "Not enough mana"
                                  :invalid-params "Cannot use this here"))
-            nil))
+          nil))
 
-      :interaction-state/no-skill-selected
-      (do (audio/play! audio "bfxr_denied")
-          (show-message! ctx "No selected skill")
-          nil))))
+    :interaction-state/no-skill-selected
+    (do (audio/play! audio "bfxr_denied")
+        (show-message! stage "No selected skill")
+        nil)))
 
 (defn- handle-input
   [state-k eid ctx audio handle-fsm-event! left-button-pressed? movement-vector mouseover-actor world-mouse-position]
@@ -1796,9 +1794,10 @@
       (handle-fsm-event! eid world-mouse-position :movement-input movement-vector)
       (when left-button-pressed?
         (interaction-state->txs (:ctx/interaction-state ctx)
-                                ctx
+                                (:ctx/stage ctx)
                                 audio
                                 handle-fsm-event!
+                                #(ui-set-item! ctx %1 %2)
                                 eid
                                 world-mouse-position)))
 
@@ -2426,9 +2425,11 @@
                                                             world-mouse-position (viewport/unproject (:ctx/world-viewport ctx)
                                                                                                     [(.getX ^Input Gdx/input)
                                                                                                      (.getY ^Input Gdx/input)])]
-                                                        (handle-clicked-inventory-cell ctx
+                                                        (handle-clicked-inventory-cell (:ctx/player-eid ctx)
                                                                                        audio
                                                                                        handle-fsm-event!
+                                                                                       #(ui-set-item! ctx %1 %2)
+                                                                                       #(ui-remove-item! ctx %)
                                                                                        cell
                                                                                        world-mouse-position)))
                                                     (fn [ctx player-entity x y mouseover? cell]
