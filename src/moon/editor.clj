@@ -273,15 +273,15 @@
       (.setName "moon.ui.clojure.editor-window"))))
 
 (defn- add-one-to-many-rows
-  [{:keys [ctx/db
-           ctx/skin
-           ctx/textures]}
+  [db
+   skin
+   textures
    table
    property-type
    property-ids]
-  (let [redo-rows (fn [ctx property-ids]
+  (let [redo-rows (fn [db skin textures property-ids]
                     (group/clear-children! table)
-                    (add-one-to-many-rows ctx table property-type property-ids)
+                    (add-one-to-many-rows db skin textures table property-type property-ids)
                     (.pack ^Layout (find-ancestor table (partial instance? window/class))))]
     (table/add-rows!
      table
@@ -290,18 +290,20 @@
                                  (changed [event _actor]
                                    (let [{:keys [ctx/db
                                                  ctx/skin
-                                                 ctx/textures]
-                                          :as ctx} (:stage/ctx (.getStage ^Event event))]
+                                                 ctx/textures
+                                                 ctx/stage]} (:stage/ctx (.getStage ^Event event))]
                                      (stage/add-actor!
-                                      (:ctx/stage ctx)
+                                      stage
                                       (property-overview-window
                                        {:db db
                                         :textures textures
                                         :skin skin
                                         :property-type property-type
-                                        :clicked-id-fn (fn [actor id ctx]
+                                        :clicked-id-fn (fn [actor id {:keys [ctx/db
+                                                                             ctx/skin
+                                                                             ctx/textures]}]
                                                          (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
-                                                         (redo-rows ctx (conj property-ids id)))})))))))}]
+                                                         (redo-rows db skin textures (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
           {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (property/image property)))
@@ -311,19 +313,22 @@
         {:actor (doto (TextButton. "-" skin)
                   (.addListener (proxy [ChangeListener] []
                                   (changed [event _actor]
-                                    (redo-rows (:stage/ctx (.getStage ^Event event))
-                                               (disj property-ids id))))))})])))
+                                    (let [{:keys [ctx/db
+                                                  ctx/skin
+                                                  ctx/textures]} (:stage/ctx (.getStage ^Event event))]
+                                      (redo-rows db skin textures
+                                                 (disj property-ids id)))))))}])))
 
 (defn- add-one-to-one-rows
-  [{:keys [ctx/db
-           ctx/skin
-           ctx/textures]}
+  [db
+   skin
+   textures
    table
    property-type
    property-id]
-  (let [redo-rows (fn [ctx id]
+  (let [redo-rows (fn [db skin textures id]
                     (group/clear-children! table)
-                    (add-one-to-one-rows ctx table property-type id)
+                    (add-one-to-one-rows db skin textures table property-type id)
                     (.pack ^Layout (find-ancestor table (partial instance? window/class))))]
     (table/add-rows!
      table
@@ -333,18 +338,20 @@
                                    (changed [event _actor]
                                      (let [{:keys [ctx/db
                                                    ctx/skin
-                                                   ctx/textures]
-                                            :as ctx} (:stage/ctx (.getStage ^Event event))]
+                                                   ctx/textures
+                                                   ctx/stage]} (:stage/ctx (.getStage ^Event event))]
                                        (stage/add-actor!
-                                        (:ctx/stage ctx)
+                                        stage
                                         (property-overview-window
                                          {:db db
                                           :textures textures
                                           :skin skin
                                           :property-type property-type
-                                          :clicked-id-fn (fn [actor id ctx]
+                                          :clicked-id-fn (fn [actor id {:keys [ctx/db
+                                                                               ctx/skin
+                                                                               ctx/textures]}]
                                                            (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
-                                                           (redo-rows ctx id))})))))))})]
+                                                           (redo-rows db skin textures id))})))))))})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
            {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (property/image property)))
@@ -354,8 +361,10 @@
          {:actor (doto (TextButton. "-" skin)
                    (.addListener (proxy [ChangeListener] []
                                    (changed [event _actor]
-                                     (redo-rows (:stage/ctx (.getStage ^Event event))
-                                                nil)))))})]])))
+                                     (let [{:keys [ctx/db
+                                                   ctx/skin
+                                                   ctx/textures]} (:stage/ctx (.getStage ^Event event))]
+                                       (redo-rows db skin textures nil))))))})]])))
 
 (defn- rebuild-editor-window!
   [{:keys [ctx/db]
@@ -534,14 +543,14 @@
   (doto (TextField. ^String (pr-str v) ^Skin skin)
     (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
 
-(defn- one-to-many-widget [[_ property-type] property-ids ctx]
+(defn- one-to-many-widget [[_ property-type] property-ids db skin textures]
   (let [table (table/create {:table/cell-defaults {:pad 5}})]
-    (add-one-to-many-rows ctx table property-type property-ids)
+    (add-one-to-many-rows db skin textures table property-type property-ids)
     table))
 
-(defn- one-to-one-widget [[_ property-type] property-id ctx]
+(defn- one-to-one-widget [[_ property-type] property-id db skin textures]
   (let [table (table/create {:table/cell-defaults {:pad 5}})]
-    (add-one-to-one-rows ctx table property-type property-id)
+    (add-one-to-one-rows db skin textures table property-type property-id)
     table))
 
 (defn- sound-widget [sound-name skin]
@@ -568,7 +577,7 @@
   (doto (TextField. ^String (pr-str v) ^Skin skin)
     (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
 
-(defn create-widget [[schema-k :as schema] v {:keys [ctx/skin ctx/textures] :as ctx}]
+(defn create-widget [[schema-k :as schema] v {:keys [ctx/db ctx/skin ctx/textures] :as ctx}]
   (case schema-k
     :s/animation (animation-widget v textures)
     :s/boolean (boolean-widget v skin)
@@ -576,8 +585,8 @@
     :s/image (image-widget v textures)
     :s/map (map-widget schema v ctx)
     :s/number (number-widget schema v skin)
-    :s/one-to-many (one-to-many-widget schema v ctx)
-    :s/one-to-one (one-to-one-widget schema v ctx)
+    :s/one-to-many (one-to-many-widget schema v db skin textures)
+    :s/one-to-one (one-to-one-widget schema v db skin textures)
     :s/sound (sound-widget v skin)
     :s/string (string-widget schema v skin)
     :s/val-max (val-max-widget schema v skin)
