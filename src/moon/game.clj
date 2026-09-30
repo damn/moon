@@ -204,22 +204,21 @@
          (:entity/fsm @(effect-ctx/get-target effect-ctx)))))
 
 (defn effect-useful?
-  [[k v] effect-ctx ctx]
+  [[k v] effect-ctx ray-blocked?]
   (case k
     :effects/audiovisual
     false
 
     :effects/projectile
     (let [{:keys [projectile/max-range] :as projectile} v
-          raycaster (:ctx/raycaster ctx)
           source-p (:entity/position @(effect-ctx/get-source effect-ctx))
           target-p (:entity/position @(effect-ctx/get-target effect-ctx))]
       (and (not (let [[start1 target1 start2 target2] (v2/double-ray-endpositions source-p
                                                                                  target-p
                                                                                  (:projectile/size projectile))]
                   (or
-                   (raycaster/blocked? raycaster start1 target1)
-                   (raycaster/blocked? raycaster start2 target2))))
+                   (ray-blocked? start1 target1)
+                   (ray-blocked? start2 target2))))
            (< (v2/distance source-p target-p)
               max-range)))
 
@@ -790,7 +789,6 @@
                               eid
                               component))))
 
-; Der hier muss erst ganz hoch nur 1x gebunden werden.
 (defn- handle-fsm-event! [ctx audio eid world-mouse-position event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -886,7 +884,7 @@
 
 ; handle-fsm-event haengt an handle-effect
 (defn handle-effect
-  [[k v] effect-ctx ctx audio world-mouse-position apply-effects!]
+  [[k v] effect-ctx ctx audio world-mouse-position apply-effects! handle-fsm-event!]
   (case k
     :effects/audiovisual
     (audiovisual! ctx audio (effect-ctx/get-target-position effect-ctx) v)
@@ -988,11 +986,11 @@
              dmg-text (str "[RED]" dmg-amount "[]")]
          (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
          (swap! target add-text-effect elapsed-time dmg-text 0.3)
-         (handle-fsm-event! ctx audio target world-mouse-position (if (zero? new-hp-val) :kill :alert))
+         (handle-fsm-event! target world-mouse-position (if (zero? new-hp-val) :kill :alert))
          (audiovisual! ctx audio (:entity/position target*) :audiovisuals/damage))))
 
     :effects.target/kill
-    (handle-fsm-event! ctx audio (effect-ctx/get-target effect-ctx) world-mouse-position :kill)
+    (handle-fsm-event! (effect-ctx/get-target effect-ctx) world-mouse-position :kill)
 
     :effects.target/melee-damage
     ; TODO AT EFFECT CREATION MAKE
@@ -1002,7 +1000,8 @@
                    ctx
                    audio
                    world-mouse-position
-                   apply-effects!)
+                   apply-effects!
+                   handle-fsm-event!)
 
     :effects.target/spiderweb
     (let [target (effect-ctx/get-target effect-ctx)]
@@ -1014,7 +1013,7 @@
         nil))
 
     :effects.target/stun
-    (handle-fsm-event! ctx audio (effect-ctx/get-target effect-ctx) world-mouse-position :stun v)))
+    (handle-fsm-event! (effect-ctx/get-target effect-ctx) world-mouse-position :stun v)))
 
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (.getRoot ^Stage (:ctx/stage ctx))
@@ -1563,7 +1562,7 @@
       (inventory-window-remove-item! cell)))
 
 (defn handle-clicked-inventory-cell
-  [ctx audio cell world-mouse-position]
+  [ctx audio handle-fsm-event! cell world-mouse-position]
   (let [player-eid (:ctx/player-eid ctx)]
     (case (:state (:entity/fsm @player-eid))
       :player-idle
@@ -1571,7 +1570,7 @@
         (audio/play! audio "bfxr_takeit")
         (swap! player-eid remove-item cell)
         (ui-remove-item! ctx cell)
-        (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item))
+        (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
 
       :player-item-on-cursor
       (let [entity @player-eid
@@ -1585,7 +1584,7 @@
              (audio/play! audio "bfxr_itemput")
              (swap! player-eid set-item cell item-on-cursor)
              (ui-set-item! ctx cell item-on-cursor)
-             (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item))
+             (handle-fsm-event! player-eid world-mouse-position :dropped-item))
 
          (and item-in-cell
               (inventory/valid-slot? cell item-on-cursor))
@@ -1595,8 +1594,8 @@
              (ui-remove-item! ctx cell)
              (swap! player-eid set-item cell item-on-cursor)
              (ui-set-item! ctx cell item-on-cursor)
-             (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item)
-             (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item-in-cell))))
+             (handle-fsm-event! player-eid world-mouse-position :dropped-item)
+             (handle-fsm-event! player-eid world-mouse-position :pickup-item item-in-cell))))
 
       nil)))
 
@@ -1821,7 +1820,7 @@
       (.setName "player-message")
       (.setUserObject (atom nil)))))
 
-(defn- interaction-state->txs [[k params] ctx audio player-eid world-mouse-position]
+(defn- interaction-state->txs [[k params] ctx audio handle-fsm-event! player-eid world-mouse-position]
   (let [stage (:ctx/stage ctx)]
     (case k
       :interaction-state/mouseover-actor
@@ -1843,7 +1842,7 @@
                     .isVisible)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
                     (audio/play! audio "bfxr_takeit")
-                    (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item))
+                    (handle-fsm-event! player-eid world-mouse-position :pickup-item item))
 
                 (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -1866,7 +1865,7 @@
 
       :interaction-state.skill/usable
       (let [[skill effect-ctx] params]
-        (handle-fsm-event! ctx audio player-eid world-mouse-position :start-action [skill effect-ctx]))
+        (handle-fsm-event! player-eid world-mouse-position :start-action [skill effect-ctx]))
 
       :interaction-state.skill/not-usable
       (let [state params]
@@ -1883,15 +1882,16 @@
           nil))))
 
 (defn- handle-input
-  [state-k eid ctx audio left-button-pressed? movement-vector mouseover-actor world-mouse-position]
+  [state-k eid ctx audio handle-fsm-event! left-button-pressed? movement-vector mouseover-actor world-mouse-position]
   (case state-k
     :player-idle
     (if movement-vector
-      (handle-fsm-event! ctx audio eid world-mouse-position :movement-input movement-vector)
+      (handle-fsm-event! eid world-mouse-position :movement-input movement-vector)
       (when left-button-pressed?
         (interaction-state->txs (:ctx/interaction-state ctx)
                                 ctx
                                 audio
+                                handle-fsm-event!
                                 eid
                                 world-mouse-position)))
 
@@ -1901,12 +1901,12 @@
                                              :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
                                                         0)})
           nil)
-      (handle-fsm-event! ctx audio eid world-mouse-position :no-movement-input))
+      (handle-fsm-event! eid world-mouse-position :no-movement-input))
 
     :player-item-on-cursor
     (when (and left-button-pressed?
                (not mouseover-actor))
-      (handle-fsm-event! ctx audio eid world-mouse-position :drop-item))
+      (handle-fsm-event! eid world-mouse-position :drop-item))
 
     nil))
 
@@ -1920,7 +1920,7 @@
      :effect/target-direction (v2/direction (:entity/position @player-eid)
                                          target-position)}))
 
-(defn- choose-skill [ctx entity effect-ctx]
+(defn- choose-skill [ray-blocked? entity effect-ctx]
   (->> entity
        :entity/skills
        vals
@@ -1929,7 +1929,7 @@
        (filter #(and (= :usable (skill-usable-state % entity effect-ctx))
                      (->> (:skill/effects %)
                           (filter (fn [e] (effect-applicable? e effect-ctx)))
-                          (some (fn [e] (effect-useful? e effect-ctx ctx))))))
+                          (some (fn [e] (effect-useful? e effect-ctx ray-blocked?))))))
        first))
 
 (defn- create-effect-ctx
@@ -1958,7 +1958,7 @@
       (effect-ctx/without-target effect-ctx))))
 
 (defn tick-component
-  [ctx audio world-mouse-position apply-effects! eid [k v]]
+  [ctx world-mouse-position apply-effects! handle-fsm-event! eid [k v]]
   (case k
     :entity/animation
     (let [{:keys [delete-after-stopped?
@@ -1984,7 +1984,7 @@
                                    :radius 4}
                                   (world/circle->entities (:ctx/world ctx))
                                   (filter #(= (:entity/faction @%) faction)))]
-          (handle-fsm-event! ctx audio friendly-eid world-mouse-position :alert)))
+          (handle-fsm-event! friendly-eid world-mouse-position :alert)))
       nil)
 
     :entity/string-effect
@@ -2038,11 +2038,11 @@
       (cond
        (not (seq (filter #(effect-applicable? % effect-ctx)
                          (:skill/effects skill))))
-       (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
+       (handle-fsm-event! eid world-mouse-position :action-done)
 
        (timer/stopped? elapsed-time counter)
        (do (apply-effects! effect-ctx (:skill/effects skill))
-           (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
+           (handle-fsm-event! eid world-mouse-position :action-done)
            nil)))
 
     :entity/delete-after-duration
@@ -2053,24 +2053,24 @@
     :stunned
     (let [{:keys [counter]} v]
       (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
-        (handle-fsm-event! ctx audio eid world-mouse-position :effect-wears-off)))
+        (handle-fsm-event! eid world-mouse-position :effect-wears-off)))
 
     :npc-moving
     (let [{:keys [timer]} v]
       (when (timer/stopped? (:ctx/elapsed-time ctx) timer)
-        (handle-fsm-event! ctx audio eid world-mouse-position :timer-finished)))
+        (handle-fsm-event! eid world-mouse-position :timer-finished)))
 
     :npc-sleeping
     (let [entity @eid]
       (when-let [distance (world/nearest-enemy-distance (:ctx/world ctx) entity)]
         (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
-          (handle-fsm-event! ctx audio eid world-mouse-position :alert))))
+          (handle-fsm-event! eid world-mouse-position :alert))))
 
     :npc-idle
     (let [effect-ctx (create-effect-ctx ctx eid)]
-      (if-let [skill (choose-skill ctx @eid effect-ctx)]
-        (handle-fsm-event! ctx audio eid world-mouse-position :start-action [skill effect-ctx])
-        (handle-fsm-event! ctx audio eid world-mouse-position :movement-direction (or (world/find-direction (:ctx/world ctx) eid)
+      (if-let [skill (choose-skill (partial raycaster/blocked? (:ctx/raycaster ctx)) @eid effect-ctx)]
+        (handle-fsm-event! eid world-mouse-position :start-action [skill effect-ctx])
+        (handle-fsm-event! eid world-mouse-position :movement-direction (or (world/find-direction (:ctx/world ctx) eid)
                                                            [0 0]))))
 
     :entity/movement
@@ -2511,13 +2511,18 @@
                                                   #(inventory-window-create
                                                     %
                                                     (fn [event cell]
-                                                      (let [ctx (.ctx ^Stage (.getStage ^Event event))]
+                                                      (let [ctx (.ctx ^Stage (.getStage ^Event event))
+                                                            world-mouse-position (viewport/unproject (:ctx/world-viewport ctx)
+                                                                                                    [(.getX ^Input Gdx/input)
+                                                                                                     (.getY ^Input Gdx/input)])
+                                                            handle-fsm-event! (let [do-fsm-event! handle-fsm-event!]
+                                                                                (fn [eid world-mouse-position event & [params]]
+                                                                                  (do-fsm-event! ctx audio eid world-mouse-position event params)))]
                                                         (handle-clicked-inventory-cell ctx
                                                                                        audio
+                                                                                       handle-fsm-event!
                                                                                        cell
-                                                                                       (viewport/unproject (:ctx/world-viewport ctx)
-                                                                                                           [(.getX ^Input Gdx/input)
-                                                                                                            (.getY ^Input Gdx/input)]))))
+                                                                                       world-mouse-position)))
                                                     (fn [ctx player-entity x y mouseover? cell]
                                                       (draw-fn-rectangle shape-drawer x y cell-size cell-size (:colors/item-rect colors))
                                                       (when (and mouseover?
@@ -2682,23 +2687,26 @@
                          (cursor-fn eid ctx))]
         (assert (contains? (:ctx/cursors ctx) cursor-key))
         (.setCursor ^Graphics Gdx/graphics ^Cursor (get (:ctx/cursors ctx) cursor-key)))
-      (let [ctx @state
-            eid (:ctx/player-eid ctx)
-            entity @eid
-            state-k (:state (:entity/fsm entity))
-            movement-vector (let [r (when (key-pressed? Input$Keys/D) [1  0])
-                                  l (when (key-pressed? Input$Keys/A) [-1 0])
-                                  u (when (key-pressed? Input$Keys/W) [0  1])
-                                  d (when (key-pressed? Input$Keys/S) [0 -1])]
-                              (when (or r l u d)
-                                (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
-                                  (when (pos? (v2/length v))
-                                    v))))]
-        (handle-input state-k eid ctx audio
-                      (button-just-pressed? Input$Buttons/LEFT)
-                      movement-vector
-                      mouseover-actor*
-                      world-mouse-position)))
+        (let [ctx @state
+              eid (:ctx/player-eid ctx)
+              entity @eid
+              state-k (:state (:entity/fsm entity))
+              movement-vector (let [r (when (key-pressed? Input$Keys/D) [1  0])
+                                    l (when (key-pressed? Input$Keys/A) [-1 0])
+                                    u (when (key-pressed? Input$Keys/W) [0  1])
+                                    d (when (key-pressed? Input$Keys/S) [0 -1])]
+                                (when (or r l u d)
+                                  (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
+                                    (when (pos? (v2/length v))
+                                      v))))
+              handle-fsm-event! (let [do-fsm-event! handle-fsm-event!]
+                                  (fn [eid world-mouse-position event & [params]]
+                                    (do-fsm-event! ctx audio eid world-mouse-position event params)))]
+          (handle-input state-k eid ctx audio handle-fsm-event!
+                        (button-just-pressed? Input$Buttons/LEFT)
+                        movement-vector
+                        mouseover-actor*
+                        world-mouse-position)))
     (swap! state dissoc :ctx/interaction-state)
     (swap! state (fn [ctx]
                    (assoc ctx :ctx/paused?
@@ -2714,17 +2722,22 @@
                                    update-time
                                    update-potential-fields)]
                        (try
-                         (letfn [(apply-effects! [effect-ctx effects]
-                                   (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-                                     (handle-effect effect effect-ctx ctx audio world-mouse-position
-                                                    apply-effects!)))]
-                           (doseq [eid (:ctx/active-entities ctx)
-                                   component @eid]
-                             (try (tick-component ctx audio world-mouse-position
-                                                  apply-effects!
-                                                  eid component)
-                                  (catch Throwable t
-                                    (throw (ex-info "Error at `entity/tick`:" {:eid eid} t))))))
+                         (let [handle-fsm-event! (let [do-fsm-event! handle-fsm-event!]
+                                                   (fn [eid world-mouse-position event & [params]]
+                                                     (do-fsm-event! ctx audio eid world-mouse-position event params)))]
+                           (letfn [(apply-effects! [effect-ctx effects]
+                                     (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
+                                       (handle-effect effect effect-ctx ctx audio world-mouse-position
+                                                      apply-effects!
+                                                      handle-fsm-event!)))]
+                             (doseq [eid (:ctx/active-entities ctx)
+                                     component @eid]
+                               (try (tick-component ctx world-mouse-position
+                                                    apply-effects!
+                                                    handle-fsm-event!
+                                                    eid component)
+                                    (catch Throwable t
+                                      (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))))
                          (catch Throwable t
                            (throwable/pretty-pst t)
                            (.addActor ^Stage (:ctx/stage ctx)
