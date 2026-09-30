@@ -1,16 +1,14 @@
 (ns gdx.tiled-map
-  (:require [gdx.texture-region :as texture-region]
-            [moon.camera :as orthographic-camera]
-            [gdx.map-properties :as map-properties]
+  (:require [moon.camera :as orthographic-camera]
             [gdx.tiled-map-tile :as tiled-map-tile]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [gdx.tiled-map-tile-layer-cell :as cell]
-            [gdx.static-tiled-map-tile :as static-tiled-map-tile]
             [gdx.vector3 :as vector3])
   (:import (com.badlogic.gdx.graphics Texture)
-           (com.badlogic.gdx.graphics.g2d Batch)
-           (com.badlogic.gdx.maps MapLayer MapLayers)
-           (com.badlogic.gdx.maps.tiled TiledMap)))
+           (com.badlogic.gdx.graphics.g2d Batch TextureRegion)
+           (com.badlogic.gdx.maps MapLayer MapLayers MapProperties)
+           (com.badlogic.gdx.maps.tiled TiledMap)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn get-properties [tiled-map]
   (.getProperties ^TiledMap tiled-map))
@@ -19,9 +17,7 @@
   (.getLayers ^TiledMap tiled-map))
 
 (defn get-property [tiled-map k]
-  (-> tiled-map
-      get-properties
-      (map-properties/get k)))
+  (.get ^MapProperties (get-properties tiled-map) k))
 
 (defn create-layer
   [tiled-map
@@ -31,10 +27,10 @@
            tiles]}]
   (let [props (get-properties tiled-map)]
     (tiled-map-tile-layer/create
-     {:width      (map-properties/get props "width")
-      :height     (map-properties/get props "height")
-      :tilewidth  (map-properties/get props "tilewidth")
-      :tileheight (map-properties/get props "tileheight")
+     {:width      (.get ^MapProperties props "width")
+      :height     (.get ^MapProperties props "height")
+      :tilewidth  (.get ^MapProperties props "tilewidth")
+      :tileheight (.get ^MapProperties props "tileheight")
       :name name
       :visible? visible?
       :map-properties properties
@@ -49,7 +45,7 @@
   (let [tiled-map (TiledMap.)]
     (doseq [[k v] properties]
       (assert (string? k))
-      (map-properties/put! (get-properties tiled-map) k v))
+      (.put ^MapProperties (get-properties tiled-map) k v))
     (doseq [layer layers]
       (add-layer! tiled-map layer))
     tiled-map))
@@ -63,8 +59,8 @@
           :let [position [x y]
                 cell (tiled-map-tile-layer/get-cell layer x y)]
           :when cell
-          :let [value (map-properties/get (tiled-map-tile/get-properties (cell/get-tile cell))
-                                           property-key)]
+          :let [value (.get ^MapProperties (tiled-map-tile/get-properties (cell/get-tile cell))
+                            property-key)]
           :when value]
       [position value])))
 
@@ -72,12 +68,12 @@
   [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (tiled-map-tile-layer/get-cell layer x y)]
-      (let [value (map-properties/get (tiled-map-tile/get-properties (cell/get-tile cell))
-                                        "movement")]
+      (let [value (.get ^MapProperties (tiled-map-tile/get-properties (cell/get-tile cell))
+                        "movement")]
         (assert value
                 (str "Value for :movement at position "
                      position " / mapeditor inverted position: " [(position 0)
-                                                                 (- (dec (map-properties/get (get-properties tiled-map) "height"))
+                                                                 (- (dec (.get ^MapProperties (get-properties tiled-map) "height"))
                                                                     (position 1))]
                      " and layer " (tiled-map-tile-layer/get-name layer) " is undefined."))
         value))))
@@ -86,7 +82,7 @@
   (->> tiled-map
        get-layers
        reverse
-       (filter #(map-properties/get (tiled-map-tile-layer/get-properties %) "movement-properties"))))
+       (filter #(.get ^MapProperties (tiled-map-tile-layer/get-properties %) "movement-properties"))))
 
 (defn movement-properties [tiled-map position]
   (for [layer (movement-property-layers tiled-map)]
@@ -116,8 +112,8 @@
                                                 tile/texture-region]}]
                                      (assert (and id
                                                   texture-region))
-                                     (let [tile (static-tiled-map-tile/create texture-region)]
-                                       (map-properties/put! (static-tiled-map-tile/get-properties tile) "id" id)
+                                     (let [tile (StaticTiledMapTile. ^TextureRegion texture-region)]
+                                       (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile) "id" id)
                                        tile)))]
                 {:name "creatures"
                  :visible? false
@@ -137,12 +133,12 @@
   (let [region (tiled-map-tile/get-texture-region tile)
         x1 (+ x (* (tiled-map-tile/get-offset-x tile) unit-scale))
         y1 (+ y (* (tiled-map-tile/get-offset-y tile) unit-scale))
-        x2 (+ x1 (* (texture-region/get-region-width region) unit-scale))
-        y2 (+ y1 (* (texture-region/get-region-height region) unit-scale))
-        u1 (texture-region/get-u region)
-        v1 (texture-region/get-v2 region)
-        u2 (texture-region/get-u2 region)
-        v2 (texture-region/get-v region)
+        x2 (+ x1 (* (.getRegionWidth ^TextureRegion region) unit-scale))
+        y2 (+ y1 (* (.getRegionHeight ^TextureRegion region) unit-scale))
+        u1 (.getU ^TextureRegion region)
+        v1 (.getV2 ^TextureRegion region)
+        u2 (.getU2 ^TextureRegion region)
+        v2 (.getV ^TextureRegion region)
         color11 (float (color-setter batch-color x1 y1))
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
@@ -168,7 +164,7 @@
     (aset-float verts Batch/U4 u2)
     (aset-float verts Batch/V4 v1)
     (.draw ^Batch batch
-           ^Texture (texture-region/get-texture region)
+           ^Texture (.getTexture ^TextureRegion region)
            ^floats verts
            (int 0)
            (int num-vertices))))

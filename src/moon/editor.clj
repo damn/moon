@@ -14,17 +14,15 @@
             [moon.error-window :as error-window]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
-            [gdx.sprite-batch :as sprite-batch]
-            [gdx.texture-region :as texture-region]
             [gdx.input :as input]
             [moon.scene2d.group :as group]
             [gdx.touchable :as touchable]
-            [gdx.skin :as ui-skin]
             [gdx.viewport :as viewport])
   (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
-           (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData TextureRegion)
+           (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor Event)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable)
@@ -209,8 +207,8 @@
                 (run! #(group/add-actor! stack %)
                       [(doto (ImageButton.
                               (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                                (.setMinSize (* image-scale (texture-region/get-region-width texture-region))
-                                             (* image-scale (texture-region/get-region-height texture-region)))))
+                                (.setMinSize (* image-scale (.getRegionWidth ^TextureRegion texture-region))
+                                             (* image-scale (.getRegionHeight ^TextureRegion texture-region)))))
                         (.addListener (proxy [ChangeListener] []
                                            (changed [event actor]
                                              (on-clicked actor (:stage/ctx (.getStage ^Event event))))))
@@ -539,8 +537,8 @@
                                       texture-region (textures/texture-region textures image)]
                                   (ImageButton.
                                    (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                                     (.setMinSize (* scale (texture-region/get-region-width texture-region))
-                                                  (* scale (texture-region/get-region-height texture-region))))))})]}))
+                                     (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
+                                                  (* scale (.getRegionHeight ^TextureRegion texture-region))))))})]}))
 
 (defmethod create-widget :s/boolean
   [_ checked? {:keys [ctx/skin]}]
@@ -559,8 +557,8 @@
         scale 2]
     (ImageButton.
      (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-       (.setMinSize (* scale (texture-region/get-region-width texture-region))
-                    (* scale (texture-region/get-region-height texture-region)))))))
+       (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
+                    (* scale (.getRegionHeight ^TextureRegion texture-region)))))))
 
 (defmethod create-widget :s/map
   [schema
@@ -659,14 +657,12 @@
   (assoc ctx :ctx/files (.getFiles ^Application Gdx/app)))
 
 (defn- batch-f [ctx]
-  (assoc ctx :ctx/batch (sprite-batch/create)))
+  (assoc ctx :ctx/batch (SpriteBatch.)))
 
 (defn- skin-f [{:keys [ctx/files] :as ctx}]
-  (let [skin (ui-skin/create (.internal ^Files files "skin/uiskin.json"))]
+  (let [skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
     (set! (.markupEnabled ^BitmapFont$BitmapFontData
-                          (-> skin
-                              (ui-skin/get-font "default-font")
-                              .getData))
+                          (.getData (.getFont ^Skin skin "default-font")))
           true)
     (assoc ctx :ctx/skin skin)))
 

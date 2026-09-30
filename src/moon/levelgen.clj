@@ -9,16 +9,16 @@
             [moon.scene2d.table :as table]
             [gdx.tiled-map :as moon-tiled-map]
             [gdx.color :as color]
-            [gdx.sprite-batch :as sprite-batch]
             [gdx.input :as input]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdx.skin :as skin]
             [moon.scene2d.window :as window]
             [gdx.viewport :as viewport])
   (:import (com.badlogic.gdx.maps MapLayers)
            (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
+           (com.badlogic.gdx.graphics.g2d SpriteBatch)
            (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
            (com.badlogic.gdx.utils Disposable)
@@ -199,7 +199,7 @@
    :ctx/world-unit-scale (float (/ (:tile-size config)))})
 
 (defn- create-sprite-batch [ctx]
-  (assoc ctx :ctx/sprite-batch (sprite-batch/create)))
+  (assoc ctx :ctx/sprite-batch (SpriteBatch.)))
 
 (defn- create-stage [ctx]
   (assoc ctx
@@ -209,8 +209,8 @@
 
 (defn- create-skin [ctx]
   (assoc ctx
-         :ctx/skin (skin/create (.internal ^Files (get-files ctx)
-                                               (:ui-skin-path config)))))
+         :ctx/skin (Skin. ^FileHandle (.internal ^Files (get-files ctx)
+                                                     (:ui-skin-path config)))))
 
 (defn- create-world-viewport [ctx]
   (let [world-unit-scale (get-world-unit-scale ctx)

@@ -2,7 +2,6 @@
   (:require [moon.coll :as coll]
             [clojure.math :as math]
             [moon.cell :as cell]
-            [gdx.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.circle :as moon-circle]
             [moon.faction :as faction]
@@ -216,7 +215,7 @@
 
 (defn point->entities [g2d pos]
   (when-let [cell (g2d (mapv int pos))]
-    (filter #(gdx-rectangle/contains (body/rectangle @%) (first pos) (second pos))
+    (filter #(.contains ^Rectangle (body/rectangle @%) (float (first pos)) (float (second pos)))
             (:entities @cell))))
 
 (defn circle->entities [g2d {:keys [position radius] :as circle}]

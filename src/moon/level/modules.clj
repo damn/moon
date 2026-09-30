@@ -4,12 +4,12 @@
             [gdx.tiled-map :as moon-tiled-map]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer :refer [property-value]]
             [gdx.tiled-map-tile-layer-cell :as cell]
-            [gdx.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdx.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
             [moon.position :as position])
-  (:import (com.badlogic.gdx.maps MapLayers)))
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps MapLayers MapProperties)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn print-grid [{:keys [grid] :as world-fn-ctx}]
   (g2d/print-y-up grid)
@@ -160,14 +160,20 @@
   (let [copy-tile (memoize
                    (fn [tile]
                      (assert tile)
-                     (static-tiled-map-tile/create tile)))]
-    {:properties (merge (map-properties/clojurize (moon-tiled-map/get-properties schema-tiled-map))
+                     (if (instance? StaticTiledMapTile tile)
+                       (StaticTiledMapTile. ^StaticTiledMapTile tile)
+                       (StaticTiledMapTile. ^TextureRegion tile))))]
+    {:properties (merge (let [props (moon-tiled-map/get-properties schema-tiled-map)]
+                          (zipmap (.getKeys ^MapProperties props)
+                                  (.getValues ^MapProperties props)))
                         {"width" (g2d/width grid)
                          "height" (g2d/height grid)})
      :layers (for [layer (moon-tiled-map/get-layers schema-tiled-map)]
                {:name (tiled-map-tile-layer/get-name layer)
                 :visible? (tiled-map-tile-layer/visible? layer)
-                :properties (map-properties/clojurize (tiled-map-tile-layer/get-properties layer))
+                :properties (let [props (tiled-map-tile-layer/get-properties layer)]
+                              (zipmap (.getKeys ^MapProperties props)
+                                      (.getValues ^MapProperties props)))
                 :tiles (for [position (g2d/posis grid)
                              :let [local-position (get grid position)]
                              :when local-position]

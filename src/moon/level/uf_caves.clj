@@ -1,11 +1,12 @@
 (ns moon.level.uf-caves
   (:require [gdx.tiled-map :as moon-tiled-map]
             [moon.rand :as rand]
-            [gdx.texture-region :as texture-region]
-            [gdx.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdx.map-properties :as map-properties]
             [moon.caves :as caves]
-            [moon.g2d :as g2d]))
+            [moon.g2d :as g2d])
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps MapProperties)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn- initial-grid
   [{:keys [initial-grid-create-fn
@@ -133,14 +134,14 @@
                                   (memoize
                                    (fn [& {:keys [sprite-idx movement]}]
                                      {:pre [#{"all" "air" "none"} movement]}
-                                     (let [texture-region (texture-region/create texture
-                                                                              (* (sprite-idx 0) tile-size)
-                                                                              (* (sprite-idx 1) tile-size)
-                                                                              tile-size
-                                                                              tile-size)
-                                           tile (static-tiled-map-tile/create texture-region)]
-                                       (map-properties/put! (static-tiled-map-tile/get-properties tile)
-                                                            "movement" movement)
+                                     (let [texture-region (TextureRegion. ^Texture texture
+                                                                          (int (* (sprite-idx 0) tile-size))
+                                                                          (int (* (sprite-idx 1) tile-size))
+                                                                          (int tile-size)
+                                                                          (int tile-size))
+                                           tile (StaticTiledMapTile. ^TextureRegion texture-region)]
+                                       (.put ^MapProperties (.getProperties ^StaticTiledMapTile tile)
+                                             "movement" movement)
                                        tile))))
              :level/spawn-rate spawn-rate
              :level/scaling scaling

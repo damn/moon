@@ -1,7 +1,7 @@
 (ns moon.body
-  (:require [gdx.rectangle :as gdx-rectangle]
-            [moon.v2 :as v2]
-            [moon.rectangle :as moon-rectangle]))
+  (:require [moon.v2 :as v2]
+            [moon.rectangle :as moon-rectangle])
+  (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn direction [entity other-entity]
   (v2/direction (:entity/position entity)
@@ -30,11 +30,11 @@
            entity/height]}]
   (let [[x y] [(- (position 0) (/ width  2))
                (- (position 1) (/ height 2))]]
-    (gdx-rectangle/create x y width height)))
+    (Rectangle. (float x) (float y) (float width) (float height))))
 
 (defn overlaps? [entity other-entity]
-  (gdx-rectangle/overlaps (rectangle entity)
-                          (rectangle other-entity)))
+  (.overlaps ^Rectangle (rectangle entity)
+             ^Rectangle (rectangle other-entity)))
 
 (defn touched-tiles
   [{:keys [entity/position

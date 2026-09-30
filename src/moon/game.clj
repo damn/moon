@@ -11,14 +11,7 @@
             [moon.camera :as orthographic-camera]
             [gdx.color :as color]
             [gdx.input :as input]
-            [gdx.pixmap :as pixmap]
-            [gdx.pixmap-texture-data :as pixmap-texture-data]
-            [gdx.shape-drawer :as shape-drawer]
-            [gdx.skin :as skin]
-            [gdx.sprite-batch :as sprite-batch]
             [gdx.stage :as stage]
-            [gdx.texture :as texture]
-            [gdx.texture-region :as texture-region]
             [gdx.tiled-map :as moon-tiled-map]
             [gdx.tooltip-manager :as tooltip-manager]
             [gdx.viewport :as viewport]
@@ -55,15 +48,17 @@
   (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
-           (com.badlogic.gdx.graphics Color Colors Cursor GL20 Pixmap Texture Texture$TextureFilter)
-           (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData TextureRegion)
+           (com.badlogic.gdx.graphics Color Colors Cursor GL20 Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
+           (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData SpriteBatch TextureRegion)
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
+           (com.badlogic.gdx.graphics.glutils PixmapTextureData)
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor Event)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
-           (com.badlogic.gdx.utils.viewport FitViewport))
+           (com.badlogic.gdx.utils.viewport FitViewport)
+           (space.earlygrey.shapedrawer ShapeDrawer))
   (:gen-class))
 
 (def schema
@@ -536,8 +531,8 @@
         {:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
         button (doto (ImageButton.
                       (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                        (.setMinSize (* scale (texture-region/get-region-width texture-region))
-                                     (* scale (texture-region/get-region-height texture-region)))))
+                        (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
+                                     (* scale (.getRegionHeight ^TextureRegion texture-region)))))
                  (.addListener (TextTooltip. ^String tooltip-text ^Skin skin))
                  (.setUserObject skill-id))]
     (group/add-actor! horizontal-group button)
@@ -1252,29 +1247,29 @@
     (/ (/ image-width tile-size) 2)))
 
 (defn- draw-fn-circle [ctx [x y] radius color-float-bits]
-  (let [shape-drawer (:ctx/shape-drawer ctx)]
-    (shape-drawer/set-color! shape-drawer color-float-bits)
-    (shape-drawer/circle shape-drawer x y radius)))
+  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
+    (.setColor shape-drawer (float color-float-bits))
+    (.circle shape-drawer x y radius)))
 
 (defn- draw-fn-ellipse [ctx [x y] radius-x radius-y color-float-bits]
-  (let [shape-drawer (:ctx/shape-drawer ctx)]
-    (shape-drawer/set-color! shape-drawer color-float-bits)
-    (shape-drawer/ellipse shape-drawer x y radius-x radius-y)))
+  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
+    (.setColor shape-drawer (float color-float-bits))
+    (.ellipse shape-drawer x y radius-x radius-y)))
 
 (defn- draw-fn-filled-circle [ctx [x y] radius color-float-bits]
-  (let [shape-drawer (:ctx/shape-drawer ctx)]
-    (shape-drawer/set-color! shape-drawer color-float-bits)
-    (shape-drawer/filled-circle! shape-drawer x y radius)))
+  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
+    (.setColor shape-drawer (float color-float-bits))
+    (.filledCircle shape-drawer (float x) (float y) (float radius))))
 
 (defn- draw-fn-filled-rectangle [ctx x y w h color-float-bits]
-  (let [shape-drawer (:ctx/shape-drawer ctx)]
-    (shape-drawer/set-color! shape-drawer color-float-bits)
-    (shape-drawer/filled-rectangle! shape-drawer x y w h)))
+  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
+    (.setColor shape-drawer (float color-float-bits))
+    (.filledRectangle shape-drawer (float x) (float y) (float w) (float h))))
 
 (defn- draw-fn-line [ctx [sx sy] [ex ey] color-float-bits]
-  (let [shape-drawer (:ctx/shape-drawer ctx)]
-    (shape-drawer/set-color! shape-drawer color-float-bits)
-    (shape-drawer/line shape-drawer sx sy ex ey)))
+  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
+    (.setColor shape-drawer (float color-float-bits))
+    (.line shape-drawer (float sx) (float sy) (float ex) (float ey))))
 
 (defn- draw-fn-grid [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
   (let [w (* (float gridw) (float cellw))
@@ -1289,14 +1284,14 @@
       (draw-fn-line ctx [leftx liney] [rightx liney] color-float-bits))))
 
 (defn- draw-fn-rectangle [ctx x y w h color-float-bits]
-  (let [shape-drawer (:ctx/shape-drawer ctx)]
-    (shape-drawer/set-color! shape-drawer color-float-bits)
-    (shape-drawer/rectangle shape-drawer x y w h)))
+  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
+    (.setColor shape-drawer (float color-float-bits))
+    (.rectangle shape-drawer x y w h)))
 
 (defn- draw-fn-sector [ctx [center-x center-y] radius start-radians radians color-float-bits]
-  (let [shape-drawer (:ctx/shape-drawer ctx)]
-    (shape-drawer/set-color! shape-drawer color-float-bits)
-    (shape-drawer/sector shape-drawer center-x center-y radius start-radians radians)))
+  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
+    (.setColor shape-drawer (float color-float-bits))
+    (.sector shape-drawer center-x center-y radius start-radians radians)))
 
 (defn- draw-fn-text [ctx {:keys [font scale x y text up?]}]
   (let [font (or font (:ctx/default-font ctx))
@@ -1326,8 +1321,8 @@
 
 (defn- draw-fn-texture-region [ctx texture-region [x y] & {:keys [center? rotation]}]
   (let [unit-scale (:ctx/unit-scale ctx)
-        [w h] (let [dimensions [(texture-region/get-region-width texture-region)
-                                (texture-region/get-region-height texture-region)]]
+        [w h] (let [dimensions [(.getRegionWidth ^TextureRegion texture-region)
+                                (.getRegionHeight ^TextureRegion texture-region)]]
                   (if (= @unit-scale 1)
                     dimensions
                     (mapv (comp float (partial * world-unit-scale))
@@ -1352,11 +1347,11 @@
              (float h)))))
 
 (defn- draw-with-line-width! [ctx width draw-body]
-  (let [shape-drawer (:ctx/shape-drawer ctx)
-        old-line-width (shape-drawer/get-default-line-width shape-drawer)]
-    (shape-drawer/set-default-line-width! shape-drawer (* width old-line-width))
+  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)
+        old-line-width (.getDefaultLineWidth shape-drawer)]
+    (.setDefaultLineWidth shape-drawer (* width old-line-width))
     (draw-body ctx)
-    (shape-drawer/set-default-line-width! shape-drawer old-line-width)))
+    (.setDefaultLineWidth shape-drawer old-line-width)))
 
 (defn effect-render
   [[k v] effect-ctx ctx]
@@ -2465,13 +2460,13 @@
     (:stage/ctx stage)))
 
 (defn shape-drawer-texture []
-  (let [pixmap (doto (pixmap/new 1 1 pixmap/rgba8888)
-                 (pixmap/set-color! 1 1 1 1)
-                 (pixmap/draw-pixel! 0 0))
-        texture (texture/create (pixmap-texture-data/create pixmap
-                                                            (pixmap/get-format pixmap)
-                                                            false
-                                                            false))]
+  (let [pixmap (doto ^Pixmap (Pixmap. (int 1) (int 1) Pixmap$Format/RGBA8888)
+                 (.setColor 1 1 1 1)
+                 (.drawPixel (int 0) (int 0)))
+        texture (Texture. ^TextureData (PixmapTextureData. ^Pixmap pixmap
+                                                           ^Pixmap$Format (Pixmap/.getFormat ^Pixmap pixmap)
+                                                           false
+                                                           false))]
     (Disposable/.dispose pixmap)
     texture))
 
@@ -2491,19 +2486,17 @@
                  :ctx/show-cell-occupied? false
                  :ctx/show-body-bounds? false
                  :ctx/show-tile-grid? false
-                 :ctx/batch (sprite-batch/create)
+                 :ctx/batch (SpriteBatch.)
                  :ctx/audio (audio/create audio files)
                  :ctx/shape-drawer-texture (shape-drawer-texture)}
             ctx
             (assoc ctx :ctx/shape-drawer
-                   (shape-drawer/new (:ctx/batch ctx)
-                                     (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1)))
+                   (ShapeDrawer. (:ctx/batch ctx)
+                                 (TextureRegion. ^Texture (:ctx/shape-drawer-texture ctx) (int 1) (int 0) (int 1) (int 1))))
             (assoc ctx :ctx/skin
-                   (let [skin (skin/create (.internal ^Files files "skin/uiskin.json"))]
+                   (let [skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
                      (set! (.markupEnabled ^BitmapFont$BitmapFontData
-                                           (-> skin
-                                               (skin/get-font "default-font")
-                                               .getData))
+                                           (.getData (.getFont ^Skin skin "default-font")))
                            true)
                      skin))
             (let [stage* (stage/create (FitViewport. (float 1440) (float 900)) (:ctx/batch ctx))]
@@ -2518,7 +2511,7 @@
                      (update-vals data
                                   (fn [[path-segment [hotspot-x hotspot-y]]]
                                     (let [path (format path-format path-segment)
-                                          pixmap* (pixmap/new (.internal ^Files files path))
+                                          pixmap* (Pixmap. ^FileHandle (.internal ^Files files path))
                                           cursor (.newCursor ^Graphics Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
                                       (Disposable/.dispose pixmap*)
                                       cursor)))))
@@ -2724,15 +2717,15 @@
                               :invisible-tile-color (:colors/invisible-tile colors)})))
     (let [ctx @state
           world-viewport (:ctx/world-viewport ctx)
-          shape-drawer (:ctx/shape-drawer ctx)
           unit-scale (:ctx/unit-scale ctx)
           [x y] ui-mouse-position
           mouseover-actor* (mouseover-actor (:ctx/stage ctx) x y)]
       (.setColor ^Batch (:ctx/batch ctx) (float 1) (float 1) (float 1) (float 1))
       (.setProjectionMatrix ^Batch (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
       (.begin ^Batch (:ctx/batch ctx))
-      (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
-        (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
+      (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)
+            old-line-width (.getDefaultLineWidth shape-drawer)]
+        (.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
         (reset! unit-scale world-unit-scale)
         (doseq [draw-fn [draw-tile-grid
                          draw-cell-debug
@@ -2740,7 +2733,7 @@
                          #(highlight-mouseover-tile % world-mouse-position)]]
           (draw-fn ctx))
         (reset! unit-scale 1)
-        (shape-drawer/set-default-line-width! shape-drawer old-line-width))
+        (.setDefaultLineWidth shape-drawer old-line-width))
       (.end ^Batch (:ctx/batch ctx))
       (swap! state assoc-interaction-state mouseover-actor* world-mouse-position)
       (let [ctx @state
