@@ -765,80 +765,9 @@
                         (min maxrange
                              (v2/distance player-position world-mouse-position)))))))
 
-(defn- key-pressed? [ctx key]
-  (input/key-pressed? (:ctx/input ctx) key))
-
-(defn- key-just-pressed? [ctx key]
-  (input/key-just-pressed? (:ctx/input ctx) key))
-
-(defn- button-just-pressed? [ctx button]
-  (input/button-just-pressed? (:ctx/input ctx) button))
-
-(defn- mouse-position [ctx]
-  (input/position (:ctx/input ctx)))
-
-(defn- control-key-pressed? [ctx control-id]
-  (key-pressed? ctx (control-id (:ctx/controls ctx))))
-
-(defn- control-key-just-pressed? [ctx control-id]
-  (key-just-pressed? ctx (control-id (:ctx/controls ctx))))
-
-(defn- control-button-just-pressed? [ctx control-id]
-  (button-just-pressed? ctx (control-id (:ctx/controls ctx))))
-
-(defn- set-input-processor! [ctx processor]
-  (input/set-processor! (:ctx/input ctx) processor))
-
-(defn- frame-delta-time [ctx]
-  (graphics/get-delta-time (:ctx/graphics ctx)))
-
-(defn- frames-per-second [ctx]
-  (graphics/get-frames-per-second (:ctx/graphics ctx)))
-
-(defn- gl20 [ctx]
-  (graphics/get-gl20 (:ctx/graphics ctx)))
-
-(defn- create-cursor [ctx pixmap hotspot-x hotspot-y]
-  (graphics/create-cursor (:ctx/graphics ctx) pixmap hotspot-x hotspot-y))
-
-(defn- set-system-cursor! [ctx cursor]
-  (graphics/set-cursor! (:ctx/graphics ctx) cursor))
-
-(defn- set-batch-color! [ctx r g b a]
-  (batch/set-color! (:ctx/batch ctx) r g b a))
-
-(defn- set-batch-projection-matrix! [ctx matrix]
-  (batch/set-projection-matrix! (:ctx/batch ctx) matrix))
-
-(defn- begin-batch! [ctx]
-  (batch/begin! (:ctx/batch ctx)))
-
-(defn- end-batch! [ctx]
-  (batch/end! (:ctx/batch ctx)))
-
-(defn- batch-draw! [ctx & args]
-  (apply batch/draw! (:ctx/batch ctx) args))
-
-(defn- draw-tiled-map! [ctx tiled-map camera tile-color-setter]
-  (moon-tiled-map/draw! tiled-map
-                        (:ctx/batch ctx)
-                        world-unit-scale
-                        camera
-                        tile-color-setter))
-
-(defn- cursor [ctx cursor-key]
-  (get (:ctx/cursors ctx) cursor-key))
-
-(defn- has-cursor? [ctx cursor-key]
-  (contains? (:ctx/cursors ctx) cursor-key))
-
-(defn- set-cursor-by-key! [ctx cursor-key]
-  (assert (has-cursor? ctx cursor-key))
-  (set-system-cursor! ctx (cursor ctx cursor-key)))
-
 (defn- mouseover-actor [ctx]
   (let [stage (:ctx/stage ctx)
-        [x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
+        [x y] (viewport/unproject (:stage/viewport stage) (input/position (:ctx/input ctx)))]
     (stage/hit stage x y true)))
 
 (defn- button?
@@ -865,15 +794,6 @@
       :else
       [:mouseover-actor/unspecified])))
 
-(defn- register-eid! [ctx eid]
-  (world/register-eid! (:ctx/world ctx) eid))
-
-(defn- unregister-eid! [ctx eid]
-  (world/unregister-eid! (:ctx/world ctx) eid))
-
-(defn- relocate-eid! [ctx eid]
-  (world/relocate-eid! (:ctx/world ctx) eid))
-
 (defn- spawn-entity! [ctx entity]
   (let [entity (reduce (fn [m [k v]]
                          (assoc m k (create-component ctx k v)))
@@ -882,7 +802,7 @@
         entity (prepare-entity-geometry entity)
         entity (merge (map->EntityRecord {}) entity)
         eid (atom entity)]
-    (register-eid! ctx eid)
+    (world/register-eid! (:ctx/world ctx) eid)
     (doseq [component @eid]
       (after-create-component ctx eid component))))
 
@@ -1429,7 +1349,7 @@
                  (str (number/readable (:ctx/elapsed-time ctx)) " seconds"))
     :icon "images/clock.png"}
    {:label "FPS"
-    :update-fn frames-per-second
+    :update-fn (fn [ctx] (graphics/get-frames-per-second (:ctx/graphics ctx)))
     :icon "images/fps.png"}
    {:label "Mouseover-entity id"
     :update-fn (fn [ctx]
@@ -1542,7 +1462,7 @@
                     (mapv (comp float (partial * world-unit-scale))
                           dimensions)))]
     (if center?
-      (batch-draw! ctx
+      (batch/draw! (:ctx/batch ctx)
                    texture-region
                    (- (float x) (/ (float w) 2))
                    (- (float y) (/ (float h) 2))
@@ -1553,7 +1473,7 @@
                    1
                    1
                    (or rotation 0))
-      (batch-draw! ctx texture-region x y w h))))
+      (batch/draw! (:ctx/batch ctx) texture-region x y w h))))
 
 (defn- draw-with-line-width! [ctx width draw-body]
   (let [shape-drawer (:ctx/shape-drawer ctx)
@@ -2110,10 +2030,10 @@
       (.setUserObject (atom nil)))))
 
 (defn- player-movement-vector [ctx]
-  (let [r (when (key-pressed? ctx :input.keys/d) [1  0])
-        l (when (key-pressed? ctx :input.keys/a) [-1 0])
-        u (when (key-pressed? ctx :input.keys/w) [0  1])
-        d (when (key-pressed? ctx :input.keys/s) [0 -1])]
+  (let [r (when (input/key-pressed? (:ctx/input ctx) :input.keys/d) [1  0])
+        l (when (input/key-pressed? (:ctx/input ctx) :input.keys/a) [-1 0])
+        u (when (input/key-pressed? (:ctx/input ctx) :input.keys/w) [0  1])
+        d (when (input/key-pressed? (:ctx/input ctx) :input.keys/s) [0 -1])]
     (when (or r l u d)
       (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
         (when (pos? (v2/length v))
@@ -2180,7 +2100,7 @@
   [player-eid ctx]
   (if-let [movement-vector (player-movement-vector ctx)]
     (handle-fsm-event! ctx player-eid :movement-input movement-vector)
-    (when (button-just-pressed? ctx :input.buttons/left)
+    (when (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
       (interaction-state->txs (:ctx/interaction-state ctx)
                               ctx
                               player-eid))))
@@ -2196,7 +2116,7 @@
 
 (defn- handle-input-player-item-on-cursor
   [eid ctx]
-  (when (and (button-just-pressed? ctx :input.buttons/left)
+  (when (and (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
              (not (mouseover-actor ctx)))
     (handle-fsm-event! ctx eid :drop-item)))
 
@@ -2408,7 +2328,7 @@
         (when rotate-in-movement-direction?
           (swap! eid assoc :entity/rotation-angle
                  (v2/angle-from-vector direction)))
-        (relocate-eid! ctx eid)
+        (world/relocate-eid! (:ctx/world ctx) eid)
         nil))))
 
 (def k->tick
@@ -2507,7 +2427,7 @@
   [ctx]
   (let [stage (:ctx/stage ctx)
         world-viewport (:ctx/world-viewport ctx)
-        mp (mouse-position ctx)]
+        mp (input/position (:ctx/input ctx))]
   (-> ctx
         (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
         (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
@@ -2537,7 +2457,7 @@
 
 (defn check-debug-viewer
   [ctx]
-  (when (control-button-just-pressed? ctx :open-debug-button)
+  (when (input/button-just-pressed? (:ctx/input ctx) (:open-debug-button (:ctx/controls ctx)))
     (let [world (:ctx/world ctx)
           mouseover-eid (:ctx/mouseover-eid ctx)
           world-mouse-position (:ctx/world-mouse-position ctx)
@@ -2564,7 +2484,7 @@
   ctx)
 
 (defn clear-screen [ctx]
-  (let [gl (gl20 ctx)]
+  (let [gl (graphics/get-gl20 (:ctx/graphics ctx))]
     (.glClearColor ^GL20 gl 0 0 0 0)
     (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT))
   ctx)
@@ -2576,10 +2496,11 @@
         colors (:ctx/colors ctx)
         explored-tile-corners (:ctx/explored-tile-corners ctx)
         tiled-map (:ctx/tiled-map ctx)]
-    (draw-tiled-map! ctx
-                     tiled-map
-                     (viewport/get-camera world-viewport)
-                     (tile-color-setter*
+    (moon-tiled-map/draw! tiled-map
+                          (:ctx/batch ctx)
+                          world-unit-scale
+                          (viewport/get-camera world-viewport)
+                          (tile-color-setter*
                       {:ray-blocked? (partial raycaster/blocked? raycaster)
                        :explored-tile-corners explored-tile-corners
                        :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
@@ -2694,9 +2615,9 @@
   (let [world-viewport (:ctx/world-viewport ctx)
         shape-drawer (:ctx/shape-drawer ctx)
         unit-scale (:ctx/unit-scale ctx)]
-    (set-batch-color! ctx 1 1 1 1)
-    (set-batch-projection-matrix! ctx (orthographic-camera/combined (viewport/get-camera world-viewport)))
-    (begin-batch! ctx)
+    (batch/set-color! (:ctx/batch ctx) 1 1 1 1)
+    (batch/set-projection-matrix! (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
+    (batch/begin! (:ctx/batch ctx))
     (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
       (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
       (reset! unit-scale world-unit-scale)
@@ -2707,7 +2628,7 @@
         (draw-fn ctx))
       (reset! unit-scale 1)
       (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-    (end-batch! ctx)
+    (batch/end! (:ctx/batch ctx))
     ctx))
 
 (defn- make-interaction-state
@@ -2803,7 +2724,8 @@
         cursor-key (if (keyword? cursor-fn)
                      cursor-fn
                      (cursor-fn eid ctx))]
-    (set-cursor-by-key! ctx cursor-key))
+    (assert (contains? (:ctx/cursors ctx) cursor-key))
+    (graphics/set-cursor! (:ctx/graphics ctx) (get (:ctx/cursors ctx) cursor-key)))
   ctx)
 
 (defn handle-player-input
@@ -2824,11 +2746,11 @@
          (or #_error
              (and pausing?
                   (state->pause-game? (:state (:entity/fsm @(:ctx/player-eid ctx))))
-                  (not (or (control-key-just-pressed? ctx :unpause-once)
-                           (control-key-pressed? ctx :unpause-continously)))))))
+                  (not (or (input/key-just-pressed? (:ctx/input ctx) (:unpause-once (:ctx/controls ctx)))
+                           (input/key-pressed? (:ctx/input ctx) (:unpause-continously (:ctx/controls ctx)))))))))
 
 (defn- update-time [ctx]
-  (let [delta-ms (min (frame-delta-time ctx) max-delta)]
+  (let [delta-ms (min (graphics/get-delta-time (:ctx/graphics ctx)) max-delta)]
     (-> ctx
         (assoc :ctx/delta-time delta-ms)
         (update :ctx/elapsed-time + delta-ms))))
@@ -2876,7 +2798,7 @@
 (defn remove-destroyed-entities
   [ctx]
   (doseq [eid (world/destroyed-eids (:ctx/world ctx))]
-    (unregister-eid! ctx eid)
+    (world/unregister-eid! (:ctx/world ctx) eid)
     (doseq [[k v] @eid
             :let [destroy-fn (k->destroy k)]
             :when destroy-fn]
@@ -2889,21 +2811,21 @@
   [ctx]
   (let [stage (:ctx/stage ctx)
         world-viewport (:ctx/world-viewport ctx)]
-    (when (control-key-pressed? ctx :zoom-in)
+    (when (input/key-pressed? (:ctx/input ctx) (:zoom-in (:ctx/controls ctx)))
       (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
 
-    (when (control-key-pressed? ctx :zoom-out)
+    (when (input/key-pressed? (:ctx/input ctx) (:zoom-out (:ctx/controls ctx)))
       (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
 
-    (when (control-key-just-pressed? ctx :close-windows-key)
+    (when (input/key-just-pressed? (:ctx/input ctx) (:close-windows-key (:ctx/controls ctx)))
       (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
            group/get-children
            (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
 
-    (when (control-key-just-pressed? ctx :toggle-inventory)
+    (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-inventory (:ctx/controls ctx)))
       (toggle-inventory-visible! ctx))
 
-    (when (control-key-just-pressed? ctx :toggle-entity-info)
+    (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-entity-info (:ctx/controls ctx)))
       (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
         (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))
     ctx))
@@ -2965,7 +2887,7 @@
                                (bitmap-font-data/set-markup-enabled! true))
                            skin))
                   (let [stage* (stage/create (fit-viewport/create 1440 900) (:ctx/batch ctx))]
-                    (set-input-processor! ctx stage*)
+                    (input/set-processor! (:ctx/input ctx) stage*)
                     (assoc ctx :ctx/stage stage*))
                   (do
                     (tooltip-manager/set-initial-time! (tooltip-manager/get-instance) 0)
@@ -2977,7 +2899,7 @@
                                         (fn [[path-segment [hotspot-x hotspot-y]]]
                                           (let [path (format path-format path-segment)
                                                 pixmap* (pixmap/new (files/internal (:ctx/files ctx) path))
-                                                cursor (create-cursor ctx pixmap* hotspot-x hotspot-y)]
+                                                cursor (graphics/create-cursor (:ctx/graphics ctx) pixmap* hotspot-x hotspot-y)]
                                             (disposable/dispose! pixmap*)
                                             cursor)))))
                   (assoc ctx :ctx/textures
