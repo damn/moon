@@ -40,16 +40,13 @@
    :camera-movement-speed 1})
 
 (defn- generate-level
-  [ctx level-fn]
-  (let [textures (:ctx/textures ctx)
-        level (level-fn {:level/creature-properties
+  [db textures camera level-fn]
+  (let [level (level-fn {:level/creature-properties
                          (moon-tiled-map/prepare-creature-tiles
-                          (db/all-raw (:ctx/db ctx) :properties/creatures)
+                          (db/all-raw db :properties/creatures)
                           #(textures/texture-region textures %))
                          :textures textures})
         tiled-map (:tiled-map level)
-        ctx (assoc ctx :ctx/tiled-map tiled-map)
-        camera (:ctx/camera ctx)
         width (moon-tiled-map/get-property tiled-map "width")
         height (moon-tiled-map/get-property tiled-map "height")]
     (assert tiled-map)
@@ -60,7 +57,7 @@
                                               :top [0 height]
                                               :right [width 0]
                                               :bottom [0 0]})
-    ctx))
+    tiled-map))
 
 (defn listener []
   (let [state (atom nil)]
@@ -83,6 +80,9 @@
                       stage* (stage/create (FitViewport. (float (:ui-viewport-width config))
                                                          (float (:ui-viewport-height config)))
                                            batch)
+                      camera (viewport/get-camera world-viewport)
+                      db (db/create)
+                      textures (textures/create files (:textures-config config))
                       _ (input/set-processor! input stage*)
                       ctx {:ctx/input input
                            :ctx/zoom-speed (:zoom-speed config)
@@ -92,10 +92,10 @@
                            :ctx/stage stage*
                            :ctx/skin skin
                            :ctx/world-viewport world-viewport
-                           :ctx/camera (viewport/get-camera world-viewport)
-                           :ctx/db (db/create)
-                           :ctx/textures (textures/create files (:textures-config config))}
-                      ctx (generate-level ctx (:initial-level-fn config))]
+                           :ctx/camera camera
+                           :ctx/db db
+                           :ctx/textures textures
+                           :ctx/tiled-map (generate-level db textures camera (:initial-level-fn config))}]
                   (stage/add-actor!
                    stage*
                    (window/create
@@ -107,9 +107,10 @@
                          (doto (TextButton. (str "Generate " label) skin)
                            (.addListener (proxy [ChangeListener] []
                                            (changed [_event _actor]
-                                             (swap! state (fn [ctx]
+                                             (swap! state (fn [{:keys [ctx/db ctx/textures ctx/camera] :as ctx}]
                                                             (Disposable/.dispose (:ctx/tiled-map ctx))
-                                                            (generate-level ctx level-fn))))))}])}))
+                                                            (assoc ctx :ctx/tiled-map
+                                                                   (generate-level db textures camera level-fn))))))))}])}))
                   ctx)))
       (dispose [_]
         (let [{:keys [ctx/sprite-batch
