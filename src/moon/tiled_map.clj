@@ -1,14 +1,12 @@
-(ns gdx.tiled-map
+(ns moon.tiled-map
   (:require [moon.camera :as orthographic-camera]
-            [gdx.tiled-map-tile :as tiled-map-tile]
-            [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdx.tiled-map-tile-layer-cell :as cell]
-            [gdx.vector3 :as vector3])
+            [gdx.tiled-map-tile-layer :as tiled-map-tile-layer])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d Batch TextureRegion)
            (com.badlogic.gdx.maps MapLayer MapLayers MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMap)
-           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
+           (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer$Cell)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
+           (com.badlogic.gdx.math Vector3)))
 
 (defn get-properties [tiled-map]
   (.getProperties ^TiledMap tiled-map))
@@ -59,7 +57,7 @@
           :let [position [x y]
                 cell (tiled-map-tile-layer/get-cell layer x y)]
           :when cell
-          :let [value (.get ^MapProperties (tiled-map-tile/get-properties (cell/get-tile cell))
+          :let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
                             property-key)]
           :when value]
       [position value])))
@@ -68,7 +66,7 @@
   [tiled-map layer [x y]]
   (let [position [x y]]
     (when-let [cell (tiled-map-tile-layer/get-cell layer x y)]
-      (let [value (.get ^MapProperties (tiled-map-tile/get-properties (cell/get-tile cell))
+      (let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
                         "movement")]
         (assert value
                 (str "Value for :movement at position "
@@ -130,9 +128,9 @@
    verts
    batch
    num-vertices]
-  (let [region (tiled-map-tile/get-texture-region tile)
-        x1 (+ x (* (tiled-map-tile/get-offset-x tile) unit-scale))
-        y1 (+ y (* (tiled-map-tile/get-offset-y tile) unit-scale))
+  (let [region (.getTextureRegion ^TiledMapTile tile)
+        x1 (+ x (* (.getOffsetX ^TiledMapTile tile) unit-scale))
+        y1 (+ y (* (.getOffsetY ^TiledMapTile tile) unit-scale))
         x2 (+ x1 (* (.getRegionWidth ^TextureRegion region) unit-scale))
         y2 (+ y1 (* (.getRegionHeight ^TextureRegion region) unit-scale))
         u1 (.getU ^TextureRegion region)
@@ -213,7 +211,7 @@
                x x-start]
           (when (< col col2)
             (when-let [cell (tiled-map-tile-layer/get-cell layer col row)]
-              (when-let [tile (cell/get-tile cell)]
+              (when-let [tile (.getTile ^TiledMapTileLayer$Cell cell)]
                 (draw-tile! x
                             y
                             tile
@@ -239,13 +237,13 @@
   (let [width  (* (orthographic-camera/viewport-width camera) (orthographic-camera/zoom camera))
         height (* (orthographic-camera/viewport-height camera) (orthographic-camera/zoom camera))
         up (orthographic-camera/up camera)
-        w (+ (* width  (Math/abs (float (vector3/y up))))
-             (* height (Math/abs (float (vector3/x up)))))
-        h (+ (* height (Math/abs (float (vector3/y up))))
-             (* width  (Math/abs (float (vector3/x up)))))
+        w (+ (* width  (Math/abs (float (.y ^Vector3 up))))
+             (* height (Math/abs (float (.x ^Vector3 up)))))
+        h (+ (* height (Math/abs (float (.y ^Vector3 up))))
+             (* width  (Math/abs (float (.x ^Vector3 up)))))
         pos (orthographic-camera/position-vec3 camera)
-        view-bounds {:x (- (vector3/x pos) (/ w 2))
-                     :y (- (vector3/y pos) (/ h 2))
+        view-bounds {:x (- (.x ^Vector3 pos) (/ w 2))
+                     :y (- (.y ^Vector3 pos) (/ h 2))
                      :width w
                      :height h}]
     (doseq [layer (filter tiled-map-tile-layer/visible? (get-layers tiled-map))]

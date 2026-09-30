@@ -6,15 +6,12 @@
             [moon.scene2d.group :as group]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
-            [gdx.touchable :as touchable]
-            [gdx.vector2 :as vector2]
             [moon.camera :as orthographic-camera]
             [gdx.color :as color]
             [gdx.input :as input]
             [gdx.stage :as stage]
-            [gdx.tiled-map :as moon-tiled-map]
-            [gdx.tooltip-manager :as tooltip-manager]
-            [gdx.viewport :as viewport]
+            [moon.tiled-map :as moon-tiled-map]
+            [moon.viewport :as viewport]
             [moon.audio :as audio]
             [moon.body :as body]
             [moon.cell :as cell]
@@ -53,8 +50,8 @@
            (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.graphics.glutils PixmapTextureData)
            (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor Event)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip Widget)
+           (com.badlogic.gdx.scenes.scene2d Actor Event Touchable)
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip TooltipManager Widget)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)
@@ -1647,10 +1644,12 @@
                                        @(:ctx/player-eid ctx)
                                        (.getX ^Actor this)
                                        (.getY ^Actor this)
-                                       (let [[x y] (vector2/clojurize
-                                                    (.stageToLocalCoordinates ^Actor this ^Vector2
-                                                                              (vector2/new (viewport/unproject (:stage/viewport (:ctx/stage ctx))
-                                                                                                               (input/position Gdx/input)))))]
+                                       (let [[ux uy] (viewport/unproject (:stage/viewport (:ctx/stage ctx))
+                                                                         (input/position Gdx/input))
+                                             local (.stageToLocalCoordinates ^Actor this
+                                                                             (Vector2. (float ux) (float uy)))
+                                             x (.x ^Vector2 local)
+                                             y (.y ^Vector2 local)]
                                          (.hit ^Actor this (float x) (float y) true))
                                        (.getUserObject ^Actor (.getParent ^Actor this)))))))
               (doto (Image. ^Drawable background-drawable)
@@ -2228,7 +2227,7 @@
                                                            :fill-x? true
                                                            :colspan 1}]
                                                          [{:actor (doto (Label. ^String "" ^Skin skin)
-                                                                        (.setTouchable touchable/disabled))
+                                                                        (.setTouchable Touchable/disabled))
                                                            :expand? true
                                                            :fill-x? true
                                                            :fill-y? true}]]})
@@ -2503,7 +2502,7 @@
               (input/set-processor! input stage*)
               (assoc ctx :ctx/stage stage*))
             (do
-             (tooltip-manager/set-initial-time! (tooltip-manager/get-instance) 0)
+             (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
              (Colors/put "PRETTY_NAME" (color/create [0.84 0.8 0.52 1]))
              ctx)
             (assoc ctx :ctx/cursors

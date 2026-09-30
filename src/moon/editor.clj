@@ -16,14 +16,13 @@
             [moon.scene2d.window :as window]
             [gdx.input :as input]
             [moon.scene2d.group :as group]
-            [gdx.touchable :as touchable]
-            [gdx.viewport :as viewport])
+            [moon.viewport :as viewport])
   (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData SpriteBatch TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor Event)
+           (com.badlogic.gdx.scenes.scene2d Actor Event Touchable)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField TextTooltip)
            (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Disposable)
@@ -214,7 +213,7 @@
                                              (on-clicked actor (:stage/ctx (.getStage ^Event event))))))
                         (.addListener (TextTooltip. ^String tooltip ^Skin skin)))
                        (doto (Label. ^String extra-info-text ^Skin skin)
-                         (.setTouchable touchable/disabled))])
+                         (.setTouchable Touchable/disabled))])
                 stack)})))
 
 (defn- property-overview-window

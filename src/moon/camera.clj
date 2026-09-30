@@ -1,8 +1,7 @@
 (ns moon.camera
   (:refer-clojure :exclude [new])
-  (:require [gdx.vector3 :as vector3])
   (:import (com.badlogic.gdx.graphics OrthographicCamera)
-           (com.badlogic.gdx.math Frustum)))
+           (com.badlogic.gdx.math Frustum Vector3)))
 
 (defn new []
   (OrthographicCamera.))
@@ -36,16 +35,19 @@
   (set-zoom! orthographic-camera (max 0.1 (+ (zoom orthographic-camera) by))))
 
 (defn position [orthographic-camera]
-  (vector3/clojurize (position-vec3 orthographic-camera)))
+  (let [v3 (position-vec3 orthographic-camera)]
+    [(.x ^Vector3 v3) (.y ^Vector3 v3) (.z ^Vector3 v3)]))
 
 (defn set-position! [orthographic-camera [x y]]
   (let [pos (position-vec3 orthographic-camera)]
-    (vector3/set-x! pos x)
-    (vector3/set-y! pos y))
+    (set! (.x ^Vector3 pos) x)
+    (set! (.y ^Vector3 pos) y))
   (.update ^OrthographicCamera orthographic-camera))
 
 (defn frustum [orthographic-camera]
-  (let [plane-points (mapv vector3/clojurize (.planePoints ^Frustum (.frustum ^OrthographicCamera orthographic-camera)))
+  (let [plane-points (mapv (fn [v3]
+                             [(.x ^Vector3 v3) (.y ^Vector3 v3) (.z ^Vector3 v3)])
+                           (.planePoints ^Frustum (.frustum ^OrthographicCamera orthographic-camera)))
         frustum-points (take 4 plane-points)
         left-x   (apply min (map first  frustum-points))
         right-x  (apply max (map first  frustum-points))

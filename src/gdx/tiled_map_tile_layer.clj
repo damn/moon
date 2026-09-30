@@ -1,8 +1,7 @@
 (ns gdx.tiled-map-tile-layer
-  (:require [gdx.tiled-map-tile :as tiled-map-tile]
-            [gdx.tiled-map-tile-layer-cell :as cell])
   (:import (com.badlogic.gdx.maps MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMapTileLayer
+           (com.badlogic.gdx.maps.tiled TiledMapTile
+                                        TiledMapTileLayer
                                         TiledMapTileLayer$Cell)))
 
 (defn create-layer [width height tilewidth tileheight]
@@ -49,7 +48,7 @@
 
 (defn property-value [layer [x y] property-key]
   (if-let [cell (get-cell layer x y)]
-    (if-let [value (.get ^MapProperties (tiled-map-tile/get-properties (cell/get-tile cell)) property-key)]
+    (if-let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell)) property-key)]
       value
       :undefined)
     :no-cell))
@@ -74,6 +73,6 @@
     (doseq [[[x y] tile] tiles
             :when tile]
       (set-cell! layer x y
-                 (doto (cell/create)
-                   (cell/set-tile! tile))))
+                 (doto (TiledMapTileLayer$Cell.)
+                   (.setTile ^TiledMapTile tile))))
     layer))

@@ -1,5 +1,5 @@
 (ns moon.level.uf-caves
-  (:require [gdx.tiled-map :as moon-tiled-map]
+  (:require [moon.tiled-map :as moon-tiled-map]
             [moon.rand :as rand]
             [moon.caves :as caves]
             [moon.g2d :as g2d])

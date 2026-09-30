@@ -1,14 +1,13 @@
 (ns moon.level.modules
   (:require [moon.rand :as rand]
-            [gdx.tmx-map-loader :as tmx-map-loader]
-            [gdx.tiled-map :as moon-tiled-map]
+            [moon.tiled-map :as moon-tiled-map]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer :refer [property-value]]
-            [gdx.tiled-map-tile-layer-cell :as cell]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
             [moon.position :as position])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps MapLayers MapProperties)
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn print-grid [{:keys [grid] :as world-fn-ctx}]
@@ -42,7 +41,7 @@
   (assoc w :scaled-grid (g2d/scale-by (:grid w) (:scale w))))
 
 (defn- load-schema-tiled-map [w]
-  (assoc w :schema-tiled-map (tmx-map-loader/load-tiled-map "maps/modules.tmx")))
+  (assoc w :schema-tiled-map (.load (TmxMapLoader.) "maps/modules.tmx")))
 
 (defn- module-index->tiled-map-positions
   [[module-x module-y]
@@ -179,7 +178,7 @@
                              :when local-position]
                          (when (vector? local-position)
                            (when-let [cell (tiled-map-tile-layer/get-cell layer (local-position 0) (local-position 1))]
-                             [position (copy-tile (cell/get-tile cell))])))})}))
+                             [position (copy-tile (.getTile ^TiledMapTileLayer$Cell cell))])))})}))
 
 (defn- convert-to-tiled-map
   [{:keys [scaled-grid

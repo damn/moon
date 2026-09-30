@@ -1,5 +1,4 @@
-(ns gdx.viewport
-  (:require [gdx.vector2 :as vector2])
+(ns moon.viewport
   (:import (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.utils.viewport Viewport)))
 
@@ -15,5 +14,6 @@
 (defn update! [viewport screen-width screen-height center-camera?]
   (.update ^Viewport viewport screen-width screen-height center-camera?))
 
-(defn unproject [viewport v2]
-  (vector2/clojurize (.unproject ^Viewport viewport ^Vector2 (vector2/new v2))))
+(defn unproject [viewport [x y]]
+  (let [v2 (.unproject ^Viewport viewport (Vector2. (float x) (float y)))]
+    [(.x ^Vector2 v2) (.y ^Vector2 v2)]))

@@ -1,5 +1,5 @@
 (ns moon.world
-  (:require [gdx.tiled-map :as tiled-map]
+  (:require [moon.tiled-map :as tiled-map]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.content-grid :as content-grid]

@@ -7,12 +7,12 @@
             [moon.textures :as textures]
             [gdx.stage :as stage]
             [moon.scene2d.table :as table]
-            [gdx.tiled-map :as moon-tiled-map]
+            [moon.tiled-map :as moon-tiled-map]
             [gdx.color :as color]
             [gdx.input :as input]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [moon.scene2d.window :as window]
-            [gdx.viewport :as viewport])
+            [moon.viewport :as viewport])
   (:import (com.badlogic.gdx.maps MapLayers)
            (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
