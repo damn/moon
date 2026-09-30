@@ -826,9 +826,6 @@
                         camera
                         tile-color-setter))
 
-(defn- dispose-batch! [ctx]
-  (disposable/dispose! (:ctx/batch ctx)))
-
 (defn- cursor [ctx cursor-key]
   (get (:ctx/cursors ctx) cursor-key))
 
@@ -838,27 +835,6 @@
 (defn- set-cursor-by-key! [ctx cursor-key]
   (assert (has-cursor? ctx cursor-key))
   (set-system-cursor! ctx (cursor ctx cursor-key)))
-
-(defn- dispose-cursors! [ctx]
-  (run! disposable/dispose! (vals (:ctx/cursors ctx))))
-
-(defn- dispose-default-font! [ctx]
-  (disposable/dispose! (:ctx/default-font ctx)))
-
-(defn- dispose-audio! [ctx]
-  (audio/dispose! (:ctx/audio ctx)))
-
-(defn- dispose-shape-drawer-texture! [ctx]
-  (disposable/dispose! (:ctx/shape-drawer-texture ctx)))
-
-(defn- dispose-skin! [ctx]
-  (disposable/dispose! (:ctx/skin ctx)))
-
-(defn- dispose-textures! [ctx]
-  (run! disposable/dispose! (vals (:ctx/textures ctx))))
-
-(defn- dispose-tiled-map! [ctx]
-  (disposable/dispose! (:ctx/tiled-map ctx)))
 
 (defn- mouseover-actor [ctx]
   (let [stage (:ctx/stage ctx)
@@ -3104,14 +3080,14 @@
                   (dissoc ctx :ctx/files))))
       (dispose [_]
         (let [ctx @state]
-          (dispose-audio! ctx)
-          (dispose-batch! ctx)
-          (dispose-cursors! ctx)
-          (dispose-default-font! ctx)
-          (dispose-shape-drawer-texture! ctx)
-          (dispose-skin! ctx)
-          (dispose-textures! ctx)
-          (dispose-tiled-map! ctx)))
+          (audio/dispose! (:ctx/audio ctx))
+          (disposable/dispose! (:ctx/batch ctx))
+          (run! disposable/dispose! (vals (:ctx/cursors ctx)))
+          (disposable/dispose! (:ctx/default-font ctx))
+          (disposable/dispose! (:ctx/shape-drawer-texture ctx))
+          (disposable/dispose! (:ctx/skin ctx))
+          (run! disposable/dispose! (vals (:ctx/textures ctx)))
+          (disposable/dispose! (:ctx/tiled-map ctx))))
       (render [_]
         (swap! state
                (fn [ctx]
