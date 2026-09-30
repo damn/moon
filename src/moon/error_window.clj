@@ -1,6 +1,6 @@
 (ns moon.error-window
   (:require [clojure.repl :as repl]
-            [gdx.actor.group.widget.table.window :as window])
+            [moon.scene2d.window :as window])
   (:import (com.badlogic.gdx.scenes.scene2d.ui Label Skin)))
 
 (defmacro with-err-str [& body]

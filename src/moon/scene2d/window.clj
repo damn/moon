@@ -1,7 +1,7 @@
-(ns gdx.actor.group.widget.table.window
+(ns moon.scene2d.window
   (:refer-clojure :exclude [class])
   (:require [gdx.change-listener :as change-listener]
-            [gdx.actor.group.widget.table :as table])
+            [moon.scene2d.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Label Skin TextButton Window)))
 

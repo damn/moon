@@ -1,4 +1,4 @@
-(ns gdx.actor.group.widget.table
+(ns moon.scene2d.table
   (:require [gdx.cell :as cell]
             [gdx.layout :as layout])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
