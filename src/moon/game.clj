@@ -69,7 +69,6 @@
             [moon.number :as number]
             [moon.rand :as rand]
             [moon.raycaster :as raycaster]
-            [moon.schema.register-methods]
             [moon.stats :as stats]
             [moon.string :as string]
             [moon.textures :as textures]

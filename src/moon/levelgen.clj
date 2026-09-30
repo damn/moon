@@ -4,7 +4,6 @@
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
-            [moon.schema.register-methods]
             [moon.textures :as textures]
             [gdx.stage :as stage]
             [gdx.actor.group.widget.table :as table]

@@ -3,7 +3,6 @@
             [moon.property :as property]
             [clojure.edn :as edn]
             [moon.coll :as coll]
-            [moon.schema.register-methods]
             [moon.textures :as textures]
             [moon.audio :as audio]
             [gdx.stage :as stage]
