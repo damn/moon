@@ -644,64 +644,56 @@
                                                                                                                                          {:ctx ctx
                                                                                                                                           :property (db/get-raw db id)})))})))))))}])})))
 
-(defn create []
-  (let [input (.getInput ^Application Gdx/app)
-        files (.getFiles ^Application Gdx/app)
-        batch (SpriteBatch.)
-        skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))
-        _ (set! (.markupEnabled ^BitmapFont$BitmapFontData
-                                (.getData (.getFont ^Skin skin "default-font")))
-                true)
-        stage* (stage/create (FitViewport. (float 1440) (float 900)) batch)
-        _ (input/set-processor! input stage*)
-        ctx {:ctx/input input
-             :ctx/files files
-             :ctx/audio (audio/create (.getAudio ^Application Gdx/app) files)
-             :ctx/batch batch
-             :ctx/skin skin
-             :ctx/db (db/create)
-             :ctx/stage stage*
-             :ctx/textures (textures/create files {:folder "resources/"
-                                                   :extensions #{"png" "bmp"}})}]
-    (stage/add-actor! (get-stage ctx) (main-window-f ctx))
-    ctx))
-
-(defn dispose [{:keys [ctx/audio
-                       ctx/skin
-                       ctx/batch
-                       ctx/textures]}]
-  (audio/dispose! audio)
-  (Disposable/.dispose batch)
-  (Disposable/.dispose skin)
-  (run! Disposable/.dispose (vals textures)))
-
-(defn render [ctx]
-  (let [stage (get-stage ctx)
-        gl (.getGL20 ^Graphics Gdx/graphics)
-        _ (.glClearColor ^GL20 gl 0 0 0 0)
-        _ (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
-        ctx (if-let [new-ctx (:stage/ctx stage)]
-              new-ctx
-              ctx)]
-    (stage/set-ctx! stage ctx)
-    (stage/act! stage)
-    (stage/draw! stage)
-    (:stage/ctx stage)))
-
-(defn resize [ctx width height]
-  (viewport/update! (:stage/viewport (get-stage ctx)) width height true))
-
 (defn listener []
   (let [state (atom nil)]
     (reify ApplicationListener
       (create [_]
-        (reset! state (create)))
+        (reset! state
+                (let [input (.getInput ^Application Gdx/app)
+                      files (.getFiles ^Application Gdx/app)
+                      batch (SpriteBatch.)
+                      skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))
+                      _ (set! (.markupEnabled ^BitmapFont$BitmapFontData
+                                              (.getData (.getFont ^Skin skin "default-font")))
+                              true)
+                      stage* (stage/create (FitViewport. (float 1440) (float 900)) batch)
+                      _ (input/set-processor! input stage*)
+                      ctx {:ctx/input input
+                           :ctx/files files
+                           :ctx/audio (audio/create (.getAudio ^Application Gdx/app) files)
+                           :ctx/batch batch
+                           :ctx/skin skin
+                           :ctx/db (db/create)
+                           :ctx/stage stage*
+                           :ctx/textures (textures/create files {:folder "resources/"
+                                                                 :extensions #{"png" "bmp"}})}]
+                  (stage/add-actor! (get-stage ctx) (main-window-f ctx))
+                  ctx)))
       (dispose [_]
-        (dispose @state))
+        (let [{:keys [ctx/audio
+                      ctx/skin
+                      ctx/batch
+                      ctx/textures]} @state]
+          (audio/dispose! audio)
+          (Disposable/.dispose batch)
+          (Disposable/.dispose skin)
+          (run! Disposable/.dispose (vals textures))))
       (render [_]
-        (swap! state render))
+        (swap! state
+               (fn [ctx]
+                 (let [stage (get-stage ctx)
+                       gl (.getGL20 ^Graphics Gdx/graphics)
+                       _ (.glClearColor ^GL20 gl 0 0 0 0)
+                       _ (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
+                       ctx (if-let [new-ctx (:stage/ctx stage)]
+                             new-ctx
+                             ctx)]
+                   (stage/set-ctx! stage ctx)
+                   (stage/act! stage)
+                   (stage/draw! stage)
+                   (:stage/ctx stage)))))
       (resize [_ width height]
-        (resize @state width height))
+        (viewport/update! (:stage/viewport (get-stage @state)) width height true))
       (pause [_])
       (resume [_]))))
 
