@@ -2,10 +2,10 @@
   (:require [gdx.actor.widget.label :as label]
             [gdx.actor.group.widget.scroll-pane :as scroll-pane]
             [gdx.actor.group.widget.table :as table]
-            [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.actor.group.widget.table.window :as window]
             [gdx.stage :as stage]
-            [gdx.change-listener :as change-listener]))
+            [gdx.change-listener :as change-listener])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
 
 (defn label-str [k]
   (str "[LIGHT_GRAY]:"
@@ -23,7 +23,7 @@
   {:pre [(map? data)]}
   (let [v->actor (fn [v skin]
                    (if (map? v)
-                     (doto (text-button/create "Map" skin)
+                     (doto (TextButton. "Map" skin)
                        (.addListener (change-listener/create
                                             (fn [_event actor]
                                               (stage/add-actor! (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor actor)

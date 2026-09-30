@@ -3,11 +3,12 @@
             [gdx.actor.group :as group]
             [gdx.button-group :as button-group]
             [gdx.actor.group.widget.horizontal-group :as horizontal-group]
-            [gdx.actor.group.widget.table.button.image :as image-button]
             [gdx.actor.group.widget.table :as table]
             [gdx.tooltip.text :as text-tooltip]
             [gdx.layout :as layout]
-            [gdx.drawable.texture-region :as texture-region-drawable]))
+            [gdx.drawable.texture-region :as texture-region-drawable])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defn create []
   (doto (table/create
@@ -40,7 +41,7 @@
    skin]
   (let [scale 2
         {:keys [horizontal-group button-group]} (get-data action-bar)
-        button (doto (image-button/create
+        button (doto (ImageButton.
                       (doto (texture-region-drawable/create texture-region)
                         (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
                                                                (* scale (texture-region/get-region-height texture-region)))))

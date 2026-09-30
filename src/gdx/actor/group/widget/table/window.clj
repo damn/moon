@@ -1,11 +1,10 @@
 (ns gdx.actor.group.widget.table.window
   (:refer-clojure :exclude [class])
   (:require [gdx.actor.widget.label :as label]
-            [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.change-listener :as change-listener]
             [gdx.actor.group.widget.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin Window)))
+           (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton Window)))
 
 (def class Window)
 
@@ -14,7 +13,7 @@
 
 (defn add-close-button! [window skin]
   (table/add-cell! (.getTitleTable ^Window window)
-             {:actor (doto (text-button/create "X" skin)
+             {:actor (doto (TextButton. "X" ^Skin skin)
                        (.addListener (change-listener/create
                                            (fn [_event _actor]
                                              (.remove ^Actor window)))))}))

@@ -17,7 +17,6 @@
             [gdx.map-layers :as map-layers]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [gdx.skin :as skin]
-            [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.actor.group.widget.table.window :as window]
             [gdx.change-listener :as change-listener]
             [gdx.disposable :as disposable]
@@ -26,7 +25,8 @@
             [gdx.gdx :as gdx]
             [gdx.application :as application]
             [gdx.lwjgl3-application :as lwjgl3-application]
-            [gdx.lwjgl3-application-configuration :as config]))
+            [gdx.lwjgl3-application-configuration :as config])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
 
 ;; ctx accessors
 
@@ -260,7 +260,7 @@
                       :table/rows
                       (for [[label level-fn] (:level-fns config)]
                         [{:actor
-                          (doto (text-button/create (str "Generate " label) (get-skin ctx))
+                          (doto (TextButton. (str "Generate " label) (get-skin ctx))
                             (.addListener (change-listener/create
                               (fn [_event _actor]
                                 (swap! state #(regenerate-level! % level-fn))))))}])}))

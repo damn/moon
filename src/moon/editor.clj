@@ -25,15 +25,12 @@
             [gdx.event :as event]
             [gdx.actor.group :as group]
             [gdx.touchable :as touchable]
-            [gdx.actor.group.widget.table.button.text.check-box :as check-box]
             [gdx.actor.widget.image :as image]
-            [gdx.actor.group.widget.table.button.image :as image-button]
             [gdx.actor.widget.label :as label]
             [gdx.actor.group.widget.scroll-pane :as scroll-pane]
             [gdx.actor.widget.select-box :as select-box]
             [gdx.actor.group.widget.stack :as stack]
             [gdx.skin :as ui-skin]
-            [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.actor.widget.text-field :as text-field]
             [gdx.tooltip.text :as text-tooltip]
             [gdx.change-listener :as change-listener]
@@ -45,7 +42,9 @@
             [gdx.gdx :as gdx]
             [gdx.application :as application]
             [gdx.lwjgl3-application :as lwjgl3-application]
-            [gdx.lwjgl3-application-configuration :as config]))
+            [gdx.lwjgl3-application-configuration :as config])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox ImageButton Skin TextButton)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defn- find-ancestor [a pred?]
   (loop [actor a]
@@ -110,7 +109,7 @@
 
 (defmethod widget-value :s/boolean
   [_ widget _schemas]
-  (check-box/checked? widget))
+  (.isChecked ^CheckBox widget))
 
 (defmethod widget-value :s/enum
   [_ widget _schemas]
@@ -169,12 +168,12 @@
     widget))
 
 (defn- sound-columns [skin table sound-name open-select-sounds-handler]
-  [{:actor (doto (text-button/create sound-name skin)
+  [{:actor (doto (TextButton. sound-name skin)
              (.addListener (change-listener/create
                                       (fn [event _actor]
                                         ((open-select-sounds-handler table)
                                          (:stage/ctx (event/get-stage event)))))))}
-   {:actor (doto (text-button/create "play!" skin)
+   {:actor (doto (TextButton. "play!" skin)
              (.addListener (change-listener/create
                                       (fn [event _actor]
                                         (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
@@ -199,11 +198,11 @@
                                             :table/rows
                                             [[(let [table (table/create {:table/cell-defaults {:pad 5}
                                                                          :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
-                                                                                       [{:actor (doto (text-button/create sound-name skin)
+                                                                                       [{:actor (doto (TextButton. sound-name skin)
                                                                                                       (.addListener (change-listener/create
                                                                                                                            (fn [event actor]
                                                                                                                              ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
-                                                                                        {:actor (doto (text-button/create "play!" skin)
+                                                                                        {:actor (doto (TextButton. "play!" skin)
                                                                                                       (.addListener (change-listener/create
                                                                                                                            (fn [event _actor]
                                                                                                                              (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
@@ -223,7 +222,7 @@
                   extra-info-text]} row]
       {:actor (let [stack (stack/create)]
                 (run! #(group/add-actor! stack %)
-                      [(doto (image-button/create
+                      [(doto (ImageButton.
                               (doto (texture-region-drawable/create texture-region)
                                 (texture-region-drawable/set-min-size! (* image-scale (texture-region/get-region-width texture-region))
                                                 (* image-scale (texture-region/get-region-height texture-region)))))
@@ -293,12 +292,12 @@
         clicked-save-fn (with-window-close (fn [db]
                                              (db/update! db (get-widget-value))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
-                          [{:actor (doto (text-button/create "Save [LIGHT_GRAY](ENTER)[]" skin)
+                          [{:actor (doto (TextButton. "Save [LIGHT_GRAY](ENTER)[]" skin)
                                      (.addListener (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
                             :center? true}
-                           {:actor (doto (text-button/create "Delete" skin)
+                           {:actor (doto (TextButton. "Delete" skin)
                                      (.addListener (change-listener/create
                                                               (fn [event actor]
                                                                 (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
@@ -339,7 +338,7 @@
                     (layout/pack (find-ancestor table (partial instance? window/class))))]
     (table/add-rows!
      table
-     [[{:actor (doto (text-button/create "+" skin)
+     [[{:actor (doto (TextButton. "+" skin)
                  (.addListener (change-listener/create
                                           (fn [event _actor]
                                             (let [{:keys [ctx/db
@@ -362,7 +361,7 @@
                     (.addListener (text-tooltip/create (property/tooltip property) skin))
                     (.setUserObject property-id))}))
       (for [id property-ids]
-        {:actor (doto (text-button/create "-" skin)
+        {:actor (doto (TextButton. "-" skin)
                   (.addListener (change-listener/create
                                            (fn [event _actor]
                                              (redo-rows (:stage/ctx (event/get-stage event))
@@ -382,7 +381,7 @@
     (table/add-rows!
      table
      [[(when-not property-id
-         {:actor (doto (text-button/create "+" skin)
+         {:actor (doto (TextButton. "+" skin)
                    (.addListener (change-listener/create
                                             (fn [event _actor]
                                               (let [{:keys [ctx/db
@@ -405,7 +404,7 @@
                      (.addListener (text-tooltip/create (property/tooltip property) skin))
                      (.setUserObject property-id))}))]
       [(when property-id
-         {:actor (doto (text-button/create "-" skin)
+         {:actor (doto (TextButton. "-" skin)
                    (.addListener (change-listener/create
                                             (fn [event _actor]
                                               (redo-rows (:stage/ctx (event/get-stage event))
@@ -434,7 +433,7 @@
            table]}]
   [{:actor (table/create {:table/cell-defaults {:pad 2}
                           :table/rows [[{:actor (when display-remove-component-button?
-                                     (doto (text-button/create "-" skin)
+                                     (doto (TextButton. "-" skin)
                                        (.addListener (change-listener/create
                                                                 (fn [event _actor]
                                                                   (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (first (filter (fn [actor]
@@ -466,7 +465,7 @@
     (table/add-rows!
      window
      (for [k remaining-ks]
-       [{:actor (doto (text-button/create (name k) skin)
+       [{:actor (doto (TextButton. (name k) skin)
                   (.addListener (change-listener/create
                                            (fn [event _actor]
                                              (.remove ^com.badlogic.gdx.scenes.scene2d.Actor window)
@@ -515,7 +514,7 @@
     (table/add-rows!
      table
      (concat [(when opt?
-                [{:actor (doto (text-button/create "Add component" skin)
+                [{:actor (doto (TextButton. "Add component" skin)
                            (.addListener (change-listener/create
                                                     (fn [event actor]
                                                       (let [{:keys [ctx/db
@@ -553,15 +552,15 @@
                                {:actor
                                 (let [scale 2
                                       texture-region (textures/texture-region textures image)]
-                                  (image-button/create
+                                  (ImageButton.
                                    (doto (texture-region-drawable/create texture-region)
                                      (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
                                                                        (* scale (texture-region/get-region-height texture-region))))))})]}))
 
 (defmethod create-widget :s/boolean
   [_ checked? {:keys [ctx/skin]}]
-  (doto (check-box/create "" skin)
-    (check-box/set-checked! checked?)))
+  (doto (CheckBox. "" ^Skin skin)
+    (.setChecked checked?)))
 
 (defmethod create-widget :s/enum
   [schema v {:keys [ctx/skin]}]
@@ -573,7 +572,7 @@
   [_ image {:keys [ctx/textures]}]
   (let [texture-region (textures/texture-region textures image)
         scale 2]
-    (image-button/create
+    (ImageButton.
      (doto (texture-region-drawable/create texture-region)
        (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
                                               (* scale (texture-region/get-region-height texture-region)))))))
@@ -623,7 +622,7 @@
       (table/add-rows! table [(if sound-name
                            (sound-columns-fn skin table sound-name)
                            [{:actor
-                             (doto (text-button/create "No sound" skin)
+                             (doto (TextButton. "No sound" skin)
                                (.addListener (change-listener/create
                                                    (fn [event _actor]
                                                      ((open-select-fn table)
@@ -646,7 +645,7 @@
   (doto (window/create {:title "Edit"
                         :skin skin
                         :table/rows (for [property-type (sort (db/property-types db))]
-                                      [{:actor (doto (text-button/create (str/capitalize (name property-type)) skin)
+                                      [{:actor (doto (TextButton. (str/capitalize (name property-type)) skin)
                                                      (.addListener (change-listener/create
                                                                            (fn [event _actor]
                                                                              (let [{:keys [ctx/db

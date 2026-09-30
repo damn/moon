@@ -4,8 +4,6 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [gdx.actor.group :as group]
-            [gdx.actor.group.widget.table.button :as button]
-            [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.actor.group.widget.table.window :as window]
             [gdx.actor.widget.label :as label]
             [gdx.align :as align]
@@ -72,9 +70,11 @@
             [moon.throwable :as throwable]
             [moon.timer :as timer]
             [moon.v2 :as v2]
-            [moon.val-max :as val-max]
-            [qrecord.core :as q]
-            [reduce-fsm :as fsm])
+             [moon.val-max :as val-max]
+             [qrecord.core :as q]
+             [reduce-fsm :as fsm])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Button Skin TextButton))
   (:gen-class))
 
 (def schema
@@ -779,6 +779,13 @@
         [x y] (viewport/unproject (:stage/viewport stage) (mouse-position ctx))]
     (stage/hit stage x y true)))
 
+(defn- button?
+  [actor]
+  (let [button-class? (fn [a] (some #(= Button %) (supers (class a))))]
+    (or (button-class? actor)
+        (when-let [parent (.getParent ^Actor actor)]
+          (button-class? parent)))))
+
 (defn- mouseover-actor-info [actor]
   (let [inventory-slot (and (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)
                             (= "inventory-cell" (.getName ^com.badlogic.gdx.scenes.scene2d.Actor (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)))
@@ -790,7 +797,7 @@
       (window/title-bar? actor)
       [:mouseover-actor/window-title-bar]
 
-      (button/is? actor)
+      (button? actor)
       [:mouseover-actor/button]
 
       :else
@@ -890,7 +897,7 @@
                       (doto (window/create {:title title
                                             :skin skin
                                             :table/rows [[{:actor (label/create text skin)}]
-                                                         [{:actor (doto (text-button/create button-text skin)
+                                                         [{:actor (doto (TextButton. button-text skin)
                                                                          (.addListener (change-listener/create
                                                                            (fn [_event _actor]
                                                                              (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (group/find-actor (:stage/root stage)

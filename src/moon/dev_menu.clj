@@ -7,9 +7,9 @@
             [gdx.touchable :as touchable]
             [gdx.actor.widget.image :as image]
             [gdx.actor.widget.label :as label]
-            [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.change-listener :as change-listener]
-            [gdx.layout :as layout]))
+            [gdx.layout :as layout])
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
 
 (defn- set-label-text-actor [label-widget text-fn]
   (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
@@ -39,7 +39,7 @@
 (defn- main-table [skin menus update-labels]
   (let [table (table/create {:table/rows [(for [{:keys [label items]} menus]
                                                            {:actor
-                                                            (doto (text-button/create label skin)
+                                                            (doto (TextButton. label skin)
                                                               (.addListener (change-listener/create
                                                                                   (fn [event actor]
                                                                                     (stage/add-actor! (event/get-stage event)
@@ -47,7 +47,7 @@
                                                                                                                     :skin skin
                                                                                                                     :table/rows [(for [{:keys [label on-click]} items]
                                                                                                                                   {:actor
-                                                                                                                                   (doto (text-button/create label skin)
+                                                                                                                                   (doto (TextButton. label skin)
                                                                                                                                      (.addListener (change-listener/create
                                                                                                                                                            (fn [event actor]
                                                                                                                                                              (let [stage (event/get-stage event)]
