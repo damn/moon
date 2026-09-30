@@ -2380,14 +2380,6 @@
                                                            :fill-y? true}]]})
         (layout/set-fill-parent! true)))
 
-(defn stage-ctx
-  [ctx]
-  (or (:stage/ctx (:ctx/stage ctx)) ctx))
-
-(defn render-validate [ctx]
-  (malli-schema/validate-humanize schema ctx)
-  ctx)
-
 (defn update-mouse-positions
   [ctx]
   (let [stage (:ctx/stage ctx)
@@ -2434,25 +2426,7 @@
                           :data data
                           :width 500
                           :height 500
-                          :skin (:ctx/skin ctx)}))))
-  ctx)
-
-(defn set-active-entities
-  [ctx]
-  (assoc ctx :ctx/active-entities
-         (world/active-entities (:ctx/world ctx) @(:ctx/player-eid ctx))))
-
-(defn set-camera-position
-  [ctx]
-  (orthographic-camera/set-position! (viewport/get-camera (:ctx/world-viewport ctx))
-                                     (:entity/position @(:ctx/player-eid ctx)))
-  ctx)
-
-(defn clear-screen [ctx]
-  (let [gl (graphics/get-gl20 (:ctx/graphics ctx))]
-    (.glClearColor ^GL20 gl 0 0 0 0)
-    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT))
-  ctx)
+                          :skin (:ctx/skin ctx)})))))
 
 (defn render-draw-tiled-map
   [ctx]
@@ -2472,8 +2446,7 @@
                        :see-all-tiles? false
                        :explored-tile-color (:colors/explored-tile colors)
                        :visible-tile-color (:colors/visible-tile colors)
-                       :invisible-tile-color (:colors/invisible-tile colors)})))
-  ctx)
+                       :invisible-tile-color (:colors/invisible-tile colors)}))))
 
 (def ^:private render-layers
   [#{:entity/mouseover?
@@ -2593,8 +2566,7 @@
         (draw-fn ctx))
       (reset! unit-scale 1)
       (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-    (batch/end! (:ctx/batch ctx))
-    ctx))
+    (batch/end! (:ctx/batch ctx))))
 
 (defn- make-interaction-state
   [ctx]
@@ -2690,8 +2662,7 @@
                      cursor-fn
                      (cursor-fn eid ctx))]
     (assert (contains? (:ctx/cursors ctx) cursor-key))
-    (graphics/set-cursor! (:ctx/graphics ctx) (get (:ctx/cursors ctx) cursor-key)))
-  ctx)
+    (graphics/set-cursor! (:ctx/graphics ctx) (get (:ctx/cursors ctx) cursor-key))))
 
 (defn handle-player-input
   [ctx]
@@ -2699,11 +2670,7 @@
         entity @eid
         state-k (:state (:entity/fsm entity))]
     (when-let [input-fn (k->handle-input state-k)]
-      (input-fn eid ctx)))
-  ctx)
-
-(defn dissoc-interaction-state [ctx]
-  (dissoc ctx :ctx/interaction-state))
+      (input-fn eid ctx))))
 
 (defn assoc-paused
   [ctx]
@@ -2767,8 +2734,7 @@
     (doseq [[k v] @eid
             :let [destroy-fn (k->destroy k)]
             :when destroy-fn]
-      (destroy-fn v eid ctx)))
-  ctx)
+      (destroy-fn v eid ctx))))
 
 (def zoom-speed 0.025)
 
@@ -2792,8 +2758,7 @@
 
     (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-entity-info (:ctx/controls ctx)))
       (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
-        (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))
-    ctx))
+        (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))))
 
 (defn update-draw-stage
   [ctx]
@@ -2974,26 +2939,31 @@
     (disposable/dispose! (:ctx/tiled-map ctx))))
 
 (defn render! []
-  (swap! state stage-ctx)
-  (swap! state render-validate)
+  (swap! state #(or (:stage/ctx (:ctx/stage %)) %))
+  (malli-schema/validate-humanize schema @state)
   (swap! state update-mouse-positions)
   (swap! state update-mouseover-eid)
-  (swap! state check-debug-viewer)
-  (swap! state set-active-entities)
-  (swap! state set-camera-position)
-  (swap! state clear-screen)
-  (swap! state render-draw-tiled-map)
-  (swap! state draw-on-world-viewport)
+  (check-debug-viewer @state)
+  (swap! state #(assoc % :ctx/active-entities
+                       (world/active-entities (:ctx/world %) @(:ctx/player-eid %))))
+  (let [ctx @state]
+    (orthographic-camera/set-position! (viewport/get-camera (:ctx/world-viewport ctx))
+                                       (:entity/position @(:ctx/player-eid ctx))))
+  (let [gl (graphics/get-gl20 (:ctx/graphics @state))]
+    (.glClearColor ^GL20 gl 0 0 0 0)
+    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT))
+  (render-draw-tiled-map @state)
+  (draw-on-world-viewport @state)
   (swap! state assoc-interaction-state)
-  (swap! state set-cursor)
-  (swap! state handle-player-input)
-  (swap! state dissoc-interaction-state)
+  (set-cursor @state)
+  (handle-player-input @state)
+  (swap! state dissoc :ctx/interaction-state)
   (swap! state assoc-paused)
   (swap! state when-not-paused)
-  (swap! state remove-destroyed-entities)
-  (swap! state window-camera-controls)
+  (remove-destroyed-entities @state)
+  (window-camera-controls @state)
   (swap! state update-draw-stage)
-  (swap! state render-validate))
+  (malli-schema/validate-humanize schema @state))
 
 (defn resize! [width height]
   (let [ctx @state]
