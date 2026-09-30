@@ -4,9 +4,23 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [gdx.actor.group :as group]
+            [gdx.actor.group.widget.horizontal-group :as horizontal-group]
+            [gdx.actor.group.widget.scroll-pane :as scroll-pane]
+            [gdx.actor.group.widget.stack :as stack]
+            [gdx.actor.group.widget.table :as table]
             [gdx.actor.group.widget.table.window :as window]
+            [gdx.actor.widget :as widget]
+            [gdx.actor.widget.image :as image]
             [gdx.actor.widget.label :as label]
             [gdx.align :as align]
+            [gdx.button-group :as button-group]
+            [gdx.click-listener :as click-listener]
+            [gdx.drawable.texture-region :as texture-region-drawable]
+            [gdx.event :as event]
+            [gdx.layout :as layout]
+            [gdx.tooltip.text :as text-tooltip]
+            [gdx.touchable :as touchable]
+            [gdx.vector2 :as vector2]
             [gdx.gdx :as gdx]
             [gdx.application :as application]
             [gdx.lwjgl3-application :as lwjgl3-application]
@@ -37,22 +51,16 @@
             [gdx.tooltip-manager :as tooltip-manager]
             [gdx.viewport :as viewport]
             [gdx.viewport.fit :as fit-viewport]
-            [moon.action-bar :as action-bar]
             [moon.audio :as audio]
             [moon.body :as body]
             [moon.cell :as cell]
             [moon.coll :as coll]
-            [moon.data-viewer-window :as data-viewer-window]
             [moon.db :as db]
-            [moon.dev-menu :as dev-menu]
             [moon.effect-ctx :as effect-ctx]
             [moon.error-window :as error-window]
             [moon.faction :as faction]
             [moon.g2d :as moon-g2d]
-            [moon.info-window :as info-window]
             [moon.inventory :as inventory]
-            [moon.inventory-window :as inventory-window]
-            [moon.item :as item]
             [moon.item :as item]
             [moon.level.modules :as modules]
             [moon.level.tmx :as tmx]
@@ -73,8 +81,9 @@
              [moon.val-max :as val-max]
              [qrecord.core :as q]
              [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Button Skin TextButton))
+  (:import (com.badlogic.gdx.math Vector2)
+           (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Button ImageButton Skin TextButton))
   (:gen-class))
 
 (def schema
@@ -561,6 +570,59 @@
           nil)
          :state initial-state))
 
+(defn- create-action-bar []
+  (doto (table/create
+         {:table/cell-defaults {:pad 2}
+          :table/rows [[{:actor (doto (horizontal-group/create
+                                       {:space 2
+                                        :pad 2})
+                                  (.setName "moon.ui.action-bar.horizontal-group")
+                                  (.setUserObject (button-group/create
+                                                           {:max-check-count 1
+                                                            :min-check-count 0})))
+                         :expand? true
+                         :bottom? true}]]})
+    (layout/set-fill-parent! true)
+    (.setName "moon.ui.action-bar")))
+
+(defn- action-bar-get-data
+  [action-bar]
+  {:post [(:horizontal-group %)
+          (:button-group %)]}
+  (let [group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")]
+    {:horizontal-group group
+     :button-group (.getUserObject ^Actor group)}))
+
+(defn- action-bar-add-skill!
+  [action-bar
+   {:keys [skill-id
+           texture-region
+           tooltip-text]}
+   skin]
+  (let [scale 2
+        {:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
+        button (doto (ImageButton.
+                      (doto (texture-region-drawable/create texture-region)
+                        (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
+                                                               (* scale (texture-region/get-region-height texture-region)))))
+                 (.addListener (text-tooltip/create tooltip-text skin))
+                 (.setUserObject skill-id))]
+    (group/add-actor! horizontal-group button)
+    (button-group/add! button-group button)
+    nil))
+
+(defn- action-bar-remove-skill!
+  [action-bar skill-id]
+  (let [{:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
+        button (get horizontal-group skill-id)]
+    (.remove ^Actor button)
+    (button-group/remove! button-group button)
+    nil))
+
+(defn- action-bar-selected-skill [action-bar]
+  (when-let [skill-button (button-group/get-checked (:button-group (action-bar-get-data action-bar)))]
+    (.getUserObject ^Actor skill-button)))
+
 (defn- ui-update-skill! [ctx skill]
   (let [skin (:ctx/skin ctx)
         stage (:ctx/stage ctx)
@@ -568,10 +630,36 @@
     (-> stage
         :stage/root
         (#(group/find-actor % "moon.ui.action-bar"))
-        (action-bar/add-skill! {:skill-id (:property/id skill)
+        (action-bar-add-skill! {:skill-id (:property/id skill)
                                 :texture-region (textures/texture-region textures (:entity/image skill))
                                 :tooltip-text (info-text skill ctx)}
                                skin))))
+
+(defn- inventory-window-get-cell [inventory-window cell]
+  (->> "inventory-cell-table"
+       (#(group/find-actor inventory-window %))
+       group/get-children
+       (filter #(= (.getUserObject ^Actor %) cell))
+       first))
+
+(defn- inventory-window-remove-item! [inventory-window cell]
+  (let [cell-widget (inventory-window-get-cell inventory-window cell)
+        image-widget (group/find-actor cell-widget "image-widget")]
+    (image/set-drawable! image-widget (:background-drawable (.getUserObject ^Actor image-widget)))
+    ; !! TODO FIXME FIXME FIXME !!!
+    ;(.removeListener actor (.getListeners actor))
+    ; ... first find the listener
+    #_(tooltip/remove! cell-widget)
+    nil))
+
+(defn- inventory-window-set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
+  (let [cell-widget (inventory-window-get-cell inventory-window cell)
+        image-widget (group/find-actor cell-widget "image-widget")
+        cell-size (:cell-size (.getUserObject ^Actor image-widget))]
+    (image/set-drawable! image-widget (doto (texture-region-drawable/create texture-region)
+                                        (texture-region-drawable/set-min-size! cell-size cell-size)))
+    (.addListener ^Actor cell-widget (text-tooltip/create tooltip-text skin))
+    nil))
 
 (defn- ui-set-item! [ctx cell item]
   (let [skin (:ctx/skin ctx)
@@ -580,7 +668,7 @@
     (-> stage
         :stage/root
         (#(group/find-actor % "moon.ui.windows.inventory"))
-        (inventory-window/set-item! cell
+        (inventory-window-set-item! cell
                                   {:texture-region (textures/texture-region textures (:entity/image item))
                                    :tooltip-text (item/info-text item)}
                                   skin))))
@@ -610,7 +698,7 @@
   (-> (:ctx/stage ctx)
       :stage/root
       (#(group/find-actor % "moon.ui.windows.inventory"))
-      (inventory-window/remove-item! cell)))
+      (inventory-window-remove-item! cell)))
 
 (defn- remove-item! [ctx eid cell]
   (let [entity @eid
@@ -1246,6 +1334,60 @@
   {:label "Help"
    :items [{:label controls-info}]})
 
+(defn- data-viewer-label-str [k]
+  (str "[LIGHT_GRAY]:"
+       (when-let [ns (namespace k)] (str ns "/"))
+       "[][WHITE]"
+       (name k)
+       "[]"))
+
+(defn- create-data-viewer-window
+  [{:keys [title
+           data
+           width
+           height
+           skin]}]
+  {:pre [(map? data)]}
+  (let [v->actor (fn [v skin]
+                   (if (map? v)
+                     (doto (TextButton. "Map" skin)
+                       (.addListener (change-listener/create
+                                            (fn [_event actor]
+                                              (stage/add-actor! (.getStage ^Actor actor)
+                                                                (create-data-viewer-window
+                                                                 {:title "title"
+                                                                  :data v
+                                                                  :width 500
+                                                                  :height 500
+                                                                  :skin skin}))))))
+                     (label/create (cond
+                                  (or (keyword? v)
+                                      (number? v)
+                                      (boolean? v)
+                                      (string? v))
+                                  (str "[GOLD]" v "[]")
+
+                                  :else
+                                  (str (class v)))
+                                skin)))
+        rows (for [[k v] (sort-by key data)]
+               {:label (data-viewer-label-str k)
+                :actor (v->actor v skin)})
+        scroll-pane-table (table/create
+                           {:table/rows (for [{:keys [label actor]} rows]
+                                           [{:actor (label/create label skin)}
+                                            {:actor actor}])})
+        scroll-pane-cell {:actor (scroll-pane/create
+                                  (table/create {:table/cell-defaults {:pad 1}
+                                                 :table/rows [[scroll-pane-table]]})
+                                  skin)
+                          :width width
+                          :height 800}]
+    (window/create {:title title
+                    :skin skin
+                    :table/rows [[scroll-pane-cell]]
+                    :window/add-close-button? true})))
+
 (def ctx-data-menu-item
   {:label "Ctx Data"
    :items [{:label "Show data"
@@ -1256,7 +1398,7 @@
                         ; :moon.game/ui
                         ; moon.game.ui/data-viweer-window?
                         (stage/add-actor! stage
-                                        (data-viewer-window/create
+                                        (create-data-viewer-window
                                          {:title "Data View"
                                           :data ctx
                                           :width 1000
@@ -1772,6 +1914,77 @@
     (when-let [handler (k->clicked-inventory-cell state-k)]
       (handler ctx player-eid cell))))
 
+(defn- inventory-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
+  (let [cell [slot (or position [0 0])]
+        background-drawable (slot->drawable slot)]
+    {:actor
+     (let [stack (stack/create)]
+       (run! #(group/add-actor! stack %)
+             [(widget/new
+               (fn [this _batch _parent-alpha]
+                 (when-let [stage (.getStage ^Actor this)]
+                   (let [ctx (:stage/ctx stage)]
+                     (draw-cell-rect! ctx
+                                      @(:ctx/player-eid ctx)
+                                      (.getX ^Actor this)
+                                      (.getY ^Actor this)
+                                      (let [[x y] (vector2/clojurize
+                                                   (.stageToLocalCoordinates ^Actor this ^Vector2 (vector2/new (:ctx/ui-mouse-position ctx))))]
+                                        (.hit ^Actor this (float x) (float y) true))
+                                      (.getUserObject ^Actor (.getParent ^Actor this)))))))
+              (doto (image/create-drawable background-drawable)
+                (.setName "image-widget")
+                (.setUserObject {:background-drawable background-drawable
+                                      :cell-size cell-size}))])
+       (doto stack
+         (.addListener (click-listener/create
+                             (fn [event _x _y]
+                               (let [ctx (:stage/ctx (event/get-stage event))]
+                                 (on-click-cell ctx (:ctx/player-eid ctx) cell)))))
+         (.setName "inventory-cell")
+         (.setUserObject cell)))}))
+
+(defn- inventory-window-build
+  [{:keys [on-click-cell
+           draw-cell-rect!
+           skin
+           position
+           slot->texture-region
+           cell-size]}]
+  (let [slot->drawable (fn [slot]
+                         (doto (texture-region-drawable/create (slot->texture-region slot))
+                           (texture-region-drawable/set-min-size! cell-size cell-size)
+                           (texture-region-drawable/tint! (color/create [1 1 1 0.4]))))
+        ->cell (partial inventory-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
+        window (doto (window/create {:title "Inventory"
+                                     :skin skin
+                                     :table/rows [[{:actor (doto (table/create
+                                                                  {:table/rows (concat [[nil nil
+                                                                                        (->cell :inventory.slot/helm)
+                                                                                        (->cell :inventory.slot/necklace)]
+                                                                                       [nil
+                                                                                        (->cell :inventory.slot/weapon)
+                                                                                        (->cell :inventory.slot/chest)
+                                                                                        (->cell :inventory.slot/cloak)
+                                                                                        (->cell :inventory.slot/shield)]
+                                                                                       [nil nil
+                                                                                        (->cell :inventory.slot/leg)]
+                                                                                       [nil
+                                                                                        (->cell :inventory.slot/glove)
+                                                                                        (->cell :inventory.slot/rings :position [0 0])
+                                                                                        (->cell :inventory.slot/rings :position [1 0])
+                                                                                        (->cell :inventory.slot/boot)]]
+                                                                                      (for [y (range 4)]
+                                                                                        (for [x (range 6)]
+                                                                                          (->cell :inventory.slot/bag :position [x y]))))})
+                                                                  (.setName "inventory-cell-table"))
+                                                    :pad 4}]]})
+                     (.setName "moon.ui.windows.inventory")
+                     (.setVisible false))]
+    (let [[x y] position]
+      (.setPosition ^Actor window (float x) (float y)))
+    window))
+
 (defn inventory-window-create
   [ctx]
   (let [colors (:ctx/colors ctx)
@@ -1802,7 +2015,7 @@
                                                           {:image/file "images/items.png"
                                                            :image/bounds bounds})))
         cell-size 48]
-    (inventory-window/inventory-window-build
+    (inventory-window-build
      {:on-click-cell handle-clicked-inventory-cell
       :draw-cell-rect! (fn [ctx player-entity x y mouseover? cell]
                          (draw-fn-rectangle ctx x y cell-size cell-size (:colors/item-rect colors))
@@ -1825,11 +2038,36 @@
     (doto group*
       (.setName "moon.ui.windows"))))
 
+(defn- create-info-window
+  [{:keys [title
+           actor-name
+           visible?
+           position
+           set-label-text!
+           skin]}]
+  (let [label (label/create "MY LABEL TEXT" skin)
+        window (doto (window/create {:title title
+                                     :skin skin
+                                     :table/rows [[{:actor label :expand? true}]]})
+                 (.setName actor-name)
+                 (.setVisible visible?))]
+    (let [[x y] position]
+      (.setPosition ^Actor window (float x) (float y)))
+    (group/add-actor! window (proxy [Actor] []
+                               (act [delta]
+                                 (when-let [stage (.getStage ^Actor this)]
+                                   (label/set-text! label (set-label-text! (:stage/ctx stage))))
+                                 (layout/pack window)
+                                 (let [^Actor this this]
+                                   (proxy-super act delta)))
+                               (draw [batch parent-alpha])))
+    window))
+
 (defn stage-info-window-create
   [ctx]
   (let [skin (:ctx/skin ctx)
         stage (:ctx/stage ctx)]
-    (info-window/create
+    (create-info-window
      {:title "Entity Info"
       :actor-name "moon.ui.windows.entity-info"
       :visible? false
@@ -2344,13 +2582,76 @@
 (defn create-db [ctx]
   (assoc ctx :ctx/db (db/create)))
 
+(defn- set-label-text-actor [label-widget text-fn]
+  (proxy [Actor] []
+    (act [delta]
+      (when-let [stage (.getStage ^Actor this)]
+        (label/set-text! label-widget (text-fn (:stage/ctx stage))))
+      (let [^Actor this this]
+        (proxy-super act delta)))
+    (draw [batch parent-alpha])))
+
+(defn- add-upd-label!
+  ([skin table text-fn icon]
+   (let [label (label/create "" skin)
+         sub-table (table/create {:table/rows [[{:actor (image/create-from-texture icon)}
+                                                              label]]})]
+     (group/add-actor! table (set-label-text-actor label text-fn))
+     (table/add-cell! table {:actor sub-table
+                       :right? true
+                       :expand-x? true})))
+  ([skin table text-fn]
+   (let [label (label/create "" skin)]
+     (group/add-actor! table (set-label-text-actor label text-fn))
+     (table/add-cell! table {:actor label
+                       :right? true
+                       :expand-x? true}))))
+
+(defn- dev-menu-main-table [skin menus update-labels]
+  (let [table (table/create {:table/rows [(for [{:keys [label items]} menus]
+                                                           {:actor
+                                                            (doto (TextButton. label skin)
+                                                              (.addListener (change-listener/create
+                                                                                  (fn [event actor]
+                                                                                    (stage/add-actor! (event/get-stage event)
+                                                                                                    (window/create {:title label
+                                                                                                                    :skin skin
+                                                                                                                    :table/rows [(for [{:keys [label on-click]} items]
+                                                                                                                                  {:actor
+                                                                                                                                   (doto (TextButton. label skin)
+                                                                                                                                     (.addListener (change-listener/create
+                                                                                                                                                           (fn [event actor]
+                                                                                                                                                             (let [stage (event/get-stage event)]
+                                                                                                                                                               (stage/set-ctx! stage
+                                                                                                                                                                               (on-click (:stage/ctx stage))))))))})]
+                                                                                                                    :window/add-close-button? true}))))))})]})]
+    (doseq [{:keys [label update-fn icon]} update-labels]
+      (let [update-fn #(str label ": " (update-fn %))]
+        (if icon
+          (add-upd-label! skin table update-fn icon)
+          (add-upd-label! skin table update-fn))))
+    table))
+
+(defn- create-dev-menu
+  [{:keys [menus update-labels skin]}]
+  (doto (table/create {:table/rows [[{:actor (dev-menu-main-table skin menus update-labels)
+                                                           :expand-x? true
+                                                           :fill-x? true
+                                                           :colspan 1}]
+                                                         [{:actor (doto (label/create "" skin)
+                                                                        (.setTouchable touchable/disabled))
+                                                           :expand? true
+                                                           :fill-x? true
+                                                           :fill-y? true}]]})
+        (layout/set-fill-parent! true)))
+
 (defn create-stage-actors
   [ctx]
   (let [stage (:ctx/stage ctx)
         skin (:ctx/skin ctx)
         textures (:ctx/textures ctx)]
-    (doseq [actor [(action-bar/create)
-                   (dev-menu/create
+    (doseq [actor [(create-action-bar)
+                   (create-dev-menu
                     {:menus dev-menus
                      :update-labels (for [item dev-update-labels]
                                       (if (:icon item)
@@ -2472,7 +2773,7 @@
           data (or (and mouseover-eid @mouseover-eid)
                    (world/cell-at world (mapv int world-mouse-position)))]
       (stage/add-actor! (:ctx/stage ctx)
-                        (data-viewer-window/create
+                        (create-data-viewer-window
                          {:title "Data View"
                           :data data
                           :width 500
@@ -2661,7 +2962,7 @@
       (if-let [skill-id (-> stage
                             :stage/root
                             (#(group/find-actor % "moon.ui.action-bar"))
-                            action-bar/selected-skill)]
+                            action-bar-selected-skill)]
         (let [entity @player-eid
               skill (skill-id (:entity/skills entity))
               effect-ctx (player-effect-ctx mouseover-eid world-mouse-position player-eid)
