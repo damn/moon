@@ -732,23 +732,21 @@
 ;; CTX SIDE EFFECT
 
 ; -> used in handle-fsm-event
-(defn- show-modal! [ctx {:keys [title text button-text on-click]}]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)]
-    (assert (not (group/find-actor (.getRoot ^Stage stage) "moon.ui.modal-window")))
-    (.addActor ^Stage stage
-                      (doto (window/create {:title title
-                                            :skin skin
-                                            :table/rows [[{:actor (Label. ^String text ^Skin skin)}]
-                                                         [{:actor (doto (TextButton. button-text skin)
-                                                                         (.addListener (proxy [ChangeListener] []
-                                                                           (changed [_event _actor]
-                                                                             (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (group/find-actor (.getRoot ^Stage stage)
-                                                                                                "moon.ui.modal-window"))
-                                                                             (on-click)))))}]]})
-                        (window/set-modal! true)
-                        (.setName "moon.ui.modal-window")
-                        (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2) (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center))))))
+(defn- show-modal! [skin stage {:keys [title text button-text on-click]}]
+  (assert (not (group/find-actor (.getRoot ^Stage stage) "moon.ui.modal-window")))
+  (.addActor ^Stage stage
+                    (doto (window/create {:title title
+                                          :skin skin
+                                          :table/rows [[{:actor (Label. ^String text ^Skin skin)}]
+                                                       [{:actor (doto (TextButton. button-text skin)
+                                                                       (.addListener (proxy [ChangeListener] []
+                                                                         (changed [_event _actor]
+                                                                           (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (group/find-actor (.getRoot ^Stage stage)
+                                                                                              "moon.ui.modal-window"))
+                                                                           (on-click)))))}]]})
+                      (window/set-modal! true)
+                      (.setName "moon.ui.modal-window")
+                      (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2) (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center)))))
 
 (defn- ui-set-item! [ctx cell item]
   (let [skin (:ctx/skin ctx)
@@ -789,53 +787,50 @@
                               eid
                               component))))
 
-(defn- audiovisual! [ctx audio position audiovisual]
-  (let [db (:ctx/db ctx)
-        {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
+(defn- audiovisual! [spawn-entity! db audio position audiovisual]
+  (let [{:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                              (db/build db audiovisual)
                                              audiovisual)]
     (audio/play! audio sound)
-    (spawn-entity! ctx (spawn-effect position
-                                     {:entity/animation (assoc animation :delete-after-stopped? true)}))))
+    (spawn-entity! (spawn-effect position
+                                 {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
 ; handle-fsm-event haengt an handle-effect
 (defn handle-effect
-  [[k v] effect-ctx ctx audio world-mouse-position apply-effects! handle-fsm-event!]
+  [[k v] effect-ctx world-mouse-position spawn-entity! audiovisual! apply-effects! handle-fsm-event!
+   active-entities colors raycaster elapsed-time]
   (case k
     :effects/audiovisual
-    (audiovisual! ctx audio (effect-ctx/get-target-position effect-ctx) v)
+    (audiovisual! (effect-ctx/get-target-position effect-ctx) v)
 
     :effects/projectile
     (let [source (effect-ctx/get-source effect-ctx)]
-      (spawn-entity! ctx (spawn-projectile
-                          {:position (projectile-start-point @source
-                                                             (effect-ctx/get-target-direction effect-ctx)
-                                                             (:projectile/size v))
-                           :direction (effect-ctx/get-target-direction effect-ctx)
-                           :faction (:entity/faction @source)}
-                          v)))
+      (spawn-entity! (spawn-projectile
+                      {:position (projectile-start-point @source
+                                                         (effect-ctx/get-target-direction effect-ctx)
+                                                         (:projectile/size v))
+                       :direction (effect-ctx/get-target-direction effect-ctx)
+                       :faction (:entity/faction @source)}
+                      v)))
 
     :effects/spawn
     (let [source (effect-ctx/get-source effect-ctx)]
-      (spawn-entity! ctx (spawn-creature {:position (effect-ctx/get-target-position effect-ctx)
-                                          :creature-property v
-                                          :components {:entity/fsm {:fsm :fsms/npc
-                                                                    :initial-state :npc-idle}
-                                                       :entity/faction (:entity/faction @source)}})))
+      (spawn-entity! (spawn-creature {:position (effect-ctx/get-target-position effect-ctx)
+                                      :creature-property v
+                                      :components {:entity/fsm {:fsm :fsms/npc
+                                                                :initial-state :npc-idle}
+                                                   :entity/faction (:entity/faction @source)}})))
 
     :effects/target-all
     (let [source (effect-ctx/get-source effect-ctx)
-          active-entities (:ctx/active-entities ctx)
-          colors (:ctx/colors ctx)
-          raycaster (:ctx/raycaster ctx)
           source* @source]
       (doseq [target (affected-targets active-entities raycaster source*)]
-        (spawn-entity! ctx (spawn-line
-                            {:start (:entity/position source*)
-                             :end (:entity/position @target)
-                             :duration 0.05
-                             :color (:colors/target-all-line colors)
-                             :thick? true}))
+        (spawn-entity! (spawn-line
+                        {:start (:entity/position source*)
+                         :end (:entity/position @target)
+                         :duration 0.05
+                         :color (:colors/target-all-line colors)
+                         :thick? true}))
         (apply-effects! {:effect/source source
                          :effect/target target}
                         (:entity-effects v))))
@@ -843,24 +838,22 @@
     :effects/target-entity
     (let [source (effect-ctx/get-source effect-ctx)
           target (effect-ctx/get-target effect-ctx)
-          colors (:ctx/colors ctx)
           body        @source
           target-body @target
           {:keys [maxrange entity-effects]} v]
       (if (body/in-range? body target-body maxrange)
-        (do (spawn-entity! ctx (spawn-line
-                                {:start (body/start-point body target-body)
-                                 :end (:entity/position target-body)
-                                 :duration 0.05
-                                 :color (:colors/target-entity-line colors)
-                                 :thick? true}))
+        (do (spawn-entity! (spawn-line
+                            {:start (body/start-point body target-body)
+                             :end (:entity/position target-body)
+                             :duration 0.05
+                             :color (:colors/target-entity-line colors)
+                             :thick? true}))
             (apply-effects! effect-ctx entity-effects))
-        (audiovisual! ctx audio
-                      (body/end-point body target-body maxrange)
+        (audiovisual! (body/end-point body target-body maxrange)
                       :audiovisuals/hit-ground)))
 
     :effects.target/audiovisual
-    (audiovisual! ctx audio (:entity/position @(effect-ctx/get-target effect-ctx)) v)
+    (audiovisual! (:entity/position @(effect-ctx/get-target effect-ctx)) v)
 
     :effects.target/convert
     (let [source (effect-ctx/get-source effect-ctx)
@@ -871,7 +864,6 @@
     :effects.target/damage
     (let [source (effect-ctx/get-source effect-ctx)
           target (effect-ctx/get-target effect-ctx)
-          elapsed-time (:ctx/elapsed-time ctx)
           source* @source
           target* @target
           hp (stats/get-hitpoints (:entity/stats target*))]
@@ -903,7 +895,7 @@
          (swap! target assoc-in [:entity/stats :stats/hp 0] new-hp-val)
          (swap! target add-text-effect elapsed-time dmg-text 0.3)
          (handle-fsm-event! target world-mouse-position (if (zero? new-hp-val) :kill :alert))
-         (audiovisual! ctx audio (:entity/position target*) :audiovisuals/damage))))
+         (audiovisual! (:entity/position target*) :audiovisuals/damage))))
 
     :effects.target/kill
     (handle-fsm-event! (effect-ctx/get-target effect-ctx) world-mouse-position :kill)
@@ -913,31 +905,35 @@
     ; same @ applicable
     (handle-effect [:effects.target/damage (stats/melee-damage @(effect-ctx/get-source effect-ctx))]
                    effect-ctx
-                   ctx
-                   audio
                    world-mouse-position
+                   spawn-entity!
+                   audiovisual!
                    apply-effects!
-                   handle-fsm-event!)
+                   handle-fsm-event!
+                   active-entities
+                   colors
+                   raycaster
+                   elapsed-time)
 
     :effects.target/spiderweb
     (let [target (effect-ctx/get-target effect-ctx)]
       ; TODO stacking? (if already has k ?) or reset counter ? (see string-effect too)
       (when-not (:entity/temp-modifier @target)
         (swap! target assoc :entity/temp-modifier {:modifiers spiderweb-modifiers
-                                                   :counter (timer/create (:ctx/elapsed-time ctx) spiderweb-duration)})
+                                                   :counter (timer/create elapsed-time spiderweb-duration)})
         (swap! target update :entity/stats stats/add-mods spiderweb-modifiers)
         nil))
 
     :effects.target/stun
     (handle-fsm-event! (effect-ctx/get-target effect-ctx) world-mouse-position :stun v)))
 
-(defn- toggle-inventory-visible! [ctx]
-  (let [inventory (-> (.getRoot ^Stage (:ctx/stage ctx))
+(defn- toggle-inventory-visible! [stage]
+  (let [inventory (-> (.getRoot ^Stage stage)
                       (group/find-actor "moon.ui.windows.inventory"))]
     (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory)))))
 
-(defn- show-message! [ctx message]
-  (-> (.getRoot ^Stage (:ctx/stage ctx))
+(defn- show-message! [stage message]
+  (-> (.getRoot ^Stage stage)
       (#(group/find-actor % "player-message"))
       (.setUserObject (atom {:text message :counter 0}))))
 
@@ -1174,7 +1170,7 @@
   (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
   (.sector ^ShapeDrawer shape-drawer center-x center-y radius start-radians radians))
 
-(defn- draw-fn-text [ctx batch default-font unit-scale {:keys [font scale x y text up?]}]
+(defn- draw-fn-text [batch default-font unit-scale {:keys [font scale x y text up?]}]
   (let [font (or font default-font)
         scale (or scale 1)
         font-data (.getData ^BitmapFont font)
@@ -1199,7 +1195,7 @@
            wrap?)
     (.setScale ^BitmapFont$BitmapFontData font-data old-scale)))
 
-(defn- draw-fn-texture-region [ctx batch unit-scale texture-region [x y] & {:keys [center? rotation]}]
+(defn- draw-fn-texture-region [batch unit-scale texture-region [x y] & {:keys [center? rotation]}]
   (let [[w h] (let [dimensions [(.getRegionWidth ^TextureRegion texture-region)
                                 (.getRegionHeight ^TextureRegion texture-region)]]
                   (if (= @unit-scale 1)
@@ -1231,13 +1227,10 @@
     (draw-body)
     (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width)))
 (defn effect-render
-  [[k v] effect-ctx ctx shape-drawer]
+  [[k v] effect-ctx shape-drawer active-entities colors raycaster]
   (case k
     :effects/target-all
     (let [source (effect-ctx/get-source effect-ctx)
-          active-entities (:ctx/active-entities ctx)
-          colors (:ctx/colors ctx)
-          raycaster (:ctx/raycaster ctx)
           source* @source]
       (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
         (draw-fn-line shape-drawer
@@ -1248,7 +1241,6 @@
     :effects/target-entity
     (when-let [target (effect-ctx/get-target effect-ctx)]
       (let [source (effect-ctx/get-source effect-ctx)
-            colors (:ctx/colors ctx)
             body        @source
             target-body @target
             maxrange (:maxrange v)]
@@ -1294,14 +1286,16 @@
               visible-tile-color))))))
 
 (defn draw-component
-  [ctx shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position entity k v]
+  [shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
+   textures colors player elapsed-time active-entities raycaster
+   entity k v]
   (case k
     :entity/clickable
     (let [{:keys [text]} v
           {:keys [entity/position entity/height entity/mouseover?]} entity]
       (when (and mouseover? text)
         (let [[x y] position]
-          (draw-fn-text ctx batch default-font unit-scale {:text text
+          (draw-fn-text batch default-font unit-scale {:text text
                              :x x
                              :y (+ y (/ height 2))
                              :up? true}))))
@@ -1309,8 +1303,8 @@
     :player-item-on-cursor
     (let [{:keys [item]} v]
       (when-not mouseover-actor
-        (draw-fn-texture-region ctx batch unit-scale
-                                (textures/texture-region (:ctx/textures ctx) (:entity/image item))
+        (draw-fn-texture-region batch unit-scale
+                                (textures/texture-region textures (:entity/image item))
                                 (item-place-position (:entity/position entity)
                                                      world-mouse-position
                                                      (- (:entity/click-distance-tiles entity) 0.1))
@@ -1320,15 +1314,15 @@
     (let [{:keys [frames cnt frame-duration]} v
           image (frames (min (int (/ (float cnt) (float frame-duration)))
                              (dec (count frames))))]
-      (draw-fn-texture-region ctx batch unit-scale
-                              (textures/texture-region (:ctx/textures ctx) image)
+      (draw-fn-texture-region batch unit-scale
+                              (textures/texture-region textures image)
                               (:entity/position entity)
                               {:center? true
                                :rotation (or (:entity/rotation-angle entity) 0)}))
 
     :entity/image
-    (draw-fn-texture-region ctx batch unit-scale
-                            (textures/texture-region (:ctx/textures ctx) v)
+    (draw-fn-texture-region batch unit-scale
+                            (textures/texture-region textures v)
                             (:entity/position entity)
                             {:center? true
                              :rotation (or (:entity/rotation-angle entity) 0)})
@@ -1342,8 +1336,6 @@
 
     :entity/mouseover?
     (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
-          colors (:ctx/colors ctx)
-          player @(:ctx/player-eid ctx)
           color (cond (= faction (faction/enemy (:entity/faction player)))
                       (:colors/enemy-color colors)
                       (= faction (:entity/faction player))
@@ -1357,8 +1349,7 @@
                                                 color)))
 
     :entity/stats
-    (let [colors (:ctx/colors ctx)
-          ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
+    (let [ratio (val-max/ratio (stats/get-hitpoints (:entity/stats entity)))]
       (when (or (< ratio 1) (:entity/mouseover? entity))
         (let [{:keys [entity/position entity/width entity/height]} entity
               [x y] position
@@ -1377,7 +1368,7 @@
     :entity/string-effect
     (let [{:keys [text]} v
           [x y] (:entity/position entity)]
-      (draw-fn-text ctx batch default-font unit-scale {:text text
+      (draw-fn-text batch default-font unit-scale {:text text
                          :x x
                          :y (+ y
                                (/ (:entity/height entity) 2)
@@ -1386,13 +1377,10 @@
                          :up? true}))
 
     :entity/temp-modifier
-    (draw-fn-filled-circle shape-drawer (:entity/position entity) 0.5 (:colors/temp-modifier (:ctx/colors ctx)))
+    (draw-fn-filled-circle shape-drawer (:entity/position entity) 0.5 (:colors/temp-modifier colors))
 
     :active-skill
     (let [{:keys [skill effect-ctx counter]} v
-          colors (:ctx/colors ctx)
-          textures (:ctx/textures ctx)
-          elapsed-time (:ctx/elapsed-time ctx)
           {:keys [entity/image skill/effects]} skill
           radius active-skill-radius
           action-counter-ratio (timer/ratio elapsed-time counter)
@@ -1409,20 +1397,23 @@
                       (math/to-radians 90)
                       (math/to-radians (* (float action-counter-ratio) 360))
                       (:colors/active-skill-sector colors))
-      (draw-fn-texture-region ctx batch unit-scale texture-region [(- (float x) radius) y])
+      (draw-fn-texture-region batch unit-scale texture-region [(- (float x) radius) y])
       (doseq [effect effects]
-        (effect-render effect effect-ctx ctx shape-drawer)))
+        (effect-render effect effect-ctx shape-drawer
+                       active-entities
+                       colors
+                       raycaster)))
 
     :npc-sleeping
     (let [{:keys [entity/position entity/height]} entity
           [x y] position]
-      (draw-fn-text ctx batch default-font unit-scale {:text "zzz"
+      (draw-fn-text batch default-font unit-scale {:text "zzz"
                          :x x
                          :y (+ y (/ height 2))
                          :up? true}))
 
     :stunned
-    (draw-fn-circle shape-drawer (:entity/position entity) 0.5 (:colors/stunned (:ctx/colors ctx)))))
+    (draw-fn-circle shape-drawer (:entity/position entity) 0.5 (:colors/stunned colors))))
 
 (defn hp-mana-bar-create
   [ctx]
@@ -1446,13 +1437,13 @@
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
         draw-hpmana-bar! (fn [ctx batch x y content-file minmaxval name]
-                           (draw-fn-texture-region ctx batch unit-scale rahmen-tex-reg [x y])
-                           (draw-fn-texture-region ctx batch unit-scale
+                           (draw-fn-texture-region batch unit-scale rahmen-tex-reg [x y])
+                           (draw-fn-texture-region batch unit-scale
                                                    (textures/texture-region textures
                                                                             {:image/file content-file
                                                                              :image/bounds [0 0 (* rahmenw (val-max/ratio minmaxval)) rahmenh]})
                                                    [x y])
-                           (draw-fn-text ctx batch default-font unit-scale {:text (str (number/readable (minmaxval 0))
+                           (draw-fn-text batch default-font unit-scale {:text (str (number/readable (minmaxval 0))
                                                          "/"
                                                          (minmaxval 1)
                                                          " "
@@ -1681,7 +1672,7 @@
   (case k
     :player-item-on-cursor
     (when mouseover-actor
-      (draw-fn-texture-region ctx batch unit-scale
+      (draw-fn-texture-region batch unit-scale
                               (textures/texture-region (:ctx/textures ctx) (:entity/image (:entity/item-on-cursor @eid)))
                               ui-mouse-position
                               {:center? true}))
@@ -1728,7 +1719,7 @@
                       vp-width (viewport/get-world-width (.getViewport ^Stage stage))
                       vp-height (viewport/get-world-height (.getViewport ^Stage stage))]
                   (when-let [text (:text @state)]
-                    (draw-fn-text ctx batch default-font unit-scale {:x (/ vp-width 2)
+                    (draw-fn-text batch default-font unit-scale {:x (/ vp-width 2)
                                        :y (+ (/ vp-height 2) 200)
                                        :text text
                                        :scale 2.5
@@ -1747,7 +1738,7 @@
         (if in-click-range?
           (case (:type (:entity/clickable @clicked-eid))
             :clickable/player
-            (do (toggle-inventory-visible! ctx)
+            (do (toggle-inventory-visible! stage)
                 nil)
 
             :clickable/item
@@ -2135,6 +2126,8 @@
   (let [player-eid (:ctx/player-eid ctx)
         raycaster (:ctx/raycaster ctx)
         colors (:ctx/colors ctx)
+        textures (:ctx/textures ctx)
+        elapsed-time (:ctx/elapsed-time ctx)
         render-z-order (:ctx/render-z-order ctx)
         show-body-bounds? (:ctx/show-body-bounds? ctx)
         active-entities (:ctx/active-entities ctx)
@@ -2159,7 +2152,9 @@
                                       (:colors/debug-body-outline colors))))
           (doseq [[k v] entity
                   :when (get render-layer k)]
-            (draw-component ctx shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position entity k v)))
+            (draw-component shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position
+                            textures colors player elapsed-time active-entities raycaster
+                            entity k v)))
         (catch Throwable t
           (draw-entity-rectangle! ctx shape-drawer
                                   entity
@@ -2627,13 +2622,27 @@
                                             (key-pressed? (:unpause-continously (:ctx/controls ctx))))))))))
     (when-not (:ctx/paused? @state)
       (swap! state #(-> % update-time update-potential-fields))
-      (let [ctx @state]
+      (let [ctx @state
+            spawn-entity! (let [do-spawn-entity! spawn-entity!]
+                            #(do-spawn-entity! ctx %))
+            audiovisual! (let [do-audiovisual! audiovisual!]
+                           #(do-audiovisual! spawn-entity! (:ctx/db ctx) audio %1 %2))
+            active-entities (:ctx/active-entities ctx)
+            colors (:ctx/colors ctx)
+            raycaster (:ctx/raycaster ctx)
+            elapsed-time (:ctx/elapsed-time ctx)]
         (try
           (letfn [(apply-effects! [effect-ctx effects]
                     (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-                      (handle-effect effect effect-ctx ctx audio world-mouse-position
+                      (handle-effect effect effect-ctx world-mouse-position
+                                     spawn-entity!
+                                     audiovisual!
                                      apply-effects!
-                                     handle-fsm-event!)))]
+                                     handle-fsm-event!
+                                     active-entities
+                                     colors
+                                     raycaster
+                                     elapsed-time)))]
             (doseq [eid (:ctx/active-entities ctx)
                     component @eid]
               (try (tick-component ctx world-mouse-position
@@ -2654,7 +2663,12 @@
         (doseq [[k v] @eid]
           (case k
             :entity/destroy-audiovisual
-            (audiovisual! ctx audio (:entity/position @eid) v)
+            (audiovisual! (let [do-spawn-entity! spawn-entity!]
+                            #(do-spawn-entity! ctx %))
+                          (:ctx/db ctx)
+                          audio
+                          (:entity/position @eid)
+                          v)
             nil))))
     (let [ctx @state
           stage (:ctx/stage ctx)
@@ -2668,7 +2682,7 @@
              group/get-children
              (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
       (when (key-just-pressed? (:toggle-inventory (:ctx/controls ctx)))
-        (toggle-inventory-visible! ctx))
+        (toggle-inventory-visible! stage))
       (when (key-just-pressed? (:toggle-entity-info (:ctx/controls ctx)))
         (let [entity-info (group/find-actor (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
           (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
@@ -2750,10 +2764,10 @@
 
             :player-dead
             (do (audio/play! audio "bfxr_playerdeath")
-                (show-modal! ctx {:title "YOU DIED - again!"
-                                  :text "Good luck next time!"
-                                  :button-text "OK"
-                                  :on-click (fn [])})
+                (show-modal! (:ctx/skin ctx) (:ctx/stage ctx) {:title "YOU DIED - again!"
+                                                               :text "Good luck next time!"
+                                                               :button-text "OK"
+                                                               :on-click (fn [])})
                 nil)
 
             :npc-moving
