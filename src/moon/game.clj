@@ -590,22 +590,6 @@
       (inventory/applies-modifiers? cell)
       (update :entity/stats stats/remove-mods (:stats/modifiers item)))))
 
-(defn- ui-remove-item! [ctx cell]
-  (-> (.getRoot ^Stage (:ctx/stage ctx))
-      (#(group/find-actor % "moon.ui.windows.inventory"))
-      (inventory-window-remove-item! cell)))
-
-(defn- ui-set-skill! [ctx elapsed-time skill]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)
-        textures (:ctx/textures ctx)]
-    (-> (.getRoot ^Stage stage)
-        (#(group/find-actor % "moon.ui.action-bar"))
-        (action-bar-add-skill! {:skill-id (:property/id skill)
-                                :texture-region (textures/texture-region textures (:entity/image skill))
-                                :tooltip-text (info-text skill elapsed-time)}
-                               skin))))
-
 (defn after-create-component
   [ui-set-skill! ui-set-item! elapsed-time eid [k v]]
   (case k
@@ -746,6 +730,9 @@
    :entity/projectile-collision {:entity-effects entity-effects
                                 :piercing? piercing?}})
 
+;; CTX SIDE EFFECT
+
+; -> used in handle-fsm-event
 (defn- show-modal! [ctx {:keys [title text button-text on-click]}]
   (let [skin (:ctx/skin ctx)
         stage (:ctx/stage ctx)]
@@ -775,6 +762,17 @@
                                      :tooltip-text (item/info-text item)}
                                     skin))))
 
+(defn- ui-set-skill! [ctx elapsed-time skill]
+  (let [skin (:ctx/skin ctx)
+        stage (:ctx/stage ctx)
+        textures (:ctx/textures ctx)]
+    (-> (.getRoot ^Stage stage)
+        (#(group/find-actor % "moon.ui.action-bar"))
+        (action-bar-add-skill! {:skill-id (:property/id skill)
+                                :texture-region (textures/texture-region textures (:entity/image skill))
+                                :tooltip-text (info-text skill elapsed-time)}
+                               skin))))
+
 (defn- spawn-entity! [ctx entity]
   (let [elapsed-time (:ctx/elapsed-time ctx)
         entity (reduce (fn [m [k v]]
@@ -792,6 +790,7 @@
                               eid
                               component))))
 
+; Der hier muss erst ganz hoch nur 1x gebunden werden.
 (defn- handle-fsm-event! [ctx audio eid world-mouse-position event & [params]]
   (let [fsm (:entity/fsm @eid)
         _ (assert fsm)
@@ -876,8 +875,6 @@
             nil))
         nil))))
 
-(declare apply-effects!)
-
 (defn- audiovisual! [ctx audio position audiovisual]
   (let [db (:ctx/db ctx)
         {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
@@ -887,8 +884,9 @@
     (spawn-entity! ctx (spawn-effect position
                                      {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
+; handle-fsm-event haengt an handle-effect
 (defn handle-effect
-  [[k v] effect-ctx ctx audio world-mouse-position]
+  [[k v] effect-ctx ctx audio world-mouse-position apply-effects!]
   (case k
     :effects/audiovisual
     (audiovisual! ctx audio (effect-ctx/get-target-position effect-ctx) v)
@@ -924,8 +922,7 @@
                              :duration 0.05
                              :color (:colors/target-all-line colors)
                              :thick? true}))
-        (apply-effects! ctx audio world-mouse-position
-                        {:effect/source source
+        (apply-effects! {:effect/source source
                          :effect/target target}
                         (:entity-effects v))))
 
@@ -943,7 +940,7 @@
                                  :duration 0.05
                                  :color (:colors/target-entity-line colors)
                                  :thick? true}))
-            (apply-effects! ctx audio world-mouse-position effect-ctx entity-effects))
+            (apply-effects! effect-ctx entity-effects))
         (audiovisual! ctx audio
                       (body/end-point body target-body maxrange)
                       :audiovisuals/hit-ground)))
@@ -1004,7 +1001,8 @@
                    effect-ctx
                    ctx
                    audio
-                   world-mouse-position)
+                   world-mouse-position
+                   apply-effects!)
 
     :effects.target/spiderweb
     (let [target (effect-ctx/get-target effect-ctx)]
@@ -1018,9 +1016,11 @@
     :effects.target/stun
     (handle-fsm-event! ctx audio (effect-ctx/get-target effect-ctx) world-mouse-position :stun v)))
 
+; hingt an apply-effects
 (defn- apply-effects! [ctx audio world-mouse-position effect-ctx effects]
   (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-    (handle-effect effect effect-ctx ctx audio world-mouse-position)))
+    (handle-effect effect effect-ctx ctx audio world-mouse-position
+                   #(apply-effects! ctx audio world-mouse-position %1 %2))))
 
 (defn- toggle-inventory-visible! [ctx]
   (let [inventory (-> (.getRoot ^Stage (:ctx/stage ctx))
@@ -1562,6 +1562,11 @@
                 bar-x (- x (/ rahmenw 2))]
             (draw-hpmana-bar! ctx batch bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
             (draw-hpmana-bar! ctx batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
+
+(defn- ui-remove-item! [ctx cell]
+  (-> (.getRoot ^Stage (:ctx/stage ctx))
+      (#(group/find-actor % "moon.ui.windows.inventory"))
+      (inventory-window-remove-item! cell)))
 
 (defn handle-clicked-inventory-cell
   [ctx audio cell world-mouse-position]
@@ -2361,24 +2366,6 @@
                   max-iterations))
   ctx)
 
-(defn- tick-entities
-  [ctx audio world-mouse-position]
-  (try
-    (doseq [eid (:ctx/active-entities ctx)
-            component @eid]
-      (try (tick-component ctx audio world-mouse-position
-                           #(apply-effects! ctx audio world-mouse-position %1 %2)
-                           eid component)
-           (catch Throwable t
-             (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
-    (catch Throwable t
-      (throwable/pretty-pst t)
-      (.addActor ^Stage (:ctx/stage ctx)
-                        (error-window/create
-                         {:skin (:ctx/skin ctx)
-                          :throwable t}))))
-  ctx)
-
 (def zoom-speed 0.025)
 
 (defn update-draw-stage
@@ -2729,10 +2716,24 @@
     (swap! state (fn [ctx]
                    (if (:ctx/paused? ctx)
                      ctx
-                     (-> ctx
-                         update-time
-                         update-potential-fields
-                         (tick-entities audio world-mouse-position)))))
+                     (let [ctx (-> ctx
+                                   update-time
+                                   update-potential-fields)]
+                       (try
+                         (doseq [eid (:ctx/active-entities ctx)
+                                 component @eid]
+                           (try (tick-component ctx audio world-mouse-position
+                                                #(apply-effects! ctx audio world-mouse-position %1 %2)
+                                                eid component)
+                                (catch Throwable t
+                                  (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
+                         (catch Throwable t
+                           (throwable/pretty-pst t)
+                           (.addActor ^Stage (:ctx/stage ctx)
+                                             (error-window/create
+                                              {:skin (:ctx/skin ctx)
+                                               :throwable t}))))
+                       ctx))))
     (let [ctx @state]
       (doseq [eid (world/destroyed-eids (:ctx/world ctx))]
         (world/unregister-eid! (:ctx/world ctx) eid)
