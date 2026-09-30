@@ -11,8 +11,7 @@
             [gdx.click-listener :as click-listener]
             [gdx.drawable.texture-region :as texture-region-drawable]
             [gdx.actor.group.widget.table :as table]
-            [gdx.vector2 :as vector2]
-            [moon.inventory.cell :as inventory-cell]))
+            [gdx.vector2 :as vector2]))
 
 (defn- get-player-eid [ctx]
   (:ctx/player-eid ctx))

@@ -57,7 +57,6 @@
             [moon.info-window :as info-window]
             [moon.inventory :as inventory]
             [moon.inventory-window :as inventory-window]
-            [moon.inventory.cell :as inventory-cell]
             [moon.item :as item]
             [moon.item :as item]
             [moon.level.modules :as modules]
@@ -754,9 +753,9 @@
   (let [entity @eid
         inventory (:entity/inventory entity)]
     (assert (and (nil? (get-in inventory cell))
-                 (inventory-cell/valid-slot? cell item)))
+                 (inventory/valid-slot? cell item)))
     (swap! eid assoc-in (cons :entity/inventory cell) item)
-    (when (inventory-cell/applies-modifiers? cell)
+    (when (inventory/applies-modifiers? cell)
       (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
     (when (:entity/player? @eid)
       (ui-set-item! ctx cell item))))
@@ -782,7 +781,7 @@
         item (get-in (:entity/inventory entity) cell)]
     (assert item)
     (swap! eid assoc-in (cons :entity/inventory cell) nil)
-    (when (inventory-cell/applies-modifiers? cell)
+    (when (inventory/applies-modifiers? cell)
       (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
     (when (:entity/player? @eid)
       (ui-remove-item! ctx cell))))
@@ -1899,7 +1898,7 @@
         item-on-cursor (:entity/item-on-cursor entity)]
     (cond
      (and (not item-in-cell)
-          (inventory-cell/valid-slot? cell item-on-cursor))
+          (inventory/valid-slot? cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
          (set-item! ctx eid cell item-on-cursor)
@@ -1913,7 +1912,7 @@
          (handle-fsm-event! ctx eid :dropped-item))
 
      (and item-in-cell
-          (inventory-cell/valid-slot? cell item-on-cursor))
+          (inventory/valid-slot? cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
          (remove-item! ctx eid cell)
@@ -1968,7 +1967,7 @@
                          (when (and mouseover?
                                     (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                            (let [item (:entity/item-on-cursor player-entity)
-                                 color (if (inventory-cell/valid-slot? cell item)
+                                 color (if (inventory/valid-slot? cell item)
                                          (:colors/droppable-item colors)
                                          (:colors/not-allowed-drop-item colors))]
                              (draw-fn-filled-rectangle ctx (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
