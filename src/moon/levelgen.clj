@@ -34,9 +34,6 @@
 (defn- get-input [ctx]
   (:ctx/input ctx))
 
-(defn- get-graphics [ctx]
-  (:ctx/graphics ctx))
-
 (defn- get-camera [ctx]
   (:ctx/camera ctx))
 
@@ -72,8 +69,8 @@
 
 ;; ctx primitives
 
-(defn- gl20 [ctx]
-  (graphics/get-gl20 (get-graphics ctx)))
+(defn- gl20 [_ctx]
+  (graphics/get-gl20 Gdx/graphics))
 
 (defn- key-pressed? [ctx key]
   (input/key-pressed? (get-input ctx) key))
@@ -200,7 +197,6 @@
 (defn- create-bootstrap [app]
   {:ctx/files (.getFiles ^Application app)
    :ctx/input (.getInput ^Application app)
-   :ctx/graphics (.getGraphics ^Application app)
    :ctx/zoom-speed (:zoom-speed config)
    :ctx/camera-movement-speed (:camera-movement-speed config)
    :ctx/world-unit-scale (float (/ (:tile-size config)))})

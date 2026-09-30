@@ -671,9 +671,6 @@
 (defn- files-f [ctx]
   (assoc ctx :ctx/files (.getFiles ^Application Gdx/app)))
 
-(defn- graphics-f [ctx]
-  (assoc ctx :ctx/graphics (.getGraphics ^Application Gdx/app)))
-
 (defn- batch-f [ctx]
   (assoc ctx :ctx/batch (sprite-batch/create)))
 
@@ -705,7 +702,6 @@
       input-f
       files-f
       audio-f
-      graphics-f
       batch-f
       skin-f
       db-f
@@ -721,16 +717,11 @@
   (disposable/dispose! skin)
   (run! disposable/dispose! (vals textures)))
 
-(defn- clear-screen
-  [{:keys [ctx/graphics] :as ctx}]
-  (let [gl (graphics/get-gl20 graphics)]
-    (.glClearColor ^GL20 gl 0 0 0 0)
-    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT))
-  ctx)
-
 (defn render [ctx]
   (let [stage (get-stage ctx)
-        ctx (clear-screen ctx)
+        gl (graphics/get-gl20 Gdx/graphics)
+        _ (.glClearColor ^GL20 gl 0 0 0 0)
+        _ (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
         ctx (if-let [new-ctx (:stage/ctx stage)]
               new-ctx
               ctx)]
