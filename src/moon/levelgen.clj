@@ -74,12 +74,21 @@
   (stage/create (FitViewport. width height)
                 batch))
 
-(defn listener []
-  (let [zoom-speed (:zoom-speed config)
-        camera-movement-speed (:camera-movement-speed config)
-        world-unit-scale (float (/ (:tile-size config)))
-        world-width (* (:world-viewport-width config) world-unit-scale)
-        world-height (* (:world-viewport-height config) world-unit-scale)
+(defn listener
+  [{:keys [zoom-speed
+           camera-movement-speed
+           tile-size
+           world-viewport-width
+           world-viewport-height
+           ui-viewport-width
+           ui-viewport-height
+           ui-skin-path
+           level-fns
+           textures-config
+           initial-level-fn]}]
+  (let [world-unit-scale (float (/ tile-size))
+        world-width (* world-viewport-width world-unit-scale)
+        world-height (* world-viewport-height world-unit-scale)
         batch (atom nil)
         skin (atom nil)
         ui-stage (atom nil)
@@ -91,15 +100,15 @@
     (reify ApplicationListener
       (create [_]
         (reset! batch (SpriteBatch.))
-        (reset! ui-stage (create-stage @batch (:ui-viewport-width config) (:ui-viewport-height config)))
+        (reset! ui-stage (create-stage @batch ui-viewport-width ui-viewport-height))
         (input/set-processor! Gdx/input @ui-stage)
-        (reset! skin (create-skin (:ui-skin-path config)))
+        (reset! skin (create-skin ui-skin-path))
         (stage/add-actor! @ui-stage
                           (window/create
                            {:title "Edit"
                             :skin @skin
                             :table/rows
-                            (for [[label level-fn] (:level-fns config)]
+                            (for [[label level-fn] level-fns]
                               [{:actor
                                 (doto (TextButton. (str "Generate " label) @skin)
                                   (.addListener (proxy [ChangeListener] []
@@ -110,8 +119,8 @@
         (reset! world-viewport (create-viewport world-width world-height))
         (reset! camera (viewport/get-camera @world-viewport))
         (reset! db (db/create))
-        (reset! textures (textures/create Gdx/files (:textures-config config)))
-        (reset! tiled-map (generate-level @db @textures @camera (:initial-level-fn config))))
+        (reset! textures (textures/create Gdx/files textures-config))
+        (reset! tiled-map (generate-level @db @textures @camera initial-level-fn)))
       (dispose [_]
         (Disposable/.dispose @batch)
         (Disposable/.dispose @skin)
@@ -154,7 +163,7 @@
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application. (listener)
+  (Lwjgl3Application. (listener config)
                       (doto (Lwjgl3ApplicationConfiguration.)
                         (.setTitle "Levelgen Test")
                         (.setWindowedMode 1440 900)
