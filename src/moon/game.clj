@@ -702,7 +702,7 @@
                 (action-bar-add-skill! {:skill-id (:property/id skill)
                                         :texture-region (textures/texture-region textures (:entity/image skill))
                                         :tooltip-text (info-text skill (:ctx/elapsed-time ctx))}
-                                       skin))))
+                                       skin)))))
       nil)
 
     :entity/inventory
@@ -2346,74 +2346,6 @@
                                                            :fill-y? true}]]})
         (layout/set-fill-parent! true)))
 
-(defn update-mouse-positions
-  [ctx]
-  (let [stage (:ctx/stage ctx)
-        world-viewport (:ctx/world-viewport ctx)
-        mp (input/position (:ctx/input ctx))]
-  (-> ctx
-        (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
-        (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp))))))
-
-(defn update-mouseover-eid
-  [ctx]
-  (let [player-eid (:ctx/player-eid ctx)
-        raycaster (:ctx/raycaster ctx)
-        render-z-order (:ctx/render-z-order ctx)
-        mouseover-eid (:ctx/mouseover-eid ctx)
-        position (:ctx/world-mouse-position ctx)
-        new-eid (if (mouseover-actor ctx)
-                  nil
-                  (let [player @player-eid
-                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
-                                     (world/point->entities (:ctx/world ctx) position))]
-                    (->> render-z-order
-                         (coll/sort-by-order hits #(:entity/z-order @%))
-                         reverse
-                         (filter #(raycaster/line-of-sight? raycaster player @%))
-                         first)))]
-    (when mouseover-eid
-      (swap! mouseover-eid dissoc :entity/mouseover?))
-    (when new-eid
-      (swap! new-eid assoc :entity/mouseover? true))
-    (assoc ctx :ctx/mouseover-eid new-eid)))
-
-(defn check-debug-viewer
-  [ctx]
-  (when (input/button-just-pressed? (:ctx/input ctx) (:open-debug-button (:ctx/controls ctx)))
-    (let [world (:ctx/world ctx)
-          mouseover-eid (:ctx/mouseover-eid ctx)
-          world-mouse-position (:ctx/world-mouse-position ctx)
-          data (or (and mouseover-eid @mouseover-eid)
-                   (world/cell-at world (mapv int world-mouse-position)))]
-      (stage/add-actor! (:ctx/stage ctx)
-                        (create-data-viewer-window
-                         {:title "Data View"
-                          :data data
-                          :width 500
-                          :height 500
-                          :skin (:ctx/skin ctx)})))))
-
-(defn render-draw-tiled-map
-  [ctx]
-  (let [raycaster (:ctx/raycaster ctx)
-        world-viewport (:ctx/world-viewport ctx)
-        colors (:ctx/colors ctx)
-        explored-tile-corners (:ctx/explored-tile-corners ctx)
-        tiled-map (:ctx/tiled-map ctx)]
-    (moon-tiled-map/draw! tiled-map
-                          (:ctx/batch ctx)
-                          world-unit-scale
-                          (viewport/get-camera world-viewport)
-                          (tile-color-setter*
-                      {:ray-blocked? (partial raycaster/blocked? raycaster)
-                       :explored-tile-corners explored-tile-corners
-                       :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
-                       :see-all-tiles? false
-                       :explored-tile-color (:colors/explored-tile colors)
-                       :visible-tile-color (:colors/visible-tile colors)
-                       :invisible-tile-color (:colors/invisible-tile colors)}))))
-
 (def ^:private render-layers
   [#{:entity/mouseover?
      :stunned
@@ -2514,26 +2446,6 @@
                            :air (:colors/mouseover-tile-air colors)
                            :none (:colors/mouseover-tile-none colors))))))
 
-(defn draw-on-world-viewport
-  [ctx]
-  (let [world-viewport (:ctx/world-viewport ctx)
-        shape-drawer (:ctx/shape-drawer ctx)
-        unit-scale (:ctx/unit-scale ctx)]
-    (batch/set-color! (:ctx/batch ctx) 1 1 1 1)
-    (batch/set-projection-matrix! (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
-    (batch/begin! (:ctx/batch ctx))
-    (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
-      (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
-      (reset! unit-scale world-unit-scale)
-      (doseq [draw-fn [draw-tile-grid
-                       draw-cell-debug
-                       draw-entities!
-                       highlight-mouseover-tile]]
-        (draw-fn ctx))
-      (reset! unit-scale 1)
-      (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-    (batch/end! (:ctx/batch ctx))))
-
 (defn- make-interaction-state
   [ctx]
   (let [player-eid (:ctx/player-eid ctx)
@@ -2619,34 +2531,6 @@
                       :interaction-state/no-skill-selected
                       :cursors/no-skill-selected)))})
 
-(defn set-cursor [ctx]
-  (let [eid (:ctx/player-eid ctx)
-        entity @eid
-        state-k (:state (:entity/fsm entity))
-        cursor-fn (k->cursor state-k)
-        cursor-key (if (keyword? cursor-fn)
-                     cursor-fn
-                     (cursor-fn eid ctx))]
-    (assert (contains? (:ctx/cursors ctx) cursor-key))
-    (graphics/set-cursor! (:ctx/graphics ctx) (get (:ctx/cursors ctx) cursor-key))))
-
-(defn handle-player-input
-  [ctx]
-  (let [eid (:ctx/player-eid ctx)
-        entity @eid
-        state-k (:state (:entity/fsm entity))]
-    (when-let [input-fn (k->handle-input state-k)]
-      (input-fn eid ctx))))
-
-(defn assoc-paused
-  [ctx]
-  (assoc ctx :ctx/paused?
-         (or #_error
-             (and pausing?
-                  (state->pause-game? (:state (:entity/fsm @(:ctx/player-eid ctx))))
-                  (not (or (input/key-just-pressed? (:ctx/input ctx) (:unpause-once (:ctx/controls ctx)))
-                           (input/key-pressed? (:ctx/input ctx) (:unpause-continously (:ctx/controls ctx)))))))))
-
 (defn- update-time [ctx]
   (let [delta-ms (min (graphics/get-delta-time (:ctx/graphics ctx)) max-delta)]
     (-> ctx
@@ -2679,52 +2563,7 @@
                           :throwable t}))))
   ctx)
 
-(defn when-not-paused [ctx]
-  (if (:ctx/paused? ctx)
-    ctx
-    (reduce (fn [ctx step] (step ctx))
-            ctx
-            [update-time
-             update-potential-fields
-             tick-entities])))
-
-(def k->destroy
-  {:entity/destroy-audiovisual
-   (fn [audiovisuals-id eid ctx]
-     (audiovisual! ctx (:entity/position @eid) audiovisuals-id))})
-
-(defn remove-destroyed-entities
-  [ctx]
-  (doseq [eid (world/destroyed-eids (:ctx/world ctx))]
-    (world/unregister-eid! (:ctx/world ctx) eid)
-    (doseq [[k v] @eid
-            :let [destroy-fn (k->destroy k)]
-            :when destroy-fn]
-      (destroy-fn v eid ctx))))
-
 (def zoom-speed 0.025)
-
-(defn window-camera-controls
-  [ctx]
-  (let [stage (:ctx/stage ctx)
-        world-viewport (:ctx/world-viewport ctx)]
-    (when (input/key-pressed? (:ctx/input ctx) (:zoom-in (:ctx/controls ctx)))
-      (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
-
-    (when (input/key-pressed? (:ctx/input ctx) (:zoom-out (:ctx/controls ctx)))
-      (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
-
-    (when (input/key-just-pressed? (:ctx/input ctx) (:close-windows-key (:ctx/controls ctx)))
-      (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
-           group/get-children
-           (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
-
-    (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-inventory (:ctx/controls ctx)))
-      (toggle-inventory-visible! ctx))
-
-    (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-entity-info (:ctx/controls ctx)))
-      (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
-        (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))))
 
 (defn update-draw-stage
   [ctx]
@@ -2909,23 +2748,144 @@
   (.glClear (graphics/get-gl20 (:ctx/graphics @state)) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (:stage/ctx (:ctx/stage %)) %))
   (malli-schema/validate-humanize schema @state)
-  (swap! state update-mouse-positions)
-  (swap! state update-mouseover-eid)
-  (check-debug-viewer @state)
+  (swap! state (fn [ctx]
+                 (let [stage (:ctx/stage ctx)
+                       world-viewport (:ctx/world-viewport ctx)
+                       mp (input/position (:ctx/input ctx))]
+                   (-> ctx
+                       (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
+                       (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp)))))))
+  (swap! state (fn [ctx]
+                 (let [player-eid (:ctx/player-eid ctx)
+                       raycaster (:ctx/raycaster ctx)
+                       render-z-order (:ctx/render-z-order ctx)
+                       mouseover-eid (:ctx/mouseover-eid ctx)
+                       position (:ctx/world-mouse-position ctx)
+                       new-eid (if (mouseover-actor ctx)
+                                 nil
+                                 (let [player @player-eid
+                                       hits (remove #(= (:entity/z-order @%) :z-order/effect)
+                                                    (world/point->entities (:ctx/world ctx) position))]
+                                   (->> render-z-order
+                                        (coll/sort-by-order hits #(:entity/z-order @%))
+                                        reverse
+                                        (filter #(raycaster/line-of-sight? raycaster player @%))
+                                        first)))]
+                   (when mouseover-eid
+                     (swap! mouseover-eid dissoc :entity/mouseover?))
+                   (when new-eid
+                     (swap! new-eid assoc :entity/mouseover? true))
+                   (assoc ctx :ctx/mouseover-eid new-eid))))
+  (let [ctx @state]
+    (when (input/button-just-pressed? (:ctx/input ctx) (:open-debug-button (:ctx/controls ctx)))
+      (let [world (:ctx/world ctx)
+            mouseover-eid (:ctx/mouseover-eid ctx)
+            world-mouse-position (:ctx/world-mouse-position ctx)
+            data (or (and mouseover-eid @mouseover-eid)
+                     (world/cell-at world (mapv int world-mouse-position)))]
+        (stage/add-actor! (:ctx/stage ctx)
+                          (create-data-viewer-window
+                           {:title "Data View"
+                            :data data
+                            :width 500
+                            :height 500
+                            :skin (:ctx/skin ctx)})))))
   (swap! state #(assoc % :ctx/active-entities
                        (world/active-entities (:ctx/world %) @(:ctx/player-eid %))))
   (orthographic-camera/set-position! (viewport/get-camera (:ctx/world-viewport @state))
                                      (:entity/position @(:ctx/player-eid @state)))
-  (render-draw-tiled-map @state)
-  (draw-on-world-viewport @state)
+  (let [ctx @state
+        raycaster (:ctx/raycaster ctx)
+        world-viewport (:ctx/world-viewport ctx)
+        colors (:ctx/colors ctx)
+        explored-tile-corners (:ctx/explored-tile-corners ctx)
+        tiled-map (:ctx/tiled-map ctx)]
+    (moon-tiled-map/draw! tiled-map
+                          (:ctx/batch ctx)
+                          world-unit-scale
+                          (viewport/get-camera world-viewport)
+                          (tile-color-setter*
+                           {:ray-blocked? (partial raycaster/blocked? raycaster)
+                            :explored-tile-corners explored-tile-corners
+                            :light-position (orthographic-camera/position (viewport/get-camera world-viewport))
+                            :see-all-tiles? false
+                            :explored-tile-color (:colors/explored-tile colors)
+                            :visible-tile-color (:colors/visible-tile colors)
+                            :invisible-tile-color (:colors/invisible-tile colors)})))
+  (let [ctx @state
+        world-viewport (:ctx/world-viewport ctx)
+        shape-drawer (:ctx/shape-drawer ctx)
+        unit-scale (:ctx/unit-scale ctx)]
+    (batch/set-color! (:ctx/batch ctx) 1 1 1 1)
+    (batch/set-projection-matrix! (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
+    (batch/begin! (:ctx/batch ctx))
+    (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
+      (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
+      (reset! unit-scale world-unit-scale)
+      (doseq [draw-fn [draw-tile-grid
+                       draw-cell-debug
+                       draw-entities!
+                       highlight-mouseover-tile]]
+        (draw-fn ctx))
+      (reset! unit-scale 1)
+      (shape-drawer/set-default-line-width! shape-drawer old-line-width))
+    (batch/end! (:ctx/batch ctx)))
   (swap! state assoc-interaction-state)
-  (set-cursor @state)
-  (handle-player-input @state)
+  (let [ctx @state
+        eid (:ctx/player-eid ctx)
+        entity @eid
+        state-k (:state (:entity/fsm entity))
+        cursor-fn (k->cursor state-k)
+        cursor-key (if (keyword? cursor-fn)
+                     cursor-fn
+                     (cursor-fn eid ctx))]
+    (assert (contains? (:ctx/cursors ctx) cursor-key))
+    (graphics/set-cursor! (:ctx/graphics ctx) (get (:ctx/cursors ctx) cursor-key)))
+  (let [ctx @state
+        eid (:ctx/player-eid ctx)
+        entity @eid
+        state-k (:state (:entity/fsm entity))]
+    (when-let [input-fn (k->handle-input state-k)]
+      (input-fn eid ctx)))
   (swap! state dissoc :ctx/interaction-state)
-  (swap! state assoc-paused)
-  (swap! state when-not-paused)
-  (remove-destroyed-entities @state)
-  (window-camera-controls @state)
+  (swap! state (fn [ctx]
+                 (assoc ctx :ctx/paused?
+                        (or #_error
+                            (and pausing?
+                                 (state->pause-game? (:state (:entity/fsm @(:ctx/player-eid ctx))))
+                                 (not (or (input/key-just-pressed? (:ctx/input ctx) (:unpause-once (:ctx/controls ctx)))
+                                          (input/key-pressed? (:ctx/input ctx) (:unpause-continously (:ctx/controls ctx))))))))))
+  (swap! state (fn [ctx]
+                 (if (:ctx/paused? ctx)
+                   ctx
+                   (-> ctx
+                       update-time
+                       update-potential-fields
+                       tick-entities))))
+  (let [ctx @state]
+    (doseq [eid (world/destroyed-eids (:ctx/world ctx))]
+      (world/unregister-eid! (:ctx/world ctx) eid)
+      (doseq [[k v] @eid]
+        (case k
+          :entity/destroy-audiovisual
+          (audiovisual! ctx (:entity/position @eid) v)
+          nil))))
+  (let [ctx @state
+        stage (:ctx/stage ctx)
+        world-viewport (:ctx/world-viewport ctx)]
+    (when (input/key-pressed? (:ctx/input ctx) (:zoom-in (:ctx/controls ctx)))
+      (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
+    (when (input/key-pressed? (:ctx/input ctx) (:zoom-out (:ctx/controls ctx)))
+      (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
+    (when (input/key-just-pressed? (:ctx/input ctx) (:close-windows-key (:ctx/controls ctx)))
+      (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
+           group/get-children
+           (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
+    (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-inventory (:ctx/controls ctx)))
+      (toggle-inventory-visible! ctx))
+    (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-entity-info (:ctx/controls ctx)))
+      (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
+        (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
   (swap! state update-draw-stage)
   (malli-schema/validate-humanize schema @state))
 
