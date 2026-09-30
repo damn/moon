@@ -583,25 +583,25 @@
     (inventory/applies-modifiers? cell)
     (update :entity/stats stats/add-mods (:stats/modifiers item))))
 
-(defn- set-item! [ctx eid cell item]
-  (swap! eid set-item cell item)
-  (when (:entity/player? @eid)
-    (let [skin (:ctx/skin ctx)
-          stage (:ctx/stage ctx)
-          textures (:ctx/textures ctx)]
-      (-> (.getRoot ^Stage stage)
-          (#(group/find-actor % "moon.ui.windows.inventory"))
-          (inventory-window-set-item! cell
+(defn- ui-set-item! [ctx cell item]
+  (let [skin (:ctx/skin ctx)
+        stage (:ctx/stage ctx)
+        textures (:ctx/textures ctx)]
+    (-> (.getRoot ^Stage stage)
+        (#(group/find-actor % "moon.ui.windows.inventory"))
+        (inventory-window-set-item! cell
                                     {:texture-region (textures/texture-region textures (:entity/image item))
                                      :tooltip-text (item/info-text item)}
-                                    skin)))))
+                                    skin))))
 
 (defn- pickup-item! [ctx eid item]
   (assert (item/valid? item))
   (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
     (assert cell)
     (assert (nil? cell-item))
-    (set-item! ctx eid cell item)))
+    (swap! eid set-item cell item)
+    (when (:entity/player? @eid)
+      (ui-set-item! ctx cell item))))
 
 (defn- remove-item! [ctx eid cell]
   (let [entity @eid
@@ -1583,7 +1583,8 @@
               (inventory/valid-slot? cell item-on-cursor))
          (do (swap! player-eid dissoc :entity/item-on-cursor)
              (audio/play! audio "bfxr_itemput")
-             (set-item! ctx player-eid cell item-on-cursor)
+             (swap! player-eid set-item cell item-on-cursor)
+             (ui-set-item! ctx cell item-on-cursor)
              (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item))
 
          (and item-in-cell
@@ -1591,7 +1592,8 @@
          (do (swap! player-eid dissoc :entity/item-on-cursor)
              (audio/play! audio "bfxr_itemput")
              (remove-item! ctx player-eid cell)
-             (set-item! ctx player-eid cell item-on-cursor)
+             (swap! player-eid set-item cell item-on-cursor)
+             (ui-set-item! ctx cell item-on-cursor)
              (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item)
              (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item-in-cell))))
 
@@ -1626,7 +1628,7 @@
        (doto stack
          (.addListener (proxy [ClickListener] []
                          (clicked [event _x _y]
-                           (on-click-cell event cell)))
+                           (on-click-cell event cell))))
          (.setName "inventory-cell")
          (.setUserObject cell)))}))
 
