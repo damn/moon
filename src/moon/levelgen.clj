@@ -6,7 +6,6 @@
             [moon.level.uf-caves :as uf-caves]
             [moon.textures :as textures]
             [gdx.stage :as stage]
-            [moon.scene2d.table :as table]
             [moon.tiled-map :as moon-tiled-map]
             [gdx.color :as color]
             [gdx.input :as input]
@@ -24,157 +23,6 @@
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
-;; ctx accessors
-
-(defn- get-stage [ctx]
-  (:ctx/stage ctx))
-
-(defn- get-input [ctx]
-  (:ctx/input ctx))
-
-(defn- get-camera [ctx]
-  (:ctx/camera ctx))
-
-(defn- get-db [ctx]
-  (:ctx/db ctx))
-
-(defn- get-textures [ctx]
-  (:ctx/textures ctx))
-
-(defn- get-zoom-speed [ctx]
-  (:ctx/zoom-speed ctx))
-
-(defn- get-camera-movement-speed [ctx]
-  (:ctx/camera-movement-speed ctx))
-
-(defn- get-world-unit-scale [ctx]
-  (:ctx/world-unit-scale ctx))
-
-(defn- get-sprite-batch [ctx]
-  (:ctx/sprite-batch ctx))
-
-(defn- get-skin [ctx]
-  (:ctx/skin ctx))
-
-(defn- get-world-viewport [ctx]
-  (:ctx/world-viewport ctx))
-
-(defn- get-tiled-map [ctx]
-  (:ctx/tiled-map ctx))
-
-(defn- get-files [ctx]
-  (:ctx/files ctx))
-
-;; ctx primitives
-
-(defn- gl20 [_ctx]
-  (.getGL20 ^Graphics Gdx/graphics))
-
-(defn- key-pressed? [ctx key]
-  (input/key-pressed? (get-input ctx) key))
-
-(defn- set-input-processor! [ctx processor]
-  (input/set-processor! (get-input ctx) processor))
-
-(defn- texture-region [ctx name]
-  (textures/texture-region (get-textures ctx) name))
-
-(defn- creature-properties [ctx]
-  (moon-tiled-map/prepare-creature-tiles
-   (db/all-raw (get-db ctx) :properties/creatures)
-   #(texture-region ctx %)))
-
-(defn- show-creatures-layer! [tiled-map]
-  (let [layers (moon-tiled-map/get-layers tiled-map)]
-    (-> (.get ^MapLayers layers "creatures")
-        (tiled-map-tile-layer/set-visible! true))))
-
-(defn- fit-camera-to-tiled-map! [ctx tiled-map]
-  (let [camera (get-camera ctx)
-        width (moon-tiled-map/get-property tiled-map "width")
-        height (moon-tiled-map/get-property tiled-map "height")]
-    (orthographic-camera/set-position! camera [(/ width 2) (/ height 2)])
-    (orthographic-camera/zoom-to-rect camera {:left [0 0]
-                                                :top [0 height]
-                                                :right [width 0]
-                                                :bottom [0 0]}))
-  ctx)
-
-(defn- clear-screen! [ctx]
-  (let [gl (gl20 ctx)]
-    (.glClearColor ^GL20 gl 0 0 0 0)
-    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)))
-
-(defn- draw-tiled-map! [ctx]
-  (moon-tiled-map/draw! (get-tiled-map ctx)
-                        (get-sprite-batch ctx)
-                        (get-world-unit-scale ctx)
-                        (viewport/get-camera (get-world-viewport ctx))
-                        (constantly (color/to-float-bits [1 1 1 1]))))
-
-(defn- inc-camera-zoom! [ctx amount]
-  (orthographic-camera/inc-zoom! (get-camera ctx) amount))
-
-(defn- zoom-controls! [ctx]
-  (when (key-pressed? ctx :input.keys/minus)
-    (inc-camera-zoom! ctx (get-zoom-speed ctx)))
-  (when (key-pressed? ctx :input.keys/equals)
-    (inc-camera-zoom! ctx (- (get-zoom-speed ctx)))))
-
-(defn- move-camera! [ctx idx f]
-  (orthographic-camera/set-position! (get-camera ctx)
-                                     (update (orthographic-camera/position (get-camera ctx))
-                                             idx
-                                             #(f % (get-camera-movement-speed ctx)))))
-
-(defn- camera-movement-controls! [ctx]
-  (when (key-pressed? ctx :input.keys/left)
-    (move-camera! ctx 0 -))
-  (when (key-pressed? ctx :input.keys/right)
-    (move-camera! ctx 0 +))
-  (when (key-pressed? ctx :input.keys/up)
-    (move-camera! ctx 1 +))
-  (when (key-pressed? ctx :input.keys/down)
-    (move-camera! ctx 1 -)))
-
-(defn- update-stage! [ctx]
-  (let [stage (get-stage ctx)]
-    (stage/act! stage)
-    (stage/draw! stage))
-  ctx)
-
-(defn- dispose-sprite-batch! [ctx]
-  (Disposable/.dispose (get-sprite-batch ctx)))
-
-(defn- dispose-skin! [ctx]
-  (Disposable/.dispose (get-skin ctx)))
-
-(defn- dispose-textures! [ctx]
-  (run! Disposable/.dispose (vals (get-textures ctx))))
-
-(defn- dispose-tiled-map! [ctx]
-  (Disposable/.dispose (get-tiled-map ctx)))
-
-(defn- resize-stage-viewport! [ctx width height]
-  (viewport/update! (:stage/viewport (get-stage ctx)) width height true))
-
-(defn- resize-world-viewport! [ctx width height]
-  (viewport/update! (get-world-viewport ctx) width height false))
-
-(defn- generate-level
-  [ctx level-fn]
-  (let [level (level-fn {:level/creature-properties (creature-properties ctx)
-                         :textures (get-textures ctx)})
-        tiled-map (:tiled-map level)
-        ctx (assoc ctx :ctx/tiled-map tiled-map)]
-    (assert tiled-map)
-    (show-creatures-layer! tiled-map)
-    (fit-camera-to-tiled-map! ctx tiled-map)))
-
-(defn- regenerate-level! [ctx level-fn]
-  (dispose-tiled-map! ctx)
-  (generate-level ctx level-fn))
-
 (def ^:private config
   {:initial-level-fn uf-caves/create
    :level-fns [["Vampire" tmx/vampire]
@@ -191,122 +39,152 @@
    :zoom-speed 0.1
    :camera-movement-speed 1})
 
-(defn- create-bootstrap [app]
-  {:ctx/files (.getFiles ^Application app)
-   :ctx/input (.getInput ^Application app)
-   :ctx/zoom-speed (:zoom-speed config)
-   :ctx/camera-movement-speed (:camera-movement-speed config)
-   :ctx/world-unit-scale (float (/ (:tile-size config)))})
+(defn- creature-properties [ctx]
+  (moon-tiled-map/prepare-creature-tiles
+   (db/all-raw (:ctx/db ctx) :properties/creatures)
+   #(textures/texture-region (:ctx/textures ctx) %)))
 
-(defn- create-sprite-batch [ctx]
-  (assoc ctx :ctx/sprite-batch (SpriteBatch.)))
+(defn- show-creatures-layer! [tiled-map]
+  (let [layers (moon-tiled-map/get-layers tiled-map)]
+    (-> (.get ^MapLayers layers "creatures")
+        (tiled-map-tile-layer/set-visible! true))))
 
-(defn- create-stage [ctx]
-  (assoc ctx
-         :ctx/stage (stage/create (FitViewport. (float (:ui-viewport-width config))
-                                                (float (:ui-viewport-height config)))
-                                  (get-sprite-batch ctx))))
-
-(defn- create-skin [ctx]
-  (assoc ctx
-         :ctx/skin (Skin. ^FileHandle (.internal ^Files (get-files ctx)
-                                                     (:ui-skin-path config)))))
-
-(defn- create-world-viewport [ctx]
-  (let [world-unit-scale (get-world-unit-scale ctx)
-        world-width (* (:world-viewport-width config) world-unit-scale)
-        world-height (* (:world-viewport-height config) world-unit-scale)
-        world-viewport (FitViewport. (float world-width)
-                                     (float world-height)
-                                     (doto (orthographic-camera/new)
-                                       (orthographic-camera/set-to-ortho! false
-                                                                          world-width
-                                                                          world-height)))]
-    (-> ctx
-        (assoc :ctx/world-viewport world-viewport)
-        (assoc :ctx/camera (viewport/get-camera world-viewport)))))
-
-(defn- create-db [ctx]
-  (assoc ctx :ctx/db (db/create)))
-
-(defn- create-textures [ctx]
-  (assoc ctx
-         :ctx/textures (textures/create (get-files ctx)
-                                        (:textures-config config))))
-
-(defn- create-initial-level [ctx]
-  (generate-level ctx (:initial-level-fn config)))
-
-(defn- set-input-processor-on-stage [ctx]
-  (set-input-processor! ctx (get-stage ctx))
+(defn- fit-camera-to-tiled-map! [ctx tiled-map]
+  (let [camera (:ctx/camera ctx)
+        width (moon-tiled-map/get-property tiled-map "width")
+        height (moon-tiled-map/get-property tiled-map "height")]
+    (orthographic-camera/set-position! camera [(/ width 2) (/ height 2)])
+    (orthographic-camera/zoom-to-rect camera {:left [0 0]
+                                              :top [0 height]
+                                              :right [width 0]
+                                              :bottom [0 0]}))
   ctx)
 
-(declare state)
+(defn- generate-level
+  [ctx level-fn]
+  (let [level (level-fn {:level/creature-properties (creature-properties ctx)
+                         :textures (:ctx/textures ctx)})
+        tiled-map (:tiled-map level)
+        ctx (assoc ctx :ctx/tiled-map tiled-map)]
+    (assert tiled-map)
+    (show-creatures-layer! tiled-map)
+    (fit-camera-to-tiled-map! ctx tiled-map)))
 
-(defn- create-edit-window [ctx]
-  (stage/add-actor! (get-stage ctx)
-                    (window/create
-                     {:title "Edit"
-                      :skin (get-skin ctx)
-                      :table/rows
-                      (for [[label level-fn] (:level-fns config)]
-                        [{:actor
-                          (doto (TextButton. (str "Generate " label) (get-skin ctx))
-                            (.addListener (proxy [ChangeListener] []
-                              (changed [_event _actor]
-                                (swap! state #(regenerate-level! % level-fn))))))}])}))
-  ctx)
+(defn- regenerate-level! [ctx level-fn]
+  (Disposable/.dispose (:ctx/tiled-map ctx))
+  (generate-level ctx level-fn))
 
-(defn- create-dissoc-files [ctx]
-  (dissoc ctx :ctx/files))
+(defn- zoom-controls! [ctx]
+  (let [input (:ctx/input ctx)
+        zoom-speed (:ctx/zoom-speed ctx)
+        camera (:ctx/camera ctx)]
+    (when (input/key-pressed? input :input.keys/minus)
+      (orthographic-camera/inc-zoom! camera zoom-speed))
+    (when (input/key-pressed? input :input.keys/equals)
+      (orthographic-camera/inc-zoom! camera (- zoom-speed)))))
 
-(defn create [app]
-  (-> (create-bootstrap app)
-      create-sprite-batch
-      create-stage
-      create-skin
-      create-world-viewport
-      create-db
-      create-textures
-      create-initial-level
-      set-input-processor-on-stage
-      create-edit-window
-      create-dissoc-files))
+(defn- camera-movement-controls! [ctx]
+  (let [input (:ctx/input ctx)
+        camera (:ctx/camera ctx)
+        speed (:ctx/camera-movement-speed ctx)
+        move (fn [idx f]
+               (orthographic-camera/set-position! camera
+                                                  (update (orthographic-camera/position camera)
+                                                          idx
+                                                          #(f % speed))))]
+    (when (input/key-pressed? input :input.keys/left)
+      (move 0 -))
+    (when (input/key-pressed? input :input.keys/right)
+      (move 0 +))
+    (when (input/key-pressed? input :input.keys/up)
+      (move 1 +))
+    (when (input/key-pressed? input :input.keys/down)
+      (move 1 -))))
 
-(defn dispose [ctx]
-  (dispose-sprite-batch! ctx)
-  (dispose-skin! ctx)
-  (dispose-textures! ctx)
-  (dispose-tiled-map! ctx))
-
-(defn render [ctx]
-  (clear-screen! ctx)
-  (draw-tiled-map! ctx)
-  (zoom-controls! ctx)
-  (camera-movement-controls! ctx)
-  (update-stage! ctx))
-
-(defn resize [ctx width height]
-  (resize-stage-viewport! ctx width height)
-  (resize-world-viewport! ctx width height))
-
-(def state (atom nil))
+(defn listener []
+  (let [state (atom nil)]
+    (reify ApplicationListener
+      (create [_]
+        (reset! state
+                (let [input (.getInput ^Application Gdx/app)
+                      files (.getFiles ^Application Gdx/app)
+                      batch (SpriteBatch.)
+                      skin (Skin. ^FileHandle (.internal ^Files files (:ui-skin-path config)))
+                      world-unit-scale (float (/ (:tile-size config)))
+                      world-width (* (:world-viewport-width config) world-unit-scale)
+                      world-height (* (:world-viewport-height config) world-unit-scale)
+                      world-viewport (FitViewport. (float world-width)
+                                                   (float world-height)
+                                                   (doto (orthographic-camera/new)
+                                                     (orthographic-camera/set-to-ortho! false
+                                                                                        world-width
+                                                                                        world-height)))
+                      stage* (stage/create (FitViewport. (float (:ui-viewport-width config))
+                                                         (float (:ui-viewport-height config)))
+                                           batch)
+                      _ (input/set-processor! input stage*)
+                      ctx {:ctx/input input
+                           :ctx/zoom-speed (:zoom-speed config)
+                           :ctx/camera-movement-speed (:camera-movement-speed config)
+                           :ctx/world-unit-scale world-unit-scale
+                           :ctx/sprite-batch batch
+                           :ctx/stage stage*
+                           :ctx/skin skin
+                           :ctx/world-viewport world-viewport
+                           :ctx/camera (viewport/get-camera world-viewport)
+                           :ctx/db (db/create)
+                           :ctx/textures (textures/create files (:textures-config config))}
+                      ctx (generate-level ctx (:initial-level-fn config))]
+                  (stage/add-actor!
+                   stage*
+                   (window/create
+                    {:title "Edit"
+                     :skin skin
+                     :table/rows
+                     (for [[label level-fn] (:level-fns config)]
+                       [{:actor
+                         (doto (TextButton. (str "Generate " label) skin)
+                           (.addListener (proxy [ChangeListener] []
+                                           (changed [_event _actor]
+                                             (swap! state #(regenerate-level! % level-fn))))))}])}))
+                  ctx)))
+      (dispose [_]
+        (let [{:keys [ctx/sprite-batch
+                      ctx/skin
+                      ctx/textures
+                      ctx/tiled-map]} @state]
+          (Disposable/.dispose sprite-batch)
+          (Disposable/.dispose skin)
+          (run! Disposable/.dispose (vals textures))
+          (Disposable/.dispose tiled-map)))
+      (render [_]
+        (swap! state
+               (fn [ctx]
+                 (let [gl (.getGL20 ^Graphics Gdx/graphics)
+                       stage (:ctx/stage ctx)]
+                   (.glClearColor ^GL20 gl 0 0 0 0)
+                   (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
+                   (moon-tiled-map/draw! (:ctx/tiled-map ctx)
+                                         (:ctx/sprite-batch ctx)
+                                         (:ctx/world-unit-scale ctx)
+                                         (viewport/get-camera (:ctx/world-viewport ctx))
+                                         (constantly (color/to-float-bits [1 1 1 1])))
+                   (zoom-controls! ctx)
+                   (camera-movement-controls! ctx)
+                   (stage/act! stage)
+                   (stage/draw! stage)
+                   ctx))))
+      (resize [_ width height]
+        (let [ctx @state]
+          (viewport/update! (:stage/viewport (:ctx/stage ctx)) width height true)
+          (viewport/update! (:ctx/world-viewport ctx) width height false)))
+      (pause [_])
+      (resume [_]))))
 
 (defn -main []
   (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application.
-    (reify ApplicationListener
-      (create [_]
-        (reset! state (create Gdx/app)))
-      (dispose [_]
-        (dispose @state))
-      (render [_]
-        (swap! state render))
-      (resize [_ width height]
-        (resize @state width height))
-      (pause [_])
-      (resume [_]))
-    (doto (Lwjgl3ApplicationConfiguration.)
-      (.setTitle "Levelgen Test")
-      (.setWindowedMode 1440 900)
-      (.setForegroundFPS 60))))
+  (Lwjgl3Application. (listener)
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "Levelgen Test")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))
