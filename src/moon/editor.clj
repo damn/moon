@@ -174,28 +174,32 @@
                          (.setTouchable Touchable/disabled))])
                 stack)})))
 
-(defn- property-overview-window
+(defn- property-overview-rows
   [{:keys [db
            textures
            skin
            property-type
            clicked-id-fn]}]
+  (let [{:keys [sort-by-fn
+                extra-info-text
+                columns
+                image-scale]} (get property-type->overview-table-props property-type)]
+    (->> (db/all-raw db property-type)
+         (sort-by sort-by-fn)
+         (map (fn [property]
+                {:texture-region (textures/texture-region textures (property/image property))
+                 :on-clicked (fn [actor ctx]
+                               (clicked-id-fn actor (:property/id property) ctx))
+                 :tooltip (property/tooltip property)
+                 :extra-info-text (extra-info-text property)}))
+         (partition-all columns)
+         (overview-table-rows* skin image-scale))))
+
+(defn- property-overview-window
+  [{:keys [skin] :as opts}]
   (doto (window/create {:title "Edit"
                         :skin skin
-                        :table/rows (let [{:keys [sort-by-fn
-                                                  extra-info-text
-                                                  columns
-                                                  image-scale]} (get property-type->overview-table-props property-type)]
-                                      (->> (db/all-raw db property-type)
-                                           (sort-by sort-by-fn)
-                                           (map (fn [property]
-                                                  {:texture-region (textures/texture-region textures (property/image property))
-                                                   :on-clicked (fn [actor ctx]
-                                                                 (clicked-id-fn actor (:property/id property) ctx))
-                                                   :tooltip (property/tooltip property)
-                                                   :extra-info-text (extra-info-text property)}))
-                                           (partition-all columns)
-                                           (overview-table-rows* skin image-scale)))
+                        :table/rows (property-overview-rows opts)
                         :window/add-close-button? true})
     (window/set-modal! true)))
 
