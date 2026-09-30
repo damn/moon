@@ -2818,8 +2818,7 @@
 
 (defn create! [audio files graphics input]
   (reset! state
-          (as-> {:ctx/files    files
-                 :ctx/graphics graphics
+          (as-> {:ctx/graphics graphics
                  :ctx/input    input
                  :ctx/unit-scale (atom 1)
                  :ctx/active-entities nil
@@ -2961,8 +2960,7 @@
                                        :components {:entity/fsm {:fsm :fsms/npc
                                                                  :initial-state :npc-sleeping}
                                                     :entity/faction :evil}})))
-             ctx)
-            (dissoc ctx :ctx/files))))
+             ctx))))
 
 (defn dispose! []
   (let [ctx @state]
