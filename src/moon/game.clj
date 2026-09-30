@@ -1,9 +1,7 @@
-; (CTX) _DESTRUCTURING_ CONSIDERED HARMFUL ?
-; I make functions instead of keywords ... can change keyword of structure .. o.o
 (ns moon.game
-  (:require [clojure.edn :as edn] ; ✅
-            [clojure.java.io :as io] ; ✅
-            [clojure.math :as math] ; 🚩
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [clojure.math :as math]
             [clojure.string :as str]
             [gdx.actor :as actor]
             [gdx.actor.group :as group]
@@ -80,48 +78,32 @@
             [reduce-fsm :as fsm])
   (:gen-class))
 
-; TODO first step - law of demeter
-; go through all ctx/ keys
-; and see if we dont go sub-level (stage get actor get actor get actor ....)
 (def schema
   (malli-schema/create
    [:map {:closed true}
-
-    ; = application ?
     [:ctx/input :some]
     [:ctx/graphics :some]
     [:ctx/audio :some]
-    ;
-
-    ; == also applciation now !? no ?
     [:ctx/batch :some]
     [:ctx/cursors :some]
     [:ctx/default-font :some]
-
     [:ctx/unit-scale :some]
-    [:ctx/world-viewport :some] ; we are accessing camerea thorugh it although it holds the camera
+    [:ctx/world-viewport :some]
     [:ctx/shape-drawer :some]
     [:ctx/shape-drawer-texture :some]
-    [:ctx/textures :some] ; run! dispose / opaque ?
+    [:ctx/textures :some]
     [:ctx/skin :some]
-    [:ctx/stage :some] ; I access too much internals (stage get actor)
-
-    ; derived keys - calculated at start of 'frame' -> ctx/frame?
+    [:ctx/stage :some]
     [:ctx/active-entities :any]
     [:ctx/delta-time :any]
     [:ctx/mouseover-eid :any]
     [:ctx/ui-mouse-position :any]
     [:ctx/world-mouse-position :any]
-
-
-    ; constants? (both at the moment FIXME)
     [:ctx/colors :some]
     [:ctx/controls :some]
     [:ctx/controls-info :some]
     [:ctx/max-speed :some]
     [:ctx/render-z-order :some]
-
-    ; simulation / model / world (contains db?)
     [:ctx/world :some]
     [:ctx/explored-tile-corners :some]
     [:ctx/potential-field-cache :some]
@@ -131,11 +113,7 @@
     [:ctx/db :some]
     [:ctx/elapsed-time :some]
     [:ctx/player-eid :some]
-
-    ; application
     [:ctx/paused? :some]
-
-    ; debug flags
     [:ctx/show-potential-field-colors? :any]
     [:ctx/show-cell-entities? :boolean]
     [:ctx/show-cell-occupied? :boolean]
@@ -583,9 +561,6 @@
           initial-state
           nil)
          :state initial-state))
-
-;; ctx accessors — enables us to change data layout without changing behaviour contract
-;; docs/ctx-accessors.md  docs/destructuring-at-the-boundary.md
 
 (defn- get-world [ctx]
   (:ctx/world ctx))
