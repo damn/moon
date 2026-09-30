@@ -8,7 +8,6 @@
             [moon.scene2d.window :as window]
             [moon.camera :as orthographic-camera]
             [moon.color :as color]
-            [gdx.stage :as stage]
             [moon.tiled-map :as moon-tiled-map]
             [moon.viewport :as viewport]
             [moon.audio :as audio]
@@ -42,6 +41,7 @@
              [qrecord.core :as q]
              [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Buttons Input$Keys InputProcessor)
+           (clojure Stage)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics Color Colors Cursor GL20 Pixmap Pixmap$Format Texture Texture$TextureFilter TextureData)
@@ -586,8 +586,7 @@
     (let [skin (:ctx/skin ctx)
           stage (:ctx/stage ctx)
           textures (:ctx/textures ctx)]
-      (-> stage
-          :stage/root
+      (-> (.getRoot ^Stage stage)
           (#(group/find-actor % "moon.ui.windows.inventory"))
           (inventory-window-set-item! cell
                                     {:texture-region (textures/texture-region textures (:entity/image item))
@@ -609,8 +608,7 @@
     (when (inventory/applies-modifiers? cell)
       (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
     (when (:entity/player? @eid)
-      (-> (:ctx/stage ctx)
-          :stage/root
+      (-> (.getRoot ^Stage (:ctx/stage ctx))
           (#(group/find-actor % "moon.ui.windows.inventory"))
           (inventory-window-remove-item! cell)))))
 
@@ -633,8 +631,7 @@
           (let [skin (:ctx/skin ctx)
                 stage (:ctx/stage ctx)
                 textures (:ctx/textures ctx)]
-            (-> stage
-                :stage/root
+            (-> (.getRoot ^Stage stage)
                 (#(group/find-actor % "moon.ui.action-bar"))
                 (action-bar-add-skill! {:skill-id (:property/id skill)
                                         :texture-region (textures/texture-region textures (:entity/image skill))
@@ -671,7 +668,7 @@
                          (v2/distance player-position world-mouse-position)))))
 
 (defn- mouseover-actor [stage x y]
-  (stage/hit stage x y true))
+  (.hit ^Stage stage (float x) (float y) true))
 
 (defn- button?
   [actor]
@@ -777,20 +774,20 @@
 (defn- show-modal! [ctx {:keys [title text button-text on-click]}]
   (let [skin (:ctx/skin ctx)
         stage (:ctx/stage ctx)]
-    (assert (not (group/find-actor (:stage/root stage) "moon.ui.modal-window")))
-    (stage/add-actor! stage
+    (assert (not (group/find-actor (.getRoot ^Stage stage) "moon.ui.modal-window")))
+    (.addActor ^Stage stage
                       (doto (window/create {:title title
                                             :skin skin
                                             :table/rows [[{:actor (Label. ^String text ^Skin skin)}]
                                                          [{:actor (doto (TextButton. button-text skin)
                                                                          (.addListener (proxy [ChangeListener] []
                                                                            (changed [_event _actor]
-                                                                             (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (group/find-actor (:stage/root stage)
+                                                                             (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (group/find-actor (.getRoot ^Stage stage)
                                                                                                 "moon.ui.modal-window"))
                                                                              (on-click)))))}]]})
                         (window/set-modal! true)
                         (.setName "moon.ui.modal-window")
-                        (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (:stage/viewport stage)) 2) (float (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))) (float Align/center))))))
+                        (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2) (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center))))))
 
 (defn- play-sound! [ctx sound-name]
   (audio/play! (:ctx/audio ctx) sound-name))
@@ -1038,14 +1035,12 @@
     (handle-effect effect effect-ctx ctx)))
 
 (defn- toggle-inventory-visible! [ctx]
-  (let [inventory (-> (:ctx/stage ctx)
-                      :stage/root
+  (let [inventory (-> (.getRoot ^Stage (:ctx/stage ctx))
                       (group/find-actor "moon.ui.windows.inventory"))]
     (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory)))))
 
 (defn- show-message! [ctx message]
-  (-> (:ctx/stage ctx)
-      :stage/root
+  (-> (.getRoot ^Stage (:ctx/stage ctx))
       (#(group/find-actor % "player-message"))
       (.setUserObject (atom {:text message :counter 0}))))
 
@@ -1135,7 +1130,7 @@
                      (doto (TextButton. "Map" skin)
                        (.addListener (proxy [ChangeListener] []
                                             (changed [_event actor]
-                                              (stage/add-actor! (.getStage ^Actor actor)
+                                              (.addActor ^Stage (.getStage ^Actor actor)
                                                                 (create-data-viewer-window
                                                                  {:title "title"
                                                                   :data v
@@ -1179,7 +1174,7 @@
                         ; skin & stage
                         ; :moon.game/ui
                         ; moon.game.ui/data-viweer-window?
-                        (stage/add-actor! stage
+                        (.addActor ^Stage stage
                                         (create-data-viewer-window
                                          {:title "Data View"
                                           :data ctx
@@ -1558,7 +1553,7 @@
                           :hpcontent-file "images/hp.png"
                           :manacontent-file "images/mana.png"
                           :y-mana 80}
-        [x y-mana] [(/ (viewport/get-world-width (:stage/viewport stage)) 2)
+        [x y-mana] [(/ (viewport/get-world-width (.getViewport ^Stage stage)) 2)
                     y-mana]
         rahmen-tex-reg (textures/texture-region textures {:image/file rahmen-file})
         y-hp (+ y-mana rahmenh)
@@ -1583,7 +1578,7 @@
           (proxy-super act delta)))
       (draw [batch parent-alpha]
         (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
-          (let [ctx (:stage/ctx stage)
+          (let [ctx (.ctx ^Stage stage)
                 stats (:entity/stats @(:ctx/player-eid ctx))
                 bar-x (- x (/ rahmenw 2))]
             (draw-hpmana-bar! ctx bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
@@ -1638,12 +1633,12 @@
              [(proxy [Widget] []
                 (draw [batch parent-alpha]
                   (when-let [stage (.getStage ^Actor this)]
-                    (let [ctx (:stage/ctx stage)]
+                    (let [ctx (.ctx ^Stage stage)]
                       (draw-cell-rect! ctx
                                        @(:ctx/player-eid ctx)
                                        (.getX ^Actor this)
                                        (.getY ^Actor this)
-                                       (let [[ux uy] (viewport/unproject (:stage/viewport (:ctx/stage ctx))
+                                       (let [[ux uy] (viewport/unproject (.getViewport ^Stage (:ctx/stage ctx))
                                                                          [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
                                              local (.stageToLocalCoordinates ^Actor this
                                                                              (Vector2. (float ux) (float uy)))
@@ -1658,7 +1653,7 @@
        (doto stack
          (.addListener (proxy [ClickListener] []
                          (clicked [event _x _y]
-                           (let [ctx (:stage/ctx (.getStage ^Event event))]
+                           (let [ctx (.ctx ^Stage (.getStage ^Event event))]
                              (on-click-cell ctx (:ctx/player-eid ctx) cell)))))
          (.setName "inventory-cell")
          (.setUserObject cell)))}))
@@ -1746,8 +1741,8 @@
                                          (:colors/not-allowed-drop-item colors))]
                              (draw-fn-filled-rectangle ctx (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
       :skin skin
-      :position [(viewport/get-world-width (:stage/viewport stage))
-                 (viewport/get-world-height (:stage/viewport stage))]
+      :position [(viewport/get-world-width (.getViewport ^Stage stage))
+                 (viewport/get-world-height (.getViewport ^Stage stage))]
       :slot->texture-region slot->texture-region
       :cell-size 48})))
 
@@ -1775,7 +1770,7 @@
     (group/add-actor! window (proxy [Actor] []
                                (act [delta]
                                  (when-let [stage (.getStage ^Actor this)]
-                                   (.setText ^Label label ^String (set-label-text! (:stage/ctx stage))))
+                                   (.setText ^Label label ^String (set-label-text! (.ctx ^Stage stage))))
                                  (.pack ^Layout window)
                                  (let [^Actor this this]
                                    (proxy-super act delta)))
@@ -1790,7 +1785,7 @@
      {:title "Entity Info"
       :actor-name "moon.ui.windows.entity-info"
       :visible? false
-      :position [(viewport/get-world-width (:stage/viewport stage)) 0]
+      :position [(viewport/get-world-width (.getViewport ^Stage stage)) 0]
       :set-label-text! (fn [ctx]
                          (if-let [eid (:ctx/mouseover-eid ctx)]
                            (info-text (apply dissoc @eid [:entity/skills
@@ -1819,11 +1814,11 @@
         (proxy-super act delta)))
     (draw [batch parent-alpha]
       (let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)
-            ctx (:stage/ctx stage)
+            ctx (.ctx ^Stage stage)
             player-eid (:ctx/player-eid ctx)
             entity @player-eid
             state-k (:state (:entity/fsm entity))
-            ui-mouse-position (viewport/unproject (:stage/viewport (:ctx/stage ctx))
+            ui-mouse-position (viewport/unproject (.getViewport ^Stage (:ctx/stage ctx))
                                                   [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
             [x y] ui-mouse-position]
         (entity-state-draw-ui-view [state-k (state-k entity)]
@@ -1845,10 +1840,10 @@
                 (proxy-super act delta)))
             (draw [batch parent-alpha]
               (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
-                (let [ctx (:stage/ctx stage)
+                (let [ctx (.ctx ^Stage stage)
                       state (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor this)
-                      vp-width (viewport/get-world-width (:stage/viewport stage))
-                      vp-height (viewport/get-world-height (:stage/viewport stage))]
+                      vp-width (viewport/get-world-width (.getViewport ^Stage stage))
+                      vp-height (viewport/get-world-height (.getViewport ^Stage stage))]
                   (when-let [text (:text @state)]
                     (draw-fn-text ctx {:x (/ vp-width 2)
                                        :y (+ (/ vp-height 2) 200)
@@ -1875,8 +1870,7 @@
             :clickable/item
             (let [item (:entity/item @clicked-eid)]
               (cond
-                (-> stage
-                    :stage/root
+                (-> (.getRoot ^Stage stage)
                     (group/find-actor "moon.ui.windows.inventory")
                     .isVisible)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
@@ -2173,7 +2167,7 @@
   (proxy [Actor] []
     (act [delta]
       (when-let [stage (.getStage ^Actor this)]
-        (.setText ^Label label-widget ^String (text-fn (:stage/ctx stage))))
+        (.setText ^Label label-widget ^String (text-fn (.ctx ^Stage stage))))
       (let [^Actor this this]
         (proxy-super act delta)))
     (draw [batch parent-alpha])))
@@ -2200,7 +2194,7 @@
                                              (doto (TextButton. label skin)
                                                (.addListener (proxy [ChangeListener] []
                                                               (changed [event actor]
-                                                                (stage/add-actor! (.getStage ^Event event)
+                                                                (.addActor ^Stage (.getStage ^Event event)
                                                                                   (window/create {:title label
                                                                                                   :skin skin
                                                                                                   :table/rows [(for [{:keys [label on-click]} items]
@@ -2209,8 +2203,7 @@
                                                                                                                     (.addListener (proxy [ChangeListener] []
                                                                                                                                    (changed [event actor]
                                                                                                                                      (let [stage (.getStage ^Event event)]
-                                                                                                                                       (stage/set-ctx! stage
-                                                                                                                                                       (on-click (:stage/ctx stage))))))))})]
+                                                                                                                                       (set! (.ctx ^Stage stage) (on-click (.ctx ^Stage stage))))))))})]
                                                                                                   :window/add-close-button? true}))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
@@ -2350,8 +2343,7 @@
                             (:entity/click-distance-tiles @player-eid))}]
 
       :else
-      (if-let [skill-id (-> stage
-                            :stage/root
+      (if-let [skill-id (-> (.getRoot ^Stage stage)
                             (#(group/find-actor % "moon.ui.action-bar"))
                             action-bar-selected-skill)]
         (let [entity @player-eid
@@ -2441,7 +2433,7 @@
              (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
     (catch Throwable t
       (throwable/pretty-pst t)
-      (stage/add-actor! (:ctx/stage ctx)
+      (.addActor ^Stage (:ctx/stage ctx)
                         (error-window/create
                          {:skin (:ctx/skin ctx)
                           :throwable t}))))
@@ -2452,10 +2444,10 @@
 (defn update-draw-stage
   [ctx]
   (let [stage (:ctx/stage ctx)]
-    (stage/set-ctx! stage ctx)
-    (stage/act! stage)
-    (stage/draw! stage)
-    (:stage/ctx stage)))
+    (set! (.ctx ^Stage stage) ctx)
+    (.act ^Stage stage)
+    (.draw ^Stage stage)
+    (.ctx ^Stage stage)))
 
 (defn shape-drawer-texture []
   (let [pixmap (doto ^Pixmap (Pixmap. (int 1) (int 1) Pixmap$Format/RGBA8888)
@@ -2497,7 +2489,7 @@
                                            (.getData (.getFont ^Skin skin "default-font")))
                            true)
                      skin))
-            (let [stage* (stage/create (FitViewport. (float 1440) (float 900)) (:ctx/batch ctx))]
+            (let [stage* (Stage. (FitViewport. (float 1440) (float 900)) (:ctx/batch ctx))]
               (.setInputProcessor ^Input input ^InputProcessor stage*)
               (assoc ctx :ctx/stage stage*))
             (do
@@ -2575,7 +2567,7 @@
                                                            :update-fn :ctx/paused?}
                                                           {:label "GUI"
                                                            :update-fn (fn [ctx]
-                                                                        (mapv int (viewport/unproject (:stage/viewport (:ctx/stage ctx))
+                                                                        (mapv int (viewport/unproject (.getViewport ^Stage (:ctx/stage ctx))
                                                                                                       [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
                                                           {:label "World"
                                                            :update-fn (fn [ctx]
@@ -2594,7 +2586,7 @@
                                                   inventory-window-create])
                              (player-state-draw-create)
                              (player-message-actor-create)]]
-                (stage/add-actor! stage actor))
+                (.addActor ^Stage stage actor))
               ctx)
             (let [{:keys [tiled-map start-position]}
                   (level-fn {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
@@ -2653,9 +2645,9 @@
 (defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed?]
   (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
-  (swap! state #(or (:stage/ctx (:ctx/stage %)) %))
+  (swap! state #(or (.ctx ^Stage (:ctx/stage %)) %))
   (malli-schema/validate-humanize schema @state)
-  (let [ui-mouse-position (viewport/unproject (:stage/viewport (:ctx/stage @state)) mouse-position)
+  (let [ui-mouse-position (viewport/unproject (.getViewport ^Stage (:ctx/stage @state)) mouse-position)
         world-mouse-position (viewport/unproject (:ctx/world-viewport @state) mouse-position)]
     (swap! state (fn [ctx]
                    (let [player-eid (:ctx/player-eid ctx)
@@ -2684,7 +2676,7 @@
               mouseover-eid (:ctx/mouseover-eid ctx)
               data (or (and mouseover-eid @mouseover-eid)
                        (world/cell-at world (mapv int world-mouse-position)))]
-          (stage/add-actor! (:ctx/stage ctx)
+          (.addActor ^Stage (:ctx/stage ctx)
                             (create-data-viewer-window
                              {:title "Data View"
                               :data data
@@ -2792,20 +2784,20 @@
       (when (key-pressed? (:zoom-out (:ctx/controls ctx)))
         (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
       (when (key-just-pressed? (:close-windows-key (:ctx/controls ctx)))
-        (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
+        (->> (group/find-actor (.getRoot ^Stage stage) "moon.ui.windows")
              group/get-children
              (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
       (when (key-just-pressed? (:toggle-inventory (:ctx/controls ctx)))
         (toggle-inventory-visible! ctx))
       (when (key-just-pressed? (:toggle-entity-info (:ctx/controls ctx)))
-        (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
+        (let [entity-info (group/find-actor (.getRoot ^Stage stage) "moon.ui.windows.entity-info")]
           (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
     (swap! state update-draw-stage)
     (malli-schema/validate-humanize schema @state)))
 
 (defn resize! [width height]
   (let [ctx @state]
-    (viewport/update! (:stage/viewport (:ctx/stage ctx)) width height true)
+    (viewport/update! (.getViewport ^Stage (:ctx/stage ctx)) width height true)
     (viewport/update! (:ctx/world-viewport ctx) width height false)))
 
 (def listener

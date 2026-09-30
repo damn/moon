@@ -5,7 +5,6 @@
             [moon.level.tmx :as tmx]
             [moon.level.uf-caves :as uf-caves]
             [moon.textures :as textures]
-            [gdx.stage :as stage]
             [moon.tiled-map :as moon-tiled-map]
             [moon.color :as color]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
@@ -13,6 +12,7 @@
             [moon.viewport :as viewport])
   (:import (com.badlogic.gdx.maps MapLayers)
            (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
+           (clojure Stage)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.files FileHandle)
            (com.badlogic.gdx.graphics GL20)
@@ -70,8 +70,8 @@
   (Skin. ^FileHandle file-handle))
 
 (defn create-stage [batch viewport actor]
-  (doto (stage/create viewport batch)
-    (stage/add-actor! actor)))
+  (doto (Stage. viewport batch)
+    (.addActor actor)))
 
 (defn text-button [skin label on-click!]
   (doto (TextButton. label skin)
@@ -159,11 +159,11 @@
             (move 1 +))
           (when (.isKeyPressed ^Input Gdx/input Input$Keys/DOWN)
             (move 1 -))
-          (stage/act! @ui-stage)
-          (stage/draw! @ui-stage)))
+          (.act ^Stage @ui-stage)
+          (.draw ^Stage @ui-stage)))
 
       (resize [_ width height]
-        (viewport/update! (:stage/viewport @ui-stage) width height true)
+        (viewport/update! (.getViewport ^Stage @ui-stage) width height true)
         (viewport/update! @world-viewport width height false))
 
       (pause [_])
