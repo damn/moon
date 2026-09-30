@@ -583,17 +583,6 @@
     (inventory/applies-modifiers? cell)
     (update :entity/stats stats/add-mods (:stats/modifiers item))))
 
-(defn- ui-set-item! [ctx cell item]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)
-        textures (:ctx/textures ctx)]
-    (-> (.getRoot ^Stage stage)
-        (#(group/find-actor % "moon.ui.windows.inventory"))
-        (inventory-window-set-item! cell
-                                    {:texture-region (textures/texture-region textures (:entity/image item))
-                                     :tooltip-text (item/info-text item)}
-                                    skin))))
-
 (defn- remove-item [entity cell]
   (let [item (get-in (:entity/inventory entity) cell)]
     (assert item)
@@ -697,23 +686,6 @@
       :else
       [:mouseover-actor/unspecified])))
 
-(defn- spawn-entity! [ctx entity]
-  (let [elapsed-time (:ctx/elapsed-time ctx)
-        entity (reduce (fn [m [k v]]
-                         (assoc m k (create-component elapsed-time k v)))
-                       {}
-                       entity)
-        entity (prepare-entity-geometry entity)
-        entity (merge (map->EntityRecord {}) entity)
-        eid (atom entity)]
-    (world/register-eid! (:ctx/world ctx) eid)
-    (doseq [component @eid]
-      (after-create-component #(ui-set-skill! ctx elapsed-time %)
-                              #(ui-set-item! ctx %1 %2)
-                              elapsed-time
-                              eid
-                              component))))
-
 (defn- spawn-creature [{:keys [position creature-property components]}]
   (assert creature-property)
   (-> creature-property
@@ -792,14 +764,33 @@
                         (.setName "moon.ui.modal-window")
                         (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2) (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center))))))
 
-(defn- audiovisual! [ctx audio position audiovisual]
-  (let [db (:ctx/db ctx)
-        {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
-                                             (db/build db audiovisual)
-                                             audiovisual)]
-    (audio/play! audio sound)
-    (spawn-entity! ctx (spawn-effect position
-                                     {:entity/animation (assoc animation :delete-after-stopped? true)})))
+(defn- ui-set-item! [ctx cell item]
+  (let [skin (:ctx/skin ctx)
+        stage (:ctx/stage ctx)
+        textures (:ctx/textures ctx)]
+    (-> (.getRoot ^Stage stage)
+        (#(group/find-actor % "moon.ui.windows.inventory"))
+        (inventory-window-set-item! cell
+                                    {:texture-region (textures/texture-region textures (:entity/image item))
+                                     :tooltip-text (item/info-text item)}
+                                    skin))))
+
+(defn- spawn-entity! [ctx entity]
+  (let [elapsed-time (:ctx/elapsed-time ctx)
+        entity (reduce (fn [m [k v]]
+                         (assoc m k (create-component elapsed-time k v)))
+                       {}
+                       entity)
+        entity (prepare-entity-geometry entity)
+        entity (merge (map->EntityRecord {}) entity)
+        eid (atom entity)]
+    (world/register-eid! (:ctx/world ctx) eid)
+    (doseq [component @eid]
+      (after-create-component #(ui-set-skill! ctx elapsed-time %)
+                              #(ui-set-item! ctx %1 %2)
+                              elapsed-time
+                              eid
+                              component))))
 
 (defn- handle-fsm-event! [ctx audio eid world-mouse-position event & [params]]
   (let [fsm (:entity/fsm @eid)
@@ -886,6 +877,15 @@
         nil))))
 
 (declare apply-effects!)
+
+(defn- audiovisual! [ctx audio position audiovisual]
+  (let [db (:ctx/db ctx)
+        {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
+                                             (db/build db audiovisual)
+                                             audiovisual)]
+    (audio/play! audio sound)
+    (spawn-entity! ctx (spawn-effect position
+                                     {:entity/animation (assoc animation :delete-after-stopped? true)}))))
 
 (defn handle-effect
   [[k v] effect-ctx ctx audio world-mouse-position]
