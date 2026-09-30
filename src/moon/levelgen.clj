@@ -7,7 +7,7 @@
             [moon.textures :as textures]
             [gdx.stage :as stage]
             [moon.tiled-map :as moon-tiled-map]
-            [gdx.color :as color]
+            [moon.color :as color]
             [gdx.input :as input]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [moon.scene2d.window :as window]
@@ -147,7 +147,7 @@
                                 @batch
                                 world-unit-scale
                                 (viewport/get-camera @world-viewport)
-                                (constantly (color/to-float-bits [1 1 1 1])))
+                                (constantly (color/float-bits [1 1 1 1])))
           (when (input/key-pressed? Gdx/input :input.keys/minus)
             (orthographic-camera/inc-zoom! camera* zoom-speed))
           (when (input/key-pressed? Gdx/input :input.keys/equals)

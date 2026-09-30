@@ -7,7 +7,7 @@
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
             [moon.camera :as orthographic-camera]
-            [gdx.color :as color]
+            [moon.color :as color]
             [gdx.input :as input]
             [gdx.stage :as stage]
             [moon.tiled-map :as moon-tiled-map]
@@ -1052,23 +1052,23 @@
 
 (def colors
   (let [outline-alpha 0.4]
-    {:colors/mouseover-tile-air (color/to-float-bits [1 1 0 0.5])
-     :colors/mouseover-tile-none (color/to-float-bits [1 0 0 0.5])
-     :colors/debug-body-outline-collides (color/to-float-bits [1 1 1 1])
-     :colors/debug-body-outline (color/to-float-bits [0.5 0.5 0.5 1])
-     :colors/debug-body-outline-render-error (color/to-float-bits [1 0 0 1])
-     :colors/debug-cell-entities (color/to-float-bits [1 0 0 0.6])
-     :colors/debug-cell-occupied (color/to-float-bits [0 0 1 0.6])
+    {:colors/mouseover-tile-air (color/float-bits [1 1 0 0.5])
+     :colors/mouseover-tile-none (color/float-bits [1 0 0 0.5])
+     :colors/debug-body-outline-collides (color/float-bits [1 1 1 1])
+     :colors/debug-body-outline (color/float-bits [0.5 0.5 0.5 1])
+     :colors/debug-body-outline-render-error (color/float-bits [1 0 0 1])
+     :colors/debug-cell-entities (color/float-bits [1 0 0 0.6])
+     :colors/debug-cell-occupied (color/float-bits [0 0 1 0.6])
      :colors/debug-potential-field (fn [ratio]
-                                     (color/to-float-bits [ratio (- 1 ratio) ratio 0.6]))
-     :colors/target-all-line (color/to-float-bits [1 0 0 0.75])
-     :colors/target-all-render (color/to-float-bits [1 0 0 0.5])
-     :colors/target-entity-line (color/to-float-bits [1 0 0 0.75])
-     :colors/target-entity-in-range (color/to-float-bits [1 0 0 0.5])
-     :colors/target-entity-not-in-range (color/to-float-bits [1 1 0 0.5])
-     :colors/enemy-color (color/to-float-bits [1 0 0 outline-alpha])
-     :colors/friendly-color (color/to-float-bits [0 1 0 outline-alpha])
-     :colors/neutral-color (color/to-float-bits [1 1 1 outline-alpha])
+                                     (color/float-bits [ratio (- 1 ratio) ratio 0.6]))
+     :colors/target-all-line (color/float-bits [1 0 0 0.75])
+     :colors/target-all-render (color/float-bits [1 0 0 0.5])
+     :colors/target-entity-line (color/float-bits [1 0 0 0.75])
+     :colors/target-entity-in-range (color/float-bits [1 0 0 0.5])
+     :colors/target-entity-not-in-range (color/float-bits [1 1 0 0.5])
+     :colors/enemy-color (color/float-bits [1 0 0 outline-alpha])
+     :colors/friendly-color (color/float-bits [0 1 0 outline-alpha])
+     :colors/neutral-color (color/float-bits [1 1 1 outline-alpha])
      :colors/hp-bar (fn [ratio]
                       (let [ratio (float ratio)
                             color (cond
@@ -1076,21 +1076,21 @@
                                     (> ratio 0.5) :darkgreen
                                     (> ratio 0.25) :yellow
                                     :else :red)]
-                        (color {:green (color/to-float-bits [0 0.8 0 1])
-                                :darkgreen (color/to-float-bits [0 0.5 0 1])
-                                :yellow (color/to-float-bits [0.5 0.5 0 1])
-                                :red (color/to-float-bits [0.5 0 0 1])})))
-     :colors/hp-bar-rect (color/to-float-bits [0 0 0 1])
-     :colors/temp-modifier (color/to-float-bits [0.5 0.5 0.5 0.4])
-     :colors/active-skill-circle (color/to-float-bits [1 1 1 0.125])
-     :colors/active-skill-sector (color/to-float-bits [1 1 1 0.5])
-     :colors/stunned (color/to-float-bits [1 1 1 0.6])
-     :colors/explored-tile (color/to-float-bits [0.5 0.5 0.5 1])
-     :colors/visible-tile (color/to-float-bits [1 1 1 1])
-     :colors/invisible-tile (color/to-float-bits [0 0 0 1])
-     :colors/droppable-item (color/to-float-bits [0 0.6 0 0.8 1])
-     :colors/not-allowed-drop-item (color/to-float-bits [0.6 0 0 0.8 1])
-     :colors/item-rect (color/to-float-bits [0.5 0.5 0.5 1])}))
+                        (color {:green (color/float-bits [0 0.8 0 1])
+                                :darkgreen (color/float-bits [0 0.5 0 1])
+                                :yellow (color/float-bits [0.5 0.5 0 1])
+                                :red (color/float-bits [0.5 0 0 1])})))
+     :colors/hp-bar-rect (color/float-bits [0 0 0 1])
+     :colors/temp-modifier (color/float-bits [0.5 0.5 0.5 0.4])
+     :colors/active-skill-circle (color/float-bits [1 1 1 0.125])
+     :colors/active-skill-sector (color/float-bits [1 1 1 0.5])
+     :colors/stunned (color/float-bits [1 1 1 0.6])
+     :colors/explored-tile (color/float-bits [0.5 0.5 0.5 1])
+     :colors/visible-tile (color/float-bits [1 1 1 1])
+     :colors/invisible-tile (color/float-bits [0 0 0 1])
+     :colors/droppable-item (color/float-bits [0 0.6 0 0.8 1])
+     :colors/not-allowed-drop-item (color/float-bits [0.6 0 0 0.8 1])
+     :colors/item-rect (color/float-bits [0.5 0.5 0.5 1])}))
 
 (def controls
   {:zoom-in :input.keys/minus
@@ -1674,7 +1674,7 @@
   (let [slot->drawable (fn [slot]
                          (doto (TextureRegionDrawable. ^TextureRegion (slot->texture-region slot))
                            (.setMinSize cell-size cell-size)
-                           (.tint ^Color (color/create [1 1 1 0.4]))))
+                           (.tint ^Color (Color. 1 1 1 0.4))))
         ->cell (partial inventory-window-cell on-click-cell slot->drawable draw-cell-rect! cell-size)
         window (doto (window/create {:title "Inventory"
                                      :skin skin
@@ -2259,7 +2259,7 @@
                      (+ 2 (int (viewport/get-world-height world-viewport)))
                      1
                      1
-                     (color/to-float-bits [1 1 1 0.8])))))
+                     (color/float-bits [1 1 1 0.8])))))
 
 (defn- draw-cell-debug
   [ctx]
@@ -2503,7 +2503,7 @@
               (assoc ctx :ctx/stage stage*))
             (do
              (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
-             (Colors/put "PRETTY_NAME" (color/create [0.84 0.8 0.52 1]))
+             (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
              ctx)
             (assoc ctx :ctx/cursors
                    (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
