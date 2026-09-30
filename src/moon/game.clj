@@ -63,14 +63,6 @@
 (def schema
   (malli-schema/create
    [:map {:closed true}
-    [:ctx/cursors :some]
-    [:ctx/default-font :some]
-    [:ctx/world-viewport :some]
-    [:ctx/shape-drawer :some]
-    [:ctx/shape-drawer-texture :some]
-    [:ctx/textures :some]
-    [:ctx/skin :some]
-    [:ctx/stage :some]
     [:ctx/active-entities :any]
     [:ctx/delta-time :any]
     [:ctx/mouseover-eid :any]
@@ -128,6 +120,14 @@
 (def audio (atom nil))
 (def batch (atom nil))
 (def unit-scale (atom 1))
+(def cursors (atom nil))
+(def default-font (atom nil))
+(def world-viewport (atom nil))
+(def shape-drawer (atom nil))
+(def shape-drawer-texture (atom nil))
+(def textures (atom nil))
+(def skin (atom nil))
+(def stage (atom nil))
 
 (def z-orders
   [:z-order/on-ground
@@ -751,9 +751,9 @@
                       (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2) (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center)))))
 
 (defn- ui-set-item! [ctx cell item]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)
-        textures (:ctx/textures ctx)]
+  (let [skin @skin
+        stage @stage
+        textures @textures]
     (-> (.getRoot ^Stage stage)
         (#(group/find-actor % "moon.ui.windows.inventory"))
         (inventory-window-set-item! cell
@@ -762,9 +762,9 @@
                                     skin))))
 
 (defn- ui-set-skill! [ctx elapsed-time skill]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)
-        textures (:ctx/textures ctx)]
+  (let [skin @skin
+        stage @stage
+        textures @textures]
     (-> (.getRoot ^Stage stage)
         (#(group/find-actor % "moon.ui.action-bar"))
         (action-bar-add-skill! {:skill-id (:property/id skill)
@@ -1047,8 +1047,8 @@
   {:label "Ctx Data"
    :items [{:label "Show data"
             :on-click (fn [ctx]
-                        (let [skin (:ctx/skin ctx)
-                              stage (:ctx/stage ctx)]
+                        (let [skin @skin
+                              stage @stage]
                         ; skin & stage
                         ; :moon.game/ui
                         ; moon.game.ui/data-viweer-window?
@@ -1402,9 +1402,9 @@
 
 (defn hp-mana-bar-create
   [ctx]
-  (let [default-font (:ctx/default-font ctx)
-        stage (:ctx/stage ctx)
-        textures (:ctx/textures ctx)
+  (let [default-font @default-font
+        stage @stage
+        textures @textures
         {:keys [rahmen-file
                 rahmenw
                 rahmenh
@@ -1448,7 +1448,7 @@
             (draw-hpmana-bar! ctx batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
 
 (defn- ui-remove-item! [ctx cell]
-  (-> (.getRoot ^Stage (:ctx/stage ctx))
+  (-> (.getRoot ^Stage @stage)
       (#(group/find-actor % "moon.ui.windows.inventory"))
       (inventory-window-remove-item! cell)))
 
@@ -1503,7 +1503,7 @@
                                        @(:ctx/player-eid ctx)
                                        (.getX ^Actor this)
                                        (.getY ^Actor this)
-                                       (let [[ux uy] (viewport/unproject (.getViewport ^Stage (:ctx/stage ctx))
+                                       (let [[ux uy] (viewport/unproject (.getViewport ^Stage stage)
                                                                          [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
                                              local (.stageToLocalCoordinates ^Actor this
                                                                              (Vector2. (float ux) (float uy)))
@@ -1565,9 +1565,9 @@
 
 (defn inventory-window-create
   [ctx on-click-cell draw-cell-rect!]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)
-        textures (:ctx/textures ctx)
+  (let [skin @skin
+        stage @stage
+        textures @textures
         slot->y-sprite-idx #:inventory.slot {:weapon 0
                                              :shield 1
                                              :rings 2
@@ -1634,8 +1634,8 @@
 
 (defn stage-info-window-create
   [ctx]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)]
+  (let [skin @skin
+        stage @stage]
     (create-info-window
      {:title "Entity Info"
       :actor-name "moon.ui.windows.entity-info"
@@ -1656,7 +1656,7 @@
     :player-item-on-cursor
     (when mouseover-actor
       (draw-fn-texture-region batch unit-scale
-                              (textures/texture-region (:ctx/textures ctx) (:entity/image (:entity/item-on-cursor @eid)))
+                              (textures/texture-region @textures (:entity/image (:entity/item-on-cursor @eid)))
                               ui-mouse-position
                               {:center? true}))
 
@@ -1673,7 +1673,7 @@
             player-eid (:ctx/player-eid ctx)
             entity @player-eid
             state-k (:state (:entity/fsm entity))
-            ui-mouse-position (viewport/unproject (.getViewport ^Stage (:ctx/stage ctx))
+            ui-mouse-position (viewport/unproject (.getViewport ^Stage stage)
                                                   [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
             [x y] ui-mouse-position]
         (entity-state-draw-ui-view [state-k (state-k entity)]
@@ -1681,7 +1681,7 @@
                                    ctx
                                    batch
                                    unit-scale
-                                   (mouseover-actor (:ctx/stage ctx) x y)
+                                   (mouseover-actor stage x y)
                                    ui-mouse-position)))))
 
 (defn player-message-actor-create [default-font unit-scale]
@@ -1778,7 +1778,7 @@
       (handle-fsm-event! eid world-mouse-position :movement-input movement-vector)
       (when left-button-pressed?
         (interaction-state->txs (:ctx/interaction-state ctx)
-                                (:ctx/stage ctx)
+                                @stage
                                 audio
                                 handle-fsm-event!
                                 #(ui-set-item! ctx %1 %2)
@@ -2109,7 +2109,7 @@
   (let [player-eid (:ctx/player-eid ctx)
         raycaster (:ctx/raycaster ctx)
         colors (:ctx/colors ctx)
-        textures (:ctx/textures ctx)
+        textures @textures
         elapsed-time (:ctx/elapsed-time ctx)
         render-z-order (:ctx/render-z-order ctx)
         show-body-bounds? (:ctx/show-body-bounds? ctx)
@@ -2160,7 +2160,7 @@
   [ctx mouseover-actor world-mouse-position]
   (let [player-eid (:ctx/player-eid ctx)
         mouseover-eid (:ctx/mouseover-eid ctx)
-        stage (:ctx/stage ctx)]
+        stage @stage]
     (cond
       mouseover-actor
       [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
@@ -2258,13 +2258,13 @@
 
 (defn update-draw-stage
   [ctx]
-  (let [stage (:ctx/stage ctx)]
+  (let [stage @stage]
     (set! (.ctx ^Stage stage) ctx)
     (.act ^Stage stage)
     (.draw ^Stage stage)
     (.ctx ^Stage stage)))
 
-(defn shape-drawer-texture []
+(defn- create-shape-drawer-texture []
   (let [pixmap (doto ^Pixmap (Pixmap. (int 1) (int 1) Pixmap$Format/RGBA8888)
                  (.setColor 1 1 1 1)
                  (.drawPixel (int 0) (int 0)))
@@ -2279,6 +2279,62 @@
   (reset! audio (audio/create gdx-audio files))
   (reset! batch (SpriteBatch.))
   (reset! unit-scale 1)
+  (reset! shape-drawer-texture (create-shape-drawer-texture))
+  (reset! shape-drawer
+          (ShapeDrawer. @batch
+                        (TextureRegion. ^Texture @shape-drawer-texture (int 1) (int 0) (int 1) (int 1))))
+  (reset! skin
+          (let [s (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
+            (set! (.markupEnabled ^BitmapFont$BitmapFontData
+                                  (.getData (.getFont ^Skin s "default-font")))
+                  true)
+            s))
+  (let [stage* (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
+    (.setInputProcessor ^Input input ^InputProcessor stage*)
+    (reset! stage stage*))
+  (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
+  (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
+  (reset! cursors
+          (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
+            (update-vals data
+                         (fn [[path-segment [hotspot-x hotspot-y]]]
+                           (let [path (format path-format path-segment)
+                                 pixmap* (Pixmap. ^FileHandle (.internal ^Files files path))
+                                 cursor (.newCursor ^Graphics Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
+                             (Disposable/.dispose pixmap*)
+                             cursor)))))
+  (reset! textures
+          (textures/create files {:folder "resources/"
+                                  :extensions #{"png" "bmp"}}))
+  (reset! world-viewport
+          (let [world-width (* 1440 world-unit-scale)
+                world-height (* 900 world-unit-scale)]
+            (FitViewport. (float world-width)
+                          (float world-height)
+                          (doto (orthographic-camera/new)
+                            (orthographic-camera/set-to-ortho! false world-width world-height)))))
+  (reset! default-font
+          (let [{:keys [path
+                        size
+                        quality-scaling
+                        use-integer-positions?]} {:path "fonts/films.EXL_____.ttf"
+                                                  :size 16
+                                                  :quality-scaling 2
+                                                  :use-integer-positions? false}
+                generator (FreeTypeFontGenerator. ^FileHandle (.internal ^Files files path))
+                parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                            (set! (.size p) (* size quality-scaling))
+                            (set! (.minFilter p) Texture$TextureFilter/Linear)
+                            (set! (.magFilter p) Texture$TextureFilter/Linear)
+                            p)
+                font (.generateFont ^FreeTypeFontGenerator generator
+                                    ^FreeTypeFontGenerator$FreeTypeFontParameter parameter)
+                font-data (.getData ^BitmapFont font)]
+            (Disposable/.dispose generator)
+            (.setScale ^BitmapFont$BitmapFontData font-data (/ quality-scaling))
+            (set! (.markupEnabled ^BitmapFont$BitmapFontData font-data) true)
+            (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
+            font))
   (reset! state
           (as-> {:ctx/active-entities nil
                  :ctx/delta-time nil
@@ -2290,66 +2346,8 @@
                  :ctx/show-cell-entities? false
                  :ctx/show-cell-occupied? false
                  :ctx/show-body-bounds? false
-                 :ctx/show-tile-grid? false
-                 :ctx/shape-drawer-texture (shape-drawer-texture)}
+                 :ctx/show-tile-grid? false}
             ctx
-            (assoc ctx :ctx/shape-drawer
-                   (ShapeDrawer. @batch
-                                 (TextureRegion. ^Texture (:ctx/shape-drawer-texture ctx) (int 1) (int 0) (int 1) (int 1))))
-            (assoc ctx :ctx/skin
-                   (let [skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
-                     (set! (.markupEnabled ^BitmapFont$BitmapFontData
-                                           (.getData (.getFont ^Skin skin "default-font")))
-                           true)
-                     skin))
-            (let [stage* (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
-              (.setInputProcessor ^Input input ^InputProcessor stage*)
-              (assoc ctx :ctx/stage stage*))
-            (do
-             (set! (.initialTime ^TooltipManager (TooltipManager/getInstance)) 0)
-             (Colors/put "PRETTY_NAME" (Color. 0.84 0.8 0.52 1))
-             ctx)
-            (assoc ctx :ctx/cursors
-                   (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
-                     (update-vals data
-                                  (fn [[path-segment [hotspot-x hotspot-y]]]
-                                    (let [path (format path-format path-segment)
-                                          pixmap* (Pixmap. ^FileHandle (.internal ^Files files path))
-                                          cursor (.newCursor ^Graphics Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
-                                      (Disposable/.dispose pixmap*)
-                                      cursor)))))
-            (assoc ctx :ctx/textures
-                   (textures/create files {:folder "resources/"
-                                           :extensions #{"png" "bmp"}}))
-            (assoc ctx :ctx/world-viewport
-                   (let [world-width (* 1440 world-unit-scale)
-                         world-height (* 900 world-unit-scale)]
-                     (FitViewport. (float world-width)
-                                   (float world-height)
-                                   (doto (orthographic-camera/new)
-                                     (orthographic-camera/set-to-ortho! false world-width world-height)))))
-            (assoc ctx :ctx/default-font
-                   (let [{:keys [path
-                                 size
-                                 quality-scaling
-                                 use-integer-positions?]} {:path "fonts/films.EXL_____.ttf"
-                                                           :size 16
-                                                           :quality-scaling 2
-                                                           :use-integer-positions? false}
-                         generator (FreeTypeFontGenerator. ^FileHandle (.internal ^Files files path))
-                         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
-                                     (set! (.size p) (* size quality-scaling))
-                                     (set! (.minFilter p) Texture$TextureFilter/Linear)
-                                     (set! (.magFilter p) Texture$TextureFilter/Linear)
-                                     p)
-                         font (.generateFont ^FreeTypeFontGenerator generator
-                                             ^FreeTypeFontGenerator$FreeTypeFontParameter parameter)
-                         font-data (.getData ^BitmapFont font)]
-                     (Disposable/.dispose generator)
-                     (.setScale ^BitmapFont$BitmapFontData font-data (/ quality-scaling))
-                     (set! (.markupEnabled ^BitmapFont$BitmapFontData font-data) true)
-                     (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
-                     font))
             (merge (map->Record {}) ctx)
             (-> ctx
                 (assoc :ctx/controls controls)
@@ -2358,11 +2356,7 @@
                 (assoc :ctx/render-z-order render-z-order)
                 (assoc :ctx/max-speed max-speed))
             (assoc ctx :ctx/db (db/create))
-            (let [stage (:ctx/stage ctx)
-                  skin (:ctx/skin ctx)
-                  textures (:ctx/textures ctx)
-                  colors (:ctx/colors ctx)
-                  shape-drawer (:ctx/shape-drawer ctx)
+            (let [colors (:ctx/colors ctx)
                   cell-size 48]
               (doseq [actor [(create-action-bar)
                              (create-dev-menu
@@ -2383,27 +2377,27 @@
                                                            :update-fn :ctx/paused?}
                                                           {:label "GUI"
                                                            :update-fn (fn [ctx]
-                                                                        (mapv int (viewport/unproject (.getViewport ^Stage (:ctx/stage ctx))
+                                                                        (mapv int (viewport/unproject (.getViewport ^Stage @stage)
                                                                                                       [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
                                                           {:label "World"
                                                            :update-fn (fn [ctx]
-                                                                        (mapv int (viewport/unproject (:ctx/world-viewport ctx)
+                                                                        (mapv int (viewport/unproject @world-viewport
                                                                                                       [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])))}
                                                           {:label "Zoom"
                                                            :update-fn (fn [ctx]
-                                                                        (orthographic-camera/zoom (viewport/get-camera (:ctx/world-viewport ctx))))
+                                                                        (orthographic-camera/zoom (viewport/get-camera @world-viewport)))
                                                            :icon "images/zoom.png"}]]
                                                 (if (:icon item)
-                                                  (update item :icon #(get textures %))
+                                                  (update item :icon #(get @textures %))
                                                   item))
-                               :skin skin})
+                               :skin @skin})
                              (hp-mana-bar-create ctx)
                              (windows-create ctx [stage-info-window-create
                                                   #(inventory-window-create
                                                     %
                                                     (fn [event cell]
                                                       (let [ctx (.ctx ^Stage (.getStage ^Event event))
-                                                            world-mouse-position (viewport/unproject (:ctx/world-viewport ctx)
+                                                            world-mouse-position (viewport/unproject @world-viewport
                                                                                                     [(.getX ^Input Gdx/input)
                                                                                                      (.getY ^Input Gdx/input)])]
                                                         (handle-clicked-inventory-cell (:ctx/player-eid ctx)
@@ -2414,23 +2408,23 @@
                                                                                        cell
                                                                                        world-mouse-position)))
                                                     (fn [ctx player-entity x y mouseover? cell]
-                                                      (draw-fn-rectangle shape-drawer x y cell-size cell-size (:colors/item-rect colors))
+                                                      (draw-fn-rectangle @shape-drawer x y cell-size cell-size (:colors/item-rect colors))
                                                       (when (and mouseover?
                                                                  (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                                                         (let [item (:entity/item-on-cursor player-entity)
                                                               color (if (inventory/valid-slot? cell item)
                                                                       (:colors/droppable-item colors)
                                                                       (:colors/not-allowed-drop-item colors))]
-                                                          (draw-fn-filled-rectangle shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
+                                                          (draw-fn-filled-rectangle @shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
                              (player-state-draw-create unit-scale)
-                             (player-message-actor-create (:ctx/default-font ctx) unit-scale)]]
-                (.addActor ^Stage stage actor))
+                             (player-message-actor-create @default-font unit-scale)]]
+                (.addActor ^Stage @stage actor))
               ctx)
             (let [{:keys [tiled-map start-position]}
                   (level-fn {:level/creature-properties (moon-tiled-map/prepare-creature-tiles
                                                          (db/all-raw (:ctx/db ctx) :properties/creatures)
-                                                         #(textures/texture-region (:ctx/textures ctx) %))
-                             :textures (:ctx/textures ctx)})]
+                                                         #(textures/texture-region @textures %))
+                             :textures @textures})]
               (assoc ctx
                      :ctx/tiled-map tiled-map
                      :ctx/start-position start-position))
@@ -2475,29 +2469,29 @@
   (let [ctx @state]
     (audio/dispose! @audio)
     (Disposable/.dispose @batch)
-    (run! Disposable/.dispose (vals (:ctx/cursors ctx)))
-    (Disposable/.dispose (:ctx/default-font ctx))
-    (Disposable/.dispose (:ctx/shape-drawer-texture ctx))
-    (Disposable/.dispose (:ctx/skin ctx))
-    (run! Disposable/.dispose (vals (:ctx/textures ctx)))
+    (run! Disposable/.dispose (vals @cursors))
+    (Disposable/.dispose @default-font)
+    (Disposable/.dispose @shape-drawer-texture)
+    (Disposable/.dispose @skin)
+    (run! Disposable/.dispose (vals @textures))
     (Disposable/.dispose (:ctx/tiled-map ctx))))
 
 (defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed? handle-fsm-event! spawn-entity!]
   (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
-  (swap! state #(or (.ctx ^Stage (:ctx/stage %)) %))
+  (swap! state #(or (.ctx ^Stage @stage) %))
   (malli-schema/validate-humanize schema @state)
-  (let [default-font (:ctx/default-font @state)
-        shape-drawer (:ctx/shape-drawer @state)
-        ui-mouse-position (viewport/unproject (.getViewport ^Stage (:ctx/stage @state)) mouse-position)
-        world-mouse-position (viewport/unproject (:ctx/world-viewport @state) mouse-position)]
+  (let [default-font @default-font
+        shape-drawer @shape-drawer
+        ui-mouse-position (viewport/unproject (.getViewport ^Stage @stage) mouse-position)
+        world-mouse-position (viewport/unproject @world-viewport mouse-position)]
     (swap! state (fn [ctx]
                    (let [player-eid (:ctx/player-eid ctx)
                          raycaster (:ctx/raycaster ctx)
                          render-z-order (:ctx/render-z-order ctx)
                          mouseover-eid (:ctx/mouseover-eid ctx)
                          [x y] ui-mouse-position
-                         new-eid (if (mouseover-actor (:ctx/stage ctx) x y)
+                         new-eid (if (mouseover-actor @stage x y)
                                    nil
                                    (let [player @player-eid
                                          hits (remove #(= (:entity/z-order @%) :z-order/effect)
@@ -2518,20 +2512,20 @@
               mouseover-eid (:ctx/mouseover-eid ctx)
               data (or (and mouseover-eid @mouseover-eid)
                        (world/cell-at world (mapv int world-mouse-position)))]
-          (.addActor ^Stage (:ctx/stage ctx)
+          (.addActor ^Stage @stage
                             (create-data-viewer-window
                              {:title "Data View"
                               :data data
                               :width 500
                               :height 500
-                              :skin (:ctx/skin ctx)})))))
+                              :skin @skin})))))
     (swap! state #(assoc % :ctx/active-entities
                          (world/active-entities (:ctx/world %) @(:ctx/player-eid %))))
-    (orthographic-camera/set-position! (viewport/get-camera (:ctx/world-viewport @state))
+    (orthographic-camera/set-position! (viewport/get-camera @world-viewport)
                                        (:entity/position @(:ctx/player-eid @state)))
     (let [ctx @state
           raycaster (:ctx/raycaster ctx)
-          world-viewport (:ctx/world-viewport ctx)
+          world-viewport @world-viewport
           colors (:ctx/colors ctx)
           explored-tile-corners (:ctx/explored-tile-corners ctx)
           tiled-map (:ctx/tiled-map ctx)]
@@ -2548,9 +2542,9 @@
                               :visible-tile-color (:colors/visible-tile colors)
                               :invisible-tile-color (:colors/invisible-tile colors)})))
     (let [ctx @state
-          world-viewport (:ctx/world-viewport ctx)
+          world-viewport @world-viewport
           [x y] ui-mouse-position
-          mouseover-actor* (mouseover-actor (:ctx/stage ctx) x y)]
+          mouseover-actor* (mouseover-actor @stage x y)]
       (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
       (.setProjectionMatrix ^Batch @batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
       (.begin ^Batch @batch)
@@ -2574,8 +2568,8 @@
             cursor-key (if (keyword? cursor-fn)
                          cursor-fn
                          (cursor-fn eid ctx))]
-        (assert (contains? (:ctx/cursors ctx) cursor-key))
-        (.setCursor ^Graphics Gdx/graphics ^Cursor (get (:ctx/cursors ctx) cursor-key)))
+        (assert (contains? @cursors cursor-key))
+        (.setCursor ^Graphics Gdx/graphics ^Cursor (get @cursors cursor-key)))
         (let [ctx @state
               eid (:ctx/player-eid ctx)
               entity @eid
@@ -2632,9 +2626,9 @@
                      (throw (ex-info "Error at `entity/tick`:" {:eid eid} t))))))
           (catch Throwable t
             (throwable/pretty-pst t)
-            (.addActor ^Stage (:ctx/stage ctx)
+            (.addActor ^Stage @stage
                               (error-window/create
-                               {:skin (:ctx/skin ctx)
+                               {:skin @skin
                                 :throwable t}))))))
     (let [ctx @state]
       (doseq [eid (world/destroyed-eids (:ctx/world ctx))]
@@ -2649,8 +2643,8 @@
                           v)
             nil))))
     (let [ctx @state
-          stage (:ctx/stage ctx)
-          world-viewport (:ctx/world-viewport ctx)]
+          stage @stage
+          world-viewport @world-viewport]
       (when (key-pressed? (:zoom-in (:ctx/controls ctx)))
         (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
       (when (key-pressed? (:zoom-out (:ctx/controls ctx)))
@@ -2669,8 +2663,8 @@
 
 (defn resize! [width height]
   (let [ctx @state]
-    (viewport/update! (.getViewport ^Stage (:ctx/stage ctx)) width height true)
-    (viewport/update! (:ctx/world-viewport ctx) width height false)))
+    (viewport/update! (.getViewport ^Stage @stage) width height true)
+    (viewport/update! @world-viewport width height false)))
 
 (defn spawn-entity! [entity]
   (let [ctx @state
@@ -2759,7 +2753,7 @@
 
             :player-dead
             (do (audio/play! @audio "bfxr_playerdeath")
-                (show-modal! (:ctx/skin ctx) (:ctx/stage ctx) {:title "YOU DIED - again!"
+                (show-modal! @skin @stage {:title "YOU DIED - again!"
                                                                :text "Good luck next time!"
                                                                :button-text "OK"
                                                                :on-click (fn [])})
