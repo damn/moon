@@ -314,58 +314,58 @@
    :usable))
 
 (def info
-  {:k->fn {:creature/level (fn [v _ctx]
+  {:k->fn {:creature/level (fn [v _elapsed-time]
                               (str "Level: " v))
-           :entity/stats (fn [entity-stats _ctx]
+           :entity/stats (fn [entity-stats _elapsed-time]
                            (stats/format-text entity-stats))
-           :effects.target/convert (fn [_ _ctx]
+           :effects.target/convert (fn [_ _elapsed-time]
                                     "Converts target to your side.")
-           :effects.target/damage (fn [{[min max] :damage/min-max} _ctx]
+           :effects.target/damage (fn [{[min max] :damage/min-max} _elapsed-time]
                                     (str min "-" max " damage"))
-           :effects.target/kill (fn [_ _ctx]
+           :effects.target/kill (fn [_ _elapsed-time]
                                   "Kills target")
-           :effects.target/melee-damage (fn [_ _ctx]
+           :effects.target/melee-damage (fn [_ _elapsed-time]
                                           "Damage based on entity strength.")
-           :effects.target/spiderweb (fn [_ _ctx]
+           :effects.target/spiderweb (fn [_ _elapsed-time]
                                        "Spiderweb slows 50% for 5 seconds.")
-           :effects.target/stun (fn [duration _ctx]
+           :effects.target/stun (fn [duration _elapsed-time]
                                   (str "Stuns for " (number/readable duration) " seconds"))
-           :effects/spawn (fn [{:keys [property/pretty-name]} _ctx]
+           :effects/spawn (fn [{:keys [property/pretty-name]} _elapsed-time]
                             (str "Spawns a " pretty-name))
-           :effects/target-all (fn [_ _ctx]
+           :effects/target-all (fn [_ _elapsed-time]
                                  "All visible targets")
-           :entity/delete-after-duration (fn [counter ctx]
-                                             (str "Remaining: " (number/readable (timer/ratio (:ctx/elapsed-time ctx) counter)) "/1"))
-           :entity/faction (fn [faction _ctx]
+           :entity/delete-after-duration (fn [counter elapsed-time]
+                                             (str "Remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+           :entity/faction (fn [faction _elapsed-time]
                              (str "Faction: " (name faction)))
-           :entity/fsm (fn [fsm _ctx]
+           :entity/fsm (fn [fsm _elapsed-time]
                           (str "State: " (name (:state fsm))))
-           :stats/modifiers (fn [mods _ctx]
+           :stats/modifiers (fn [mods _elapsed-time]
                               (mods/format-text mods))
-           :entity/skills (fn [skills _ctx]
+           :entity/skills (fn [skills _elapsed-time]
                             (when (seq skills)
                               (str "Skills: " (str/join "," (map name (keys skills))))))
-           :entity/species (fn [species _ctx]
+           :entity/species (fn [species _elapsed-time]
                              (str "Creature - " (str/capitalize (name species))))
-           :entity/temp-modifier (fn [{:keys [counter]} ctx]
-                                    (str "Spiderweb - remaining: " (number/readable (timer/ratio (:ctx/elapsed-time ctx) counter)) "/1"))
-           :projectile/piercing? (fn [_ _ctx]
+           :entity/temp-modifier (fn [{:keys [counter]} elapsed-time]
+                                    (str "Spiderweb - remaining: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+           :projectile/piercing? (fn [_ _elapsed-time]
                                    "Piercing")
-           :property/pretty-name (fn [v _ctx]
+           :property/pretty-name (fn [v _elapsed-time]
                                     v)
-           :skill/cooling-down? (fn [counter ctx]
-                                   (str "Cooldown: " (number/readable (timer/ratio (:ctx/elapsed-time ctx) counter)) "/1"))
-           :skill/action-time (fn [v _ctx]
+           :skill/cooling-down? (fn [counter elapsed-time]
+                                   (str "Cooldown: " (number/readable (timer/ratio elapsed-time counter)) "/1"))
+           :skill/action-time (fn [v _elapsed-time]
                                  (str "Action-Time: " (number/readable v) " seconds"))
-           :skill/action-time-modifier-key (fn [v _ctx]
+           :skill/action-time-modifier-key (fn [v _elapsed-time]
                                               (case v
                                                 :stats/cast-speed "Spell"
                                                 :stats/attack-speed "Attack"))
-           :skill/cooldown (fn [v _ctx]
+           :skill/cooldown (fn [v _elapsed-time]
                              (str "Cooldown: " (number/readable v) " seconds"))
-           :skill/cost (fn [v _ctx]
+           :skill/cost (fn [v _elapsed-time]
                           (str "Cost: " v " Mana"))
-           :maxrange (fn [v _ctx]
+           :maxrange (fn [v _elapsed-time]
                        (str "Range: " v " Meters."))}
    :k-order [:property/pretty-name
              :skill/action-time-modifier-key
@@ -397,13 +397,13 @@
                :entity/temp-modifier "LIGHT_GRAY"}})
 
 (defn info-text
-  [entity ctx]
+  [entity elapsed-time]
   (let [{:keys [k->fn
                 k-order
                 k->colors]} info
         component-info (fn [[k v]]
                          (let [s (if-let [info-fn (k->fn k)]
-                                   (str (info-fn v ctx)))]
+                                   (str (info-fn v elapsed-time)))]
                            (if-let [color (k->colors k)]
                              (str "[" color "]" s "[]")
                              s)))]
@@ -414,23 +414,9 @@
                            (catch Throwable _t
                              (str "*info-error* " k)))
                       (when (map? v)
-                        (str "\n" (info-text v ctx))))))
+                        (str "\n" (info-text v elapsed-time))))))
          (str/join "\n")
          string/remove-newlines)))
-
-(defn- create-component-animation
-  [{:keys [animation/frames
-           animation/frame-duration
-           animation/looping?
-           delete-after-stopped?]}
-   _ctx]
-  (assert (not (and looping? delete-after-stopped?)))
-  {:frames (vec frames)
-   :frame-duration frame-duration
-   :looping? looping?
-   :cnt 0
-   :maxcnt (* (count frames) (float frame-duration))
-   :delete-after-stopped? delete-after-stopped?})
 
 (defn- prepare-entity-geometry [entity]
   (let [{:entity/keys [position width height collides? z-order rotation-angle]} entity]
@@ -449,66 +435,69 @@
            :entity/height (float height)
            :entity/rotation-angle (or rotation-angle 0))))
 
-(defn- create-component-delete-after-duration
-  [duration ctx]
-  (timer/create (:ctx/elapsed-time ctx) duration))
-
-(defn- create-component-projectile-collision
-  [v _ctx]
-  (assoc v :already-hit-bodies #{}))
-
-(defn- create-component-stats
-  [v _ctx]
-  (-> v
-      (update :stats/mana (fn [v] [v v]))
-      (update :stats/hp   (fn [v] [v v]))))
-
-(def k->create-component
-  {:entity/animation create-component-animation
-   :entity/delete-after-duration create-component-delete-after-duration
-   :entity/projectile-collision create-component-projectile-collision
-   :entity/stats create-component-stats})
-
 (defn create-component
-  [ctx k v]
-  (if-let [f (k->create-component k)]
-    (f v ctx)
+  [elapsed-time k v]
+  (case k
+    :entity/animation
+    (let [{:keys [animation/frames
+                  animation/frame-duration
+                  animation/looping?
+                  delete-after-stopped?]} v]
+      (assert (not (and looping? delete-after-stopped?)))
+      {:frames (vec frames)
+       :frame-duration frame-duration
+       :looping? looping?
+       :cnt 0
+       :maxcnt (* (count frames) (float frame-duration))
+       :delete-after-stopped? delete-after-stopped?})
+
+    :entity/delete-after-duration
+    (timer/create elapsed-time v)
+
+    :entity/projectile-collision
+    (assoc v :already-hit-bodies #{})
+
+    :entity/stats
+    (-> v
+        (update :stats/mana (fn [v] [v v]))
+        (update :stats/hp   (fn [v] [v v])))
+
     v))
 
 (defmulti create-entity-state
-  (fn [[k _v] _eid _ctx]
+  (fn [[k _v] _eid _elapsed-time]
     k))
 
 (defmethod create-entity-state :default
-  [[_k v] _eid _ctx]
+  [[_k v] _eid _elapsed-time]
   v)
 
 (defmethod create-entity-state :active-skill
-  [[_k [skill effect-ctx]] eid ctx]
+  [[_k [skill effect-ctx]] eid elapsed-time]
   {:skill skill
    :effect-ctx effect-ctx
    :counter (->> skill
                  :skill/action-time
                  (stats/apply-action-speed-modifier (:entity/stats @eid) skill)
-                 (timer/create (:ctx/elapsed-time ctx)))})
+                 (timer/create elapsed-time))})
 
 (defmethod create-entity-state :stunned
-  [[_k duration] _eid ctx]
-  {:counter (timer/create (:ctx/elapsed-time ctx) duration)})
+  [[_k duration] _eid elapsed-time]
+  {:counter (timer/create elapsed-time duration)})
 
 (defmethod create-entity-state :player-moving
-  [[_k movement-vector] _eid _ctx]
+  [[_k movement-vector] _eid _elapsed-time]
   {:movement-vector movement-vector})
 
 (defmethod create-entity-state :npc-moving
-  [[_k movement-vector] eid ctx]
+  [[_k movement-vector] eid elapsed-time]
   {:movement-vector movement-vector
-   :timer (timer/create (:ctx/elapsed-time ctx)
+   :timer (timer/create elapsed-time
                         (* (stats/get-value (:entity/stats @eid) :stats/reaction-time)
                            0.016))})
 
 (defmethod create-entity-state :player-item-on-cursor
-  [[_k item] _eid _ctx]
+  [[_k item] _eid _elapsed-time]
   {:item item})
 
 (def fsms
@@ -630,7 +619,7 @@
         (#(group/find-actor % "moon.ui.action-bar"))
         (action-bar-add-skill! {:skill-id (:property/id skill)
                                 :texture-region (textures/texture-region textures (:entity/image skill))
-                                :tooltip-text (info-text skill ctx)}
+                                :tooltip-text (info-text skill (:ctx/elapsed-time ctx))}
                                skin))))
 
 (defn- inventory-window-get-cell [inventory-window cell]
@@ -708,51 +697,45 @@
     (when (:entity/player? @eid)
       (ui-remove-item! ctx cell))))
 
-(defn- after-create-fsm
-  [{:keys [fsm initial-state]} eid ctx]
-  (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
-  (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid ctx))
-  nil)
-
-(defn- after-create-skills
-  [skills eid ctx]
-  (swap! eid assoc :entity/skills nil)
-  (doseq [{:keys [property/id] :as skill} skills]
-    (assert (not (contains? (:entity/skills @eid) id)))
-    (swap! eid update :entity/skills assoc id skill)
-    (when (:entity/player? @eid)
-      (ui-update-skill! ctx skill)))
-  nil)
-
-(defn- after-create-inventory
-  [items eid ctx]
-  (swap! eid assoc :entity/inventory (->> #:inventory.slot{:bag      [6 4]
-                                                          :weapon   [1 1]
-                                                          :shield   [1 1]
-                                                          :helm     [1 1]
-                                                          :chest    [1 1]
-                                                          :leg      [1 1]
-                                                          :glove    [1 1]
-                                                          :boot     [1 1]
-                                                          :cloak    [1 1]
-                                                          :necklace [1 1]
-                                                          :rings    [2 1]}
-                                             (map (fn [[slot [width height]]]
-                                                    [slot (moon-g2d/create width height (constantly nil))]))
-                                             (into {})))
-  (doseq [item items]
-    (pickup-item! ctx eid item))
-  nil)
-
-(def k->after-create
-  {:entity/fsm after-create-fsm
-   :entity/inventory after-create-inventory
-   :entity/skills after-create-skills})
-
 (defn after-create-component
   [ctx eid [k v]]
-  (if-let [f (k->after-create k)]
-    (f v eid ctx)
+  (case k
+    :entity/fsm
+    (let [{:keys [fsm initial-state]} v]
+      (swap! eid assoc :entity/fsm (create-fsm fsm initial-state))
+      (swap! eid assoc initial-state (create-entity-state [initial-state nil] eid (:ctx/elapsed-time ctx)))
+      nil)
+
+    :entity/skills
+    (do
+      (swap! eid assoc :entity/skills nil)
+      (doseq [{:keys [property/id] :as skill} v]
+        (assert (not (contains? (:entity/skills @eid) id)))
+        (swap! eid update :entity/skills assoc id skill)
+        (when (:entity/player? @eid)
+          (ui-update-skill! ctx skill)))
+      nil)
+
+    :entity/inventory
+    (do
+      (swap! eid assoc :entity/inventory (->> #:inventory.slot{:bag      [6 4]
+                                                              :weapon   [1 1]
+                                                              :shield   [1 1]
+                                                              :helm     [1 1]
+                                                              :chest    [1 1]
+                                                              :leg      [1 1]
+                                                              :glove    [1 1]
+                                                              :boot     [1 1]
+                                                              :cloak    [1 1]
+                                                              :necklace [1 1]
+                                                              :rings    [2 1]}
+                                                 (map (fn [[slot [width height]]]
+                                                        [slot (moon-g2d/create width height (constantly nil))]))
+                                                 (into {})))
+      (doseq [item v]
+        (pickup-item! ctx eid item))
+      nil)
+
     nil))
 
 (defn- item-place-position [player-position world-mouse-position maxrange]
@@ -792,7 +775,7 @@
 
 (defn- spawn-entity! [ctx entity]
   (let [entity (reduce (fn [m [k v]]
-                         (assoc m k (create-component ctx k v)))
+                         (assoc m k (create-component (:ctx/elapsed-time ctx) k v)))
                        {}
                        entity)
         entity (prepare-entity-geometry entity)
@@ -997,7 +980,7 @@
       (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
                              [k (k @eid)])
             state-args (if params [new-state-k params] [new-state-k nil])
-            new-state-obj [new-state-k (create-entity-state state-args eid ctx)]]
+            new-state-obj [new-state-k (create-entity-state state-args eid (:ctx/elapsed-time ctx))]]
         (swap! eid assoc :entity/fsm new-fsm)
         (swap! eid assoc new-state-k (new-state-obj 1))
         (swap! eid dissoc old-state-k)
@@ -1937,7 +1920,7 @@
                            (info-text (apply dissoc @eid [:entity/skills
                                                           :entity/faction
                                                           :active-skill])
-                                      ctx)
+                                      (:ctx/elapsed-time ctx))
                            ""))
       :skin skin})))
 
