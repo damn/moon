@@ -1,4 +1,4 @@
 (ns gdx.texture-filter
-  (:require [com.badlogic.gdx.graphics.texture$texture-filter :as texture-filter]))
+  (:import (com.badlogic.gdx.graphics Texture$TextureFilter)))
 
-(def linear texture-filter/Linear)
+(def linear Texture$TextureFilter/Linear)

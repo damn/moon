@@ -1,26 +1,31 @@
 (ns gdx.free-type-font-generator
   (:refer-clojure :exclude [new])
-  (:require [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator :as generator]
-            [com.badlogic.gdx.graphics.g2d.freetype.free-type-font-generator$free-type-font-parameter :as parameter]))
+  (:import (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Texture$TextureFilter)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator
+                                                   FreeTypeFontGenerator$FreeTypeFontParameter)))
 
 (defn new [file-handle]
-  (generator/new file-handle))
+  (FreeTypeFontGenerator. ^FileHandle file-handle))
 
 (let [k->opts
       {
        ; TODO convert texture-filter from keyword?
-       :set-mag-filter parameter/set-magFilter
-       :set-min-filter parameter/set-minFilter
-       :set-size       parameter/set-size
+       :set-mag-filter (fn [^FreeTypeFontGenerator$FreeTypeFontParameter parameter ^Texture$TextureFilter filter]
+                         (set! (.magFilter parameter) filter))
+       :set-min-filter (fn [^FreeTypeFontGenerator$FreeTypeFontParameter parameter ^Texture$TextureFilter filter]
+                         (set! (.minFilter parameter) filter))
+       :set-size (fn [^FreeTypeFontGenerator$FreeTypeFontParameter parameter size]
+                   (set! (.size parameter) size))
        }
 
       build
       (fn [config-opts]
-        (let [config (parameter/new)]
+        (let [config (FreeTypeFontGenerator$FreeTypeFontParameter.)]
           (doseq [[k v] config-opts]
             (let [apply! (k->opts k)]
               (assert apply! (str "Unknown config option: " k))
               (apply! config v)))
           config))]
   (defn generate-font [generator parameter]
-    (generator/generateFont generator (build parameter))))
+    (.generateFont ^FreeTypeFontGenerator generator ^FreeTypeFontGenerator$FreeTypeFontParameter (build parameter))))

@@ -1,8 +1,11 @@
 (ns gdx.static-tiled-map-tile
-  (:require [com.badlogic.gdx.maps.tiled.tiles.static-tiled-map-tile :as static-tiled-map-tile]))
+  (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn create [texture-region-or-tile]
-  (static-tiled-map-tile/new texture-region-or-tile))
+  (if (instance? StaticTiledMapTile texture-region-or-tile)
+    (StaticTiledMapTile. ^StaticTiledMapTile texture-region-or-tile)
+    (StaticTiledMapTile. ^TextureRegion texture-region-or-tile)))
 
 (defn get-properties [tile]
-  (static-tiled-map-tile/getProperties tile))
+  (.getProperties ^StaticTiledMapTile tile))

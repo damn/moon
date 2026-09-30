@@ -1,14 +1,14 @@
 (ns gdx.tiled-map-tile
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile :as tiled-map-tile]))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTile)))
 
 (defn get-properties [tile]
-  (tiled-map-tile/getProperties tile))
+  (.getProperties ^TiledMapTile tile))
 
 (defn get-texture-region [tile]
-  (tiled-map-tile/getTextureRegion tile))
+  (.getTextureRegion ^TiledMapTile tile))
 
 (defn get-offset-x [tile]
-  (tiled-map-tile/getOffsetX tile))
+  (.getOffsetX ^TiledMapTile tile))
 
 (defn get-offset-y [tile]
-  (tiled-map-tile/getOffsetY tile))
+  (.getOffsetY ^TiledMapTile tile))

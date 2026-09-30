@@ -1,50 +1,51 @@
 (ns gdx.tiled-map-tile-layer
   (:require [gdx.map-properties :as map-properties]
             [gdx.tiled-map-tile :as tiled-map-tile]
-            [gdx.tiled-map-tile-layer-cell :as cell]
-            [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer :as tiled-map-tile-layer]))
+            [gdx.tiled-map-tile-layer-cell :as cell])
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTileLayer
+                                        TiledMapTileLayer$Cell)))
 
 (defn create-layer [width height tilewidth tileheight]
-  (tiled-map-tile-layer/new width height tilewidth tileheight))
+  (TiledMapTileLayer. (int width) (int height) (int tilewidth) (int tileheight)))
 
 (defn set-name! [layer name]
-  (tiled-map-tile-layer/setName layer name))
+  (.setName ^TiledMapTileLayer layer ^String name))
 
 (defn set-visible! [layer visible?]
-  (tiled-map-tile-layer/setVisible layer visible?))
+  (.setVisible ^TiledMapTileLayer layer visible?))
 
 (defn get-cell [layer x y]
-  (tiled-map-tile-layer/getCell layer x y))
+  (.getCell ^TiledMapTileLayer layer (int x) (int y)))
 
 (defn set-cell! [layer x y cell]
-  (tiled-map-tile-layer/setCell layer x y cell))
+  (.setCell ^TiledMapTileLayer layer (int x) (int y) ^TiledMapTileLayer$Cell cell))
 
 (defn get-properties [layer]
-  (tiled-map-tile-layer/getProperties layer))
+  (.getProperties ^TiledMapTileLayer layer))
 
 (defn get-name [layer]
-  (tiled-map-tile-layer/getName layer))
+  (.getName ^TiledMapTileLayer layer))
 
 (defn visible? [layer]
-  (tiled-map-tile-layer/isVisible layer))
+  (.isVisible ^TiledMapTileLayer layer))
 
 (defn get-width [layer]
-  (tiled-map-tile-layer/getWidth layer))
+  (.getWidth ^TiledMapTileLayer layer))
 
 (defn get-height [layer]
-  (tiled-map-tile-layer/getHeight layer))
+  (.getHeight ^TiledMapTileLayer layer))
 
 (defn get-tile-width [layer]
-  (tiled-map-tile-layer/getTileWidth layer))
+  (.getTileWidth ^TiledMapTileLayer layer))
 
 (defn get-tile-height [layer]
-  (tiled-map-tile-layer/getTileHeight layer))
+  (.getTileHeight ^TiledMapTileLayer layer))
 
 (defn get-render-offset-x [layer]
-  (tiled-map-tile-layer/getRenderOffsetX layer))
+  (.getRenderOffsetX ^TiledMapTileLayer layer))
 
 (defn get-render-offset-y [layer]
-  (tiled-map-tile-layer/getRenderOffsetY layer))
+  (.getRenderOffsetY ^TiledMapTileLayer layer))
 
 (defn property-value [layer [x y] property-key]
   (if-let [cell (get-cell layer x y)]

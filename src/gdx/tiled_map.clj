@@ -8,14 +8,14 @@
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [gdx.tiled-map-tile-layer-cell :as cell]
             [gdx.static-tiled-map-tile :as static-tiled-map-tile]
-            [gdx.vector3 :as vector3]
-            [com.badlogic.gdx.maps.tiled.tiled-map :as tiled-map]))
+            [gdx.vector3 :as vector3])
+  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn get-properties [tiled-map]
-  (tiled-map/getProperties tiled-map))
+  (.getProperties ^TiledMap tiled-map))
 
 (defn get-layers [tiled-map]
-  (tiled-map/getLayers tiled-map))
+  (.getLayers ^TiledMap tiled-map))
 
 (defn get-property [tiled-map k]
   (-> tiled-map
@@ -45,7 +45,7 @@
 
 (defn create
   [{:keys [properties layers]}]
-  (let [tiled-map (tiled-map/new)]
+  (let [tiled-map (TiledMap.)]
     (doseq [[k v] properties]
       (assert (string? k))
       (map-properties/put! (get-properties tiled-map) k v))

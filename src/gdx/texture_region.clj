@@ -1,29 +1,30 @@
 (ns gdx.texture-region
-  (:require [com.badlogic.gdx.graphics.g2d.texture-region :as texture-region]))
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)))
 
 (defn create
   ([texture]
-   (texture-region/new texture))
+   (TextureRegion. ^Texture texture))
   ([texture x y w h]
-   (texture-region/new texture x y w h)))
+   (TextureRegion. ^Texture texture (int x) (int y) (int w) (int h))))
 
 (defn get-region-width [texture-region]
-  (texture-region/getRegionWidth texture-region))
+  (.getRegionWidth ^TextureRegion texture-region))
 
 (defn get-region-height [texture-region]
-  (texture-region/getRegionHeight texture-region))
+  (.getRegionHeight ^TextureRegion texture-region))
 
 (defn get-u [texture-region]
-  (texture-region/getU texture-region))
+  (.getU ^TextureRegion texture-region))
 
 (defn get-v [texture-region]
-  (texture-region/getV texture-region))
+  (.getV ^TextureRegion texture-region))
 
 (defn get-u2 [texture-region]
-  (texture-region/getU2 texture-region))
+  (.getU2 ^TextureRegion texture-region))
 
 (defn get-v2 [texture-region]
-  (texture-region/getV2 texture-region))
+  (.getV2 ^TextureRegion texture-region))
 
 (defn get-texture [texture-region]
-  (texture-region/getTexture texture-region))
+  (.getTexture ^TextureRegion texture-region))

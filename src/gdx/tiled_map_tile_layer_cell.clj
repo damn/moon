@@ -1,11 +1,12 @@
 (ns gdx.tiled-map-tile-layer-cell
-  (:require [com.badlogic.gdx.maps.tiled.tiled-map-tile-layer$cell :as cell]))
+  (:import (com.badlogic.gdx.maps.tiled TiledMapTile
+                                        TiledMapTileLayer$Cell)))
 
 (defn create []
-  (cell/new))
+  (TiledMapTileLayer$Cell.))
 
 (defn set-tile! [cell tile]
-  (cell/setTile cell tile))
+  (.setTile ^TiledMapTileLayer$Cell cell ^TiledMapTile tile))
 
 (defn get-tile [cell]
-  (cell/getTile cell))
+  (.getTile ^TiledMapTileLayer$Cell cell))

@@ -1,5 +1,6 @@
 (ns gdx.texture
-  (:require [com.badlogic.gdx.graphics.texture :as texture]))
+  (:import (com.badlogic.gdx.graphics Texture
+                                      TextureData)))
 
 (defn create [texture-data]
-  (texture/new texture-data))
+  (Texture. ^TextureData texture-data))
