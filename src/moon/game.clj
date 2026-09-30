@@ -594,17 +594,17 @@
                                      :tooltip-text (item/info-text item)}
                                     skin))))
 
-(defn- remove-item! [ctx eid cell]
-  (let [entity @eid
-        item (get-in (:entity/inventory entity) cell)]
+(defn- remove-item [entity cell]
+  (let [item (get-in (:entity/inventory entity) cell)]
     (assert item)
-    (swap! eid assoc-in (cons :entity/inventory cell) nil)
-    (when (inventory/applies-modifiers? cell)
-      (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
-    (when (:entity/player? @eid)
-      (-> (.getRoot ^Stage (:ctx/stage ctx))
-          (#(group/find-actor % "moon.ui.windows.inventory"))
-          (inventory-window-remove-item! cell)))))
+    (cond-> (assoc-in entity (cons :entity/inventory cell) nil)
+      (inventory/applies-modifiers? cell)
+      (update :entity/stats stats/remove-mods (:stats/modifiers item)))))
+
+(defn- ui-remove-item! [ctx cell]
+  (-> (.getRoot ^Stage (:ctx/stage ctx))
+      (#(group/find-actor % "moon.ui.windows.inventory"))
+      (inventory-window-remove-item! cell)))
 
 (defn after-create-component
   [ctx eid [k v]]
@@ -1567,7 +1567,8 @@
       :player-idle
       (when-let [item (get-in (:entity/inventory @player-eid) cell)]
         (audio/play! audio "bfxr_takeit")
-        (remove-item! ctx player-eid cell)
+        (swap! player-eid remove-item cell)
+        (ui-remove-item! ctx cell)
         (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item))
 
       :player-item-on-cursor
@@ -1588,7 +1589,8 @@
               (inventory/valid-slot? cell item-on-cursor))
          (do (swap! player-eid dissoc :entity/item-on-cursor)
              (audio/play! audio "bfxr_itemput")
-             (remove-item! ctx player-eid cell)
+             (swap! player-eid remove-item cell)
+             (ui-remove-item! ctx cell)
              (swap! player-eid set-item cell item-on-cursor)
              (ui-set-item! ctx cell item-on-cursor)
              (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item)
