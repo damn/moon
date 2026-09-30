@@ -1,8 +1,11 @@
 (ns gdx.color
-  (:require [com.badlogic.gdx.graphics.color :as color]))
+  (:import (com.badlogic.gdx.graphics Color)))
 
-(defn create [rgba]
-  (color/new rgba))
+(defn create [[r g b a]]
+  (Color. r g b a))
 
-(defn to-float-bits [rgba]
-  (color/toFloatBits rgba))
+(defn to-float-bits [[r g b a]]
+  (Color/toFloatBits (float r)
+                     (float g)
+                     (float b)
+                     (float a)))

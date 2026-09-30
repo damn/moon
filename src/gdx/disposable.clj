@@ -1,5 +1,5 @@
 (ns gdx.disposable
-  (:require [com.badlogic.gdx.utils.disposable :as disposable]))
+  (:import (com.badlogic.gdx.utils Disposable)))
 
 (defn dispose! [resource]
-  (disposable/dispose resource))
+  (Disposable/.dispose resource))

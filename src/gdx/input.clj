@@ -1,44 +1,45 @@
 (ns gdx.input
-  (:require [com.badlogic.gdx.input :as input]
-            [com.badlogic.gdx.input$buttons :as buttons]
-            [com.badlogic.gdx.input$keys :as keys]))
+  (:import (com.badlogic.gdx Input
+                             Input$Buttons
+                             Input$Keys
+                             InputProcessor)))
 
 (defn- key->code [k]
   (case k
-    :input.keys/d keys/D
-    :input.keys/a keys/A
-    :input.keys/w keys/W
-    :input.keys/s keys/S
-    :input.keys/minus keys/MINUS
-    :input.keys/equals keys/EQUALS
-    :input.keys/p keys/P
-    :input.keys/space keys/SPACE
-    :input.keys/escape keys/ESCAPE
-    :input.keys/i keys/I
-    :input.keys/e keys/E
-    :input.keys/enter keys/ENTER
-    :input.keys/left keys/LEFT
-    :input.keys/right keys/RIGHT
-    :input.keys/up keys/UP
-    :input.keys/down keys/DOWN))
+    :input.keys/d Input$Keys/D
+    :input.keys/a Input$Keys/A
+    :input.keys/w Input$Keys/W
+    :input.keys/s Input$Keys/S
+    :input.keys/minus Input$Keys/MINUS
+    :input.keys/equals Input$Keys/EQUALS
+    :input.keys/p Input$Keys/P
+    :input.keys/space Input$Keys/SPACE
+    :input.keys/escape Input$Keys/ESCAPE
+    :input.keys/i Input$Keys/I
+    :input.keys/e Input$Keys/E
+    :input.keys/enter Input$Keys/ENTER
+    :input.keys/left Input$Keys/LEFT
+    :input.keys/right Input$Keys/RIGHT
+    :input.keys/up Input$Keys/UP
+    :input.keys/down Input$Keys/DOWN))
 
 (defn- button->code [k]
   (case k
-    :input.buttons/left buttons/LEFT
-    :input.buttons/right buttons/RIGHT))
+    :input.buttons/left Input$Buttons/LEFT
+    :input.buttons/right Input$Buttons/RIGHT))
 
 (defn position [input]
-  [(input/getX input)
-   (input/getY input)])
+  [(.getX ^Input input)
+   (.getY ^Input input)])
 
 (defn key-pressed? [input key]
-  (input/isKeyPressed input (key->code key)))
+  (.isKeyPressed ^Input input (key->code key)))
 
 (defn key-just-pressed? [input key]
-  (input/isKeyJustPressed input (key->code key)))
+  (.isKeyJustPressed ^Input input (key->code key)))
 
 (defn button-just-pressed? [input button]
-  (input/isButtonJustPressed input (button->code button)))
+  (.isButtonJustPressed ^Input input (button->code button)))
 
 (defn set-processor! [input processor]
-  (input/setInputProcessor input processor))
+  (.setInputProcessor ^Input input ^InputProcessor processor))

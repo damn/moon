@@ -1,8 +1,8 @@
 (ns gdx.actor.widget.text-field
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-field :as text-field]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextField)))
 
 (defn create [text skin]
-  (text-field/new text skin))
+  (TextField. ^String text ^Skin skin))
 
 (defn get-text [text-field]
-  (text-field/getText text-field))
+  (.getText ^TextField text-field))

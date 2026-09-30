@@ -1,7 +1,7 @@
 (ns gdx.stage
   (:import (clojure.lang ILookup)
-           (clojure Stage))
-  (:require [com.badlogic.gdx.scenes.scene2d.stage :as stage]))
+           (clojure Stage)
+           (com.badlogic.gdx.scenes.scene2d Actor)))
 
 (defn set-ctx! [^Stage stage ctx]
   (set! (.ctx stage) ctx))
@@ -18,13 +18,13 @@
   (set-ctx! stage (f (:stage/ctx stage))))
 
 (defn add-actor! [stage actor]
-  (stage/addActor stage actor))
+  (.addActor ^Stage stage ^Actor actor))
 
 (defn hit [stage x y touchable?]
-  (stage/hit stage x y touchable?))
+  (.hit ^Stage stage (float x) (float y) touchable?))
 
 (defn act! [stage]
-  (stage/act stage))
+  (.act ^Stage stage))
 
 (defn draw! [stage]
-  (stage/draw stage))
+  (.draw ^Stage stage))

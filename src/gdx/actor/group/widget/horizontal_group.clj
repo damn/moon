@@ -1,8 +1,8 @@
 (ns gdx.actor.group.widget.horizontal-group
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.horizontal-group :as horizontal-group]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui HorizontalGroup)))
 
 (defn create
   [{:keys [space pad]}]
-  (doto (horizontal-group/new)
-    (horizontal-group/space space)
-    (horizontal-group/pad pad)))
+  (doto (HorizontalGroup.)
+    (.space (float space))
+    (.pad (float pad))))

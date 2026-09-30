@@ -1,5 +1,6 @@
 (ns gdx.actor.group.widget.scroll-pane
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.scroll-pane :as scroll-pane]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui ScrollPane Skin)))
 
 (defn create [widget skin]
-  (scroll-pane/new widget skin))
+  (ScrollPane. ^Actor widget ^Skin skin))

@@ -1,10 +1,11 @@
 (ns gdx.actor.group.widget.table
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.table :as table]
-            [gdx.cell :as cell]
-            [gdx.layout :as layout]))
+  (:require [gdx.cell :as cell]
+            [gdx.layout :as layout])
+  (:import (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui Table)))
 
 (defn add-cell! [table cell-declaration]
-  (-> (table/add table (:actor cell-declaration))
+  (-> (.add ^Table table ^Actor (:actor cell-declaration))
       (cell/set-opts! (dissoc cell-declaration :actor))))
 
 (defn add-rows! [table rows]
@@ -15,8 +16,8 @@
         (add-cell! table props-or-actor)
 
         ; TODO Remove else case
-        :else (table/add table props-or-actor)))
-    (table/row table))
+        :else (.add ^Table table ^Actor props-or-actor)))
+    (.row ^Table table))
   table)
 
 (def ^:private set-opt-fns
@@ -24,7 +25,7 @@
                  (add-rows! table rows)
                  (layout/pack table))
    :table/cell-defaults (fn [table defaults]
-                          (cell/set-opts! (table/defaults table) defaults))})
+                          (cell/set-opts! (.defaults ^Table table) defaults))})
 
 (defn set-opts! [table opts]
   (doseq [[k v] opts :when (set-opt-fns k)]
@@ -32,5 +33,5 @@
   table)
 
 (defn create [opts]
-  (doto (table/new)
+  (doto (Table.)
     (set-opts! opts)))

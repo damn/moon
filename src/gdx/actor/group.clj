@@ -1,17 +1,17 @@
 (ns gdx.actor.group
-  (:require [com.badlogic.gdx.scenes.scene2d.group :as group]))
+  (:import (com.badlogic.gdx.scenes.scene2d Actor Group)))
 
 (defn create []
-  (group/new))
+  (Group.))
 
 (defn find-actor [group actor-name]
-  (group/findActor group actor-name))
+  (.findActor ^Group group actor-name))
 
 (defn get-children [group]
-  (group/getChildren group))
+  (.getChildren ^Group group))
 
 (defn add-actor! [group actor]
-  (group/addActor group actor))
+  (.addActor ^Group group ^Actor actor))
 
 (defn clear-children! [group]
-  (group/clearChildren group))
+  (.clearChildren ^Group group))

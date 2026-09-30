@@ -1,11 +1,11 @@
 (ns gdx.actor.group.widget.table.button.text.check-box
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.check-box :as check-box]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox Skin)))
 
 (defn create [text skin]
-  (check-box/new text skin))
+  (CheckBox. ^String text ^Skin skin))
 
 (defn checked? [check-box]
-  (check-box/isChecked check-box))
+  (.isChecked ^CheckBox check-box))
 
 (defn set-checked! [check-box checked?]
-  (check-box/setChecked check-box checked?))
+  (.setChecked ^CheckBox check-box checked?))

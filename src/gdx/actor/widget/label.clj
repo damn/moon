@@ -1,11 +1,11 @@
 (ns gdx.actor.widget.label
   (:refer-clojure :exclude [class])
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.label :as label]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Label Skin)))
 
-(def class label/class)
+(def class Label)
 
 (defn create [text skin]
-  (label/new text skin))
+  (Label. ^String text ^Skin skin))
 
 (defn set-text! [label text]
-  (label/setText label text))
+  (.setText ^Label label ^String text))

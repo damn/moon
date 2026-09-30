@@ -1,8 +1,9 @@
 (ns gdx.skin
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.skin :as skin]))
+  (:import (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin)))
 
 (defn create [file-handle]
-  (skin/new file-handle))
+  (Skin. ^FileHandle file-handle))
 
 (defn get-font [skin font-name]
-  (skin/getFont skin font-name))
+  (.getFont ^Skin skin font-name))

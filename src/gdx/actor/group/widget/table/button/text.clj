@@ -1,5 +1,5 @@
 (ns gdx.actor.group.widget.table.button.text
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.text-button :as text-button]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
 
 (defn create [text skin]
-  (text-button/new text skin))
+  (TextButton. ^String text ^Skin skin))

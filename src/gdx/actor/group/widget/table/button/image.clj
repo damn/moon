@@ -1,6 +1,6 @@
 (ns gdx.actor.group.widget.table.button.image
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.image-button :as image-button]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui ImageButton)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
-(defn create
-  [drawable]
-  (image-button/new drawable))
+(defn create [drawable]
+  (ImageButton. ^Drawable drawable))

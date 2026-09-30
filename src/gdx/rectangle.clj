@@ -1,11 +1,11 @@
 (ns gdx.rectangle
-  (:require [com.badlogic.gdx.math.rectangle :as rectangle]))
+  (:import (com.badlogic.gdx.math Rectangle)))
 
 (defn create [x y width height]
-  (rectangle/new x y width height))
+  (Rectangle. (float x) (float y) (float width) (float height)))
 
 (defn overlaps [a b]
-  (rectangle/overlaps a b))
+  (.overlaps ^Rectangle a ^Rectangle b))
 
 (defn contains [rectangle x y]
-  (rectangle/contains rectangle x y))
+  (.contains ^Rectangle rectangle (float x) (float y)))

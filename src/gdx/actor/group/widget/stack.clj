@@ -1,5 +1,5 @@
 (ns gdx.actor.group.widget.stack
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.stack :as stack]))
+  (:import (com.badlogic.gdx.scenes.scene2d.ui Stack)))
 
 (defn create []
-  (stack/new))
+  (Stack.))

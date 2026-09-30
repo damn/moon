@@ -1,14 +1,17 @@
 (ns gdx.actor.widget.image
-  (:require [com.badlogic.gdx.scenes.scene2d.ui.image :as image]))
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d.ui Image)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defn create [drawable]
-  (image/new drawable))
+  (Image. ^TextureRegion drawable))
 
 (defn create-from-texture [texture]
-  (image/newTexture texture))
+  (Image. ^Texture texture))
 
 (defn create-drawable [drawable]
-  (image/newDrawable drawable))
+  (Image. ^Drawable drawable))
 
 (defn set-drawable! [image drawable]
-  (image/setDrawable image drawable))
+  (.setDrawable ^Image image ^Drawable drawable))
