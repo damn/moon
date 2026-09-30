@@ -30,7 +30,7 @@
 
 (defn- find-ancestor [a pred?]
   (loop [actor a]
-    (if-let [p (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)]
+    (if-let [p (Actor/.getParent actor)]
       (if (pred? p)
         p
         (recur p))
@@ -40,8 +40,6 @@
 (defn k-label-text [k]
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
   )
-
-
 
 (def ^:private property-type->overview-table-props
   {:properties/audiovisuals {:columns 10
@@ -68,13 +66,7 @@
                              :sort-by-fn (comp name :property/id)
                              :extra-info-text (constantly "")}})
 
-(defmulti create-widget
-  (fn [[schema-k :as _schema] v ctx]
-    schema-k))
-
-(defmulti widget-value
-  (fn [[schema-k :as _schema] widget schemas]
-    schema-k))
+(declare create-widget widget-value)
 
 (defn- map-widget-table-get-value [table schemas]
   (into {}
@@ -82,45 +74,21 @@
               :let [[k _] (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor widget)]]
           [k (widget-value (get schemas k) widget schemas)])))
 
-(defmethod widget-value :default
-  [_ widget _schemas]
-  ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor widget) 1))
-
-(defmethod widget-value :s/boolean
-  [_ widget _schemas]
-  (.isChecked ^CheckBox widget))
-
-(defmethod widget-value :s/enum
-  [_ widget _schemas]
-  (edn/read-string (.getSelected ^SelectBox widget)))
-
-(defmethod widget-value :s/map
-  [_ table schemas]
-  (map-widget-table-get-value table schemas))
-
-(defmethod widget-value :s/number
-  [_ widget _schemas]
-  (edn/read-string (.getText ^TextField widget)))
-
-(defmethod widget-value :s/one-to-many
-  [_ widget _schemas]
-  (->> (group/get-children widget)
-       (keep (fn [^com.badlogic.gdx.scenes.scene2d.Actor a] (.getUserObject a)))
-       set))
-
-(defmethod widget-value :s/one-to-one
-  [_ widget _schemas]
-  (->> (group/get-children widget)
-       (keep (fn [^com.badlogic.gdx.scenes.scene2d.Actor a] (.getUserObject a)))
-       first))
-
-(defmethod widget-value :s/string
-  [_ widget _schemas]
-  (.getText ^TextField widget))
-
-(defmethod widget-value :s/val-max
-  [_ widget _schemas]
-  (edn/read-string (.getText ^TextField widget)))
+(defn widget-value [[schema-k] widget schemas]
+  (case schema-k
+    :s/boolean (.isChecked ^CheckBox widget)
+    :s/enum (edn/read-string (.getSelected ^SelectBox widget))
+    :s/map (map-widget-table-get-value widget schemas)
+    :s/number (edn/read-string (.getText ^TextField widget))
+    :s/one-to-many (->> (group/get-children widget)
+                        (keep (fn [^com.badlogic.gdx.scenes.scene2d.Actor a] (.getUserObject a)))
+                        set)
+    :s/one-to-one (->> (group/get-children widget)
+                       (keep (fn [^com.badlogic.gdx.scenes.scene2d.Actor a] (.getUserObject a)))
+                       first)
+    :s/string (.getText ^TextField widget)
+    :s/val-max (edn/read-string (.getText ^TextField widget))
+    ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor widget) 1)))
 
 (def ^:private property-k-sort-order
   [:property/id
@@ -517,52 +485,40 @@
              component-rows))
     table))
 
-(defmethod create-widget :default
-  [_ v {:keys [ctx/skin]}]
+(defn- scaled-image-button [texture-region scale]
+  (ImageButton.
+   (doto (TextureRegionDrawable. ^TextureRegion texture-region)
+     (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
+                  (* scale (.getRegionHeight ^TextureRegion texture-region))))))
+
+(defn- default-widget [v skin]
   (Label. ^String (string/truncate (binding [*print-level* nil]
-                         (pr-str v))
-                       60)
-             ^Skin skin))
+                                     (pr-str v))
+                                   60)
+          ^Skin skin))
 
-(defmethod create-widget :s/animation
-  [_ animation {:keys [ctx/textures]}]
+(defn- animation-widget [animation textures]
   (table/create {:table/cell-defaults {:pad 1}
-                :table/rows [(for [image (:animation/frames animation)]
-                               {:actor
-                                (let [scale 2
-                                      texture-region (textures/texture-region textures image)]
-                                  (ImageButton.
-                                   (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-                                     (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
-                                                  (* scale (.getRegionHeight ^TextureRegion texture-region))))))})]}))
+                 :table/rows [(for [image (:animation/frames animation)]
+                                {:actor (scaled-image-button
+                                         (textures/texture-region textures image)
+                                         2)})]}))
 
-(defmethod create-widget :s/boolean
-  [_ checked? {:keys [ctx/skin]}]
+(defn- boolean-widget [checked? skin]
   (doto (CheckBox. "" ^Skin skin)
     (.setChecked checked?)))
 
-(defmethod create-widget :s/enum
-  [schema v {:keys [ctx/skin]}]
+(defn- enum-widget [schema v skin]
   (doto ^SelectBox (SelectBox. ^Skin skin)
     (.setItems ^"[Ljava.lang.Object;" (into-array (map pr-str (rest schema))))
     (.setSelected (pr-str v))))
 
-(defmethod create-widget :s/image
-  [_ image {:keys [ctx/textures]}]
-  (let [texture-region (textures/texture-region textures image)
-        scale 2]
-    (ImageButton.
-     (doto (TextureRegionDrawable. ^TextureRegion texture-region)
-       (.setMinSize (* scale (.getRegionWidth ^TextureRegion texture-region))
-                    (* scale (.getRegionHeight ^TextureRegion texture-region)))))))
+(defn- image-widget [image textures]
+  (scaled-image-button (textures/texture-region textures image) 2))
 
-(defmethod create-widget :s/map
-  [schema
-   m
-   {:keys [ctx/db
-           ctx/skin]
-    :as ctx}]
-  (let [schemas (:db/schemas db)]
+(defn- map-widget [schema m ctx]
+  (let [{:keys [ctx/db ctx/skin]} ctx
+        schemas (:db/schemas db)]
     (map-widget-table-create
      {:skin skin
       :schema schema
@@ -574,49 +530,58 @@
       :opt? (seq (set/difference (optional-keyset schemas schema)
                                  (set (keys m))))})))
 
-(defmethod create-widget :s/number
-  [schema v {:keys [ctx/skin]}]
+(defn- number-widget [schema v skin]
   (doto (TextField. ^String (pr-str v) ^Skin skin)
     (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
 
-(defmethod create-widget :s/one-to-many
-  [[_ property-type] property-ids ctx]
+(defn- one-to-many-widget [[_ property-type] property-ids ctx]
   (let [table (table/create {:table/cell-defaults {:pad 5}})]
     (add-one-to-many-rows ctx table property-type property-ids)
     table))
 
-(defmethod create-widget :s/one-to-one
-  [[_ property-type] property-id ctx]
+(defn- one-to-one-widget [[_ property-type] property-id ctx]
   (let [table (table/create {:table/cell-defaults {:pad 5}})]
     (add-one-to-one-rows ctx table property-type property-id)
     table))
 
-(defmethod create-widget :s/sound
-  [_ sound-name {:keys [ctx/skin]}]
+(defn- sound-widget [sound-name skin]
   (let [table (table/create {:table/cell-defaults {:pad 5}})]
     (letfn [(sound-columns-fn [skin table sound-name]
               (sound-columns skin table sound-name open-select-fn))
             (open-select-fn [table]
               (open-select-sounds-handler table sound-columns-fn))]
       (table/add-rows! table [(if sound-name
-                           (sound-columns-fn skin table sound-name)
-                           [{:actor
-                             (doto (TextButton. "No sound" skin)
-                               (.addListener (proxy [ChangeListener] []
-                                                   (changed [event _actor]
-                                                     ((open-select-fn table)
-                                                      (:stage/ctx (.getStage ^Event event)))))))}])])
+                                (sound-columns-fn skin table sound-name)
+                                [{:actor
+                                  (doto (TextButton. "No sound" skin)
+                                    (.addListener (proxy [ChangeListener] []
+                                                    (changed [event _actor]
+                                                      ((open-select-fn table)
+                                                       (:stage/ctx (.getStage ^Event event)))))))}])])
       table)))
 
-(defmethod create-widget :s/string
-  [schema v {:keys [ctx/skin]}]
+(defn- string-widget [schema v skin]
   (doto (TextField. ^String (str v) ^Skin skin)
     (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
 
-(defmethod create-widget :s/val-max
-  [schema v {:keys [ctx/skin]}]
+(defn- val-max-widget [schema v skin]
   (doto (TextField. ^String (pr-str v) ^Skin skin)
     (.addListener (TextTooltip. ^String (str schema) ^Skin skin))))
+
+(defn create-widget [[schema-k :as schema] v {:keys [ctx/skin ctx/textures] :as ctx}]
+  (case schema-k
+    :s/animation (animation-widget v textures)
+    :s/boolean (boolean-widget v skin)
+    :s/enum (enum-widget schema v skin)
+    :s/image (image-widget v textures)
+    :s/map (map-widget schema v ctx)
+    :s/number (number-widget schema v skin)
+    :s/one-to-many (one-to-many-widget schema v ctx)
+    :s/one-to-one (one-to-one-widget schema v ctx)
+    :s/sound (sound-widget v skin)
+    :s/string (string-widget schema v skin)
+    :s/val-max (val-max-widget schema v skin)
+    (default-widget v skin)))
 
 (defn- main-window-f
   [{:keys [ctx/db
