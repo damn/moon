@@ -14,11 +14,6 @@
              :entity/image
              :item/slot} keyset))))
 
-(defn stackable? [item-a item-b]
-  (and (:count item-a)
-       (:count item-b)
-       (= (:property/id item-a) (:property/id item-b))))
-
 (defn info-text [item]
   (assert (valid? item))
   (str/join "\n"

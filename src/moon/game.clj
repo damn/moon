@@ -661,11 +661,8 @@
   (assert (item/valid? item))
   (let [[cell cell-item] (inventory/can-pickup-item? (:entity/inventory @eid) item)]
     (assert cell)
-    (assert (or (item/stackable? item cell-item)
-                (nil? cell-item)))
-    (if (item/stackable? item cell-item)
-      (do #_(stack-item ctx eid cell item))
-      (set-item! ctx eid cell item))))
+    (assert (nil? cell-item))
+    (set-item! ctx eid cell item)))
 
 (defn- remove-item! [ctx eid cell]
   (let [entity @eid
@@ -1721,13 +1718,6 @@
      (do (swap! eid dissoc :entity/item-on-cursor)
          (play-sound! ctx "bfxr_itemput")
          (set-item! ctx eid cell item-on-cursor)
-         (handle-fsm-event! ctx eid :dropped-item))
-
-     (and item-in-cell
-          (item/stackable? item-in-cell item-on-cursor))
-     (do (swap! eid dissoc :entity/item-on-cursor)
-         (play-sound! ctx "bfxr_itemput")
-         ; TODO :tx/stack-item not implemented
          (handle-fsm-event! ctx eid :dropped-item))
 
      (and item-in-cell

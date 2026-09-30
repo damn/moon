@@ -22,17 +22,16 @@
   (for [[position item] (slot inventory)]
     [[slot position] item]))
 
-(defn- free-cell [inventory slot item]
+(defn- free-cell [inventory slot]
   (assert (known-slot? slot) (str "Slot :" (pr-str slot)))
   (first (filter (fn [[_cell cell-item]]
-                   (or (item/stackable? item cell-item)
-                       (nil? cell-item)))
+                   (nil? cell-item))
                  (cells-and-items inventory slot))))
 
 (defn can-pickup-item? [inventory item]
   (assert (item/valid? item))
-  (or (free-cell inventory (:item/slot item) item)
-      (free-cell inventory :inventory.slot/bag item)))
+  (or (free-cell inventory (:item/slot item))
+      (free-cell inventory :inventory.slot/bag)))
 
 (defn valid-slot? [[slot _] item]
   (or (= :inventory.slot/bag slot)
