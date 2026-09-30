@@ -701,10 +701,8 @@
                     (min maxrange
                          (v2/distance player-position world-mouse-position)))))
 
-(defn- mouseover-actor [ctx]
-  (let [stage (:ctx/stage ctx)
-        [x y] (viewport/unproject (:stage/viewport stage) (input/position (:ctx/input ctx)))]
-    (stage/hit stage x y true)))
+(defn- mouseover-actor [stage x y]
+  (stage/hit stage x y true))
 
 (defn- button?
   [actor]
@@ -1881,8 +1879,12 @@
       (let [ctx (:stage/ctx (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this))
             player-eid (:ctx/player-eid ctx)
             entity @player-eid
-            state-k (:state (:entity/fsm entity))]
-        (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx (mouseover-actor ctx))))))
+            state-k (:state (:entity/fsm entity))
+            [x y] (:ctx/ui-mouse-position ctx)]
+        (entity-state-draw-ui-view [state-k (state-k entity)]
+                                   player-eid
+                                   ctx
+                                   (mouseover-actor (:ctx/stage ctx) x y))))))
 
 (defn player-message-actor-create []
   (let [message-duration-seconds 0.5]
@@ -2707,7 +2709,8 @@
                        render-z-order (:ctx/render-z-order ctx)
                        mouseover-eid (:ctx/mouseover-eid ctx)
                        position (:ctx/world-mouse-position ctx)
-                       new-eid (if (mouseover-actor ctx)
+                       [x y] (:ctx/ui-mouse-position ctx)
+                       new-eid (if (mouseover-actor (:ctx/stage ctx) x y)
                                  nil
                                  (let [player @player-eid
                                        hits (remove #(= (:entity/z-order @%) :z-order/effect)
@@ -2762,7 +2765,8 @@
         world-viewport (:ctx/world-viewport ctx)
         shape-drawer (:ctx/shape-drawer ctx)
         unit-scale (:ctx/unit-scale ctx)
-        mouseover-actor* (mouseover-actor ctx)]
+        [x y] (:ctx/ui-mouse-position ctx)
+        mouseover-actor* (mouseover-actor (:ctx/stage ctx) x y)]
     (batch/set-color! (:ctx/batch ctx) 1 1 1 1)
     (batch/set-projection-matrix! (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
     (batch/begin! (:ctx/batch ctx))
