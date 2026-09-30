@@ -41,8 +41,6 @@
   (name k) ;(str "[GRAY]:" (namespace k) "[]/" (name k))
   )
 
-(def state (atom nil))
-
 (defn- get-stage [ctx]
   (:ctx/stage ctx))
 
@@ -693,9 +691,8 @@
 (defn resize [ctx width height]
   (viewport/update! (:stage/viewport (get-stage ctx)) width height true))
 
-(defn -main []
-  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
-  (Lwjgl3Application.
+(defn listener []
+  (let [state (atom nil)]
     (reify ApplicationListener
       (create [_]
         (reset! state (create)))
@@ -706,8 +703,12 @@
       (resize [_ width height]
         (resize @state width height))
       (pause [_])
-      (resume [_]))
-    (doto (Lwjgl3ApplicationConfiguration.)
-      (.setTitle "!Editor!")
-      (.setWindowedMode 1440 900)
-      (.setForegroundFPS 60))))
+      (resume [_]))))
+
+(defn -main []
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application. (listener)
+                      (doto (Lwjgl3ApplicationConfiguration.)
+                        (.setTitle "!Editor!")
+                        (.setWindowedMode 1440 900)
+                        (.setForegroundFPS 60))))
