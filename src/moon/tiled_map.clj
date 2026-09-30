@@ -4,7 +4,7 @@
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d Batch TextureRegion)
            (com.badlogic.gdx.maps MapLayer MapLayers MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer$Cell)
+           (com.badlogic.gdx.maps.tiled TiledMap TiledMapTile TiledMapTileLayer TiledMapTileLayer$Cell)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)
            (com.badlogic.gdx.math Vector3)))
 
@@ -52,10 +52,10 @@
   (let [layer-name "creatures"
         property-key "id"
         layer (.get ^MapLayers (get-layers tiled-map) ^String layer-name)]
-    (for [x (range (tiled-map-tile-layer/get-width layer))
-          y (range (tiled-map-tile-layer/get-height layer))
+    (for [x (range (.getWidth ^TiledMapTileLayer layer))
+          y (range (.getHeight ^TiledMapTileLayer layer))
           :let [position [x y]
-                cell (tiled-map-tile-layer/get-cell layer x y)]
+                cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
           :when cell
           :let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
                             property-key)]
@@ -65,7 +65,7 @@
 (defn tile-movement-property
   [tiled-map layer [x y]]
   (let [position [x y]]
-    (when-let [cell (tiled-map-tile-layer/get-cell layer x y)]
+    (when-let [cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
       (let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell))
                         "movement")]
         (assert value
@@ -73,18 +73,18 @@
                      position " / mapeditor inverted position: " [(position 0)
                                                                  (- (dec (.get ^MapProperties (get-properties tiled-map) "height"))
                                                                     (position 1))]
-                     " and layer " (tiled-map-tile-layer/get-name layer) " is undefined."))
+                     " and layer " (.getName ^TiledMapTileLayer layer) " is undefined."))
         value))))
 
 (defn movement-property-layers [tiled-map]
   (->> tiled-map
        get-layers
        reverse
-       (filter #(.get ^MapProperties (tiled-map-tile-layer/get-properties %) "movement-properties"))))
+       (filter #(.get ^MapProperties (.getProperties ^TiledMapTileLayer %) "movement-properties"))))
 
 (defn movement-properties [tiled-map position]
   (for [layer (movement-property-layers tiled-map)]
-    [(tiled-map-tile-layer/get-name layer)
+    [(.getName ^TiledMapTileLayer layer)
      (tile-movement-property tiled-map layer position)]))
 
 (defn movement-property [tiled-map position]
@@ -176,12 +176,12 @@
   (let [num-vertices 20
         vertices (float-array num-vertices)
         batch-color (.getColor ^Batch batch)
-        layer-width (tiled-map-tile-layer/get-width layer)
-        layer-height (tiled-map-tile-layer/get-height layer)
-        layer-tile-width (* (tiled-map-tile-layer/get-tile-width layer) unit-scale)
-        layer-tile-height (* (tiled-map-tile-layer/get-tile-height layer) unit-scale)
-        layer-offset-x (* (tiled-map-tile-layer/get-render-offset-x layer) unit-scale)
-        layer-offset-y (* (- (tiled-map-tile-layer/get-render-offset-y layer)) unit-scale)
+        layer-width (.getWidth ^TiledMapTileLayer layer)
+        layer-height (.getHeight ^TiledMapTileLayer layer)
+        layer-tile-width (* (.getTileWidth ^TiledMapTileLayer layer) unit-scale)
+        layer-tile-height (* (.getTileHeight ^TiledMapTileLayer layer) unit-scale)
+        layer-offset-x (* (.getRenderOffsetX ^TiledMapTileLayer layer) unit-scale)
+        layer-offset-y (* (- (.getRenderOffsetY ^TiledMapTileLayer layer)) unit-scale)
         col1 (max 0
                   (int (/ (- (:x view-bounds) layer-offset-x)
                           layer-tile-width)))
@@ -210,7 +210,7 @@
         (loop [col col1
                x x-start]
           (when (< col col2)
-            (when-let [cell (tiled-map-tile-layer/get-cell layer col row)]
+            (when-let [cell (.getCell ^TiledMapTileLayer layer (int col) (int row))]
               (when-let [tile (.getTile ^TiledMapTileLayer$Cell cell)]
                 (draw-tile! x
                             y
@@ -246,7 +246,7 @@
                      :y (- (.y ^Vector3 pos) (/ h 2))
                      :width w
                      :height h}]
-    (doseq [layer (filter tiled-map-tile-layer/visible? (get-layers tiled-map))]
+    (doseq [layer (filter #(.isVisible ^TiledMapTileLayer %) (get-layers tiled-map))]
       (draw-tile-layer! layer
                         batch
                         world-unit-scale

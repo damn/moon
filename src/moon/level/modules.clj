@@ -1,13 +1,13 @@
 (ns moon.level.modules
   (:require [moon.rand :as rand]
             [moon.tiled-map :as moon-tiled-map]
-            [gdx.tiled-map-tile-layer :as tiled-map-tile-layer :refer [property-value]]
+            [gdx.tiled-map-tile-layer :refer [property-value]]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
             [moon.position :as position])
   (:import (com.badlogic.gdx.graphics.g2d TextureRegion)
            (com.badlogic.gdx.maps MapLayers MapProperties)
-           (com.badlogic.gdx.maps.tiled TiledMapTileLayer$Cell TmxMapLoader)
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer TiledMapTileLayer$Cell TmxMapLoader)
            (com.badlogic.gdx.maps.tiled.tiles StaticTiledMapTile)))
 
 (defn print-grid [{:keys [grid] :as world-fn-ctx}]
@@ -168,16 +168,16 @@
                         {"width" (g2d/width grid)
                          "height" (g2d/height grid)})
      :layers (for [layer (moon-tiled-map/get-layers schema-tiled-map)]
-               {:name (tiled-map-tile-layer/get-name layer)
-                :visible? (tiled-map-tile-layer/visible? layer)
-                :properties (let [props (tiled-map-tile-layer/get-properties layer)]
+               {:name (.getName ^TiledMapTileLayer layer)
+                :visible? (.isVisible ^TiledMapTileLayer layer)
+                :properties (let [props (.getProperties ^TiledMapTileLayer layer)]
                               (zipmap (.getKeys ^MapProperties props)
                                       (.getValues ^MapProperties props)))
                 :tiles (for [position (g2d/posis grid)
                              :let [local-position (get grid position)]
                              :when local-position]
                          (when (vector? local-position)
-                           (when-let [cell (tiled-map-tile-layer/get-cell layer (local-position 0) (local-position 1))]
+                           (when-let [cell (.getCell ^TiledMapTileLayer layer (int (local-position 0)) (int (local-position 1)))]
                              [position (copy-tile (.getTile ^TiledMapTileLayer$Cell cell))])))})}))
 
 (defn- convert-to-tiled-map

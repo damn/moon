@@ -7,10 +7,10 @@
             [moon.textures :as textures]
             [moon.tiled-map :as moon-tiled-map]
             [moon.color :as color]
-            [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [moon.scene2d.window :as window]
             [moon.viewport :as viewport])
   (:import (com.badlogic.gdx.maps MapLayers)
+           (com.badlogic.gdx.maps.tiled TiledMapTileLayer)
            (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics Input Input$Keys InputProcessor)
            (clojure Stage)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
@@ -49,8 +49,8 @@
         width (moon-tiled-map/get-property tiled-map "width")
         height (moon-tiled-map/get-property tiled-map "height")]
     (assert tiled-map)
-    (-> (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) "creatures")
-        (tiled-map-tile-layer/set-visible! true))
+    (.setVisible ^TiledMapTileLayer (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) "creatures")
+                 true)
     (orthographic-camera/set-position! camera [(/ width 2) (/ height 2)])
     (orthographic-camera/zoom-to-rect camera {:left [0 0]
                                               :top [0 height]
