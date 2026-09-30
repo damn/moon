@@ -789,97 +789,14 @@
                         (.setName "moon.ui.modal-window")
                         (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (.getViewport ^Stage stage)) 2) (float (* (viewport/get-world-height (.getViewport ^Stage stage)) (/ 3 4))) (float Align/center))))))
 
-(defn- play-sound! [ctx sound-name]
-  (audio/play! (:ctx/audio ctx) sound-name))
-
 (defn- audiovisual! [ctx position audiovisual]
   (let [db (:ctx/db ctx)
         {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
                                              (db/build db audiovisual)
                                              audiovisual)]
-    (play-sound! ctx sound)
+    (audio/play! (:ctx/audio ctx) sound)
     (spawn-effect! ctx position
                    {:entity/animation (assoc animation :delete-after-stopped? true)})))
-
-(defn- state-enter-player-item-on-cursor
-  [{:keys [item]} eid _ctx]
-  (swap! eid assoc :entity/item-on-cursor item)
-  nil)
-
-(defn- state-enter-active-skill
-  [{:keys [skill]} eid ctx]
-  (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
-  (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
-         (timer/create (:ctx/elapsed-time ctx) (:skill/cooldown skill)))
-  (play-sound! ctx (:skill/start-action-sound skill))
-  nil)
-
-(defn- state-enter-npc-dead
-  [_ eid _ctx]
-  (swap! eid assoc :entity/destroyed? true)
-  nil)
-
-(defn- state-enter-player-moving
-  [{:keys [movement-vector]} eid _ctx]
-  (swap! eid assoc :entity/movement {:direction movement-vector
-                                     :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
-                                                0)})
-  nil)
-
-(defn- state-enter-player-dead
-  [_ _eid ctx]
-  (play-sound! ctx "bfxr_playerdeath")
-  (show-modal! ctx {:title "YOU DIED - again!"
-                    :text "Good luck next time!"
-                    :button-text "OK"
-                    :on-click (fn [])})
-  nil)
-
-(defn- state-enter-npc-moving
-  [{:keys [movement-vector]} eid _ctx]
-  (swap! eid assoc :entity/movement {:direction movement-vector
-                                     :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
-                                                0)})
-  nil)
-
-(def k->state-enter
-  {:player-item-on-cursor state-enter-player-item-on-cursor
-   :active-skill state-enter-active-skill
-   :npc-dead state-enter-npc-dead
-   :player-moving state-enter-player-moving
-   :player-dead state-enter-player-dead
-   :npc-moving state-enter-npc-moving})
-
-(defn- state-enter! [ctx eid [state-k state-v]]
-  (when-let [f (k->state-enter state-k)]
-    (f state-v eid ctx)))
-
-(defn- state-exit! [ctx eid [state-k _state-v] world-mouse-position]
-  (case state-k
-    :player-item-on-cursor
-    (let [entity @eid
-          item (:entity/item-on-cursor entity)]
-      (when item
-        (swap! eid dissoc :entity/item-on-cursor)
-        (play-sound! ctx "bfxr_itemputground")
-        (spawn-item! ctx (item-place-position (:entity/position entity)
-                                              world-mouse-position
-                                              (- (:entity/click-distance-tiles entity) 0.1))
-                     item)))
-
-    :player-moving
-    (do (swap! eid dissoc :entity/movement)
-        nil)
-
-    :npc-sleeping
-    (do (swap! eid add-text-effect (:ctx/elapsed-time ctx) "[WHITE]!" 1)
-        (spawn-alert! ctx (:entity/position @eid) (:entity/faction @eid) 0.2))
-
-    :npc-moving
-    (do (swap! eid dissoc :entity/movement)
-        nil)
-
-    nil))
 
 (defn- handle-fsm-event! [ctx eid world-mouse-position event & [params]]
   (let [fsm (:entity/fsm @eid)
@@ -895,8 +812,74 @@
         (swap! eid assoc :entity/fsm new-fsm)
         (swap! eid assoc new-state-k (new-state-obj 1))
         (swap! eid dissoc old-state-k)
-        (state-exit! ctx eid old-state-obj world-mouse-position)
-        (state-enter! ctx eid new-state-obj)
+        (let [[state-k _state-v] old-state-obj]
+          (case state-k
+            :player-item-on-cursor
+            (let [entity @eid
+                  item (:entity/item-on-cursor entity)]
+              (when item
+                (swap! eid dissoc :entity/item-on-cursor)
+                (audio/play! (:ctx/audio ctx) "bfxr_itemputground")
+                (spawn-item! ctx (item-place-position (:entity/position entity)
+                                                      world-mouse-position
+                                                      (- (:entity/click-distance-tiles entity) 0.1))
+                             item)))
+
+            :player-moving
+            (do (swap! eid dissoc :entity/movement)
+                nil)
+
+            :npc-sleeping
+            (do (swap! eid add-text-effect (:ctx/elapsed-time ctx) "[WHITE]!" 1)
+                (spawn-alert! ctx (:entity/position @eid) (:entity/faction @eid) 0.2))
+
+            :npc-moving
+            (do (swap! eid dissoc :entity/movement)
+                nil)
+
+            nil))
+        (let [[state-k state-v] new-state-obj]
+          (case state-k
+            :player-item-on-cursor
+            (let [{:keys [item]} state-v]
+              (swap! eid assoc :entity/item-on-cursor item)
+              nil)
+
+            :active-skill
+            (let [{:keys [skill]} state-v]
+              (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
+              (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
+                     (timer/create (:ctx/elapsed-time ctx) (:skill/cooldown skill)))
+              (audio/play! (:ctx/audio ctx) (:skill/start-action-sound skill))
+              nil)
+
+            :npc-dead
+            (do (swap! eid assoc :entity/destroyed? true)
+                nil)
+
+            :player-moving
+            (let [{:keys [movement-vector]} state-v]
+              (swap! eid assoc :entity/movement {:direction movement-vector
+                                                 :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                            0)})
+              nil)
+
+            :player-dead
+            (do (audio/play! (:ctx/audio ctx) "bfxr_playerdeath")
+                (show-modal! ctx {:title "YOU DIED - again!"
+                                  :text "Good luck next time!"
+                                  :button-text "OK"
+                                  :on-click (fn [])})
+                nil)
+
+            :npc-moving
+            (let [{:keys [movement-vector]} state-v]
+              (swap! eid assoc :entity/movement {:direction movement-vector
+                                                 :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                            0)})
+              nil)
+
+            nil))
         nil))))
 
 (declare apply-effects!)
@@ -1587,7 +1570,7 @@
 (defn- clicked-inventory-cell-player-idle
   [ctx eid cell]
   (when-let [item (get-in (:entity/inventory @eid) cell)]
-    (play-sound! ctx "bfxr_takeit")
+    (audio/play! (:ctx/audio ctx) "bfxr_takeit")
     (remove-item! ctx eid cell)
     (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :pickup-item item)))
 
@@ -1601,14 +1584,14 @@
      (and (not item-in-cell)
           (inventory/valid-slot? cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
-         (play-sound! ctx "bfxr_itemput")
+         (audio/play! (:ctx/audio ctx) "bfxr_itemput")
          (set-item! ctx eid cell item-on-cursor)
          (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :dropped-item))
 
      (and item-in-cell
           (inventory/valid-slot? cell item-on-cursor))
      (do (swap! eid dissoc :entity/item-on-cursor)
-         (play-sound! ctx "bfxr_itemput")
+         (audio/play! (:ctx/audio ctx) "bfxr_itemput")
          (remove-item! ctx eid cell)
          (set-item! ctx eid cell item-on-cursor)
          (handle-fsm-event! ctx eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :dropped-item)
@@ -1874,20 +1857,20 @@
                     (group/find-actor "moon.ui.windows.inventory")
                     .isVisible)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
-                    (play-sound! ctx "bfxr_takeit")
+                    (audio/play! (:ctx/audio ctx) "bfxr_takeit")
                     (handle-fsm-event! ctx player-eid world-mouse-position :pickup-item item))
 
                 (inventory/can-pickup-item? (:entity/inventory @player-eid) item)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
-                    (play-sound! ctx "bfxr_pickup")
+                    (audio/play! (:ctx/audio ctx) "bfxr_pickup")
                     (pickup-item! ctx player-eid item)
                     nil)
 
                 :else
-                (do (play-sound! ctx "bfxr_denied")
+                (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
                     (show-message! ctx "Your Inventory is full")
                     nil))))
-          (do (play-sound! ctx "bfxr_denied")
+          (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
               (show-message! ctx "Too far away")
               nil)))
 
@@ -1897,7 +1880,7 @@
 
       :interaction-state.skill/not-usable
       (let [state params]
-        (do (play-sound! ctx "bfxr_denied")
+        (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
             (show-message! ctx (case state
                                  :cooldown "Skill is still on cooldown"
                                  :not-enough-mana "Not enough mana"
@@ -1905,7 +1888,7 @@
             nil))
 
       :interaction-state/no-skill-selected
-      (do (play-sound! ctx "bfxr_denied")
+      (do (audio/play! (:ctx/audio ctx) "bfxr_denied")
           (show-message! ctx "No selected skill")
           nil))))
 
