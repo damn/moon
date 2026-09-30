@@ -2410,8 +2410,8 @@
                                                         (handle-clicked-inventory-cell (:ctx/player-eid ctx)
                                                                                        @audio
                                                                                        handle-fsm-event!
-                                                                                       #(ui-set-item! ctx %1 %2)
-                                                                                       #(ui-remove-item! ctx %)
+                                                                                       (fn [cell item] (ui-set-item! ctx cell item))
+                                                                                       (fn [cell] (ui-remove-item! ctx cell))
                                                                                        cell
                                                                                        world-mouse-position)))
                                                     (fn [ctx player-entity x y mouseover? cell]
