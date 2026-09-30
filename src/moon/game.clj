@@ -1477,7 +1477,7 @@
               visible-tile-color))))))
 
 (defn draw-component
-  [ctx entity k v]
+  [ctx mouseover-actor entity k v]
   (case k
     :entity/clickable
     (let [{:keys [text]} v
@@ -1491,7 +1491,7 @@
 
     :player-item-on-cursor
     (let [{:keys [item]} v]
-      (when-not (mouseover-actor ctx)
+      (when-not mouseover-actor
         (draw-fn-texture-region ctx
                                 (textures/texture-region (:ctx/textures ctx) (:entity/image item))
                                 (item-place-position (:entity/position entity)
@@ -1860,21 +1860,17 @@
                            ""))
       :skin skin})))
 
-(defmulti entity-state-draw-ui-view
-  (fn [[k _v] _eid _ctx]
-    k))
+(defn entity-state-draw-ui-view
+  [[k _v] eid ctx mouseover-actor]
+  (case k
+    :player-item-on-cursor
+    (when mouseover-actor
+      (draw-fn-texture-region ctx
+                              (textures/texture-region (:ctx/textures ctx) (:entity/image (:entity/item-on-cursor @eid)))
+                              (:ctx/ui-mouse-position ctx)
+                              {:center? true}))
 
-(defmethod entity-state-draw-ui-view :default
-  [_ _eid _ctx]
-  nil)
-
-(defmethod entity-state-draw-ui-view :player-item-on-cursor
-  [_ eid ctx]
-  (when (mouseover-actor ctx)
-    (draw-fn-texture-region ctx
-                            (textures/texture-region (:ctx/textures ctx) (:entity/image (:entity/item-on-cursor @eid)))
-                            (:ctx/ui-mouse-position ctx)
-                            {:center? true})))
+    nil))
 
 (defn player-state-draw-create []
   (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
@@ -1886,7 +1882,7 @@
             player-eid (:ctx/player-eid ctx)
             entity @player-eid
             state-k (:state (:entity/fsm entity))]
-        (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx)))))
+        (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx (mouseover-actor ctx))))))
 
 (defn player-message-actor-create []
   (let [message-duration-seconds 0.5]
@@ -1981,34 +1977,31 @@
           (show-message! ctx "No selected skill")
           nil))))
 
-(defn- handle-input-player-idle
-  [player-eid ctx]
-  (if-let [movement-vector (player-movement-vector ctx)]
-    (handle-fsm-event! ctx player-eid :movement-input movement-vector)
-    (when (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
-      (interaction-state->txs (:ctx/interaction-state ctx)
-                              ctx
-                              player-eid))))
+(defn- handle-input
+  [state-k eid ctx mouseover-actor]
+  (case state-k
+    :player-idle
+    (if-let [movement-vector (player-movement-vector ctx)]
+      (handle-fsm-event! ctx eid :movement-input movement-vector)
+      (when (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
+        (interaction-state->txs (:ctx/interaction-state ctx)
+                                ctx
+                                eid)))
 
-(defn- handle-input-player-moving
-  [eid ctx]
-  (if-let [movement-vector (player-movement-vector ctx)]
-    (do (swap! eid assoc :entity/movement {:direction movement-vector
-                                           :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
-                                                      0)})
-        nil)
-    (handle-fsm-event! ctx eid :no-movement-input)))
+    :player-moving
+    (if-let [movement-vector (player-movement-vector ctx)]
+      (do (swap! eid assoc :entity/movement {:direction movement-vector
+                                             :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                        0)})
+          nil)
+      (handle-fsm-event! ctx eid :no-movement-input))
 
-(defn- handle-input-player-item-on-cursor
-  [eid ctx]
-  (when (and (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
-             (not (mouseover-actor ctx)))
-    (handle-fsm-event! ctx eid :drop-item)))
+    :player-item-on-cursor
+    (when (and (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
+               (not mouseover-actor))
+      (handle-fsm-event! ctx eid :drop-item))
 
-(def k->handle-input
-  {:player-idle handle-input-player-idle
-   :player-moving handle-input-player-moving
-   :player-item-on-cursor handle-input-player-item-on-cursor})
+    nil))
 
 (defn player-effect-ctx [mouseover-eid world-mouse-position player-eid]
   (let [target-position (or (and mouseover-eid
@@ -2353,7 +2346,7 @@
     (draw-fn-rectangle ctx x y width height color-float-bits)))
 
 (defn- draw-entities!
-  [ctx]
+  [ctx mouseover-actor]
   (let [player-eid (:ctx/player-eid ctx)
         raycaster (:ctx/raycaster ctx)
         colors (:ctx/colors ctx)
@@ -2381,7 +2374,7 @@
                                       (:colors/debug-body-outline colors))))
           (doseq [[k v] entity
                   :when (get render-layer k)]
-            (draw-component ctx entity k v)))
+            (draw-component ctx mouseover-actor entity k v)))
         (catch Throwable t
           (draw-entity-rectangle! ctx
                                   entity
@@ -2401,15 +2394,14 @@
                            :none (:colors/mouseover-tile-none colors))))))
 
 (defn- make-interaction-state
-  [ctx]
+  [ctx mouseover-actor]
   (let [player-eid (:ctx/player-eid ctx)
         mouseover-eid (:ctx/mouseover-eid ctx)
         world-mouse-position (:ctx/world-mouse-position ctx)
-        stage (:ctx/stage ctx)
-        mouseover-actor* (mouseover-actor ctx)]
+        stage (:ctx/stage ctx)]
     (cond
-      mouseover-actor*
-      [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor*)]
+      mouseover-actor
+      [:interaction-state/mouseover-actor (mouseover-actor-info mouseover-actor)]
 
       (and mouseover-eid
            (:entity/clickable @mouseover-eid))
@@ -2433,8 +2425,8 @@
             [:interaction-state.skill/not-usable state]))
         [:interaction-state/no-skill-selected]))))
 
-(defn assoc-interaction-state [ctx]
-  (assoc ctx :ctx/interaction-state (make-interaction-state ctx)))
+(defn assoc-interaction-state [ctx mouseover-actor]
+  (assoc ctx :ctx/interaction-state (make-interaction-state ctx mouseover-actor)))
 
 (def k->cursor
   {:player-item-on-cursor :cursors/hand-grab
@@ -2769,7 +2761,8 @@
   (let [ctx @state
         world-viewport (:ctx/world-viewport ctx)
         shape-drawer (:ctx/shape-drawer ctx)
-        unit-scale (:ctx/unit-scale ctx)]
+        unit-scale (:ctx/unit-scale ctx)
+        mouseover-actor* (mouseover-actor ctx)]
     (batch/set-color! (:ctx/batch ctx) 1 1 1 1)
     (batch/set-projection-matrix! (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
     (batch/begin! (:ctx/batch ctx))
@@ -2778,29 +2771,28 @@
       (reset! unit-scale world-unit-scale)
       (doseq [draw-fn [draw-tile-grid
                        draw-cell-debug
-                       draw-entities!
+                       #(draw-entities! % mouseover-actor*)
                        highlight-mouseover-tile]]
         (draw-fn ctx))
       (reset! unit-scale 1)
       (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-    (batch/end! (:ctx/batch ctx)))
-  (swap! state assoc-interaction-state)
-  (let [ctx @state
-        eid (:ctx/player-eid ctx)
-        entity @eid
-        state-k (:state (:entity/fsm entity))
-        cursor-fn (k->cursor state-k)
-        cursor-key (if (keyword? cursor-fn)
-                     cursor-fn
-                     (cursor-fn eid ctx))]
-    (assert (contains? (:ctx/cursors ctx) cursor-key))
-    (graphics/set-cursor! (:ctx/graphics ctx) (get (:ctx/cursors ctx) cursor-key)))
-  (let [ctx @state
-        eid (:ctx/player-eid ctx)
-        entity @eid
-        state-k (:state (:entity/fsm entity))]
-    (when-let [input-fn (k->handle-input state-k)]
-      (input-fn eid ctx)))
+    (batch/end! (:ctx/batch ctx))
+    (swap! state assoc-interaction-state mouseover-actor*)
+    (let [ctx @state
+          eid (:ctx/player-eid ctx)
+          entity @eid
+          state-k (:state (:entity/fsm entity))
+          cursor-fn (k->cursor state-k)
+          cursor-key (if (keyword? cursor-fn)
+                       cursor-fn
+                       (cursor-fn eid ctx))]
+      (assert (contains? (:ctx/cursors ctx) cursor-key))
+      (graphics/set-cursor! (:ctx/graphics ctx) (get (:ctx/cursors ctx) cursor-key)))
+    (let [ctx @state
+          eid (:ctx/player-eid ctx)
+          entity @eid
+          state-k (:state (:entity/fsm entity))]
+      (handle-input state-k eid ctx mouseover-actor*)))
   (swap! state dissoc :ctx/interaction-state)
   (swap! state (fn [ctx]
                  (assoc ctx :ctx/paused?
