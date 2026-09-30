@@ -1,6 +1,5 @@
 (ns gdx.tiled-map
-  (:require [gdx.batch :as batch]
-            [gdx.texture-region :as texture-region]
+  (:require [gdx.texture-region :as texture-region]
             [gdx.camera.orthographic :as orthographic-camera]
             [gdx.map-layers :as map-layers]
             [gdx.map-properties :as map-properties]
@@ -9,7 +8,9 @@
             [gdx.tiled-map-tile-layer-cell :as cell]
             [gdx.static-tiled-map-tile :as static-tiled-map-tile]
             [gdx.vector3 :as vector3])
-  (:import (com.badlogic.gdx.maps.tiled TiledMap)))
+  (:import (com.badlogic.gdx.graphics Texture)
+           (com.badlogic.gdx.graphics.g2d Batch)
+           (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn get-properties [tiled-map]
   (.getProperties ^TiledMap tiled-map))
@@ -146,31 +147,31 @@
         color12 (float (color-setter batch-color x1 y2))
         color22 (float (color-setter batch-color x2 y2))
         color21 (float (color-setter batch-color x2 y1))]
-    (aset-float verts batch/x1 x1)
-    (aset-float verts batch/y1 y1)
-    (aset-float verts batch/c1 color11)
-    (aset-float verts batch/u1 u1)
-    (aset-float verts batch/v1 v1)
-    (aset-float verts batch/x2 x1)
-    (aset-float verts batch/y2 y2)
-    (aset-float verts batch/c2 color12)
-    (aset-float verts batch/u2 u1)
-    (aset-float verts batch/v2 v2)
-    (aset-float verts batch/x3 x2)
-    (aset-float verts batch/y3 y2)
-    (aset-float verts batch/c3 color22)
-    (aset-float verts batch/u3 u2)
-    (aset-float verts batch/v3 v2)
-    (aset-float verts batch/x4 x2)
-    (aset-float verts batch/y4 y1)
-    (aset-float verts batch/c4 color21)
-    (aset-float verts batch/u4 u2)
-    (aset-float verts batch/v4 v1)
-    (batch/draw! batch
-                (texture-region/get-texture region)
-                verts
-                0
-                num-vertices)))
+    (aset-float verts Batch/X1 x1)
+    (aset-float verts Batch/Y1 y1)
+    (aset-float verts Batch/C1 color11)
+    (aset-float verts Batch/U1 u1)
+    (aset-float verts Batch/V1 v1)
+    (aset-float verts Batch/X2 x1)
+    (aset-float verts Batch/Y2 y2)
+    (aset-float verts Batch/C2 color12)
+    (aset-float verts Batch/U2 u1)
+    (aset-float verts Batch/V2 v2)
+    (aset-float verts Batch/X3 x2)
+    (aset-float verts Batch/Y3 y2)
+    (aset-float verts Batch/C3 color22)
+    (aset-float verts Batch/U3 u2)
+    (aset-float verts Batch/V3 v2)
+    (aset-float verts Batch/X4 x2)
+    (aset-float verts Batch/Y4 y1)
+    (aset-float verts Batch/C4 color21)
+    (aset-float verts Batch/U4 u2)
+    (aset-float verts Batch/V4 v1)
+    (.draw ^Batch batch
+           ^Texture (texture-region/get-texture region)
+           ^floats verts
+           (int 0)
+           (int num-vertices))))
 
 (defn- draw-tile-layer!
   [layer
@@ -180,7 +181,7 @@
    color-setter]
   (let [num-vertices 20
         vertices (float-array num-vertices)
-        batch-color (batch/get-color batch)
+        batch-color (.getColor ^Batch batch)
         layer-width (tiled-map-tile-layer/get-width layer)
         layer-height (tiled-map-tile-layer/get-height layer)
         layer-tile-width (* (tiled-map-tile-layer/get-tile-width layer) unit-scale)
@@ -237,8 +238,8 @@
    world-unit-scale
    camera
    color-setter]
-  (batch/set-projection-matrix! batch (orthographic-camera/combined camera))
-  (batch/begin! batch)
+  (.setProjectionMatrix ^Batch batch (orthographic-camera/combined camera))
+  (.begin ^Batch batch)
   (let [width  (* (orthographic-camera/viewport-width camera) (orthographic-camera/zoom camera))
         height (* (orthographic-camera/viewport-height camera) (orthographic-camera/zoom camera))
         up (orthographic-camera/up camera)
@@ -257,4 +258,4 @@
                         world-unit-scale
                         view-bounds
                         color-setter)))
-  (batch/end! batch))
+  (.end ^Batch batch))

@@ -1,10 +1,10 @@
 (ns moon.audio
   (:require [clojure.edn :as edn]
-            [gdx.audio :as audio]
             [gdx.sound :as sound]
             [gdx.files :as files]
             [gdx.disposable :as disposable]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io])
+  (:import (com.badlogic.gdx Audio)))
 
 (defn create
   [audio files]
@@ -12,7 +12,7 @@
         (for [sound-name (-> "config/sounds.edn" io/resource slurp edn/read-string)
               :let [path (format "sounds/%s.wav" sound-name)]]
           [sound-name
-           (audio/new-sound audio (files/internal files path))])))
+           (.newSound ^Audio audio (files/internal files path))])))
 
 (defn play!
   [sounds sound-name]

@@ -16,7 +16,6 @@
             [gdx.actor.group.widget.table.window :as window]
             [gdx.files :as files]
             [gdx.graphics :as graphics]
-            [gdx.bitmap-font :as bitmap-font]
             [gdx.bitmap-font-data :as bitmap-font-data]
             [gdx.sprite-batch :as sprite-batch]
             [gdx.texture-region :as texture-region]
@@ -678,7 +677,7 @@
   (let [skin (ui-skin/create (files/internal files "skin/uiskin.json"))]
     (-> skin
         (ui-skin/get-font "default-font")
-        bitmap-font/get-data
+        .getData
         (bitmap-font-data/set-markup-enabled! true))
     (assoc ctx :ctx/skin skin)))
 

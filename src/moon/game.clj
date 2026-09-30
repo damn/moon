@@ -12,8 +12,6 @@
             [gdx.actor.widget :as widget]
             [gdx.actor.widget.image :as image]
             [gdx.actor.widget.label :as label]
-            [gdx.align :as align]
-            [gdx.button-group :as button-group]
             [gdx.click-listener :as click-listener]
             [gdx.drawable.texture-region :as texture-region-drawable]
             [gdx.event :as event]
@@ -21,8 +19,6 @@
             [gdx.tooltip.text :as text-tooltip]
             [gdx.touchable :as touchable]
             [gdx.vector2 :as vector2]
-            [gdx.batch :as batch]
-            [gdx.bitmap-font :as bitmap-font]
             [gdx.bitmap-font-data :as bitmap-font-data]
             [gdx.camera.orthographic :as orthographic-camera]
             [gdx.change-listener :as change-listener]
@@ -79,9 +75,11 @@
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
+           (com.badlogic.gdx.graphics.g2d Batch BitmapFont TextureRegion)
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ImageButton Skin TextButton))
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup ImageButton Skin TextButton)
+           (com.badlogic.gdx.utils Align))
   (:gen-class))
 
 (def schema
@@ -528,9 +526,9 @@
                                        {:space 2
                                         :pad 2})
                                   (.setName "moon.ui.action-bar.horizontal-group")
-                                  (.setUserObject (button-group/create
-                                                           {:max-check-count 1
-                                                            :min-check-count 0})))
+                                  (.setUserObject (doto (ButtonGroup.)
+                                                    (.setMaxCheckCount (int 1))
+                                                    (.setMinCheckCount (int 0)))))
                          :expand? true
                          :bottom? true}]]})
     (layout/set-fill-parent! true)
@@ -559,7 +557,7 @@
                  (.addListener (text-tooltip/create tooltip-text skin))
                  (.setUserObject skill-id))]
     (group/add-actor! horizontal-group button)
-    (button-group/add! button-group button)
+    (.add ^ButtonGroup button-group ^Button button)
     nil))
 
 (defn- action-bar-remove-skill!
@@ -567,11 +565,11 @@
   (let [{:keys [horizontal-group button-group]} (action-bar-get-data action-bar)
         button (get horizontal-group skill-id)]
     (.remove ^Actor button)
-    (button-group/remove! button-group button)
+    (.remove ^ButtonGroup button-group ^Button button)
     nil))
 
 (defn- action-bar-selected-skill [action-bar]
-  (when-let [skill-button (button-group/get-checked (:button-group (action-bar-get-data action-bar)))]
+  (when-let [skill-button (.getChecked ^ButtonGroup (:button-group (action-bar-get-data action-bar)))]
     (.getUserObject ^Actor skill-button)))
 
 (defn- inventory-window-get-cell [inventory-window cell]
@@ -817,7 +815,7 @@
                                                                              (on-click)))))}]]})
                         (window/set-modal! true)
                         (.setName "moon.ui.modal-window")
-                        (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (:stage/viewport stage)) 2) (float (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))) (float align/center))))))
+                        (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (:stage/viewport stage)) 2) (float (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))) (float Align/center))))))
 
 (defn- play-sound! [ctx sound-name]
   (audio/play! (:ctx/audio ctx) sound-name))
@@ -1320,26 +1318,26 @@
   (let [font (or font (:ctx/default-font ctx))
         unit-scale (:ctx/unit-scale ctx)
         scale (or scale 1)
-        font-data (bitmap-font/get-data font)
+        font-data (.getData ^BitmapFont font)
         old-scale (bitmap-font-data/scale-x font-data)
         target-width 0
         wrap? false
         scale (* (float @unit-scale)
                  (float scale))]
     (bitmap-font-data/set-scale! font-data (* old-scale scale))
-    (bitmap-font/draw! font
-                       (:ctx/batch ctx)
-                       text
-                       x
-                       (+ y (if up?
-                              (-> text
-                                  (str/split #"\n")
-                                  count
-                                  (* (bitmap-font/get-line-height font)))
-                              0))
-                       target-width
-                       align/center
-                       wrap?)
+    (.draw ^BitmapFont font
+           ^Batch (:ctx/batch ctx)
+           text
+           (float x)
+           (float (+ y (if up?
+                         (-> text
+                             (str/split #"\n")
+                             count
+                             (* (.getLineHeight ^BitmapFont font)))
+                         0)))
+           (float target-width)
+           Align/center
+           wrap?)
     (bitmap-font-data/set-scale! font-data old-scale)))
 
 (defn- draw-fn-texture-region [ctx texture-region [x y] & {:keys [center? rotation]}]
@@ -1351,18 +1349,23 @@
                     (mapv (comp float (partial * world-unit-scale))
                           dimensions)))]
     (if center?
-      (batch/draw! (:ctx/batch ctx)
-                   texture-region
-                   (- (float x) (/ (float w) 2))
-                   (- (float y) (/ (float h) 2))
-                   (/ (float w) 2)
-                   (/ (float h) 2)
-                   w
-                   h
-                   1
-                   1
-                   (or rotation 0))
-      (batch/draw! (:ctx/batch ctx) texture-region x y w h))))
+      (Batch/.draw ^Batch (:ctx/batch ctx)
+                   ^TextureRegion texture-region
+                   (float (- (float x) (/ (float w) 2)))
+                   (float (- (float y) (/ (float h) 2)))
+                   (float (/ (float w) 2))
+                   (float (/ (float h) 2))
+                   (float w)
+                   (float h)
+                   (float 1)
+                   (float 1)
+                   (float (or rotation 0)))
+      (.draw ^Batch (:ctx/batch ctx)
+             ^TextureRegion texture-region
+             (float x)
+             (float y)
+             (float w)
+             (float h)))))
 
 (defn- draw-with-line-width! [ctx width draw-body]
   (let [shape-drawer (:ctx/shape-drawer ctx)
@@ -2515,7 +2518,7 @@
                    (let [skin (skin/create (files/internal files "skin/uiskin.json"))]
                      (-> skin
                          (skin/get-font "default-font")
-                         bitmap-font/get-data
+                         .getData
                          (bitmap-font-data/set-markup-enabled! true))
                      skin))
             (let [stage* (stage/create (fit-viewport/create 1440 900) (:ctx/batch ctx))]
@@ -2557,11 +2560,11 @@
                                     :set-min-filter texture-filter/linear
                                     :set-mag-filter texture-filter/linear}
                          font (font-generator/generate-font generator parameter)
-                         font-data (bitmap-font/get-data font)]
+                         font-data (.getData ^BitmapFont font)]
                      (disposable/dispose! generator)
                      (bitmap-font-data/set-scale! font-data (/ quality-scaling))
                      (bitmap-font-data/set-markup-enabled! font-data true)
-                     (bitmap-font/set-use-integer-positions! font use-integer-positions?)
+                     (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
                      font))
             (merge (map->Record {}) ctx)
             (-> ctx
@@ -2737,9 +2740,9 @@
           unit-scale (:ctx/unit-scale ctx)
           [x y] ui-mouse-position
           mouseover-actor* (mouseover-actor (:ctx/stage ctx) x y)]
-      (batch/set-color! (:ctx/batch ctx) 1 1 1 1)
-      (batch/set-projection-matrix! (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
-      (batch/begin! (:ctx/batch ctx))
+      (.setColor ^Batch (:ctx/batch ctx) (float 1) (float 1) (float 1) (float 1))
+      (.setProjectionMatrix ^Batch (:ctx/batch ctx) (orthographic-camera/combined (viewport/get-camera world-viewport)))
+      (.begin ^Batch (:ctx/batch ctx))
       (let [old-line-width (shape-drawer/get-default-line-width shape-drawer)]
         (shape-drawer/set-default-line-width! shape-drawer (* world-unit-scale old-line-width))
         (reset! unit-scale world-unit-scale)
@@ -2750,7 +2753,7 @@
           (draw-fn ctx))
         (reset! unit-scale 1)
         (shape-drawer/set-default-line-width! shape-drawer old-line-width))
-      (batch/end! (:ctx/batch ctx))
+      (.end ^Batch (:ctx/batch ctx))
       (swap! state assoc-interaction-state mouseover-actor* world-mouse-position)
       (let [ctx @state
             eid (:ctx/player-eid ctx)
