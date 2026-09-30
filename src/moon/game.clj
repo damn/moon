@@ -4,14 +4,8 @@
             [clojure.math :as math]
             [clojure.string :as str]
             [gdx.actor.group :as group]
-            [gdx.actor.group.widget.horizontal-group :as horizontal-group]
-            [gdx.actor.group.widget.scroll-pane :as scroll-pane]
-            [gdx.actor.group.widget.stack :as stack]
             [gdx.actor.group.widget.table :as table]
             [gdx.actor.group.widget.table.window :as window]
-            [gdx.actor.widget :as widget]
-            [gdx.actor.widget.image :as image]
-            [gdx.actor.widget.label :as label]
             [gdx.click-listener :as click-listener]
             [gdx.drawable.texture-region :as texture-region-drawable]
             [gdx.event :as event]
@@ -75,10 +69,12 @@
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
+           (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont TextureRegion)
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup ImageButton Skin TextButton)
+           (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton Widget)
+           (com.badlogic.gdx.scenes.scene2d.utils Drawable)
            (com.badlogic.gdx.utils Align))
   (:gen-class))
 
@@ -522,9 +518,9 @@
 (defn- create-action-bar []
   (doto (table/create
          {:table/cell-defaults {:pad 2}
-          :table/rows [[{:actor (doto (horizontal-group/create
-                                       {:space 2
-                                        :pad 2})
+          :table/rows [[{:actor (doto (HorizontalGroup.)
+                                  (.space (float 2))
+                                  (.pad (float 2))
                                   (.setName "moon.ui.action-bar.horizontal-group")
                                   (.setUserObject (doto (ButtonGroup.)
                                                     (.setMaxCheckCount (int 1))
@@ -582,7 +578,7 @@
 (defn- inventory-window-remove-item! [inventory-window cell]
   (let [cell-widget (inventory-window-get-cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")]
-    (image/set-drawable! image-widget (:background-drawable (.getUserObject ^Actor image-widget)))
+    (.setDrawable ^Image image-widget ^Drawable (:background-drawable (.getUserObject ^Actor image-widget)))
     ; !! TODO FIXME FIXME FIXME !!!
     ;(.removeListener actor (.getListeners actor))
     ; ... first find the listener
@@ -593,8 +589,8 @@
   (let [cell-widget (inventory-window-get-cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")
         cell-size (:cell-size (.getUserObject ^Actor image-widget))]
-    (image/set-drawable! image-widget (doto (texture-region-drawable/create texture-region)
-                                        (texture-region-drawable/set-min-size! cell-size cell-size)))
+    (.setDrawable ^Image image-widget ^Drawable (doto (texture-region-drawable/create texture-region)
+                                                  (texture-region-drawable/set-min-size! cell-size cell-size)))
     (.addListener ^Actor cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
@@ -806,7 +802,7 @@
     (stage/add-actor! stage
                       (doto (window/create {:title title
                                             :skin skin
-                                            :table/rows [[{:actor (label/create text skin)}]
+                                            :table/rows [[{:actor (Label. ^String text ^Skin skin)}]
                                                          [{:actor (doto (TextButton. button-text skin)
                                                                          (.addListener (change-listener/create
                                                                            (fn [_event _actor]
@@ -1167,7 +1163,7 @@
                                                                   :width 500
                                                                   :height 500
                                                                   :skin skin}))))))
-                     (label/create (cond
+                     (Label. ^String (cond
                                   (or (keyword? v)
                                       (number? v)
                                       (boolean? v)
@@ -1176,18 +1172,18 @@
 
                                   :else
                                   (str (class v)))
-                                skin)))
+                                ^Skin skin)))
         rows (for [[k v] (sort-by key data)]
                {:label (data-viewer-label-str k)
                 :actor (v->actor v skin)})
         scroll-pane-table (table/create
                            {:table/rows (for [{:keys [label actor]} rows]
-                                           [{:actor (label/create label skin)}
+                                           [{:actor (Label. ^String label ^Skin skin)}
                                             {:actor actor}])})
-        scroll-pane-cell {:actor (scroll-pane/create
-                                  (table/create {:table/cell-defaults {:pad 1}
+        scroll-pane-cell {:actor (ScrollPane.
+                                  ^Actor (table/create {:table/cell-defaults {:pad 1}
                                                  :table/rows [[scroll-pane-table]]})
-                                  skin)
+                                  ^Skin skin)
                           :width width
                           :height 800}]
     (window/create {:title title
@@ -1658,23 +1654,23 @@
   (let [cell [slot (or position [0 0])]
         background-drawable (slot->drawable slot)]
     {:actor
-     (let [stack (stack/create)]
+     (let [stack (Stack.)]
        (run! #(group/add-actor! stack %)
-             [(widget/new
-               (fn [this _batch _parent-alpha]
-                 (when-let [stage (.getStage ^Actor this)]
-                   (let [ctx (:stage/ctx stage)]
-                     (draw-cell-rect! ctx
-                                      @(:ctx/player-eid ctx)
-                                      (.getX ^Actor this)
-                                      (.getY ^Actor this)
-                                      (let [[x y] (vector2/clojurize
-                                                   (.stageToLocalCoordinates ^Actor this ^Vector2
-                                                                             (vector2/new (viewport/unproject (:stage/viewport (:ctx/stage ctx))
-                                                                                                              (input/position Gdx/input)))))]
-                                        (.hit ^Actor this (float x) (float y) true))
-                                      (.getUserObject ^Actor (.getParent ^Actor this)))))))
-              (doto (image/create-drawable background-drawable)
+             [(proxy [Widget] []
+                (draw [batch parent-alpha]
+                  (when-let [stage (.getStage ^Actor this)]
+                    (let [ctx (:stage/ctx stage)]
+                      (draw-cell-rect! ctx
+                                       @(:ctx/player-eid ctx)
+                                       (.getX ^Actor this)
+                                       (.getY ^Actor this)
+                                       (let [[x y] (vector2/clojurize
+                                                    (.stageToLocalCoordinates ^Actor this ^Vector2
+                                                                              (vector2/new (viewport/unproject (:stage/viewport (:ctx/stage ctx))
+                                                                                                               (input/position Gdx/input)))))]
+                                         (.hit ^Actor this (float x) (float y) true))
+                                       (.getUserObject ^Actor (.getParent ^Actor this)))))))
+              (doto (Image. ^Drawable background-drawable)
                 (.setName "image-widget")
                 (.setUserObject {:background-drawable background-drawable
                                       :cell-size cell-size}))])
@@ -1787,7 +1783,7 @@
            position
            set-label-text!
            skin]}]
-  (let [label (label/create "MY LABEL TEXT" skin)
+  (let [label (Label. ^String "MY LABEL TEXT" ^Skin skin)
         window (doto (window/create {:title title
                                      :skin skin
                                      :table/rows [[{:actor label :expand? true}]]})
@@ -1798,7 +1794,7 @@
     (group/add-actor! window (proxy [Actor] []
                                (act [delta]
                                  (when-let [stage (.getStage ^Actor this)]
-                                   (label/set-text! label (set-label-text! (:stage/ctx stage))))
+                                   (.setText ^Label label ^String (set-label-text! (:stage/ctx stage))))
                                  (layout/pack window)
                                  (let [^Actor this this]
                                    (proxy-super act delta)))
@@ -2196,22 +2192,22 @@
   (proxy [Actor] []
     (act [delta]
       (when-let [stage (.getStage ^Actor this)]
-        (label/set-text! label-widget (text-fn (:stage/ctx stage))))
+        (.setText ^Label label-widget ^String (text-fn (:stage/ctx stage))))
       (let [^Actor this this]
         (proxy-super act delta)))
     (draw [batch parent-alpha])))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
-   (let [label (label/create "" skin)
-         sub-table (table/create {:table/rows [[{:actor (image/create-from-texture icon)}
+   (let [label (Label. ^String "" ^Skin skin)
+         sub-table (table/create {:table/rows [[{:actor (Image. ^Texture icon)
                                                               label]]})]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (table/add-cell! table {:actor sub-table
                        :right? true
                        :expand-x? true})))
   ([skin table text-fn]
-   (let [label (label/create "" skin)]
+   (let [label (Label. ^String "" ^Skin skin)]
      (group/add-actor! table (set-label-text-actor label text-fn))
      (table/add-cell! table {:actor label
                        :right? true
@@ -2248,7 +2244,7 @@
                                                            :expand-x? true
                                                            :fill-x? true
                                                            :colspan 1}]
-                                                         [{:actor (doto (label/create "" skin)
+                                                         [{:actor (doto (Label. ^String "" ^Skin skin)
                                                                         (.setTouchable touchable/disabled))
                                                            :expand? true
                                                            :fill-x? true

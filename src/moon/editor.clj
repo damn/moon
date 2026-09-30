@@ -23,13 +23,7 @@
             [gdx.event :as event]
             [gdx.actor.group :as group]
             [gdx.touchable :as touchable]
-            [gdx.actor.widget.image :as image]
-            [gdx.actor.widget.label :as label]
-            [gdx.actor.group.widget.scroll-pane :as scroll-pane]
-            [gdx.actor.widget.select-box :as select-box]
-            [gdx.actor.group.widget.stack :as stack]
             [gdx.skin :as ui-skin]
-            [gdx.actor.widget.text-field :as text-field]
             [gdx.tooltip.text :as text-tooltip]
             [gdx.change-listener :as change-listener]
             [gdx.layout :as layout]
@@ -40,7 +34,9 @@
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
-           (com.badlogic.gdx.scenes.scene2d.ui CheckBox ImageButton Skin TextButton)
+           (com.badlogic.gdx.graphics.g2d TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defn- find-ancestor [a pred?]
@@ -110,7 +106,7 @@
 
 (defmethod widget-value :s/enum
   [_ widget _schemas]
-  (edn/read-string (select-box/get-selected widget)))
+  (edn/read-string (.getSelected ^SelectBox widget)))
 
 (defmethod widget-value :s/map
   [_ table schemas]
@@ -118,7 +114,7 @@
 
 (defmethod widget-value :s/number
   [_ widget _schemas]
-  (edn/read-string (text-field/get-text widget)))
+  (edn/read-string (.getText ^TextField widget)))
 
 (defmethod widget-value :s/one-to-many
   [_ widget _schemas]
@@ -134,11 +130,11 @@
 
 (defmethod widget-value :s/string
   [_ widget _schemas]
-  (text-field/get-text widget))
+  (.getText ^TextField widget))
 
 (defmethod widget-value :s/val-max
   [_ widget _schemas]
-  (edn/read-string (text-field/get-text widget)))
+  (edn/read-string (.getText ^TextField widget)))
 
 (def ^:private property-k-sort-order
   [:property/id
@@ -204,7 +200,7 @@
                                                                                                                            (fn [event _actor]
                                                                                                                              (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
                                                                                                                                           sound-name)))))}])})]
-                                               {:actor (scroll-pane/create table skin)
+                                               {:actor (ScrollPane. ^Actor table ^Skin skin)
                                                 :width  (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor table) 50)
                                                 :height (min (- (viewport/get-world-height (:stage/viewport stage)) 50)
                                                              (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor table))})]]
@@ -217,7 +213,7 @@
                   on-clicked
                   tooltip
                   extra-info-text]} row]
-      {:actor (let [stack (stack/create)]
+      {:actor (let [stack (Stack.)]
                 (run! #(group/add-actor! stack %)
                       [(doto (ImageButton.
                               (doto (texture-region-drawable/create texture-region)
@@ -227,7 +223,7 @@
                                            (fn [event actor]
                                              (on-clicked actor (:stage/ctx (event/get-stage event))))))
                         (.addListener (text-tooltip/create tooltip skin)))
-                       (doto (label/create extra-info-text skin)
+                       (doto (Label. ^String extra-info-text ^Skin skin)
                          (.setTouchable touchable/disabled))])
                 stack)})))
 
@@ -304,7 +300,7 @@
                           :table/cell-defaults {:pad 5}
                           :table/rows [[(let [table (table/create {:table/cell-defaults {:pad 5}
                                                                   :table/rows scroll-pane-rows})]
-                                          {:actor (scroll-pane/create table skin)
+                                          {:actor (ScrollPane. ^Actor table ^Skin skin)
                                            :width (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor table) 50)
                                            :height (min (- scroll-pane-height 50)
                                                         (.getHeight ^com.badlogic.gdx.scenes.scene2d.Actor table))})]]
@@ -354,7 +350,7 @@
                                                                   (redo-rows ctx (conj property-ids id)))})))))))}]
       (for [property-id property-ids]
         (let [property (db/get-raw db property-id)]
-          {:actor (doto (image/create (textures/texture-region textures (property/image property)))
+          {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (property/image property)))
                     (.addListener (text-tooltip/create (property/tooltip property) skin))
                     (.setUserObject property-id))}))
       (for [id property-ids]
@@ -397,7 +393,7 @@
                                                                     (redo-rows ctx id))})))))))})]
       [(when property-id
          (let [property (db/get-raw db property-id)]
-           {:actor (doto (image/create (textures/texture-region textures (property/image property)))
+           {:actor (doto (Image. ^TextureRegion (textures/texture-region textures (property/image property)))
                      (.addListener (text-tooltip/create (property/tooltip property) skin))
                      (.setUserObject property-id))}))]
       [(when property-id
@@ -440,7 +436,7 @@
                                                                   (let [ctx (:stage/ctx (event/get-stage event))]
                                                                     (rebuild-editor-window! ctx)))))))
                             :left? true}
-                           {:actor (label/create (k-label-text k) skin)}]]})
+                           {:actor (Label. ^String (k-label-text k) ^Skin skin)}]]})
     :right? true}
    {:actor nil
     :pad-top 2
@@ -537,10 +533,10 @@
 
 (defmethod create-widget :default
   [_ v {:keys [ctx/skin]}]
-  (label/create (string/truncate (binding [*print-level* nil]
+  (Label. ^String (string/truncate (binding [*print-level* nil]
                          (pr-str v))
                        60)
-             skin))
+             ^Skin skin))
 
 (defmethod create-widget :s/animation
   [_ animation {:keys [ctx/textures]}]
@@ -561,9 +557,9 @@
 
 (defmethod create-widget :s/enum
   [schema v {:keys [ctx/skin]}]
-  (doto (select-box/create skin)
-    (select-box/set-items! (map pr-str (rest schema)))
-    (select-box/set-selected! (pr-str v))))
+  (doto ^SelectBox (SelectBox. ^Skin skin)
+    (.setItems ^"[Ljava.lang.Object;" (into-array (map pr-str (rest schema))))
+    (.setSelected (pr-str v))))
 
 (defmethod create-widget :s/image
   [_ image {:keys [ctx/textures]}]
@@ -594,7 +590,7 @@
 
 (defmethod create-widget :s/number
   [schema v {:keys [ctx/skin]}]
-  (doto (text-field/create (pr-str v) skin)
+  (doto (TextField. ^String (pr-str v) ^Skin skin)
     (.addListener (text-tooltip/create (str schema) skin))))
 
 (defmethod create-widget :s/one-to-many
@@ -628,12 +624,12 @@
 
 (defmethod create-widget :s/string
   [schema v {:keys [ctx/skin]}]
-  (doto (text-field/create (str v) skin)
+  (doto (TextField. ^String (str v) ^Skin skin)
     (.addListener (text-tooltip/create (str schema) skin))))
 
 (defmethod create-widget :s/val-max
   [schema v {:keys [ctx/skin]}]
-  (doto (text-field/create (pr-str v) skin)
+  (doto (TextField. ^String (pr-str v) ^Skin skin)
     (.addListener (text-tooltip/create (str schema) skin))))
 
 (defn- main-window-f

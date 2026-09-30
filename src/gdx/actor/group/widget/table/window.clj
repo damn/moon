@@ -1,10 +1,9 @@
 (ns gdx.actor.group.widget.table.window
   (:refer-clojure :exclude [class])
-  (:require [gdx.actor.widget.label :as label]
-            [gdx.change-listener :as change-listener]
+  (:require [gdx.change-listener :as change-listener]
             [gdx.actor.group.widget.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton Window)))
+           (com.badlogic.gdx.scenes.scene2d.ui Label Skin TextButton Window)))
 
 (def class Window)
 
@@ -30,7 +29,7 @@
     window))
 
 (defn title-bar? [actor]
-  (when (instance? label/class actor)
+  (when (instance? Label actor)
     (when-let [p (.getParent ^Actor actor)]
       (when-let [p (.getParent ^Actor p)]
         (and (instance? Window p)
