@@ -1,9 +1,9 @@
 (ns moon.scene2d.window
   (:refer-clojure :exclude [class])
-  (:require [gdx.change-listener :as change-listener]
-            [moon.scene2d.table :as table])
+  (:require [moon.scene2d.table :as table])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Label Skin TextButton Window)))
+           (com.badlogic.gdx.scenes.scene2d.ui Label Skin TextButton Window)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)))
 
 (def class Window)
 
@@ -13,8 +13,8 @@
 (defn add-close-button! [window skin]
   (table/add-cell! (.getTitleTable ^Window window)
              {:actor (doto (TextButton. "X" ^Skin skin)
-                       (.addListener (change-listener/create
-                                           (fn [_event _actor]
+                       (.addListener (proxy [ChangeListener] []
+                                           (changed [_event _actor]
                                              (.remove ^Actor window)))))}))
 
 (def ^:private set-opt-fns

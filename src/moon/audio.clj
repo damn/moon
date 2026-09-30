@@ -2,9 +2,9 @@
   (:require [clojure.edn :as edn]
             [gdx.sound :as sound]
             [gdx.files :as files]
-            [gdx.disposable :as disposable]
             [clojure.java.io :as io])
-  (:import (com.badlogic.gdx Audio)))
+  (:import (com.badlogic.gdx Audio)
+           (com.badlogic.gdx.utils Disposable)))
 
 (defn create
   [audio files]
@@ -25,4 +25,4 @@
 
 (defn dispose!
   [sounds]
-  (run! disposable/dispose! (vals sounds)))
+  (run! Disposable/.dispose (vals sounds)))

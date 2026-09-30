@@ -16,25 +16,22 @@
             [moon.scene2d.window :as window]
             [gdx.files :as files]
             [gdx.graphics :as graphics]
-            [gdx.bitmap-font-data :as bitmap-font-data]
             [gdx.sprite-batch :as sprite-batch]
             [gdx.texture-region :as texture-region]
             [gdx.input :as input]
-            [gdx.event :as event]
             [moon.scene2d.group :as group]
             [gdx.touchable :as touchable]
             [gdx.skin :as ui-skin]
-            [gdx.change-listener :as change-listener]
             [gdx.layout :as layout]
-            [gdx.disposable :as disposable]
             [gdx.viewport :as viewport])
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
-           (com.badlogic.gdx.graphics.g2d TextureRegion)
-           (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData TextureRegion)
+           (com.badlogic.gdx.scenes.scene2d Actor Event)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField TextTooltip)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable TextureRegionDrawable)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable TextureRegionDrawable)
+           (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
 (defn- find-ancestor [a pred?]
@@ -160,14 +157,14 @@
 
 (defn- sound-columns [skin table sound-name open-select-sounds-handler]
   [{:actor (doto (TextButton. sound-name skin)
-             (.addListener (change-listener/create
-                                      (fn [event _actor]
+             (.addListener (proxy [ChangeListener] []
+                                      (changed [event _actor]
                                         ((open-select-sounds-handler table)
-                                         (:stage/ctx (event/get-stage event)))))))}
+                                         (:stage/ctx (.getStage ^Event event)))))))}
    {:actor (doto (TextButton. "play!" skin)
-             (.addListener (change-listener/create
-                                      (fn [event _actor]
-                                        (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
+             (.addListener (proxy [ChangeListener] []
+                                      (changed [event _actor]
+                                        (audio/play! (:ctx/audio (:stage/ctx (.getStage ^Event event)))
                                                      sound-name)))))}])
 
 (defn- rebuild-sound-widget! [table sound-name ->sound-columns]
@@ -190,13 +187,13 @@
                                             [[(let [table (table/create {:table/cell-defaults {:pad 5}
                                                                          :table/rows (for [sound-name (audio/names (:ctx/audio ctx))]
                                                                                        [{:actor (doto (TextButton. sound-name skin)
-                                                                                                      (.addListener (change-listener/create
-                                                                                                                           (fn [event actor]
-                                                                                                                             ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (event/get-stage event)))))))}
+                                                                                                      (.addListener (proxy [ChangeListener] []
+                                                                                                                           (changed [event actor]
+                                                                                                                             ((rebuild-sound-widget! table sound-name ->sound-columns) actor (:stage/ctx (.getStage ^Event event)))))))}
                                                                                         {:actor (doto (TextButton. "play!" skin)
-                                                                                                      (.addListener (change-listener/create
-                                                                                                                           (fn [event _actor]
-                                                                                                                             (audio/play! (:ctx/audio (:stage/ctx (event/get-stage event)))
+                                                                                                      (.addListener (proxy [ChangeListener] []
+                                                                                                                           (changed [event _actor]
+                                                                                                                             (audio/play! (:ctx/audio (:stage/ctx (.getStage ^Event event)))
                                                                                                                                           sound-name)))))}])})]
                                                {:actor (ScrollPane. ^Actor table ^Skin skin)
                                                 :width  (+ (.getWidth ^com.badlogic.gdx.scenes.scene2d.Actor table) 50)
@@ -217,9 +214,9 @@
                               (doto (TextureRegionDrawable. ^TextureRegion texture-region)
                                 (.setMinSize (* image-scale (texture-region/get-region-width texture-region))
                                              (* image-scale (texture-region/get-region-height texture-region)))))
-                        (.addListener (change-listener/create
-                                           (fn [event actor]
-                                             (on-clicked actor (:stage/ctx (event/get-stage event))))))
+                        (.addListener (proxy [ChangeListener] []
+                                           (changed [event actor]
+                                             (on-clicked actor (:stage/ctx (.getStage ^Event event))))))
                         (.addListener (TextTooltip. ^String tooltip ^Skin skin)))
                        (doto (Label. ^String extra-info-text ^Skin skin)
                          (.setTouchable touchable/disabled))])
@@ -284,14 +281,14 @@
                                              (db/update! db (get-widget-value))))
         scroll-pane-rows [[{:actor widget :colspan 2}]
                           [{:actor (doto (TextButton. "Save [LIGHT_GRAY](ENTER)[]" skin)
-                                     (.addListener (change-listener/create
-                                                              (fn [event actor]
-                                                                (clicked-save-fn actor (:stage/ctx (event/get-stage event)))))))
+                                     (.addListener (proxy [ChangeListener] []
+                                                              (changed [event actor]
+                                                                (clicked-save-fn actor (:stage/ctx (.getStage ^Event event)))))))
                             :center? true}
                            {:actor (doto (TextButton. "Delete" skin)
-                                     (.addListener (change-listener/create
-                                                              (fn [event actor]
-                                                                (clicked-delete-fn actor (:stage/ctx (event/get-stage event)))))))
+                                     (.addListener (proxy [ChangeListener] []
+                                                              (changed [event actor]
+                                                                (clicked-delete-fn actor (:stage/ctx (.getStage ^Event event)))))))
                             :center? true}]]]
     (doto (window/create {:title "[SKY]Property[]"
                           :skin skin
@@ -330,12 +327,12 @@
     (table/add-rows!
      table
      [[{:actor (doto (TextButton. "+" skin)
-                 (.addListener (change-listener/create
-                                          (fn [event _actor]
+                 (.addListener (proxy [ChangeListener] []
+                                          (changed [event _actor]
                                             (let [{:keys [ctx/db
                                                           ctx/skin
                                                           ctx/textures]
-                                                   :as ctx} (:stage/ctx (event/get-stage event))]
+                                                   :as ctx} (:stage/ctx (.getStage ^Event event))]
                                               (stage/add-actor!
                                                (get-stage ctx)
                                                (property-overview-window
@@ -353,9 +350,9 @@
                     (.setUserObject property-id))}))
       (for [id property-ids]
         {:actor (doto (TextButton. "-" skin)
-                  (.addListener (change-listener/create
-                                           (fn [event _actor]
-                                             (redo-rows (:stage/ctx (event/get-stage event))
+                  (.addListener (proxy [ChangeListener] []
+                                           (changed [event _actor]
+                                             (redo-rows (:stage/ctx (.getStage ^Event event))
                                                         (disj property-ids id))))))})])))
 
 (defn- add-one-to-one-rows
@@ -373,12 +370,12 @@
      table
      [[(when-not property-id
          {:actor (doto (TextButton. "+" skin)
-                   (.addListener (change-listener/create
-                                            (fn [event _actor]
+                   (.addListener (proxy [ChangeListener] []
+                                            (changed [event _actor]
                                               (let [{:keys [ctx/db
                                                             ctx/skin
                                                             ctx/textures]
-                                                     :as ctx} (:stage/ctx (event/get-stage event))]
+                                                     :as ctx} (:stage/ctx (.getStage ^Event event))]
                                                 (stage/add-actor!
                                                  (get-stage ctx)
                                                  (property-overview-window
@@ -396,9 +393,9 @@
                      (.setUserObject property-id))}))]
       [(when property-id
          {:actor (doto (TextButton. "-" skin)
-                   (.addListener (change-listener/create
-                                            (fn [event _actor]
-                                              (redo-rows (:stage/ctx (event/get-stage event))
+                   (.addListener (proxy [ChangeListener] []
+                                            (changed [event _actor]
+                                              (redo-rows (:stage/ctx (.getStage ^Event event))
                                                          nil)))))})]])))
 
 (defn- rebuild-editor-window!
@@ -425,13 +422,13 @@
   [{:actor (table/create {:table/cell-defaults {:pad 2}
                           :table/rows [[{:actor (when display-remove-component-button?
                                      (doto (TextButton. "-" skin)
-                                       (.addListener (change-listener/create
-                                                                (fn [event _actor]
+                                       (.addListener (proxy [ChangeListener] []
+                                                                (changed [event _actor]
                                                                   (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (first (filter (fn [actor]
                                                                                                           (and (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor)
                                                                                                                (= k ((.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor actor) 0))))
                                                                                                         (group/get-children table))))
-                                                                  (let [ctx (:stage/ctx (event/get-stage event))]
+                                                                  (let [ctx (:stage/ctx (.getStage ^Event event))]
                                                                     (rebuild-editor-window! ctx)))))))
                             :left? true}
                            {:actor (Label. ^String (k-label-text k) ^Skin skin)}]]})
@@ -457,10 +454,10 @@
      window
      (for [k remaining-ks]
        [{:actor (doto (TextButton. (name k) skin)
-                  (.addListener (change-listener/create
-                                           (fn [event _actor]
+                  (.addListener (proxy [ChangeListener] []
+                                           (changed [event _actor]
                                              (.remove ^com.badlogic.gdx.scenes.scene2d.Actor window)
-                                             (let [ctx (:stage/ctx (event/get-stage event))]
+                                             (let [ctx (:stage/ctx (.getStage ^Event event))]
                                                (table/add-rows! map-widget-table [(create-component-row
                                                                             {:skin skin
                                                                              :editor-widget (build-widget ctx
@@ -506,11 +503,11 @@
      table
      (concat [(when opt?
                 [{:actor (doto (TextButton. "Add component" skin)
-                           (.addListener (change-listener/create
-                                                    (fn [event actor]
+                           (.addListener (proxy [ChangeListener] []
+                                                    (changed [event actor]
                                                       (let [{:keys [ctx/db
                                                                     ctx/skin]
-                                                             :as ctx} (:stage/ctx (event/get-stage event))]
+                                                             :as ctx} (:stage/ctx (.getStage ^Event event))]
                                                         (stage/add-actor!
                                                          (get-stage ctx)
                                                          (add-component-window
@@ -614,10 +611,10 @@
                            (sound-columns-fn skin table sound-name)
                            [{:actor
                              (doto (TextButton. "No sound" skin)
-                               (.addListener (change-listener/create
-                                                   (fn [event _actor]
+                               (.addListener (proxy [ChangeListener] []
+                                                   (changed [event _actor]
                                                      ((open-select-fn table)
-                                                      (:stage/ctx (event/get-stage event)))))))}])])
+                                                      (:stage/ctx (.getStage ^Event event)))))))}])])
       table)))
 
 (defmethod create-widget :s/string
@@ -637,12 +634,12 @@
                         :skin skin
                         :table/rows (for [property-type (sort (db/property-types db))]
                                       [{:actor (doto (TextButton. (str/capitalize (name property-type)) skin)
-                                                     (.addListener (change-listener/create
-                                                                           (fn [event _actor]
+                                                     (.addListener (proxy [ChangeListener] []
+                                                                           (changed [event _actor]
                                                                              (let [{:keys [ctx/db
                                                                                            ctx/skin
                                                                                            ctx/textures]
-                                                                                    :as ctx} (:stage/ctx (event/get-stage event))]
+                                                                                    :as ctx} (:stage/ctx (.getStage ^Event event))]
                                                                                (stage/add-actor! (get-stage ctx)
                                                                                                  (property-overview-window
                                                                                                   {:db db
@@ -669,10 +666,11 @@
 
 (defn- skin-f [{:keys [ctx/files] :as ctx}]
   (let [skin (ui-skin/create (files/internal files "skin/uiskin.json"))]
-    (-> skin
-        (ui-skin/get-font "default-font")
-        .getData
-        (bitmap-font-data/set-markup-enabled! true))
+    (set! (.markupEnabled ^BitmapFont$BitmapFontData
+                          (-> skin
+                              (ui-skin/get-font "default-font")
+                              .getData))
+          true)
     (assoc ctx :ctx/skin skin)))
 
 (defn- db-f [ctx]
@@ -706,9 +704,9 @@
                        ctx/batch
                        ctx/textures]}]
   (audio/dispose! audio)
-  (disposable/dispose! batch)
-  (disposable/dispose! skin)
-  (run! disposable/dispose! (vals textures)))
+  (Disposable/.dispose batch)
+  (Disposable/.dispose skin)
+  (run! Disposable/.dispose (vals textures)))
 
 (defn render [ctx]
   (let [stage (get-stage ctx)

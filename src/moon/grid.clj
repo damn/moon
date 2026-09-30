@@ -2,7 +2,6 @@
   (:require [moon.coll :as coll]
             [clojure.math :as math]
             [moon.cell :as cell]
-            [gdx.circle :as circle]
             [gdx.rectangle :as gdx-rectangle]
             [moon.body :as body]
             [moon.circle :as moon-circle]
@@ -10,7 +9,8 @@
             [moon.g2d :as g2d]
             [moon.position :as position]
             [moon.rectangle :as rectangle]
-            [moon.v2 :as v2]))
+            [moon.v2 :as v2])
+  (:import (com.badlogic.gdx.math Circle Intersector Rectangle)))
 
 (defn nearest-entity [cell faction]
   (-> cell faction :eid))
@@ -221,15 +221,15 @@
 
 (defn circle->entities [g2d {:keys [position radius] :as circle}]
   (let [[x y] position
-        gdx-circle (circle/new x y radius)]
+        gdx-circle (Circle. (float x) (float y) (float radius))]
     (->> circle
          moon-circle/outer-rectangle
          rectangle/touched-tiles
          (g2d/get-cells g2d)
          (map deref)
          entities
-         (filter #(circle/overlaps gdx-circle
-                                        (body/rectangle @%))))))
+         (filter #(Intersector/overlaps ^Circle gdx-circle
+                                        ^Rectangle (body/rectangle @%))))))
 
 (defn inside-cell? [grid entity cell]
   (let [cells (g2d/get-cells grid (body/touched-tiles entity))]

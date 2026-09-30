@@ -6,17 +6,11 @@
             [moon.scene2d.group :as group]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
-            [gdx.click-listener :as click-listener]
-            [gdx.event :as event]
             [gdx.layout :as layout]
             [gdx.touchable :as touchable]
             [gdx.vector2 :as vector2]
-            [gdx.bitmap-font-data :as bitmap-font-data]
             [moon.camera :as orthographic-camera]
-            [gdx.change-listener :as change-listener]
             [gdx.color :as color]
-            [gdx.colors :as colors]
-            [gdx.disposable :as disposable]
             [gdx.files :as files]
             [gdx.free-type-font-generator :as font-generator]
             [gdx.graphics :as graphics]
@@ -65,13 +59,13 @@
              [reduce-fsm :as fsm])
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics Color GL20 Texture)
-           (com.badlogic.gdx.graphics.g2d Batch BitmapFont TextureRegion)
+           (com.badlogic.gdx.graphics Color Colors GL20 Texture)
+           (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData TextureRegion)
            (com.badlogic.gdx.math Vector2)
-           (com.badlogic.gdx.scenes.scene2d Actor)
+           (com.badlogic.gdx.scenes.scene2d Actor Event)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip Widget)
-           (com.badlogic.gdx.scenes.scene2d.utils Drawable TextureRegionDrawable)
-           (com.badlogic.gdx.utils Align)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable TextureRegionDrawable)
+           (com.badlogic.gdx.utils Align Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport))
   (:gen-class))
 
@@ -801,8 +795,8 @@
                                             :skin skin
                                             :table/rows [[{:actor (Label. ^String text ^Skin skin)}]
                                                          [{:actor (doto (TextButton. button-text skin)
-                                                                         (.addListener (change-listener/create
-                                                                           (fn [_event _actor]
+                                                                         (.addListener (proxy [ChangeListener] []
+                                                                           (changed [_event _actor]
                                                                              (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (group/find-actor (:stage/root stage)
                                                                                                 "moon.ui.modal-window"))
                                                                              (on-click)))))}]]})
@@ -1151,8 +1145,8 @@
   (let [v->actor (fn [v skin]
                    (if (map? v)
                      (doto (TextButton. "Map" skin)
-                       (.addListener (change-listener/create
-                                            (fn [_event actor]
+                       (.addListener (proxy [ChangeListener] []
+                                            (changed [_event actor]
                                               (stage/add-actor! (.getStage ^Actor actor)
                                                                 (create-data-viewer-window
                                                                  {:title "title"
@@ -1239,7 +1233,7 @@
                                  ui stage
                                  stage (:ctx/stage actor)]
                              (rebuild-actors! ui ctx)
-                             #_(disposable/dispose! (:ctx/tiled-map ctx))
+                             #_(Disposable/.dispose (:ctx/tiled-map ctx))
                              (set! (.ctx ^Stage stage) (create-world ctx world-fn)))
                          ctx)})})
 
@@ -1312,12 +1306,12 @@
         unit-scale (:ctx/unit-scale ctx)
         scale (or scale 1)
         font-data (.getData ^BitmapFont font)
-        old-scale (bitmap-font-data/scale-x font-data)
+        old-scale (.scaleX ^BitmapFont$BitmapFontData font-data)
         target-width 0
         wrap? false
         scale (* (float @unit-scale)
                  (float scale))]
-    (bitmap-font-data/set-scale! font-data (* old-scale scale))
+    (.setScale ^BitmapFont$BitmapFontData font-data (* old-scale scale))
     (.draw ^BitmapFont font
            ^Batch (:ctx/batch ctx)
            text
@@ -1331,7 +1325,7 @@
            (float target-width)
            Align/center
            wrap?)
-    (bitmap-font-data/set-scale! font-data old-scale)))
+    (.setScale ^BitmapFont$BitmapFontData font-data old-scale)))
 
 (defn- draw-fn-texture-region [ctx texture-region [x y] & {:keys [center? rotation]}]
   (let [unit-scale (:ctx/unit-scale ctx)
@@ -1672,10 +1666,10 @@
                 (.setUserObject {:background-drawable background-drawable
                                       :cell-size cell-size}))])
        (doto stack
-         (.addListener (click-listener/create
-                             (fn [event _x _y]
-                               (let [ctx (:stage/ctx (event/get-stage event))]
-                                 (on-click-cell ctx (:ctx/player-eid ctx) cell)))))
+         (.addListener (proxy [ClickListener] []
+                         (clicked [event _x _y]
+                           (let [ctx (:stage/ctx (.getStage ^Event event))]
+                             (on-click-cell ctx (:ctx/player-eid ctx) cell)))))
          (.setName "inventory-cell")
          (.setUserObject cell)))}))
 
@@ -2214,17 +2208,17 @@
   (let [table (table/create {:table/rows [(for [{:keys [label items]} menus]
                                             {:actor
                                              (doto (TextButton. label skin)
-                                               (.addListener (change-listener/create
-                                                              (fn [event actor]
-                                                                (stage/add-actor! (event/get-stage event)
+                                               (.addListener (proxy [ChangeListener] []
+                                                              (changed [event actor]
+                                                                (stage/add-actor! (.getStage ^Event event)
                                                                                   (window/create {:title label
                                                                                                   :skin skin
                                                                                                   :table/rows [(for [{:keys [label on-click]} items]
                                                                                                                  {:actor
                                                                                                                   (doto (TextButton. label skin)
-                                                                                                                    (.addListener (change-listener/create
-                                                                                                                                   (fn [event actor]
-                                                                                                                                     (let [stage (event/get-stage event)]
+                                                                                                                    (.addListener (proxy [ChangeListener] []
+                                                                                                                                   (changed [event actor]
+                                                                                                                                     (let [stage (.getStage ^Event event)]
                                                                                                                                        (stage/set-ctx! stage
                                                                                                                                                        (on-click (:stage/ctx stage))))))))})]
                                                                                                   :window/add-close-button? true}))))))})]})]
@@ -2481,7 +2475,7 @@
                                                             (pixmap/get-format pixmap)
                                                             false
                                                             false))]
-    (disposable/dispose! pixmap)
+    (Disposable/.dispose pixmap)
     texture))
 
 (def state (atom nil))
@@ -2509,17 +2503,18 @@
                                      (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1)))
             (assoc ctx :ctx/skin
                    (let [skin (skin/create (files/internal files "skin/uiskin.json"))]
-                     (-> skin
-                         (skin/get-font "default-font")
-                         .getData
-                         (bitmap-font-data/set-markup-enabled! true))
+                     (set! (.markupEnabled ^BitmapFont$BitmapFontData
+                                           (-> skin
+                                               (skin/get-font "default-font")
+                                               .getData))
+                           true)
                      skin))
             (let [stage* (stage/create (FitViewport. (float 1440) (float 900)) (:ctx/batch ctx))]
               (input/set-processor! input stage*)
               (assoc ctx :ctx/stage stage*))
             (do
              (tooltip-manager/set-initial-time! (tooltip-manager/get-instance) 0)
-             (colors/put! "PRETTY_NAME" (color/create [0.84 0.8 0.52 1]))
+             (Colors/put "PRETTY_NAME" (color/create [0.84 0.8 0.52 1]))
              ctx)
             (assoc ctx :ctx/cursors
                    (let [{:keys [data path-format]} (-> "config/cursors.edn" io/resource slurp edn/read-string)]
@@ -2528,7 +2523,7 @@
                                     (let [path (format path-format path-segment)
                                           pixmap* (pixmap/new (files/internal files path))
                                           cursor (graphics/create-cursor Gdx/graphics pixmap* hotspot-x hotspot-y)]
-                                      (disposable/dispose! pixmap*)
+                                      (Disposable/.dispose pixmap*)
                                       cursor)))))
             (assoc ctx :ctx/textures
                    (textures/create files {:folder "resources/"
@@ -2554,9 +2549,9 @@
                                     :set-mag-filter texture-filter/linear}
                          font (font-generator/generate-font generator parameter)
                          font-data (.getData ^BitmapFont font)]
-                     (disposable/dispose! generator)
-                     (bitmap-font-data/set-scale! font-data (/ quality-scaling))
-                     (bitmap-font-data/set-markup-enabled! font-data true)
+                     (Disposable/.dispose generator)
+                     (.setScale ^BitmapFont$BitmapFontData font-data (/ quality-scaling))
+                     (set! (.markupEnabled ^BitmapFont$BitmapFontData font-data) true)
                      (.setUseIntegerPositions ^BitmapFont font use-integer-positions?)
                      font))
             (merge (map->Record {}) ctx)
@@ -2656,13 +2651,13 @@
 (defn dispose! []
   (let [ctx @state]
     (audio/dispose! (:ctx/audio ctx))
-    (disposable/dispose! (:ctx/batch ctx))
-    (run! disposable/dispose! (vals (:ctx/cursors ctx)))
-    (disposable/dispose! (:ctx/default-font ctx))
-    (disposable/dispose! (:ctx/shape-drawer-texture ctx))
-    (disposable/dispose! (:ctx/skin ctx))
-    (run! disposable/dispose! (vals (:ctx/textures ctx)))
-    (disposable/dispose! (:ctx/tiled-map ctx))))
+    (Disposable/.dispose (:ctx/batch ctx))
+    (run! Disposable/.dispose (vals (:ctx/cursors ctx)))
+    (Disposable/.dispose (:ctx/default-font ctx))
+    (Disposable/.dispose (:ctx/shape-drawer-texture ctx))
+    (Disposable/.dispose (:ctx/skin ctx))
+    (run! Disposable/.dispose (vals (:ctx/textures ctx)))
+    (Disposable/.dispose (:ctx/tiled-map ctx))))
 
 (defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed?]
   (.glClearColor (graphics/get-gl20 Gdx/graphics) 0 0 0 0)

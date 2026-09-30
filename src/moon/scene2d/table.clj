@@ -1,12 +1,30 @@
 (ns moon.scene2d.table
-  (:require [gdx.cell :as cell]
-            [gdx.layout :as layout])
+  (:require [gdx.layout :as layout])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Table)))
+           (com.badlogic.gdx.scenes.scene2d.ui Cell Table)))
+
+(defn- set-cell-opts! [cell opts]
+  (doseq [[option arg] opts]
+    (case option
+      :fill-x?    (.fillX ^Cell cell)
+      :fill-y?    (.fillY ^Cell cell)
+      :expand?    (.expand ^Cell cell)
+      :expand-x?  (.expandX ^Cell cell)
+      :expand-y?  (.expandY ^Cell cell)
+      :bottom?    (.bottom ^Cell cell)
+      :colspan    (.colspan ^Cell cell (int arg))
+      :pad        (.pad ^Cell cell (float arg))
+      :pad-top    (.padTop ^Cell cell (float arg))
+      :pad-bottom (.padBottom ^Cell cell (float arg))
+      :width      (.width ^Cell cell (float arg))
+      :height     (.height ^Cell cell (float arg))
+      :center?    (.center ^Cell cell)
+      :right?     (.right ^Cell cell)
+      :left?      (.left ^Cell cell))))
 
 (defn add-cell! [table cell-declaration]
   (-> (.add ^Table table ^Actor (:actor cell-declaration))
-      (cell/set-opts! (dissoc cell-declaration :actor))))
+      (set-cell-opts! (dissoc cell-declaration :actor))))
 
 (defn add-rows! [table rows]
   (doseq [row rows]
@@ -25,7 +43,7 @@
                  (add-rows! table rows)
                  (layout/pack table))
    :table/cell-defaults (fn [table defaults]
-                          (cell/set-opts! (.defaults ^Table table) defaults))})
+                          (set-cell-opts! (.defaults ^Table table) defaults))})
 
 (defn set-opts! [table opts]
   (doseq [[k v] opts :when (set-opt-fns k)]

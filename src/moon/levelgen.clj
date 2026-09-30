@@ -17,13 +17,13 @@
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [gdx.skin :as skin]
             [moon.scene2d.window :as window]
-            [gdx.change-listener :as change-listener]
-            [gdx.disposable :as disposable]
             [gdx.viewport :as viewport])
   (:import (com.badlogic.gdx Application ApplicationListener Gdx)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener)
+           (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
 ;; ctx accessors
@@ -147,16 +147,16 @@
   ctx)
 
 (defn- dispose-sprite-batch! [ctx]
-  (disposable/dispose! (get-sprite-batch ctx)))
+  (Disposable/.dispose (get-sprite-batch ctx)))
 
 (defn- dispose-skin! [ctx]
-  (disposable/dispose! (get-skin ctx)))
+  (Disposable/.dispose (get-skin ctx)))
 
 (defn- dispose-textures! [ctx]
-  (run! disposable/dispose! (vals (get-textures ctx))))
+  (run! Disposable/.dispose (vals (get-textures ctx))))
 
 (defn- dispose-tiled-map! [ctx]
-  (disposable/dispose! (get-tiled-map ctx)))
+  (Disposable/.dispose (get-tiled-map ctx)))
 
 (defn- resize-stage-viewport! [ctx width height]
   (viewport/update! (:stage/viewport (get-stage ctx)) width height true))
@@ -255,8 +255,8 @@
                       (for [[label level-fn] (:level-fns config)]
                         [{:actor
                           (doto (TextButton. (str "Generate " label) (get-skin ctx))
-                            (.addListener (change-listener/create
-                              (fn [_event _actor]
+                            (.addListener (proxy [ChangeListener] []
+                              (changed [_event _actor]
                                 (swap! state #(regenerate-level! % level-fn))))))}])}))
   ctx)
 
