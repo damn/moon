@@ -124,6 +124,11 @@
 
 (def world-unit-scale (float (/ 48)))
 
+(def state (atom nil))
+(def audio (atom nil))
+(def batch (atom nil))
+(def unit-scale (atom 1))
+
 (def z-orders
   [:z-order/on-ground
    :z-order/ground
@@ -2270,11 +2275,6 @@
     (Disposable/.dispose pixmap)
     texture))
 
-(def state (atom nil))
-(def audio (atom nil))
-(def batch (atom nil))
-(def unit-scale (atom 1))
-
 (defn create! [gdx-audio files input handle-fsm-event! spawn-entity!]
   (reset! audio (audio/create gdx-audio files))
   (reset! batch (SpriteBatch.))
@@ -2536,7 +2536,7 @@
           explored-tile-corners (:ctx/explored-tile-corners ctx)
           tiled-map (:ctx/tiled-map ctx)]
       (moon-tiled-map/draw! tiled-map
-                            batch
+                            @batch
                             world-unit-scale
                             (viewport/get-camera world-viewport)
                             (tile-color-setter*
