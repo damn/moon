@@ -1,23 +1,39 @@
 (ns moon.textures
-  (:require [gdx.files :as files]
-            [gdx.file-handle :as file-handle]
-            [gdx.texture-region :as texture-region]
-            [gdx.file-texture-data :as file-texture-data]
+  (:require [gdx.texture-region :as texture-region]
             [gdx.pixmap :as pixmap]
             [gdx.texture :as texture]
-            [clojure.string :as str]))
+            [clojure.string :as str])
+  (:import (com.badlogic.gdx Files)
+           (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Pixmap Pixmap$Format)
+           (com.badlogic.gdx.graphics.glutils FileTextureData)))
+
+(defn- recursively-search [handle extensions]
+  (loop [[handle & remaining] (.list ^FileHandle handle)
+         result []]
+    (cond (nil? handle)
+          result
+
+          (.isDirectory ^FileHandle handle)
+          (recur (concat remaining (.list ^FileHandle handle)) result)
+
+          (extensions (.extension ^FileHandle handle))
+          (recur remaining (conj result (.path ^FileHandle handle)))
+
+          :else
+          (recur remaining result))))
 
 (defn create
   [files {:keys [folder extensions]}]
   (into {} (for [path (map (fn [path]
                              (str/replace-first path folder ""))
-                           (file-handle/recursively-search (files/internal files folder) extensions))
-                 :let [file (files/internal files path)
+                           (recursively-search (.internal ^Files files folder) extensions))
+                 :let [file (.internal ^Files files path)
                        pixmap (pixmap/new file)]]
-             [path (texture/create (file-texture-data/new file
-                                                       pixmap
-                                                       (pixmap/get-format pixmap)
-                                                       false))])))
+             [path (texture/create (FileTextureData. ^FileHandle file
+                                                     ^Pixmap pixmap
+                                                     ^Pixmap$Format (pixmap/get-format pixmap)
+                                                     false))])))
 
 (defn texture-region
   [textures {:keys [image/file image/bounds]}]

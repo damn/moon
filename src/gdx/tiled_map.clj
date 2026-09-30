@@ -1,7 +1,6 @@
 (ns gdx.tiled-map
   (:require [gdx.texture-region :as texture-region]
             [moon.camera :as orthographic-camera]
-            [gdx.map-layers :as map-layers]
             [gdx.map-properties :as map-properties]
             [gdx.tiled-map-tile :as tiled-map-tile]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
@@ -10,6 +9,7 @@
             [gdx.vector3 :as vector3])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d Batch)
+           (com.badlogic.gdx.maps MapLayer MapLayers)
            (com.badlogic.gdx.maps.tiled TiledMap)))
 
 (defn get-properties [tiled-map]
@@ -41,8 +41,8 @@
       :tiles tiles})))
 
 (defn add-layer! [tiled-map layer]
-  (map-layers/add! (get-layers tiled-map)
-                   (create-layer tiled-map layer)))
+  (.add ^MapLayers (get-layers tiled-map)
+        ^MapLayer (create-layer tiled-map layer)))
 
 (defn create
   [{:keys [properties layers]}]
@@ -57,7 +57,7 @@
 (defn spawn-positions [tiled-map]
   (let [layer-name "creatures"
         property-key "id"
-        layer (map-layers/get (get-layers tiled-map) layer-name)]
+        layer (.get ^MapLayers (get-layers tiled-map) ^String layer-name)]
     (for [x (range (tiled-map-tile-layer/get-width layer))
           y (range (tiled-map-tile-layer/get-height layer))
           :let [position [x y]

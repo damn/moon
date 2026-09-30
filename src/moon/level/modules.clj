@@ -2,14 +2,14 @@
   (:require [moon.rand :as rand]
             [gdx.tmx-map-loader :as tmx-map-loader]
             [gdx.tiled-map :as moon-tiled-map]
-            [gdx.map-layers :as map-layers]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer :refer [property-value]]
             [gdx.tiled-map-tile-layer-cell :as cell]
             [gdx.static-tiled-map-tile :as static-tiled-map-tile]
             [gdx.map-properties :as map-properties]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
-            [moon.position :as position]))
+            [moon.position :as position])
+  (:import (com.badlogic.gdx.maps MapLayers)))
 
 (defn print-grid [{:keys [grid] :as world-fn-ctx}]
   (g2d/print-y-up grid)
@@ -214,7 +214,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (map-layers/get (moon-tiled-map/get-layers tiled-map) "creatures")
+                                                    (property-value (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) ^String "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))

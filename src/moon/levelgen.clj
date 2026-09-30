@@ -8,17 +8,15 @@
             [gdx.stage :as stage]
             [moon.scene2d.table :as table]
             [gdx.tiled-map :as moon-tiled-map]
-            [gdx.files :as files]
-            [gdx.graphics :as graphics]
             [gdx.color :as color]
             [gdx.sprite-batch :as sprite-batch]
             [gdx.input :as input]
-            [gdx.map-layers :as map-layers]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
             [gdx.skin :as skin]
             [moon.scene2d.window :as window]
             [gdx.viewport :as viewport])
-  (:import (com.badlogic.gdx Application ApplicationListener Gdx)
+  (:import (com.badlogic.gdx.maps MapLayers)
+           (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)
@@ -70,7 +68,7 @@
 ;; ctx primitives
 
 (defn- gl20 [_ctx]
-  (graphics/get-gl20 Gdx/graphics))
+  (.getGL20 ^Graphics Gdx/graphics))
 
 (defn- key-pressed? [ctx key]
   (input/key-pressed? (get-input ctx) key))
@@ -87,10 +85,9 @@
    #(texture-region ctx %)))
 
 (defn- show-creatures-layer! [tiled-map]
-  (-> tiled-map
-      moon-tiled-map/get-layers
-      (map-layers/get "creatures")
-      (tiled-map-tile-layer/set-visible! true)))
+  (let [layers (moon-tiled-map/get-layers tiled-map)]
+    (-> (.get ^MapLayers layers ^String "creatures")
+        (tiled-map-tile-layer/set-visible! true))))
 
 (defn- fit-camera-to-tiled-map! [ctx tiled-map]
   (let [camera (get-camera ctx)
@@ -212,7 +209,7 @@
 
 (defn- create-skin [ctx]
   (assoc ctx
-         :ctx/skin (skin/create (files/internal (get-files ctx)
+         :ctx/skin (skin/create (.internal ^Files (get-files ctx)
                                                (:ui-skin-path config)))))
 
 (defn- create-world-viewport [ctx]

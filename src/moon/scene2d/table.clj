@@ -1,7 +1,7 @@
 (ns moon.scene2d.table
-  (:require [gdx.layout :as layout])
   (:import (com.badlogic.gdx.scenes.scene2d Actor)
-           (com.badlogic.gdx.scenes.scene2d.ui Cell Table)))
+           (com.badlogic.gdx.scenes.scene2d.ui Cell Table)
+           (com.badlogic.gdx.scenes.scene2d.utils Layout)))
 
 (defn- set-cell-opts! [cell opts]
   (doseq [[option arg] opts]
@@ -41,7 +41,7 @@
 (def ^:private set-opt-fns
   {:table/rows (fn [table rows]
                  (add-rows! table rows)
-                 (layout/pack table))
+                 (.pack ^Layout table))
    :table/cell-defaults (fn [table defaults]
                           (set-cell-opts! (.defaults ^Table table) defaults))})
 

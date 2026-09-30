@@ -14,23 +14,20 @@
             [moon.error-window :as error-window]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
-            [gdx.files :as files]
-            [gdx.graphics :as graphics]
             [gdx.sprite-batch :as sprite-batch]
             [gdx.texture-region :as texture-region]
             [gdx.input :as input]
             [moon.scene2d.group :as group]
             [gdx.touchable :as touchable]
             [gdx.skin :as ui-skin]
-            [gdx.layout :as layout]
             [gdx.viewport :as viewport])
-  (:import (com.badlogic.gdx Application ApplicationListener Gdx)
+  (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
            (com.badlogic.gdx.graphics GL20)
            (com.badlogic.gdx.graphics.g2d BitmapFont$BitmapFontData TextureRegion)
            (com.badlogic.gdx.scenes.scene2d Actor Event)
            (com.badlogic.gdx.scenes.scene2d.ui CheckBox Image ImageButton Label ScrollPane SelectBox Skin Stack TextButton TextField TextTooltip)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable TextureRegionDrawable)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport)))
 
@@ -172,7 +169,7 @@
     (group/clear-children! table)
     (table/add-rows! table [(->sound-columns skin table sound-name)])
     (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (find-ancestor actor (partial instance? window/class)))
-    (layout/pack (find-ancestor table (partial instance? window/class)))
+    (.pack ^Layout (find-ancestor table (partial instance? window/class)))
     (let [[k _] (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table)]
       (.setUserObject ^com.badlogic.gdx.scenes.scene2d.Actor table [k sound-name]))))
 
@@ -323,7 +320,7 @@
   (let [redo-rows (fn [ctx property-ids]
                     (group/clear-children! table)
                     (add-one-to-many-rows ctx table property-type property-ids)
-                    (layout/pack (find-ancestor table (partial instance? window/class))))]
+                    (.pack ^Layout (find-ancestor table (partial instance? window/class))))]
     (table/add-rows!
      table
      [[{:actor (doto (TextButton. "+" skin)
@@ -365,7 +362,7 @@
   (let [redo-rows (fn [ctx id]
                     (group/clear-children! table)
                     (add-one-to-one-rows ctx table property-type id)
-                    (layout/pack (find-ancestor table (partial instance? window/class))))]
+                    (.pack ^Layout (find-ancestor table (partial instance? window/class))))]
     (table/add-rows!
      table
      [[(when-not property-id
@@ -468,7 +465,7 @@
                                                                              :display-remove-component-button? (optional? schemas schema k)
                                                                              :table map-widget-table})])
                                                (rebuild-editor-window! ctx))))))}]))
-    (layout/pack window)
+    (.pack ^Layout window)
     window))
 
 (defn horiz-sep [colspan]
@@ -665,7 +662,7 @@
   (assoc ctx :ctx/batch (sprite-batch/create)))
 
 (defn- skin-f [{:keys [ctx/files] :as ctx}]
-  (let [skin (ui-skin/create (files/internal files "skin/uiskin.json"))]
+  (let [skin (ui-skin/create (.internal ^Files files "skin/uiskin.json"))]
     (set! (.markupEnabled ^BitmapFont$BitmapFontData
                           (-> skin
                               (ui-skin/get-font "default-font")
@@ -710,7 +707,7 @@
 
 (defn render [ctx]
   (let [stage (get-stage ctx)
-        gl (graphics/get-gl20 Gdx/graphics)
+        gl (.getGL20 ^Graphics Gdx/graphics)
         _ (.glClearColor ^GL20 gl 0 0 0 0)
         _ (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)
         ctx (if-let [new-ctx (:stage/ctx stage)]

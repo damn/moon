@@ -6,14 +6,10 @@
             [moon.scene2d.group :as group]
             [moon.scene2d.table :as table]
             [moon.scene2d.window :as window]
-            [gdx.layout :as layout]
             [gdx.touchable :as touchable]
             [gdx.vector2 :as vector2]
             [moon.camera :as orthographic-camera]
             [gdx.color :as color]
-            [gdx.files :as files]
-            [gdx.free-type-font-generator :as font-generator]
-            [gdx.graphics :as graphics]
             [gdx.input :as input]
             [gdx.pixmap :as pixmap]
             [gdx.pixmap-texture-data :as pixmap-texture-data]
@@ -22,7 +18,6 @@
             [gdx.sprite-batch :as sprite-batch]
             [gdx.stage :as stage]
             [gdx.texture :as texture]
-            [gdx.texture-filter :as texture-filter]
             [gdx.texture-region :as texture-region]
             [gdx.tiled-map :as moon-tiled-map]
             [gdx.tooltip-manager :as tooltip-manager]
@@ -57,14 +52,16 @@
              [moon.val-max :as val-max]
              [qrecord.core :as q]
              [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx Application ApplicationListener Gdx)
+  (:import (com.badlogic.gdx Application ApplicationListener Files Gdx Graphics)
            (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
-           (com.badlogic.gdx.graphics Color Colors GL20 Texture)
+           (com.badlogic.gdx.files FileHandle)
+           (com.badlogic.gdx.graphics Color Colors Cursor GL20 Pixmap Texture Texture$TextureFilter)
            (com.badlogic.gdx.graphics.g2d Batch BitmapFont BitmapFont$BitmapFontData TextureRegion)
+           (com.badlogic.gdx.graphics.g2d.freetype FreeTypeFontGenerator FreeTypeFontGenerator$FreeTypeFontParameter)
            (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor Event)
            (com.badlogic.gdx.scenes.scene2d.ui Button ButtonGroup HorizontalGroup Image ImageButton Label ScrollPane Skin Stack TextButton TextTooltip Widget)
-           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable TextureRegionDrawable)
+           (com.badlogic.gdx.scenes.scene2d.utils ChangeListener ClickListener Drawable Layout TextureRegionDrawable)
            (com.badlogic.gdx.utils Align Disposable)
            (com.badlogic.gdx.utils.viewport FitViewport))
   (:gen-class))
@@ -518,7 +515,7 @@
                                                     (.setMinCheckCount (int 0)))))
                          :expand? true
                          :bottom? true}]]})
-    (layout/set-fill-parent! true)
+    (.setFillParent true)
     (.setName "moon.ui.action-bar")))
 
 (defn- action-bar-get-data
@@ -1786,7 +1783,7 @@
                                (act [delta]
                                  (when-let [stage (.getStage ^Actor this)]
                                    (.setText ^Label label ^String (set-label-text! (:stage/ctx stage))))
-                                 (layout/pack window)
+                                 (.pack ^Layout window)
                                  (let [^Actor this this]
                                    (proxy-super act delta)))
                                (draw [batch parent-alpha])))
@@ -2240,7 +2237,7 @@
                                                            :expand? true
                                                            :fill-x? true
                                                            :fill-y? true}]]})
-        (layout/set-fill-parent! true)))
+        (.setFillParent true)))
 
 (def ^:private render-layers
   [#{:entity/mouseover?
@@ -2426,7 +2423,7 @@
                       :cursors/no-skill-selected)))})
 
 (defn- update-time [ctx]
-  (let [delta-ms (min (graphics/get-delta-time Gdx/graphics) max-delta)]
+  (let [delta-ms (min (.getDeltaTime ^Graphics Gdx/graphics) max-delta)]
     (-> ctx
         (assoc :ctx/delta-time delta-ms)
         (update :ctx/elapsed-time + delta-ms))))
@@ -2502,7 +2499,7 @@
                    (shape-drawer/new (:ctx/batch ctx)
                                      (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1)))
             (assoc ctx :ctx/skin
-                   (let [skin (skin/create (files/internal files "skin/uiskin.json"))]
+                   (let [skin (skin/create (.internal ^Files files "skin/uiskin.json"))]
                      (set! (.markupEnabled ^BitmapFont$BitmapFontData
                                            (-> skin
                                                (skin/get-font "default-font")
@@ -2521,8 +2518,8 @@
                      (update-vals data
                                   (fn [[path-segment [hotspot-x hotspot-y]]]
                                     (let [path (format path-format path-segment)
-                                          pixmap* (pixmap/new (files/internal files path))
-                                          cursor (graphics/create-cursor Gdx/graphics pixmap* hotspot-x hotspot-y)]
+                                          pixmap* (pixmap/new (.internal ^Files files path))
+                                          cursor (.newCursor ^Graphics Gdx/graphics ^Pixmap pixmap* hotspot-x hotspot-y)]
                                       (Disposable/.dispose pixmap*)
                                       cursor)))))
             (assoc ctx :ctx/textures
@@ -2543,11 +2540,14 @@
                                                            :size 16
                                                            :quality-scaling 2
                                                            :use-integer-positions? false}
-                         generator (font-generator/new (files/internal files path))
-                         parameter {:set-size (* size quality-scaling)
-                                    :set-min-filter texture-filter/linear
-                                    :set-mag-filter texture-filter/linear}
-                         font (font-generator/generate-font generator parameter)
+                         generator (FreeTypeFontGenerator. ^FileHandle (.internal ^Files files path))
+                         parameter (let [p (FreeTypeFontGenerator$FreeTypeFontParameter.)]
+                                     (set! (.size p) (* size quality-scaling))
+                                     (set! (.minFilter p) Texture$TextureFilter/Linear)
+                                     (set! (.magFilter p) Texture$TextureFilter/Linear)
+                                     p)
+                         font (.generateFont ^FreeTypeFontGenerator generator
+                                             ^FreeTypeFontGenerator$FreeTypeFontParameter parameter)
                          font-data (.getData ^BitmapFont font)]
                      (Disposable/.dispose generator)
                      (.setScale ^BitmapFont$BitmapFontData font-data (/ quality-scaling))
@@ -2573,7 +2573,7 @@
                                                                         (str (number/readable (:ctx/elapsed-time ctx)) " seconds"))
                                                            :icon "images/clock.png"}
                                                           {:label "FPS"
-                                                           :update-fn (fn [ctx] (graphics/get-frames-per-second Gdx/graphics))
+                                                           :update-fn (fn [ctx] (.getFramesPerSecond ^Graphics Gdx/graphics))
                                                            :icon "images/fps.png"}
                                                           {:label "Mouseover-entity id"
                                                            :update-fn (fn [ctx]
@@ -2660,8 +2660,8 @@
     (Disposable/.dispose (:ctx/tiled-map ctx))))
 
 (defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed?]
-  (.glClearColor (graphics/get-gl20 Gdx/graphics) 0 0 0 0)
-  (.glClear (graphics/get-gl20 Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
+  (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
+  (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (:stage/ctx (:ctx/stage %)) %))
   (malli-schema/validate-humanize schema @state)
   (let [ui-mouse-position (viewport/unproject (:stage/viewport (:ctx/stage @state)) mouse-position)
@@ -2752,7 +2752,7 @@
                          cursor-fn
                          (cursor-fn eid ctx))]
         (assert (contains? (:ctx/cursors ctx) cursor-key))
-        (graphics/set-cursor! Gdx/graphics (get (:ctx/cursors ctx) cursor-key)))
+        (.setCursor ^Graphics Gdx/graphics ^Cursor (get (:ctx/cursors ctx) cursor-key)))
       (let [ctx @state
             eid (:ctx/player-eid ctx)
             entity @eid
