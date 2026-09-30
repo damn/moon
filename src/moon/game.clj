@@ -2803,6 +2803,17 @@
     (stage/draw! stage)
     (:stage/ctx stage)))
 
+(defn shape-drawer-texture []
+  (let [pixmap (doto (pixmap/new 1 1 pixmap/rgba8888)
+                 (pixmap/set-color! 1 1 1 1)
+                 (pixmap/draw-pixel! 0 0))
+        texture (texture/create (pixmap-texture-data/create pixmap
+                                                            (pixmap/get-format pixmap)
+                                                            false
+                                                            false))]
+    (disposable/dispose! pixmap)
+    texture))
+
 (def state (atom nil))
 
 (defn -main []
@@ -2811,8 +2822,7 @@
     (reify ApplicationListener
       (create [_]
         (reset! state
-                (as-> {:ctx/audio    (.getAudio    ^Application Gdx/app)
-                       :ctx/files    (.getFiles    ^Application Gdx/app)
+                (as-> {:ctx/files    (.getFiles    ^Application Gdx/app)
                        :ctx/graphics (.getGraphics ^Application Gdx/app)
                        :ctx/input    (.getInput    ^Application Gdx/app)
                        :ctx/unit-scale (atom 1)
@@ -2828,19 +2838,11 @@
                        :ctx/show-cell-entities? false
                        :ctx/show-cell-occupied? false
                        :ctx/show-body-bounds? false
-                       :ctx/show-tile-grid? false} ctx
-                  (assoc ctx :ctx/batch (sprite-batch/create))
-                  (assoc ctx :ctx/audio (audio/create (:ctx/audio ctx) (:ctx/files ctx)))
-                  (assoc ctx :ctx/shape-drawer-texture
-                         (let [pixmap (doto (pixmap/new 1 1 pixmap/rgba8888)
-                                        (pixmap/set-color! 1 1 1 1)
-                                        (pixmap/draw-pixel! 0 0))
-                               texture (texture/create (pixmap-texture-data/create pixmap
-                                                                                (pixmap/get-format pixmap)
-                                                                                false
-                                                                                false))]
-                           (disposable/dispose! pixmap)
-                           texture))
+                       :ctx/show-tile-grid? false
+                       :ctx/batch (sprite-batch/create)
+                       :ctx/audio (audio/create Gdx/audio Gdx/files)
+                       :ctx/shape-drawer-texture (shape-drawer-texture)}
+                  ctx
                   (assoc ctx :ctx/shape-drawer
                          (shape-drawer/new (:ctx/batch ctx)
                                            (texture-region/create (:ctx/shape-drawer-texture ctx) 1 0 1 1)))
