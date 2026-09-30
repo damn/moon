@@ -2344,22 +2344,22 @@
 
 (defn- dev-menu-main-table [skin menus update-labels]
   (let [table (table/create {:table/rows [(for [{:keys [label items]} menus]
-                                                           {:actor
-                                                            (doto (TextButton. label skin)
-                                                              (.addListener (change-listener/create
-                                                                                  (fn [event actor]
-                                                                                    (stage/add-actor! (event/get-stage event)
-                                                                                                    (window/create {:title label
-                                                                                                                    :skin skin
-                                                                                                                    :table/rows [(for [{:keys [label on-click]} items]
-                                                                                                                                  {:actor
-                                                                                                                                   (doto (TextButton. label skin)
-                                                                                                                                     (.addListener (change-listener/create
-                                                                                                                                                           (fn [event actor]
-                                                                                                                                                             (let [stage (event/get-stage event)]
-                                                                                                                                                               (stage/set-ctx! stage
-                                                                                                                                                                               (on-click (:stage/ctx stage))))))))})]
-                                                                                                                    :window/add-close-button? true}))))))})]})]
+                                            {:actor
+                                             (doto (TextButton. label skin)
+                                               (.addListener (change-listener/create
+                                                              (fn [event actor]
+                                                                (stage/add-actor! (event/get-stage event)
+                                                                                  (window/create {:title label
+                                                                                                  :skin skin
+                                                                                                  :table/rows [(for [{:keys [label on-click]} items]
+                                                                                                                 {:actor
+                                                                                                                  (doto (TextButton. label skin)
+                                                                                                                    (.addListener (change-listener/create
+                                                                                                                                   (fn [event actor]
+                                                                                                                                     (let [stage (event/get-stage event)]
+                                                                                                                                       (stage/set-ctx! stage
+                                                                                                                                                       (on-click (:stage/ctx stage))))))))})]
+                                                                                                  :window/add-close-button? true}))))))})]})]
     (doseq [{:keys [label update-fn icon]} update-labels]
       (let [update-fn #(str label ": " (update-fn %))]
         (if icon
@@ -2974,29 +2974,26 @@
     (disposable/dispose! (:ctx/tiled-map ctx))))
 
 (defn render! []
-  (swap! state
-         (fn [ctx]
-           (-> ctx
-               stage-ctx
-               render-validate
-               update-mouse-positions
-               update-mouseover-eid
-               check-debug-viewer
-               set-active-entities
-               set-camera-position
-               clear-screen
-               render-draw-tiled-map
-               draw-on-world-viewport
-               assoc-interaction-state
-               set-cursor
-               handle-player-input
-               dissoc-interaction-state
-               assoc-paused
-               when-not-paused
-               remove-destroyed-entities
-               window-camera-controls
-               update-draw-stage
-               render-validate))))
+  (swap! state stage-ctx)
+  (swap! state render-validate)
+  (swap! state update-mouse-positions)
+  (swap! state update-mouseover-eid)
+  (swap! state check-debug-viewer)
+  (swap! state set-active-entities)
+  (swap! state set-camera-position)
+  (swap! state clear-screen)
+  (swap! state render-draw-tiled-map)
+  (swap! state draw-on-world-viewport)
+  (swap! state assoc-interaction-state)
+  (swap! state set-cursor)
+  (swap! state handle-player-input)
+  (swap! state dissoc-interaction-state)
+  (swap! state assoc-paused)
+  (swap! state when-not-paused)
+  (swap! state remove-destroyed-entities)
+  (swap! state window-camera-controls)
+  (swap! state update-draw-stage)
+  (swap! state render-validate))
 
 (defn resize! [width height]
   (let [ctx @state]
