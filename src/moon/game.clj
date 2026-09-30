@@ -1573,37 +1573,38 @@
             (draw-hpmana-bar! ctx batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
 
 (defn handle-clicked-inventory-cell
-  [ctx audio player-eid cell world-mouse-position]
-  (case (:state (:entity/fsm @player-eid))
-    :player-idle
-    (when-let [item (get-in (:entity/inventory @player-eid) cell)]
-      (audio/play! audio "bfxr_takeit")
-      (remove-item! ctx player-eid cell)
-      (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item))
+  [ctx audio cell world-mouse-position]
+  (let [player-eid (:ctx/player-eid ctx)]
+    (case (:state (:entity/fsm @player-eid))
+      :player-idle
+      (when-let [item (get-in (:entity/inventory @player-eid) cell)]
+        (audio/play! audio "bfxr_takeit")
+        (remove-item! ctx player-eid cell)
+        (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item))
 
-    :player-item-on-cursor
-    (let [entity @player-eid
-          inventory (:entity/inventory entity)
-          item-in-cell (get-in inventory cell)
-          item-on-cursor (:entity/item-on-cursor entity)]
-      (cond
-       (and (not item-in-cell)
-            (inventory/valid-slot? cell item-on-cursor))
-       (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (audio/play! audio "bfxr_itemput")
-           (set-item! ctx player-eid cell item-on-cursor)
-           (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item))
+      :player-item-on-cursor
+      (let [entity @player-eid
+            inventory (:entity/inventory entity)
+            item-in-cell (get-in inventory cell)
+            item-on-cursor (:entity/item-on-cursor entity)]
+        (cond
+         (and (not item-in-cell)
+              (inventory/valid-slot? cell item-on-cursor))
+         (do (swap! player-eid dissoc :entity/item-on-cursor)
+             (audio/play! audio "bfxr_itemput")
+             (set-item! ctx player-eid cell item-on-cursor)
+             (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item))
 
-       (and item-in-cell
-            (inventory/valid-slot? cell item-on-cursor))
-       (do (swap! player-eid dissoc :entity/item-on-cursor)
-           (audio/play! audio "bfxr_itemput")
-           (remove-item! ctx player-eid cell)
-           (set-item! ctx player-eid cell item-on-cursor)
-           (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item)
-           (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item-in-cell))))
+         (and item-in-cell
+              (inventory/valid-slot? cell item-on-cursor))
+         (do (swap! player-eid dissoc :entity/item-on-cursor)
+             (audio/play! audio "bfxr_itemput")
+             (remove-item! ctx player-eid cell)
+             (set-item! ctx player-eid cell item-on-cursor)
+             (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item)
+             (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item-in-cell))))
 
-    nil))
+      nil)))
 
 (defn- inventory-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -1634,13 +1635,7 @@
        (doto stack
          (.addListener (proxy [ClickListener] []
                          (clicked [event _x _y]
-                           (let [ctx (.ctx ^Stage (.getStage ^Event event))]
-                             (on-click-cell ctx
-                                            (:ctx/player-eid ctx)
-                                            cell
-                                            (viewport/unproject (:ctx/world-viewport ctx)
-                                                                [(.getX ^Input Gdx/input)
-                                                                 (.getY ^Input Gdx/input)])))))
+                           (on-click-cell event cell)))
          (.setName "inventory-cell")
          (.setUserObject cell)))}))
 
@@ -1686,9 +1681,8 @@
     window))
 
 (defn inventory-window-create
-  [ctx audio]
-  (let [colors (:ctx/colors ctx)
-        skin (:ctx/skin ctx)
+  [ctx on-click-cell draw-cell-rect!]
+  (let [skin (:ctx/skin ctx)
         stage (:ctx/stage ctx)
         textures (:ctx/textures ctx)
         slot->y-sprite-idx #:inventory.slot {:weapon 0
@@ -1716,22 +1710,13 @@
                                                            :image/bounds bounds})))
         cell-size 48]
     (inventory-window-build
-     {:on-click-cell (fn [ctx player-eid cell world-mouse-position]
-                       (handle-clicked-inventory-cell ctx audio player-eid cell world-mouse-position))
-      :draw-cell-rect! (fn [ctx player-entity x y mouseover? cell]
-                         (draw-fn-rectangle ctx x y cell-size cell-size (:colors/item-rect colors))
-                         (when (and mouseover?
-                                    (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
-                           (let [item (:entity/item-on-cursor player-entity)
-                                 color (if (inventory/valid-slot? cell item)
-                                         (:colors/droppable-item colors)
-                                         (:colors/not-allowed-drop-item colors))]
-                             (draw-fn-filled-rectangle ctx (inc x) (inc y) (- cell-size 2) (- cell-size 2) color))))
+     {:on-click-cell on-click-cell
+      :draw-cell-rect! draw-cell-rect!
       :skin skin
       :position [(viewport/get-world-width (.getViewport ^Stage stage))
                  (viewport/get-world-height (.getViewport ^Stage stage))]
       :slot->texture-region slot->texture-region
-      :cell-size 48})))
+      :cell-size cell-size})))
 
 (defn windows-create [ctx actor-fns]
   (let [group* (group/create)]
@@ -2196,10 +2181,9 @@
      :active-skill}])
 
 (defn- draw-tile-grid
-  [ctx]
+  [ctx world-viewport]
   (when (:ctx/show-tile-grid? ctx)
-    (let [world-viewport (:ctx/world-viewport ctx)
-          [left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/get-camera world-viewport))]
+    (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/get-camera world-viewport))]
       (draw-fn-grid ctx
                      (int left-x)
                      (int bottom-y)
@@ -2210,10 +2194,9 @@
                      (color/float-bits [1 1 1 0.8])))))
 
 (defn- draw-cell-debug
-  [ctx]
+  [ctx world-viewport]
   (let [world (:ctx/world ctx)
         colors (:ctx/colors ctx)
-        world-viewport (:ctx/world-viewport ctx)
         tile-positions (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))]
     (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
       (when (and (:ctx/show-cell-entities? ctx) (seq (:entities cell*)))
@@ -2503,7 +2486,10 @@
             (assoc ctx :ctx/db (db/create))
             (let [stage (:ctx/stage ctx)
                   skin (:ctx/skin ctx)
-                  textures (:ctx/textures ctx)]
+                  textures (:ctx/textures ctx)
+                  colors (:ctx/colors ctx)
+                  audio (:ctx/audio ctx)
+                  cell-size 48]
               (doseq [actor [(create-action-bar)
                              (create-dev-menu
                               {:menus dev-menus
@@ -2539,7 +2525,25 @@
                                :skin skin})
                              (hp-mana-bar-create ctx)
                              (windows-create ctx [stage-info-window-create
-                                                  #(inventory-window-create % (:ctx/audio %))])
+                                                  #(inventory-window-create
+                                                    %
+                                                    (fn [event cell]
+                                                      (let [ctx (.ctx ^Stage (.getStage ^Event event))]
+                                                        (handle-clicked-inventory-cell ctx
+                                                                                       audio
+                                                                                       cell
+                                                                                       (viewport/unproject (:ctx/world-viewport ctx)
+                                                                                                           [(.getX ^Input Gdx/input)
+                                                                                                            (.getY ^Input Gdx/input)]))))
+                                                    (fn [ctx player-entity x y mouseover? cell]
+                                                      (draw-fn-rectangle ctx x y cell-size cell-size (:colors/item-rect colors))
+                                                      (when (and mouseover?
+                                                                 (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
+                                                        (let [item (:entity/item-on-cursor player-entity)
+                                                              color (if (inventory/valid-slot? cell item)
+                                                                      (:colors/droppable-item colors)
+                                                                      (:colors/not-allowed-drop-item colors))]
+                                                          (draw-fn-filled-rectangle ctx (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
                              (player-state-draw-create (:ctx/unit-scale ctx))
                              (player-message-actor-create (:ctx/default-font ctx) (:ctx/unit-scale ctx))]]
                 (.addActor ^Stage stage actor))
@@ -2676,8 +2680,8 @@
             old-line-width (.getDefaultLineWidth shape-drawer)]
         (.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
         (reset! unit-scale world-unit-scale)
-        (doseq [draw-fn [draw-tile-grid
-                         draw-cell-debug
+        (doseq [draw-fn [#(draw-tile-grid % world-viewport)
+                         #(draw-cell-debug % world-viewport)
                          #(draw-entities! % batch default-font unit-scale mouseover-actor* world-mouse-position)
                          #(highlight-mouseover-tile % world-mouse-position)]]
           (draw-fn ctx))
