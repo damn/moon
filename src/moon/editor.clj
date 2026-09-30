@@ -525,15 +525,14 @@
 (defn- image-widget [image textures]
   (scaled-image-button (textures/texture-region textures image) 2))
 
-(defn- map-widget [schema m ctx]
-  (let [{:keys [ctx/db ctx/skin]} ctx
-        schemas (:db/schemas db)]
+(defn- map-widget [schema m db skin build-widget]
+  (let [schemas (:db/schemas db)]
     (map-widget-table-create
      {:skin skin
       :schema schema
       :k->widget (into {}
                        (for [[k v] m]
-                         [k (build-widget ctx (get schemas k) k v)]))
+                         [k (build-widget (get schemas k) k v)]))
       :k->optional? #(optional? schemas schema %)
       :ks-sorted (map first (coll/sort-by-k-order property-k-sort-order m))
       :opt? (seq (set/difference (optional-keyset schemas schema)
@@ -583,7 +582,7 @@
     :s/boolean (boolean-widget v skin)
     :s/enum (enum-widget schema v skin)
     :s/image (image-widget v textures)
-    :s/map (map-widget schema v ctx)
+    :s/map (map-widget schema v db skin (partial build-widget ctx))
     :s/number (number-widget schema v skin)
     :s/one-to-many (one-to-many-widget schema v db skin textures)
     :s/one-to-one (one-to-one-widget schema v db skin textures)
