@@ -16,7 +16,6 @@
             [gdx.actor.group.widget.table.window :as window]
             [gdx.files :as files]
             [gdx.graphics :as graphics]
-            [gdx.gl20 :as gl20]
             [gdx.bitmap-font :as bitmap-font]
             [gdx.bitmap-font-data :as bitmap-font-data]
             [gdx.sprite-batch :as sprite-batch]
@@ -38,12 +37,11 @@
             [gdx.drawable.texture-region :as texture-region-drawable]
             [gdx.disposable :as disposable]
             [gdx.viewport.fit :as fit-viewport]
-            [gdx.viewport :as viewport]
-            [gdx.gdx :as gdx]
-            [gdx.application :as application]
-            [gdx.lwjgl3-application :as lwjgl3-application]
-            [gdx.lwjgl3-application-configuration :as config])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui CheckBox ImageButton Skin TextButton)
+            [gdx.viewport :as viewport])
+  (:import (com.badlogic.gdx Application ApplicationListener Gdx)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.graphics GL20)
+           (com.badlogic.gdx.scenes.scene2d.ui CheckBox ImageButton Skin TextButton)
            (com.badlogic.gdx.scenes.scene2d.utils Drawable)))
 
 (defn- find-ancestor [a pred?]
@@ -665,16 +663,16 @@
                                                                                                                                           :property (db/get-raw db id)})))})))))))}])})))
 
 (defn- input-f [ctx]
-  (assoc ctx :ctx/input (application/get-input (gdx/app))))
+  (assoc ctx :ctx/input (.getInput ^Application Gdx/app)))
 
 (defn- audio-f [{:keys [ctx/files] :as ctx}]
-  (assoc ctx :ctx/audio (audio/create (application/get-audio (gdx/app)) files)))
+  (assoc ctx :ctx/audio (audio/create (.getAudio ^Application Gdx/app) files)))
 
 (defn- files-f [ctx]
-  (assoc ctx :ctx/files (application/get-files (gdx/app))))
+  (assoc ctx :ctx/files (.getFiles ^Application Gdx/app)))
 
 (defn- graphics-f [ctx]
-  (assoc ctx :ctx/graphics (application/get-graphics (gdx/app))))
+  (assoc ctx :ctx/graphics (.getGraphics ^Application Gdx/app)))
 
 (defn- batch-f [ctx]
   (assoc ctx :ctx/batch (sprite-batch/create)))
@@ -726,8 +724,8 @@
 (defn- clear-screen
   [{:keys [ctx/graphics] :as ctx}]
   (let [gl (graphics/get-gl20 graphics)]
-    (gl20/gl-clear-color! gl 0 0 0 0)
-    (gl20/gl-clear! gl gl20/gl-color-buffer-bit))
+    (.glClearColor ^GL20 gl 0 0 0 0)
+    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT))
   ctx)
 
 (defn render [ctx]
@@ -745,24 +743,20 @@
   (viewport/update! (:stage/viewport (get-stage ctx)) width height true))
 
 (defn -main []
-  (config/use-glfw-async!)
-  (lwjgl3-application/create
-    {:create! (fn [_app]
-                (reset! state (create)))
-
-     :dispose! (fn []
-                 (dispose @state))
-
-     :render! (fn []
-                (swap! state render))
-
-     :resize! (fn [width height]
-                (resize @state width height))
-
-     :pause! (fn [])
-
-     :resume! (fn [])
-
-     :title "!Editor!"
-     :windowed-mode [1440 900]
-     :foreground-fps 60}))
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application.
+    (reify ApplicationListener
+      (create [_]
+        (reset! state (create)))
+      (dispose [_]
+        (dispose @state))
+      (render [_]
+        (swap! state render))
+      (resize [_ width height]
+        (resize @state width height))
+      (pause [_])
+      (resume [_]))
+    (doto (Lwjgl3ApplicationConfiguration.)
+      (.setTitle "!Editor!")
+      (.setWindowedMode 1440 900)
+      (.setForegroundFPS 60))))

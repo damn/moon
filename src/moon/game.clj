@@ -21,10 +21,6 @@
             [gdx.tooltip.text :as text-tooltip]
             [gdx.touchable :as touchable]
             [gdx.vector2 :as vector2]
-            [gdx.gdx :as gdx]
-            [gdx.application :as application]
-            [gdx.lwjgl3-application :as lwjgl3-application]
-            [gdx.lwjgl3-application-configuration :as config]
             [gdx.batch :as batch]
             [gdx.bitmap-font :as bitmap-font]
             [gdx.bitmap-font-data :as bitmap-font-data]
@@ -35,7 +31,6 @@
             [gdx.disposable :as disposable]
             [gdx.files :as files]
             [gdx.free-type-font-generator :as font-generator]
-            [gdx.gl20 :as gl20]
             [gdx.graphics :as graphics]
             [gdx.input :as input]
             [gdx.pixmap :as pixmap]
@@ -81,7 +76,10 @@
              [moon.val-max :as val-max]
              [qrecord.core :as q]
              [reduce-fsm :as fsm])
-  (:import (com.badlogic.gdx.math Vector2)
+  (:import (com.badlogic.gdx Application ApplicationListener Gdx)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.graphics GL20)
+           (com.badlogic.gdx.math Vector2)
            (com.badlogic.gdx.scenes.scene2d Actor)
            (com.badlogic.gdx.scenes.scene2d.ui Button ImageButton Skin TextButton))
   (:gen-class))
@@ -2459,10 +2457,10 @@
     nil))
 
 (defn create-bootstrap [app]
-  {:ctx/audio    (application/get-audio    app)
-   :ctx/files    (application/get-files    app)
-   :ctx/graphics (application/get-graphics app)
-   :ctx/input    (application/get-input    app)
+  {:ctx/audio    (.getAudio    ^Application app)
+   :ctx/files    (.getFiles    ^Application app)
+   :ctx/graphics (.getGraphics ^Application app)
+   :ctx/input    (.getInput    ^Application app)
    :ctx/unit-scale (atom 1)
    :ctx/active-entities nil
    :ctx/delta-time nil
@@ -2794,8 +2792,8 @@
 
 (defn clear-screen [ctx]
   (let [gl (gl20 ctx)]
-    (gl20/gl-clear-color! gl 0 0 0 0)
-    (gl20/gl-clear! gl gl20/gl-color-buffer-bit))
+    (.glClearColor ^GL20 gl 0 0 0 0)
+    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT))
   ctx)
 
 (defn render-draw-tiled-map
@@ -3221,24 +3219,20 @@
 (def state (atom nil))
 
 (defn -main []
-  (config/use-glfw-async!)
-  (lwjgl3-application/create
-    {:create! (fn [application]
-                (reset! state (create application)))
-
-     :dispose! (fn []
-                 (dispose @state))
-
-     :render! (fn []
-                (swap! state render))
-
-     :resize! (fn [width height]
-                (resize @state width height))
-
-     :pause! (fn [])
-
-     :resume! (fn [])
-
-     :title "Moon"
-     :windowed-mode [1440 900]
-     :foreground-fps 60}))
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application.
+    (reify ApplicationListener
+      (create [_]
+        (reset! state (create Gdx/app)))
+      (dispose [_]
+        (dispose @state))
+      (render [_]
+        (swap! state render))
+      (resize [_ width height]
+        (resize @state width height))
+      (pause [_])
+      (resume [_]))
+    (doto (Lwjgl3ApplicationConfiguration.)
+      (.setTitle "Moon")
+      (.setWindowedMode 1440 900)
+      (.setForegroundFPS 60))))

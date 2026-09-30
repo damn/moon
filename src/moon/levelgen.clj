@@ -12,7 +12,6 @@
             [gdx.graphics :as graphics]
             [gdx.color :as color]
             [gdx.sprite-batch :as sprite-batch]
-            [gdx.gl20 :as gl20]
             [gdx.input :as input]
             [gdx.map-layers :as map-layers]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
@@ -21,12 +20,11 @@
             [gdx.change-listener :as change-listener]
             [gdx.disposable :as disposable]
             [gdx.viewport.fit :as fit-viewport]
-            [gdx.viewport :as viewport]
-            [gdx.gdx :as gdx]
-            [gdx.application :as application]
-            [gdx.lwjgl3-application :as lwjgl3-application]
-            [gdx.lwjgl3-application-configuration :as config])
-  (:import (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
+            [gdx.viewport :as viewport])
+  (:import (com.badlogic.gdx Application ApplicationListener Gdx)
+           (com.badlogic.gdx.backends.lwjgl3 Lwjgl3Application Lwjgl3ApplicationConfiguration)
+           (com.badlogic.gdx.graphics GL20)
+           (com.badlogic.gdx.scenes.scene2d.ui Skin TextButton)))
 
 ;; ctx accessors
 
@@ -110,8 +108,8 @@
 
 (defn- clear-screen! [ctx]
   (let [gl (gl20 ctx)]
-    (gl20/gl-clear-color! gl 0 0 0 0)
-    (gl20/gl-clear! gl gl20/gl-color-buffer-bit)))
+    (.glClearColor ^GL20 gl 0 0 0 0)
+    (.glClear ^GL20 gl GL20/GL_COLOR_BUFFER_BIT)))
 
 (defn- draw-tiled-map! [ctx]
   (moon-tiled-map/draw! (get-tiled-map ctx)
@@ -200,9 +198,9 @@
    :camera-movement-speed 1})
 
 (defn- create-bootstrap [app]
-  {:ctx/files (application/get-files app)
-   :ctx/input (application/get-input app)
-   :ctx/graphics (application/get-graphics app)
+  {:ctx/files (.getFiles ^Application app)
+   :ctx/input (.getInput ^Application app)
+   :ctx/graphics (.getGraphics ^Application app)
    :ctx/zoom-speed (:zoom-speed config)
    :ctx/camera-movement-speed (:camera-movement-speed config)
    :ctx/world-unit-scale (float (/ (:tile-size config)))})
@@ -302,24 +300,20 @@
 (def state (atom nil))
 
 (defn -main []
-  (config/use-glfw-async!)
-  (lwjgl3-application/create
-    {     :create! (fn [app]
-                (reset! state (create app)))
-
-     :dispose! (fn []
-                 (dispose @state))
-
-     :render! (fn []
-                (swap! state render))
-
-     :resize! (fn [width height]
-                (resize @state width height))
-
-     :pause! (fn [])
-
-     :resume! (fn [])
-
-     :title "Levelgen Test"
-     :windowed-mode [1440 900]
-     :foreground-fps 60}))
+  (Lwjgl3ApplicationConfiguration/useGlfwAsync)
+  (Lwjgl3Application.
+    (reify ApplicationListener
+      (create [_]
+        (reset! state (create Gdx/app)))
+      (dispose [_]
+        (dispose @state))
+      (render [_]
+        (swap! state render))
+      (resize [_ width height]
+        (resize @state width height))
+      (pause [_])
+      (resume [_]))
+    (doto (Lwjgl3ApplicationConfiguration.)
+      (.setTitle "Levelgen Test")
+      (.setWindowedMode 1440 900)
+      (.setForegroundFPS 60))))
