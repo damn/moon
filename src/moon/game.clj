@@ -1225,52 +1225,45 @@
         image-width 32]
     (/ (/ image-width tile-size) 2)))
 
-(defn- draw-fn-circle [ctx [x y] radius color-float-bits]
-  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
-    (.setColor shape-drawer (float color-float-bits))
-    (.circle shape-drawer x y radius)))
+(defn- draw-fn-circle [shape-drawer [x y] radius color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.circle ^ShapeDrawer shape-drawer x y radius))
 
-(defn- draw-fn-ellipse [ctx [x y] radius-x radius-y color-float-bits]
-  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
-    (.setColor shape-drawer (float color-float-bits))
-    (.ellipse shape-drawer x y radius-x radius-y)))
+(defn- draw-fn-ellipse [shape-drawer [x y] radius-x radius-y color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.ellipse ^ShapeDrawer shape-drawer x y radius-x radius-y))
 
-(defn- draw-fn-filled-circle [ctx [x y] radius color-float-bits]
-  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
-    (.setColor shape-drawer (float color-float-bits))
-    (.filledCircle shape-drawer (float x) (float y) (float radius))))
+(defn- draw-fn-filled-circle [shape-drawer [x y] radius color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.filledCircle ^ShapeDrawer shape-drawer (float x) (float y) (float radius)))
 
-(defn- draw-fn-filled-rectangle [ctx x y w h color-float-bits]
-  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
-    (.setColor shape-drawer (float color-float-bits))
-    (.filledRectangle shape-drawer (float x) (float y) (float w) (float h))))
+(defn- draw-fn-filled-rectangle [shape-drawer x y w h color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.filledRectangle ^ShapeDrawer shape-drawer (float x) (float y) (float w) (float h)))
 
-(defn- draw-fn-line [ctx [sx sy] [ex ey] color-float-bits]
-  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
-    (.setColor shape-drawer (float color-float-bits))
-    (.line shape-drawer (float sx) (float sy) (float ex) (float ey))))
+(defn- draw-fn-line [shape-drawer [sx sy] [ex ey] color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.line ^ShapeDrawer shape-drawer (float sx) (float sy) (float ex) (float ey)))
 
-(defn- draw-fn-grid [ctx leftx bottomy gridw gridh cellw cellh color-float-bits]
+(defn- draw-fn-grid [shape-drawer leftx bottomy gridw gridh cellw cellh color-float-bits]
   (let [w (* (float gridw) (float cellw))
         h (* (float gridh) (float cellh))
         topy (+ (float bottomy) (float h))
         rightx (+ (float leftx) (float w))]
     (doseq [idx (range (inc (float gridw)))
             :let [linex (+ (float leftx) (* (float idx) (float cellw)))]]
-      (draw-fn-line ctx [linex topy] [linex bottomy] color-float-bits))
+      (draw-fn-line shape-drawer [linex topy] [linex bottomy] color-float-bits))
     (doseq [idx (range (inc (float gridh)))
             :let [liney (+ (float bottomy) (* (float idx) (float cellh)))]]
-      (draw-fn-line ctx [leftx liney] [rightx liney] color-float-bits))))
+      (draw-fn-line shape-drawer [leftx liney] [rightx liney] color-float-bits))))
 
-(defn- draw-fn-rectangle [ctx x y w h color-float-bits]
-  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
-    (.setColor shape-drawer (float color-float-bits))
-    (.rectangle shape-drawer x y w h)))
+(defn- draw-fn-rectangle [shape-drawer x y w h color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.rectangle ^ShapeDrawer shape-drawer x y w h))
 
-(defn- draw-fn-sector [ctx [center-x center-y] radius start-radians radians color-float-bits]
-  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)]
-    (.setColor shape-drawer (float color-float-bits))
-    (.sector shape-drawer center-x center-y radius start-radians radians)))
+(defn- draw-fn-sector [shape-drawer [center-x center-y] radius start-radians radians color-float-bits]
+  (.setColor ^ShapeDrawer shape-drawer (float color-float-bits))
+  (.sector ^ShapeDrawer shape-drawer center-x center-y radius start-radians radians))
 
 (defn- draw-fn-text [ctx batch default-font unit-scale {:keys [font scale x y text up?]}]
   (let [font (or font default-font)
@@ -1323,15 +1316,13 @@
              (float w)
              (float h)))))
 
-(defn- draw-with-line-width! [ctx width draw-body]
-  (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)
-        old-line-width (.getDefaultLineWidth shape-drawer)]
-    (.setDefaultLineWidth shape-drawer (* width old-line-width))
-    (draw-body ctx)
-    (.setDefaultLineWidth shape-drawer old-line-width)))
-
+(defn- draw-with-line-width! [shape-drawer width draw-body]
+  (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
+    (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* width old-line-width))
+    (draw-body)
+    (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width)))
 (defn effect-render
-  [[k v] effect-ctx ctx]
+  [[k v] effect-ctx ctx shape-drawer]
   (case k
     :effects/target-all
     (let [source (effect-ctx/get-source effect-ctx)
@@ -1340,7 +1331,7 @@
           raycaster (:ctx/raycaster ctx)
           source* @source]
       (doseq [target* (map deref (affected-targets active-entities raycaster source*))]
-        (draw-fn-line ctx
+        (draw-fn-line shape-drawer
                       (:entity/position source*)
                       (:entity/position target*)
                       (:colors/target-all-render colors))))
@@ -1352,7 +1343,7 @@
             body        @source
             target-body @target
             maxrange (:maxrange v)]
-        (draw-fn-line ctx
+        (draw-fn-line shape-drawer
                       (body/start-point body target-body)
                       (body/end-point body target-body maxrange)
                       (if (body/in-range? body target-body maxrange)
@@ -1394,7 +1385,7 @@
               visible-tile-color))))))
 
 (defn draw-component
-  [ctx batch default-font unit-scale mouseover-actor world-mouse-position entity k v]
+  [ctx shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position entity k v]
   (case k
     :entity/clickable
     (let [{:keys [text]} v
@@ -1437,8 +1428,8 @@
     (let [{:keys [thick? end color]} v
           position (:entity/position entity)]
       (if thick?
-        (draw-with-line-width! ctx 4 #(draw-fn-line % position end color))
-        (draw-fn-line ctx position end color)))
+        (draw-with-line-width! shape-drawer 4 #(draw-fn-line shape-drawer position end color))
+        (draw-fn-line shape-drawer position end color)))
 
     :entity/mouseover?
     (let [{:keys [entity/position entity/width entity/height entity/faction]} entity
@@ -1450,8 +1441,8 @@
                       (:colors/friendly-color colors)
                       :else
                       (:colors/neutral-color colors))]
-      (draw-with-line-width! ctx 5
-                             #(draw-fn-ellipse % position
+      (draw-with-line-width! shape-drawer 5
+                             #(draw-fn-ellipse shape-drawer position
                                                 (/ width 2)
                                                 (/ height 2)
                                                 color)))
@@ -1466,8 +1457,8 @@
               y (+ y (/ height 2))
               height (* 5 world-unit-scale)
               border (* 1 world-unit-scale)]
-          (draw-fn-filled-rectangle ctx x y width height (:colors/hp-bar-rect colors))
-          (draw-fn-filled-rectangle ctx
+          (draw-fn-filled-rectangle shape-drawer x y width height (:colors/hp-bar-rect colors))
+          (draw-fn-filled-rectangle shape-drawer
                                     (+ x border)
                                     (+ y border)
                                     (- (* width ratio) (* 2 border))
@@ -1486,7 +1477,7 @@
                          :up? true}))
 
     :entity/temp-modifier
-    (draw-fn-filled-circle ctx (:entity/position entity) 0.5 (:colors/temp-modifier (:ctx/colors ctx)))
+    (draw-fn-filled-circle shape-drawer (:entity/position entity) 0.5 (:colors/temp-modifier (:ctx/colors ctx)))
 
     :active-skill
     (let [{:keys [skill effect-ctx counter]} v
@@ -1502,8 +1493,8 @@
                (float (/ (:entity/height entity) 2))
                (float 0.15))
           center [x (+ y radius)]]
-      (draw-fn-filled-circle ctx center radius (:colors/active-skill-circle colors))
-      (draw-fn-sector ctx
+      (draw-fn-filled-circle shape-drawer center radius (:colors/active-skill-circle colors))
+      (draw-fn-sector shape-drawer
                       center
                       radius
                       (math/to-radians 90)
@@ -1511,7 +1502,7 @@
                       (:colors/active-skill-sector colors))
       (draw-fn-texture-region ctx batch unit-scale texture-region [(- (float x) radius) y])
       (doseq [effect effects]
-        (effect-render effect effect-ctx ctx)))
+        (effect-render effect effect-ctx ctx shape-drawer)))
 
     :npc-sleeping
     (let [{:keys [entity/position entity/height]} entity
@@ -1522,7 +1513,7 @@
                          :up? true}))
 
     :stunned
-    (draw-fn-circle ctx (:entity/position entity) 0.5 (:colors/stunned (:ctx/colors ctx)))))
+    (draw-fn-circle shape-drawer (:entity/position entity) 0.5 (:colors/stunned (:ctx/colors ctx)))))
 
 (defn hp-mana-bar-create
   [ctx]
@@ -2181,10 +2172,10 @@
      :active-skill}])
 
 (defn- draw-tile-grid
-  [ctx world-viewport]
+  [ctx shape-drawer world-viewport]
   (when (:ctx/show-tile-grid? ctx)
     (let [[left-x _right-x bottom-y _top-y] (orthographic-camera/frustum (viewport/get-camera world-viewport))]
-      (draw-fn-grid ctx
+      (draw-fn-grid shape-drawer
                      (int left-x)
                      (int bottom-y)
                      (inc (int (viewport/get-world-width world-viewport)))
@@ -2194,30 +2185,30 @@
                      (color/float-bits [1 1 1 0.8])))))
 
 (defn- draw-cell-debug
-  [ctx world-viewport]
+  [ctx shape-drawer world-viewport]
   (let [world (:ctx/world ctx)
         colors (:ctx/colors ctx)
         tile-positions (orthographic-camera/visible-tiles (viewport/get-camera world-viewport))]
     (doseq [[[x y] cell*] (world/cells-at world tile-positions)]
       (when (and (:ctx/show-cell-entities? ctx) (seq (:entities cell*)))
-        (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-entities colors)))
+        (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-entities colors)))
       (when (and (:ctx/show-cell-occupied? ctx) (seq (:occupied cell*)))
-        (draw-fn-filled-rectangle ctx x y 1 1 (:colors/debug-cell-occupied colors)))
+        (draw-fn-filled-rectangle shape-drawer x y 1 1 (:colors/debug-cell-occupied colors)))
       (when-let [faction (:ctx/show-potential-field-colors? ctx)]
         (let [{:keys [distance]} (faction cell*)]
           (when distance
             (let [ratio (/ distance (factions-iterations faction))]
-              (draw-fn-filled-rectangle ctx x y 1 1 ((:colors/debug-potential-field colors) ratio)))))))))
+              (draw-fn-filled-rectangle shape-drawer x y 1 1 ((:colors/debug-potential-field colors) ratio)))))))))
 
 (defn draw-entity-rectangle!
-  [ctx entity color-float-bits]
+  [ctx shape-drawer entity color-float-bits]
   (let [{:keys [entity/position entity/width entity/height]} entity
         [x y] [(- (position 0) (/ width 2))
                (- (position 1) (/ height 2))]]
-    (draw-fn-rectangle ctx x y width height color-float-bits)))
+    (draw-fn-rectangle shape-drawer x y width height color-float-bits)))
 
 (defn- draw-entities!
-  [ctx batch default-font unit-scale mouseover-actor world-mouse-position]
+  [ctx shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position]
   (let [player-eid (:ctx/player-eid ctx)
         raycaster (:ctx/raycaster ctx)
         colors (:ctx/colors ctx)
@@ -2238,28 +2229,28 @@
       (try
         (do
           (when show-body-bounds?
-            (draw-entity-rectangle! ctx
+            (draw-entity-rectangle! ctx shape-drawer
                                     entity
                                     (if (:entity/collides? entity)
                                       (:colors/debug-body-outline-collides colors)
                                       (:colors/debug-body-outline colors))))
           (doseq [[k v] entity
                   :when (get render-layer k)]
-            (draw-component ctx batch default-font unit-scale mouseover-actor world-mouse-position entity k v)))
+            (draw-component ctx shape-drawer batch default-font unit-scale mouseover-actor world-mouse-position entity k v)))
         (catch Throwable t
-          (draw-entity-rectangle! ctx
+          (draw-entity-rectangle! ctx shape-drawer
                                   entity
                                   (:colors/debug-body-outline-render-error colors))
           (throwable/pretty-pst t))))))
 
 (defn- highlight-mouseover-tile
-  [ctx world-mouse-position]
+  [ctx shape-drawer world-mouse-position]
   (let [colors (:ctx/colors ctx)
         world (:ctx/world ctx)
         [x y] (mapv int world-mouse-position)
         cell (world/cell-at world [x y])]
     (when (and cell (#{:air :none} (:movement cell)))
-      (draw-fn-rectangle ctx x y 1 1
+      (draw-fn-rectangle shape-drawer x y 1 1
                          (case (:movement cell)
                            :air (:colors/mouseover-tile-air colors)
                            :none (:colors/mouseover-tile-none colors))))))
@@ -2489,6 +2480,7 @@
                   textures (:ctx/textures ctx)
                   colors (:ctx/colors ctx)
                   audio (:ctx/audio ctx)
+                  shape-drawer (:ctx/shape-drawer ctx)
                   cell-size 48]
               (doseq [actor [(create-action-bar)
                              (create-dev-menu
@@ -2536,14 +2528,14 @@
                                                                                                            [(.getX ^Input Gdx/input)
                                                                                                             (.getY ^Input Gdx/input)]))))
                                                     (fn [ctx player-entity x y mouseover? cell]
-                                                      (draw-fn-rectangle ctx x y cell-size cell-size (:colors/item-rect colors))
+                                                      (draw-fn-rectangle shape-drawer x y cell-size cell-size (:colors/item-rect colors))
                                                       (when (and mouseover?
                                                                  (= :player-item-on-cursor (:state (:entity/fsm player-entity))))
                                                         (let [item (:entity/item-on-cursor player-entity)
                                                               color (if (inventory/valid-slot? cell item)
                                                                       (:colors/droppable-item colors)
                                                                       (:colors/not-allowed-drop-item colors))]
-                                                          (draw-fn-filled-rectangle ctx (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
+                                                          (draw-fn-filled-rectangle shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
                              (player-state-draw-create (:ctx/unit-scale ctx))
                              (player-message-actor-create (:ctx/default-font ctx) (:ctx/unit-scale ctx))]]
                 (.addActor ^Stage stage actor))
@@ -2610,6 +2602,7 @@
   (let [audio (:ctx/audio @state)
         batch (:ctx/batch @state)
         default-font (:ctx/default-font @state)
+        shape-drawer (:ctx/shape-drawer @state)
         ui-mouse-position (viewport/unproject (.getViewport ^Stage (:ctx/stage @state)) mouse-position)
         world-mouse-position (viewport/unproject (:ctx/world-viewport @state) mouse-position)]
     (swap! state (fn [ctx]
@@ -2676,17 +2669,16 @@
       (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
       (.setProjectionMatrix ^Batch batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
       (.begin ^Batch batch)
-      (let [^ShapeDrawer shape-drawer (:ctx/shape-drawer ctx)
-            old-line-width (.getDefaultLineWidth shape-drawer)]
-        (.setDefaultLineWidth shape-drawer (* world-unit-scale old-line-width))
+      (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
+        (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* world-unit-scale old-line-width))
         (reset! unit-scale world-unit-scale)
-        (doseq [draw-fn [#(draw-tile-grid % world-viewport)
-                         #(draw-cell-debug % world-viewport)
-                         #(draw-entities! % batch default-font unit-scale mouseover-actor* world-mouse-position)
-                         #(highlight-mouseover-tile % world-mouse-position)]]
+        (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport)
+                         #(draw-cell-debug % shape-drawer world-viewport)
+                         #(draw-entities! % shape-drawer batch default-font unit-scale mouseover-actor* world-mouse-position)
+                         #(highlight-mouseover-tile % shape-drawer world-mouse-position)]]
           (draw-fn ctx))
         (reset! unit-scale 1)
-        (.setDefaultLineWidth shape-drawer old-line-width))
+        (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width))
       (.end ^Batch batch)
       (swap! state assoc-interaction-state mouseover-actor* world-mouse-position)
       (let [ctx @state
