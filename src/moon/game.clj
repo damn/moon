@@ -610,18 +610,6 @@
   (when-let [skill-button (button-group/get-checked (:button-group (action-bar-get-data action-bar)))]
     (.getUserObject ^Actor skill-button)))
 
-(defn- ui-update-skill! [ctx skill]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)
-        textures (:ctx/textures ctx)]
-    (-> stage
-        :stage/root
-        (#(group/find-actor % "moon.ui.action-bar"))
-        (action-bar-add-skill! {:skill-id (:property/id skill)
-                                :texture-region (textures/texture-region textures (:entity/image skill))
-                                :tooltip-text (info-text skill (:ctx/elapsed-time ctx))}
-                               skin))))
-
 (defn- inventory-window-get-cell [inventory-window cell]
   (->> "inventory-cell-table"
        (#(group/find-actor inventory-window %))
@@ -648,18 +636,6 @@
     (.addListener ^Actor cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
-(defn- ui-set-item! [ctx cell item]
-  (let [skin (:ctx/skin ctx)
-        stage (:ctx/stage ctx)
-        textures (:ctx/textures ctx)]
-    (-> stage
-        :stage/root
-        (#(group/find-actor % "moon.ui.windows.inventory"))
-        (inventory-window-set-item! cell
-                                  {:texture-region (textures/texture-region textures (:entity/image item))
-                                   :tooltip-text (item/info-text item)}
-                                  skin))))
-
 (defn- set-item! [ctx eid cell item]
   (let [entity @eid
         inventory (:entity/inventory entity)]
@@ -669,7 +645,16 @@
     (when (inventory/applies-modifiers? cell)
       (swap! eid update :entity/stats stats/add-mods (:stats/modifiers item)))
     (when (:entity/player? @eid)
-      (ui-set-item! ctx cell item))))
+      (let [skin (:ctx/skin ctx)
+            stage (:ctx/stage ctx)
+            textures (:ctx/textures ctx)]
+        (-> stage
+            :stage/root
+            (#(group/find-actor % "moon.ui.windows.inventory"))
+            (inventory-window-set-item! cell
+                                      {:texture-region (textures/texture-region textures (:entity/image item))
+                                       :tooltip-text (item/info-text item)}
+                                      skin)))))
 
 (defn- pickup-item! [ctx eid item]
   (assert (item/valid? item))
@@ -681,12 +666,6 @@
       (do #_(stack-item ctx eid cell item))
       (set-item! ctx eid cell item))))
 
-(defn- ui-remove-item! [ctx cell]
-  (-> (:ctx/stage ctx)
-      :stage/root
-      (#(group/find-actor % "moon.ui.windows.inventory"))
-      (inventory-window-remove-item! cell)))
-
 (defn- remove-item! [ctx eid cell]
   (let [entity @eid
         item (get-in (:entity/inventory entity) cell)]
@@ -695,7 +674,10 @@
     (when (inventory/applies-modifiers? cell)
       (swap! eid update :entity/stats stats/remove-mods (:stats/modifiers item)))
     (when (:entity/player? @eid)
-      (ui-remove-item! ctx cell))))
+      (-> (:ctx/stage ctx)
+          :stage/root
+          (#(group/find-actor % "moon.ui.windows.inventory"))
+          (inventory-window-remove-item! cell)))))
 
 (defn after-create-component
   [ctx eid [k v]]
@@ -713,7 +695,16 @@
         (assert (not (contains? (:entity/skills @eid) id)))
         (swap! eid update :entity/skills assoc id skill)
         (when (:entity/player? @eid)
-          (ui-update-skill! ctx skill)))
+          (let [skin (:ctx/skin ctx)
+                stage (:ctx/stage ctx)
+                textures (:ctx/textures ctx)]
+            (-> stage
+                :stage/root
+                (#(group/find-actor % "moon.ui.action-bar"))
+                (action-bar-add-skill! {:skill-id (:property/id skill)
+                                        :texture-region (textures/texture-region textures (:entity/image skill))
+                                        :tooltip-text (info-text skill (:ctx/elapsed-time ctx))}
+                                       skin))))
       nil)
 
     :entity/inventory
