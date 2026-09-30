@@ -63,10 +63,8 @@
 (def schema
   (malli-schema/create
    [:map {:closed true}
-    [:ctx/batch :some]
     [:ctx/cursors :some]
     [:ctx/default-font :some]
-    [:ctx/unit-scale :some]
     [:ctx/world-viewport :some]
     [:ctx/shape-drawer :some]
     [:ctx/shape-drawer-texture :some]
@@ -1400,7 +1398,6 @@
 (defn hp-mana-bar-create
   [ctx]
   (let [default-font (:ctx/default-font ctx)
-        unit-scale (:ctx/unit-scale ctx)
         stage (:ctx/stage ctx)
         textures (:ctx/textures ctx)
         {:keys [rahmen-file
@@ -2275,12 +2272,15 @@
 
 (def state (atom nil))
 (def audio (atom nil))
+(def batch (atom nil))
+(def unit-scale (atom 1))
 
 (defn create! [gdx-audio files input handle-fsm-event! spawn-entity!]
   (reset! audio (audio/create gdx-audio files))
+  (reset! batch (SpriteBatch.))
+  (reset! unit-scale 1)
   (reset! state
-          (as-> {:ctx/unit-scale (atom 1)
-                 :ctx/active-entities nil
+          (as-> {:ctx/active-entities nil
                  :ctx/delta-time nil
                  :ctx/mouseover-eid nil
                  :ctx/paused? false
@@ -2291,11 +2291,10 @@
                  :ctx/show-cell-occupied? false
                  :ctx/show-body-bounds? false
                  :ctx/show-tile-grid? false
-                 :ctx/batch (SpriteBatch.)
                  :ctx/shape-drawer-texture (shape-drawer-texture)}
             ctx
             (assoc ctx :ctx/shape-drawer
-                   (ShapeDrawer. (:ctx/batch ctx)
+                   (ShapeDrawer. @batch
                                  (TextureRegion. ^Texture (:ctx/shape-drawer-texture ctx) (int 1) (int 0) (int 1) (int 1))))
             (assoc ctx :ctx/skin
                    (let [skin (Skin. ^FileHandle (.internal ^Files files "skin/uiskin.json"))]
@@ -2303,7 +2302,7 @@
                                            (.getData (.getFont ^Skin skin "default-font")))
                            true)
                      skin))
-            (let [stage* (Stage. (FitViewport. (float 1440) (float 900)) (:ctx/batch ctx))]
+            (let [stage* (Stage. (FitViewport. (float 1440) (float 900)) @batch)]
               (.setInputProcessor ^Input input ^InputProcessor stage*)
               (assoc ctx :ctx/stage stage*))
             (do
@@ -2423,8 +2422,8 @@
                                                                       (:colors/droppable-item colors)
                                                                       (:colors/not-allowed-drop-item colors))]
                                                           (draw-fn-filled-rectangle shape-drawer (inc x) (inc y) (- cell-size 2) (- cell-size 2) color)))))])
-                             (player-state-draw-create (:ctx/unit-scale ctx))
-                             (player-message-actor-create (:ctx/default-font ctx) (:ctx/unit-scale ctx))]]
+                             (player-state-draw-create unit-scale)
+                             (player-message-actor-create (:ctx/default-font ctx) unit-scale)]]
                 (.addActor ^Stage stage actor))
               ctx)
             (let [{:keys [tiled-map start-position]}
@@ -2475,7 +2474,7 @@
 (defn dispose! []
   (let [ctx @state]
     (audio/dispose! @audio)
-    (Disposable/.dispose (:ctx/batch ctx))
+    (Disposable/.dispose @batch)
     (run! Disposable/.dispose (vals (:ctx/cursors ctx)))
     (Disposable/.dispose (:ctx/default-font ctx))
     (Disposable/.dispose (:ctx/shape-drawer-texture ctx))
@@ -2488,8 +2487,7 @@
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (.ctx ^Stage (:ctx/stage %)) %))
   (malli-schema/validate-humanize schema @state)
-  (let [batch (:ctx/batch @state)
-        default-font (:ctx/default-font @state)
+  (let [default-font (:ctx/default-font @state)
         shape-drawer (:ctx/shape-drawer @state)
         ui-mouse-position (viewport/unproject (.getViewport ^Stage (:ctx/stage @state)) mouse-position)
         world-mouse-position (viewport/unproject (:ctx/world-viewport @state) mouse-position)]
@@ -2551,23 +2549,22 @@
                               :invisible-tile-color (:colors/invisible-tile colors)})))
     (let [ctx @state
           world-viewport (:ctx/world-viewport ctx)
-          unit-scale (:ctx/unit-scale ctx)
           [x y] ui-mouse-position
           mouseover-actor* (mouseover-actor (:ctx/stage ctx) x y)]
-      (.setColor ^Batch batch (float 1) (float 1) (float 1) (float 1))
-      (.setProjectionMatrix ^Batch batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
-      (.begin ^Batch batch)
+      (.setColor ^Batch @batch (float 1) (float 1) (float 1) (float 1))
+      (.setProjectionMatrix ^Batch @batch (orthographic-camera/combined (viewport/get-camera world-viewport)))
+      (.begin ^Batch @batch)
       (let [old-line-width (.getDefaultLineWidth ^ShapeDrawer shape-drawer)]
         (.setDefaultLineWidth ^ShapeDrawer shape-drawer (* world-unit-scale old-line-width))
         (reset! unit-scale world-unit-scale)
         (doseq [draw-fn [#(draw-tile-grid % shape-drawer world-viewport)
                          #(draw-cell-debug % shape-drawer world-viewport)
-                         #(draw-entities! % shape-drawer batch default-font unit-scale mouseover-actor* world-mouse-position)
+                         #(draw-entities! % shape-drawer @batch default-font unit-scale mouseover-actor* world-mouse-position)
                          #(highlight-mouseover-tile % shape-drawer world-mouse-position)]]
           (draw-fn ctx))
         (reset! unit-scale 1)
         (.setDefaultLineWidth ^ShapeDrawer shape-drawer old-line-width))
-      (.end ^Batch batch)
+      (.end ^Batch @batch)
       (swap! state assoc-interaction-state mouseover-actor* world-mouse-position)
       (let [ctx @state
             eid (:ctx/player-eid ctx)
