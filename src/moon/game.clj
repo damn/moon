@@ -789,90 +789,6 @@
                               eid
                               component))))
 
-(defn- handle-fsm-event! [ctx audio eid world-mouse-position event & [params]]
-  (let [fsm (:entity/fsm @eid)
-        _ (assert fsm)
-        old-state-k (:state fsm)
-        new-fsm (fsm/fsm-event fsm event)
-        new-state-k (:state new-fsm)]
-    (when-not (= old-state-k new-state-k)
-      (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
-                             [k (k @eid)])
-            state-args (if params [new-state-k params] [new-state-k nil])
-            new-state-obj [new-state-k (create-entity-state state-args eid (:ctx/elapsed-time ctx))]]
-        (swap! eid assoc :entity/fsm new-fsm)
-        (swap! eid assoc new-state-k (new-state-obj 1))
-        (swap! eid dissoc old-state-k)
-        (let [[state-k _state-v] old-state-obj]
-          (case state-k
-            :player-item-on-cursor
-            (let [entity @eid
-                  item (:entity/item-on-cursor entity)]
-              (when item
-                (swap! eid dissoc :entity/item-on-cursor)
-                (audio/play! audio "bfxr_itemputground")
-                (spawn-entity! ctx (spawn-item (item-place-position (:entity/position entity)
-                                                                    world-mouse-position
-                                                                    (- (:entity/click-distance-tiles entity) 0.1))
-                                               item))))
-
-            :player-moving
-            (do (swap! eid dissoc :entity/movement)
-                nil)
-
-            :npc-sleeping
-            (do (swap! eid add-text-effect (:ctx/elapsed-time ctx) "[WHITE]!" 1)
-                (spawn-entity! ctx (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 (:ctx/elapsed-time ctx))))
-
-            :npc-moving
-            (do (swap! eid dissoc :entity/movement)
-                nil)
-
-            nil))
-        (let [[state-k state-v] new-state-obj]
-          (case state-k
-            :player-item-on-cursor
-            (let [{:keys [item]} state-v]
-              (swap! eid assoc :entity/item-on-cursor item)
-              nil)
-
-            :active-skill
-            (let [{:keys [skill]} state-v]
-              (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
-              (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
-                     (timer/create (:ctx/elapsed-time ctx) (:skill/cooldown skill)))
-              (audio/play! audio (:skill/start-action-sound skill))
-              nil)
-
-            :npc-dead
-            (do (swap! eid assoc :entity/destroyed? true)
-                nil)
-
-            :player-moving
-            (let [{:keys [movement-vector]} state-v]
-              (swap! eid assoc :entity/movement {:direction movement-vector
-                                                 :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
-                                                            0)})
-              nil)
-
-            :player-dead
-            (do (audio/play! audio "bfxr_playerdeath")
-                (show-modal! ctx {:title "YOU DIED - again!"
-                                  :text "Good luck next time!"
-                                  :button-text "OK"
-                                  :on-click (fn [])})
-                nil)
-
-            :npc-moving
-            (let [{:keys [movement-vector]} state-v]
-              (swap! eid assoc :entity/movement {:direction movement-vector
-                                                 :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
-                                                            0)})
-              nil)
-
-            nil))
-        nil))))
-
 (defn- audiovisual! [ctx audio position audiovisual]
   (let [db (:ctx/db ctx)
         {:keys [tx/sound entity/animation]} (if (keyword? audiovisual)
@@ -2383,7 +2299,7 @@
 
 (def state (atom nil))
 
-(defn create! [audio files input]
+(defn create! [audio files input handle-fsm-event!]
   (reset! state
           (as-> {:ctx/unit-scale (atom 1)
                  :ctx/active-entities nil
@@ -2514,10 +2430,7 @@
                                                       (let [ctx (.ctx ^Stage (.getStage ^Event event))
                                                             world-mouse-position (viewport/unproject (:ctx/world-viewport ctx)
                                                                                                     [(.getX ^Input Gdx/input)
-                                                                                                     (.getY ^Input Gdx/input)])
-                                                            handle-fsm-event! (let [do-fsm-event! handle-fsm-event!]
-                                                                                (fn [eid world-mouse-position event & [params]]
-                                                                                  (do-fsm-event! ctx audio eid world-mouse-position event params)))]
+                                                                                                     (.getY ^Input Gdx/input)])]
                                                         (handle-clicked-inventory-cell ctx
                                                                                        audio
                                                                                        handle-fsm-event!
@@ -2590,7 +2503,7 @@
     (run! Disposable/.dispose (vals (:ctx/textures ctx)))
     (Disposable/.dispose (:ctx/tiled-map ctx))))
 
-(defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed?]
+(defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed? handle-fsm-event!]
   (.glClearColor (.getGL20 ^Graphics Gdx/graphics) 0 0 0 0)
   (.glClear (.getGL20 ^Graphics Gdx/graphics) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (.ctx ^Stage (:ctx/stage %)) %))
@@ -2698,10 +2611,7 @@
                                 (when (or r l u d)
                                   (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
                                     (when (pos? (v2/length v))
-                                      v))))
-              handle-fsm-event! (let [do-fsm-event! handle-fsm-event!]
-                                  (fn [eid world-mouse-position event & [params]]
-                                    (do-fsm-event! ctx audio eid world-mouse-position event params)))]
+                                      v))))]
           (handle-input state-k eid ctx audio handle-fsm-event!
                         (button-just-pressed? Input$Buttons/LEFT)
                         movement-vector
@@ -2715,36 +2625,29 @@
                                    (state->pause-game? (:state (:entity/fsm @(:ctx/player-eid ctx))))
                                    (not (or (key-just-pressed? (:unpause-once (:ctx/controls ctx)))
                                             (key-pressed? (:unpause-continously (:ctx/controls ctx))))))))))
-    (swap! state (fn [ctx]
-                   (if (:ctx/paused? ctx)
-                     ctx
-                     (let [ctx (-> ctx
-                                   update-time
-                                   update-potential-fields)]
-                       (try
-                         (let [handle-fsm-event! (let [do-fsm-event! handle-fsm-event!]
-                                                   (fn [eid world-mouse-position event & [params]]
-                                                     (do-fsm-event! ctx audio eid world-mouse-position event params)))]
-                           (letfn [(apply-effects! [effect-ctx effects]
-                                     (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
-                                       (handle-effect effect effect-ctx ctx audio world-mouse-position
-                                                      apply-effects!
-                                                      handle-fsm-event!)))]
-                             (doseq [eid (:ctx/active-entities ctx)
-                                     component @eid]
-                               (try (tick-component ctx world-mouse-position
-                                                    apply-effects!
-                                                    handle-fsm-event!
-                                                    eid component)
-                                    (catch Throwable t
-                                      (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))))
-                         (catch Throwable t
-                           (throwable/pretty-pst t)
-                           (.addActor ^Stage (:ctx/stage ctx)
-                                             (error-window/create
-                                              {:skin (:ctx/skin ctx)
-                                               :throwable t}))))
-                       ctx))))
+    (when-not (:ctx/paused? @state)
+      (swap! state #(-> % update-time update-potential-fields))
+      (let [ctx @state]
+        (try
+          (letfn [(apply-effects! [effect-ctx effects]
+                    (doseq [effect (filter #(effect-applicable? % effect-ctx) effects)]
+                      (handle-effect effect effect-ctx ctx audio world-mouse-position
+                                     apply-effects!
+                                     handle-fsm-event!)))]
+            (doseq [eid (:ctx/active-entities ctx)
+                    component @eid]
+              (try (tick-component ctx world-mouse-position
+                                   apply-effects!
+                                   handle-fsm-event!
+                                   eid component)
+                   (catch Throwable t
+                     (throw (ex-info "Error at `entity/tick`:" {:eid eid} t))))))
+          (catch Throwable t
+            (throwable/pretty-pst t)
+            (.addActor ^Stage (:ctx/stage ctx)
+                              (error-window/create
+                               {:skin (:ctx/skin ctx)
+                                :throwable t}))))))
     (let [ctx @state]
       (doseq [eid (world/destroyed-eids (:ctx/world ctx))]
         (world/unregister-eid! (:ctx/world ctx) eid)
@@ -2777,10 +2680,96 @@
     (viewport/update! (.getViewport ^Stage (:ctx/stage ctx)) width height true)
     (viewport/update! (:ctx/world-viewport ctx) width height false)))
 
+(defn handle-fsm-event! [eid world-mouse-position event & [params]]
+  (let [ctx @state
+        audio (:ctx/audio ctx)
+        fsm (:entity/fsm @eid)
+        _ (assert fsm)
+        old-state-k (:state fsm)
+        new-fsm (fsm/fsm-event fsm event)
+        new-state-k (:state new-fsm)]
+    (when-not (= old-state-k new-state-k)
+      (let [old-state-obj (let [k (:state (:entity/fsm @eid))]
+                             [k (k @eid)])
+            state-args (if params [new-state-k params] [new-state-k nil])
+            new-state-obj [new-state-k (create-entity-state state-args eid (:ctx/elapsed-time ctx))]]
+        (swap! eid assoc :entity/fsm new-fsm)
+        (swap! eid assoc new-state-k (new-state-obj 1))
+        (swap! eid dissoc old-state-k)
+        (let [[state-k _state-v] old-state-obj]
+          (case state-k
+            :player-item-on-cursor
+            (let [entity @eid
+                  item (:entity/item-on-cursor entity)]
+              (when item
+                (swap! eid dissoc :entity/item-on-cursor)
+                (audio/play! audio "bfxr_itemputground")
+                (spawn-entity! ctx (spawn-item (item-place-position (:entity/position entity)
+                                                                    world-mouse-position
+                                                                    (- (:entity/click-distance-tiles entity) 0.1))
+                                               item))))
+
+            :player-moving
+            (do (swap! eid dissoc :entity/movement)
+                nil)
+
+            :npc-sleeping
+            (do (swap! eid add-text-effect (:ctx/elapsed-time ctx) "[WHITE]!" 1)
+                (spawn-entity! ctx (spawn-alert (:entity/position @eid) (:entity/faction @eid) 0.2 (:ctx/elapsed-time ctx))))
+
+            :npc-moving
+            (do (swap! eid dissoc :entity/movement)
+                nil)
+
+            nil))
+        (let [[state-k state-v] new-state-obj]
+          (case state-k
+            :player-item-on-cursor
+            (let [{:keys [item]} state-v]
+              (swap! eid assoc :entity/item-on-cursor item)
+              nil)
+
+            :active-skill
+            (let [{:keys [skill]} state-v]
+              (swap! eid update :entity/stats stats/pay-mana-cost (:skill/cost skill))
+              (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?]
+                     (timer/create (:ctx/elapsed-time ctx) (:skill/cooldown skill)))
+              (audio/play! audio (:skill/start-action-sound skill))
+              nil)
+
+            :npc-dead
+            (do (swap! eid assoc :entity/destroyed? true)
+                nil)
+
+            :player-moving
+            (let [{:keys [movement-vector]} state-v]
+              (swap! eid assoc :entity/movement {:direction movement-vector
+                                                 :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                            0)})
+              nil)
+
+            :player-dead
+            (do (audio/play! audio "bfxr_playerdeath")
+                (show-modal! ctx {:title "YOU DIED - again!"
+                                  :text "Good luck next time!"
+                                  :button-text "OK"
+                                  :on-click (fn [])})
+                nil)
+
+            :npc-moving
+            (let [{:keys [movement-vector]} state-v]
+              (swap! eid assoc :entity/movement {:direction movement-vector
+                                                 :speed (or (stats/get-value (:entity/stats @eid) :stats/movement-speed)
+                                                            0)})
+              nil)
+
+            nil))
+        nil))))
+
 (def listener
   (reify ApplicationListener
     (create [_]
-      (create! Gdx/audio Gdx/files Gdx/input))
+      (create! Gdx/audio Gdx/files Gdx/input handle-fsm-event!))
     (dispose [_]
       (dispose!))
     (render [_]
@@ -2788,7 +2777,8 @@
         (render! [(.getX ^Input input) (.getY ^Input input)]
                  #(.isKeyPressed ^Input input (int %))
                  #(.isKeyJustPressed ^Input input (int %))
-                 #(.isButtonJustPressed ^Input input (int %)))))
+                 #(.isButtonJustPressed ^Input input (int %))
+                 handle-fsm-event!)))
     (resize [_ width height]
       (resize! width height))
     (pause [_])
