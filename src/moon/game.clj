@@ -1572,45 +1572,38 @@
             (draw-hpmana-bar! ctx batch bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
             (draw-hpmana-bar! ctx batch bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
 
-(defn- clicked-inventory-cell-player-idle
-  [ctx audio eid cell]
-  (when-let [item (get-in (:entity/inventory @eid) cell)]
-    (audio/play! audio "bfxr_takeit")
-    (remove-item! ctx eid cell)
-    (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :pickup-item item)))
-
-(defn- clicked-inventory-cell-player-item-on-cursor
-  [ctx audio eid cell]
-  (let [entity @eid
-        inventory (:entity/inventory entity)
-        item-in-cell (get-in inventory cell)
-        item-on-cursor (:entity/item-on-cursor entity)]
-    (cond
-     (and (not item-in-cell)
-          (inventory/valid-slot? cell item-on-cursor))
-     (do (swap! eid dissoc :entity/item-on-cursor)
-         (audio/play! audio "bfxr_itemput")
-         (set-item! ctx eid cell item-on-cursor)
-         (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :dropped-item))
-
-     (and item-in-cell
-          (inventory/valid-slot? cell item-on-cursor))
-     (do (swap! eid dissoc :entity/item-on-cursor)
-         (audio/play! audio "bfxr_itemput")
-         (remove-item! ctx eid cell)
-         (set-item! ctx eid cell item-on-cursor)
-         (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :dropped-item)
-         (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :pickup-item item-in-cell)))))
-
-(def k->clicked-inventory-cell
-  {:player-item-on-cursor clicked-inventory-cell-player-item-on-cursor
-   :player-idle clicked-inventory-cell-player-idle})
-
 (defn handle-clicked-inventory-cell
-  [ctx audio player-eid cell]
-  (let [state-k (:state (:entity/fsm @player-eid))]
-    (when-let [handler (k->clicked-inventory-cell state-k)]
-      (handler ctx audio player-eid cell))))
+  [ctx audio player-eid cell world-mouse-position]
+  (case (:state (:entity/fsm @player-eid))
+    :player-idle
+    (when-let [item (get-in (:entity/inventory @player-eid) cell)]
+      (audio/play! audio "bfxr_takeit")
+      (remove-item! ctx player-eid cell)
+      (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item))
+
+    :player-item-on-cursor
+    (let [entity @player-eid
+          inventory (:entity/inventory entity)
+          item-in-cell (get-in inventory cell)
+          item-on-cursor (:entity/item-on-cursor entity)]
+      (cond
+       (and (not item-in-cell)
+            (inventory/valid-slot? cell item-on-cursor))
+       (do (swap! player-eid dissoc :entity/item-on-cursor)
+           (audio/play! audio "bfxr_itemput")
+           (set-item! ctx player-eid cell item-on-cursor)
+           (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item))
+
+       (and item-in-cell
+            (inventory/valid-slot? cell item-on-cursor))
+       (do (swap! player-eid dissoc :entity/item-on-cursor)
+           (audio/play! audio "bfxr_itemput")
+           (remove-item! ctx player-eid cell)
+           (set-item! ctx player-eid cell item-on-cursor)
+           (handle-fsm-event! ctx audio player-eid world-mouse-position :dropped-item)
+           (handle-fsm-event! ctx audio player-eid world-mouse-position :pickup-item item-in-cell))))
+
+    nil))
 
 (defn- inventory-window-cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
   (let [cell [slot (or position [0 0])]
@@ -1642,7 +1635,12 @@
          (.addListener (proxy [ClickListener] []
                          (clicked [event _x _y]
                            (let [ctx (.ctx ^Stage (.getStage ^Event event))]
-                             (on-click-cell ctx (:ctx/player-eid ctx) cell)))))
+                             (on-click-cell ctx
+                                            (:ctx/player-eid ctx)
+                                            cell
+                                            (viewport/unproject (:ctx/world-viewport ctx)
+                                                                [(.getX ^Input Gdx/input)
+                                                                 (.getY ^Input Gdx/input)])))))
          (.setName "inventory-cell")
          (.setUserObject cell)))}))
 
@@ -1718,8 +1716,8 @@
                                                            :image/bounds bounds})))
         cell-size 48]
     (inventory-window-build
-     {:on-click-cell (fn [ctx player-eid cell]
-                       (handle-clicked-inventory-cell ctx audio player-eid cell))
+     {:on-click-cell (fn [ctx player-eid cell world-mouse-position]
+                       (handle-clicked-inventory-cell ctx audio player-eid cell world-mouse-position))
       :draw-cell-rect! (fn [ctx player-entity x y mouseover? cell]
                          (draw-fn-rectangle ctx x y cell-size cell-size (:colors/item-rect colors))
                          (when (and mouseover?
@@ -1975,195 +1973,150 @@
       effect-ctx
       (effect-ctx/without-target effect-ctx))))
 
-(defn- tick-entity-animation
-  [{:keys [delete-after-stopped?
-           looping?
-           cnt
-           maxcnt]
-    :as animation}
-   eid
-   ctx
-   _audio]
-  (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
-                                           newcnt (+ (float cnt) (float (:ctx/delta-time ctx)))]
-                                       (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
-                                                                   looping? (min maxcnt (- newcnt maxcnt))
-                                                                   :else maxcnt))))
-  (when (and delete-after-stopped?
-             (and (not looping?) (>= cnt maxcnt)))
-    (swap! eid assoc :entity/destroyed? true))
-  nil)
-
-(defn- tick-entity-alert-friendlies-after-duration
-  [{:keys [counter faction]}
-   eid
-   ctx
-   audio]
-  (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
-    (swap! eid assoc :entity/destroyed? true)
-    (doseq [friendly-eid (->> {:position (:entity/position @eid)
-                               :radius 4}
-                              (world/circle->entities (:ctx/world ctx))
-                              (filter #(= (:entity/faction @%) faction)))]
-      (handle-fsm-event! ctx audio friendly-eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :alert)))
-  nil)
-
-(defn- tick-entity-string-effect
-  [{:keys [counter]}
-   eid
-   ctx
-   _audio]
-  (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
-    (swap! eid dissoc :entity/string-effect))
-  nil)
-
-(defn- tick-entity-skills
-  [skills eid ctx _audio]
-  (doseq [{:keys [skill/cooling-down?] :as skill} (vals skills)
-          :when (and cooling-down?
-                     (timer/stopped? (:ctx/elapsed-time ctx) cooling-down?))]
-    (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
-  nil)
-
-(defn- tick-entity-temp-modifier
-  [{:keys [modifiers counter]}
-   eid
-   ctx
-   _audio]
-  (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
-    (swap! eid dissoc :entity/temp-modifier)
-    (swap! eid update :entity/stats stats/remove-mods modifiers))
-  nil)
-
-(defn- tick-entity-projectile-collision
-  [{:keys [entity-effects already-hit-bodies piercing?]}
-   eid
-   ctx
-   audio]
-  (let [world (:ctx/world ctx)
-        entity @eid
-        world-mouse-position (viewport/unproject (:ctx/world-viewport ctx)
-                                                 [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])
-        hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
-                                        (not= (:entity/faction entity)
-                                              (:entity/faction @%))
-                                        (:entity/collides? @%)
-                                        (body/overlaps? entity
-                                                        @%))
-                                  (world/entities-at-touched-tiles world entity)))
-        destroy? (or (and hit-entity (not piercing?))
-                     (world/blocked-at-touched-tiles? world entity (:entity/z-order entity)))]
-    (when hit-entity
-      (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
-             (conj already-hit-bodies hit-entity)))
-    (when destroy?
-      (swap! eid assoc :entity/destroyed? true))
-    (when hit-entity
-      (apply-effects! ctx audio world-mouse-position
-                      {:effect/source eid
-                       :effect/target hit-entity}
-                      entity-effects)))
-  nil)
-
-(defn- tick-active-skill
-  [{:keys [skill effect-ctx counter]}
-   eid
-   ctx
-   audio]
-  (let [elapsed-time (:ctx/elapsed-time ctx)
-        effect-ctx (update-effect-ctx (:ctx/raycaster ctx) effect-ctx)
-        world-mouse-position (viewport/unproject (:ctx/world-viewport ctx)
-                                                 [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)])]
-    (cond
-     (not (seq (filter #(effect-applicable? % effect-ctx)
-                       (:skill/effects skill))))
-     (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
-
-     (timer/stopped? elapsed-time counter)
-     (do (apply-effects! ctx audio world-mouse-position effect-ctx (:skill/effects skill))
-         (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
-         nil))))
-
-(defn- tick-entity-delete-after-duration
-  [counter eid ctx _audio]
-  (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
-    (swap! eid assoc :entity/destroyed? true))
-  nil)
-
-(defn- tick-stunned
-  [{:keys [counter]} eid ctx audio]
-  (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
-    (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :effect-wears-off)))
-
-(defn- tick-npc-moving
-  [{:keys [timer]} eid ctx audio]
-  (when (timer/stopped? (:ctx/elapsed-time ctx) timer)
-    (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :timer-finished)))
-
-(defn- tick-npc-sleeping
-  [_ eid ctx audio]
-  (let [entity @eid]
-    (when-let [distance (world/nearest-enemy-distance (:ctx/world ctx) entity)]
-      (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
-        (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :alert)))))
-
-(defn- tick-npc-idle
-  [_ eid ctx audio]
-  (let [effect-ctx (create-effect-ctx ctx eid)]
-    (if-let [skill (choose-skill ctx @eid effect-ctx)]
-      (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :start-action [skill effect-ctx])
-      (handle-fsm-event! ctx audio eid (viewport/unproject (:ctx/world-viewport ctx) [(.getX ^Input Gdx/input) (.getY ^Input Gdx/input)]) :movement-direction (or (world/find-direction (:ctx/world ctx) eid)
-                                                         [0 0])))))
-
-(defn- tick-entity-movement
-  [{:keys [direction
-           speed
-           rotate-in-movement-direction?]
-    :as movement}
-   eid
-   ctx
-   _audio]
-  (assert (<= 0 speed (:ctx/max-speed ctx))
-          (pr-str speed))
-  (assert (vector? direction))
-  (assert (or (zero? (v2/length direction))
-              (number/nearly-equal? 1 (v2/length direction)))
-          (str "cannot understand direction: " (pr-str direction)))
-  (when-not (or (zero? (v2/length direction))
-                (nil? speed)
-                (zero? speed))
-    (let [world (:ctx/world ctx)
-          movement (assoc movement :delta-time (:ctx/delta-time ctx))
-          body @eid]
-      (when-let [body (if (:entity/collides? body)
-                         (world/try-move-solid-body world body (:entity/id @eid) movement)
-                         (update body :entity/position v2/move movement))]
-        (swap! eid assoc :entity/position (:entity/position body))
-        (when rotate-in-movement-direction?
-          (swap! eid assoc :entity/rotation-angle
-                 (v2/angle-from-vector direction)))
-        (world/relocate-eid! (:ctx/world ctx) eid)
-        nil))))
-
-(def k->tick
-  {:entity/animation tick-entity-animation
-   :entity/alert-friendlies-after-duration tick-entity-alert-friendlies-after-duration
-   :entity/string-effect tick-entity-string-effect
-   :entity/skills tick-entity-skills
-   :entity/temp-modifier tick-entity-temp-modifier
-   :entity/projectile-collision tick-entity-projectile-collision
-   :active-skill tick-active-skill
-   :entity/delete-after-duration tick-entity-delete-after-duration
-   :stunned tick-stunned
-   :npc-moving tick-npc-moving
-   :npc-sleeping tick-npc-sleeping
-   :npc-idle tick-npc-idle
-   :entity/movement tick-entity-movement})
-
 (defn tick-component
-  [ctx audio eid [k v]]
-  (if-let [f (k->tick k)]
-    (f v eid ctx audio)
+  [ctx audio world-mouse-position eid [k v]]
+  (case k
+    :entity/animation
+    (let [{:keys [delete-after-stopped?
+                  looping?
+                  cnt
+                  maxcnt]
+           :as animation} v]
+      (swap! eid assoc :entity/animation (let [maxcnt (float maxcnt)
+                                               newcnt (+ (float cnt) (float (:ctx/delta-time ctx)))]
+                                           (assoc animation :cnt (cond (< newcnt maxcnt) newcnt
+                                                                       looping? (min maxcnt (- newcnt maxcnt))
+                                                                       :else maxcnt))))
+      (when (and delete-after-stopped?
+                 (and (not looping?) (>= cnt maxcnt)))
+        (swap! eid assoc :entity/destroyed? true))
+      nil)
+
+    :entity/alert-friendlies-after-duration
+    (let [{:keys [counter faction]} v]
+      (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
+        (swap! eid assoc :entity/destroyed? true)
+        (doseq [friendly-eid (->> {:position (:entity/position @eid)
+                                   :radius 4}
+                                  (world/circle->entities (:ctx/world ctx))
+                                  (filter #(= (:entity/faction @%) faction)))]
+          (handle-fsm-event! ctx audio friendly-eid world-mouse-position :alert)))
+      nil)
+
+    :entity/string-effect
+    (let [{:keys [counter]} v]
+      (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
+        (swap! eid dissoc :entity/string-effect))
+      nil)
+
+    :entity/skills
+    (do (doseq [{:keys [skill/cooling-down?] :as skill} (vals v)
+                :when (and cooling-down?
+                           (timer/stopped? (:ctx/elapsed-time ctx) cooling-down?))]
+          (swap! eid assoc-in [:entity/skills (:property/id skill) :skill/cooling-down?] false))
+        nil)
+
+    :entity/temp-modifier
+    (let [{:keys [modifiers counter]} v]
+      (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
+        (swap! eid dissoc :entity/temp-modifier)
+        (swap! eid update :entity/stats stats/remove-mods modifiers))
+      nil)
+
+    :entity/projectile-collision
+    (let [{:keys [entity-effects already-hit-bodies piercing?]} v
+          world (:ctx/world ctx)
+          entity @eid
+          hit-entity (first (filter #(and (not (contains? already-hit-bodies %))
+                                          (not= (:entity/faction entity)
+                                                (:entity/faction @%))
+                                          (:entity/collides? @%)
+                                          (body/overlaps? entity
+                                                          @%))
+                                    (world/entities-at-touched-tiles world entity)))
+          destroy? (or (and hit-entity (not piercing?))
+                       (world/blocked-at-touched-tiles? world entity (:entity/z-order entity)))]
+      (when hit-entity
+        (swap! eid assoc-in [:entity/projectile-collision :already-hit-bodies]
+               (conj already-hit-bodies hit-entity)))
+      (when destroy?
+        (swap! eid assoc :entity/destroyed? true))
+      (when hit-entity
+        (apply-effects! ctx audio world-mouse-position
+                        {:effect/source eid
+                         :effect/target hit-entity}
+                        entity-effects))
+      nil)
+
+    :active-skill
+    (let [{:keys [skill effect-ctx counter]} v
+          elapsed-time (:ctx/elapsed-time ctx)
+          effect-ctx (update-effect-ctx (:ctx/raycaster ctx) effect-ctx)]
+      (cond
+       (not (seq (filter #(effect-applicable? % effect-ctx)
+                         (:skill/effects skill))))
+       (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
+
+       (timer/stopped? elapsed-time counter)
+       (do (apply-effects! ctx audio world-mouse-position effect-ctx (:skill/effects skill))
+           (handle-fsm-event! ctx audio eid world-mouse-position :action-done)
+           nil)))
+
+    :entity/delete-after-duration
+    (do (when (timer/stopped? (:ctx/elapsed-time ctx) v)
+          (swap! eid assoc :entity/destroyed? true))
+        nil)
+
+    :stunned
+    (let [{:keys [counter]} v]
+      (when (timer/stopped? (:ctx/elapsed-time ctx) counter)
+        (handle-fsm-event! ctx audio eid world-mouse-position :effect-wears-off)))
+
+    :npc-moving
+    (let [{:keys [timer]} v]
+      (when (timer/stopped? (:ctx/elapsed-time ctx) timer)
+        (handle-fsm-event! ctx audio eid world-mouse-position :timer-finished)))
+
+    :npc-sleeping
+    (let [entity @eid]
+      (when-let [distance (world/nearest-enemy-distance (:ctx/world ctx) entity)]
+        (when (<= distance (stats/get-value (:entity/stats entity) :stats/aggro-range))
+          (handle-fsm-event! ctx audio eid world-mouse-position :alert))))
+
+    :npc-idle
+    (let [effect-ctx (create-effect-ctx ctx eid)]
+      (if-let [skill (choose-skill ctx @eid effect-ctx)]
+        (handle-fsm-event! ctx audio eid world-mouse-position :start-action [skill effect-ctx])
+        (handle-fsm-event! ctx audio eid world-mouse-position :movement-direction (or (world/find-direction (:ctx/world ctx) eid)
+                                                           [0 0]))))
+
+    :entity/movement
+    (let [{:keys [direction
+                  speed
+                  rotate-in-movement-direction?]
+           :as movement} v]
+      (assert (<= 0 speed (:ctx/max-speed ctx))
+              (pr-str speed))
+      (assert (vector? direction))
+      (assert (or (zero? (v2/length direction))
+                  (number/nearly-equal? 1 (v2/length direction)))
+              (str "cannot understand direction: " (pr-str direction)))
+      (when-not (or (zero? (v2/length direction))
+                    (nil? speed)
+                    (zero? speed))
+        (let [world (:ctx/world ctx)
+              movement (assoc movement :delta-time (:ctx/delta-time ctx))
+              body @eid]
+          (when-let [body (if (:entity/collides? body)
+                             (world/try-move-solid-body world body (:entity/id @eid) movement)
+                             (update body :entity/position v2/move movement))]
+            (swap! eid assoc :entity/position (:entity/position body))
+            (when rotate-in-movement-direction?
+              (swap! eid assoc :entity/rotation-angle
+                     (v2/angle-from-vector direction)))
+            (world/relocate-eid! (:ctx/world ctx) eid)
+            nil))))
+
     nil))
 
 (defn- set-label-text-actor [label-widget text-fn]
@@ -2427,11 +2380,11 @@
   ctx)
 
 (defn- tick-entities
-  [ctx audio]
+  [ctx audio world-mouse-position]
   (try
     (doseq [eid (:ctx/active-entities ctx)
             component @eid]
-      (try (tick-component ctx audio eid component)
+      (try (tick-component ctx audio world-mouse-position eid component)
            (catch Throwable t
              (throw (ex-info "Error at `entity/tick`:" {:eid eid} t)))))
     (catch Throwable t
@@ -2773,7 +2726,7 @@
                      (-> ctx
                          update-time
                          update-potential-fields
-                         (tick-entities audio)))))
+                         (tick-entities audio world-mouse-position)))))
     (let [ctx @state]
       (doseq [eid (world/destroyed-eids (:ctx/world ctx))]
         (world/unregister-eid! (:ctx/world ctx) eid)
