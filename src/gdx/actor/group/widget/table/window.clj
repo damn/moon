@@ -1,6 +1,6 @@
 (ns gdx.actor.group.widget.table.window
   (:refer-clojure :exclude [class])
-  (:require [gdx.actor :as actor]
+  (:require
             [gdx.actor.widget.label :as label]
             [gdx.actor.group.widget.table.button.text :as text-button]
             [com.badlogic.gdx.scenes.scene2d.ui.window :as window]
@@ -15,9 +15,9 @@
 (defn add-close-button! [window skin]
   (table/add-cell! (window/getTitleTable window)
              {:actor (doto (text-button/create "X" skin)
-                       (actor/add-listener! (change-listener/create
+                       (.addListener (change-listener/create
                                            (fn [_event _actor]
-                                             (actor/remove! window)))))}))
+                                             (.remove ^com.badlogic.gdx.scenes.scene2d.Actor window)))))}))
 
 (def ^:private set-opt-fns
   {:window/add-close-button? (fn [window skin _]
@@ -32,7 +32,7 @@
 
 (defn title-bar? [actor]
   (when (instance? label/class actor)
-    (when-let [p (actor/get-parent actor)]
-      (when-let [p (actor/get-parent p)]
+    (when-let [p (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)]
+      (when-let [p (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor p)]
         (and (instance? window/class p)
              (= (window/getTitleLabel p) actor))))))

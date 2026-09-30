@@ -16,7 +16,6 @@
             [gdx.input :as input]
             [gdx.map-layers :as map-layers]
             [gdx.tiled-map-tile-layer :as tiled-map-tile-layer]
-            [gdx.actor :as actor]
             [gdx.skin :as skin]
             [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.actor.group.widget.table.window :as window]
@@ -262,8 +261,7 @@
                       (for [[label level-fn] (:level-fns config)]
                         [{:actor
                           (doto (text-button/create (str "Generate " label) (get-skin ctx))
-                            (actor/add-listener!
-                             (change-listener/create
+                            (.addListener (change-listener/create
                               (fn [_event _actor]
                                 (swap! state #(regenerate-level! % level-fn))))))}])}))
   ctx)

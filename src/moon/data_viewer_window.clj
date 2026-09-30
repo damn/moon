@@ -4,7 +4,6 @@
             [gdx.actor.group.widget.table :as table]
             [gdx.actor.group.widget.table.button.text :as text-button]
             [gdx.actor.group.widget.table.window :as window]
-            [gdx.actor :as actor]
             [gdx.stage :as stage]
             [gdx.change-listener :as change-listener]))
 
@@ -25,9 +24,9 @@
   (let [v->actor (fn [v skin]
                    (if (map? v)
                      (doto (text-button/create "Map" skin)
-                       (actor/add-listener! (change-listener/create
+                       (.addListener (change-listener/create
                                             (fn [_event actor]
-                                              (stage/add-actor! (actor/get-stage actor)
+                                              (stage/add-actor! (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor actor)
                                                                 (create
                                                                  {:title "title"
                                                                   :data v

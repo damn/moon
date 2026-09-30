@@ -1,6 +1,5 @@
 (ns moon.action-bar
   (:require [gdx.texture-region :as texture-region]
-            [gdx.actor :as actor]
             [gdx.actor.group :as group]
             [gdx.button-group :as button-group]
             [gdx.actor.group.widget.horizontal-group :as horizontal-group]
@@ -16,14 +15,14 @@
           :table/rows [[{:actor (doto (horizontal-group/create
                                        {:space 2
                                         :pad 2})
-                                  (actor/set-name! "moon.ui.action-bar.horizontal-group")
-                                  (actor/set-user-object! (button-group/create
+                                  (.setName "moon.ui.action-bar.horizontal-group")
+                                  (.setUserObject (button-group/create
                                                            {:max-check-count 1
                                                             :min-check-count 0})))
                          :expand? true
                          :bottom? true}]]})
     (layout/set-fill-parent! true)
-    (actor/set-name! "moon.ui.action-bar")))
+    (.setName "moon.ui.action-bar")))
 
 (defn- get-data
   [action-bar]
@@ -31,7 +30,7 @@
           (:button-group %)]}
   (let [group (group/find-actor action-bar "moon.ui.action-bar.horizontal-group")]
     {:horizontal-group group
-     :button-group (actor/get-user-object group)}))
+     :button-group (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor group)}))
 
 (defn add-skill!
   [action-bar
@@ -45,8 +44,8 @@
                       (doto (texture-region-drawable/create texture-region)
                         (texture-region-drawable/set-min-size! (* scale (texture-region/get-region-width texture-region))
                                                                (* scale (texture-region/get-region-height texture-region)))))
-                 (actor/add-listener! (text-tooltip/create tooltip-text skin))
-                 (actor/set-user-object! skill-id))]
+                 (.addListener (text-tooltip/create tooltip-text skin))
+                 (.setUserObject skill-id))]
     (group/add-actor! horizontal-group button)
     (button-group/add! button-group button)
     nil))
@@ -55,10 +54,10 @@
   [action-bar skill-id]
   (let [{:keys [horizontal-group button-group]} (get-data action-bar)
         button (get horizontal-group skill-id)]
-    (actor/remove! button)
+    (.remove ^com.badlogic.gdx.scenes.scene2d.Actor button)
     (button-group/remove! button-group button)
     nil))
 
 (defn selected-skill [action-bar]
   (when-let [skill-button (button-group/get-checked (:button-group (get-data action-bar)))]
-    (actor/get-user-object skill-button)))
+    (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor skill-button)))

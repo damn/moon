@@ -2,7 +2,6 @@
   (:require [gdx.actor.group.widget.table :as table]
             [gdx.stage :as stage]
             [gdx.actor.group.widget.table.window :as window]
-            [gdx.actor :as actor]
             [gdx.event :as event]
             [gdx.actor.group :as group]
             [gdx.touchable :as touchable]
@@ -13,11 +12,13 @@
             [gdx.layout :as layout]))
 
 (defn- set-label-text-actor [label-widget text-fn]
-  (actor/new
-   (fn [this _delta]
-     (when-let [stage (actor/get-stage this)]
-       (label/set-text! label-widget (text-fn (:stage/ctx stage)))))
-   (fn [_actor _batch _parent-alpha])))
+  (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
+    (act [delta]
+      (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
+        (label/set-text! label-widget (text-fn (:stage/ctx stage))))
+      (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
+        (proxy-super act delta)))
+    (draw [batch parent-alpha])))
 
 (defn- add-upd-label!
   ([skin table text-fn icon]
@@ -39,7 +40,7 @@
   (let [table (table/create {:table/rows [(for [{:keys [label items]} menus]
                                                            {:actor
                                                             (doto (text-button/create label skin)
-                                                              (actor/add-listener! (change-listener/create
+                                                              (.addListener (change-listener/create
                                                                                   (fn [event actor]
                                                                                     (stage/add-actor! (event/get-stage event)
                                                                                                     (window/create {:title label
@@ -47,7 +48,7 @@
                                                                                                                     :table/rows [(for [{:keys [label on-click]} items]
                                                                                                                                   {:actor
                                                                                                                                    (doto (text-button/create label skin)
-                                                                                                                                     (actor/add-listener! (change-listener/create
+                                                                                                                                     (.addListener (change-listener/create
                                                                                                                                                            (fn [event actor]
                                                                                                                                                              (let [stage (event/get-stage event)]
                                                                                                                                                                (stage/set-ctx! stage
@@ -67,7 +68,7 @@
                                                            :fill-x? true
                                                            :colspan 1}]
                                                          [{:actor (doto (label/create "" skin)
-                                                                        (actor/set-touchable! touchable/disabled))
+                                                                        (.setTouchable touchable/disabled))
                                                            :expand? true
                                                            :fill-x? true
                                                            :fill-y? true}]]})

@@ -3,7 +3,6 @@
             [clojure.java.io :as io]
             [clojure.math :as math]
             [clojure.string :as str]
-            [gdx.actor :as actor]
             [gdx.actor.group :as group]
             [gdx.actor.group.widget.table.button :as button]
             [gdx.actor.group.widget.table.button.text :as text-button]
@@ -781,9 +780,9 @@
     (stage/hit stage x y true)))
 
 (defn- mouseover-actor-info [actor]
-  (let [inventory-slot (and (actor/get-parent actor)
-                            (= "inventory-cell" (actor/get-name (actor/get-parent actor)))
-                            (actor/get-user-object (actor/get-parent actor)))]
+  (let [inventory-slot (and (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)
+                            (= "inventory-cell" (.getName ^com.badlogic.gdx.scenes.scene2d.Actor (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)))
+                            (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor actor)))]
     (cond
       inventory-slot
       [:mouseover-actor/inventory-cell inventory-slot]
@@ -892,18 +891,14 @@
                                             :skin skin
                                             :table/rows [[{:actor (label/create text skin)}]
                                                          [{:actor (doto (text-button/create button-text skin)
-                                                                         (actor/add-listener!
-                                                                          (change-listener/create
+                                                                         (.addListener (change-listener/create
                                                                            (fn [_event _actor]
-                                                                             (actor/remove!
-                                                                              (group/find-actor (:stage/root stage)
+                                                                             (.remove ^com.badlogic.gdx.scenes.scene2d.Actor (group/find-actor (:stage/root stage)
                                                                                                 "moon.ui.modal-window"))
                                                                              (on-click)))))}]]})
                         (window/set-modal! true)
-                        (actor/set-name! "moon.ui.modal-window")
-                        (actor/set-position! (/ (viewport/get-world-width (:stage/viewport stage)) 2)
-                                             (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))
-                                             align/center)))))
+                        (.setName "moon.ui.modal-window")
+                        (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor (/ (viewport/get-world-width (:stage/viewport stage)) 2) (float (* (viewport/get-world-height (:stage/viewport stage)) (/ 3 4))) (float align/center))))))
 
 (defn- play-sound! [ctx sound-name]
   (audio/play! (:ctx/audio ctx) sound-name))
@@ -1169,13 +1164,13 @@
   (let [inventory (-> (:ctx/stage ctx)
                       :stage/root
                       (group/find-actor "moon.ui.windows.inventory"))]
-    (actor/set-visible! inventory (not (actor/visible? inventory)))))
+    (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor inventory)))))
 
 (defn- show-message! [ctx message]
   (-> (:ctx/stage ctx)
       :stage/root
       (#(group/find-actor % "player-message"))
-      (actor/set-user-object! (atom {:text message :counter 0}))))
+      (.setUserObject (atom {:text message :counter 0}))))
 
 (def colors
   (let [outline-alpha 0.4]
@@ -1711,15 +1706,17 @@
                                               :x (+ x 75)
                                               :y (+ y 2)
                                               :up? true}))]
-    (actor/new
-     (fn [_actor _delta])
-     (fn [this _batch _parent-alpha]
-       (when-let [stage (actor/get-stage this)]
-         (let [ctx (:stage/ctx stage)
-               stats (:entity/stats @(:ctx/player-eid ctx))
-               bar-x (- x (/ rahmenw 2))]
-           (draw-hpmana-bar! ctx bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
-           (draw-hpmana-bar! ctx bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
+    (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
+      (act [delta]
+        (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
+          (proxy-super act delta)))
+      (draw [batch parent-alpha]
+        (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
+          (let [ctx (:stage/ctx stage)
+                stats (:entity/stats @(:ctx/player-eid ctx))
+                bar-x (- x (/ rahmenw 2))]
+            (draw-hpmana-bar! ctx bar-x y-hp hpcontent-file (stats/get-hitpoints stats) "HP")
+            (draw-hpmana-bar! ctx bar-x y-mana manacontent-file (stats/get-mana stats) "MP")))))))
 
 (defn- clicked-inventory-cell-player-idle
   [ctx eid cell]
@@ -1819,7 +1816,7 @@
   (let [group* (group/create)]
     (run! #(group/add-actor! group* %) (for [f actor-fns] (f ctx)))
     (doto group*
-      (actor/set-name! "moon.ui.windows"))))
+      (.setName "moon.ui.windows"))))
 
 (defn stage-info-window-create
   [ctx]
@@ -1856,38 +1853,42 @@
                             {:center? true})))
 
 (defn player-state-draw-create []
-  (actor/new
-   (fn [_actor _delta])
-   (fn [this _batch _parent-alpha]
-     (let [ctx (:stage/ctx (actor/get-stage this))
-           player-eid (:ctx/player-eid ctx)
-           entity @player-eid
-           state-k (:state (:entity/fsm entity))]
-       (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx)))))
+  (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
+    (act [delta]
+      (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
+        (proxy-super act delta)))
+    (draw [batch parent-alpha]
+      (let [ctx (:stage/ctx (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this))
+            player-eid (:ctx/player-eid ctx)
+            entity @player-eid
+            state-k (:state (:entity/fsm entity))]
+        (entity-state-draw-ui-view [state-k (state-k entity)] player-eid ctx)))))
 
 (defn player-message-actor-create []
   (let [message-duration-seconds 0.5]
-    (doto (actor/new
-           (fn [this delta]
-             (let [state (actor/get-user-object this)]
-               (when (:text @state)
-                 (swap! state update :counter + delta)
-                 (when (>= (:counter @state) message-duration-seconds)
-                   (reset! state nil)))))
-           (fn [this _batch _parent-alpha]
-             (when-let [stage (actor/get-stage this)]
-               (let [ctx (:stage/ctx stage)
-                     state (actor/get-user-object this)
-                     vp-width (viewport/get-world-width (:stage/viewport stage))
-                     vp-height (viewport/get-world-height (:stage/viewport stage))]
-                 (when-let [text (:text @state)]
-                   (draw-fn-text ctx {:x (/ vp-width 2)
-                                      :y (+ (/ vp-height 2) 200)
-                                      :text text
-                                      :scale 2.5
-                                      :up? true}))))))
-      (actor/set-name! "player-message")
-      (actor/set-user-object! (atom nil)))))
+    (doto (proxy [com.badlogic.gdx.scenes.scene2d.Actor] []
+            (act [delta]
+              (let [state (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor this)]
+                (when (:text @state)
+                  (swap! state update :counter + delta)
+                  (when (>= (:counter @state) message-duration-seconds)
+                    (reset! state nil))))
+              (let [^com.badlogic.gdx.scenes.scene2d.Actor this this]
+                (proxy-super act delta)))
+            (draw [batch parent-alpha]
+              (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
+                (let [ctx (:stage/ctx stage)
+                      state (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor this)
+                      vp-width (viewport/get-world-width (:stage/viewport stage))
+                      vp-height (viewport/get-world-height (:stage/viewport stage))]
+                  (when-let [text (:text @state)]
+                    (draw-fn-text ctx {:x (/ vp-width 2)
+                                       :y (+ (/ vp-height 2) 200)
+                                       :text text
+                                       :scale 2.5
+                                       :up? true}))))))
+      (.setName "player-message")
+      (.setUserObject (atom nil)))))
 
 (defn- player-movement-vector [ctx]
   (let [r (when (key-pressed? ctx :input.keys/d) [1  0])
@@ -1918,8 +1919,8 @@
               (cond
                 (-> stage
                     :stage/root
-                    (#(group/find-actor % "moon.ui.windows.inventory"))
-                    actor/visible?)
+                    (group/find-actor "moon.ui.windows.inventory")
+                    .isVisible)
                 (do (swap! clicked-eid assoc :entity/destroyed? true)
                     (play-sound! ctx "bfxr_takeit")
                     (handle-fsm-event! ctx player-eid :pickup-item item))
@@ -2818,14 +2819,14 @@
     (when (control-key-just-pressed? ctx :close-windows-key)
       (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
            group/get-children
-           (run! #(actor/set-visible! % false))))
+           (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
 
     (when (control-key-just-pressed? ctx :toggle-inventory)
       (toggle-inventory-visible! ctx))
 
     (when (control-key-just-pressed? ctx :toggle-entity-info)
       (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
-        (actor/set-visible! entity-info (not (actor/visible? entity-info)))))
+        (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info)))))
     ctx))
 
 (defn update-draw-stage

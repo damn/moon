@@ -1,6 +1,5 @@
 (ns moon.inventory-window
   (:require [gdx.color :as color]
-            [gdx.actor :as actor]
             [gdx.event :as event]
             [gdx.actor.group :as group]
             [gdx.actor.widget.image :as image]
@@ -23,13 +22,13 @@
   (->> "inventory-cell-table"
        (#(group/find-actor inventory-window %))
        group/get-children
-       (filter #(= (actor/get-user-object %) cell))
+       (filter #(= (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor %) cell))
        first))
 
 (defn remove-item! [inventory-window cell]
   (let [cell-widget (get-cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")]
-    (image/set-drawable! image-widget (:background-drawable (actor/get-user-object image-widget)))
+    (image/set-drawable! image-widget (:background-drawable (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor image-widget)))
     ; !! TODO FIXME FIXME FIXME !!!
     ;(.removeListener actor (.getListeners actor))
     ; ... first find the listener
@@ -39,10 +38,10 @@
 (defn set-item! [inventory-window cell {:keys [texture-region tooltip-text]} skin]
   (let [cell-widget (get-cell inventory-window cell)
         image-widget (group/find-actor cell-widget "image-widget")
-        cell-size (:cell-size (actor/get-user-object image-widget))]
+        cell-size (:cell-size (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor image-widget))]
     (image/set-drawable! image-widget (doto (texture-region-drawable/create texture-region)
                                         (texture-region-drawable/set-min-size! cell-size cell-size)))
-    (actor/add-listener! cell-widget (text-tooltip/create tooltip-text skin))
+    (.addListener ^com.badlogic.gdx.scenes.scene2d.Actor cell-widget (text-tooltip/create tooltip-text skin))
     nil))
 
 (defn- ->cell [on-click-cell slot->drawable draw-cell-rect! cell-size slot & {:keys [position]}]
@@ -53,28 +52,27 @@
        (run! #(group/add-actor! stack %)
              [(widget/new
                (fn [this _batch _parent-alpha]
-                 (when-let [stage (actor/get-stage this)]
+                 (when-let [stage (.getStage ^com.badlogic.gdx.scenes.scene2d.Actor this)]
                    (let [ctx (:stage/ctx stage)]
                      (draw-cell-rect! ctx
                                       @(get-player-eid ctx)
-                                      (actor/get-x this)
-                                      (actor/get-y this)
+                                      (.getX ^com.badlogic.gdx.scenes.scene2d.Actor this)
+                                      (.getY ^com.badlogic.gdx.scenes.scene2d.Actor this)
                                       (let [[x y] (vector2/clojurize
-                                                   (actor/stage-to-local-coordinates this
-                                                                                    (vector2/new (get-ui-mouse-position ctx))))]
-                                        (actor/hit this x y true))
-                                      (actor/get-user-object (actor/get-parent this)))))))
+                                                   (.stageToLocalCoordinates ^com.badlogic.gdx.scenes.scene2d.Actor this ^com.badlogic.gdx.math.Vector2 (vector2/new (get-ui-mouse-position ctx))))]
+                                        (.hit ^com.badlogic.gdx.scenes.scene2d.Actor this (float x) (float y) true))
+                                      (.getUserObject ^com.badlogic.gdx.scenes.scene2d.Actor (.getParent ^com.badlogic.gdx.scenes.scene2d.Actor this)))))))
               (doto (image/create-drawable background-drawable)
-                (actor/set-name! "image-widget")
-                (actor/set-user-object! {:background-drawable background-drawable
+                (.setName "image-widget")
+                (.setUserObject {:background-drawable background-drawable
                                       :cell-size cell-size}))])
        (doto stack
-         (actor/add-listener! (click-listener/create
+         (.addListener (click-listener/create
                              (fn [event _x _y]
                                (let [ctx (:stage/ctx (event/get-stage event))]
                                  (on-click-cell ctx (get-player-eid ctx) cell)))))
-         (actor/set-name! "inventory-cell")
-         (actor/set-user-object! cell)))}))
+         (.setName "inventory-cell")
+         (.setUserObject cell)))}))
 
 (defn inventory-window-build
   [{:keys [on-click-cell
@@ -109,10 +107,10 @@
                                                                                       (for [y (range 4)]
                                                                                         (for [x (range 6)]
                                                                                           (->cell :inventory.slot/bag :position [x y]))))})
-                                                                  (actor/set-name! "inventory-cell-table"))
+                                                                  (.setName "inventory-cell-table"))
                                                     :pad 4}]]})
-                     (actor/set-name! "moon.ui.windows.inventory")
-                     (actor/set-visible! false))]
+                     (.setName "moon.ui.windows.inventory")
+                     (.setVisible false))]
     (let [[x y] position]
-      (actor/set-position! window x y))
+      (.setPosition ^com.badlogic.gdx.scenes.scene2d.Actor window (float x) (float y)))
     window))
