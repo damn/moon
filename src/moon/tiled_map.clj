@@ -1,6 +1,5 @@
 (ns moon.tiled-map
-  (:require [moon.camera :as orthographic-camera]
-            [gdx.tiled-map-tile-layer :as tiled-map-tile-layer])
+  (:require [moon.camera :as orthographic-camera])
   (:import (com.badlogic.gdx.graphics Texture)
            (com.badlogic.gdx.graphics.g2d Batch TextureRegion)
            (com.badlogic.gdx.maps MapLayer MapLayers MapProperties)
@@ -17,22 +16,37 @@
 (defn get-property [tiled-map k]
   (.get ^MapProperties (get-properties tiled-map) k))
 
+(defn property-value [layer [x y] property-key]
+  (if-let [cell (.getCell ^TiledMapTileLayer layer (int x) (int y))]
+    (if-let [value (.get ^MapProperties (.getProperties ^TiledMapTile (.getTile ^TiledMapTileLayer$Cell cell)) property-key)]
+      value
+      :undefined)
+    :no-cell))
+
 (defn create-layer
   [tiled-map
    {:keys [name
            visible?
            properties
            tiles]}]
-  (let [props (get-properties tiled-map)]
-    (tiled-map-tile-layer/create
-     {:width      (.get ^MapProperties props "width")
-      :height     (.get ^MapProperties props "height")
-      :tilewidth  (.get ^MapProperties props "tilewidth")
-      :tileheight (.get ^MapProperties props "tileheight")
-      :name name
-      :visible? visible?
-      :map-properties properties
-      :tiles tiles})))
+  {:pre [(string? name)
+         (boolean? visible?)]}
+  (let [props (get-properties tiled-map)
+        layer (doto (TiledMapTileLayer. (int (.get ^MapProperties props "width"))
+                                        (int (.get ^MapProperties props "height"))
+                                        (int (.get ^MapProperties props "tilewidth"))
+                                        (int (.get ^MapProperties props "tileheight")))
+                (.setName ^String name)
+                (.setVisible visible?))]
+    (doseq [[k v] properties]
+      (assert (string? k))
+      (.put ^MapProperties (.getProperties ^TiledMapTileLayer layer) k v))
+    (doseq [[[x y] tile] tiles
+            :when tile]
+      (.setCell ^TiledMapTileLayer layer (int x) (int y)
+                (doto (TiledMapTileLayer$Cell.)
+                  (.setTile ^TiledMapTile tile))))
+    layer))
 
 (defn add-layer! [tiled-map layer]
   (.add ^MapLayers (get-layers tiled-map)

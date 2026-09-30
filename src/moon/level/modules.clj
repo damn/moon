@@ -1,7 +1,6 @@
 (ns moon.level.modules
   (:require [moon.rand :as rand]
             [moon.tiled-map :as moon-tiled-map]
-            [gdx.tiled-map-tile-layer :refer [property-value]]
             [moon.caves :as caves]
             [moon.g2d :as g2d]
             [moon.position :as position])
@@ -219,7 +218,7 @@
                                             (fn [p]
                                               (and (= area-level (get scaled-area-level-grid p))
                                                    (#{:no-cell :undefined}
-                                                    (property-value (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) "creatures")
+                                                    (moon-tiled-map/property-value (.get ^MapLayers (moon-tiled-map/get-layers tiled-map) "creatures")
                                                                     p
                                                                     "id"))))
                                             spawn-positions)))
