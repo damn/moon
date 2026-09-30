@@ -87,7 +87,6 @@
 (def schema
   (malli-schema/create
    [:map {:closed true}
-    [:ctx/input :some]
     [:ctx/graphics :some]
     [:ctx/audio :some]
     [:ctx/batch :some]
@@ -2527,7 +2526,6 @@
 (defn create! [audio files graphics input]
   (reset! state
           (as-> {:ctx/graphics graphics
-                 :ctx/input    input
                  :ctx/unit-scale (atom 1)
                  :ctx/active-entities nil
                  :ctx/delta-time nil
@@ -2681,18 +2679,17 @@
     (run! disposable/dispose! (vals (:ctx/textures ctx)))
     (disposable/dispose! (:ctx/tiled-map ctx))))
 
-(defn render! []
+(defn render! [mouse-position key-pressed? key-just-pressed? button-just-pressed?]
   (.glClearColor (graphics/get-gl20 (:ctx/graphics @state)) 0 0 0 0)
   (.glClear (graphics/get-gl20 (:ctx/graphics @state)) GL20/GL_COLOR_BUFFER_BIT)
   (swap! state #(or (:stage/ctx (:ctx/stage %)) %))
   (malli-schema/validate-humanize schema @state)
   (swap! state (fn [ctx]
                  (let [stage (:ctx/stage ctx)
-                       world-viewport (:ctx/world-viewport ctx)
-                       mp (input/position (:ctx/input ctx))]
+                       world-viewport (:ctx/world-viewport ctx)]
                    (-> ctx
-                       (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mp))
-                       (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mp)))))))
+                       (assoc :ctx/world-mouse-position (viewport/unproject world-viewport mouse-position))
+                       (assoc :ctx/ui-mouse-position (-> stage :stage/viewport (viewport/unproject mouse-position)))))))
   (swap! state (fn [ctx]
                  (let [player-eid (:ctx/player-eid ctx)
                        raycaster (:ctx/raycaster ctx)
@@ -2716,7 +2713,7 @@
                      (swap! new-eid assoc :entity/mouseover? true))
                    (assoc ctx :ctx/mouseover-eid new-eid))))
   (let [ctx @state]
-    (when (input/button-just-pressed? (:ctx/input ctx) (:open-debug-button (:ctx/controls ctx)))
+    (when (button-just-pressed? (:open-debug-button (:ctx/controls ctx)))
       (let [world (:ctx/world ctx)
             mouseover-eid (:ctx/mouseover-eid ctx)
             world-mouse-position (:ctx/world-mouse-position ctx)
@@ -2786,16 +2783,16 @@
           eid (:ctx/player-eid ctx)
           entity @eid
           state-k (:state (:entity/fsm entity))
-          movement-vector (let [r (when (input/key-pressed? (:ctx/input ctx) :input.keys/d) [1  0])
-                                l (when (input/key-pressed? (:ctx/input ctx) :input.keys/a) [-1 0])
-                                u (when (input/key-pressed? (:ctx/input ctx) :input.keys/w) [0  1])
-                                d (when (input/key-pressed? (:ctx/input ctx) :input.keys/s) [0 -1])]
+          movement-vector (let [r (when (key-pressed? :input.keys/d) [1  0])
+                                l (when (key-pressed? :input.keys/a) [-1 0])
+                                u (when (key-pressed? :input.keys/w) [0  1])
+                                d (when (key-pressed? :input.keys/s) [0 -1])]
                             (when (or r l u d)
                               (let [v (v2/normalise (reduce v2/add [0 0] (remove nil? [r l u d])))]
                                 (when (pos? (v2/length v))
                                   v))))]
       (handle-input state-k eid ctx
-                    (input/button-just-pressed? (:ctx/input ctx) :input.buttons/left)
+                    (button-just-pressed? :input.buttons/left)
                     movement-vector
                     mouseover-actor*)))
   (swap! state dissoc :ctx/interaction-state)
@@ -2804,8 +2801,8 @@
                         (or #_error
                             (and pausing?
                                  (state->pause-game? (:state (:entity/fsm @(:ctx/player-eid ctx))))
-                                 (not (or (input/key-just-pressed? (:ctx/input ctx) (:unpause-once (:ctx/controls ctx)))
-                                          (input/key-pressed? (:ctx/input ctx) (:unpause-continously (:ctx/controls ctx))))))))))
+                                 (not (or (key-just-pressed? (:unpause-once (:ctx/controls ctx)))
+                                          (key-pressed? (:unpause-continously (:ctx/controls ctx))))))))))
   (swap! state (fn [ctx]
                  (if (:ctx/paused? ctx)
                    ctx
@@ -2824,17 +2821,17 @@
   (let [ctx @state
         stage (:ctx/stage ctx)
         world-viewport (:ctx/world-viewport ctx)]
-    (when (input/key-pressed? (:ctx/input ctx) (:zoom-in (:ctx/controls ctx)))
+    (when (key-pressed? (:zoom-in (:ctx/controls ctx)))
       (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) zoom-speed))
-    (when (input/key-pressed? (:ctx/input ctx) (:zoom-out (:ctx/controls ctx)))
+    (when (key-pressed? (:zoom-out (:ctx/controls ctx)))
       (orthographic-camera/inc-zoom! (viewport/get-camera world-viewport) (- zoom-speed)))
-    (when (input/key-just-pressed? (:ctx/input ctx) (:close-windows-key (:ctx/controls ctx)))
+    (when (key-just-pressed? (:close-windows-key (:ctx/controls ctx)))
       (->> (group/find-actor (:stage/root stage) "moon.ui.windows")
            group/get-children
            (run! #(.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor % false))))
-    (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-inventory (:ctx/controls ctx)))
+    (when (key-just-pressed? (:toggle-inventory (:ctx/controls ctx)))
       (toggle-inventory-visible! ctx))
-    (when (input/key-just-pressed? (:ctx/input ctx) (:toggle-entity-info (:ctx/controls ctx)))
+    (when (key-just-pressed? (:toggle-entity-info (:ctx/controls ctx)))
       (let [entity-info (group/find-actor (:stage/root stage) "moon.ui.windows.entity-info")]
         (.setVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info (not (.isVisible ^com.badlogic.gdx.scenes.scene2d.Actor entity-info))))))
   (swap! state update-draw-stage)
@@ -2852,7 +2849,11 @@
     (dispose [_]
       (dispose!))
     (render [_]
-      (render!))
+      (let [input Gdx/input]
+        (render! (input/position input)
+                 #(input/key-pressed? input %)
+                 #(input/key-just-pressed? input %)
+                 #(input/button-just-pressed? input %))))
     (resize [_ width height]
       (resize! width height))
     (pause [_])
